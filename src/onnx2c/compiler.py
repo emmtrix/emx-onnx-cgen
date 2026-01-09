@@ -7,7 +7,7 @@ from typing import Mapping
 import numpy as np
 import onnx
 
-from .codegen.c_emitter import BinaryOp, CEmitter, LoweredModel
+from .codegen.c_emitter import BinaryOp, CEmitter, LoweredModel, UnaryOp
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph
 from .onnx_import import import_onnx
@@ -40,12 +40,19 @@ class Compiler:
             )
         node = graph.nodes[0]
         op_symbol = _binary_op_symbol(node.op_type)
-        if op_symbol is None:
+        unary_symbol = _unary_op_symbol(node.op_type)
+        if op_symbol is None and unary_symbol is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if len(node.inputs) != 2 or len(node.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node.op_type} must have 2 inputs and 1 output"
-            )
+        if op_symbol is not None:
+            if len(node.inputs) != 2 or len(node.outputs) != 1:
+                raise UnsupportedOpError(
+                    f"{node.op_type} must have 2 inputs and 1 output"
+                )
+        else:
+            if len(node.inputs) != 1 or len(node.outputs) != 1:
+                raise UnsupportedOpError(
+                    f"{node.op_type} must have 1 input and 1 output"
+                )
         output_value = graph.outputs[0]
         if output_value.type.dtype != "float":
             raise UnsupportedOpError(
@@ -54,6 +61,20 @@ class Compiler:
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
             raise ShapeInferenceError("Output shape must be fully defined")
+        if unary_symbol is not None:
+            return LoweredModel(
+                name=self._options.model_name,
+                input_names=(node.inputs[0],),
+                output_name=node.outputs[0],
+                element_count=element_count,
+                ops=(
+                    UnaryOp(
+                        input0=node.inputs[0],
+                        output=node.outputs[0],
+                        operator=unary_symbol,
+                    ),
+                ),
+            )
         return LoweredModel(
             name=self._options.model_name,
             input_names=(node.inputs[0], node.inputs[1]),
@@ -128,11 +149,16 @@ class Compiler:
             raise UnsupportedOpError("Only one- or two-node graphs are supported")
         node = graph.nodes[0]
         op_symbol = _binary_op_symbol(node.op_type)
-        if op_symbol is None:
+        unary_symbol = _unary_op_symbol(node.op_type)
+        if op_symbol is None and unary_symbol is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        left = feeds[node.inputs[0]]
-        right = feeds[node.inputs[1]]
-        result = _apply_binary_op(op_symbol, left, right)
+        if op_symbol is not None:
+            left = feeds[node.inputs[0]]
+            right = feeds[node.inputs[1]]
+            result = _apply_binary_op(op_symbol, left, right)
+        else:
+            value = feeds[node.inputs[0]]
+            result = _apply_unary_op(unary_symbol, value)
         return {node.outputs[0]: result}
 
     def _run_binary_chain(
@@ -182,7 +208,19 @@ def _binary_op_symbol(op_type: str) -> str | None:
     return None
 
 
+def _unary_op_symbol(op_type: str) -> str | None:
+    if op_type == "Tanh":
+        return "tanhf"
+    return None
+
+
 def _apply_binary_op(op_symbol: str, left: np.ndarray, right: np.ndarray) -> np.ndarray:
     if op_symbol == "+":
         return left + right
     return left * right
+
+
+def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
+    if op_symbol == "tanhf":
+        return np.tanh(value)
+    raise UnsupportedOpError(f"Unsupported unary op {op_symbol}")
