@@ -12,6 +12,17 @@ This document describes the working conventions for humans and automated agents 
 - Support reproducible builds and deterministic code generation.
 - Maintain high code quality: prioritize clean OO design, avoid code smells, and continuously refactor toward simpler abstractions.
 
+## Related Repositories / References
+
+The directories **`emx-pytorch2c-org/`** and **`onnx2c-org/`** serve as **reference implementations / knowledge bases** for ideas, operator coverage, and practical edge cases:
+
+- **`onnx2c-org/`** is a **C++ implementation** with similar goals (ONNX → C compilation, deterministic codegen, minimal runtime).
+  *Note:* It may generate **ugly C code**. Use it for semantic reference and operator handling, not as a style template.
+- **`emx-pytorch2c-org/`** is a **Python-based PyTorch → C compiler**.
+  *Note:* It may contain **poor design choices / architecture smells**. Use it for concepts, codegen patterns, and testing approaches, but do **not** replicate the design blindly.
+
+When making architectural decisions, prefer clean and maintainable design even if it diverges from these repositories.
+
 ## Repository Structure (expected)
 
 > If folders do not exist yet, create them following these conventions.
