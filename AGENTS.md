@@ -1,0 +1,215 @@
+# AGENTS.md
+
+This repository builds an **ONNX → C compiler** implemented in Python.
+
+This document describes the working conventions for humans and automated agents (e.g., code assistants) contributing to the project.
+
+## Project Goals
+
+- Compile ONNX models into **portable C code** with minimal runtime dependencies.
+- Produce **correct-by-comparison** outputs against ONNX Runtime (ORT).
+- Keep the compiler architecture **pass-based** (import → normalize → optimize → lower → emit).
+- Support reproducible builds and deterministic code generation.
+
+## Repository Structure (expected)
+
+> If folders do not exist yet, create them following these conventions.
+
+- `src/`  
+  Python package for the compiler.
+- `src/onnx2c/`  
+  Main package (or rename to your chosen package name).
+- `src/onnx2c/ir/`  
+  Internal IR definitions (graph, tensors, types, attributes).
+- `src/onnx2c/passes/`  
+  Normalization + optimization passes.
+- `src/onnx2c/lowering/`  
+  Lowering from IR to C-level IR / operator kernels.
+- `src/onnx2c/codegen/`  
+  C emission (templates + emit logic).
+- `src/onnx2c/runtime/`  
+  Minimal C runtime support (allocator, tensor struct, operator kernels).
+- `templates/`  
+  Jinja2 templates for C sources/headers.
+- `tests/`  
+  Pytest-based tests.
+- `tests/models/`  
+  Small ONNX models + known-good test artifacts.
+- `tools/`  
+  Developer scripts (benchmarking, model zoo fetch, etc.).
+- `docs/`  
+  Design notes, decisions, and architecture docs.
+- `examples/`  
+  Example models and compilation pipelines.
+
+## Key Invariants
+
+- **Correctness first:** any optimization must preserve semantics.
+- **Deterministic output:** code generation must be stable across runs:
+  - stable node ordering
+  - stable symbol names
+  - stable formatting
+- **No hidden state:** passes should be pure functions over IR where possible.
+- **Explicit errors:** unsupported ops or ambiguous shapes must raise actionable errors.
+
+## How to Run
+
+### Unit tests
+```bash
+pytest -n auto -q
+```
+
+## Compiler Pipeline (conceptual)
+
+1. **Load ONNX**
+
+   * Validate model
+   * Resolve initializers
+   * Run ONNX shape inference (best-effort)
+
+2. **Import to IR**
+
+   * Build internal graph representation
+   * Normalize attributes and types
+
+3. **Normalize passes**
+
+   * Constant folding
+   * Canonicalize patterns
+   * Eliminate no-ops / identities
+   * Ensure all required shapes/types exist
+
+4. **Optimize passes**
+
+   * Fuse patterns (e.g., Conv+Relu)
+   * Layout transforms (optional)
+   * Dead code elimination
+
+5. **Lowering**
+
+   * Map IR nodes to C-level kernels or intrinsic ops
+   * Produce explicit tensor views / memory model
+   * Decide storage (stack/static/global)
+
+6. **Code generation**
+
+   * Emit `model.c/.h`
+   * Emit kernels (or link runtime kernels)
+   * Emit weights
+
+7. **Verification**
+
+   * Run ORT and generated code, compare numerically
+   * Log max abs/rel error
+
+## Coding Standards
+
+### Python style
+
+* Format: `black`
+* Lint: `ruff`
+* Prefer type hints (`typing`, `dataclasses`)
+* Avoid global mutable state
+* Keep functions small and testable
+
+### Error handling
+
+* Prefer explicit custom exceptions:
+
+  * `UnsupportedOpError`
+  * `ShapeInferenceError`
+  * `LoweringError`
+  * `CodegenError`
+* Error messages must include:
+
+  * op type
+  * node name (if any)
+  * input/output shapes (if known)
+  * hint to fix (e.g., “run onnxsim” or “export with static shapes”)
+
+### Logging
+
+* Use Python `logging` (no prints in library code).
+* Default level: INFO.
+* Provide debug dumps behind flags.
+
+## Testing Guidelines
+
+### Requirements for new features
+
+* Every new operator/kernel requires:
+
+  * at least one unit test
+  * at least one ORT comparison test
+  * edge cases (broadcasting, padding, axis, negative indices, etc.)
+
+### Numeric tolerances
+
+* Use tolerances appropriate for `float32`:
+
+  * default: `atol=1e-5`, `rtol=1e-4`
+* For ops with higher numeric drift (e.g., `Softmax`):
+
+  * loosen tolerances slightly, document why
+
+### Test model sources
+
+* Keep test ONNX models small.
+* Prefer:
+
+  * hand-constructed graphs
+  * ONNX Model Zoo models only for integration tests (optional)
+
+## Performance Guidelines
+
+* Avoid Python-level tensor computations in hot paths except for:
+  * constant folding
+  * verification
+
+* In C runtime:
+  * prefer contiguous memory layouts
+  * avoid dynamic allocations unless explicitly enabled
+* Any performance optimization must include a benchmark or profiling note.
+
+## Documentation Expectations
+
+* Any major design change needs a short note in `docs/`:
+  * motivation
+  * alternatives considered
+  * decision
+  * consequences
+* Public-facing usage should be documented in `README.md`.
+
+## Contribution Workflow
+
+* Keep PRs focused and small.
+* For any change affecting output C code:
+  * include golden snapshot updates (if applicable)
+  * run ORT comparison tests
+* Prefer descriptive commit messages:
+  * `passes: fold constants for Add/Mul`
+  * `codegen: stable symbol naming`
+  * `runtime: add Conv2D kernel (NHWC)`
+
+## Agent Instructions (for automated assistants)
+
+When acting as an agent in this repo:
+
+1. **Do not introduce new dependencies** without a clear need.
+2. **Do not change code generation output formatting** unless necessary.
+3. For new ops:
+   * implement kernel
+   * update lowering mapping
+   * add unit test + ORT comparison test
+4. Maintain determinism:
+   * stable ordering, stable naming
+5. If unsure about semantics, prefer correctness and add a TODO + test.
+
+## Security / Safety
+
+* Do not execute untrusted ONNX models from unknown sources.
+* Avoid shelling out to external tools in the compilation path.
+* Generated C code should not include:
+  * filesystem I/O
+  * network I/O
+  * dynamic loading
