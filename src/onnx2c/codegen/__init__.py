@@ -1,3 +1,3 @@
-from .c_emitter import BinaryOp, CEmitter, LoweredModel
+from .c_emitter import BinaryOp, CEmitter, LoweredModel, UnaryOp
 
-__all__ = ["BinaryOp", "CEmitter", "LoweredModel"]
+__all__ = ["BinaryOp", "CEmitter", "LoweredModel", "UnaryOp"]
