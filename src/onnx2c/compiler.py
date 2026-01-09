@@ -7,7 +7,7 @@ from typing import Mapping
 import numpy as np
 import onnx
 
-from .codegen.c_emitter import BinaryModel, CEmitter
+from .codegen.c_emitter import BinaryChainModel, BinaryModel, CEmitter
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph
 from .onnx_import import import_onnx
@@ -28,13 +28,17 @@ class Compiler:
 
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)
-        binary_model = self._lower_binary_model(graph)
-        return self._emitter.emit_binary_model(binary_model)
+        lowered = self._lower_model(graph)
+        if isinstance(lowered, BinaryModel):
+            return self._emitter.emit_binary_model(lowered)
+        return self._emitter.emit_binary_chain_model(lowered)
 
-    def _lower_binary_model(self, graph: Graph) -> BinaryModel:
+    def _lower_model(self, graph: Graph) -> BinaryModel | BinaryChainModel:
         if len(graph.nodes) != 1:
+            if len(graph.nodes) == 2:
+                return self._lower_binary_chain_model(graph)
             raise UnsupportedOpError(
-                f"Only single-node graphs are supported, got {len(graph.nodes)}"
+                f"Only one- or two-node graphs are supported, got {len(graph.nodes)}"
             )
         node = graph.nodes[0]
         op_symbol = _binary_op_symbol(node.op_type)
@@ -60,21 +64,95 @@ class Compiler:
             operator=op_symbol,
         )
 
+    def _lower_binary_chain_model(self, graph: Graph) -> BinaryChainModel:
+        node1, node2 = graph.nodes
+        op1_symbol = _binary_op_symbol(node1.op_type)
+        if op1_symbol is None:
+            raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
+        op2_symbol = _binary_op_symbol(node2.op_type)
+        if op2_symbol is None:
+            raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
+        if len(node1.inputs) != 2 or len(node1.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node1.op_type} must have 2 inputs and 1 output"
+            )
+        if len(node2.inputs) != 2 or len(node2.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node2.op_type} must have 2 inputs and 1 output"
+            )
+        intermediate = node1.outputs[0]
+        if intermediate not in node2.inputs:
+            raise UnsupportedOpError(
+                "Second node must consume the first node output"
+            )
+        output_value = graph.outputs[0]
+        if output_value.type.dtype != "float":
+            raise UnsupportedOpError(
+                f"Unsupported dtype {output_value.type.dtype} for {output_value.name}"
+            )
+        element_count = _element_count(output_value.type.shape)
+        if element_count <= 0:
+            raise ShapeInferenceError("Output shape must be fully defined")
+        if node2.inputs[0] == intermediate:
+            temp_on_left = True
+            other_input = node2.inputs[1]
+        else:
+            temp_on_left = False
+            other_input = node2.inputs[0]
+        input_names = tuple(value.name for value in graph.inputs)
+        return BinaryChainModel(
+            name=self._options.model_name,
+            input_names=input_names,
+            output_name=node2.outputs[0],
+            element_count=element_count,
+            first_inputs=(node1.inputs[0], node1.inputs[1]),
+            first_operator=op1_symbol,
+            second_input=other_input,
+            second_operator=op2_symbol,
+            temp_on_left=temp_on_left,
+        )
+
     def run(self, model: onnx.ModelProto, feeds: Mapping[str, np.ndarray]) -> dict[str, np.ndarray]:
         graph = import_onnx(model)
         if len(graph.nodes) != 1:
-            raise UnsupportedOpError("Only single-node graphs are supported")
+            if len(graph.nodes) == 2:
+                return self._run_binary_chain(graph, feeds)
+            raise UnsupportedOpError("Only one- or two-node graphs are supported")
         node = graph.nodes[0]
         op_symbol = _binary_op_symbol(node.op_type)
         if op_symbol is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
         left = feeds[node.inputs[0]]
         right = feeds[node.inputs[1]]
-        if op_symbol == "+":
-            result = left + right
-        else:
-            result = left * right
+        result = _apply_binary_op(op_symbol, left, right)
         return {node.outputs[0]: result}
+
+    def _run_binary_chain(
+        self, graph: Graph, feeds: Mapping[str, np.ndarray]
+    ) -> dict[str, np.ndarray]:
+        node1, node2 = graph.nodes
+        op1_symbol = _binary_op_symbol(node1.op_type)
+        if op1_symbol is None:
+            raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
+        op2_symbol = _binary_op_symbol(node2.op_type)
+        if op2_symbol is None:
+            raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
+        intermediate = node1.outputs[0]
+        if intermediate not in node2.inputs:
+            raise UnsupportedOpError(
+                "Second node must consume the first node output"
+            )
+        left = feeds[node1.inputs[0]]
+        right = feeds[node1.inputs[1]]
+        tmp = _apply_binary_op(op1_symbol, left, right)
+        if node2.inputs[0] == intermediate:
+            left = tmp
+            right = feeds[node2.inputs[1]]
+        else:
+            left = feeds[node2.inputs[0]]
+            right = tmp
+        result = _apply_binary_op(op2_symbol, left, right)
+        return {node2.outputs[0]: result}
 
 
 def _element_count(shape: tuple[int, ...]) -> int:
@@ -94,3 +172,9 @@ def _binary_op_symbol(op_type: str) -> str | None:
     if op_type == "Mul":
         return "*"
     return None
+
+
+def _apply_binary_op(op_symbol: str, left: np.ndarray, right: np.ndarray) -> np.ndarray:
+    if op_symbol == "+":
+        return left + right
+    return left * right
