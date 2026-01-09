@@ -270,6 +270,29 @@ When acting as an agent in this repo:
 * options
 * recommendation
 
+## Maintaining this document (AGENTS.md)
+
+This file is part of the project’s contract.
+
+Update `AGENTS.md` when:
+- the repository structure changes (new top-level folders, renamed packages)
+- the compiler pipeline changes (new major phases or invariants)
+- coding standards or tooling decisions change (`ruff`, `black`, test strategy, etc.)
+- new supported targets/constraints are added (dynamic shapes, quantization, new runtimes)
+- recurring confusion appears in PR reviews (add clarifying rules)
+- an agent repeatedly makes the same mistake (add an explicit guardrail)
+
+Rules for updating:
+- Keep changes small and specific.
+- Include the rationale in the commit/PR description.
+- Prefer adding explicit examples over vague guidelines.
+- Do not add rules that are not enforced or not useful.
+- If a new rule conflicts with existing rules, resolve the conflict in `AGENTS.md` as part of the same change.
+
+Agents:
+- If you encounter ambiguity not covered by this document, propose an update to `AGENTS.md`.
+- If your change introduces new conventions, update this file in the same PR.
+
 ## Security / Safety
 
 * Do not execute untrusted ONNX models from unknown sources.
