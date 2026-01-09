@@ -1,0 +1,5 @@
+void {{ op_name }}(const float* {{ input0 }}, float* {{ output }}) {
+    for (size_t i = 0; i < {{ element_count }}; ++i) {
+        {{ output }}[i] = {{ operator }}({{ input0 }}[i]);
+    }
+}
