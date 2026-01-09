@@ -1,3 +1,3 @@
-from .c_emitter import AddModel, CEmitter
+from .c_emitter import BinaryModel, CEmitter
 
-__all__ = ["AddModel", "CEmitter"]
+__all__ = ["BinaryModel", "CEmitter"]

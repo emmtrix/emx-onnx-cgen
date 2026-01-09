@@ -10,11 +10,12 @@ from ..errors import CodegenError
 
 
 @dataclass(frozen=True)
-class AddModel:
+class BinaryModel:
     name: str
     input_names: tuple[str, str]
     output_name: str
     element_count: int
+    operator: str
 
 
 class CEmitter:
@@ -26,7 +27,7 @@ class CEmitter:
             lstrip_blocks=True,
         )
 
-    def emit_add_model(self, model: AddModel) -> str:
+    def emit_binary_model(self, model: BinaryModel) -> str:
         try:
             template = self._env.get_template("model.c.j2")
         except Exception as exc:  # pragma: no cover - template load failure
@@ -37,6 +38,7 @@ class CEmitter:
             input1=model.input_names[1],
             output=model.output_name,
             element_count=model.element_count,
+            operator=model.operator,
         )
         if not rendered.endswith("\n"):
             rendered += "\n"
