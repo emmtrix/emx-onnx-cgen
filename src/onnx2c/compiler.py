@@ -7,7 +7,7 @@ from typing import Mapping
 import numpy as np
 import onnx
 
-from .codegen.c_emitter import BinaryChainModel, BinaryModel, CEmitter
+from .codegen.c_emitter import BinaryOp, CEmitter, LoweredModel
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph
 from .onnx_import import import_onnx
@@ -29,11 +29,9 @@ class Compiler:
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)
         lowered = self._lower_model(graph)
-        if isinstance(lowered, BinaryModel):
-            return self._emitter.emit_binary_model(lowered)
-        return self._emitter.emit_binary_chain_model(lowered)
+        return self._emitter.emit_model(lowered)
 
-    def _lower_model(self, graph: Graph) -> BinaryModel | BinaryChainModel:
+    def _lower_model(self, graph: Graph) -> LoweredModel:
         if len(graph.nodes) != 1:
             if len(graph.nodes) == 2:
                 return self._lower_binary_chain_model(graph)
@@ -56,15 +54,22 @@ class Compiler:
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
             raise ShapeInferenceError("Output shape must be fully defined")
-        return BinaryModel(
+        return LoweredModel(
             name=self._options.model_name,
             input_names=(node.inputs[0], node.inputs[1]),
             output_name=node.outputs[0],
             element_count=element_count,
-            operator=op_symbol,
+            ops=(
+                BinaryOp(
+                    input0=node.inputs[0],
+                    input1=node.inputs[1],
+                    output=node.outputs[0],
+                    operator=op_symbol,
+                ),
+            ),
         )
 
-    def _lower_binary_chain_model(self, graph: Graph) -> BinaryChainModel:
+    def _lower_binary_chain_model(self, graph: Graph) -> LoweredModel:
         node1, node2 = graph.nodes
         op1_symbol = _binary_op_symbol(node1.op_type)
         if op1_symbol is None:
@@ -93,23 +98,26 @@ class Compiler:
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
             raise ShapeInferenceError("Output shape must be fully defined")
-        if node2.inputs[0] == intermediate:
-            temp_on_left = True
-            other_input = node2.inputs[1]
-        else:
-            temp_on_left = False
-            other_input = node2.inputs[0]
         input_names = tuple(value.name for value in graph.inputs)
-        return BinaryChainModel(
+        return LoweredModel(
             name=self._options.model_name,
             input_names=input_names,
             output_name=node2.outputs[0],
             element_count=element_count,
-            first_inputs=(node1.inputs[0], node1.inputs[1]),
-            first_operator=op1_symbol,
-            second_input=other_input,
-            second_operator=op2_symbol,
-            temp_on_left=temp_on_left,
+            ops=(
+                BinaryOp(
+                    input0=node1.inputs[0],
+                    input1=node1.inputs[1],
+                    output=intermediate,
+                    operator=op1_symbol,
+                ),
+                BinaryOp(
+                    input0=node2.inputs[0],
+                    input1=node2.inputs[1],
+                    output=node2.outputs[0],
+                    operator=op2_symbol,
+                ),
+            ),
         )
 
     def run(self, model: onnx.ModelProto, feeds: Mapping[str, np.ndarray]) -> dict[str, np.ndarray]:
