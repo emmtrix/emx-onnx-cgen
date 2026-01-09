@@ -10,6 +10,7 @@ This document describes the working conventions for humans and automated agents 
 - Produce **correct-by-comparison** outputs against ONNX Runtime (ORT).
 - Keep the compiler architecture **pass-based** (import → normalize → optimize → lower → emit).
 - Support reproducible builds and deterministic code generation.
+- Maintain high code quality: prioritize clean OO design, avoid code smells, and continuously refactor toward simpler abstractions.
 
 ## Repository Structure (expected)
 
@@ -55,6 +56,7 @@ This document describes the working conventions for humans and automated agents 
 ## How to Run
 
 ### Unit tests
+
 ```bash
 pytest -n auto -q
 ```
@@ -112,6 +114,42 @@ pytest -n auto -q
 * Avoid global mutable state
 * Keep functions small and testable
 
+### Design & Architecture (OO)
+
+* Prefer clear, maintainable OO design over cleverness.
+* Keep responsibilities small:
+
+  * one module = one concern
+  * one class = one responsibility
+  * one function = one purpose
+* Use composition over inheritance unless inheritance is clearly justified.
+* Prefer immutable data structures for IR objects where practical.
+* Keep pass interfaces consistent:
+
+  * every pass has a clear input/output contract
+  * avoid side effects and implicit global state
+* Separate concerns strictly:
+
+  * ONNX parsing/import
+  * IR + transformations
+  * lowering decisions (memory model, kernels)
+  * code generation (pure emission)
+  * runtime kernels (C)
+* Prefer explicit "context" objects over global configuration:
+
+  * e.g. `CompilerOptions`, `Target`, `DiagnosticContext`
+
+### Code Smells to Avoid
+
+* Long methods/functions (split when complexity grows).
+* "God" classes or modules that combine unrelated responsibilities.
+* Hidden coupling via globals, singletons, or implicit module-level state.
+* Deep inheritance hierarchies.
+* Feature envy: methods that operate mostly on other objects’ data.
+* Duplicated logic (introduce helpers or shared utilities).
+* Unclear naming: prefer descriptive names over abbreviations.
+* Tight coupling between passes and codegen or runtime internals.
+
 ### Error handling
 
 * Prefer explicit custom exceptions:
@@ -163,10 +201,11 @@ pytest -n auto -q
 ## Performance Guidelines
 
 * Avoid Python-level tensor computations in hot paths except for:
+
   * constant folding
   * verification
-
 * In C runtime:
+
   * prefer contiguous memory layouts
   * avoid dynamic allocations unless explicitly enabled
 * Any performance optimization must include a benchmark or profiling note.
@@ -174,6 +213,7 @@ pytest -n auto -q
 ## Documentation Expectations
 
 * Any major design change needs a short note in `docs/`:
+
   * motivation
   * alternatives considered
   * decision
@@ -184,9 +224,11 @@ pytest -n auto -q
 
 * Keep PRs focused and small.
 * For any change affecting output C code:
+
   * include golden snapshot updates (if applicable)
   * run ORT comparison tests
 * Prefer descriptive commit messages:
+
   * `passes: fold constants for Add/Mul`
   * `codegen: stable symbol naming`
   * `runtime: add Conv2D kernel (NHWC)`
@@ -198,18 +240,42 @@ When acting as an agent in this repo:
 1. **Do not introduce new dependencies** without a clear need.
 2. **Do not change code generation output formatting** unless necessary.
 3. For new ops:
+
    * implement kernel
    * update lowering mapping
    * add unit test + ORT comparison test
 4. Maintain determinism:
+
    * stable ordering, stable naming
 5. If unsure about semantics, prefer correctness and add a TODO + test.
+6. Always propose refactorings when they improve:
+
+   * readability
+   * testability
+   * separation of concerns
+   * determinism
+7. Detect and call out common code smells (see above) and suggest concrete improvements.
+8. Prefer incremental refactorings:
+
+   * keep PRs small and mechanical
+   * preserve behavior and determinism
+   * add tests before/with refactoring when needed
+9. When adding new functionality, keep the design extensible:
+
+   * avoid hardcoding operator names and special cases
+   * prefer registries / dispatch tables for op lowering and kernels
+10. If the architecture starts drifting, propose a short design note in `docs/` with:
+
+* problem
+* options
+* recommendation
 
 ## Security / Safety
 
 * Do not execute untrusted ONNX models from unknown sources.
 * Avoid shelling out to external tools in the compilation path.
 * Generated C code should not include:
+
   * filesystem I/O
   * network I/O
   * dynamic loading
