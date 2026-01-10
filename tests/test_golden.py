@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# NOTE: This file contains only golden codegen tests.
+
 from pathlib import Path
 
 import numpy as np
