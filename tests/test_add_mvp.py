@@ -8,6 +8,7 @@ import onnxruntime as ort
 from onnx import helper, TensorProto
 
 from onnx2c import Compiler
+from onnx2c.compiler import CompilerOptions
 from golden_utils import assert_golden
 
 
@@ -186,6 +187,15 @@ def test_codegen_golden_matmul() -> None:
     compiler = Compiler()
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "matmul_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_includes_testbench() -> None:
+    model = _make_add_model()
+    options = CompilerOptions(template_dir=Path("templates"), emit_testbench=True)
+    compiler = Compiler(options)
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "add_model_testbench.c"
     assert_golden(generated, golden_path)
 
 

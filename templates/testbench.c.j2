@@ -1,0 +1,58 @@
+int main(void) {
+    srand(0);
+{% for input in inputs %}
+    float {{ input.name }}{{ input.array_suffix }};
+    float *{{ input.name }}_ptr = (float *){{ input.name }};
+    for (size_t i = 0; i < {{ input.count }}; ++i) {
+        {{ input.name }}_ptr[i] = (float)rand() / (float)RAND_MAX;
+    }
+{% endfor %}
+    float {{ output.name }}{{ output.array_suffix }};
+    float *{{ output.name }}_ptr = (float *){{ output.name }};
+    {{ model_name }}({% for input in inputs %}{{ input.name }}, {% endfor %}{{ output.name }});
+    printf("{\"inputs\":{");
+{% for input in inputs %}
+{% if not loop.first %}
+    printf(",");
+{% endif %}
+    printf("\"{{ input.name }}\":{\"shape\":[{{ input.shape_literal }}],\"data\":");
+    printf("[");
+{% for depth in range(input.rank) %}
+{{ input.loop_indents[depth] }}for (size_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+{{ input.loop_indents[depth] }}    if ({{ input.loop_vars[depth] }}) {
+{{ input.loop_indents[depth] }}        printf(",");
+{{ input.loop_indents[depth] }}    }
+{% if depth < input.rank - 1 %}
+{{ input.loop_indents[depth] }}    printf("[");
+{% endif %}
+{% endfor %}
+{{ input.inner_indent }}printf("%.8g", (double){{ input.name }}_ptr[{{ input.index_expr }}]);
+{% for depth in range(input.rank - 1, -1, -1) %}
+{% if depth < input.rank - 1 %}
+{{ input.loop_indents[depth] }}    printf("]");
+{% endif %}
+{{ input.loop_indents[depth] }}}
+{% endfor %}
+    printf("]}");
+{% endfor %}
+    printf("},\"output\":{\"name\":\"{{ output.name }}\",\"shape\":[{{ output.shape_literal }}],\"data\":");
+    printf("[");
+{% for depth in range(output.rank) %}
+{{ output.loop_indents[depth] }}for (size_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+{{ output.loop_indents[depth] }}    if ({{ output.loop_vars[depth] }}) {
+{{ output.loop_indents[depth] }}        printf(",");
+{{ output.loop_indents[depth] }}    }
+{% if depth < output.rank - 1 %}
+{{ output.loop_indents[depth] }}    printf("[");
+{% endif %}
+{% endfor %}
+{{ output.inner_indent }}printf("%.8g", (double){{ output.name }}_ptr[{{ output.index_expr }}]);
+{% for depth in range(output.rank - 1, -1, -1) %}
+{% if depth < output.rank - 1 %}
+{{ output.loop_indents[depth] }}    printf("]");
+{% endif %}
+{{ output.loop_indents[depth] }}}
+{% endfor %}
+    printf("]}}\n");
+    return 0;
+}
