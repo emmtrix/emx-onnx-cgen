@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import Iterable
 
 import onnx
+from onnx import numpy_helper
 
 from .errors import ShapeInferenceError, UnsupportedOpError
-from .ir.model import Graph, Node, TensorType, Value
+from .ir.model import Graph, Initializer, Node, TensorType, Value
 
 _ONNX_TO_DTYPE = {
     onnx.TensorProto.FLOAT: "float",
@@ -33,8 +34,26 @@ def _values(value_infos: Iterable[onnx.ValueInfoProto]) -> tuple[Value, ...]:
     return tuple(Value(name=vi.name, type=_tensor_type(vi)) for vi in value_infos)
 
 
+def _initializer(value: onnx.TensorProto) -> Initializer:
+    dtype = _ONNX_TO_DTYPE.get(value.data_type)
+    if dtype is None:
+        raise UnsupportedOpError(
+            f"Unsupported elem_type {value.data_type} for initializer {value.name}"
+        )
+    data = numpy_helper.to_array(value)
+    if dtype == "float" and data.dtype != "float32":
+        data = data.astype("float32", copy=False)
+    return Initializer(
+        name=value.name,
+        type=TensorType(dtype=dtype, shape=tuple(data.shape)),
+        data=data,
+    )
+
+
 def import_onnx(model: onnx.ModelProto) -> Graph:
     graph = model.graph
+    initializers = tuple(_initializer(value) for value in graph.initializer)
+    initializer_names = {initializer.name for initializer in initializers}
     nodes = tuple(
         Node(
             op_type=node.op_type,
@@ -43,6 +62,13 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
         )
         for node in graph.node
     )
-    inputs = _values(graph.input)
+    inputs = _values(
+        value_info for value_info in graph.input if value_info.name not in initializer_names
+    )
     outputs = _values(graph.output)
-    return Graph(inputs=inputs, outputs=outputs, nodes=nodes)
+    return Graph(
+        inputs=inputs,
+        outputs=outputs,
+        nodes=nodes,
+        initializers=initializers,
+    )
