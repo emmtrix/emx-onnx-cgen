@@ -1,5 +1,9 @@
-void {{ op_name }}(const float* {{ input0 }}, float* {{ output }}) {
-    for (size_t i = 0; i < {{ element_count }}; ++i) {
-        {{ output }}[i] = {{ operator }}({{ input0 }}[i]);
-    }
+void {{ op_name }}(const float {{ input0 }}{{ array_suffix }}, float {{ output }}{{ array_suffix }}) {
+{% for dim in shape %}
+{{ loop_indents[loop.index0] }}for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ operator }}({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %});
+{% for _ in shape %}
+{{ loop_indents[loop.revindex0] }}}
+{% endfor %}
 }
