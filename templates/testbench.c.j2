@@ -1,10 +1,24 @@
+static uint64_t rng_state = 0x243f6a8885a308d3ull;
+
+static uint64_t rng_next_u64(void) {
+    uint64_t x = rng_state;
+    x ^= x >> 12;
+    x ^= x << 25;
+    x ^= x >> 27;
+    rng_state = x;
+    return x * 0x2545f4914f6cdd1dull;
+}
+
+static float rng_next_float(void) {
+    return (float)((double)rng_next_u64() * (1.0 / 18446744073709551616.0));
+}
+
 int main(void) {
-    srand(0);
 {% for input in inputs %}
     float {{ input.name }}{{ input.array_suffix }};
     float *{{ input.name }}_ptr = (float *){{ input.name }};
     for (size_t i = 0; i < {{ input.count }}; ++i) {
-        {{ input.name }}_ptr[i] = (float)rand() / (float)RAND_MAX;
+        {{ input.name }}_ptr[i] = rng_next_float();
     }
 {% endfor %}
     float {{ output.name }}{{ output.array_suffix }};
