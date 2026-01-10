@@ -84,6 +84,21 @@ def _make_tanh_model() -> onnx.ModelProto:
     return model
 
 
+def _make_relu_model() -> onnx.ModelProto:
+    input_x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
+    node = helper.make_node("Relu", inputs=["x"], outputs=["out"])
+    graph = helper.make_graph([node], "relu_graph", [input_x], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_matmul_model() -> onnx.ModelProto:
     input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3])
     input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [3, 4])
@@ -108,10 +123,30 @@ def test_codegen_golden_tanh() -> None:
     assert_golden(generated, golden_path)
 
 
+def test_codegen_golden_relu() -> None:
+    model = _make_relu_model()
+    compiler = Compiler()
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "relu_model.c"
+    assert_golden(generated, golden_path)
+
+
 def test_tanh_matches_onnxruntime() -> None:
     model = _make_tanh_model()
     compiler = Compiler()
     input_x = np.random.rand(2, 3).astype(np.float32)
+
+    sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
+    (ort_out,) = sess.run(None, {"x": input_x})
+
+    compiled = compiler.run(model, {"x": input_x})
+    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+
+
+def test_relu_matches_onnxruntime() -> None:
+    model = _make_relu_model()
+    compiler = Compiler()
+    input_x = np.random.randn(2, 3).astype(np.float32)
 
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"x": input_x})

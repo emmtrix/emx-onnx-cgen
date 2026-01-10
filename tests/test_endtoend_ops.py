@@ -102,6 +102,14 @@ OPERATOR_CASES = [
         "attrs": {},
     },
     {
+        "name": "Relu",
+        "op_type": "Relu",
+        "input_shapes": [[2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+    },
+    {
         "name": "MatMul",
         "op_type": "MatMul",
         "input_shapes": [[2, 3], [3, 4]],
