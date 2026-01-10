@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import logging
+import os
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 from typing import Sequence
 
@@ -39,6 +44,30 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Emit a JSON-producing testbench main() for validation",
     )
+
+    verify_parser = subparsers.add_parser(
+        "verify",
+        help="Compile an ONNX model and verify outputs against ONNX Runtime",
+    )
+    verify_parser.add_argument("model", type=Path, help="Path to the ONNX model")
+    verify_parser.add_argument(
+        "--template-dir",
+        type=Path,
+        default=Path("templates"),
+        help="Template directory (default: templates)",
+    )
+    verify_parser.add_argument(
+        "--model-name",
+        type=str,
+        default=None,
+        help="Override the generated model name (default: model file stem)",
+    )
+    verify_parser.add_argument(
+        "--cc",
+        type=str,
+        default=None,
+        help="C compiler command to build the testbench binary",
+    )
     return parser
 
 
@@ -49,6 +78,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "compile":
         return _handle_compile(args)
+    if args.command == "verify":
+        return _handle_verify(args)
     parser.error(f"Unknown command {args.command}")
     return 1
 
@@ -73,4 +104,94 @@ def _handle_compile(args: argparse.Namespace) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generated, encoding="utf-8")
     LOGGER.info("Wrote C source to %s", output_path)
+    return 0
+
+
+def _resolve_compiler(cc: str | None) -> str | None:
+    if cc:
+        return cc
+    env_cc = os.environ.get("CC")
+    if env_cc:
+        return env_cc
+    return shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
+
+
+def _handle_verify(args: argparse.Namespace) -> int:
+    import numpy as np
+    import onnxruntime as ort
+
+    model_path: Path = args.model
+    model_name = args.model_name or model_path.stem
+    compiler_cmd = _resolve_compiler(args.cc)
+    if compiler_cmd is None:
+        LOGGER.error("No C compiler found (set --cc or CC environment variable).")
+        return 1
+    try:
+        model = onnx.load_model(model_path)
+        options = CompilerOptions(
+            template_dir=args.template_dir,
+            model_name=model_name,
+            emit_testbench=True,
+        )
+        compiler = Compiler(options)
+        generated = compiler.compile(model)
+    except (OSError, CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
+        LOGGER.error("Failed to compile %s: %s", model_path, exc)
+        return 1
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        c_path = temp_path / "model.c"
+        exe_path = temp_path / "model"
+        c_path.write_text(generated, encoding="utf-8")
+        try:
+            subprocess.run(
+                [
+                    compiler_cmd,
+                    "-std=c99",
+                    "-O2",
+                    str(c_path),
+                    "-o",
+                    str(exe_path),
+                    "-lm",
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            LOGGER.error("Failed to build testbench: %s", exc.stderr.strip())
+            return 1
+        try:
+            result = subprocess.run(
+                [str(exe_path)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.CalledProcessError as exc:
+            LOGGER.error("Testbench execution failed: %s", exc.stderr.strip())
+            return 1
+
+    try:
+        payload = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        LOGGER.error("Failed to parse testbench JSON: %s", exc)
+        return 1
+
+    inputs = {
+        name: np.array(value["data"], dtype=np.float32)
+        for name, value in payload["inputs"].items()
+    }
+    sess = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    (ort_out,) = sess.run(None, inputs)
+    output_data = np.array(payload["output"]["data"], dtype=np.float32)
+    try:
+        np.testing.assert_allclose(output_data, ort_out, rtol=1e-4, atol=1e-5)
+    except AssertionError as exc:
+        LOGGER.error("Verification failed: %s", exc)
+        return 1
+    LOGGER.info("Verification succeeded for %s", model_path)
     return 0
