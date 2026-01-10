@@ -115,6 +115,35 @@ def _make_matmul_model() -> onnx.ModelProto:
     return model
 
 
+def _make_add_initializer_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, [2, 3])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
+    weight_values = np.linspace(0.1, 0.6, num=6, dtype=np.float32).reshape(2, 3)
+    weight_initializer = helper.make_tensor(
+        "weight",
+        TensorProto.FLOAT,
+        dims=[2, 3],
+        vals=weight_values.flatten().tolist(),
+    )
+    weight_info = helper.make_tensor_value_info("weight", TensorProto.FLOAT, [2, 3])
+    node = helper.make_node("Add", inputs=["in0", "weight"], outputs=["out"])
+    graph = helper.make_graph(
+        [node],
+        "add_init_graph",
+        [input_info, weight_info],
+        [output],
+        initializer=[weight_initializer],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def test_codegen_golden_tanh() -> None:
     model = _make_tanh_model()
     compiler = Compiler()
@@ -160,6 +189,14 @@ def test_codegen_golden_add() -> None:
     compiler = Compiler()
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "add_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_add_initializer() -> None:
+    model = _make_add_initializer_model()
+    compiler = Compiler()
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "add_initializer_model.c"
     assert_golden(generated, golden_path)
 
 
