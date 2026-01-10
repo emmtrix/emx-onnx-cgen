@@ -12,9 +12,9 @@ from golden_utils import assert_golden
 
 
 def _make_add_model() -> onnx.ModelProto:
-    input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3])
-    input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2, 3])
-    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
+    input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3, 4])
+    input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2, 3, 4])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3, 4])
     node = helper.make_node("Add", inputs=["a", "b"], outputs=["out"])
     graph = helper.make_graph([node], "add_graph", [input_a, input_b], [output])
     model = helper.make_model(
@@ -112,8 +112,8 @@ def test_codegen_golden_add() -> None:
 def test_add_matches_onnxruntime() -> None:
     model = _make_add_model()
     compiler = Compiler()
-    input_a = np.random.rand(2, 3).astype(np.float32)
-    input_b = np.random.rand(2, 3).astype(np.float32)
+    input_a = np.random.rand(2, 3, 4).astype(np.float32)
+    input_b = np.random.rand(2, 3, 4).astype(np.float32)
 
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"a": input_a, "b": input_b})
