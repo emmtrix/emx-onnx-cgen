@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -14,8 +15,8 @@ import pytest
 
 from onnx import TensorProto, helper
 
-from onnx2c import Compiler
-from onnx2c.compiler import CompilerOptions
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SRC_ROOT = PROJECT_ROOT / "src"
 
 
 def _make_operator_model(
@@ -50,9 +51,6 @@ def _make_operator_model(
 
 
 def _compile_and_run_testbench(model: onnx.ModelProto) -> dict[str, object]:
-    options = CompilerOptions(template_dir=Path("templates"), emit_testbench=True)
-    compiler = Compiler(options)
-    generated = compiler.compile(model)
     compiler_cmd = os.environ.get("CC") or shutil.which("cc") or shutil.which("gcc")
     if compiler_cmd is None:
         pytest.skip("C compiler not available (set CC or install gcc/clang)")
@@ -60,7 +58,31 @@ def _compile_and_run_testbench(model: onnx.ModelProto) -> dict[str, object]:
         temp_path = Path(temp_dir)
         c_path = temp_path / "model.c"
         exe_path = temp_path / "model"
-        c_path.write_text(generated, encoding="utf-8")
+        model_path = temp_path / "model.onnx"
+        onnx.save_model(model, model_path)
+        env = os.environ.copy()
+        python_path = str(SRC_ROOT)
+        if env.get("PYTHONPATH"):
+            python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
+        env["PYTHONPATH"] = python_path
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "onnx2c",
+                "compile",
+                str(model_path),
+                str(c_path),
+                "--template-dir",
+                str(PROJECT_ROOT / "templates"),
+                "--emit-testbench",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            cwd=PROJECT_ROOT,
+            env=env,
+        )
         subprocess.run(
             [compiler_cmd, "-std=c99", "-O2", str(c_path), "-o", str(exe_path), "-lm"],
             check=True,
