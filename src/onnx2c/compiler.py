@@ -17,6 +17,7 @@ from .onnx_import import import_onnx
 class CompilerOptions:
     template_dir: Path
     model_name: str = "model"
+    emit_testbench: bool = False
 
 
 class Compiler:
@@ -29,7 +30,9 @@ class Compiler:
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)
         lowered = self._lower_model(graph)
-        return self._emitter.emit_model(lowered)
+        return self._emitter.emit_model(
+            lowered, emit_testbench=self._options.emit_testbench
+        )
 
     def _lower_model(self, graph: Graph) -> LoweredModel:
         if len(graph.nodes) != 1:
