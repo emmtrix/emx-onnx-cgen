@@ -24,13 +24,24 @@ class UnaryOp:
 
 
 @dataclass(frozen=True)
+class MatMulOp:
+    input0: str
+    input1: str
+    output: str
+    m: int
+    n: int
+    k: int
+
+
+@dataclass(frozen=True)
 class LoweredModel:
     name: str
     input_names: tuple[str, ...]
+    input_shapes: tuple[tuple[int, ...], ...]
     output_name: str
     element_count: int
     output_shape: tuple[int, ...]
-    ops: tuple[BinaryOp | UnaryOp, ...]
+    ops: tuple[BinaryOp | UnaryOp | MatMulOp, ...]
 
 
 class CEmitter:
@@ -46,6 +57,7 @@ class CEmitter:
         try:
             binary_template = self._env.get_template("binary_op.c.j2")
             unary_template = self._env.get_template("unary_op.c.j2")
+            matmul_template = self._env.get_template("matmul_op.c.j2")
         except Exception as exc:  # pragma: no cover - template load failure
             raise CodegenError("Failed to load C template") from exc
         temp_map = self._temp_buffers(model)
@@ -67,6 +79,7 @@ class CEmitter:
                 inner_indent=inner_indent,
                 binary_template=binary_template,
                 unary_template=unary_template,
+                matmul_template=matmul_template,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -97,12 +110,13 @@ class CEmitter:
     def _emit_model_wrapper(
         self,
         model: LoweredModel,
-        resolved_ops: list[BinaryOp | UnaryOp],
+        resolved_ops: list[BinaryOp | UnaryOp | MatMulOp],
         temp_buffers: tuple[str, ...],
         array_suffix: str,
     ) -> str:
         signature = ", ".join(
-            f"const float {name}{array_suffix}" for name in model.input_names
+            f"const float {name}{self._array_suffix(shape)}"
+            for name, shape in zip(model.input_names, model.input_shapes)
         )
         lines = [
             f"void {model.name}({signature}, float {model.output_name}{array_suffix}) {{"
@@ -110,7 +124,7 @@ class CEmitter:
         for temp in temp_buffers:
             lines.append(f"    float {temp}{array_suffix};")
         for index, op in enumerate(resolved_ops):
-            if isinstance(op, BinaryOp):
+            if isinstance(op, (BinaryOp, MatMulOp)):
                 call = f"{op.input0}, {op.input1}, {op.output}"
             else:
                 call = f"{op.input0}, {op.output}"
@@ -135,14 +149,23 @@ class CEmitter:
 
     @staticmethod
     def _resolve_op(
-        op: BinaryOp | UnaryOp, temp_map: dict[str, str]
-    ) -> BinaryOp | UnaryOp:
+        op: BinaryOp | UnaryOp | MatMulOp, temp_map: dict[str, str]
+    ) -> BinaryOp | UnaryOp | MatMulOp:
         if isinstance(op, BinaryOp):
             return BinaryOp(
                 input0=temp_map.get(op.input0, op.input0),
                 input1=temp_map.get(op.input1, op.input1),
                 output=temp_map.get(op.output, op.output),
                 operator=op.operator,
+            )
+        if isinstance(op, MatMulOp):
+            return MatMulOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input1=temp_map.get(op.input1, op.input1),
+                output=temp_map.get(op.output, op.output),
+                m=op.m,
+                n=op.n,
+                k=op.k,
             )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
@@ -153,7 +176,7 @@ class CEmitter:
     @staticmethod
     def _render_op(
         model: LoweredModel,
-        op: BinaryOp | UnaryOp,
+        op: BinaryOp | UnaryOp | MatMulOp,
         index: int,
         *,
         array_suffix: str,
@@ -162,12 +185,12 @@ class CEmitter:
         inner_indent: str,
         binary_template,
         unary_template,
+        matmul_template,
     ) -> str:
         common = {
             "model_name": model.name,
             "op_name": f"{model.name}_op{index}",
             "element_count": model.element_count,
-            "operator": op.operator,
             "array_suffix": array_suffix,
             "shape": model.output_shape,
             "loop_vars": loop_vars,
@@ -180,15 +203,31 @@ class CEmitter:
                 input0=op.input0,
                 input1=op.input1,
                 output=op.output,
+                operator=op.operator,
+            ).rstrip()
+        if isinstance(op, MatMulOp):
+            return matmul_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                input1=op.input1,
+                output=op.output,
+                input0_suffix=CEmitter._array_suffix((op.m, op.k)),
+                input1_suffix=CEmitter._array_suffix((op.k, op.n)),
+                output_suffix=CEmitter._array_suffix((op.m, op.n)),
+                m=op.m,
+                n=op.n,
+                k=op.k,
             ).rstrip()
         return unary_template.render(
             **common,
             input0=op.input0,
             output=op.output,
+            operator=op.operator,
         ).rstrip()
 
     @staticmethod
-    def _op_output(op: BinaryOp | UnaryOp) -> str:
+    def _op_output(op: BinaryOp | UnaryOp | MatMulOp) -> str:
         return op.output
 
     @staticmethod
