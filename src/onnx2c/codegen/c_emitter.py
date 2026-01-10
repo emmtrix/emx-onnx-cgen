@@ -91,7 +91,7 @@ class CEmitter:
         )
         includes = ["#include <stddef.h>"]
         if emit_testbench:
-            includes.extend(("#include <stdio.h>", "#include <stdlib.h>"))
+            includes.extend(("#include <stdio.h>", "#include <stdint.h>"))
         if any(
             isinstance(op, UnaryOp) and op.operator == "tanhf"
             for op in resolved_ops
