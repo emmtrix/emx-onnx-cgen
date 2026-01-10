@@ -1,0 +1,11 @@
+void {{ op_name }}(const float {{ input0 }}{{ input0_suffix }}, const float {{ input1 }}{{ input1_suffix }}, float {{ output }}{{ output_suffix }}) {
+    for (size_t i = 0; i < {{ m }}; ++i) {
+        for (size_t j = 0; j < {{ n }}; ++j) {
+            float acc = 0.0f;
+            for (size_t k = 0; k < {{ k }}; ++k) {
+                acc += {{ input0 }}[i][k] * {{ input1 }}[k][j];
+            }
+            {{ output }}[i][j] = acc;
+        }
+    }
+}
