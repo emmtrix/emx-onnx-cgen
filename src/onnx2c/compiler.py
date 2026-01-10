@@ -67,6 +67,7 @@ class Compiler:
                 input_names=(node.inputs[0],),
                 output_name=node.outputs[0],
                 element_count=element_count,
+                output_shape=output_value.type.shape,
                 ops=(
                     UnaryOp(
                         input0=node.inputs[0],
@@ -80,6 +81,7 @@ class Compiler:
             input_names=(node.inputs[0], node.inputs[1]),
             output_name=node.outputs[0],
             element_count=element_count,
+            output_shape=output_value.type.shape,
             ops=(
                 BinaryOp(
                     input0=node.inputs[0],
@@ -125,6 +127,7 @@ class Compiler:
             input_names=input_names,
             output_name=node2.outputs[0],
             element_count=element_count,
+            output_shape=output_value.type.shape,
             ops=(
                 BinaryOp(
                     input0=node1.inputs[0],

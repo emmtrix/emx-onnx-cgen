@@ -29,6 +29,7 @@ class LoweredModel:
     input_names: tuple[str, ...]
     output_name: str
     element_count: int
+    output_shape: tuple[int, ...]
     ops: tuple[BinaryOp | UnaryOp, ...]
 
 
@@ -51,18 +52,26 @@ class CEmitter:
         resolved_ops = [
             self._resolve_op(op, temp_map) for op in model.ops
         ]
+        array_suffix = self._array_suffix(model.output_shape)
+        loop_vars = self._loop_vars(model.output_shape)
+        loop_indents = self._loop_indents(model.output_shape)
+        inner_indent = self._inner_indent(model.output_shape)
         operator_fns = "\n\n".join(
             self._render_op(
                 model,
                 op,
                 index,
+                array_suffix=array_suffix,
+                loop_vars=loop_vars,
+                loop_indents=loop_indents,
+                inner_indent=inner_indent,
                 binary_template=binary_template,
                 unary_template=unary_template,
             )
             for index, op in enumerate(resolved_ops)
         )
         wrapper_fn = self._emit_model_wrapper(
-            model, resolved_ops, tuple(temp_map.values())
+            model, resolved_ops, tuple(temp_map.values()), array_suffix
         )
         includes = ["#include <stddef.h>"]
         if any(
@@ -90,13 +99,16 @@ class CEmitter:
         model: LoweredModel,
         resolved_ops: list[BinaryOp | UnaryOp],
         temp_buffers: tuple[str, ...],
+        array_suffix: str,
     ) -> str:
         signature = ", ".join(
-            f"const float* {name}" for name in model.input_names
+            f"const float {name}{array_suffix}" for name in model.input_names
         )
-        lines = [f"void {model.name}({signature}, float* {model.output_name}) {{"]
+        lines = [
+            f"void {model.name}({signature}, float {model.output_name}{array_suffix}) {{"
+        ]
         for temp in temp_buffers:
-            lines.append(f"    float {temp}[{model.element_count}];")
+            lines.append(f"    float {temp}{array_suffix};")
         for index, op in enumerate(resolved_ops):
             if isinstance(op, BinaryOp):
                 call = f"{op.input0}, {op.input1}, {op.output}"
@@ -144,6 +156,10 @@ class CEmitter:
         op: BinaryOp | UnaryOp,
         index: int,
         *,
+        array_suffix: str,
+        loop_vars: tuple[str, ...],
+        loop_indents: tuple[str, ...],
+        inner_indent: str,
         binary_template,
         unary_template,
     ) -> str:
@@ -152,6 +168,11 @@ class CEmitter:
             "op_name": f"{model.name}_op{index}",
             "element_count": model.element_count,
             "operator": op.operator,
+            "array_suffix": array_suffix,
+            "shape": model.output_shape,
+            "loop_vars": loop_vars,
+            "loop_indents": loop_indents,
+            "inner_indent": inner_indent,
         }
         if isinstance(op, BinaryOp):
             return binary_template.render(
@@ -169,3 +190,27 @@ class CEmitter:
     @staticmethod
     def _op_output(op: BinaryOp | UnaryOp) -> str:
         return op.output
+
+    @staticmethod
+    def _array_suffix(shape: tuple[int, ...]) -> str:
+        if not shape:
+            raise CodegenError("Scalar outputs are not supported")
+        return "".join(f"[{dim}]" for dim in shape)
+
+    @staticmethod
+    def _loop_vars(shape: tuple[int, ...]) -> tuple[str, ...]:
+        if not shape:
+            raise CodegenError("Scalar outputs are not supported")
+        return tuple(f"i{index}" for index in range(len(shape)))
+
+    @staticmethod
+    def _loop_indents(shape: tuple[int, ...]) -> tuple[str, ...]:
+        if not shape:
+            raise CodegenError("Scalar outputs are not supported")
+        return tuple("    " * (index + 1) for index in range(len(shape)))
+
+    @staticmethod
+    def _inner_indent(shape: tuple[int, ...]) -> str:
+        if not shape:
+            raise CodegenError("Scalar outputs are not supported")
+        return "    " * (len(shape) + 1)
