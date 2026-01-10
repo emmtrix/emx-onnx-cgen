@@ -277,6 +277,8 @@ def _binary_op_symbol(op_type: str) -> str | None:
 
 
 def _unary_op_symbol(op_type: str) -> str | None:
+    if op_type == "Relu":
+        return "relu"
     if op_type == "Tanh":
         return "tanhf"
     return None
@@ -289,6 +291,8 @@ def _apply_binary_op(op_symbol: str, left: np.ndarray, right: np.ndarray) -> np.
 
 
 def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
+    if op_symbol == "relu":
+        return np.maximum(value, 0)
     if op_symbol == "tanhf":
         return np.tanh(value)
     raise UnsupportedOpError(f"Unsupported unary op {op_symbol}")
