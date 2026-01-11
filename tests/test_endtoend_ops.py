@@ -88,6 +88,54 @@ def _make_constant_add_model() -> onnx.ModelProto:
     return model
 
 
+def _make_conv_model() -> onnx.ModelProto:
+    input_shape = [1, 1, 4, 4]
+    weight_shape = [1, 1, 3, 3]
+    output_shape = [1, 1, 4, 4]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    weight_values = np.arange(9, dtype=np.float32).reshape(weight_shape)
+    weight_tensor = helper.make_tensor(
+        "weight",
+        TensorProto.FLOAT,
+        dims=weight_shape,
+        vals=weight_values.flatten().tolist(),
+    )
+    bias_values = np.array([0.25], dtype=np.float32)
+    bias_tensor = helper.make_tensor(
+        "bias",
+        TensorProto.FLOAT,
+        dims=[1],
+        vals=bias_values.tolist(),
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    conv_node = helper.make_node(
+        "Conv",
+        inputs=["in0", "weight", "bias"],
+        outputs=[output.name],
+        pads=[1, 1, 1, 1],
+        strides=[1, 1],
+    )
+    graph = helper.make_graph(
+        [conv_node],
+        "conv_graph",
+        [input_info],
+        [output],
+        initializer=[weight_tensor, bias_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _run_cli_verify(model: onnx.ModelProto) -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         model_path = Path(temp_dir) / "model.onnx"
@@ -401,4 +449,9 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
 
 def test_constant_op_matches_onnxruntime() -> None:
     model = _make_constant_add_model()
+    _run_cli_verify(model)
+
+
+def test_conv_op_matches_onnxruntime() -> None:
+    model = _make_conv_model()
     _run_cli_verify(model)
