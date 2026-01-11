@@ -1813,7 +1813,7 @@ OFFICIAL_ONNX_FILES = [
 ]
 
 OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
-    Path(__file__).resolve().parent / "official_onnx_first_500_expected_errors.json"
+    Path(__file__).resolve().parent / "official_onnx_expected_errors.json"
 )
 
 
@@ -1841,11 +1841,11 @@ def test_official_onnx_files() -> None:
     )
 
 
-def test_official_onnx_first_500_expected_errors() -> None:
+def test_official_onnx_expected_errors() -> None:
     data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
     expectations = _load_official_onnx_file_expectations()
     expected_paths = [path for path, _ in expectations]
-    assert expected_paths == OFFICIAL_ONNX_FILES[:500]
+    assert expected_paths == OFFICIAL_ONNX_FILES
     compiler = Compiler()
     for rel_path, expected_error in expectations:
         model_path = data_root / rel_path
