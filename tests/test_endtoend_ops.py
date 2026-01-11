@@ -6,6 +6,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+import numpy as np
 import onnx
 import pytest
 
@@ -41,6 +42,46 @@ def _make_operator_model(
         graph,
         producer_name="onnx2c",
         opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_constant_add_model() -> onnx.ModelProto:
+    input_shape = [2, 3]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    const_values = np.linspace(0.5, 1.0, num=6, dtype=np.float32).reshape(input_shape)
+    const_tensor = helper.make_tensor(
+        "const_tensor",
+        TensorProto.FLOAT,
+        dims=input_shape,
+        vals=const_values.flatten().tolist(),
+    )
+    const_node = helper.make_node(
+        "Constant",
+        inputs=[],
+        outputs=["const_out"],
+        value=const_tensor,
+    )
+    const_info = helper.make_tensor_value_info(
+        "const_out", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
+    add_node = helper.make_node(
+        "Add", inputs=["in0", "const_out"], outputs=[output.name]
+    )
+    graph = helper.make_graph(
+        [const_node, add_node],
+        "constant_add_graph",
+        [input_info],
+        [output],
+        value_info=[const_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -355,4 +396,9 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         attrs=case["attrs"],
         opset=case.get("opset", 13),
     )
+    _run_cli_verify(model)
+
+
+def test_constant_op_matches_onnxruntime() -> None:
+    model = _make_constant_add_model()
     _run_cli_verify(model)
