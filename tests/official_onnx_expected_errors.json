@@ -89,19 +89,19 @@
   ],
   [
     "node/test_add_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_add_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_add_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_add_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_affine_grid_2d/model.onnx",
@@ -145,19 +145,19 @@
   ],
   [
     "node/test_ai_onnx_ml_label_encoder_string_int/model.onnx",
-    "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for X."
   ],
   [
     "node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx",
-    "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for X."
   ],
   [
     "node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx",
-    "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for X."
   ],
   [
     "node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx",
-    "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for X."
   ],
   [
     "node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx",
@@ -165,39 +165,39 @@
   ],
   [
     "node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for X."
   ],
   [
     "node/test_and2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_and3d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_and4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_and_bcast3v1d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_and_bcast3v2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_and_bcast4v2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_and_bcast4v3d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_and_bcast4v4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_argmax_default_axis_example/model.onnx",
@@ -585,19 +585,19 @@
   ],
   [
     "node/test_attention_4d_attn_mask_bool/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for attn_mask. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for attn_mask."
   ],
   [
     "node/test_attention_4d_attn_mask_bool_4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for attn_mask. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for attn_mask."
   ],
   [
     "node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for attn_mask. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for attn_mask."
   ],
   [
     "node/test_attention_4d_attn_mask_bool_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for attn_mask. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for attn_mask."
   ],
   [
     "node/test_attention_4d_attn_mask_expanded/model.onnx",
@@ -689,11 +689,11 @@
   ],
   [
     "node/test_attention_4d_fp16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for Q. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for Q."
   ],
   [
     "node/test_attention_4d_fp16_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for Q. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for Q."
   ],
   [
     "node/test_attention_4d_gqa/model.onnx",
@@ -745,11 +745,11 @@
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for Q. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for Q."
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for Q. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for Q."
   ],
   [
     "node/test_attention_4d_scaled/model.onnx",
@@ -969,19 +969,19 @@
   ],
   [
     "node/test_bernoulli/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_bernoulli_double/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for y."
   ],
   [
     "node/test_bernoulli_double_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for y."
   ],
   [
     "node/test_bernoulli_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_bernoulli_seed/model.onnx",
@@ -993,35 +993,35 @@
   ],
   [
     "node/test_bitshift_left_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_bitshift_left_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_bitshift_left_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_bitshift_left_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_bitshift_right_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_bitshift_right_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_bitshift_right_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_bitshift_right_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_bitwise_and_i16_3d/model.onnx",
@@ -1033,11 +1033,11 @@
   ],
   [
     "node/test_bitwise_and_ui64_bcast_3v1d/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_bitwise_and_ui8_bcast_4v3d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_bitwise_not_2d/model.onnx",
@@ -1045,11 +1045,11 @@
   ],
   [
     "node/test_bitwise_not_3d/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_bitwise_not_4d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_bitwise_or_i16_4d/model.onnx",
@@ -1061,11 +1061,11 @@
   ],
   [
     "node/test_bitwise_or_ui64_bcast_3v1d/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_bitwise_or_ui8_bcast_4v3d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_bitwise_xor_i16_3d/model.onnx",
@@ -1077,11 +1077,11 @@
   ],
   [
     "node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_blackmanwindow/model.onnx",
@@ -1101,691 +1101,691 @@
   ],
   [
     "node/test_cast_BFLOAT16_to_FLOAT/model.onnx",
-    "Unsupported elem_type 16 (BFLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 16 (BFLOAT16) for input."
   ],
   [
     "node/test_cast_DOUBLE_to_FLOAT/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for input."
   ],
   [
     "node/test_cast_DOUBLE_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_INT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_INT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_UINT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT16_to_UINT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for input."
   ],
   [
     "node/test_cast_FLOAT4E2M1_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for input."
   ],
   [
     "node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input."
   ],
   [
     "node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input."
   ],
   [
     "node/test_cast_FLOAT8E4M3FN_to_FLOAT/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input."
   ],
   [
     "node/test_cast_FLOAT8E4M3FN_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input."
   ],
   [
     "node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input."
   ],
   [
     "node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input."
   ],
   [
     "node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for input."
   ],
   [
     "node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for input."
   ],
   [
     "node/test_cast_FLOAT_to_BFLOAT16/model.onnx",
-    "Unsupported elem_type 16 (BFLOAT16) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 16 (BFLOAT16) for output."
   ],
   [
     "node/test_cast_FLOAT_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for output."
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for output."
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for output."
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for output."
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output."
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for output."
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output."
   ],
   [
     "node/test_cast_FLOAT_to_INT2/model.onnx",
-    "Unsupported elem_type 26 (INT2) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for output."
   ],
   [
     "node/test_cast_FLOAT_to_INT4/model.onnx",
-    "Unsupported elem_type 22 (INT4) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for output."
   ],
   [
     "node/test_cast_FLOAT_to_UINT2/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for output."
   ],
   [
     "node/test_cast_FLOAT_to_UINT4/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for output."
   ],
   [
     "node/test_cast_INT2_to_FLOAT/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_cast_INT2_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_cast_INT2_to_INT8/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_cast_INT4_to_FLOAT/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_cast_INT4_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_cast_INT4_to_INT8/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_cast_UINT2_to_FLOAT/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_cast_UINT2_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_cast_UINT2_to_UINT8/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_cast_UINT4_to_FLOAT/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_cast_UINT4_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_cast_UINT4_to_UINT8/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_cast_e8m0_FLOAT16_to_FLOAT8E8M0/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT/model.onnx",
-    "Unsupported elem_type 24 (FLOAT8E8M0) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 24 (FLOAT8E8M0) for input."
   ],
   [
     "node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 24 (FLOAT8E8M0) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 24 (FLOAT8E8M0) for input."
   ],
   [
     "node/test_cast_e8m0_FLOAT_to_FLOAT8E8M0/model.onnx",
-    "Unsupported elem_type 24 (FLOAT8E8M0) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 24 (FLOAT8E8M0) for output."
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for output."
   ],
   [
     "node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output."
   ],
   [
     "node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for output."
   ],
   [
     "node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output."
   ],
   [
     "node/test_castlike_BFLOAT16_to_FLOAT/model.onnx",
-    "Unsupported elem_type 16 (BFLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 16 (BFLOAT16) for input."
   ],
   [
     "node/test_castlike_BFLOAT16_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 16 (BFLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 16 (BFLOAT16) for input."
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for input."
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for input."
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for input."
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_INT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_INT2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_INT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_INT4_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT4_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for input."
   ],
   [
     "node/test_castlike_FLOAT4E2M1_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for input."
   ],
   [
     "node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for input."
   ],
   [
     "node/test_castlike_FLOAT4E2M1_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FN_to_FLOAT/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FN_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FN_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input."
   ],
   [
     "node/test_castlike_FLOAT8E4M3FN_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2_to_FLOAT/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for input."
   ],
   [
     "node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for input."
   ],
   [
     "node/test_castlike_FLOAT_to_BFLOAT16/model.onnx",
-    "Unsupported elem_type 16 (BFLOAT16) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 16 (BFLOAT16) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 16 (BFLOAT16) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 16 (BFLOAT16) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT8E5M2_expanded/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_INT2/model.onnx",
-    "Unsupported elem_type 26 (INT2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_INT2_expanded/model.onnx",
-    "Unsupported elem_type 26 (INT2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_INT4/model.onnx",
-    "Unsupported elem_type 22 (INT4) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_INT4_expanded/model.onnx",
-    "Unsupported elem_type 22 (INT4) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_UINT2/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_UINT2_expanded/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_UINT4/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for like."
   ],
   [
     "node/test_castlike_FLOAT_to_UINT4_expanded/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for like."
   ],
   [
     "node/test_castlike_INT2_to_FLOAT/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_castlike_INT2_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_castlike_INT2_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_castlike_INT2_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_castlike_INT2_to_INT8/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_castlike_INT2_to_INT8_expanded/model.onnx",
-    "Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for input."
   ],
   [
     "node/test_castlike_INT4_to_FLOAT/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_castlike_INT4_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_castlike_INT4_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_castlike_INT4_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_castlike_INT4_to_INT8/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_castlike_INT4_to_INT8_expanded/model.onnx",
-    "Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for input."
   ],
   [
     "node/test_castlike_UINT2_to_FLOAT/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_castlike_UINT2_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_castlike_UINT2_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_castlike_UINT2_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_castlike_UINT2_to_UINT8/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_castlike_UINT2_to_UINT8_expanded/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for input."
   ],
   [
     "node/test_castlike_UINT4_to_FLOAT/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_castlike_UINT4_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_castlike_UINT4_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_castlike_UINT4_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_castlike_UINT4_to_UINT8/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_castlike_UINT4_to_UINT8_expanded/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for input."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for like."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for like."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for like. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for like."
   ],
   [
     "node/test_ceil/model.onnx",
@@ -1969,19 +1969,19 @@
   ],
   [
     "node/test_compress_0/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for condition."
   ],
   [
     "node/test_compress_1/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for condition."
   ],
   [
     "node/test_compress_default_axis/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for condition."
   ],
   [
     "node/test_compress_negative_axis/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for condition."
   ],
   [
     "node/test_concat_1d_axis_0/model.onnx",
@@ -2077,11 +2077,11 @@
   ],
   [
     "node/test_convinteger_with_padding/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_convinteger_without_padding/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_convtranspose/model.onnx",
@@ -2145,11 +2145,11 @@
   ],
   [
     "node/test_cumsum_1d/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_cumsum_1d_exclusive/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_cumsum_1d_int32_exclusive/model.onnx",
@@ -2157,19 +2157,19 @@
   ],
   [
     "node/test_cumsum_1d_reverse/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_cumsum_1d_reverse_exclusive/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_cumsum_2d_axis_0/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_cumsum_2d_axis_1/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_cumsum_2d_int32/model.onnx",
@@ -2177,7 +2177,7 @@
   ],
   [
     "node/test_cumsum_2d_negative_axis/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_deform_conv_with_mask_bias/model.onnx",
@@ -2197,35 +2197,35 @@
   ],
   [
     "node/test_dequantizelinear/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_dequantizelinear_axis/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_dequantizelinear_blocked/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_dequantizelinear_e4m3fn/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for x."
   ],
   [
     "node/test_dequantizelinear_e4m3fn_float16/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for x."
   ],
   [
     "node/test_dequantizelinear_e4m3fn_zero_point/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for x."
   ],
   [
     "node/test_dequantizelinear_e5m2/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for x."
   ],
   [
     "node/test_dequantizelinear_float4e2m1/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for x."
   ],
   [
     "node/test_dequantizelinear_int16/model.onnx",
@@ -2233,23 +2233,23 @@
   ],
   [
     "node/test_dequantizelinear_int2/model.onnx",
-    "Unsupported elem_type 26 (INT2) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for x."
   ],
   [
     "node/test_dequantizelinear_int4/model.onnx",
-    "Unsupported elem_type 22 (INT4) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for x."
   ],
   [
     "node/test_dequantizelinear_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_dequantizelinear_uint2/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for x."
   ],
   [
     "node/test_dequantizelinear_uint4/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for x."
   ],
   [
     "node/test_det_2d/model.onnx",
@@ -2305,19 +2305,19 @@
   ],
   [
     "node/test_div_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_div_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_div_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_div_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_dropout_default/model.onnx",
@@ -2325,11 +2325,11 @@
   ],
   [
     "node/test_dropout_default_mask/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for z. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for z."
   ],
   [
     "node/test_dropout_default_mask_ratio/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for z. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for z."
   ],
   [
     "node/test_dropout_default_old/model.onnx",
@@ -2345,27 +2345,27 @@
   ],
   [
     "node/test_dynamicquantizelinear/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y."
   ],
   [
     "node/test_dynamicquantizelinear_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y."
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y."
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y."
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y."
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y."
   ],
   [
     "node/test_edge_pad/model.onnx",
@@ -2373,27 +2373,27 @@
   ],
   [
     "node/test_einsum_batch_diagonal/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_einsum_batch_matmul/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_einsum_inner_prod/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_einsum_scalar/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_einsum_sum/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_einsum_transpose/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_elu/model.onnx",
@@ -2421,43 +2421,43 @@
   ],
   [
     "node/test_equal/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for z. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for z."
   ],
   [
     "node/test_equal_bcast/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for z. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for z."
   ],
   [
     "node/test_equal_int16/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for z. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for z."
   ],
   [
     "node/test_equal_int8/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for z. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for z."
   ],
   [
     "node/test_equal_string/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_equal_string_broadcast/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_equal_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_equal_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_equal_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_equal_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_erf/model.onnx",
@@ -2485,7 +2485,7 @@
   ],
   [
     "node/test_eyelike_with_dtype/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for y."
   ],
   [
     "node/test_eyelike_without_dtype/model.onnx",
@@ -2669,99 +2669,99 @@
   ],
   [
     "node/test_greater/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater."
   ],
   [
     "node/test_greater_bcast/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater."
   ],
   [
     "node/test_greater_equal/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_bcast/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_bcast_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_int16/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_int16_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_int8/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_int8_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater_equal."
   ],
   [
     "node/test_greater_equal_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_greater_equal_uint16_expanded/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_greater_equal_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_greater_equal_uint32_expanded/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_greater_equal_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_greater_equal_uint64_expanded/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_greater_equal_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_greater_equal_uint8_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_greater_int16/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater."
   ],
   [
     "node/test_greater_int8/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for greater. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for greater."
   ],
   [
     "node/test_greater_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_greater_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_greater_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_greater_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_gridsample/model.onnx",
@@ -2973,51 +2973,51 @@
   ],
   [
     "node/test_if/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for cond. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for cond."
   ],
   [
     "node/test_if_opt/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for cond. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for cond."
   ],
   [
     "node/test_if_seq/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for cond. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for cond."
   ],
   [
     "node/test_image_decoder_decode_bmp_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_jpeg2k_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_jpeg_bgr/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_jpeg_grayscale/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_jpeg_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_png_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_pnm_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_tiff_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_image_decoder_decode_webp_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data."
   ],
   [
     "node/test_instancenorm_epsilon/model.onnx",
@@ -3029,27 +3029,27 @@
   ],
   [
     "node/test_isinf/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for y."
   ],
   [
     "node/test_isinf_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for x."
   ],
   [
     "node/test_isinf_negative/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for y."
   ],
   [
     "node/test_isinf_positive/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for y."
   ],
   [
     "node/test_isnan/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for y."
   ],
   [
     "node/test_isnan_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for x."
   ],
   [
     "node/test_l1normalization_axis_0/model.onnx",
@@ -3325,99 +3325,99 @@
   ],
   [
     "node/test_less/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less."
   ],
   [
     "node/test_less_bcast/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less."
   ],
   [
     "node/test_less_equal/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_bcast/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_bcast_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_int16/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_int16_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_int8/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_int8_expanded/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less_equal."
   ],
   [
     "node/test_less_equal_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_less_equal_uint16_expanded/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_less_equal_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_less_equal_uint32_expanded/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_less_equal_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_less_equal_uint64_expanded/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_less_equal_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_less_equal_uint8_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_less_int16/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less."
   ],
   [
     "node/test_less_int8/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for less. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for less."
   ],
   [
     "node/test_less_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_less_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_less_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_less_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_log/model.onnx",
@@ -3513,15 +3513,15 @@
   ],
   [
     "node/test_loop11/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for cond. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for cond."
   ],
   [
     "node/test_loop13_seq/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for cond. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for cond."
   ],
   [
     "node/test_loop16_seq_none/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for cond. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for cond."
   ],
   [
     "node/test_lpnormalization_default/model.onnx",
@@ -3613,7 +3613,7 @@
   ],
   [
     "node/test_matmulinteger/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for A. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for A."
   ],
   [
     "node/test_max_example/model.onnx",
@@ -3621,7 +3621,7 @@
   ],
   [
     "node/test_max_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for data_0."
   ],
   [
     "node/test_max_float32/model.onnx",
@@ -3629,7 +3629,7 @@
   ],
   [
     "node/test_max_float64/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data_0."
   ],
   [
     "node/test_max_int16/model.onnx",
@@ -3657,19 +3657,19 @@
   ],
   [
     "node/test_max_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for data_0."
   ],
   [
     "node/test_max_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for data_0."
   ],
   [
     "node/test_max_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for data_0."
   ],
   [
     "node/test_max_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data_0."
   ],
   [
     "node/test_maxpool_1d_default/model.onnx",
@@ -3721,7 +3721,7 @@
   ],
   [
     "node/test_maxpool_2d_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_maxpool_3d_default/model.onnx",
@@ -3777,7 +3777,7 @@
   ],
   [
     "node/test_min_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for data_0."
   ],
   [
     "node/test_min_float32/model.onnx",
@@ -3785,7 +3785,7 @@
   ],
   [
     "node/test_min_float64/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data_0."
   ],
   [
     "node/test_min_int16/model.onnx",
@@ -3813,19 +3813,19 @@
   ],
   [
     "node/test_min_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for data_0."
   ],
   [
     "node/test_min_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for data_0."
   ],
   [
     "node/test_min_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for data_0."
   ],
   [
     "node/test_min_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for data_0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for data_0."
   ],
   [
     "node/test_mish/model.onnx",
@@ -3845,7 +3845,7 @@
   ],
   [
     "node/test_mod_mixed_sign_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for x."
   ],
   [
     "node/test_mod_mixed_sign_float32/model.onnx",
@@ -3853,7 +3853,7 @@
   ],
   [
     "node/test_mod_mixed_sign_float64/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for x."
   ],
   [
     "node/test_mod_mixed_sign_int16/model.onnx",
@@ -3873,19 +3873,19 @@
   ],
   [
     "node/test_mod_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_mod_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_mod_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_mod_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_momentum/model.onnx",
@@ -3917,19 +3917,19 @@
   ],
   [
     "node/test_mul_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_mul_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_mul_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_mul_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_mvn/model.onnx",
@@ -4137,19 +4137,19 @@
   ],
   [
     "node/test_nonzero_example/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for condition."
   ],
   [
     "node/test_not_2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_not_3d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_not_4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_onehot_negative_indices/model.onnx",
@@ -4185,19 +4185,19 @@
   ],
   [
     "node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for output."
   ],
   [
     "node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for output."
   ],
   [
     "node/test_optional_has_element_empty_no_input_optional_input/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for output."
   ],
   [
     "node/test_optional_has_element_empty_no_input_tensor_input/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for output. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for output."
   ],
   [
     "node/test_optional_has_element_empty_optional_input/model.onnx",
@@ -4213,35 +4213,35 @@
   ],
   [
     "node/test_or2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_or3d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_or4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_or_bcast3v1d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_or_bcast3v2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_or_bcast4v2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_or_bcast4v3d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_or_bcast4v4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_pow/model.onnx",
@@ -4269,11 +4269,11 @@
   ],
   [
     "node/test_pow_types_float32_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for y."
   ],
   [
     "node/test_pow_types_float32_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for y. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for y."
   ],
   [
     "node/test_pow_types_int32_float32/model.onnx",
@@ -4309,11 +4309,11 @@
   ],
   [
     "node/test_qlinearconv/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_qlinearmatmul_2D_int8_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for a_scale. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for a_scale."
   ],
   [
     "node/test_qlinearmatmul_2D_int8_float32/model.onnx",
@@ -4321,15 +4321,15 @@
   ],
   [
     "node/test_qlinearmatmul_2D_uint8_float16/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for a. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for a."
   ],
   [
     "node/test_qlinearmatmul_2D_uint8_float32/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for a. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for a."
   ],
   [
     "node/test_qlinearmatmul_3D_int8_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for a_scale. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 10 (FLOAT16) for a_scale."
   ],
   [
     "node/test_qlinearmatmul_3D_int8_float32/model.onnx",
@@ -4337,23 +4337,23 @@
   ],
   [
     "node/test_qlinearmatmul_3D_uint8_float16/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for a. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for a."
   ],
   [
     "node/test_qlinearmatmul_3D_uint8_float32/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for a. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for a."
   ],
   [
     "node/test_quantizelinear/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_axis/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_blocked_asymmetric/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_blocked_symmetric/model.onnx",
@@ -4361,15 +4361,15 @@
   ],
   [
     "node/test_quantizelinear_e4m3fn/model.onnx",
-    "Unsupported elem_type 17 (FLOAT8E4M3FN) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_e5m2/model.onnx",
-    "Unsupported elem_type 19 (FLOAT8E5M2) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_float4e2m1/model.onnx",
-    "Unsupported elem_type 23 (FLOAT4E2M1) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_int16/model.onnx",
@@ -4377,23 +4377,23 @@
   ],
   [
     "node/test_quantizelinear_int2/model.onnx",
-    "Unsupported elem_type 26 (INT2) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 26 (INT2) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_int4/model.onnx",
-    "Unsupported elem_type 22 (INT4) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 22 (INT4) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_uint2/model.onnx",
-    "Unsupported elem_type 25 (UINT2) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 25 (UINT2) for y_zero_point."
   ],
   [
     "node/test_quantizelinear_uint4/model.onnx",
-    "Unsupported elem_type 21 (UINT4) for y_zero_point. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 21 (UINT4) for y_zero_point."
   ],
   [
     "node/test_range_float_type_positive_delta/model.onnx",
@@ -4597,35 +4597,35 @@
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set/model.onnx",
@@ -4637,35 +4637,35 @@
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for data."
   ],
   [
     "node/test_reduce_log_sum_negative_axes/model.onnx",
@@ -4677,7 +4677,7 @@
   ],
   [
     "node/test_reduce_max_bool_inputs/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for data."
   ],
   [
     "node/test_reduce_max_default_axes_keepdim_example/model.onnx",
@@ -4749,7 +4749,7 @@
   ],
   [
     "node/test_reduce_min_bool_inputs/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for data. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for data."
   ],
   [
     "node/test_reduce_min_default_axes_keepdims_example/model.onnx",
@@ -4949,15 +4949,15 @@
   ],
   [
     "node/test_regex_full_match_basic/model.onnx",
-    "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for X."
   ],
   [
     "node/test_regex_full_match_email_domain/model.onnx",
-    "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for X."
   ],
   [
     "node/test_regex_full_match_empty/model.onnx",
-    "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for X."
   ],
   [
     "node/test_relu/model.onnx",
@@ -6185,71 +6185,71 @@
   ],
   [
     "node/test_string_concat/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_concat_broadcasting/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_concat_empty_string/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_concat_utf8/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_concat_zero_dimensional/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_split_basic/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_split_consecutive_delimiters/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_split_empty_string_delimiter/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_split_empty_tensor/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_split_maxsplit/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_string_split_no_delimiter/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_strnormalizer_export_monday_empty_output/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_strnormalizer_nostopwords_nochangecase/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "node/test_sub/model.onnx",
@@ -6273,19 +6273,19 @@
   ],
   [
     "node/test_sub_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 4 (UINT16) for x."
   ],
   [
     "node/test_sub_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 12 (UINT32) for x."
   ],
   [
     "node/test_sub_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_sub_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 2 (UINT8) for x."
   ],
   [
     "node/test_sum_example/model.onnx",
@@ -6421,31 +6421,31 @@
   ],
   [
     "node/test_top_k_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 13 (UINT64) for x."
   ],
   [
     "node/test_training_dropout/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for t. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for t."
   ],
   [
     "node/test_training_dropout_default/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for t. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for t."
   ],
   [
     "node/test_training_dropout_default_mask/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for t. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for t."
   ],
   [
     "node/test_training_dropout_mask/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for t. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for t."
   ],
   [
     "node/test_training_dropout_zero_ratio/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for t. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for t."
   ],
   [
     "node/test_training_dropout_zero_ratio_mask/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for t. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for t."
   ],
   [
     "node/test_transpose_all_permutations_0/model.onnx",
@@ -6605,11 +6605,11 @@
   ],
   [
     "node/test_where_example/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for condition."
   ],
   [
     "node/test_where_long_example/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for condition."
   ],
   [
     "node/test_wrap_pad/model.onnx",
@@ -6617,35 +6617,35 @@
   ],
   [
     "node/test_xor2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_xor3d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_xor4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_xor_bcast3v1d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_xor_bcast3v2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_xor_bcast4v2d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_xor_bcast4v3d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "node/test_xor_bcast4v4d/model.onnx",
-    "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 9 (BOOL) for x."
   ],
   [
     "pytorch-converted/test_AvgPool1d/model.onnx",
@@ -6977,23 +6977,23 @@
   ],
   [
     "pytorch-operator/test_operator_add_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for 0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for 0."
   ],
   [
     "pytorch-operator/test_operator_add_size1_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for 0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for 0."
   ],
   [
     "pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for 0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for 0."
   ],
   [
     "pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for 0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for 0."
   ],
   [
     "pytorch-operator/test_operator_addconstant/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for 0. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for 0."
   ],
   [
     "pytorch-operator/test_operator_addmm/model.onnx",
@@ -7165,7 +7165,7 @@
   ],
   [
     "simple/test_sequence_model7/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for X. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 11 (DOUBLE) for X."
   ],
   [
     "simple/test_sequence_model8/model.onnx",
@@ -7185,26 +7185,26 @@
   ],
   [
     "simple/test_strnorm_model_monday_casesensintive_lower/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "simple/test_strnorm_model_monday_casesensintive_upper/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "simple/test_strnorm_model_monday_empty_output/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ],
   [
     "simple/test_strnorm_model_nostopwords_nochangecase/model.onnx",
-    "Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64)."
+    "Unsupported elem_type 8 (STRING) for x."
   ]
 ]
