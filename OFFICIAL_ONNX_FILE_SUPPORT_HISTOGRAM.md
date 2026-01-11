@@ -10,9 +10,9 @@
 | Unsupported elem_type 2 (UINT8) for tensor '*'. | 50 | ██████████ |
 | ReduceSum expects matching dtypes, got float, int64 | 43 | █████████ |
 | Missing dtype for value '*' in op Resize. Hint: run ONNX shape inference or export with static shapes. | 39 | ████████ |
-| Unsupported op Conv | 33 | ███████ |
 | Missing elem_type for tensor '*' | 33 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
+| Unsupported op Conv | 30 | ██████ |
 | Unsupported op Attention | 29 | ██████ |
 | Unsupported op CastLike | 29 | ██████ |
 | Unsupported op AveragePool | 25 | █████ |
@@ -174,6 +174,7 @@
 | Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | ConstantOfShape expects matching dtypes, got int32, int64 | 1 | █ |
+| Conv supports auto_pad=NOTSET only | 1 | █ |
 | DequantizeLinear expects matching dtypes, got float, int16 | 1 | █ |
 | Unsupported op Det | 1 | █ |
 | Equal expects matching dtypes, got bool, int16 | 1 | █ |
