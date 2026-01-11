@@ -167,6 +167,84 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _unsqueeze_output_shape(
+    input_shape: list[int], axes: list[int]
+) -> list[int]:
+    output_rank = len(input_shape) + len(axes)
+    normalized_axes = []
+    for axis in axes:
+        if axis < 0:
+            axis += output_rank
+        if axis < 0 or axis >= output_rank:
+            raise ValueError(f"Axis {axis} out of range for rank {output_rank}")
+        normalized_axes.append(axis)
+    if len(set(normalized_axes)) != len(normalized_axes):
+        raise ValueError("Axes must be unique")
+    normalized_axes = sorted(normalized_axes)
+    output_dims = []
+    input_index = 0
+    for axis in range(output_rank):
+        if axis in normalized_axes:
+            output_dims.append(1)
+        else:
+            output_dims.append(input_shape[input_index])
+            input_index += 1
+    return output_dims
+
+
+def _make_unsqueeze_model(
+    *, input_shape: list[int], axes: list[int], opset: int = 13
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output_shape = _unsqueeze_output_shape(input_shape, axes)
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    if opset >= 13:
+        axes_values = np.array(axes, dtype=np.int64)
+        axes_tensor = helper.make_tensor(
+            "axes",
+            TensorProto.INT64,
+            dims=axes_values.shape,
+            vals=axes_values.tolist(),
+        )
+        node = helper.make_node(
+            "Unsqueeze",
+            inputs=["in0", "axes"],
+            outputs=[output.name],
+        )
+        graph = helper.make_graph(
+            [node],
+            "unsqueeze_graph",
+            [input_info],
+            [output],
+            initializer=[axes_tensor],
+        )
+    else:
+        node = helper.make_node(
+            "Unsqueeze",
+            inputs=["in0"],
+            outputs=[output.name],
+            axes=axes,
+        )
+        graph = helper.make_graph(
+            [node],
+            "unsqueeze_graph",
+            [input_info],
+            [output],
+        )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_conv_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     weight_shape = [1, 1, 3, 3]
@@ -780,6 +858,20 @@ def test_constant_of_shape_matches_onnxruntime() -> None:
 
 def test_reshape_op_matches_onnxruntime() -> None:
     model = _make_reshape_model()
+    _run_cli_verify(model)
+
+
+def test_unsqueeze_run_matches_numpy() -> None:
+    model = _make_unsqueeze_model(input_shape=[2, 3], axes=[0, 2], opset=11)
+    compiler = Compiler()
+    input_data = np.arange(6, dtype=np.float32).reshape(2, 3)
+    outputs = compiler.run(model, {"in0": input_data})
+    expected = np.expand_dims(np.expand_dims(input_data, axis=0), axis=2)
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-6, atol=1e-6)
+
+
+def test_unsqueeze_op_matches_onnxruntime() -> None:
+    model = _make_unsqueeze_model(input_shape=[2, 3], axes=[-1], opset=13)
     _run_cli_verify(model)
 
 

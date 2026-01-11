@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 192 / 1802 official ONNX files.
+Support 199 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -9,9 +9,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | File | Supported | Error |
 | --- | --- | --- |
 | `light/light_bvlc_alexnet.onnx` | ❌ | Unsupported op LRN |
-| `light/light_densenet121.onnx` | ❌ | Unsupported op Unsqueeze |
+| `light/light_densenet121.onnx` | ❌ | Unsupported op GlobalAveragePool |
 | `light/light_inception_v1.onnx` | ❌ | Unsupported op LRN |
-| `light/light_inception_v2.onnx` | ❌ | Unsupported op Unsqueeze |
+| `light/light_inception_v2.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `light/light_resnet50.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `light/light_shufflenet.onnx` | ❌ | Conv supports group=1 only |
 | `light/light_squeezenet.onnx` | ❌ | Unsupported op Dropout |
@@ -998,7 +998,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_neg_example/model.onnx` | ✅ |  |
 | `node/test_nesterov_momentum/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_nllloss_NC/model.onnx` | ❌ | Unsupported op NegativeLogLikelihoodLoss |
-| `node/test_nllloss_NC_expanded/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `node/test_nllloss_NC_expanded/model.onnx` | ❌ | Unsupported op GatherElements |
 | `node/test_nllloss_NCd1/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1_ii/model.onnx` | ❌ | Scalar outputs are not supported |
@@ -1010,7 +1010,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_nllloss_NCd1_weight_ii/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1_weight_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2/model.onnx` | ❌ | Unsupported op NegativeLogLikelihoodLoss |
-| `node/test_nllloss_NCd1d2_expanded/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `node/test_nllloss_NCd1d2_expanded/model.onnx` | ❌ | Unsupported op GatherElements |
 | `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2_reduction_mean/model.onnx` | ❌ | Scalar outputs are not supported |
@@ -1018,7 +1018,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_nllloss_NCd1d2_reduction_sum/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2_with_weight/model.onnx` | ❌ | Unsupported op NegativeLogLikelihoodLoss |
-| `node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx` | ❌ | Unsupported op GatherElements |
 | `node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx` | ❌ | Scalar outputs are not supported |
@@ -1026,13 +1026,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx` | ❌ | Unsupported op NegativeLogLikelihoodLoss |
-| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported op Cast |
 | `node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx` | ❌ | Unsupported op NegativeLogLikelihoodLoss |
-| `node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Unsupported op GatherElements |
 | `node/test_nonmaxsuppression_center_point_box_format/model.onnx` | ❌ | Unsupported op NonMaxSuppression |
 | `node/test_nonmaxsuppression_flipped_coordinates/model.onnx` | ❌ | Unsupported op NonMaxSuppression |
 | `node/test_nonmaxsuppression_identical_boxes/model.onnx` | ❌ | Unsupported op NonMaxSuppression |
@@ -1651,13 +1651,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_unique_sorted_with_axis_3d/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_unique_sorted_with_negative_axis/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_unique_sorted_without_axis/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_unsqueeze_axis_0/model.onnx` | ❌ | Unsupported op Unsqueeze |
-| `node/test_unsqueeze_axis_1/model.onnx` | ❌ | Unsupported op Unsqueeze |
-| `node/test_unsqueeze_axis_2/model.onnx` | ❌ | Unsupported op Unsqueeze |
-| `node/test_unsqueeze_negative_axes/model.onnx` | ❌ | Unsupported op Unsqueeze |
-| `node/test_unsqueeze_three_axes/model.onnx` | ❌ | Unsupported op Unsqueeze |
-| `node/test_unsqueeze_two_axes/model.onnx` | ❌ | Unsupported op Unsqueeze |
-| `node/test_unsqueeze_unsorted_axes/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `node/test_unsqueeze_axis_0/model.onnx` | ✅ |  |
+| `node/test_unsqueeze_axis_1/model.onnx` | ✅ |  |
+| `node/test_unsqueeze_axis_2/model.onnx` | ✅ |  |
+| `node/test_unsqueeze_negative_axes/model.onnx` | ✅ |  |
+| `node/test_unsqueeze_three_axes/model.onnx` | ✅ |  |
+| `node/test_unsqueeze_two_axes/model.onnx` | ✅ |  |
+| `node/test_unsqueeze_unsorted_axes/model.onnx` | ✅ |  |
 | `node/test_upsample_nearest/model.onnx` | ❌ | Unsupported op Upsample |
 | `node/test_where_example/model.onnx` | ❌ | Unsupported op Where |
 | `node/test_where_long_example/model.onnx` | ❌ | Unsupported op Where |
@@ -1670,8 +1670,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_xor_bcast4v2d/model.onnx` | ✅ |  |
 | `node/test_xor_bcast4v3d/model.onnx` | ✅ |  |
 | `node/test_xor_bcast4v4d/model.onnx` | ✅ |  |
-| `pytorch-converted/test_AvgPool1d/model.onnx` | ❌ | Unsupported op Unsqueeze |
-| `pytorch-converted/test_AvgPool1d_stride/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `pytorch-converted/test_AvgPool1d/model.onnx` | ❌ | Unsupported op Squeeze |
+| `pytorch-converted/test_AvgPool1d_stride/model.onnx` | ❌ | Unsupported op Squeeze |
 | `pytorch-converted/test_AvgPool2d/model.onnx` | ✅ |  |
 | `pytorch-converted/test_AvgPool2d_stride/model.onnx` | ✅ |  |
 | `pytorch-converted/test_AvgPool3d/model.onnx` | ❌ | AveragePool expects 2D kernel_shape |
