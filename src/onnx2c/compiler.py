@@ -46,33 +46,28 @@ class Compiler:
 
     def _lower_model(self, graph: Graph) -> LoweredModel:
         dtype = _model_dtype(graph)
-        if len(graph.nodes) != 1:
-            if len(graph.nodes) == 2:
-                return self._lower_binary_chain_model(graph, dtype)
+        if not graph.nodes:
+            raise UnsupportedOpError("Graph must contain at least one node")
+        if len(graph.nodes) == 1:
+            node = graph.nodes[0]
+            if node.op_type in {"MatMul", "Gemm"}:
+                if node.op_type == "Gemm":
+                    _validate_gemm(node)
+                return self._lower_matmul(graph, node, dtype)
+            if node.op_type == "Attention":
+                return self._lower_attention(graph, node, dtype)
+            return self._lower_elementwise_chain(graph, dtype)
+        if any(
+            node.op_type in {"MatMul", "Gemm", "Attention"} for node in graph.nodes
+        ):
             raise UnsupportedOpError(
-                f"Only one- or two-node graphs are supported, got {len(graph.nodes)}"
+                "MatMul, Gemm, and Attention must be the only node in a graph"
             )
-        node = graph.nodes[0]
-        if node.op_type in {"MatMul", "Gemm"}:
-            if node.op_type == "Gemm":
-                _validate_gemm(node)
-            return self._lower_matmul(graph, node, dtype)
-        if node.op_type == "Attention":
-            return self._lower_attention(graph, node, dtype)
-        op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
-        unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
-        if op_spec is None and unary_symbol is None:
-            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if op_spec is not None:
-            if len(node.inputs) != 2 or len(node.outputs) != 1:
-                raise UnsupportedOpError(
-                    f"{node.op_type} must have 2 inputs and 1 output"
-                )
-        else:
-            if len(node.inputs) != 1 or len(node.outputs) != 1:
-                raise UnsupportedOpError(
-                    f"{node.op_type} must have 1 input and 1 output"
-                )
+        return self._lower_elementwise_chain(graph, dtype)
+
+    def _lower_elementwise_chain(
+        self, graph: Graph, dtype: str
+    ) -> LoweredModel:
         output_value = graph.outputs[0]
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
@@ -80,96 +75,42 @@ class Compiler:
         constants = _lowered_constants(graph, dtype)
         input_names = tuple(value.name for value in graph.inputs)
         input_shapes = tuple(value.type.shape for value in graph.inputs)
-        if unary_symbol is not None:
-            return LoweredModel(
-                name=self._options.model_name,
-                dtype=dtype,
-                input_names=input_names,
-                input_shapes=input_shapes,
-                output_name=node.outputs[0],
-                element_count=element_count,
-                output_shape=output_value.type.shape,
-                constants=constants,
-                ops=(
+        ops: list[BinaryOp | UnaryOp] = []
+        for node in graph.nodes:
+            op_spec, unary_symbol = _resolve_elementwise_op(node, dtype)
+            if unary_symbol is not None:
+                ops.append(
                     UnaryOp(
                         input0=node.inputs[0],
                         output=node.outputs[0],
                         operator=unary_symbol,
-                    ),
-                ),
+                    )
+                )
+            else:
+                ops.append(
+                    BinaryOp(
+                        input0=node.inputs[0],
+                        input1=node.inputs[1],
+                        output=node.outputs[0],
+                        operator=op_spec.operator,
+                        operator_kind=op_spec.kind,
+                    )
+                )
+        last_output = graph.nodes[-1].outputs[0]
+        if output_value.name != last_output:
+            raise UnsupportedOpError(
+                "Graph output must be produced by the last node"
             )
         return LoweredModel(
             name=self._options.model_name,
             dtype=dtype,
             input_names=input_names,
             input_shapes=input_shapes,
-            output_name=node.outputs[0],
+            output_name=output_value.name,
             element_count=element_count,
             output_shape=output_value.type.shape,
             constants=constants,
-            ops=(
-                BinaryOp(
-                    input0=node.inputs[0],
-                    input1=node.inputs[1],
-                    output=node.outputs[0],
-                    operator=op_spec.operator,
-                    operator_kind=op_spec.kind,
-                ),
-            ),
-        )
-
-    def _lower_binary_chain_model(self, graph: Graph, dtype: str) -> LoweredModel:
-        node1, node2 = graph.nodes
-        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs, dtype=dtype)
-        if op1_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs, dtype=dtype)
-        if op2_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
-        if len(node1.inputs) != 2 or len(node1.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node1.op_type} must have 2 inputs and 1 output"
-            )
-        if len(node2.inputs) != 2 or len(node2.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node2.op_type} must have 2 inputs and 1 output"
-            )
-        intermediate = node1.outputs[0]
-        if intermediate not in node2.inputs:
-            raise UnsupportedOpError(
-                "Second node must consume the first node output"
-            )
-        output_value = graph.outputs[0]
-        element_count = _element_count(output_value.type.shape)
-        if element_count <= 0:
-            raise ShapeInferenceError("Output shape must be fully defined")
-        input_names = tuple(value.name for value in graph.inputs)
-        input_shapes = tuple(value.type.shape for value in graph.inputs)
-        return LoweredModel(
-            name=self._options.model_name,
-            dtype=dtype,
-            input_names=input_names,
-            input_shapes=input_shapes,
-            output_name=node2.outputs[0],
-            element_count=element_count,
-            output_shape=output_value.type.shape,
-            constants=_lowered_constants(graph, dtype),
-            ops=(
-                BinaryOp(
-                    input0=node1.inputs[0],
-                    input1=node1.inputs[1],
-                    output=intermediate,
-                    operator=op1_spec.operator,
-                    operator_kind=op1_spec.kind,
-                ),
-                BinaryOp(
-                    input0=node2.inputs[0],
-                    input1=node2.inputs[1],
-                    output=node2.outputs[0],
-                    operator=op2_spec.operator,
-                    operator_kind=op2_spec.kind,
-                ),
-            ),
+            ops=tuple(ops),
         )
 
     def run(
@@ -181,64 +122,62 @@ class Compiler:
             initializer.name: initializer.data for initializer in graph.initializers
         }
         resolved_feeds = _ResolvedFeeds(feeds=feeds, constants=constants)
-        if len(graph.nodes) != 1:
-            if len(graph.nodes) == 2:
-                return self._run_binary_chain(graph, resolved_feeds, dtype)
-            raise UnsupportedOpError("Only one- or two-node graphs are supported")
-        node = graph.nodes[0]
-        if node.op_type in {"MatMul", "Gemm"}:
-            if node.op_type == "Gemm":
-                _validate_gemm(node)
-            left = resolved_feeds.fetch(node.inputs[0])
-            right = resolved_feeds.fetch(node.inputs[1])
-            result = _apply_matmul(left, right)
-            return {node.outputs[0]: result}
-        if node.op_type == "Attention":
-            spec = _resolve_attention_spec(graph, node, dtype)
-            query = resolved_feeds.fetch(node.inputs[0])
-            key = resolved_feeds.fetch(node.inputs[1])
-            value = resolved_feeds.fetch(node.inputs[2])
-            result = _apply_attention(spec, query, key, value)
-            return {node.outputs[0]: result}
-        op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
-        unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
-        if op_spec is None and unary_symbol is None:
-            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if op_spec is not None:
-            left = resolved_feeds.fetch(node.inputs[0])
-            right = resolved_feeds.fetch(node.inputs[1])
-            result = _apply_binary_op(op_spec, left, right)
-        else:
-            value = resolved_feeds.fetch(node.inputs[0])
-            result = _apply_unary_op(unary_symbol, value)
-        return {node.outputs[0]: result}
+        if not graph.nodes:
+            raise UnsupportedOpError("Graph must contain at least one node")
+        if len(graph.nodes) == 1:
+            node = graph.nodes[0]
+            if node.op_type in {"MatMul", "Gemm"}:
+                if node.op_type == "Gemm":
+                    _validate_gemm(node)
+                left = resolved_feeds.fetch(node.inputs[0])
+                right = resolved_feeds.fetch(node.inputs[1])
+                result = _apply_matmul(left, right)
+                return {node.outputs[0]: result}
+            if node.op_type == "Attention":
+                spec = _resolve_attention_spec(graph, node, dtype)
+                query = resolved_feeds.fetch(node.inputs[0])
+                key = resolved_feeds.fetch(node.inputs[1])
+                value = resolved_feeds.fetch(node.inputs[2])
+                result = _apply_attention(spec, query, key, value)
+                return {node.outputs[0]: result}
+            return self._run_elementwise_chain(graph, resolved_feeds, dtype)
+        if any(
+            node.op_type in {"MatMul", "Gemm", "Attention"} for node in graph.nodes
+        ):
+            raise UnsupportedOpError(
+                "MatMul, Gemm, and Attention must be the only node in a graph"
+            )
+        return self._run_elementwise_chain(graph, resolved_feeds, dtype)
 
-    def _run_binary_chain(
+    def _run_elementwise_chain(
         self, graph: Graph, feeds: _ResolvedFeeds, dtype: str
     ) -> dict[str, np.ndarray]:
-        node1, node2 = graph.nodes
-        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs, dtype=dtype)
-        if op1_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs, dtype=dtype)
-        if op2_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
-        intermediate = node1.outputs[0]
-        if intermediate not in node2.inputs:
+        resolved: dict[str, np.ndarray] = {}
+
+        def fetch(name: str) -> np.ndarray:
+            if name in resolved:
+                return resolved[name]
+            return feeds.fetch(name)
+
+        for node in graph.nodes:
+            op_spec, unary_symbol = _resolve_elementwise_op(node, dtype)
+            if unary_symbol is not None:
+                value = fetch(node.inputs[0])
+                resolved[node.outputs[0]] = _apply_unary_op(
+                    unary_symbol, value
+                )
+            else:
+                left = fetch(node.inputs[0])
+                right = fetch(node.inputs[1])
+                resolved[node.outputs[0]] = _apply_binary_op(
+                    op_spec, left, right
+                )
+        output_name = graph.outputs[0].name
+        if output_name not in resolved:
             raise UnsupportedOpError(
-                "Second node must consume the first node output"
+                "Graph output must be produced by the last node"
             )
-        left = feeds.fetch(node1.inputs[0])
-        right = feeds.fetch(node1.inputs[1])
-        tmp = _apply_binary_op(op1_spec, left, right)
-        if node2.inputs[0] == intermediate:
-            left = tmp
-            right = feeds.fetch(node2.inputs[1])
-        else:
-            left = feeds.fetch(node2.inputs[0])
-            right = tmp
-        result = _apply_binary_op(op2_spec, left, right)
-        return {node2.outputs[0]: result}
+        return {output_name: resolved[output_name]}
 
     def _lower_matmul(
         self, graph: Graph, node: Node | None, dtype: str
@@ -338,6 +277,26 @@ class _BinaryOpSpec:
     operator: str
     kind: str
     apply: Callable[[np.ndarray, np.ndarray], np.ndarray]
+
+
+def _resolve_elementwise_op(
+    node: Node, dtype: str
+) -> tuple[_BinaryOpSpec | None, str | None]:
+    op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
+    unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
+    if op_spec is None and unary_symbol is None:
+        raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+    if op_spec is not None:
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node.op_type} must have 2 inputs and 1 output"
+            )
+        return op_spec, None
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError(
+            f"{node.op_type} must have 1 input and 1 output"
+        )
+    return None, unary_symbol
 
 
 def _lowered_constants(graph: Graph, dtype: str) -> tuple[ConstTensor, ...]:

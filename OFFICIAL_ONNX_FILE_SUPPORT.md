@@ -98,128 +98,128 @@ ONNX version: 1.20.1
 | `node/test_atanh_example/model.onnx` | ✅ |  |
 | `node/test_attention_3d/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 72 |
+| `node/test_attention_3d_attn_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 84 |
+| `node/test_attention_3d_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_diff_heads_sizes/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 72 |
+| `node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_diff_heads_sizes_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 84 |
-| `node/test_attention_3d_diff_heads_sizes_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 71 |
+| `node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_3d_diff_heads_sizes_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_diff_heads_sizes_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 71 |
+| `node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_diff_heads_sizes_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
+| `node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_diff_heads_with_past_and_present/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
-| `node/test_attention_3d_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 71 |
+| `node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_3d_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_gqa/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_gqa_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 72 |
+| `node/test_attention_3d_gqa_attn_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_gqa_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 84 |
-| `node/test_attention_3d_gqa_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 71 |
+| `node/test_attention_3d_gqa_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_3d_gqa_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_gqa_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 71 |
+| `node/test_attention_3d_gqa_scaled_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_gqa_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
+| `node/test_attention_3d_gqa_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_gqa_with_past_and_present/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
+| `node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 71 |
+| `node/test_attention_3d_scaled_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
+| `node/test_attention_3d_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_transpose_verification/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_transpose_verification_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 71 |
+| `node/test_attention_3d_transpose_verification_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_with_past_and_present/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_with_past_and_present_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
+| `node/test_attention_3d_with_past_and_present_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 79 |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d/model.onnx` | ✅ |  |
 | `node/test_attention_4d_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_3d/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_3d_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
-| `node/test_attention_4d_attn_mask_3d_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
+| `node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_attn_mask_3d_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_attn_mask_4d/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_4d_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
-| `node/test_attention_4d_attn_mask_4d_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
+| `node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_attn_mask_4d_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_attn_mask_bool/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
 | `node/test_attention_4d_attn_mask_bool_4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
 | `node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
 | `node/test_attention_4d_attn_mask_bool_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
-| `node/test_attention_4d_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
+| `node/test_attention_4d_attn_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_causal/model.onnx` | ✅ |  |
-| `node/test_attention_4d_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
+| `node/test_attention_4d_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_attention_4d_diff_heads_sizes/model.onnx` | ✅ |  |
 | `node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
+| `node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_diff_heads_sizes_causal/model.onnx` | ✅ |  |
-| `node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
-| `node/test_attention_4d_diff_heads_sizes_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
+| `node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_diff_heads_sizes_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_diff_heads_sizes_scaled/model.onnx` | ✅ |  |
-| `node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
+| `node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_diff_heads_sizes_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
+| `node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_diff_heads_with_past_and_present/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 64 |
+| `node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 64 |
+| `node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 64 |
-| `node/test_attention_4d_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
+| `node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_fp16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
 | `node/test_attention_4d_fp16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
 | `node/test_attention_4d_gqa/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_gqa_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
+| `node/test_attention_4d_gqa_attn_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_gqa_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
-| `node/test_attention_4d_gqa_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
+| `node/test_attention_4d_gqa_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_gqa_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_gqa_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
+| `node/test_attention_4d_gqa_scaled_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_gqa_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
+| `node/test_attention_4d_gqa_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_gqa_with_past_and_present/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 64 |
+| `node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
 | `node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
-| `node/test_attention_4d_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
+| `node/test_attention_4d_scaled/model.onnx` | ✅ |  |
+| `node/test_attention_4d_scaled_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
+| `node/test_attention_4d_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_with_past_and_present/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_with_past_and_present_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 64 |
+| `node/test_attention_4d_with_past_and_present_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 78 |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 78 |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_with_qk_matmul/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_with_qk_matmul_bias/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 63 |
-| `node/test_attention_4d_with_qk_matmul_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
+| `node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `node/test_attention_4d_with_qk_matmul_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_with_qk_matmul_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 67 |
+| `node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_attention_4d_with_qk_matmul_softmax/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 63 |
+| `node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `node/test_averagepool_1d_default/model.onnx` | ❌ | Unsupported op AveragePool |
 | `node/test_averagepool_2d_ceil/model.onnx` | ❌ | Unsupported op AveragePool |
 | `node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx` | ❌ | Unsupported op AveragePool |
@@ -253,7 +253,7 @@ ONNX version: 1.20.1
 | `node/test_bernoulli_double_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for y. |
 | `node/test_bernoulli_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
 | `node/test_bernoulli_seed/model.onnx` | ❌ | Unsupported op Bernoulli |
-| `node/test_bernoulli_seed_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
+| `node/test_bernoulli_seed_expanded/model.onnx` | ❌ | Unsupported op RandomUniformLike |
 | `node/test_bitshift_left_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
 | `node/test_bitshift_left_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
 | `node/test_bitshift_left_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
@@ -456,7 +456,7 @@ ONNX version: 1.20.1
 | `node/test_ceil/model.onnx` | ✅ |  |
 | `node/test_ceil_example/model.onnx` | ✅ |  |
 | `node/test_celu/model.onnx` | ❌ | Unsupported op Celu |
-| `node/test_celu_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `node/test_celu_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_center_crop_pad_crop/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_center_crop_pad_crop_and_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_center_crop_pad_crop_and_pad_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -483,16 +483,16 @@ ONNX version: 1.20.1
 | `node/test_clip_default_min/model.onnx` | ❌ | Unsupported op Clip |
 | `node/test_clip_default_min_expanded/model.onnx` | ❌ | Unsupported op Less |
 | `node/test_clip_example/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_example_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
-| `node/test_clip_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `node/test_clip_example_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_expanded/model.onnx` | ❌ | Unsupported op Less |
 | `node/test_clip_inbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_inbounds_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `node/test_clip_inbounds_expanded/model.onnx` | ❌ | Unsupported op Less |
 | `node/test_clip_min_greater_than_max/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_min_greater_than_max_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `node/test_clip_min_greater_than_max_expanded/model.onnx` | ❌ | Unsupported op Less |
 | `node/test_clip_outbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_outbounds_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `node/test_clip_outbounds_expanded/model.onnx` | ❌ | Unsupported op Less |
 | `node/test_clip_splitbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_splitbounds_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `node/test_clip_splitbounds_expanded/model.onnx` | ❌ | Unsupported op Less |
 | `node/test_col2im/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_col2im_5d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_col2im_dilations/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -569,7 +569,7 @@ ONNX version: 1.20.1
 | `node/test_dequantizelinear_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
 | `node/test_dequantizelinear_uint2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for x. |
 | `node/test_dequantizelinear_uint4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for x. |
-| `node/test_det_2d/model.onnx` | ❌ | Unsupported op Det |
+| `node/test_det_2d/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_det_nd/model.onnx` | ❌ | Unsupported op Det |
 | `node/test_dft/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_dft_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -607,10 +607,10 @@ ONNX version: 1.20.1
 | `node/test_einsum_transpose/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
 | `node/test_elu/model.onnx` | ❌ | Unsupported op Elu |
 | `node/test_elu_default/model.onnx` | ❌ | Unsupported op Elu |
-| `node/test_elu_default_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 11 |
+| `node/test_elu_default_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_elu_example/model.onnx` | ❌ | Unsupported op Elu |
-| `node/test_elu_example_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 11 |
-| `node/test_elu_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 11 |
+| `node/test_elu_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_elu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
 | `node/test_equal_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
 | `node/test_equal_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
@@ -651,13 +651,13 @@ ONNX version: 1.20.1
 | `node/test_gathernd_example_int32/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
 | `node/test_gathernd_example_int32_batch_dim1/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
 | `node/test_gelu_default_1/model.onnx` | ❌ | Unsupported op Gelu |
-| `node/test_gelu_default_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 12 |
+| `node/test_gelu_default_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_gelu_default_2/model.onnx` | ❌ | Unsupported op Gelu |
-| `node/test_gelu_default_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 12 |
+| `node/test_gelu_default_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_gelu_tanh_1/model.onnx` | ❌ | Unsupported op Gelu |
-| `node/test_gelu_tanh_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 19 |
+| `node/test_gelu_tanh_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_gelu_tanh_2/model.onnx` | ❌ | Unsupported op Gelu |
-| `node/test_gelu_tanh_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 19 |
+| `node/test_gelu_tanh_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_gemm_all_attributes/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `node/test_gemm_alpha/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `node/test_gemm_beta/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
@@ -716,9 +716,9 @@ ONNX version: 1.20.1
 | `node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx` | ❌ | Unsupported op GridSample |
 | `node/test_gridsample_zeros_padding/model.onnx` | ❌ | Unsupported op GridSample |
 | `node/test_group_normalization_epsilon/model.onnx` | ❌ | Unsupported op GroupNormalization |
-| `node/test_group_normalization_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 34 |
+| `node/test_group_normalization_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_group_normalization_example/model.onnx` | ❌ | Unsupported op GroupNormalization |
-| `node/test_group_normalization_example_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 34 |
+| `node/test_group_normalization_example_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_gru_batchwise/model.onnx` | ❌ | Unsupported op GRU |
 | `node/test_gru_defaults/model.onnx` | ❌ | Unsupported op GRU |
 | `node/test_gru_seq_length/model.onnx` | ❌ | Unsupported op GRU |
@@ -740,10 +740,10 @@ ONNX version: 1.20.1
 | `node/test_hardmax_one_hot/model.onnx` | ❌ | Unsupported op Hardmax |
 | `node/test_hardsigmoid/model.onnx` | ❌ | Unsupported op HardSigmoid |
 | `node/test_hardsigmoid_default/model.onnx` | ❌ | Unsupported op HardSigmoid |
-| `node/test_hardsigmoid_default_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 12 |
+| `node/test_hardsigmoid_default_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_hardsigmoid_example/model.onnx` | ❌ | Unsupported op HardSigmoid |
-| `node/test_hardsigmoid_example_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 12 |
-| `node/test_hardsigmoid_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 12 |
+| `node/test_hardsigmoid_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_hardsigmoid_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_hardswish/model.onnx` | ❌ | Unsupported op HardSwish |
 | `node/test_hardswish_expanded/model.onnx` | ❌ | Unsupported op HardSigmoid |
 | `node/test_identity/model.onnx` | ❌ | Unsupported op Identity |
@@ -775,68 +775,68 @@ ONNX version: 1.20.1
 | `node/test_l2normalization_axis_0/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_l2normalization_axis_1/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_layer_normalization_2d_axis0/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_2d_axis0_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_2d_axis0_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_2d_axis1/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_2d_axis1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_2d_axis1_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_2d_axis_negative_1/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_2d_axis_negative_2/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_3d_axis0_epsilon/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_3d_axis1_epsilon/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_3d_axis2_epsilon/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis0/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis0_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis0_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis1/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis1_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis2/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis2_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis3/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis3_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis3_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis_negative_1/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis_negative_2/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis_negative_3/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_4d_axis_negative_4/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_layer_normalization_default_axis/model.onnx` | ❌ | Unsupported op LayerNormalization |
-| `node/test_layer_normalization_default_axis_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
-| `node/test_layer_normalization_default_axis_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 31 |
+| `node/test_layer_normalization_default_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_layer_normalization_default_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_leakyrelu/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `node/test_leakyrelu_default/model.onnx` | ❌ | Unsupported op LeakyRelu |
-| `node/test_leakyrelu_default_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_leakyrelu_default_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_leakyrelu_example/model.onnx` | ❌ | Unsupported op LeakyRelu |
-| `node/test_leakyrelu_example_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_leakyrelu_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_leakyrelu_example_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_leakyrelu_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_less/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less. |
 | `node/test_less_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less. |
 | `node/test_less_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
@@ -864,26 +864,26 @@ ONNX version: 1.20.1
 | `node/test_log/model.onnx` | ✅ |  |
 | `node/test_log_example/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_axis_0/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_axis_0_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_logsoftmax_axis_0_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_logsoftmax_axis_0_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_logsoftmax_axis_0_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_axis_1/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_axis_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_logsoftmax_axis_1_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_logsoftmax_axis_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_logsoftmax_axis_1_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_axis_2/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_axis_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_logsoftmax_axis_2_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_logsoftmax_axis_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_logsoftmax_axis_2_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_default_axis/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_default_axis_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_logsoftmax_default_axis_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_logsoftmax_default_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_logsoftmax_default_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_example_1/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_example_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_logsoftmax_example_1_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_logsoftmax_example_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_logsoftmax_example_1_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_large_number/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_large_number_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_logsoftmax_large_number_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_logsoftmax_large_number_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_logsoftmax_large_number_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_negative_axis/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_negative_axis_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
-| `node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 7 |
+| `node/test_logsoftmax_negative_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_loop11/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
 | `node/test_loop13_seq/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
 | `node/test_loop16_seq_none/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
@@ -964,7 +964,7 @@ ONNX version: 1.20.1
 | `node/test_min_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for data_0. |
 | `node/test_min_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data_0. |
 | `node/test_mish/model.onnx` | ❌ | Unsupported op Mish |
-| `node/test_mish_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
+| `node/test_mish_expanded/model.onnx` | ❌ | Unsupported op Softplus |
 | `node/test_mod_broadcast/model.onnx` | ❌ | Unsupported op Mod |
 | `node/test_mod_int64_fmod/model.onnx` | ❌ | Unsupported op Mod |
 | `node/test_mod_mixed_sign_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for x. |
@@ -990,8 +990,8 @@ ONNX version: 1.20.1
 | `node/test_mul_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
 | `node/test_mul_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
 | `node/test_mvn/model.onnx` | ❌ | Unsupported op MeanVarianceNormalization |
-| `node/test_mvn_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 11 |
-| `node/test_mvn_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 12 |
+| `node/test_mvn_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_mvn_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_neg/model.onnx` | ✅ |  |
 | `node/test_neg_example/model.onnx` | ✅ |  |
 | `node/test_nesterov_momentum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1080,9 +1080,9 @@ ONNX version: 1.20.1
 | `node/test_pow_types_int64_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_pow_types_int64_int64/model.onnx` | ❌ | Unsupported op Pow |
 | `node/test_prelu_broadcast/model.onnx` | ✅ |  |
-| `node/test_prelu_broadcast_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
+| `node/test_prelu_broadcast_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_prelu_example/model.onnx` | ✅ |  |
-| `node/test_prelu_example_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
+| `node/test_prelu_example_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_qlinearconv/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
 | `node/test_qlinearmatmul_2D_int8_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for a_scale. |
 | `node/test_qlinearmatmul_2D_int8_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int8 |
@@ -1106,9 +1106,9 @@ ONNX version: 1.20.1
 | `node/test_quantizelinear_uint2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for y_zero_point. |
 | `node/test_quantizelinear_uint4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for y_zero_point. |
 | `node/test_range_float_type_positive_delta/model.onnx` | ❌ | Unsupported op Range |
-| `node/test_range_float_type_positive_delta_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 9 |
+| `node/test_range_float_type_positive_delta_expanded/model.onnx` | ❌ | Unsupported op Cast |
 | `node/test_range_int32_type_negative_delta/model.onnx` | ❌ | Unsupported op Range |
-| `node/test_range_int32_type_negative_delta_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 9 |
+| `node/test_range_int32_type_negative_delta_expanded/model.onnx` | ❌ | Unsupported op Cast |
 | `node/test_reciprocal/model.onnx` | ❌ | Unsupported op Reciprocal |
 | `node/test_reciprocal_example/model.onnx` | ❌ | Unsupported op Reciprocal |
 | `node/test_reduce_l1_default_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1247,7 +1247,7 @@ ONNX version: 1.20.1
 | `node/test_regex_full_match_email_domain/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
 | `node/test_regex_full_match_empty/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
 | `node/test_relu/model.onnx` | ✅ |  |
-| `node/test_relu_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
+| `node/test_relu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_reshape_allowzero_reordered/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reshape_extended_dims/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reshape_negative_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1300,43 +1300,43 @@ ONNX version: 1.20.1
 | `node/test_reversesequence_batch/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reversesequence_time/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rms_normalization_2d_axis0/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis0_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_2d_axis0_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_2d_axis1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_2d_axis1_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_2d_axis_negative_1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_2d_axis_negative_2/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_3d_axis0_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_3d_axis1_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_3d_axis2_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis0/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis0_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis0_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis1_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis2/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis2_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis3/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis3_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis3_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis_negative_1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis_negative_2/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis_negative_3/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_4d_axis_negative_4/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rms_normalization_default_axis/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_default_axis_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 16 |
+| `node/test_rms_normalization_default_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rnn_seq_length/model.onnx` | ❌ | Unsupported op RNN |
 | `node/test_roialign_aligned_false/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_roialign_aligned_true/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1348,11 +1348,11 @@ ONNX version: 1.20.1
 | `node/test_rotary_embedding_interleaved/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rotary_embedding_interleaved_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rotary_embedding_no_position_ids/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
-| `node/test_rotary_embedding_no_position_ids_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
+| `node/test_rotary_embedding_no_position_ids_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rotary_embedding_no_position_ids_interleaved/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
-| `node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 38 |
+| `node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
-| `node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 30 |
+| `node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rotary_embedding_with_rotary_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1443,10 +1443,10 @@ ONNX version: 1.20.1
 | `node/test_sce_sum_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_selu/model.onnx` | ❌ | Unsupported op Selu |
 | `node/test_selu_default/model.onnx` | ❌ | Unsupported op Selu |
-| `node/test_selu_default_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 13 |
+| `node/test_selu_default_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_selu_example/model.onnx` | ❌ | Unsupported op Selu |
-| `node/test_selu_example_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 13 |
-| `node/test_selu_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 13 |
+| `node/test_selu_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_selu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_sequence_insert_at_back/model.onnx` | ❌ | Missing elem_type for sequence |
 | `node/test_sequence_insert_at_front/model.onnx` | ❌ | Missing elem_type for sequence |
 | `node/test_sequence_map_add_1_sequence_1_tensor/model.onnx` | ❌ | Missing elem_type for x0 |
@@ -1473,9 +1473,9 @@ ONNX version: 1.20.1
 | `node/test_shape_start_greater_than_end/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_shape_start_negative_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_shrink_hard/model.onnx` | ❌ | Unsupported op Shrink |
-| `node/test_shrink_hard_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 13 |
+| `node/test_shrink_hard_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_shrink_soft/model.onnx` | ❌ | Unsupported op Shrink |
-| `node/test_shrink_soft_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 13 |
+| `node/test_shrink_soft_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_sigmoid/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `node/test_sigmoid_example/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `node/test_sign/model.onnx` | ❌ | Unsupported op Sign |
@@ -1497,34 +1497,34 @@ ONNX version: 1.20.1
 | `node/test_slice_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_slice_start_out_of_bounds/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_softmax_axis_0/model.onnx` | ❌ | Unsupported op Softmax |
-| `node/test_softmax_axis_0_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_softmax_axis_0_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_softmax_axis_0_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softmax_axis_0_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softmax_axis_1/model.onnx` | ❌ | Unsupported op Softmax |
-| `node/test_softmax_axis_1_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_softmax_axis_1_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_softmax_axis_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softmax_axis_1_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softmax_axis_2/model.onnx` | ❌ | Unsupported op Softmax |
-| `node/test_softmax_axis_2_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_softmax_axis_2_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_softmax_axis_2_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softmax_axis_2_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softmax_default_axis/model.onnx` | ❌ | Unsupported op Softmax |
-| `node/test_softmax_default_axis_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_softmax_default_axis_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_softmax_default_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softmax_default_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softmax_example/model.onnx` | ❌ | Unsupported op Softmax |
-| `node/test_softmax_example_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_softmax_example_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_softmax_example_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softmax_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softmax_large_number/model.onnx` | ❌ | Unsupported op Softmax |
-| `node/test_softmax_large_number_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_softmax_large_number_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_softmax_large_number_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softmax_large_number_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softmax_negative_axis/model.onnx` | ❌ | Unsupported op Softmax |
-| `node/test_softmax_negative_axis_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_softmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_softmax_negative_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softplus/model.onnx` | ❌ | Unsupported op Softplus |
 | `node/test_softplus_example/model.onnx` | ❌ | Unsupported op Softplus |
-| `node/test_softplus_example_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
-| `node/test_softplus_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
+| `node/test_softplus_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softplus_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softsign/model.onnx` | ❌ | Unsupported op Softsign |
 | `node/test_softsign_example/model.onnx` | ❌ | Unsupported op Softsign |
-| `node/test_softsign_example_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
-| `node/test_softsign_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
+| `node/test_softsign_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_softsign_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_spacetodepth/model.onnx` | ❌ | Unsupported op SpaceToDepth |
 | `node/test_spacetodepth_example/model.onnx` | ❌ | Unsupported op SpaceToDepth |
 | `node/test_split_1d_uneven_split_opset18/model.onnx` | ❌ | Unsupported op Split |
@@ -1582,7 +1582,7 @@ ONNX version: 1.20.1
 | `node/test_sum_one_input/model.onnx` | ❌ | Sum must have 2 inputs and 1 output |
 | `node/test_sum_two_inputs/model.onnx` | ✅ |  |
 | `node/test_swish/model.onnx` | ❌ | Unsupported op Swish |
-| `node/test_swish_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
+| `node/test_swish_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_tan/model.onnx` | ✅ |  |
 | `node/test_tan_example/model.onnx` | ✅ |  |
 | `node/test_tanh/model.onnx` | ✅ |  |
@@ -1599,10 +1599,10 @@ ONNX version: 1.20.1
 | `node/test_tfidfvectorizer_tf_uniandbigrams_skip5/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
 | `node/test_thresholdedrelu/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
 | `node/test_thresholdedrelu_default/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
-| `node/test_thresholdedrelu_default_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_thresholdedrelu_default_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_thresholdedrelu_example/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
-| `node/test_thresholdedrelu_example_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
-| `node/test_thresholdedrelu_expanded_ver18/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 6 |
+| `node/test_thresholdedrelu_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_thresholdedrelu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_tile/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_tile_precomputed/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_top_k/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1633,7 +1633,7 @@ ONNX version: 1.20.1
 | `node/test_tril_pos/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_tril_square/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_tril_square_neg/model.onnx` | ❌ | Unsupported op Trilu |
-| `node/test_tril_zero/model.onnx` | ❌ | Unsupported op Trilu |
+| `node/test_tril_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
 | `node/test_triu/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_triu_neg/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_triu_one_row/model.onnx` | ❌ | Unsupported op Trilu |
@@ -1642,7 +1642,7 @@ ONNX version: 1.20.1
 | `node/test_triu_pos/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_triu_square/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_triu_square_neg/model.onnx` | ❌ | Unsupported op Trilu |
-| `node/test_triu_zero/model.onnx` | ❌ | Unsupported op Trilu |
+| `node/test_triu_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
 | `node/test_unique_length_1/model.onnx` | ❌ | Unsupported op Unique |
 | `node/test_unique_not_sorted_without_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_unique_sorted_with_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1668,8 +1668,8 @@ ONNX version: 1.20.1
 | `node/test_xor_bcast4v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
 | `node/test_xor_bcast4v3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
 | `node/test_xor_bcast4v4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `pytorch-converted/test_AvgPool1d/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
-| `pytorch-converted/test_AvgPool1d_stride/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
+| `pytorch-converted/test_AvgPool1d/model.onnx` | ❌ | Unsupported op Unsqueeze |
+| `pytorch-converted/test_AvgPool1d_stride/model.onnx` | ❌ | Unsupported op Unsqueeze |
 | `pytorch-converted/test_AvgPool2d/model.onnx` | ❌ | Unsupported op AveragePool |
 | `pytorch-converted/test_AvgPool2d_stride/model.onnx` | ❌ | Unsupported op AveragePool |
 | `pytorch-converted/test_AvgPool3d/model.onnx` | ❌ | Unsupported op AveragePool |
@@ -1712,12 +1712,12 @@ ONNX version: 1.20.1
 | `pytorch-converted/test_ELU/model.onnx` | ❌ | Unsupported op Elu |
 | `pytorch-converted/test_Embedding/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `pytorch-converted/test_Embedding_sparse/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `pytorch-converted/test_GLU/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
-| `pytorch-converted/test_GLU_dim/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
+| `pytorch-converted/test_GLU/model.onnx` | ❌ | Unsupported op Split |
+| `pytorch-converted/test_GLU_dim/model.onnx` | ❌ | Unsupported op Split |
 | `pytorch-converted/test_LeakyReLU/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `pytorch-converted/test_LeakyReLU_with_negval/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `pytorch-converted/test_Linear/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `pytorch-converted/test_Linear_no_bias/model.onnx` | ❌ | Unsupported op Transpose |
+| `pytorch-converted/test_Linear_no_bias/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `pytorch-converted/test_LogSoftmax/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `pytorch-converted/test_MaxPool1d/model.onnx` | ❌ | Unsupported op MaxPool |
 | `pytorch-converted/test_MaxPool1d_stride/model.onnx` | ❌ | Unsupported op MaxPool |
@@ -1733,17 +1733,17 @@ ONNX version: 1.20.1
 | `pytorch-converted/test_PReLU_2d_multiparam/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PReLU_3d/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PReLU_3d_multiparam/model.onnx` | ✅ |  |
-| `pytorch-converted/test_PixelShuffle/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
-| `pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `pytorch-converted/test_PixelShuffle/model.onnx` | ❌ | Unsupported op Constant |
+| `pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx` | ❌ | Unsupported op Constant |
 | `pytorch-converted/test_ReLU/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ReflectionPad2d/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-converted/test_ReplicationPad2d/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-converted/test_SELU/model.onnx` | ❌ | Unsupported op Selu |
 | `pytorch-converted/test_Sigmoid/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `pytorch-converted/test_Softmax/model.onnx` | ❌ | Unsupported op Softmax |
-| `pytorch-converted/test_Softmin/model.onnx` | ❌ | Unsupported op Neg |
+| `pytorch-converted/test_Softmin/model.onnx` | ❌ | Unsupported op Softmax |
 | `pytorch-converted/test_Softplus/model.onnx` | ❌ | Unsupported op Softplus |
-| `pytorch-converted/test_Softsign/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `pytorch-converted/test_Softsign/model.onnx` | ❌ | Unsupported op Constant |
 | `pytorch-converted/test_Tanh/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ZeroPad2d/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-converted/test_log_softmax_dim3/model.onnx` | ❌ | Unsupported op LogSoftmax |
@@ -1755,8 +1755,8 @@ ONNX version: 1.20.1
 | `pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
 | `pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
 | `pytorch-operator/test_operator_addconstant/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
-| `pytorch-operator/test_operator_addmm/model.onnx` | ❌ | Unsupported op Gemm |
-| `pytorch-operator/test_operator_basic/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
+| `pytorch-operator/test_operator_addmm/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
+| `pytorch-operator/test_operator_basic/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `pytorch-operator/test_operator_chunk/model.onnx` | ❌ | Unsupported op Split |
 | `pytorch-operator/test_operator_clip/model.onnx` | ❌ | Unsupported op Clip |
 | `pytorch-operator/test_operator_concat2/model.onnx` | ❌ | Unsupported op Concat |
@@ -1768,10 +1768,10 @@ ONNX version: 1.20.1
 | `pytorch-operator/test_operator_max/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_maxpool/model.onnx` | ❌ | Unsupported op MaxPool |
 | `pytorch-operator/test_operator_min/model.onnx` | ✅ |  |
-| `pytorch-operator/test_operator_mm/model.onnx` | ❌ | Unsupported op Constant |
+| `pytorch-operator/test_operator_mm/model.onnx` | ❌ | MatMul, Gemm, and Attention must be the only node in a graph |
 | `pytorch-operator/test_operator_non_float_params/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_pad/model.onnx` | ❌ | Unsupported op Pad |
-| `pytorch-operator/test_operator_params/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 5 |
+| `pytorch-operator/test_operator_params/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `pytorch-operator/test_operator_permute2/model.onnx` | ❌ | Unsupported op Transpose |
 | `pytorch-operator/test_operator_pow/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_reduced_mean/model.onnx` | ❌ | Unsupported op ReduceMean |
@@ -1779,18 +1779,18 @@ ONNX version: 1.20.1
 | `pytorch-operator/test_operator_reduced_sum/model.onnx` | ❌ | Unsupported op ReduceSum |
 | `pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx` | ❌ | Unsupported op ReduceSum |
 | `pytorch-operator/test_operator_repeat/model.onnx` | ❌ | Unsupported op Constant |
-| `pytorch-operator/test_operator_repeat_dim_overflow/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 4 |
+| `pytorch-operator/test_operator_repeat_dim_overflow/model.onnx` | ❌ | Unsupported op Constant |
 | `pytorch-operator/test_operator_selu/model.onnx` | ❌ | Unsupported op Selu |
 | `pytorch-operator/test_operator_sqrt/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_symbolic_override/model.onnx` | ❌ | Unsupported op InstanceNormalization |
-| `pytorch-operator/test_operator_symbolic_override_nested/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
+| `pytorch-operator/test_operator_symbolic_override_nested/model.onnx` | ❌ | Sum must have 2 inputs and 1 output |
 | `pytorch-operator/test_operator_view/model.onnx` | ❌ | Unsupported op Flatten |
 | `simple/test_expand_shape_model1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `simple/test_expand_shape_model2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `simple/test_expand_shape_model3/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `simple/test_expand_shape_model4/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `simple/test_gradient_of_add/model.onnx` | ❌ | Unsupported op Gradient |
-| `simple/test_gradient_of_add_and_mul/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 3 |
+| `simple/test_gradient_of_add/model.onnx` | ❌ | Scalar outputs are not supported |
+| `simple/test_gradient_of_add_and_mul/model.onnx` | ❌ | Scalar outputs are not supported |
 | `simple/test_sequence_model1/model.onnx` | ❌ | Dynamic dim for out |
 | `simple/test_sequence_model2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `simple/test_sequence_model3/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1814,7 +1814,9 @@ ONNX version: 1.20.1
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Mixed dtypes are not supported, got float, int64 | 440 | ██████████████████████████████ |
-| Unsupported op Attention | 57 | ████ |
+| Unsupported op Constant | 128 | █████████ |
+| MatMul, Gemm, and Attention must be the only node in a graph | 60 | ████ |
+| Unsupported op Attention | 51 | ███ |
 | Unsupported elem_type 10 (FLOAT16) for input. | 46 | ███ |
 | Unsupported op Conv | 33 | ██ |
 | Unsupported elem_type 9 (BOOL) for x. | 27 | ██ |
@@ -1823,53 +1825,40 @@ ONNX version: 1.20.1
 | Unsupported elem_type 8 (STRING) for x. | 25 | ██ |
 | Unsupported op MaxPool | 25 | ██ |
 | Mixed dtypes are not supported, got float, int32 | 24 | ██ |
-| Only one- or two-node graphs are supported, got 30 | 21 | █ |
 | Unsupported op LayerNormalization | 19 | █ |
-| Only one- or two-node graphs are supported, got 31 | 19 | █ |
 | Unsupported op Resize | 19 | █ |
 | Unsupported op RMSNormalization | 19 | █ |
-| Only one- or two-node graphs are supported, got 16 | 19 | █ |
 | Unsupported elem_type 13 (UINT64) for x. | 18 | █ |
 | Unsupported op GridSample | 18 | █ |
-| Unsupported op Trilu | 18 | █ |
-| Only one- or two-node graphs are supported, got 7 | 17 | █ |
-| Only one- or two-node graphs are supported, got 6 | 17 | █ |
 | Unsupported elem_type 4 (UINT16) for x. | 16 | █ |
 | Unsupported elem_type 11 (DOUBLE) for x. | 16 | █ |
 | Unsupported elem_type 11 (DOUBLE) for data. | 16 | █ |
+| Unsupported op Trilu | 16 | █ |
 | Unsupported elem_type 12 (UINT32) for x. | 14 | █ |
 | Unsupported op ConvTranspose | 14 | █ |
 | Unsupported op Clip | 13 | █ |
 | Unsupported op Concat | 13 | █ |
 | Unsupported op Flatten | 11 | █ |
 | Gemm must have 2 inputs and 1 output | 11 | █ |
-| Only one- or two-node graphs are supported, got 4 | 10 | █ |
+| Unsupported op Softmax | 11 | █ |
+| Unsupported op Split | 11 | █ |
+| Unsupported op Less | 10 | █ |
 | Unsupported op LogSoftmax | 10 | █ |
-| Only one- or two-node graphs are supported, got 5 | 10 | █ |
-| Unsupported op Softmax | 10 | █ |
 | Unsupported op BatchNormalization | 9 | █ |
-| Only one- or two-node graphs are supported, got 3 | 9 | █ |
 | Unsupported elem_type 26 (INT2) for input. | 9 | █ |
 | Unsupported elem_type 22 (INT4) for input. | 9 | █ |
 | Unsupported elem_type 25 (UINT2) for input. | 9 | █ |
 | Unsupported elem_type 21 (UINT4) for input. | 9 | █ |
 | Unsupported elem_type 2 (UINT8) for data. | 9 | █ |
-| Unsupported op Split | 9 | █ |
-| Unsupported op Transpose | 9 | █ |
-| Only one- or two-node graphs are supported, got 75 | 8 | █ |
 | Unsupported elem_type 9 (BOOL) for greater_equal. | 8 | █ |
 | Unsupported elem_type 9 (BOOL) for less_equal. | 8 | █ |
 | Unsupported op LpPool | 8 | █ |
 | Missing elem_type for x0 | 8 | █ |
+| Unsupported op Transpose | 8 | █ |
 | Unsupported elem_type 8 (STRING) for X. | 7 | █ |
-| Only one- or two-node graphs are supported, got 71 | 7 | █ |
-| Only one- or two-node graphs are supported, got 65 | 7 | █ |
 | Unsupported elem_type 9 (BOOL) for condition. | 7 | █ |
 | Mixed dtypes are not supported, got int32, int64 | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
-| Only one- or two-node graphs are supported, got 74 | 6 | █ |
-| Only one- or two-node graphs are supported, got 62 | 6 | █ |
-| Only one- or two-node graphs are supported, got 61 | 6 | █ |
 | Unsupported elem_type 11 (DOUBLE) for input. | 6 | █ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for input. | 6 | █ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. | 6 | █ |
@@ -1878,16 +1867,14 @@ ONNX version: 1.20.1
 | Unsupported elem_type 19 (FLOAT8E5M2) for input. | 6 | █ |
 | Unsupported elem_type 9 (BOOL) for z. | 6 | █ |
 | Unsupported elem_type 2 (UINT8) for y. | 6 | █ |
-| Only one- or two-node graphs are supported, got 12 | 6 | █ |
 | Unsupported elem_type 9 (BOOL) for cond. | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op Mod | 6 | █ |
 | Missing elem_type for optional_input | 6 | █ |
 | Unsupported elem_type 9 (BOOL) for t. | 6 | █ |
-| Only one- or two-node graphs are supported, got 64 | 5 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
 | Unsupported op Selu | 5 | █ |
-| Only one- or two-node graphs are supported, got 13 | 5 | █ |
+| Unsupported op Sigmoid | 5 | █ |
 | Unsupported op Pad | 5 | █ |
 | Unsupported elem_type 11 (DOUBLE) for 0. | 5 | █ |
 | Unsupported elem_type 9 (BOOL) for attn_mask. | 4 | █ |
@@ -1897,10 +1884,9 @@ ONNX version: 1.20.1
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. | 4 | █ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for like. | 4 | █ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. | 4 | █ |
-| Unsupported op Less | 4 | █ |
+| Scalar outputs are not supported | 4 | █ |
 | Unsupported op Dropout | 4 | █ |
 | Unsupported op Elu | 4 | █ |
-| Only one- or two-node graphs are supported, got 11 | 4 | █ |
 | Unsupported op Gelu | 4 | █ |
 | Unsupported elem_type 9 (BOOL) for greater. | 4 | █ |
 | Unsupported op GRU | 4 | █ |
@@ -1909,15 +1895,13 @@ ONNX version: 1.20.1
 | Unsupported elem_type 9 (BOOL) for less. | 4 | █ |
 | Unsupported op Max | 4 | █ |
 | Unsupported op Min | 4 | █ |
+| Unsupported op Softplus | 4 | █ |
 | Unsupported elem_type 9 (BOOL) for output. | 4 | █ |
 | Unsupported elem_type 2 (UINT8) for a. | 4 | █ |
 | Unsupported op RNN | 4 | █ |
-| Only one- or two-node graphs are supported, got 72 | 3 | █ |
-| Only one- or two-node graphs are supported, got 84 | 3 | █ |
 | Unsupported elem_type 11 (DOUBLE) for y. | 3 | █ |
 | Unsupported elem_type 16 (BFLOAT16) for input. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
-| Unsupported op Constant | 3 | █ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for x. | 3 | █ |
 | Mixed dtypes are not supported, got float, int16 | 3 | █ |
 | Unsupported op DFT | 3 | █ |
@@ -1928,9 +1912,8 @@ ONNX version: 1.20.1
 | Unsupported elem_type 2 (UINT8) for y_zero_point. | 3 | █ |
 | Unsupported op RotaryEmbedding | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
-| Unsupported op Sigmoid | 3 | █ |
-| Unsupported op Softplus | 3 | █ |
 | Missing elem_type for seq | 3 | █ |
+| Sum must have 2 inputs and 1 output | 3 | █ |
 | Unsupported op ThresholdedRelu | 3 | █ |
 | Unsupported op TopK | 3 | █ |
 | Unsupported op Acos | 2 | █ |
@@ -1939,8 +1922,6 @@ ONNX version: 1.20.1
 | Unsupported op Asin | 2 | █ |
 | Unsupported op Asinh | 2 | █ |
 | Unsupported op Atan | 2 | █ |
-| Only one- or two-node graphs are supported, got 78 | 2 | █ |
-| Only one- or two-node graphs are supported, got 63 | 2 | █ |
 | Unsupported op BitwiseAnd | 2 | █ |
 | Unsupported op BitwiseOr | 2 | █ |
 | Unsupported op BitwiseXor | 2 | █ |
@@ -1960,13 +1941,10 @@ ONNX version: 1.20.1
 | Unsupported op Cosh | 2 | █ |
 | Unsupported op CumSum | 2 | █ |
 | Unsupported op DepthToSpace | 2 | █ |
-| Unsupported op Det | 2 | █ |
 | Unsupported op Div | 2 | █ |
-| Only one- or two-node graphs are supported, got 19 | 2 | █ |
 | Unsupported op GlobalAveragePool | 2 | █ |
 | Unsupported op GlobalMaxPool | 2 | █ |
 | Unsupported op GroupNormalization | 2 | █ |
-| Only one- or two-node graphs are supported, got 34 | 2 | █ |
 | Unsupported op LRN | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
 | Unsupported elem_type 10 (FLOAT16) for data_0. | 2 | █ |
@@ -1982,7 +1960,7 @@ ONNX version: 1.20.1
 | Unsupported elem_type 10 (FLOAT16) for a_scale. | 2 | █ |
 | Mixed dtypes are not supported, got float, int8 | 2 | █ |
 | Unsupported op Range | 2 | █ |
-| Only one- or two-node graphs are supported, got 9 | 2 | █ |
+| Unsupported op Cast | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
 | Unsupported elem_type 9 (BOOL) for data. | 2 | █ |
 | Unsupported op ReduceMax | 2 | █ |
@@ -1995,15 +1973,15 @@ ONNX version: 1.20.1
 | Unsupported op Sinh | 2 | █ |
 | Unsupported op Softsign | 2 | █ |
 | Unsupported op SpaceToDepth | 2 | █ |
-| Sum must have 2 inputs and 1 output | 2 | █ |
+| Dynamic or zero dims are not supported | 2 | █ |
+| Unsupported op Unsqueeze | 2 | █ |
 | Unsupported op ReduceMean | 2 | █ |
 | Unsupported op ReduceSum | 2 | █ |
 | Dynamic dim for out | 2 | █ |
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op TreeEnsemble | 1 | █ |
-| Only one- or two-node graphs are supported, got 79 | 1 | █ |
-| Only one- or two-node graphs are supported, got 67 | 1 | █ |
 | Unsupported op Bernoulli | 1 | █ |
+| Unsupported op RandomUniformLike | 1 | █ |
 | Unsupported op BitwiseNot | 1 | █ |
 | Unsupported elem_type 16 (BFLOAT16) for output. | 1 | █ |
 | Unsupported elem_type 11 (DOUBLE) for output. | 1 | █ |
@@ -2021,6 +1999,7 @@ ONNX version: 1.20.1
 | Unsupported elem_type 22 (INT4) for x. | 1 | █ |
 | Unsupported elem_type 25 (UINT2) for x. | 1 | █ |
 | Unsupported elem_type 21 (UINT4) for x. | 1 | █ |
+| Unsupported op Det | 1 | █ |
 | Unsupported op Erf | 1 | █ |
 | Unsupported op EyeLike | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
@@ -2036,7 +2015,6 @@ ONNX version: 1.20.1
 | Unsupported op MeanVarianceNormalization | 1 | █ |
 | Mixed dtypes are not supported, got float, int32, int64 | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
-| Scalar outputs are not supported | 1 | █ |
 | Unsupported elem_type 12 (UINT32) for y. | 1 | █ |
 | Unsupported elem_type 13 (UINT64) for y. | 1 | █ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for y_zero_point. | 1 | █ |
@@ -2047,14 +2025,10 @@ ONNX version: 1.20.1
 | Unsupported elem_type 4 (UINT16) for y_zero_point. | 1 | █ |
 | Unsupported elem_type 25 (UINT2) for y_zero_point. | 1 | █ |
 | Unsupported elem_type 21 (UINT4) for y_zero_point. | 1 | █ |
-| Only one- or two-node graphs are supported, got 38 | 1 | █ |
 | Unsupported op Round | 1 | █ |
 | Unsupported op Swish | 1 | █ |
 | Unsupported op Unique | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
-| Unsupported op Neg | 1 | █ |
-| Unsupported op Gemm | 1 | █ |
 | Unsupported op Slice | 1 | █ |
-| Unsupported op Gradient | 1 | █ |
 | Unsupported op SequenceConstruct | 1 | █ |
 | Dynamic dim for X | 1 | █ |
