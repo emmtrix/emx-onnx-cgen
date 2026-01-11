@@ -2,7 +2,7 @@
 
 Support 63 / 1802 official ONNX files.
 
-This list is derived from `tests/official_onnx_expected_errors.json`.
+ONNX version: 1.20.1
 
 | File | Supported | Error |
 | --- | --- | --- |
