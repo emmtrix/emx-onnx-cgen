@@ -10,6 +10,7 @@ import onnx
 
 from .codegen.c_emitter import (
     AttentionOp,
+    AveragePoolOp,
     BinaryOp,
     CEmitter,
     ConstTensor,
@@ -25,6 +26,8 @@ from .codegen.c_emitter import (
 from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Node
+from .lowering import get_lowering
+from .lowering.average_pool import lower_average_pool
 from .onnx_import import import_onnx
 
 
@@ -71,12 +74,17 @@ class Compiler:
             | MatMulOp
             | AttentionOp
             | ConvOp
+            | AveragePoolOp
             | SoftmaxOp
             | MaxPoolOp
             | ConcatOp
             | TransposeOp
         ] = []
         for node in graph.nodes:
+            lowering = get_lowering(node.op_type)
+            if lowering is not None:
+                ops.append(lowering(graph, node))
+                continue
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
                     _validate_gemm(node)
@@ -188,6 +196,11 @@ class Compiler:
                 values[node.outputs[0]] = _apply_conv(
                     spec, data, weights, bias
                 )
+                continue
+            if node.op_type == "AveragePool":
+                op = lower_average_pool(graph, node)
+                data = values[node.inputs[0]]
+                values[node.outputs[0]] = _apply_average_pool(op, data)
                 continue
             if node.op_type == "MaxPool":
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -968,6 +981,34 @@ def _apply_conv(
                                     * weights[oc, ic, kh, kw]
                                 )
                     output[n, oc, oh, ow] = acc
+    return output
+
+
+def _apply_average_pool(op: AveragePoolOp, data: np.ndarray) -> np.ndarray:
+    output = np.zeros((op.batch, op.channels, op.out_h, op.out_w), dtype=data.dtype)
+    for n in range(op.batch):
+        for c in range(op.channels):
+            for oh in range(op.out_h):
+                for ow in range(op.out_w):
+                    acc = 0.0
+                    count = 0
+                    for kh in range(op.kernel_h):
+                        ih = oh * op.stride_h + kh - op.pad_top
+                        if ih < 0 or ih >= op.in_h:
+                            if op.count_include_pad:
+                                count += op.kernel_w
+                            continue
+                        for kw in range(op.kernel_w):
+                            iw = ow * op.stride_w + kw - op.pad_left
+                            if iw < 0 or iw >= op.in_w:
+                                if op.count_include_pad:
+                                    count += 1
+                                continue
+                            acc += data[n, c, ih, iw]
+                            count += 1
+                    output[n, c, oh, ow] = (
+                        0.0 if count == 0 else acc / float(count)
+                    )
     return output
 
 
