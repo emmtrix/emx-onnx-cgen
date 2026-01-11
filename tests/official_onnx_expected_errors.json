@@ -6449,31 +6449,31 @@
   ],
   [
     "node/test_transpose_all_permutations_0/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "node/test_transpose_all_permutations_1/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "node/test_transpose_all_permutations_2/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "node/test_transpose_all_permutations_3/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "node/test_transpose_all_permutations_4/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "node/test_transpose_all_permutations_5/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "node/test_transpose_default/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "node/test_tril/model.onnx",
@@ -6845,7 +6845,7 @@
   ],
   [
     "pytorch-converted/test_Linear_no_bias/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "pytorch-converted/test_LogSoftmax/model.onnx",
@@ -7065,7 +7065,7 @@
   ],
   [
     "pytorch-operator/test_operator_permute2/model.onnx",
-    "Unsupported op Transpose"
+    ""
   ],
   [
     "pytorch-operator/test_operator_pow/model.onnx",

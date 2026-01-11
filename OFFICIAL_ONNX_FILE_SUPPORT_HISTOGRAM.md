@@ -51,7 +51,6 @@
 | ReduceL1 expects matching dtypes, got float, int64 | 9 | ██ |
 | ReduceL2 expects matching dtypes, got float, int64 | 9 | ██ |
 | ReduceSumSquare expects matching dtypes, got float, int64 | 9 | ██ |
-| Unsupported op Transpose | 9 | ██ |
 | Unsupported op LpPool | 8 | ██ |
 | Conv supports group=1 only | 8 | ██ |
 | Unsupported op BatchNormalization | 7 | █ |
