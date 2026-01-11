@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -1853,7 +1854,10 @@ def _render_official_onnx_file_support_markdown(
 
 
 def _render_error_histogram(expectations: list[tuple[str, str]]) -> list[str]:
-    errors = [error for _, error in expectations if error]
+    def _sanitize_error(error: str) -> str:
+        return re.sub(r"'[^']*'", "'*'", error)
+
+    errors = [_sanitize_error(error) for _, error in expectations if error]
     counts = Counter(errors)
     if not counts:
         return [""]
