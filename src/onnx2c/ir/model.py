@@ -39,9 +39,10 @@ class Graph:
     outputs: tuple[Value, ...]
     nodes: tuple[Node, ...]
     initializers: tuple[Initializer, ...]
+    values: tuple[Value, ...] = ()
 
     def find_value(self, name: str) -> Value:
-        for value in self.inputs + self.outputs:
+        for value in self.inputs + self.outputs + self.values:
             if value.name == name:
                 return value
         for initializer in self.initializers:
