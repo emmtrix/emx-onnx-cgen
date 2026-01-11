@@ -545,7 +545,7 @@
   ],
   [
     "node/test_attention_4d/model.onnx",
-    "Unsupported op Attention"
+    ""
   ],
   [
     "node/test_attention_4d_attn_mask/model.onnx",
@@ -605,7 +605,7 @@
   ],
   [
     "node/test_attention_4d_causal/model.onnx",
-    "Unsupported op Attention"
+    ""
   ],
   [
     "node/test_attention_4d_causal_expanded/model.onnx",
@@ -621,7 +621,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes/model.onnx",
-    "Unsupported op Attention"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx",
@@ -633,7 +633,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal/model.onnx",
-    "Unsupported op Attention"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx",
@@ -645,7 +645,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled/model.onnx",
-    "Unsupported op Attention"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx",
@@ -753,7 +753,7 @@
   ],
   [
     "node/test_attention_4d_scaled/model.onnx",
-    "Unsupported op Attention"
+    ""
   ],
   [
     "node/test_attention_4d_scaled_expanded/model.onnx",

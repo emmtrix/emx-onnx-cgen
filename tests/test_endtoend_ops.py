@@ -294,6 +294,15 @@ OPERATOR_CASES = [
         "opset": 13,
     },
     {
+        "name": "Attention",
+        "op_type": "Attention",
+        "input_shapes": [[1, 2, 3, 4], [1, 2, 5, 4], [1, 2, 5, 4]],
+        "output_shape": [1, 2, 3, 4],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 23,
+    },
+    {
         "name": "Sin",
         "op_type": "Sin",
         "input_shapes": [[2, 3]],
