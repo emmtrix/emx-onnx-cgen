@@ -46,33 +46,10 @@ class Compiler:
 
     def _lower_model(self, graph: Graph) -> LoweredModel:
         dtype = _model_dtype(graph)
-        if len(graph.nodes) != 1:
-            if len(graph.nodes) == 2:
-                return self._lower_binary_chain_model(graph, dtype)
-            raise UnsupportedOpError(
-                f"Only one- or two-node graphs are supported, got {len(graph.nodes)}"
-            )
-        node = graph.nodes[0]
-        if node.op_type in {"MatMul", "Gemm"}:
-            if node.op_type == "Gemm":
-                _validate_gemm(node)
-            return self._lower_matmul(graph, node, dtype)
-        if node.op_type == "Attention":
-            return self._lower_attention(graph, node, dtype)
-        op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
-        unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
-        if op_spec is None and unary_symbol is None:
-            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if op_spec is not None:
-            if len(node.inputs) != 2 or len(node.outputs) != 1:
-                raise UnsupportedOpError(
-                    f"{node.op_type} must have 2 inputs and 1 output"
-                )
-        else:
-            if len(node.inputs) != 1 or len(node.outputs) != 1:
-                raise UnsupportedOpError(
-                    f"{node.op_type} must have 1 input and 1 output"
-                )
+        if len(graph.outputs) != 1:
+            raise UnsupportedOpError("Only single-output graphs are supported")
+        if not graph.nodes:
+            raise UnsupportedOpError("Graph must contain at least one node")
         output_value = graph.outputs[0]
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
@@ -80,96 +57,60 @@ class Compiler:
         constants = _lowered_constants(graph, dtype)
         input_names = tuple(value.name for value in graph.inputs)
         input_shapes = tuple(value.type.shape for value in graph.inputs)
-        if unary_symbol is not None:
-            return LoweredModel(
-                name=self._options.model_name,
-                dtype=dtype,
-                input_names=input_names,
-                input_shapes=input_shapes,
-                output_name=node.outputs[0],
-                element_count=element_count,
-                output_shape=output_value.type.shape,
-                constants=constants,
-                ops=(
-                    UnaryOp(
+        ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp] = []
+        for node in graph.nodes:
+            if node.op_type in {"MatMul", "Gemm"}:
+                if node.op_type == "Gemm":
+                    _validate_gemm(node)
+                ops.append(self._lower_matmul_op(graph, node, dtype))
+                continue
+            if node.op_type == "Attention":
+                ops.append(self._lower_attention_op(graph, node, dtype))
+                continue
+            op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
+            unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
+            if op_spec is None and unary_symbol is None:
+                raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+            if op_spec is not None:
+                if len(node.inputs) != 2 or len(node.outputs) != 1:
+                    raise UnsupportedOpError(
+                        f"{node.op_type} must have 2 inputs and 1 output"
+                    )
+                output_shape = _value_shape(graph, node.outputs[0], node)
+                ops.append(
+                    BinaryOp(
                         input0=node.inputs[0],
+                        input1=node.inputs[1],
                         output=node.outputs[0],
-                        operator=unary_symbol,
-                    ),
-                ),
+                        operator=op_spec.operator,
+                        operator_kind=op_spec.kind,
+                        shape=output_shape,
+                    )
+                )
+                continue
+            if len(node.inputs) != 1 or len(node.outputs) != 1:
+                raise UnsupportedOpError(
+                    f"{node.op_type} must have 1 input and 1 output"
+                )
+            output_shape = _value_shape(graph, node.outputs[0], node)
+            ops.append(
+                UnaryOp(
+                    input0=node.inputs[0],
+                    output=node.outputs[0],
+                    operator=unary_symbol,
+                    shape=output_shape,
+                )
             )
         return LoweredModel(
             name=self._options.model_name,
             dtype=dtype,
             input_names=input_names,
             input_shapes=input_shapes,
-            output_name=node.outputs[0],
+            output_name=output_value.name,
             element_count=element_count,
             output_shape=output_value.type.shape,
             constants=constants,
-            ops=(
-                BinaryOp(
-                    input0=node.inputs[0],
-                    input1=node.inputs[1],
-                    output=node.outputs[0],
-                    operator=op_spec.operator,
-                    operator_kind=op_spec.kind,
-                ),
-            ),
-        )
-
-    def _lower_binary_chain_model(self, graph: Graph, dtype: str) -> LoweredModel:
-        node1, node2 = graph.nodes
-        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs, dtype=dtype)
-        if op1_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs, dtype=dtype)
-        if op2_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
-        if len(node1.inputs) != 2 or len(node1.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node1.op_type} must have 2 inputs and 1 output"
-            )
-        if len(node2.inputs) != 2 or len(node2.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node2.op_type} must have 2 inputs and 1 output"
-            )
-        intermediate = node1.outputs[0]
-        if intermediate not in node2.inputs:
-            raise UnsupportedOpError(
-                "Second node must consume the first node output"
-            )
-        output_value = graph.outputs[0]
-        element_count = _element_count(output_value.type.shape)
-        if element_count <= 0:
-            raise ShapeInferenceError("Output shape must be fully defined")
-        input_names = tuple(value.name for value in graph.inputs)
-        input_shapes = tuple(value.type.shape for value in graph.inputs)
-        return LoweredModel(
-            name=self._options.model_name,
-            dtype=dtype,
-            input_names=input_names,
-            input_shapes=input_shapes,
-            output_name=node2.outputs[0],
-            element_count=element_count,
-            output_shape=output_value.type.shape,
-            constants=_lowered_constants(graph, dtype),
-            ops=(
-                BinaryOp(
-                    input0=node1.inputs[0],
-                    input1=node1.inputs[1],
-                    output=intermediate,
-                    operator=op1_spec.operator,
-                    operator_kind=op1_spec.kind,
-                ),
-                BinaryOp(
-                    input0=node2.inputs[0],
-                    input1=node2.inputs[1],
-                    output=node2.outputs[0],
-                    operator=op2_spec.operator,
-                    operator_kind=op2_spec.kind,
-                ),
-            ),
+            ops=tuple(ops),
         )
 
     def run(
@@ -180,76 +121,43 @@ class Compiler:
         constants = {
             initializer.name: initializer.data for initializer in graph.initializers
         }
-        resolved_feeds = _ResolvedFeeds(feeds=feeds, constants=constants)
-        if len(graph.nodes) != 1:
-            if len(graph.nodes) == 2:
-                return self._run_binary_chain(graph, resolved_feeds, dtype)
-            raise UnsupportedOpError("Only one- or two-node graphs are supported")
-        node = graph.nodes[0]
-        if node.op_type in {"MatMul", "Gemm"}:
-            if node.op_type == "Gemm":
-                _validate_gemm(node)
-            left = resolved_feeds.fetch(node.inputs[0])
-            right = resolved_feeds.fetch(node.inputs[1])
-            result = _apply_matmul(left, right)
-            return {node.outputs[0]: result}
-        if node.op_type == "Attention":
-            spec = _resolve_attention_spec(graph, node, dtype)
-            query = resolved_feeds.fetch(node.inputs[0])
-            key = resolved_feeds.fetch(node.inputs[1])
-            value = resolved_feeds.fetch(node.inputs[2])
-            result = _apply_attention(spec, query, key, value)
-            return {node.outputs[0]: result}
-        op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
-        unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
-        if op_spec is None and unary_symbol is None:
-            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if op_spec is not None:
-            left = resolved_feeds.fetch(node.inputs[0])
-            right = resolved_feeds.fetch(node.inputs[1])
-            result = _apply_binary_op(op_spec, left, right)
-        else:
-            value = resolved_feeds.fetch(node.inputs[0])
-            result = _apply_unary_op(unary_symbol, value)
-        return {node.outputs[0]: result}
+        values: dict[str, np.ndarray] = dict(constants)
+        values.update(feeds)
+        for node in graph.nodes:
+            if node.op_type in {"MatMul", "Gemm"}:
+                if node.op_type == "Gemm":
+                    _validate_gemm(node)
+                left = values[node.inputs[0]]
+                right = values[node.inputs[1]]
+                values[node.outputs[0]] = _apply_matmul(left, right)
+                continue
+            if node.op_type == "Attention":
+                spec = _resolve_attention_spec(graph, node, dtype)
+                query = values[node.inputs[0]]
+                key = values[node.inputs[1]]
+                value = values[node.inputs[2]]
+                values[node.outputs[0]] = _apply_attention(spec, query, key, value)
+                continue
+            op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
+            unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
+            if op_spec is None and unary_symbol is None:
+                raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+            if op_spec is not None:
+                left = values[node.inputs[0]]
+                right = values[node.inputs[1]]
+                values[node.outputs[0]] = _apply_binary_op(op_spec, left, right)
+                continue
+            value = values[node.inputs[0]]
+            values[node.outputs[0]] = _apply_unary_op(unary_symbol, value)
+        return {output.name: values[output.name] for output in graph.outputs}
 
-    def _run_binary_chain(
-        self, graph: Graph, feeds: _ResolvedFeeds, dtype: str
-    ) -> dict[str, np.ndarray]:
-        node1, node2 = graph.nodes
-        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs, dtype=dtype)
-        if op1_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs, dtype=dtype)
-        if op2_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
-        intermediate = node1.outputs[0]
-        if intermediate not in node2.inputs:
-            raise UnsupportedOpError(
-                "Second node must consume the first node output"
-            )
-        left = feeds.fetch(node1.inputs[0])
-        right = feeds.fetch(node1.inputs[1])
-        tmp = _apply_binary_op(op1_spec, left, right)
-        if node2.inputs[0] == intermediate:
-            left = tmp
-            right = feeds.fetch(node2.inputs[1])
-        else:
-            left = feeds.fetch(node2.inputs[0])
-            right = tmp
-        result = _apply_binary_op(op2_spec, left, right)
-        return {node2.outputs[0]: result}
-
-    def _lower_matmul(
-        self, graph: Graph, node: Node | None, dtype: str
-    ) -> LoweredModel:
-        if node is None:
-            raise UnsupportedOpError("MatMul node is missing")
+    def _lower_matmul_op(
+        self, graph: Graph, node: Node, dtype: str
+    ) -> MatMulOp:
         if len(node.inputs) != 2 or len(node.outputs) != 1:
             raise UnsupportedOpError("MatMul must have 2 inputs and 1 output")
-        output_value = graph.outputs[0]
-        input0_shape = graph.find_value(node.inputs[0]).type.shape
-        input1_shape = graph.find_value(node.inputs[1]).type.shape
+        input0_shape = _value_shape(graph, node.inputs[0], node)
+        input1_shape = _value_shape(graph, node.inputs[1], node)
         if len(input0_shape) != 2 or len(input1_shape) != 2:
             raise UnsupportedOpError(
                 f"MatMul supports 2D inputs only, got {input0_shape} x {input1_shape}"
@@ -260,77 +168,38 @@ class Compiler:
             raise ShapeInferenceError(
                 f"MatMul inner dimensions must match, got {k_left} and {k_right}"
             )
-        if output_value.type.shape != (m, n):
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        if output_shape != (m, n):
             raise ShapeInferenceError(
-                f"MatMul output shape must be {(m, n)}, got {output_value.type.shape}"
+                f"MatMul output shape must be {(m, n)}, got {output_shape}"
             )
-        element_count = _element_count(output_value.type.shape)
-        return LoweredModel(
-            name=self._options.model_name,
-            dtype=dtype,
-            input_names=tuple(value.name for value in graph.inputs),
-            input_shapes=tuple(value.type.shape for value in graph.inputs),
-            output_name=node.outputs[0],
-            element_count=element_count,
-            output_shape=output_value.type.shape,
-            constants=_lowered_constants(graph, dtype),
-            ops=(
-                MatMulOp(
-                    input0=node.inputs[0],
-                    input1=node.inputs[1],
-                    output=node.outputs[0],
-                    m=m,
-                    n=n,
-                    k=k_left,
-                ),
-            ),
+        return MatMulOp(
+            input0=node.inputs[0],
+            input1=node.inputs[1],
+            output=node.outputs[0],
+            m=m,
+            n=n,
+            k=k_left,
         )
 
-    def _lower_attention(
-        self, graph: Graph, node: Node | None, dtype: str
-    ) -> LoweredModel:
-        if node is None:
-            raise UnsupportedOpError("Attention node is missing")
+    def _lower_attention_op(
+        self, graph: Graph, node: Node, dtype: str
+    ) -> AttentionOp:
         spec = _resolve_attention_spec(graph, node, dtype)
-        output_value = graph.outputs[0]
-        element_count = _element_count(output_value.type.shape)
-        return LoweredModel(
-            name=self._options.model_name,
-            dtype=dtype,
-            input_names=tuple(value.name for value in graph.inputs),
-            input_shapes=tuple(value.type.shape for value in graph.inputs),
-            output_name=node.outputs[0],
-            element_count=element_count,
-            output_shape=output_value.type.shape,
-            constants=_lowered_constants(graph, dtype),
-            ops=(
-                AttentionOp(
-                    input_q=node.inputs[0],
-                    input_k=node.inputs[1],
-                    input_v=node.inputs[2],
-                    output=node.outputs[0],
-                    batch=spec.batch,
-                    heads=spec.heads,
-                    q_seq=spec.q_seq,
-                    kv_seq=spec.kv_seq,
-                    qk_head_size=spec.qk_head_size,
-                    v_head_size=spec.v_head_size,
-                    scale=spec.scale,
-                    is_causal=spec.is_causal,
-                ),
-            ),
+        return AttentionOp(
+            input_q=node.inputs[0],
+            input_k=node.inputs[1],
+            input_v=node.inputs[2],
+            output=node.outputs[0],
+            batch=spec.batch,
+            heads=spec.heads,
+            q_seq=spec.q_seq,
+            kv_seq=spec.kv_seq,
+            qk_head_size=spec.qk_head_size,
+            v_head_size=spec.v_head_size,
+            scale=spec.scale,
+            is_causal=spec.is_causal,
         )
-
-
-@dataclass(frozen=True)
-class _ResolvedFeeds:
-    feeds: Mapping[str, np.ndarray]
-    constants: Mapping[str, np.ndarray]
-
-    def fetch(self, name: str) -> np.ndarray:
-        if name in self.constants:
-            return self.constants[name]
-        return self.feeds[name]
 
 
 @dataclass(frozen=True)
@@ -376,6 +245,17 @@ def _element_count(shape: tuple[int, ...]) -> int:
             raise ShapeInferenceError("Dynamic or zero dims are not supported")
         count *= dim
     return count
+
+
+def _value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int, ...]:
+    try:
+        return graph.find_value(name).type.shape
+    except KeyError as exc:
+        op_type = node.op_type if node is not None else "unknown"
+        raise ShapeInferenceError(
+            f"Missing shape for value '{name}' in op {op_type}. "
+            "Hint: run ONNX shape inference or export with static shapes."
+        ) from exc
 
 
 def _binary_op_symbol(
@@ -551,9 +431,9 @@ def _resolve_attention_spec(
         raise UnsupportedOpError("Unsupported op Attention")
     if set(node.attrs) - {"scale", "is_causal"}:
         raise UnsupportedOpError("Unsupported op Attention")
-    q_shape = graph.find_value(node.inputs[0]).type.shape
-    k_shape = graph.find_value(node.inputs[1]).type.shape
-    v_shape = graph.find_value(node.inputs[2]).type.shape
+    q_shape = _value_shape(graph, node.inputs[0], node)
+    k_shape = _value_shape(graph, node.inputs[1], node)
+    v_shape = _value_shape(graph, node.inputs[2], node)
     if len(q_shape) != 4 or len(k_shape) != 4 or len(v_shape) != 4:
         raise UnsupportedOpError("Unsupported op Attention")
     batch, q_heads, q_seq, qk_head_size = q_shape
@@ -567,12 +447,12 @@ def _resolve_attention_spec(
         raise ShapeInferenceError("Attention Q/K head sizes must match")
     if q_heads != kv_heads or kv_heads != v_heads:
         raise UnsupportedOpError("Unsupported op Attention")
-    output_value = graph.outputs[0]
+    output_shape = _value_shape(graph, node.outputs[0], node)
     expected_output_shape = (batch, q_heads, q_seq, v_head_size)
-    if output_value.type.shape != expected_output_shape:
+    if output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "Attention output shape must be "
-            f"{expected_output_shape}, got {output_value.type.shape}"
+            f"{expected_output_shape}, got {output_shape}"
         )
     scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
     is_causal = int(node.attrs.get("is_causal", 0))
