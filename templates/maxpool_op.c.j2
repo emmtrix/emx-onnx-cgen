@@ -1,0 +1,76 @@
+void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+    for (size_t n = 0; n < {{ batch }}; ++n) {
+        for (size_t c = 0; c < {{ channels }}; ++c) {
+{% if spatial_rank == 1 %}
+            for (size_t ox = 0; ox < {{ out_spatial[0] }}; ++ox) {
+                {{ c_type }} max_value = {{ min_literal }};
+                for (size_t kx = 0; kx < {{ kernel_shape[0] }}; ++kx) {
+                    const int ix = (int)(ox * {{ strides[0] }} + kx * {{ dilations[0] }}) - {{ pads[0] }};
+                    if (ix < 0 || ix >= {{ in_spatial[0] }}) {
+                        continue;
+                    }
+                    {{ c_type }} val = {{ input0 }}[n][c][ix];
+                    if (val > max_value) {
+                        max_value = val;
+                    }
+                }
+                {{ output }}[n][c][ox] = max_value;
+            }
+{% elif spatial_rank == 2 %}
+            for (size_t oh = 0; oh < {{ out_spatial[0] }}; ++oh) {
+                for (size_t ow = 0; ow < {{ out_spatial[1] }}; ++ow) {
+                    {{ c_type }} max_value = {{ min_literal }};
+                    for (size_t kh = 0; kh < {{ kernel_shape[0] }}; ++kh) {
+                        const int ih = (int)(oh * {{ strides[0] }} + kh * {{ dilations[0] }}) - {{ pads[0] }};
+                        if (ih < 0 || ih >= {{ in_spatial[0] }}) {
+                            continue;
+                        }
+                        for (size_t kw = 0; kw < {{ kernel_shape[1] }}; ++kw) {
+                            const int iw = (int)(ow * {{ strides[1] }} + kw * {{ dilations[1] }}) - {{ pads[1] }};
+                            if (iw < 0 || iw >= {{ in_spatial[1] }}) {
+                                continue;
+                            }
+                            {{ c_type }} val = {{ input0 }}[n][c][ih][iw];
+                            if (val > max_value) {
+                                max_value = val;
+                            }
+                        }
+                    }
+                    {{ output }}[n][c][oh][ow] = max_value;
+                }
+            }
+{% elif spatial_rank == 3 %}
+            for (size_t od = 0; od < {{ out_spatial[0] }}; ++od) {
+                for (size_t oh = 0; oh < {{ out_spatial[1] }}; ++oh) {
+                    for (size_t ow = 0; ow < {{ out_spatial[2] }}; ++ow) {
+                        {{ c_type }} max_value = {{ min_literal }};
+                        for (size_t kd = 0; kd < {{ kernel_shape[0] }}; ++kd) {
+                            const int id = (int)(od * {{ strides[0] }} + kd * {{ dilations[0] }}) - {{ pads[0] }};
+                            if (id < 0 || id >= {{ in_spatial[0] }}) {
+                                continue;
+                            }
+                            for (size_t kh = 0; kh < {{ kernel_shape[1] }}; ++kh) {
+                                const int ih = (int)(oh * {{ strides[1] }} + kh * {{ dilations[1] }}) - {{ pads[1] }};
+                                if (ih < 0 || ih >= {{ in_spatial[1] }}) {
+                                    continue;
+                                }
+                                for (size_t kw = 0; kw < {{ kernel_shape[2] }}; ++kw) {
+                                    const int iw = (int)(ow * {{ strides[2] }} + kw * {{ dilations[2] }}) - {{ pads[2] }};
+                                    if (iw < 0 || iw >= {{ in_spatial[2] }}) {
+                                        continue;
+                                    }
+                                    {{ c_type }} val = {{ input0 }}[n][c][id][ih][iw];
+                                    if (val > max_value) {
+                                        max_value = val;
+                                    }
+                                }
+                            }
+                        }
+                        {{ output }}[n][c][od][oh][ow] = max_value;
+                    }
+                }
+            }
+{% endif %}
+        }
+    }
+}

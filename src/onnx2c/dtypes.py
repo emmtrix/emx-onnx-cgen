@@ -12,6 +12,7 @@ class DTypeInfo:
     c_type: str
     np_dtype: np.dtype
     zero_literal: str
+    min_literal: str
 
 
 ONNX_TO_DTYPE = {
@@ -30,36 +31,42 @@ DTYPE_INFO = {
         c_type="float",
         np_dtype=np.dtype("float32"),
         zero_literal="0.0f",
+        min_literal="-INFINITY",
     ),
     "bool": DTypeInfo(
         name="bool",
         c_type="bool",
         np_dtype=np.dtype("bool"),
         zero_literal="false",
+        min_literal="false",
     ),
     "int64": DTypeInfo(
         name="int64",
         c_type="int64_t",
         np_dtype=np.dtype("int64"),
         zero_literal="0",
+        min_literal="INT64_MIN",
     ),
     "int32": DTypeInfo(
         name="int32",
         c_type="int32_t",
         np_dtype=np.dtype("int32"),
         zero_literal="0",
+        min_literal="INT32_MIN",
     ),
     "int16": DTypeInfo(
         name="int16",
         c_type="int16_t",
         np_dtype=np.dtype("int16"),
         zero_literal="0",
+        min_literal="INT16_MIN",
     ),
     "int8": DTypeInfo(
         name="int8",
         c_type="int8_t",
         np_dtype=np.dtype("int8"),
         zero_literal="0",
+        min_literal="INT8_MIN",
     ),
 }
 

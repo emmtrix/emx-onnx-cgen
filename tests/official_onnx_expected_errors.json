@@ -3673,51 +3673,51 @@
   ],
   [
     "node/test_maxpool_1d_default/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_ceil/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_default/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_dilations/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_pads/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_precomputed_pads/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_precomputed_same_upper/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_precomputed_strides/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_same_lower/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_same_upper/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_strides/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_2d_uint8/model.onnx",
@@ -3725,19 +3725,19 @@
   ],
   [
     "node/test_maxpool_3d_default/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_3d_dilations/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_3d_dilations_use_ref_impl/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx",
@@ -6853,35 +6853,35 @@
   ],
   [
     "pytorch-converted/test_MaxPool1d/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_MaxPool1d_stride/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_MaxPool2d/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_MaxPool2d_stride_padding_dilation/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_MaxPool3d/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_MaxPool3d_stride/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_MaxPool3d_stride_padding/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-converted/test_PReLU_1d/model.onnx",
@@ -7041,7 +7041,7 @@
   ],
   [
     "pytorch-operator/test_operator_maxpool/model.onnx",
-    "Unsupported op MaxPool"
+    ""
   ],
   [
     "pytorch-operator/test_operator_min/model.onnx",
