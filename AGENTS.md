@@ -74,6 +74,15 @@ pytest -n auto -q
 
 When reporting executed tests, include the test duration in your feedback.
 
+### Golden reference updates
+
+Golden tests compare generated code against reference files. To refresh references
+after intentional changes, set `UPDATE_REFS=1` when running tests:
+
+```bash
+UPDATE_REFS=1 pytest -n auto -q
+```
+
 ## Compiler Pipeline (conceptual)
 
 1. **Load ONNX**
