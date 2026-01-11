@@ -18,6 +18,7 @@ from .codegen.c_emitter import (
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
+    SoftmaxOp,
     TransposeOp,
     UnaryOp,
 )
@@ -70,6 +71,7 @@ class Compiler:
             | MatMulOp
             | AttentionOp
             | ConvOp
+            | SoftmaxOp
             | MaxPoolOp
             | ConcatOp
             | TransposeOp
@@ -94,6 +96,9 @@ class Compiler:
                 continue
             if node.op_type == "Transpose":
                 ops.append(self._lower_transpose_op(graph, node))
+                continue
+            if node.op_type == "Softmax":
+                ops.append(self._lower_softmax_op(graph, node))
                 continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(
@@ -192,6 +197,18 @@ class Compiler:
                 data = values[node.inputs[0]]
                 values[node.outputs[0]] = _apply_maxpool(spec, data)
                 continue
+            if node.op_type == "Softmax":
+                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                if op_dtype != "float":
+                    raise UnsupportedOpError("Softmax supports float inputs only")
+                axis = _normalize_axis(
+                    int(node.attrs.get("axis", -1)),
+                    _value_shape(graph, node.inputs[0], node),
+                    node,
+                )
+                value = values[node.inputs[0]]
+                values[node.outputs[0]] = _apply_softmax(value, axis)
+                continue
             if node.op_type == "Concat":
                 axis = int(node.attrs.get("axis", 0))
                 tensors = [values[name] for name in node.inputs]
@@ -282,6 +299,41 @@ class Compiler:
             perm=perm,
             input_shape=input_shape,
             output_shape=output_shape,
+            dtype=op_dtype,
+        )
+
+    def _lower_softmax_op(self, graph: Graph, node: Node) -> SoftmaxOp:
+        if len(node.inputs) != 1 or len(node.outputs) != 1:
+            raise UnsupportedOpError("Softmax must have 1 input and 1 output")
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        if op_dtype != "float":
+            raise UnsupportedOpError("Softmax supports float inputs only")
+        input_shape = _value_shape(graph, node.inputs[0], node)
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        if input_shape != output_shape:
+            raise ShapeInferenceError(
+                f"Softmax output shape must be {input_shape}, got {output_shape}"
+            )
+        axis = _normalize_axis(
+            int(node.attrs.get("axis", -1)),
+            input_shape,
+            node,
+        )
+        outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
+        axis_size = input_shape[axis]
+        inner = (
+            _shape_product(input_shape[axis + 1 :])
+            if axis + 1 < len(input_shape)
+            else 1
+        )
+        return SoftmaxOp(
+            input0=node.inputs[0],
+            output=node.outputs[0],
+            outer=outer,
+            axis_size=axis_size,
+            inner=inner,
+            axis=axis,
+            shape=input_shape,
             dtype=op_dtype,
         )
 
@@ -475,6 +527,30 @@ def _element_count(shape: tuple[int, ...]) -> int:
     return count
 
 
+def _shape_product(shape: tuple[int, ...]) -> int:
+    if not shape:
+        return 1
+    product = 1
+    for dim in shape:
+        if dim <= 0:
+            raise ShapeInferenceError("Dynamic or zero dims are not supported")
+        product *= dim
+    return product
+
+
+def _normalize_axis(axis: int, shape: tuple[int, ...], node: Node) -> int:
+    if not shape:
+        raise ShapeInferenceError("Softmax does not support scalar inputs")
+    rank = len(shape)
+    if axis < 0:
+        axis += rank
+    if axis < 0 or axis >= rank:
+        raise ShapeInferenceError(
+            f"{node.op_type} axis {axis} is out of range for rank {rank}"
+        )
+    return axis
+
+
 def _value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int, ...]:
     try:
         return graph.find_value(name).type.shape
@@ -656,6 +732,13 @@ def _apply_matmul(left: np.ndarray, right: np.ndarray) -> np.ndarray:
             f"MatMul inner dimensions must match, got {left.shape[1]} and {right.shape[0]}"
         )
     return np.matmul(left, right)
+
+
+def _apply_softmax(values: np.ndarray, axis: int) -> np.ndarray:
+    max_values = np.max(values, axis=axis, keepdims=True)
+    exp_values = np.exp(values - max_values)
+    sum_values = np.sum(exp_values, axis=axis, keepdims=True)
+    return exp_values / sum_values
 
 
 @dataclass(frozen=True)

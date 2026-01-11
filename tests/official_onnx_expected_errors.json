@@ -5961,7 +5961,7 @@
   ],
   [
     "node/test_softmax_axis_0/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "node/test_softmax_axis_0_expanded/model.onnx",
@@ -5973,7 +5973,7 @@
   ],
   [
     "node/test_softmax_axis_1/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "node/test_softmax_axis_1_expanded/model.onnx",
@@ -5985,7 +5985,7 @@
   ],
   [
     "node/test_softmax_axis_2/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "node/test_softmax_axis_2_expanded/model.onnx",
@@ -5997,7 +5997,7 @@
   ],
   [
     "node/test_softmax_default_axis/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "node/test_softmax_default_axis_expanded/model.onnx",
@@ -6009,7 +6009,7 @@
   ],
   [
     "node/test_softmax_example/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "node/test_softmax_example_expanded/model.onnx",
@@ -6021,7 +6021,7 @@
   ],
   [
     "node/test_softmax_large_number/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "node/test_softmax_large_number_expanded/model.onnx",
@@ -6033,7 +6033,7 @@
   ],
   [
     "node/test_softmax_negative_axis/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "node/test_softmax_negative_axis_expanded/model.onnx",
@@ -6937,11 +6937,11 @@
   ],
   [
     "pytorch-converted/test_Softmax/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "pytorch-converted/test_Softmin/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "pytorch-converted/test_Softplus/model.onnx",
@@ -6969,11 +6969,11 @@
   ],
   [
     "pytorch-converted/test_softmax_functional_dim3/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "pytorch-converted/test_softmax_lastdim/model.onnx",
-    "Unsupported op Softmax"
+    ""
   ],
   [
     "pytorch-operator/test_operator_add_broadcast/model.onnx",
