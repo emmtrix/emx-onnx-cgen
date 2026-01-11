@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 191 / 1802 official ONNX files.
+Support 192 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -12,10 +12,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `light/light_densenet121.onnx` | ❌ | Unsupported op Unsqueeze |
 | `light/light_inception_v1.onnx` | ❌ | Unsupported op LRN |
 | `light/light_inception_v2.onnx` | ❌ | Unsupported op Unsqueeze |
-| `light/light_resnet50.onnx` | ❌ | Unsupported op Reshape |
+| `light/light_resnet50.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `light/light_shufflenet.onnx` | ❌ | Conv supports group=1 only |
 | `light/light_squeezenet.onnx` | ❌ | Unsupported op Dropout |
-| `light/light_vgg19.onnx` | ❌ | Unsupported op Reshape |
+| `light/light_vgg19.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `light/light_zfnet512.onnx` | ❌ | Unsupported op LRN |
 | `node/test_abs/model.onnx` | ✅ |  |
 | `node/test_acos/model.onnx` | ❌ | Unsupported op Acos |
@@ -1251,15 +1251,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_relu/model.onnx` | ✅ |  |
 | `node/test_relu_expanded_ver18/model.onnx` | ❌ | Unsupported op CastLike |
 | `node/test_reshape_allowzero_reordered/model.onnx` | ❌ | Dynamic or zero dims are not supported |
-| `node/test_reshape_extended_dims/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_negative_dim/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_negative_extended_dims/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_one_dim/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_reduced_dims/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_reordered_all_dims/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_reordered_last_dims/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_zero_and_negative_dim/model.onnx` | ❌ | Unsupported op Reshape |
-| `node/test_reshape_zero_dim/model.onnx` | ❌ | Unsupported op Reshape |
+| `node/test_reshape_extended_dims/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_negative_dim/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_negative_extended_dims/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_one_dim/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_reduced_dims/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_reordered_all_dims/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_reordered_last_dims/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_zero_and_negative_dim/model.onnx` | ❌ | Reshape requires a constant shape input |
+| `node/test_reshape_zero_dim/model.onnx` | ❌ | Reshape requires a constant shape input |
 | `node/test_resize_downsample_scales_cubic/model.onnx` | ❌ | Unsupported op Resize |
 | `node/test_resize_downsample_scales_cubic_A_n0p5_exclude_outside/model.onnx` | ❌ | Unsupported op Resize |
 | `node/test_resize_downsample_scales_cubic_align_corners/model.onnx` | ❌ | Unsupported op Resize |
@@ -1380,7 +1380,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx` | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported op Reshape |
+| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx` | ❌ | Scalar outputs are not supported |
@@ -1392,7 +1392,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx` | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| `node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Unsupported op Reshape |
+| `node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_mean/model.onnx` | ❌ | Scalar outputs are not supported |
@@ -1432,11 +1432,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_sce_mean_weight_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_mean_weight_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_none/model.onnx` | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| `node/test_sce_none_expanded/model.onnx` | ❌ | Unsupported op Reshape |
+| `node/test_sce_none_expanded/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `node/test_sce_none_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_none_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_none_weights/model.onnx` | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| `node/test_sce_none_weights_expanded/model.onnx` | ❌ | Unsupported op Reshape |
+| `node/test_sce_none_weights_expanded/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `node/test_sce_none_weights_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_none_weights_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sce_sum/model.onnx` | ❌ | Scalar outputs are not supported |
@@ -1735,7 +1735,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_PReLU_2d_multiparam/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PReLU_3d/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PReLU_3d_multiparam/model.onnx` | ✅ |  |
-| `pytorch-converted/test_PixelShuffle/model.onnx` | ❌ | Unsupported op Reshape |
+| `pytorch-converted/test_PixelShuffle/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ReLU/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ReflectionPad2d/model.onnx` | ❌ | Unsupported op Pad |
@@ -1781,7 +1781,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_reduced_sum/model.onnx` | ❌ | Unsupported op ReduceSum |
 | `pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx` | ❌ | Unsupported op ReduceSum |
 | `pytorch-operator/test_operator_repeat/model.onnx` | ❌ | Unsupported op Tile |
-| `pytorch-operator/test_operator_repeat_dim_overflow/model.onnx` | ❌ | Unsupported op Reshape |
+| `pytorch-operator/test_operator_repeat_dim_overflow/model.onnx` | ❌ | Unsupported op Tile |
 | `pytorch-operator/test_operator_selu/model.onnx` | ❌ | Unsupported op Selu |
 | `pytorch-operator/test_operator_sqrt/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_symbolic_override/model.onnx` | ❌ | Unsupported op InstanceNormalization |

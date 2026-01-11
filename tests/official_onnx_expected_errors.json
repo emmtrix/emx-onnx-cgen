@@ -17,7 +17,7 @@
   ],
   [
     "light/light_resnet50.onnx",
-    "Unsupported op Reshape"
+    "Gemm must have 2 inputs and 1 output"
   ],
   [
     "light/light_shufflenet.onnx",
@@ -29,7 +29,7 @@
   ],
   [
     "light/light_vgg19.onnx",
-    "Unsupported op Reshape"
+    "Gemm must have 2 inputs and 1 output"
   ],
   [
     "light/light_zfnet512.onnx",
@@ -4973,39 +4973,39 @@
   ],
   [
     "node/test_reshape_extended_dims/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_negative_dim/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_negative_extended_dims/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_one_dim/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_reduced_dims/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_reordered_all_dims/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_reordered_last_dims/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_zero_and_negative_dim/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_reshape_zero_dim/model.onnx",
-    "Unsupported op Reshape"
+    "Reshape requires a constant shape input"
   ],
   [
     "node/test_resize_downsample_scales_cubic/model.onnx",
@@ -5489,7 +5489,7 @@
   ],
   [
     "node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx",
-    "Unsupported op Reshape"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx",
@@ -5537,7 +5537,7 @@
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx",
-    "Unsupported op Reshape"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx",
@@ -5697,7 +5697,7 @@
   ],
   [
     "node/test_sce_none_expanded/model.onnx",
-    "Unsupported op Reshape"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_none_log_prob/model.onnx",
@@ -5713,7 +5713,7 @@
   ],
   [
     "node/test_sce_none_weights_expanded/model.onnx",
-    "Unsupported op Reshape"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_none_weights_log_prob/model.onnx",
@@ -6909,7 +6909,7 @@
   ],
   [
     "pytorch-converted/test_PixelShuffle/model.onnx",
-    "Unsupported op Reshape"
+    ""
   ],
   [
     "pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx",
@@ -7093,7 +7093,7 @@
   ],
   [
     "pytorch-operator/test_operator_repeat_dim_overflow/model.onnx",
-    "Unsupported op Reshape"
+    "Unsupported op Tile"
   ],
   [
     "pytorch-operator/test_operator_selu/model.onnx",
