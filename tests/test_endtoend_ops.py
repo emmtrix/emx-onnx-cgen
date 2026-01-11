@@ -201,6 +201,19 @@ def _make_maxpool_model(
     return model
 
 
+def _average_pool_output_shape(
+    input_shape: list[int],
+    kernel_shape: list[int],
+    strides: list[int],
+    pads: list[int],
+) -> list[int]:
+    batch, channels, in_h, in_w = input_shape
+    pad_top, pad_left, pad_bottom, pad_right = pads
+    out_h = (in_h + pad_top + pad_bottom - kernel_shape[0]) // strides[0] + 1
+    out_w = (in_w + pad_left + pad_right - kernel_shape[1]) // strides[1] + 1
+    return [batch, channels, out_h, out_w]
+
+
 def _run_cli_verify(model: onnx.ModelProto) -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         model_path = Path(temp_dir) / "model.onnx"
@@ -546,6 +559,33 @@ OPERATOR_CASES = [
     },
 ]
 
+AVG_POOL_CASES = [
+    {
+        "name": "Kernel2Stride2",
+        "input_shape": [1, 1, 4, 4],
+        "kernel_shape": [2, 2],
+        "strides": [2, 2],
+        "pads": [0, 0, 0, 0],
+        "count_include_pad": 0,
+    },
+    {
+        "name": "Kernel3Stride1Pad",
+        "input_shape": [1, 2, 5, 5],
+        "kernel_shape": [3, 3],
+        "strides": [1, 1],
+        "pads": [1, 1, 1, 1],
+        "count_include_pad": 0,
+    },
+    {
+        "name": "Kernel3x2Stride2x1Pad",
+        "input_shape": [1, 1, 5, 4],
+        "kernel_shape": [3, 2],
+        "strides": [2, 1],
+        "pads": [0, 1, 0, 1],
+        "count_include_pad": 1,
+    },
+]
+
 MAXPOOL_CASES = [
     {
         "name": "MaxPool2dBasic",
@@ -575,6 +615,29 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         dtype=case["dtype"],
         attrs=case["attrs"],
         opset=case.get("opset", 13),
+    )
+    _run_cli_verify(model)
+
+
+@pytest.mark.parametrize("case", AVG_POOL_CASES, ids=lambda case: case["name"])
+def test_average_pool_matches_onnxruntime(case: dict[str, object]) -> None:
+    output_shape = _average_pool_output_shape(
+        case["input_shape"],
+        case["kernel_shape"],
+        case["strides"],
+        case["pads"],
+    )
+    model = _make_operator_model(
+        op_type="AveragePool",
+        input_shapes=[case["input_shape"]],
+        output_shape=output_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={
+            "kernel_shape": case["kernel_shape"],
+            "strides": case["strides"],
+            "pads": case["pads"],
+            "count_include_pad": case["count_include_pad"],
+        },
     )
     _run_cli_verify(model)
 
