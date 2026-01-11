@@ -15,6 +15,7 @@ from .codegen.c_emitter import (
     MatMulOp,
     UnaryOp,
 )
+from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Node
 from .onnx_import import import_onnx
@@ -42,9 +43,10 @@ class Compiler:
         )
 
     def _lower_model(self, graph: Graph) -> LoweredModel:
+        dtype = _model_dtype(graph)
         if len(graph.nodes) != 1:
             if len(graph.nodes) == 2:
-                return self._lower_binary_chain_model(graph)
+                return self._lower_binary_chain_model(graph, dtype)
             raise UnsupportedOpError(
                 f"Only one- or two-node graphs are supported, got {len(graph.nodes)}"
             )
@@ -52,9 +54,9 @@ class Compiler:
         if node.op_type in {"MatMul", "Gemm"}:
             if node.op_type == "Gemm":
                 _validate_gemm(node)
-            return self._lower_matmul(graph, node)
-        op_spec = _binary_op_symbol(node.op_type, node.attrs)
-        unary_symbol = _unary_op_symbol(node.op_type)
+            return self._lower_matmul(graph, node, dtype)
+        op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
+        unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
         if op_spec is None and unary_symbol is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
         if op_spec is not None:
@@ -68,19 +70,16 @@ class Compiler:
                     f"{node.op_type} must have 1 input and 1 output"
                 )
         output_value = graph.outputs[0]
-        if output_value.type.dtype != "float":
-            raise UnsupportedOpError(
-                f"Unsupported dtype {output_value.type.dtype} for {output_value.name}"
-            )
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
             raise ShapeInferenceError("Output shape must be fully defined")
-        constants = _lowered_constants(graph)
+        constants = _lowered_constants(graph, dtype)
         input_names = tuple(value.name for value in graph.inputs)
         input_shapes = tuple(value.type.shape for value in graph.inputs)
         if unary_symbol is not None:
             return LoweredModel(
                 name=self._options.model_name,
+                dtype=dtype,
                 input_names=input_names,
                 input_shapes=input_shapes,
                 output_name=node.outputs[0],
@@ -97,6 +96,7 @@ class Compiler:
             )
         return LoweredModel(
             name=self._options.model_name,
+            dtype=dtype,
             input_names=input_names,
             input_shapes=input_shapes,
             output_name=node.outputs[0],
@@ -114,12 +114,12 @@ class Compiler:
             ),
         )
 
-    def _lower_binary_chain_model(self, graph: Graph) -> LoweredModel:
+    def _lower_binary_chain_model(self, graph: Graph, dtype: str) -> LoweredModel:
         node1, node2 = graph.nodes
-        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs)
+        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs, dtype=dtype)
         if op1_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs)
+        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs, dtype=dtype)
         if op2_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
         if len(node1.inputs) != 2 or len(node1.outputs) != 1:
@@ -136,10 +136,6 @@ class Compiler:
                 "Second node must consume the first node output"
             )
         output_value = graph.outputs[0]
-        if output_value.type.dtype != "float":
-            raise UnsupportedOpError(
-                f"Unsupported dtype {output_value.type.dtype} for {output_value.name}"
-            )
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
             raise ShapeInferenceError("Output shape must be fully defined")
@@ -147,12 +143,13 @@ class Compiler:
         input_shapes = tuple(value.type.shape for value in graph.inputs)
         return LoweredModel(
             name=self._options.model_name,
+            dtype=dtype,
             input_names=input_names,
             input_shapes=input_shapes,
             output_name=node2.outputs[0],
             element_count=element_count,
             output_shape=output_value.type.shape,
-            constants=_lowered_constants(graph),
+            constants=_lowered_constants(graph, dtype),
             ops=(
                 BinaryOp(
                     input0=node1.inputs[0],
@@ -175,13 +172,14 @@ class Compiler:
         self, model: onnx.ModelProto, feeds: Mapping[str, np.ndarray]
     ) -> dict[str, np.ndarray]:
         graph = import_onnx(model)
+        dtype = _model_dtype(graph)
         constants = {
             initializer.name: initializer.data for initializer in graph.initializers
         }
         resolved_feeds = _ResolvedFeeds(feeds=feeds, constants=constants)
         if len(graph.nodes) != 1:
             if len(graph.nodes) == 2:
-                return self._run_binary_chain(graph, resolved_feeds)
+                return self._run_binary_chain(graph, resolved_feeds, dtype)
             raise UnsupportedOpError("Only one- or two-node graphs are supported")
         node = graph.nodes[0]
         if node.op_type in {"MatMul", "Gemm"}:
@@ -191,8 +189,8 @@ class Compiler:
             right = resolved_feeds.fetch(node.inputs[1])
             result = _apply_matmul(left, right)
             return {node.outputs[0]: result}
-        op_spec = _binary_op_symbol(node.op_type, node.attrs)
-        unary_symbol = _unary_op_symbol(node.op_type)
+        op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
+        unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
         if op_spec is None and unary_symbol is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
         if op_spec is not None:
@@ -205,13 +203,13 @@ class Compiler:
         return {node.outputs[0]: result}
 
     def _run_binary_chain(
-        self, graph: Graph, feeds: _ResolvedFeeds
+        self, graph: Graph, feeds: _ResolvedFeeds, dtype: str
     ) -> dict[str, np.ndarray]:
         node1, node2 = graph.nodes
-        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs)
+        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs, dtype=dtype)
         if op1_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs)
+        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs, dtype=dtype)
         if op2_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
         intermediate = node1.outputs[0]
@@ -231,16 +229,14 @@ class Compiler:
         result = _apply_binary_op(op2_spec, left, right)
         return {node2.outputs[0]: result}
 
-    def _lower_matmul(self, graph: Graph, node: Node | None = None) -> LoweredModel:
+    def _lower_matmul(
+        self, graph: Graph, node: Node | None, dtype: str
+    ) -> LoweredModel:
         if node is None:
             raise UnsupportedOpError("MatMul node is missing")
         if len(node.inputs) != 2 or len(node.outputs) != 1:
             raise UnsupportedOpError("MatMul must have 2 inputs and 1 output")
         output_value = graph.outputs[0]
-        if output_value.type.dtype != "float":
-            raise UnsupportedOpError(
-                f"Unsupported dtype {output_value.type.dtype} for {output_value.name}"
-            )
         input0_shape = graph.find_value(node.inputs[0]).type.shape
         input1_shape = graph.find_value(node.inputs[1]).type.shape
         if len(input0_shape) != 2 or len(input1_shape) != 2:
@@ -260,12 +256,13 @@ class Compiler:
         element_count = _element_count(output_value.type.shape)
         return LoweredModel(
             name=self._options.model_name,
+            dtype=dtype,
             input_names=tuple(value.name for value in graph.inputs),
             input_shapes=tuple(value.type.shape for value in graph.inputs),
             output_name=node.outputs[0],
             element_count=element_count,
             output_shape=output_value.type.shape,
-            constants=_lowered_constants(graph),
+            constants=_lowered_constants(graph, dtype),
             ops=(
                 MatMulOp(
                     input0=node.inputs[0],
@@ -297,15 +294,31 @@ class _BinaryOpSpec:
     apply: Callable[[np.ndarray, np.ndarray], np.ndarray]
 
 
-def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
+def _lowered_constants(graph: Graph, dtype: str) -> tuple[ConstTensor, ...]:
+    info = dtype_info(dtype)
     return tuple(
         ConstTensor(
             name=initializer.name,
             shape=initializer.type.shape,
-            data=tuple(float(value) for value in initializer.data.ravel()),
+            data=tuple(
+                info.np_dtype.type(value) for value in initializer.data.ravel()
+            ),
         )
         for initializer in graph.initializers
     )
+
+
+def _model_dtype(graph: Graph) -> str:
+    dtypes = {value.type.dtype for value in graph.inputs + graph.outputs}
+    dtypes.update(initializer.type.dtype for initializer in graph.initializers)
+    if len(dtypes) != 1:
+        raise UnsupportedOpError(
+            f"Mixed dtypes are not supported, got {', '.join(sorted(dtypes))}"
+        )
+    dtype = next(iter(dtypes))
+    if dtype not in {"float", "int64"}:
+        raise UnsupportedOpError(f"Unsupported dtype {dtype}")
+    return dtype
 
 
 def _element_count(shape: tuple[int, ...]) -> int:
@@ -320,8 +333,16 @@ def _element_count(shape: tuple[int, ...]) -> int:
 
 
 def _binary_op_symbol(
-    op_type: str, attrs: Mapping[str, object] | None = None
+    op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: str
 ) -> _BinaryOpSpec | None:
+    if dtype == "int64":
+        if op_type in {"Add", "Sum"}:
+            return _BinaryOpSpec("+", "infix", lambda left, right: left + right)
+        if op_type == "Sub":
+            return _BinaryOpSpec("-", "infix", lambda left, right: left - right)
+        if op_type == "Mul":
+            return _BinaryOpSpec("*", "infix", lambda left, right: left * right)
+        return None
     if op_type == "Add":
         return _BinaryOpSpec("+", "infix", lambda left, right: left + right)
     if op_type == "Div":
@@ -375,7 +396,13 @@ def _validate_gemm(node: Node) -> None:
         )
 
 
-def _unary_op_symbol(op_type: str) -> str | None:
+def _unary_op_symbol(op_type: str, *, dtype: str) -> str | None:
+    if dtype == "int64":
+        if op_type == "Abs":
+            return "llabs"
+        if op_type == "Neg":
+            return "neg"
+        return None
     if op_type == "Abs":
         return "fabsf"
     if op_type == "Ceil":
@@ -413,6 +440,8 @@ def _apply_binary_op(
 
 def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
     if op_symbol == "fabsf":
+        return np.abs(value)
+    if op_symbol == "llabs":
         return np.abs(value)
     if op_symbol == "ceilf":
         return np.ceil(value)
