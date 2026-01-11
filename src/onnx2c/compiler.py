@@ -22,6 +22,7 @@ from .codegen.c_emitter import (
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
+    ReshapeOp,
     SoftmaxOp,
     TransposeOp,
     UnaryOp,
@@ -33,6 +34,7 @@ from .lowering import get_lowering
 from .lowering.average_pool import lower_average_pool
 from .lowering.batch_normalization import lower_batch_normalization
 from .lowering.constant_of_shape import lower_constant_of_shape
+from .lowering.reshape import lower_reshape
 from .onnx_import import import_onnx
 
 
@@ -86,6 +88,7 @@ class Compiler:
             | ConcatOp
             | TransposeOp
             | ConstantOfShapeOp
+            | ReshapeOp
         ] = []
         for node in graph.nodes:
             lowering = get_lowering(node.op_type)
@@ -298,6 +301,12 @@ class Compiler:
                     perm = tuple(reversed(range(values[node.inputs[0]].ndim)))
                 values[node.outputs[0]] = np.transpose(
                     values[node.inputs[0]], axes=tuple(perm)
+                )
+                continue
+            if node.op_type == "Reshape":
+                output_shape = _value_shape(graph, node.outputs[0], node)
+                values[node.outputs[0]] = values[node.inputs[0]].reshape(
+                    output_shape
                 )
                 continue
             if node.op_type == "ConstantOfShape":
