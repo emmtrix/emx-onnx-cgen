@@ -316,7 +316,7 @@ def _model_dtype(graph: Graph) -> str:
             f"Mixed dtypes are not supported, got {', '.join(sorted(dtypes))}"
         )
     dtype = next(iter(dtypes))
-    if dtype not in {"float", "int64"}:
+    if dtype not in {"float", "int64", "int32", "int16", "int8"}:
         raise UnsupportedOpError(f"Unsupported dtype {dtype}")
     return dtype
 
@@ -335,7 +335,7 @@ def _element_count(shape: tuple[int, ...]) -> int:
 def _binary_op_symbol(
     op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: str
 ) -> _BinaryOpSpec | None:
-    if dtype == "int64":
+    if dtype in {"int64", "int32", "int16", "int8"}:
         if op_type in {"Add", "Sum"}:
             return _BinaryOpSpec("+", "infix", lambda left, right: left + right)
         if op_type == "Sub":
@@ -397,9 +397,9 @@ def _validate_gemm(node: Node) -> None:
 
 
 def _unary_op_symbol(op_type: str, *, dtype: str) -> str | None:
-    if dtype == "int64":
+    if dtype in {"int64", "int32", "int16", "int8"}:
         if op_type == "Abs":
-            return "llabs"
+            return "llabs" if dtype == "int64" else "abs"
         if op_type == "Neg":
             return "neg"
         return None
@@ -440,6 +440,8 @@ def _apply_binary_op(
 
 def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
     if op_symbol == "fabsf":
+        return np.abs(value)
+    if op_symbol == "abs":
         return np.abs(value)
     if op_symbol == "llabs":
         return np.abs(value)
