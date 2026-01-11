@@ -1,0 +1,32 @@
+void {{ op_name }}(const {{ c_type }} {{ input_a }}{{ input_a_suffix }}, const {{ c_type }} {{ input_b }}{{ input_b_suffix }}{% if input_c %}, const {{ c_type }} {{ input_c }}{{ c_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+    for (size_t i = 0; i < {{ m }}; ++i) {
+        for (size_t j = 0; j < {{ n }}; ++j) {
+            {{ acc_type }} acc = {{ zero_literal }};
+            for (size_t k = 0; k < {{ k }}; ++k) {
+                {% if trans_a %}
+                const {{ c_type }} a_val = {{ input_a }}[k][i];
+                {% else %}
+                const {{ c_type }} a_val = {{ input_a }}[i][k];
+                {% endif %}
+                {% if trans_b %}
+                const {{ c_type }} b_val = {{ input_b }}[j][k];
+                {% else %}
+                const {{ c_type }} b_val = {{ input_b }}[k][j];
+                {% endif %}
+                acc += a_val * b_val;
+            }
+            {% if input_c %}
+            {% if c_rank == 2 %}
+            size_t c_i = {% if c_dim0 == 1 %}0{% else %}i{% endif %};
+            size_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
+            const {{ c_type }} bias = {{ input_c }}[c_i][c_j];
+            {% elif c_rank == 1 %}
+            const {{ c_type }} bias = {{ input_c }}[j];
+            {% endif %}
+            {{ output }}[i][j] = acc * {{ alpha_literal }} + bias * {{ beta_literal }};
+            {% else %}
+            {{ output }}[i][j] = acc * {{ alpha_literal }};
+            {% endif %}
+        }
+    }
+}
