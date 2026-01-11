@@ -1815,12 +1815,39 @@ OFFICIAL_ONNX_FILES = [
 OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
     Path(__file__).resolve().parent / "official_onnx_expected_errors.json"
 )
+OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
+    Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT.md"
+)
+ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
 
 
 def _load_official_onnx_file_expectations() -> list[tuple[str, str]]:
     data = json.loads(OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH.read_text(encoding="utf-8"))
     return [(path, error) for path, error in data]
 
+
+def _render_official_onnx_file_support_markdown(
+    expectations: list[tuple[str, str]],
+) -> str:
+    supported_count = sum(1 for _, error in expectations if not error)
+    total_count = len(expectations)
+    onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
+    lines = [
+        "# Official ONNX file support",
+        "",
+        f"Support {supported_count} / {total_count} official ONNX files.",
+        "",
+        f"ONNX version: {onnx_version}",
+        "",
+        "| File | Supported | Error |",
+        "| --- | --- | --- |",
+    ]
+    for path, error in expectations:
+        supported = "✅" if not error else "❌"
+        message = error.replace("\n", " ").strip()
+        lines.append(f"| `{path}` | {supported} | {message} |")
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _collect_onnx_files(data_root: Path) -> list[str]:
@@ -1860,3 +1887,10 @@ def test_official_onnx_expected_errors() -> None:
             f"Unexpected result for {rel_path}. Expected: {expected_error!r}. "
             f"Got: {actual_error!r}."
         )
+
+
+def test_official_onnx_file_support_doc() -> None:
+    expectations = _load_official_onnx_file_expectations()
+    expected_markdown = _render_official_onnx_file_support_markdown(expectations)
+    actual_markdown = OFFICIAL_ONNX_FILE_SUPPORT_PATH.read_text(encoding="utf-8")
+    assert actual_markdown == expected_markdown
