@@ -100,8 +100,21 @@ class CEmitter:
         includes = ["#include <stddef.h>"]
         if emit_testbench:
             includes.extend(("#include <stdio.h>", "#include <stdint.h>"))
+        math_ops = {
+            "atanhf",
+            "ceilf",
+            "cosf",
+            "expf",
+            "fabsf",
+            "floorf",
+            "logf",
+            "sinf",
+            "sqrtf",
+            "tanf",
+            "tanhf",
+        }
         if any(
-            isinstance(op, UnaryOp) and op.operator in {"tanhf", "atanhf"}
+            isinstance(op, UnaryOp) and op.operator in math_ops
             for op in resolved_ops
         ):
             includes.append("#include <math.h>")
