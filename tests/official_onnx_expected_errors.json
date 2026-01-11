@@ -5,7 +5,7 @@
   ],
   [
     "light/light_densenet121.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op GlobalAveragePool"
   ],
   [
     "light/light_inception_v1.onnx",
@@ -13,7 +13,7 @@
   ],
   [
     "light/light_inception_v2.onnx",
-    "Unsupported op Unsqueeze"
+    "Gemm must have 2 inputs and 1 output"
   ],
   [
     "light/light_resnet50.onnx",
@@ -3961,7 +3961,7 @@
   ],
   [
     "node/test_nllloss_NC_expanded/model.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op GatherElements"
   ],
   [
     "node/test_nllloss_NCd1/model.onnx",
@@ -4009,7 +4009,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_expanded/model.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op GatherElements"
   ],
   [
     "node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx",
@@ -4041,7 +4041,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op GatherElements"
   ],
   [
     "node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx",
@@ -4073,7 +4073,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op Cast"
   ],
   [
     "node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx",
@@ -4097,7 +4097,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op GatherElements"
   ],
   [
     "node/test_nonmaxsuppression_center_point_box_format/model.onnx",
@@ -6573,31 +6573,31 @@
   ],
   [
     "node/test_unsqueeze_axis_0/model.onnx",
-    "Unsupported op Unsqueeze"
+    ""
   ],
   [
     "node/test_unsqueeze_axis_1/model.onnx",
-    "Unsupported op Unsqueeze"
+    ""
   ],
   [
     "node/test_unsqueeze_axis_2/model.onnx",
-    "Unsupported op Unsqueeze"
+    ""
   ],
   [
     "node/test_unsqueeze_negative_axes/model.onnx",
-    "Unsupported op Unsqueeze"
+    ""
   ],
   [
     "node/test_unsqueeze_three_axes/model.onnx",
-    "Unsupported op Unsqueeze"
+    ""
   ],
   [
     "node/test_unsqueeze_two_axes/model.onnx",
-    "Unsupported op Unsqueeze"
+    ""
   ],
   [
     "node/test_unsqueeze_unsorted_axes/model.onnx",
-    "Unsupported op Unsqueeze"
+    ""
   ],
   [
     "node/test_upsample_nearest/model.onnx",
@@ -6649,11 +6649,11 @@
   ],
   [
     "pytorch-converted/test_AvgPool1d/model.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op Squeeze"
   ],
   [
     "pytorch-converted/test_AvgPool1d_stride/model.onnx",
-    "Unsupported op Unsqueeze"
+    "Unsupported op Squeeze"
   ],
   [
     "pytorch-converted/test_AvgPool2d/model.onnx",
