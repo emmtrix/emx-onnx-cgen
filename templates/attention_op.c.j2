@@ -1,0 +1,47 @@
+void {{ op_name }}(const {{ c_type }} {{ input_q }}{{ input_q_suffix }},
+                   const {{ c_type }} {{ input_k }}{{ input_k_suffix }},
+                   const {{ c_type }} {{ input_v }}{{ input_v_suffix }},
+                   {{ c_type }} {{ output }}{{ output_suffix }}) {
+    const {{ c_type }} scale = {{ scale_literal }};
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int h = 0; h < {{ heads }}; ++h) {
+            for (int qi = 0; qi < {{ q_seq }}; ++qi) {
+                {{ c_type }} scores[{{ kv_seq }}];
+                {{ c_type }} max_score = -INFINITY;
+                for (int ki = 0; ki < {{ kv_seq }}; ++ki) {
+                    {{ c_type }} score = {{ zero_literal }};
+                    if ({{ is_causal }} && ki > qi) {
+                        score = -INFINITY;
+                    } else {
+                        for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                            score += {{ input_q }}[b][h][qi][d] * {{ input_k }}[b][h][ki][d];
+                        }
+                        score *= scale;
+                    }
+                    scores[ki] = score;
+                    if (score > max_score) {
+                        max_score = score;
+                    }
+                }
+                {{ c_type }} weights[{{ kv_seq }}];
+                {{ c_type }} sum = {{ zero_literal }};
+                for (int ki = 0; ki < {{ kv_seq }}; ++ki) {
+                    {{ c_type }} weight = {{ zero_literal }};
+                    if (!({{ is_causal }} && ki > qi)) {
+                        weight = expf(scores[ki] - max_score);
+                    }
+                    weights[ki] = weight;
+                    sum += weight;
+                }
+                {{ c_type }} inv_sum = sum == {{ zero_literal }} ? {{ zero_literal }} : ({{ c_type }})1.0f / sum;
+                for (int vd = 0; vd < {{ v_head_size }}; ++vd) {
+                    {{ c_type }} acc = {{ zero_literal }};
+                    for (int ki = 0; ki < {{ kv_seq }}; ++ki) {
+                        acc += weights[ki] * inv_sum * {{ input_v }}[b][h][ki][vd];
+                    }
+                    {{ output }}[b][h][qi][vd] = acc;
+                }
+            }
+        }
+    }
+}
