@@ -21,7 +21,6 @@
 | Unsupported op Less | 18 | ████ |
 | Unsupported op GridSample | 18 | ████ |
 | Unsupported elem_type 12 (UINT32) for tensor '*'. | 17 | ███ |
-| Gemm must have 2 inputs and 1 output | 16 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
@@ -41,6 +40,7 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
+| Gemm only supports alpha=1, beta=1, transA=0, transB=0 | 10 | ██ |
 | Unsupported op ReduceMin | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
 | Conv supports group=1 only | 9 | ██ |
@@ -162,6 +162,10 @@
 | Unsupported op DequantizeLinear | 1 | █ |
 | Unsupported op Det | 1 | █ |
 | Unsupported op Erf | 1 | █ |
+| Gemm bias input must match output shape, got () vs (2, 4) | 1 | █ |
+| Gemm bias input must match output shape, got (1,) vs (3, 3) | 1 | █ |
+| Gemm bias input must match output shape, got (1, 4) vs (2, 4) | 1 | █ |
+| Gemm bias input must match output shape, got (1, 4) vs (3, 4) | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
 | Unsupported op If | 1 | █ |
 | Unsupported op IsNaN | 1 | █ |
@@ -180,3 +184,4 @@
 | Unsupported op Swish | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
 | Unsupported elem_type 11 (DOUBLE) for Constant '*'. | 1 | █ |
+| Gemm bias input must match output shape, got (4,) vs (2, 4) | 1 | █ |

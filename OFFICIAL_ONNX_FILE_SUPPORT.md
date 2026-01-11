@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 199 / 1802 official ONNX files.
+Support 200 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -11,11 +11,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `light/light_bvlc_alexnet.onnx` | ❌ | Unsupported op LRN |
 | `light/light_densenet121.onnx` | ❌ | Unsupported op GlobalAveragePool |
 | `light/light_inception_v1.onnx` | ❌ | Unsupported op LRN |
-| `light/light_inception_v2.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `light/light_resnet50.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
+| `light/light_inception_v2.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
+| `light/light_resnet50.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
 | `light/light_shufflenet.onnx` | ❌ | Conv supports group=1 only |
 | `light/light_squeezenet.onnx` | ❌ | Unsupported op Dropout |
-| `light/light_vgg19.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
+| `light/light_vgg19.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
 | `light/light_zfnet512.onnx` | ❌ | Unsupported op LRN |
 | `node/test_abs/model.onnx` | ✅ |  |
 | `node/test_acos/model.onnx` | ❌ | Unsupported op Acos |
@@ -660,17 +660,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_gelu_tanh_1_expanded/model.onnx` | ❌ | Unsupported op CastLike |
 | `node/test_gelu_tanh_2/model.onnx` | ❌ | Unsupported op Gelu |
 | `node/test_gelu_tanh_2_expanded/model.onnx` | ❌ | Unsupported op CastLike |
-| `node/test_gemm_all_attributes/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_alpha/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_beta/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_default_matrix_bias/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
+| `node/test_gemm_all_attributes/model.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
+| `node/test_gemm_alpha/model.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
+| `node/test_gemm_beta/model.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
+| `node/test_gemm_default_matrix_bias/model.onnx` | ✅ |  |
 | `node/test_gemm_default_no_bias/model.onnx` | ✅ |  |
-| `node/test_gemm_default_scalar_bias/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_default_single_elem_vector_bias/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_default_vector_bias/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_default_zero_bias/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_transposeA/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `node/test_gemm_transposeB/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
+| `node/test_gemm_default_scalar_bias/model.onnx` | ❌ | Gemm bias input must match output shape, got () vs (2, 4) |
+| `node/test_gemm_default_single_elem_vector_bias/model.onnx` | ❌ | Gemm bias input must match output shape, got (1,) vs (3, 3) |
+| `node/test_gemm_default_vector_bias/model.onnx` | ❌ | Gemm bias input must match output shape, got (1, 4) vs (2, 4) |
+| `node/test_gemm_default_zero_bias/model.onnx` | ❌ | Gemm bias input must match output shape, got (1, 4) vs (3, 4) |
+| `node/test_gemm_transposeA/model.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
+| `node/test_gemm_transposeB/model.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
 | `node/test_globalaveragepool/model.onnx` | ❌ | Unsupported op GlobalAveragePool |
 | `node/test_globalaveragepool_precomputed/model.onnx` | ❌ | Unsupported op GlobalAveragePool |
 | `node/test_globalmaxpool/model.onnx` | ❌ | Unsupported op GlobalMaxPool |
@@ -1718,7 +1718,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_GLU_dim/model.onnx` | ❌ | Unsupported op Split |
 | `pytorch-converted/test_LeakyReLU/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `pytorch-converted/test_LeakyReLU_with_negval/model.onnx` | ❌ | Unsupported op LeakyRelu |
-| `pytorch-converted/test_Linear/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
+| `pytorch-converted/test_Linear/model.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
 | `pytorch-converted/test_Linear_no_bias/model.onnx` | ✅ |  |
 | `pytorch-converted/test_LogSoftmax/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `pytorch-converted/test_MaxPool1d/model.onnx` | ✅ |  |
@@ -1757,7 +1757,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
 | `pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
 | `pytorch-operator/test_operator_addconstant/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for Constant '1'. |
-| `pytorch-operator/test_operator_addmm/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
+| `pytorch-operator/test_operator_addmm/model.onnx` | ❌ | Gemm bias input must match output shape, got (4,) vs (2, 4) |
 | `pytorch-operator/test_operator_basic/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `pytorch-operator/test_operator_chunk/model.onnx` | ❌ | Only single-output graphs are supported |
 | `pytorch-operator/test_operator_clip/model.onnx` | ❌ | Unsupported op Clip |
@@ -1770,7 +1770,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_max/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_maxpool/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_min/model.onnx` | ✅ |  |
-| `pytorch-operator/test_operator_mm/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
+| `pytorch-operator/test_operator_mm/model.onnx` | ❌ | Gemm only supports alpha=1, beta=1, transA=0, transB=0 |
 | `pytorch-operator/test_operator_non_float_params/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_pad/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-operator/test_operator_params/model.onnx` | ❌ | Unsupported op Sigmoid |

@@ -13,11 +13,11 @@
   ],
   [
     "light/light_inception_v2.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "light/light_resnet50.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "light/light_shufflenet.onnx",
@@ -29,7 +29,7 @@
   ],
   [
     "light/light_vgg19.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "light/light_zfnet512.onnx",
@@ -2609,19 +2609,19 @@
   ],
   [
     "node/test_gemm_all_attributes/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "node/test_gemm_alpha/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "node/test_gemm_beta/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "node/test_gemm_default_matrix_bias/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    ""
   ],
   [
     "node/test_gemm_default_no_bias/model.onnx",
@@ -2629,27 +2629,27 @@
   ],
   [
     "node/test_gemm_default_scalar_bias/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm bias input must match output shape, got () vs (2, 4)"
   ],
   [
     "node/test_gemm_default_single_elem_vector_bias/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm bias input must match output shape, got (1,) vs (3, 3)"
   ],
   [
     "node/test_gemm_default_vector_bias/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm bias input must match output shape, got (1, 4) vs (2, 4)"
   ],
   [
     "node/test_gemm_default_zero_bias/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm bias input must match output shape, got (1, 4) vs (3, 4)"
   ],
   [
     "node/test_gemm_transposeA/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "node/test_gemm_transposeB/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "node/test_globalaveragepool/model.onnx",
@@ -6841,7 +6841,7 @@
   ],
   [
     "pytorch-converted/test_Linear/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "pytorch-converted/test_Linear_no_bias/model.onnx",
@@ -6997,7 +6997,7 @@
   ],
   [
     "pytorch-operator/test_operator_addmm/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm bias input must match output shape, got (4,) vs (2, 4)"
   ],
   [
     "pytorch-operator/test_operator_basic/model.onnx",
@@ -7049,7 +7049,7 @@
   ],
   [
     "pytorch-operator/test_operator_mm/model.onnx",
-    "Gemm must have 2 inputs and 1 output"
+    "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
   ],
   [
     "pytorch-operator/test_operator_non_float_params/model.onnx",

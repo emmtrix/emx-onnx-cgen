@@ -98,8 +98,9 @@ class Compiler:
                 continue
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
-                    _validate_gemm(node)
-                ops.append(self._lower_matmul_op(graph, node))
+                    ops.extend(self._lower_gemm_ops(graph, node))
+                else:
+                    ops.append(self._lower_matmul_op(graph, node))
                 continue
             if node.op_type == "Concat":
                 ops.append(self._lower_concat_op(graph, node))
@@ -188,7 +189,16 @@ class Compiler:
                     _validate_gemm(node)
                 left = values[node.inputs[0]]
                 right = values[node.inputs[1]]
-                values[node.outputs[0]] = _apply_matmul(left, right)
+                result = _apply_matmul(left, right)
+                if len(node.inputs) == 3:
+                    bias = values[node.inputs[2]]
+                    if bias.shape != result.shape:
+                        raise ShapeInferenceError(
+                            "Gemm bias input must match output shape, "
+                            f"got {bias.shape} vs {result.shape}"
+                        )
+                    result = result + bias
+                values[node.outputs[0]] = result
                 continue
             if node.op_type == "Attention":
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -417,6 +427,73 @@ class Compiler:
             k=k_left,
             dtype=op_dtype,
         )
+
+    def _lower_gemm_ops(
+        self, graph: Graph, node: Node
+    ) -> list[MatMulOp | BinaryOp]:
+        _validate_gemm(node)
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        input0_shape = _value_shape(graph, node.inputs[0], node)
+        input1_shape = _value_shape(graph, node.inputs[1], node)
+        if len(input0_shape) != 2 or len(input1_shape) != 2:
+            raise UnsupportedOpError(
+                f"Gemm supports 2D inputs only, got {input0_shape} x {input1_shape}"
+            )
+        m, k_left = input0_shape
+        k_right, n = input1_shape
+        if k_left != k_right:
+            raise ShapeInferenceError(
+                f"Gemm inner dimensions must match, got {k_left} and {k_right}"
+            )
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        if output_shape != (m, n):
+            raise ShapeInferenceError(
+                f"Gemm output shape must be {(m, n)}, got {output_shape}"
+            )
+        if len(node.inputs) == 2:
+            return [
+                MatMulOp(
+                    input0=node.inputs[0],
+                    input1=node.inputs[1],
+                    output=node.outputs[0],
+                    m=m,
+                    n=n,
+                    k=k_left,
+                    dtype=op_dtype,
+                )
+            ]
+        bias_shape = _value_shape(graph, node.inputs[2], node)
+        if bias_shape != output_shape:
+            raise ShapeInferenceError(
+                "Gemm bias input must match output shape, "
+                f"got {bias_shape} vs {output_shape}"
+            )
+        op_spec = _binary_op_symbol("Add", None, dtype=op_dtype)
+        if op_spec is None:
+            raise UnsupportedOpError("Unsupported Add op for Gemm bias")
+        matmul_output = _unique_value_name(
+            graph, f"{node.outputs[0]}_matmul"
+        )
+        return [
+            MatMulOp(
+                input0=node.inputs[0],
+                input1=node.inputs[1],
+                output=matmul_output,
+                m=m,
+                n=n,
+                k=k_left,
+                dtype=op_dtype,
+            ),
+            BinaryOp(
+                input0=matmul_output,
+                input1=node.inputs[2],
+                output=node.outputs[0],
+                operator=op_spec.operator,
+                operator_kind=op_spec.kind,
+                shape=output_shape,
+                dtype=op_dtype,
+            ),
+        ]
 
     def _lower_transpose_op(self, graph: Graph, node: Node) -> TransposeOp:
         if len(node.inputs) != 1 or len(node.outputs) != 1:
@@ -901,8 +978,8 @@ def _binary_op_symbol(
 
 
 def _validate_gemm(node: Node) -> None:
-    if len(node.inputs) != 2 or len(node.outputs) != 1:
-        raise UnsupportedOpError("Gemm must have 2 inputs and 1 output")
+    if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
+        raise UnsupportedOpError("Gemm must have 2 or 3 inputs and 1 output")
     alpha = float(node.attrs.get("alpha", 1.0))
     beta = float(node.attrs.get("beta", 1.0))
     trans_a = int(node.attrs.get("transA", 0))
@@ -911,6 +988,17 @@ def _validate_gemm(node: Node) -> None:
         raise UnsupportedOpError(
             "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
         )
+
+
+def _unique_value_name(graph: Graph, base: str) -> str:
+    existing = {value.name for value in graph.inputs + graph.outputs + graph.values}
+    existing.update(initializer.name for initializer in graph.initializers)
+    candidate = base
+    index = 1
+    while candidate in existing:
+        candidate = f"{base}_{index}"
+        index += 1
+    return candidate
 
 
 def _unary_op_symbol(op_type: str, *, dtype: str) -> str | None:
