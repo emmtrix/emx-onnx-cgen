@@ -37,7 +37,7 @@
   ],
   [
     "node/test_abs/model.onnx",
-    "Unsupported op Abs"
+    ""
   ],
   [
     "node/test_acos/model.onnx",
@@ -1789,11 +1789,11 @@
   ],
   [
     "node/test_ceil/model.onnx",
-    "Unsupported op Ceil"
+    ""
   ],
   [
     "node/test_ceil_example/model.onnx",
-    "Unsupported op Ceil"
+    ""
   ],
   [
     "node/test_celu/model.onnx",

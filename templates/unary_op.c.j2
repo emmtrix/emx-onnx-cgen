@@ -4,6 +4,8 @@ void {{ op_name }}(const float {{ input0 }}{{ array_suffix }}, float {{ output }
 {% endfor %}
 {% if operator == "relu" %}
 {{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} > 0.0f ? {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} : 0.0f;
+{% elif operator == "neg" %}
+{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = -{{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
 {% else %}
 {{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ operator }}({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %});
 {% endif %}
