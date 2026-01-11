@@ -8,24 +8,24 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 | File | Supported | Error |
 | --- | --- | --- |
-| `light/light_bvlc_alexnet.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_densenet121.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_inception_v1.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_inception_v2.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_resnet50.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_shufflenet.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_squeezenet.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_vgg19.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `light/light_zfnet512.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `light/light_bvlc_alexnet.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_densenet121.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_inception_v1.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_inception_v2.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_resnet50.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_shufflenet.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_squeezenet.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_vgg19.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `light/light_zfnet512.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
 | `node/test_abs/model.onnx` | ✅ |  |
 | `node/test_acos/model.onnx` | ❌ | Unsupported op Acos |
 | `node/test_acos_example/model.onnx` | ❌ | Unsupported op Acos |
 | `node/test_acosh/model.onnx` | ❌ | Unsupported op Acosh |
 | `node/test_acosh_example/model.onnx` | ❌ | Unsupported op Acosh |
-| `node/test_adagrad/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_adagrad_multiple/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_adam/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_adam_multiple/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_adagrad/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_adagrad_multiple/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_adam/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_adam_multiple/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_add/model.onnx` | ✅ |  |
 | `node/test_add_bcast/model.onnx` | ✅ |  |
 | `node/test_add_int16/model.onnx` | ✅ |  |
@@ -34,15 +34,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_add_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
 | `node/test_add_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | `node/test_add_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| `node/test_affine_grid_2d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_affine_grid_2d_align_corners/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_affine_grid_2d/model.onnx` | ❌ | AffineGrid expects matching dtypes, got float, int64 |
+| `node/test_affine_grid_2d_align_corners/model.onnx` | ❌ | AffineGrid expects matching dtypes, got float, int64 |
 | `node/test_affine_grid_2d_align_corners_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_2d_align_corners_expanded_function_W' |
 | `node/test_affine_grid_2d_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_2d_expanded_function_W' |
-| `node/test_affine_grid_3d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_affine_grid_3d_align_corners/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_affine_grid_3d/model.onnx` | ❌ | AffineGrid expects matching dtypes, got float, int64 |
+| `node/test_affine_grid_3d_align_corners/model.onnx` | ❌ | AffineGrid expects matching dtypes, got float, int64 |
 | `node/test_affine_grid_3d_align_corners_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_3d_align_corners_expanded_function_N' |
 | `node/test_affine_grid_3d_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_3d_expanded_function_N' |
-| `node/test_ai_onnx_ml_array_feature_extractor/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_ai_onnx_ml_array_feature_extractor/model.onnx` | ❌ | ArrayFeatureExtractor expects matching dtypes, got float, int64 |
 | `node/test_ai_onnx_ml_binarizer/model.onnx` | ❌ | Unsupported op Binarizer |
 | `node/test_ai_onnx_ml_label_encoder_string_int/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | `node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
@@ -58,38 +58,38 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_and_bcast4v2d/model.onnx` | ✅ |  |
 | `node/test_and_bcast4v3d/model.onnx` | ✅ |  |
 | `node/test_and_bcast4v4d/model.onnx` | ✅ |  |
-| `node/test_argmax_default_axis_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_default_axis_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_default_axis_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_default_axis_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_keepdims_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_keepdims_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_negative_axis_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_negative_axis_keepdims_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_negative_axis_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_negative_axis_keepdims_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_no_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_no_keepdims_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_no_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmax_no_keepdims_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_default_axis_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_default_axis_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_default_axis_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_default_axis_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_keepdims_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_keepdims_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_negative_axis_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_negative_axis_keepdims_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_negative_axis_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_no_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_no_keepdims_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_no_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_argmin_no_keepdims_random_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_argmax_default_axis_example/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_default_axis_example_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_default_axis_random/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_default_axis_random_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_keepdims_example/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_keepdims_example_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_keepdims_random/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_keepdims_random_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_negative_axis_keepdims_example/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_negative_axis_keepdims_example_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_negative_axis_keepdims_random/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_negative_axis_keepdims_random_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_no_keepdims_example/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_no_keepdims_example_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_no_keepdims_random/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmax_no_keepdims_random_select_last_index/model.onnx` | ❌ | ArgMax expects matching dtypes, got float, int64 |
+| `node/test_argmin_default_axis_example/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_default_axis_example_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_default_axis_random/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_default_axis_random_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_keepdims_example/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_keepdims_example_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_keepdims_random/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_keepdims_random_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_negative_axis_keepdims_example/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_negative_axis_keepdims_example_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_negative_axis_keepdims_random/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_no_keepdims_example/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_no_keepdims_example_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_no_keepdims_random/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
+| `node/test_argmin_no_keepdims_random_select_last_index/model.onnx` | ❌ | ArgMin expects matching dtypes, got float, int64 |
 | `node/test_asin/model.onnx` | ❌ | Unsupported op Asin |
 | `node/test_asin_example/model.onnx` | ❌ | Unsupported op Asin |
 | `node/test_asinh/model.onnx` | ❌ | Unsupported op Asinh |
@@ -154,14 +154,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_attention_4d_attn_mask_4d_causal/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow' |
 | `node/test_attention_4d_attn_mask_4d_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_expanded_function_KExpanded' |
-| `node/test_attention_4d_attn_mask_bool/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_attention_4d_attn_mask_bool_4d/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
+| `node/test_attention_4d_attn_mask_bool/model.onnx` | ❌ | Attention expects matching dtypes, got bool, float |
+| `node/test_attention_4d_attn_mask_bool_4d/model.onnx` | ❌ | Attention expects matching dtypes, got bool, float |
 | `node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_bool_4d_expanded_function_KExpanded' |
 | `node/test_attention_4d_attn_mask_bool_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_bool_expanded_function_KExpanded' |
 | `node/test_attention_4d_attn_mask_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_expanded_function_KExpanded' |
 | `node/test_attention_4d_causal/model.onnx` | ✅ |  |
 | `node/test_attention_4d_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_AttnBias' |
-| `node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx` | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
 | `node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' |
 | `node/test_attention_4d_diff_heads_sizes/model.onnx` | ✅ |  |
 | `node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
@@ -279,9 +279,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_bitwise_xor_i32_2d/model.onnx` | ❌ | Unsupported op BitwiseXor |
 | `node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | `node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| `node/test_blackmanwindow/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_blackmanwindow/model.onnx` | ❌ | BlackmanWindow expects matching dtypes, got float, int32 |
 | `node/test_blackmanwindow_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_expanded_function_Range' |
-| `node/test_blackmanwindow_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_blackmanwindow_symmetric/model.onnx` | ❌ | BlackmanWindow expects matching dtypes, got float, int32 |
 | `node/test_blackmanwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range' |
 | `node/test_cast_BFLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | `node/test_cast_DOUBLE_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
@@ -459,51 +459,51 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_ceil_example/model.onnx` | ✅ |  |
 | `node/test_celu/model.onnx` | ❌ | Unsupported op Celu |
 | `node/test_celu_expanded/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_center_crop_pad_crop/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_center_crop_pad_crop_and_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_center_crop_pad_crop/model.onnx` | ❌ | CenterCropPad expects matching dtypes, got float, int64 |
+| `node/test_center_crop_pad_crop_and_pad/model.onnx` | ❌ | CenterCropPad expects matching dtypes, got float, int64 |
 | `node/test_center_crop_pad_crop_and_pad_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input' |
-| `node/test_center_crop_pad_crop_axes_chw/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_center_crop_pad_crop_axes_chw/model.onnx` | ❌ | CenterCropPad expects matching dtypes, got float, int64 |
 | `node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_chw_expanded_function_padded_input' |
-| `node/test_center_crop_pad_crop_axes_hwc/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_center_crop_pad_crop_axes_hwc/model.onnx` | ❌ | CenterCropPad expects matching dtypes, got float, int64 |
 | `node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_hwc_expanded_function_padded_input' |
 | `node/test_center_crop_pad_crop_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_expanded_function_padded_input' |
-| `node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx` | ❌ | CenterCropPad expects matching dtypes, got float, int64 |
 | `node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_negative_axes_hwc_expanded_function_padded_input' |
-| `node/test_center_crop_pad_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_center_crop_pad_pad/model.onnx` | ❌ | CenterCropPad expects matching dtypes, got float, int64 |
 | `node/test_center_crop_pad_pad_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input' |
 | `node/test_clip/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_inbounds/model.onnx` | ❌ | Unsupported op Clip |
+| `node/test_clip_default_inbounds/model.onnx` | ❌ | Missing dtype for value '' in op Clip. Hint: run ONNX shape inference or export with static shapes. |
 | `node/test_clip_default_inbounds_expanded/model.onnx` | ❌ | Unsupported op Identity |
-| `node/test_clip_default_int8_inbounds/model.onnx` | ❌ | Unsupported op Clip |
+| `node/test_clip_default_int8_inbounds/model.onnx` | ❌ | Missing dtype for value '' in op Clip. Hint: run ONNX shape inference or export with static shapes. |
 | `node/test_clip_default_int8_inbounds_expanded/model.onnx` | ❌ | Unsupported op Identity |
-| `node/test_clip_default_int8_max/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_int8_max_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_default_int8_max/model.onnx` | ❌ | Missing dtype for value '' in op Clip. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_clip_default_int8_max_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, int8 |
 | `node/test_clip_default_int8_min/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_int8_min_expanded/model.onnx` | ❌ | Unsupported op Less |
-| `node/test_clip_default_max/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_max_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_default_int8_min_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, int8 |
+| `node/test_clip_default_max/model.onnx` | ❌ | Missing dtype for value '' in op Clip. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_clip_default_max_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
 | `node/test_clip_default_min/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_min_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_default_min_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
 | `node/test_clip_example/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_example_expanded/model.onnx` | ❌ | Unsupported op Less |
-| `node/test_clip_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_example_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
+| `node/test_clip_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
 | `node/test_clip_inbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_inbounds_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_inbounds_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
 | `node/test_clip_min_greater_than_max/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_min_greater_than_max_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_min_greater_than_max_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
 | `node/test_clip_outbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_outbounds_expanded/model.onnx` | ❌ | Unsupported op Less |
+| `node/test_clip_outbounds_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
 | `node/test_clip_splitbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_splitbounds_expanded/model.onnx` | ❌ | Unsupported op Less |
-| `node/test_col2im/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_col2im_5d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_col2im_dilations/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_col2im_pads/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_col2im_strides/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_compress_0/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_compress_1/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_compress_default_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_compress_negative_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
+| `node/test_clip_splitbounds_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
+| `node/test_col2im/model.onnx` | ❌ | Col2Im expects matching dtypes, got float, int64 |
+| `node/test_col2im_5d/model.onnx` | ❌ | Col2Im expects matching dtypes, got float, int64 |
+| `node/test_col2im_dilations/model.onnx` | ❌ | Col2Im expects matching dtypes, got float, int64 |
+| `node/test_col2im_pads/model.onnx` | ❌ | Col2Im expects matching dtypes, got float, int64 |
+| `node/test_col2im_strides/model.onnx` | ❌ | Col2Im expects matching dtypes, got float, int64 |
+| `node/test_compress_0/model.onnx` | ❌ | Compress expects matching dtypes, got bool, float |
+| `node/test_compress_1/model.onnx` | ❌ | Compress expects matching dtypes, got bool, float |
+| `node/test_compress_default_axis/model.onnx` | ❌ | Compress expects matching dtypes, got bool, float |
+| `node/test_compress_negative_axis/model.onnx` | ❌ | Compress expects matching dtypes, got bool, float |
 | `node/test_concat_1d_axis_0/model.onnx` | ❌ | Unsupported op Concat |
 | `node/test_concat_1d_axis_negative_1/model.onnx` | ❌ | Unsupported op Concat |
 | `node/test_concat_2d_axis_0/model.onnx` | ❌ | Unsupported op Concat |
@@ -517,12 +517,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_concat_3d_axis_negative_2/model.onnx` | ❌ | Unsupported op Concat |
 | `node/test_concat_3d_axis_negative_3/model.onnx` | ❌ | Unsupported op Concat |
 | `node/test_constant/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_constant_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_constant_pad_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_constant_pad_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_constantofshape_float_ones/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_constantofshape_int_shape_zero/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
-| `node/test_constantofshape_int_zeros/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
+| `node/test_constant_pad/model.onnx` | ❌ | Pad expects matching dtypes, got float, int64 |
+| `node/test_constant_pad_axes/model.onnx` | ❌ | Pad expects matching dtypes, got float, int64 |
+| `node/test_constant_pad_negative_axes/model.onnx` | ❌ | Pad expects matching dtypes, got float, int64 |
+| `node/test_constantofshape_float_ones/model.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
+| `node/test_constantofshape_int_shape_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
+| `node/test_constantofshape_int_zeros/model.onnx` | ❌ | ConstantOfShape expects matching dtypes, got int32, int64 |
 | `node/test_conv_with_autopad_same/model.onnx` | ❌ | Unsupported op Conv |
 | `node/test_conv_with_strides_and_asymmetric_padding/model.onnx` | ❌ | Unsupported op Conv |
 | `node/test_conv_with_strides_no_padding/model.onnx` | ❌ | Unsupported op Conv |
@@ -565,7 +565,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_dequantizelinear_e4m3fn_zero_point/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | `node/test_dequantizelinear_e5m2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. |
 | `node/test_dequantizelinear_float4e2m1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
-| `node/test_dequantizelinear_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int16 |
+| `node/test_dequantizelinear_int16/model.onnx` | ❌ | DequantizeLinear expects matching dtypes, got float, int16 |
 | `node/test_dequantizelinear_int2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'x'. |
 | `node/test_dequantizelinear_int4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'x'. |
 | `node/test_dequantizelinear_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
@@ -573,10 +573,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_dequantizelinear_uint4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
 | `node/test_det_2d/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_det_nd/model.onnx` | ❌ | Unsupported op Det |
-| `node/test_dft/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_dft_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_dft/model.onnx` | ❌ | Missing dtype for value '' in op DFT. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_dft_axis/model.onnx` | ❌ | Missing dtype for value '' in op DFT. Hint: run ONNX shape inference or export with static shapes. |
 | `node/test_dft_axis_opset19/model.onnx` | ❌ | Unsupported op DFT |
-| `node/test_dft_inverse/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_dft_inverse/model.onnx` | ❌ | Missing dtype for value '' in op DFT. Hint: run ONNX shape inference or export with static shapes. |
 | `node/test_dft_inverse_opset19/model.onnx` | ❌ | Unsupported op DFT |
 | `node/test_dft_opset19/model.onnx` | ❌ | Unsupported op DFT |
 | `node/test_div/model.onnx` | ✅ |  |
@@ -589,8 +589,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_div_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | `node/test_div_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_dropout_default/model.onnx` | ❌ | Unsupported op Dropout |
-| `node/test_dropout_default_mask/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_dropout_default_mask_ratio/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
+| `node/test_dropout_default_mask/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_dropout_default_mask_ratio/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_dropout_default_old/model.onnx` | ❌ | Unsupported op Dropout |
 | `node/test_dropout_default_ratio/model.onnx` | ❌ | Unsupported op Dropout |
 | `node/test_dropout_random_old/model.onnx` | ❌ | Unsupported op Dropout |
@@ -600,7 +600,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
 | `node/test_dynamicquantizelinear_min_adjusted/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
 | `node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
-| `node/test_edge_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
+| `node/test_edge_pad/model.onnx` | ❌ | Pad expects matching dtypes, got int32, int64 |
 | `node/test_einsum_batch_diagonal/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_einsum_batch_matmul/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_einsum_inner_prod/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
@@ -613,10 +613,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_elu_example/model.onnx` | ❌ | Unsupported op Elu |
 | `node/test_elu_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_elu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_equal/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int32 |
-| `node/test_equal_bcast/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int32 |
-| `node/test_equal_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int16 |
-| `node/test_equal_int8/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int8 |
+| `node/test_equal/model.onnx` | ❌ | Equal expects matching dtypes, got bool, int32 |
+| `node/test_equal_bcast/model.onnx` | ❌ | Equal expects matching dtypes, got bool, int32 |
+| `node/test_equal_int16/model.onnx` | ❌ | Equal expects matching dtypes, got bool, int16 |
+| `node/test_equal_int8/model.onnx` | ❌ | Equal expects matching dtypes, got bool, int8 |
 | `node/test_equal_string/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | `node/test_equal_string_broadcast/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | `node/test_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
@@ -626,9 +626,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_erf/model.onnx` | ❌ | Unsupported op Erf |
 | `node/test_exp/model.onnx` | ✅ |  |
 | `node/test_exp_example/model.onnx` | ✅ |  |
-| `node/test_expand_dim_changed/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_expand_dim_unchanged/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_eyelike_populate_off_main_diagonal/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_expand_dim_changed/model.onnx` | ❌ | Expand expects matching dtypes, got float, int64 |
+| `node/test_expand_dim_unchanged/model.onnx` | ❌ | Expand expects matching dtypes, got float, int64 |
+| `node/test_eyelike_populate_off_main_diagonal/model.onnx` | ❌ | EyeLike expects matching dtypes, got float, int32 |
 | `node/test_eyelike_with_dtype/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
 | `node/test_eyelike_without_dtype/model.onnx` | ❌ | Unsupported op EyeLike |
 | `node/test_flatten_axis0/model.onnx` | ❌ | Unsupported op Flatten |
@@ -642,16 +642,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_flatten_negative_axis4/model.onnx` | ❌ | Unsupported op Flatten |
 | `node/test_floor/model.onnx` | ✅ |  |
 | `node/test_floor_example/model.onnx` | ✅ |  |
-| `node/test_gather_0/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gather_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gather_2d_indices/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gather_elements_0/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gather_elements_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gather_elements_negative_indices/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gather_negative_indices/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gathernd_example_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_gathernd_example_int32/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
-| `node/test_gathernd_example_int32_batch_dim1/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
+| `node/test_gather_0/model.onnx` | ❌ | Gather expects matching dtypes, got float, int64 |
+| `node/test_gather_1/model.onnx` | ❌ | Gather expects matching dtypes, got float, int64 |
+| `node/test_gather_2d_indices/model.onnx` | ❌ | Gather expects matching dtypes, got float, int64 |
+| `node/test_gather_elements_0/model.onnx` | ❌ | GatherElements expects matching dtypes, got float, int64 |
+| `node/test_gather_elements_1/model.onnx` | ❌ | GatherElements expects matching dtypes, got float, int64 |
+| `node/test_gather_elements_negative_indices/model.onnx` | ❌ | GatherElements expects matching dtypes, got float, int64 |
+| `node/test_gather_negative_indices/model.onnx` | ❌ | Gather expects matching dtypes, got float, int64 |
+| `node/test_gathernd_example_float32/model.onnx` | ❌ | GatherND expects matching dtypes, got float, int64 |
+| `node/test_gathernd_example_int32/model.onnx` | ❌ | GatherND expects matching dtypes, got int32, int64 |
+| `node/test_gathernd_example_int32_batch_dim1/model.onnx` | ❌ | GatherND expects matching dtypes, got int32, int64 |
 | `node/test_gelu_default_1/model.onnx` | ❌ | Unsupported op Gelu |
 | `node/test_gelu_default_1_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_gelu_default_2/model.onnx` | ❌ | Unsupported op Gelu |
@@ -675,16 +675,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_globalaveragepool_precomputed/model.onnx` | ❌ | Unsupported op GlobalAveragePool |
 | `node/test_globalmaxpool/model.onnx` | ❌ | Unsupported op GlobalMaxPool |
 | `node/test_globalmaxpool_precomputed/model.onnx` | ❌ | Unsupported op GlobalMaxPool |
-| `node/test_greater/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_greater_bcast/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_greater_equal/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_greater_equal_bcast/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_greater_equal_bcast_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_greater_equal_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_greater_equal_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int16 |
-| `node/test_greater_equal_int16_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int16 |
-| `node/test_greater_equal_int8/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int8 |
-| `node/test_greater_equal_int8_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int8 |
+| `node/test_greater/model.onnx` | ❌ | Greater expects matching dtypes, got bool, float |
+| `node/test_greater_bcast/model.onnx` | ❌ | Greater expects matching dtypes, got bool, float |
+| `node/test_greater_equal/model.onnx` | ❌ | GreaterOrEqual expects matching dtypes, got bool, float |
+| `node/test_greater_equal_bcast/model.onnx` | ❌ | GreaterOrEqual expects matching dtypes, got bool, float |
+| `node/test_greater_equal_bcast_expanded/model.onnx` | ❌ | Greater expects matching dtypes, got bool, float |
+| `node/test_greater_equal_expanded/model.onnx` | ❌ | Greater expects matching dtypes, got bool, float |
+| `node/test_greater_equal_int16/model.onnx` | ❌ | GreaterOrEqual expects matching dtypes, got bool, int16 |
+| `node/test_greater_equal_int16_expanded/model.onnx` | ❌ | Greater expects matching dtypes, got bool, int16 |
+| `node/test_greater_equal_int8/model.onnx` | ❌ | GreaterOrEqual expects matching dtypes, got bool, int8 |
+| `node/test_greater_equal_int8_expanded/model.onnx` | ❌ | Greater expects matching dtypes, got bool, int8 |
 | `node/test_greater_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
 | `node/test_greater_equal_uint16_expanded/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
 | `node/test_greater_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
@@ -693,8 +693,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_greater_equal_uint64_expanded/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | `node/test_greater_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_greater_equal_uint8_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| `node/test_greater_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int16 |
-| `node/test_greater_int8/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int8 |
+| `node/test_greater_int16/model.onnx` | ❌ | Greater expects matching dtypes, got bool, int16 |
+| `node/test_greater_int8/model.onnx` | ❌ | Greater expects matching dtypes, got bool, int8 |
 | `node/test_greater_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
 | `node/test_greater_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
 | `node/test_greater_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
@@ -722,16 +722,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_group_normalization_example/model.onnx` | ❌ | Unsupported op GroupNormalization |
 | `node/test_group_normalization_example_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'GroupNormalization_test_group_normalization_example_expanded_function_XReshaped' |
 | `node/test_gru_batchwise/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_gru_defaults/model.onnx` | ❌ | Unsupported op GRU |
-| `node/test_gru_seq_length/model.onnx` | ❌ | Unsupported op GRU |
-| `node/test_gru_with_initial_bias/model.onnx` | ❌ | Unsupported op GRU |
-| `node/test_hammingwindow/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_gru_defaults/model.onnx` | ❌ | Missing dtype for value '' in op GRU. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_gru_seq_length/model.onnx` | ❌ | Missing dtype for value '' in op GRU. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_gru_with_initial_bias/model.onnx` | ❌ | Missing dtype for value '' in op GRU. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_hammingwindow/model.onnx` | ❌ | HammingWindow expects matching dtypes, got float, int32 |
 | `node/test_hammingwindow_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HammingWindow_test_hammingwindow_expanded_function_Range' |
-| `node/test_hammingwindow_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_hammingwindow_symmetric/model.onnx` | ❌ | HammingWindow expects matching dtypes, got float, int32 |
 | `node/test_hammingwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HammingWindow_test_hammingwindow_symmetric_expanded_function_Range' |
-| `node/test_hannwindow/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_hannwindow/model.onnx` | ❌ | HannWindow expects matching dtypes, got float, int32 |
 | `node/test_hannwindow_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HannWindow_test_hannwindow_expanded_function_Range' |
-| `node/test_hannwindow_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_hannwindow_symmetric/model.onnx` | ❌ | HannWindow expects matching dtypes, got float, int32 |
 | `node/test_hannwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HannWindow_test_hannwindow_symmetric_expanded_function_Range' |
 | `node/test_hardmax_axis_0/model.onnx` | ❌ | Unsupported op Hardmax |
 | `node/test_hardmax_axis_1/model.onnx` | ❌ | Unsupported op Hardmax |
@@ -751,7 +751,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_identity/model.onnx` | ❌ | Unsupported op Identity |
 | `node/test_identity_opt/model.onnx` | ❌ | Missing elem_type for tensor 'opt_in' |
 | `node/test_identity_sequence/model.onnx` | ❌ | Missing elem_type for tensor 'x' |
-| `node/test_if/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
+| `node/test_if/model.onnx` | ❌ | If expects matching dtypes, got bool, float |
 | `node/test_if_opt/model.onnx` | ❌ | Missing elem_type for tensor 'sequence' |
 | `node/test_if_seq/model.onnx` | ❌ | Missing elem_type for tensor 'res' |
 | `node/test_image_decoder_decode_bmp_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
@@ -765,11 +765,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_image_decoder_decode_webp_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
 | `node/test_instancenorm_epsilon/model.onnx` | ❌ | Unsupported op InstanceNormalization |
 | `node/test_instancenorm_example/model.onnx` | ❌ | Unsupported op InstanceNormalization |
-| `node/test_isinf/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
+| `node/test_isinf/model.onnx` | ❌ | IsInf expects matching dtypes, got bool, float |
 | `node/test_isinf_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'x'. |
-| `node/test_isinf_negative/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_isinf_positive/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_isnan/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
+| `node/test_isinf_negative/model.onnx` | ❌ | IsInf expects matching dtypes, got bool, float |
+| `node/test_isinf_positive/model.onnx` | ❌ | IsInf expects matching dtypes, got bool, float |
+| `node/test_isnan/model.onnx` | ❌ | IsNaN expects matching dtypes, got bool, float |
 | `node/test_isnan_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'x'. |
 | `node/test_l1normalization_axis_0/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_l1normalization_axis_1/model.onnx` | ❌ | Unsupported op LpNormalization |
@@ -839,16 +839,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_leakyrelu_example/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `node/test_leakyrelu_example_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_leakyrelu_expanded/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_less/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_less_bcast/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_less_equal/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_less_equal_bcast/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_less_equal_bcast_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_less_equal_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_less_equal_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int16 |
-| `node/test_less_equal_int16_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int16 |
-| `node/test_less_equal_int8/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int8 |
-| `node/test_less_equal_int8_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int8 |
+| `node/test_less/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
+| `node/test_less_bcast/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
+| `node/test_less_equal/model.onnx` | ❌ | LessOrEqual expects matching dtypes, got bool, float |
+| `node/test_less_equal_bcast/model.onnx` | ❌ | LessOrEqual expects matching dtypes, got bool, float |
+| `node/test_less_equal_bcast_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
+| `node/test_less_equal_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, float |
+| `node/test_less_equal_int16/model.onnx` | ❌ | LessOrEqual expects matching dtypes, got bool, int16 |
+| `node/test_less_equal_int16_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, int16 |
+| `node/test_less_equal_int8/model.onnx` | ❌ | LessOrEqual expects matching dtypes, got bool, int8 |
+| `node/test_less_equal_int8_expanded/model.onnx` | ❌ | Less expects matching dtypes, got bool, int8 |
 | `node/test_less_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
 | `node/test_less_equal_uint16_expanded/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
 | `node/test_less_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
@@ -857,8 +857,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_less_equal_uint64_expanded/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | `node/test_less_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_less_equal_uint8_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| `node/test_less_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int16 |
-| `node/test_less_int8/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int8 |
+| `node/test_less_int16/model.onnx` | ❌ | Less expects matching dtypes, got bool, int16 |
+| `node/test_less_int8/model.onnx` | ❌ | Less expects matching dtypes, got bool, int8 |
 | `node/test_less_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
 | `node/test_less_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
 | `node/test_less_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
@@ -886,7 +886,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_logsoftmax_negative_axis/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `node/test_logsoftmax_negative_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_loop11/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float, int64 |
+| `node/test_loop11/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_loop13_seq/model.onnx` | ❌ | Missing elem_type for tensor 'seq_empty' |
 | `node/test_loop16_seq_none/model.onnx` | ❌ | Missing elem_type for tensor 'opt_seq' |
 | `node/test_lpnormalization_default/model.onnx` | ❌ | Unsupported op LpNormalization |
@@ -901,9 +901,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_lrn/model.onnx` | ❌ | Unsupported op LRN |
 | `node/test_lrn_default/model.onnx` | ❌ | Unsupported op LRN |
 | `node/test_lstm_batchwise/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_lstm_defaults/model.onnx` | ❌ | Unsupported op LSTM |
-| `node/test_lstm_with_initial_bias/model.onnx` | ❌ | Unsupported op LSTM |
-| `node/test_lstm_with_peepholes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_lstm_defaults/model.onnx` | ❌ | Missing dtype for value '' in op LSTM. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_lstm_with_initial_bias/model.onnx` | ❌ | Missing dtype for value '' in op LSTM. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_lstm_with_peepholes/model.onnx` | ❌ | Missing dtype for value '' in op LSTM. Hint: run ONNX shape inference or export with static shapes. |
 | `node/test_matmul_1d_1d/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_matmul_1d_3d/model.onnx` | ❌ | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) |
 | `node/test_matmul_2d/model.onnx` | ✅ |  |
@@ -943,14 +943,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_maxpool_3d_dilations/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_3d_dilations_use_ref_impl/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_maxunpool_export_with_output_shape/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_maxunpool_export_without_output_shape/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_maxunpool_export_with_output_shape/model.onnx` | ❌ | MaxUnpool expects matching dtypes, got float, int64 |
+| `node/test_maxunpool_export_without_output_shape/model.onnx` | ❌ | MaxUnpool expects matching dtypes, got float, int64 |
 | `node/test_mean_example/model.onnx` | ❌ | Mean must have 2 inputs and 1 output |
 | `node/test_mean_one_input/model.onnx` | ❌ | Mean must have 2 inputs and 1 output |
 | `node/test_mean_two_inputs/model.onnx` | ✅ |  |
-| `node/test_melweightmatrix/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_melweightmatrix/model.onnx` | ❌ | MelWeightMatrix expects matching dtypes, got float, int32 |
 | `node/test_min_example/model.onnx` | ❌ | Min must have 2 inputs and 1 output |
 | `node/test_min_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. |
 | `node/test_min_float32/model.onnx` | ✅ |  |
@@ -980,8 +980,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_mod_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
 | `node/test_mod_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | `node/test_mod_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| `node/test_momentum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_momentum_multiple/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_momentum/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_momentum_multiple/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_mul/model.onnx` | ✅ |  |
 | `node/test_mul_bcast/model.onnx` | ✅ |  |
 | `node/test_mul_example/model.onnx` | ✅ |  |
@@ -996,60 +996,60 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_mvn_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_neg/model.onnx` | ✅ |  |
 | `node/test_neg_example/model.onnx` | ✅ |  |
-| `node/test_nesterov_momentum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NC/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NC_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_weight_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_weight_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_reduction_mean/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_reduction_sum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_center_point_box_format/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_flipped_coordinates/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_identical_boxes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_limit_output_size/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_single_box/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_suppress_by_IOU/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_two_batches/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonmaxsuppression_two_classes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonzero_example/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int64 |
+| `node/test_nesterov_momentum/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_nllloss_NC/model.onnx` | ❌ | NegativeLogLikelihoodLoss expects matching dtypes, got float, int64 |
+| `node/test_nllloss_NC_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_nllloss_NCd1/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_weight/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_weight_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_weight_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1_weight_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2/model.onnx` | ❌ | NegativeLogLikelihoodLoss expects matching dtypes, got float, int64 |
+| `node/test_nllloss_NCd1d2_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_reduction_mean/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_reduction_sum/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_with_weight/model.onnx` | ❌ | NegativeLogLikelihoodLoss expects matching dtypes, got float, int64 |
+| `node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx` | ❌ | NegativeLogLikelihoodLoss expects matching dtypes, got float, int64 |
+| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx` | ❌ | NegativeLogLikelihoodLoss expects matching dtypes, got float, int64 |
+| `node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_nonmaxsuppression_center_point_box_format/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_flipped_coordinates/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_identical_boxes/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_limit_output_size/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_single_box/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_suppress_by_IOU/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_two_batches/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonmaxsuppression_two_classes/model.onnx` | ❌ | NonMaxSuppression expects matching dtypes, got float, int64 |
+| `node/test_nonzero_example/model.onnx` | ❌ | NonZero expects matching dtypes, got bool, int64 |
 | `node/test_not_2d/model.onnx` | ✅ |  |
 | `node/test_not_3d/model.onnx` | ✅ |  |
 | `node/test_not_4d/model.onnx` | ✅ |  |
-| `node/test_onehot_negative_indices/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_onehot_negative_indices/model.onnx` | ❌ | OneHot expects matching dtypes, got float, int64 |
 | `node/test_onehot_with_axis/model.onnx` | ❌ | Unsupported op OneHot |
 | `node/test_onehot_with_negative_axis/model.onnx` | ❌ | Unsupported op OneHot |
-| `node/test_onehot_without_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32, int64 |
+| `node/test_onehot_without_axis/model.onnx` | ❌ | OneHot expects matching dtypes, got float, int32, int64 |
 | `node/test_optional_get_element_optional_sequence/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
 | `node/test_optional_get_element_optional_tensor/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
 | `node/test_optional_get_element_sequence/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
@@ -1073,13 +1073,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_pow_bcast_array/model.onnx` | ✅ |  |
 | `node/test_pow_bcast_scalar/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_pow_example/model.onnx` | ✅ |  |
-| `node/test_pow_types_float32_int32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_pow_types_float32_int64/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_pow_types_float32_int32/model.onnx` | ❌ | Pow expects matching dtypes, got float, int32 |
+| `node/test_pow_types_float32_int64/model.onnx` | ❌ | Pow expects matching dtypes, got float, int64 |
 | `node/test_pow_types_float32_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'y'. |
 | `node/test_pow_types_float32_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'y'. |
-| `node/test_pow_types_int32_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_pow_types_int32_float32/model.onnx` | ❌ | Pow expects matching dtypes, got float, int32 |
 | `node/test_pow_types_int32_int32/model.onnx` | ❌ | Unsupported op Pow |
-| `node/test_pow_types_int64_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_pow_types_int64_float32/model.onnx` | ❌ | Pow expects matching dtypes, got float, int64 |
 | `node/test_pow_types_int64_int64/model.onnx` | ❌ | Unsupported op Pow |
 | `node/test_prelu_broadcast/model.onnx` | ✅ |  |
 | `node/test_prelu_broadcast_expanded/model.onnx` | ❌ | Unsupported op Constant |
@@ -1087,21 +1087,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_prelu_example_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_qlinearconv/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_qlinearmatmul_2D_int8_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
-| `node/test_qlinearmatmul_2D_int8_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int8 |
+| `node/test_qlinearmatmul_2D_int8_float32/model.onnx` | ❌ | QLinearMatMul expects matching dtypes, got float, int8 |
 | `node/test_qlinearmatmul_2D_uint8_float16/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
 | `node/test_qlinearmatmul_2D_uint8_float32/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
 | `node/test_qlinearmatmul_3D_int8_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
-| `node/test_qlinearmatmul_3D_int8_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int8 |
+| `node/test_qlinearmatmul_3D_int8_float32/model.onnx` | ❌ | QLinearMatMul expects matching dtypes, got float, int8 |
 | `node/test_qlinearmatmul_3D_uint8_float16/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
 | `node/test_qlinearmatmul_3D_uint8_float32/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
 | `node/test_quantizelinear/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_axis/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_blocked_asymmetric/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
-| `node/test_quantizelinear_blocked_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int16 |
+| `node/test_quantizelinear_blocked_symmetric/model.onnx` | ❌ | QuantizeLinear expects matching dtypes, got float, int16 |
 | `node/test_quantizelinear_e4m3fn/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_e5m2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_float4e2m1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
-| `node/test_quantizelinear_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int16 |
+| `node/test_quantizelinear_int16/model.onnx` | ❌ | QuantizeLinear expects matching dtypes, got float, int16 |
 | `node/test_quantizelinear_int2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_int4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'y_zero_point'. |
@@ -1110,53 +1110,53 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_range_float_type_positive_delta/model.onnx` | ❌ | Unsupported op Range |
 | `node/test_range_float_type_positive_delta_expanded/model.onnx` | ❌ | Unsupported op Cast |
 | `node/test_range_int32_type_negative_delta/model.onnx` | ❌ | Unsupported op Range |
-| `node/test_range_int32_type_negative_delta_expanded/model.onnx` | ❌ | Unsupported op Cast |
+| `node/test_range_int32_type_negative_delta_expanded/model.onnx` | ❌ | Cast expects matching dtypes, got float, int32 |
 | `node/test_reciprocal/model.onnx` | ❌ | Unsupported op Reciprocal |
 | `node/test_reciprocal_example/model.onnx` | ❌ | Unsupported op Reciprocal |
-| `node/test_reduce_l1_default_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_default_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_empty_set_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_keep_dims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_keep_dims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_keep_dims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_keep_dims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_negative_axes_keep_dims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_negative_axes_keep_dims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l1_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_default_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_default_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_empty_set_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_keep_dims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_keep_dims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_keep_dims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_keep_dims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_asc_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_asc_axes_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_default/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_default_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_desc_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_desc_axes_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_empty_set_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_reduce_l1_default_axes_keepdims_example/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_default_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_default_axes_keepdims_random/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_default_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_do_not_keepdims_example/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_do_not_keepdims_random/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_empty_set/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_empty_set_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_keep_dims_example/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_keep_dims_random/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_negative_axes_keep_dims_example/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_negative_axes_keep_dims_random/model.onnx` | ❌ | ReduceL1 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l1_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_default_axes_keepdims_example/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_default_axes_keepdims_random/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_do_not_keepdims_example/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_do_not_keepdims_random/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_empty_set/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_empty_set_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_keep_dims_example/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_keep_dims_random/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx` | ❌ | ReduceL2 expects matching dtypes, got float, int64 |
+| `node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_asc_axes/model.onnx` | ❌ | ReduceLogSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_asc_axes_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_default/model.onnx` | ❌ | ReduceLogSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_default_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_desc_axes/model.onnx` | ❌ | ReduceLogSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_desc_axes_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_empty_set/model.onnx` | ❌ | ReduceLogSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_empty_set_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
 | `node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
@@ -1165,7 +1165,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| `node/test_reduce_log_sum_exp_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_reduce_log_sum_exp_empty_set/model.onnx` | ❌ | ReduceLogSumExp expects matching dtypes, got float, int64 |
 | `node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double'. |
 | `node/test_reduce_log_sum_exp_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
@@ -1175,132 +1175,132 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| `node/test_reduce_log_sum_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_negative_axes_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_bool_inputs/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int64 |
+| `node/test_reduce_log_sum_negative_axes/model.onnx` | ❌ | ReduceLogSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_log_sum_negative_axes_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_max_bool_inputs/model.onnx` | ❌ | ReduceMax expects matching dtypes, got bool, int64 |
 | `node/test_reduce_max_default_axes_keepdim_example/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_reduce_max_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_negative_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_default_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_default_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_negative_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_mean_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_bool_inputs/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int64 |
+| `node/test_reduce_max_do_not_keepdims_example/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
+| `node/test_reduce_max_do_not_keepdims_random/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
+| `node/test_reduce_max_empty_set/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
+| `node/test_reduce_max_keepdims_example/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
+| `node/test_reduce_max_keepdims_random/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
+| `node/test_reduce_max_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
+| `node/test_reduce_max_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_default_axes_keepdims_example/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_default_axes_keepdims_random/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_do_not_keepdims_example/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_do_not_keepdims_random/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_keepdims_example/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_keepdims_random/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_mean_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceMean expects matching dtypes, got float, int64 |
+| `node/test_reduce_min_bool_inputs/model.onnx` | ❌ | ReduceMin expects matching dtypes, got bool, int64 |
 | `node/test_reduce_min_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMin |
 | `node/test_reduce_min_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_negative_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_reduce_min_do_not_keepdims_example/model.onnx` | ❌ | ReduceMin expects matching dtypes, got float, int64 |
+| `node/test_reduce_min_do_not_keepdims_random/model.onnx` | ❌ | ReduceMin expects matching dtypes, got float, int64 |
+| `node/test_reduce_min_empty_set/model.onnx` | ❌ | ReduceMin expects matching dtypes, got float, int64 |
+| `node/test_reduce_min_keepdims_example/model.onnx` | ❌ | ReduceMin expects matching dtypes, got float, int64 |
+| `node/test_reduce_min_keepdims_random/model.onnx` | ❌ | ReduceMin expects matching dtypes, got float, int64 |
+| `node/test_reduce_min_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceMin expects matching dtypes, got float, int64 |
+| `node/test_reduce_min_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceMin expects matching dtypes, got float, int64 |
 | `node/test_reduce_prod_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceProd |
 | `node/test_reduce_prod_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_prod_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_prod_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_prod_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_prod_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_prod_negative_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_prod_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_default_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_default_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_empty_axes_input_noop/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_empty_axes_input_noop_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_negative_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_default_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_do_not_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_empty_set_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_negative_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reflect_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
+| `node/test_reduce_prod_do_not_keepdims_example/model.onnx` | ❌ | ReduceProd expects matching dtypes, got float, int64 |
+| `node/test_reduce_prod_do_not_keepdims_random/model.onnx` | ❌ | ReduceProd expects matching dtypes, got float, int64 |
+| `node/test_reduce_prod_empty_set/model.onnx` | ❌ | ReduceProd expects matching dtypes, got float, int64 |
+| `node/test_reduce_prod_keepdims_example/model.onnx` | ❌ | ReduceProd expects matching dtypes, got float, int64 |
+| `node/test_reduce_prod_keepdims_random/model.onnx` | ❌ | ReduceProd expects matching dtypes, got float, int64 |
+| `node/test_reduce_prod_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceProd expects matching dtypes, got float, int64 |
+| `node/test_reduce_prod_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceProd expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_default_axes_keepdims_example/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_default_axes_keepdims_random/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_do_not_keepdims_example/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_do_not_keepdims_random/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_empty_axes_input_noop/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_empty_axes_input_noop_example/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_empty_set/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
+| `node/test_reduce_sum_keepdims_example/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_keepdims_random/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_default_axes_keepdims_example/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_default_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_do_not_keepdims_example/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_do_not_keepdims_random/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_empty_set/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_empty_set_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_keepdims_example/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_keepdims_random/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceSumSquare expects matching dtypes, got float, int64 |
+| `node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum expects matching dtypes, got float, int64 |
+| `node/test_reflect_pad/model.onnx` | ❌ | Pad expects matching dtypes, got int32, int64 |
 | `node/test_regex_full_match_basic/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | `node/test_regex_full_match_email_domain/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | `node/test_regex_full_match_empty/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | `node/test_relu/model.onnx` | ✅ |  |
 | `node/test_relu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_reshape_allowzero_reordered/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_extended_dims/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_negative_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_negative_extended_dims/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_one_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_reduced_dims/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_reordered_all_dims/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_reordered_last_dims/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_zero_and_negative_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reshape_zero_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_downsample_scales_cubic/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_cubic_A_n0p5_exclude_outside/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_cubic_align_corners/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_cubic_antialias/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_linear/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_linear_align_corners/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_linear_antialias/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_linear_half_pixel_symmetric/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_scales_nearest/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_downsample_sizes_cubic/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_downsample_sizes_cubic_antialias/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_downsample_sizes_linear_antialias/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_downsample_sizes_linear_pytorch_half_pixel/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_downsample_sizes_nearest/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_downsample_sizes_nearest_not_larger/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_downsample_sizes_nearest_not_smaller/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_tf_crop_and_resize/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_tf_crop_and_resize_axes_2_3/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_tf_crop_and_resize_axes_3_2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_tf_crop_and_resize_extrapolation_value/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_scales_cubic/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_cubic_A_n0p5_exclude_outside/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_cubic_align_corners/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_cubic_asymmetric/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_linear/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_linear_align_corners/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_linear_half_pixel_symmetric/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_nearest/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_nearest_axes_2_3/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_scales_nearest_axes_3_2/model.onnx` | ❌ | Unsupported op Resize |
-| `node/test_resize_upsample_sizes_cubic/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest_axes_2_3/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest_axes_3_2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest_ceil_half_pixel/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest_floor_align_corners/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest_not_larger/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest_not_smaller/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_resize_upsample_sizes_nearest_round_prefer_ceil_asymmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reversesequence_batch/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reversesequence_time/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_reshape_allowzero_reordered/model.onnx` | ❌ | Dynamic or zero dims are not supported |
+| `node/test_reshape_extended_dims/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_negative_dim/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_negative_extended_dims/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_one_dim/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_reduced_dims/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_reordered_all_dims/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_reordered_last_dims/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_zero_and_negative_dim/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_reshape_zero_dim/model.onnx` | ❌ | Reshape expects matching dtypes, got float, int64 |
+| `node/test_resize_downsample_scales_cubic/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_cubic_A_n0p5_exclude_outside/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_cubic_align_corners/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_cubic_antialias/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_linear/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_linear_align_corners/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_linear_antialias/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_linear_half_pixel_symmetric/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_scales_nearest/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_sizes_cubic/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_sizes_cubic_antialias/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_sizes_linear_antialias/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_sizes_linear_pytorch_half_pixel/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_sizes_nearest/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_sizes_nearest_not_larger/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_downsample_sizes_nearest_not_smaller/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_tf_crop_and_resize/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_tf_crop_and_resize_axes_2_3/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_tf_crop_and_resize_axes_3_2/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_tf_crop_and_resize_extrapolation_value/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_cubic/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_cubic_A_n0p5_exclude_outside/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_cubic_align_corners/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_cubic_asymmetric/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_linear/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_linear_align_corners/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_linear_half_pixel_symmetric/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_nearest/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_nearest_axes_2_3/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_scales_nearest_axes_3_2/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_cubic/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest_axes_2_3/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest_axes_3_2/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest_ceil_half_pixel/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest_floor_align_corners/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest_not_larger/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest_not_smaller/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_resize_upsample_sizes_nearest_round_prefer_ceil_asymmetric/model.onnx` | ❌ | Missing dtype for value '' in op Resize. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_reversesequence_batch/model.onnx` | ❌ | ReverseSequence expects matching dtypes, got float, int64 |
+| `node/test_reversesequence_time/model.onnx` | ❌ | ReverseSequence expects matching dtypes, got float, int64 |
 | `node/test_rms_normalization_2d_axis0/model.onnx` | ❌ | Unsupported op RMSNormalization |
 | `node/test_rms_normalization_2d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis0_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_2d_axis1/model.onnx` | ❌ | Unsupported op RMSNormalization |
@@ -1339,15 +1339,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_4_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_default_axis/model.onnx` | ❌ | Unsupported op RMSNormalization |
 | `node/test_rms_normalization_default_axis_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_default_axis_expanded_function_ReduceAxes' |
-| `node/test_rnn_seq_length/model.onnx` | ❌ | Unsupported op RNN |
-| `node/test_roialign_aligned_false/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_roialign_aligned_true/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_roialign_mode_max/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_rotary_embedding/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_rotary_embedding_3d_input/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_rnn_seq_length/model.onnx` | ❌ | Missing dtype for value '' in op RNN. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_roialign_aligned_false/model.onnx` | ❌ | RoiAlign expects matching dtypes, got float, int64 |
+| `node/test_roialign_aligned_true/model.onnx` | ❌ | RoiAlign expects matching dtypes, got float, int64 |
+| `node/test_roialign_mode_max/model.onnx` | ❌ | RoiAlign expects matching dtypes, got float, int64 |
+| `node/test_rotary_embedding/model.onnx` | ❌ | RotaryEmbedding expects matching dtypes, got float, int64 |
+| `node/test_rotary_embedding_3d_input/model.onnx` | ❌ | RotaryEmbedding expects matching dtypes, got float, int64 |
 | `node/test_rotary_embedding_3d_input_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_XIn' |
 | `node/test_rotary_embedding_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_expanded_function_CosCacheSliced' |
-| `node/test_rotary_embedding_interleaved/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_rotary_embedding_interleaved/model.onnx` | ❌ | RotaryEmbedding expects matching dtypes, got float, int64 |
 | `node/test_rotary_embedding_interleaved_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_interleaved_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_no_position_ids/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
 | `node/test_rotary_embedding_no_position_ids_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_expanded_function_CosCacheSliced' |
@@ -1355,94 +1355,94 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_interleaved_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
 | `node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_rotary_dim_expanded_function_CosCacheSliced' |
-| `node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx` | ❌ | RotaryEmbedding expects matching dtypes, got float, int64 |
 | `node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced' |
-| `node/test_rotary_embedding_with_rotary_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_rotary_embedding_with_rotary_dim/model.onnx` | ❌ | RotaryEmbedding expects matching dtypes, got float, int64 |
 | `node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced' |
 | `node/test_round/model.onnx` | ❌ | Unsupported op Round |
 | `node/test_scan9_sum/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_scan_sum/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_scatter_elements_with_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatter_elements_with_duplicate_indices/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatter_elements_with_negative_indices/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatter_elements_with_reduction_max/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatter_elements_with_reduction_min/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatter_elements_without_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatter_with_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatter_without_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatternd/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatternd_add/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatternd_max/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatternd_min/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_scatternd_multiply/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1_mean_weight_negative_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_3d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_3d_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_3d_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_3d_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_3d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_4d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_3d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_3d_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_3d_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_4d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_4d_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_4d_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_mean_weight_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none_weights/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none_weights_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none_weights_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_none_weights_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_sum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_sum_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_sum_log_prob/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_sce_sum_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_scatter_elements_with_axis/model.onnx` | ❌ | ScatterElements expects matching dtypes, got float, int64 |
+| `node/test_scatter_elements_with_duplicate_indices/model.onnx` | ❌ | ScatterElements expects matching dtypes, got float, int64 |
+| `node/test_scatter_elements_with_negative_indices/model.onnx` | ❌ | ScatterElements expects matching dtypes, got float, int64 |
+| `node/test_scatter_elements_with_reduction_max/model.onnx` | ❌ | ScatterElements expects matching dtypes, got float, int64 |
+| `node/test_scatter_elements_with_reduction_min/model.onnx` | ❌ | ScatterElements expects matching dtypes, got float, int64 |
+| `node/test_scatter_elements_without_axis/model.onnx` | ❌ | ScatterElements expects matching dtypes, got float, int64 |
+| `node/test_scatter_with_axis/model.onnx` | ❌ | Scatter expects matching dtypes, got float, int64 |
+| `node/test_scatter_without_axis/model.onnx` | ❌ | Scatter expects matching dtypes, got float, int64 |
+| `node/test_scatternd/model.onnx` | ❌ | ScatterND expects matching dtypes, got float, int64 |
+| `node/test_scatternd_add/model.onnx` | ❌ | ScatterND expects matching dtypes, got float, int64 |
+| `node/test_scatternd_max/model.onnx` | ❌ | ScatterND expects matching dtypes, got float, int64 |
+| `node/test_scatternd_min/model.onnx` | ❌ | ScatterND expects matching dtypes, got float, int64 |
+| `node/test_scatternd_multiply/model.onnx` | ❌ | ScatterND expects matching dtypes, got float, int64 |
+| `node/test_sce_NCd1_mean_weight_negative_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx` | ❌ | SoftmaxCrossEntropyLoss expects matching dtypes, got float, int64 |
+| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx` | ❌ | SoftmaxCrossEntropyLoss expects matching dtypes, got float, int64 |
+| `node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_3d/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_3d_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_3d_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_3d_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_no_weight_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_no_weight_ii_3d/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_no_weight_ii_4d/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_no_weight_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_no_weight_ii_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_ii/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_ii_3d/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_ii_3d_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_ii_3d_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight_ii_4d/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_ii_4d_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_ii_4d_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight_ii_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_mean_weight_ii_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_mean_weight_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_none/model.onnx` | ❌ | SoftmaxCrossEntropyLoss expects matching dtypes, got float, int64 |
+| `node/test_sce_none_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_sce_none_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_none_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_none_weights/model.onnx` | ❌ | SoftmaxCrossEntropyLoss expects matching dtypes, got float, int64 |
+| `node/test_sce_none_weights_expanded/model.onnx` | ❌ | Unsupported op Constant |
+| `node/test_sce_none_weights_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_none_weights_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_sum/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_sum_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_sce_sum_log_prob/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_sce_sum_log_prob_expanded/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_selu/model.onnx` | ❌ | Unsupported op Selu |
 | `node/test_selu_default/model.onnx` | ❌ | Unsupported op Selu |
 | `node/test_selu_default_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
@@ -1463,17 +1463,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_sequence_map_identity_1_sequence_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'x' |
 | `node/test_sequence_map_identity_2_sequences/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
 | `node/test_sequence_map_identity_2_sequences_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
-| `node/test_shape/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_clip_end/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_clip_start/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_end_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_end_negative_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_start_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_start_1_end_2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_start_1_end_negative_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_start_greater_than_end/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_shape_start_negative_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_shape/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_clip_end/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_clip_start/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_end_1/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_end_negative_1/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_example/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_start_1/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_start_1_end_2/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_start_1_end_negative_1/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
+| `node/test_shape_start_greater_than_end/model.onnx` | ❌ | Dynamic or zero dims are not supported |
+| `node/test_shape_start_negative_1/model.onnx` | ❌ | Shape expects matching dtypes, got float, int64 |
 | `node/test_shrink_hard/model.onnx` | ❌ | Unsupported op Shrink |
 | `node/test_shrink_hard_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_shrink_soft/model.onnx` | ❌ | Unsupported op Shrink |
@@ -1482,22 +1482,22 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_sigmoid_example/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `node/test_sign/model.onnx` | ❌ | Unsupported op Sign |
 | `node/test_simple_rnn_batchwise/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_simple_rnn_defaults/model.onnx` | ❌ | Unsupported op RNN |
-| `node/test_simple_rnn_with_initial_bias/model.onnx` | ❌ | Unsupported op RNN |
+| `node/test_simple_rnn_defaults/model.onnx` | ❌ | Missing dtype for value '' in op RNN. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_simple_rnn_with_initial_bias/model.onnx` | ❌ | Missing dtype for value '' in op RNN. Hint: run ONNX shape inference or export with static shapes. |
 | `node/test_sin/model.onnx` | ✅ |  |
 | `node/test_sin_example/model.onnx` | ✅ |  |
 | `node/test_sinh/model.onnx` | ❌ | Unsupported op Sinh |
 | `node/test_sinh_example/model.onnx` | ❌ | Unsupported op Sinh |
-| `node/test_size/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_size_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice_default_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice_default_steps/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice_end_out_of_bounds/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice_neg/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice_neg_steps/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_slice_start_out_of_bounds/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_size/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_size_example/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_slice/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
+| `node/test_slice_default_axes/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
+| `node/test_slice_default_steps/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
+| `node/test_slice_end_out_of_bounds/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
+| `node/test_slice_neg/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
+| `node/test_slice_neg_steps/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
+| `node/test_slice_negative_axes/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
+| `node/test_slice_start_out_of_bounds/model.onnx` | ❌ | Dynamic or zero dims are not supported |
 | `node/test_softmax_axis_0/model.onnx` | ❌ | Unsupported op Softmax |
 | `node/test_softmax_axis_0_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_softmax_axis_0_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
@@ -1540,20 +1540,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_split_to_sequence_1/model.onnx` | ❌ | Missing elem_type for tensor 'seq' |
 | `node/test_split_to_sequence_2/model.onnx` | ❌ | Missing elem_type for tensor 'seq' |
 | `node/test_split_to_sequence_nokeepdims/model.onnx` | ❌ | Missing elem_type for tensor 'seq' |
-| `node/test_split_variable_parts_1d_opset13/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_split_variable_parts_1d_opset18/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_split_variable_parts_2d_opset13/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_split_variable_parts_2d_opset18/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_split_variable_parts_default_axis_opset13/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_split_variable_parts_default_axis_opset18/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_split_zero_size_splits_opset13/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_split_zero_size_splits_opset18/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_split_variable_parts_1d_opset13/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_split_variable_parts_1d_opset18/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_split_variable_parts_2d_opset13/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_split_variable_parts_2d_opset18/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_split_variable_parts_default_axis_opset13/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_split_variable_parts_default_axis_opset18/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_split_zero_size_splits_opset13/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_split_zero_size_splits_opset18/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_sqrt/model.onnx` | ✅ |  |
 | `node/test_sqrt_example/model.onnx` | ✅ |  |
-| `node/test_squeeze/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_squeeze_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_stft/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_stft_with_window/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_squeeze/model.onnx` | ❌ | Squeeze expects matching dtypes, got float, int64 |
+| `node/test_squeeze_negative_axes/model.onnx` | ❌ | Squeeze expects matching dtypes, got float, int64 |
+| `node/test_stft/model.onnx` | ❌ | Missing dtype for value '' in op STFT. Hint: run ONNX shape inference or export with static shapes. |
+| `node/test_stft_with_window/model.onnx` | ❌ | STFT expects matching dtypes, got float, int64 |
 | `node/test_string_concat/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | `node/test_string_concat_broadcasting/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | `node/test_string_concat_empty_string/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
@@ -1589,37 +1589,37 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_tan_example/model.onnx` | ✅ |  |
 | `node/test_tanh/model.onnx` | ✅ |  |
 | `node/test_tanh_example/model.onnx` | ✅ |  |
-| `node/test_tensorscatter/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_tensorscatter_3d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_tensorscatter_circular/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_tfidfvectorizer_tf_batch_onlybigrams_skip0/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_tfidfvectorizer_tf_batch_onlybigrams_skip5/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_tfidfvectorizer_tf_batch_uniandbigrams_skip5/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_tfidfvectorizer_tf_only_bigrams_skip0/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_tfidfvectorizer_tf_onlybigrams_levelempty/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_tfidfvectorizer_tf_onlybigrams_skip5/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_tfidfvectorizer_tf_uniandbigrams_skip5/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
+| `node/test_tensorscatter/model.onnx` | ❌ | TensorScatter expects matching dtypes, got float, int64 |
+| `node/test_tensorscatter_3d/model.onnx` | ❌ | TensorScatter expects matching dtypes, got float, int64 |
+| `node/test_tensorscatter_circular/model.onnx` | ❌ | TensorScatter expects matching dtypes, got float, int64 |
+| `node/test_tfidfvectorizer_tf_batch_onlybigrams_skip0/model.onnx` | ❌ | TfIdfVectorizer expects matching dtypes, got float, int32 |
+| `node/test_tfidfvectorizer_tf_batch_onlybigrams_skip5/model.onnx` | ❌ | TfIdfVectorizer expects matching dtypes, got float, int32 |
+| `node/test_tfidfvectorizer_tf_batch_uniandbigrams_skip5/model.onnx` | ❌ | TfIdfVectorizer expects matching dtypes, got float, int32 |
+| `node/test_tfidfvectorizer_tf_only_bigrams_skip0/model.onnx` | ❌ | TfIdfVectorizer expects matching dtypes, got float, int32 |
+| `node/test_tfidfvectorizer_tf_onlybigrams_levelempty/model.onnx` | ❌ | TfIdfVectorizer expects matching dtypes, got float, int32 |
+| `node/test_tfidfvectorizer_tf_onlybigrams_skip5/model.onnx` | ❌ | TfIdfVectorizer expects matching dtypes, got float, int32 |
+| `node/test_tfidfvectorizer_tf_uniandbigrams_skip5/model.onnx` | ❌ | TfIdfVectorizer expects matching dtypes, got float, int32 |
 | `node/test_thresholdedrelu/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
 | `node/test_thresholdedrelu_default/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
 | `node/test_thresholdedrelu_default_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_thresholdedrelu_example/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
 | `node/test_thresholdedrelu_example_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_thresholdedrelu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_tile/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_tile_precomputed/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_top_k/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_top_k_negative_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_tile/model.onnx` | ❌ | Tile expects matching dtypes, got float, int64 |
+| `node/test_tile_precomputed/model.onnx` | ❌ | Tile expects matching dtypes, got float, int64 |
+| `node/test_top_k/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_top_k_negative_axis/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_top_k_same_values/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_top_k_same_values_2d/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_top_k_same_values_largest/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_top_k_smallest/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_top_k_smallest/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_top_k_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| `node/test_training_dropout/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_training_dropout_default/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_training_dropout_default_mask/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_training_dropout_mask/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_training_dropout_zero_ratio/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_training_dropout_zero_ratio_mask/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
+| `node/test_training_dropout/model.onnx` | ❌ | Dropout expects matching dtypes, got bool, float |
+| `node/test_training_dropout_default/model.onnx` | ❌ | Dropout expects matching dtypes, got bool, float |
+| `node/test_training_dropout_default_mask/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_training_dropout_mask/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_training_dropout_zero_ratio/model.onnx` | ❌ | Dropout expects matching dtypes, got bool, float |
+| `node/test_training_dropout_zero_ratio_mask/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_transpose_all_permutations_0/model.onnx` | ❌ | Unsupported op Transpose |
 | `node/test_transpose_all_permutations_1/model.onnx` | ❌ | Unsupported op Transpose |
 | `node/test_transpose_all_permutations_2/model.onnx` | ❌ | Unsupported op Transpose |
@@ -1646,22 +1646,22 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_triu_square_neg/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_triu_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
 | `node/test_unique_length_1/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_unique_not_sorted_without_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unique_sorted_with_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unique_sorted_with_axis_3d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unique_sorted_with_negative_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unique_sorted_without_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unsqueeze_axis_0/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unsqueeze_axis_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unsqueeze_axis_2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unsqueeze_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unsqueeze_three_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unsqueeze_two_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_unsqueeze_unsorted_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `node/test_unique_not_sorted_without_axis/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_unique_sorted_with_axis/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_unique_sorted_with_axis_3d/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_unique_sorted_with_negative_axis/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_unique_sorted_without_axis/model.onnx` | ❌ | Only single-output graphs are supported |
+| `node/test_unsqueeze_axis_0/model.onnx` | ❌ | Unsqueeze expects matching dtypes, got float, int64 |
+| `node/test_unsqueeze_axis_1/model.onnx` | ❌ | Unsqueeze expects matching dtypes, got float, int64 |
+| `node/test_unsqueeze_axis_2/model.onnx` | ❌ | Unsqueeze expects matching dtypes, got float, int64 |
+| `node/test_unsqueeze_negative_axes/model.onnx` | ❌ | Unsqueeze expects matching dtypes, got float, int64 |
+| `node/test_unsqueeze_three_axes/model.onnx` | ❌ | Unsqueeze expects matching dtypes, got float, int64 |
+| `node/test_unsqueeze_two_axes/model.onnx` | ❌ | Unsqueeze expects matching dtypes, got float, int64 |
+| `node/test_unsqueeze_unsorted_axes/model.onnx` | ❌ | Unsqueeze expects matching dtypes, got float, int64 |
 | `node/test_upsample_nearest/model.onnx` | ❌ | Unsupported op Upsample |
-| `node/test_where_example/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, float |
-| `node/test_where_long_example/model.onnx` | ❌ | Mixed dtypes are not supported, got bool, int64 |
-| `node/test_wrap_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
+| `node/test_where_example/model.onnx` | ❌ | Where expects matching dtypes, got bool, float |
+| `node/test_where_long_example/model.onnx` | ❌ | Where expects matching dtypes, got bool, int64 |
+| `node/test_wrap_pad/model.onnx` | ❌ | Pad expects matching dtypes, got int32, int64 |
 | `node/test_xor2d/model.onnx` | ✅ |  |
 | `node/test_xor3d/model.onnx` | ✅ |  |
 | `node/test_xor4d/model.onnx` | ✅ |  |
@@ -1712,8 +1712,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_ConvTranspose2d/model.onnx` | ❌ | Unsupported op ConvTranspose |
 | `pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx` | ❌ | Unsupported op ConvTranspose |
 | `pytorch-converted/test_ELU/model.onnx` | ❌ | Unsupported op Elu |
-| `pytorch-converted/test_Embedding/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `pytorch-converted/test_Embedding_sparse/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `pytorch-converted/test_Embedding/model.onnx` | ❌ | Gather expects matching dtypes, got float, int64 |
+| `pytorch-converted/test_Embedding_sparse/model.onnx` | ❌ | Gather expects matching dtypes, got float, int64 |
 | `pytorch-converted/test_GLU/model.onnx` | ❌ | Unsupported op Split |
 | `pytorch-converted/test_GLU_dim/model.onnx` | ❌ | Unsupported op Split |
 | `pytorch-converted/test_LeakyReLU/model.onnx` | ❌ | Unsupported op LeakyRelu |
@@ -1787,10 +1787,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_symbolic_override/model.onnx` | ❌ | Unsupported op InstanceNormalization |
 | `pytorch-operator/test_operator_symbolic_override_nested/model.onnx` | ❌ | Only single-output graphs are supported |
 | `pytorch-operator/test_operator_view/model.onnx` | ❌ | Unsupported op Flatten |
-| `simple/test_expand_shape_model1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `simple/test_expand_shape_model2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `simple/test_expand_shape_model3/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `simple/test_expand_shape_model4/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
+| `simple/test_expand_shape_model1/model.onnx` | ❌ | Expand expects matching dtypes, got float, int64 |
+| `simple/test_expand_shape_model2/model.onnx` | ❌ | Expand expects matching dtypes, got float, int64 |
+| `simple/test_expand_shape_model3/model.onnx` | ❌ | Expand expects matching dtypes, got float, int64 |
+| `simple/test_expand_shape_model4/model.onnx` | ❌ | Expand expects matching dtypes, got float, int64 |
 | `simple/test_gradient_of_add/model.onnx` | ❌ | Only single-output graphs are supported |
 | `simple/test_gradient_of_add_and_mul/model.onnx` | ❌ | Only single-output graphs are supported |
 | `simple/test_sequence_model1/model.onnx` | ❌ | Dynamic dim for tensor 'out' |

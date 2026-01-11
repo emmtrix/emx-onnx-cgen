@@ -45,30 +45,36 @@ class Compiler:
         )
 
     def _lower_model(self, graph: Graph) -> LoweredModel:
-        dtype = _model_dtype(graph)
         if len(graph.outputs) != 1:
             raise UnsupportedOpError("Only single-output graphs are supported")
         if not graph.nodes:
             raise UnsupportedOpError("Graph must contain at least one node")
         output_value = graph.outputs[0]
+        output_dtype = _value_dtype(graph, output_value.name)
         element_count = _element_count(output_value.type.shape)
         if element_count <= 0:
             raise ShapeInferenceError("Output shape must be fully defined")
-        constants = _lowered_constants(graph, dtype)
+        constants = _lowered_constants(graph)
         input_names = tuple(value.name for value in graph.inputs)
         input_shapes = tuple(value.type.shape for value in graph.inputs)
+        input_dtypes = tuple(
+            _value_dtype(graph, value.name) for value in graph.inputs
+        )
         ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp] = []
         for node in graph.nodes:
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
                     _validate_gemm(node)
-                ops.append(self._lower_matmul_op(graph, node, dtype))
+                ops.append(self._lower_matmul_op(graph, node))
                 continue
             if node.op_type == "Attention":
-                ops.append(self._lower_attention_op(graph, node, dtype))
+                ops.append(self._lower_attention_op(graph, node))
                 continue
-            op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
-            unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
+            op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+            op_spec = _binary_op_symbol(
+                node.op_type, node.attrs, dtype=op_dtype
+            )
+            unary_symbol = _unary_op_symbol(node.op_type, dtype=op_dtype)
             if op_spec is None and unary_symbol is None:
                 raise UnsupportedOpError(f"Unsupported op {node.op_type}")
             if op_spec is not None:
@@ -85,6 +91,7 @@ class Compiler:
                         operator=op_spec.operator,
                         operator_kind=op_spec.kind,
                         shape=output_shape,
+                        dtype=op_dtype,
                     )
                 )
                 continue
@@ -99,14 +106,16 @@ class Compiler:
                     output=node.outputs[0],
                     operator=unary_symbol,
                     shape=output_shape,
+                    dtype=op_dtype,
                 )
             )
         return LoweredModel(
             name=self._options.model_name,
-            dtype=dtype,
             input_names=input_names,
             input_shapes=input_shapes,
+            input_dtypes=input_dtypes,
             output_name=output_value.name,
+            output_dtype=output_dtype,
             element_count=element_count,
             output_shape=output_value.type.shape,
             constants=constants,
@@ -117,7 +126,6 @@ class Compiler:
         self, model: onnx.ModelProto, feeds: Mapping[str, np.ndarray]
     ) -> dict[str, np.ndarray]:
         graph = import_onnx(model)
-        dtype = _model_dtype(graph)
         constants = {
             initializer.name: initializer.data for initializer in graph.initializers
         }
@@ -132,14 +140,16 @@ class Compiler:
                 values[node.outputs[0]] = _apply_matmul(left, right)
                 continue
             if node.op_type == "Attention":
-                spec = _resolve_attention_spec(graph, node, dtype)
+                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                spec = _resolve_attention_spec(graph, node, op_dtype)
                 query = values[node.inputs[0]]
                 key = values[node.inputs[1]]
                 value = values[node.inputs[2]]
                 values[node.outputs[0]] = _apply_attention(spec, query, key, value)
                 continue
-            op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
-            unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
+            op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+            op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
+            unary_symbol = _unary_op_symbol(node.op_type, dtype=op_dtype)
             if op_spec is None and unary_symbol is None:
                 raise UnsupportedOpError(f"Unsupported op {node.op_type}")
             if op_spec is not None:
@@ -151,11 +161,10 @@ class Compiler:
             values[node.outputs[0]] = _apply_unary_op(unary_symbol, value)
         return {output.name: values[output.name] for output in graph.outputs}
 
-    def _lower_matmul_op(
-        self, graph: Graph, node: Node, dtype: str
-    ) -> MatMulOp:
+    def _lower_matmul_op(self, graph: Graph, node: Node) -> MatMulOp:
         if len(node.inputs) != 2 or len(node.outputs) != 1:
             raise UnsupportedOpError("MatMul must have 2 inputs and 1 output")
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
         input0_shape = _value_shape(graph, node.inputs[0], node)
         input1_shape = _value_shape(graph, node.inputs[1], node)
         if len(input0_shape) != 2 or len(input1_shape) != 2:
@@ -180,12 +189,12 @@ class Compiler:
             m=m,
             n=n,
             k=k_left,
+            dtype=op_dtype,
         )
 
-    def _lower_attention_op(
-        self, graph: Graph, node: Node, dtype: str
-    ) -> AttentionOp:
-        spec = _resolve_attention_spec(graph, node, dtype)
+    def _lower_attention_op(self, graph: Graph, node: Node) -> AttentionOp:
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        spec = _resolve_attention_spec(graph, node, op_dtype)
         return AttentionOp(
             input_q=node.inputs[0],
             input_k=node.inputs[1],
@@ -199,6 +208,7 @@ class Compiler:
             v_head_size=spec.v_head_size,
             scale=spec.scale,
             is_causal=spec.is_causal,
+            dtype=op_dtype,
         )
 
 
@@ -209,31 +219,50 @@ class _BinaryOpSpec:
     apply: Callable[[np.ndarray, np.ndarray], np.ndarray]
 
 
-def _lowered_constants(graph: Graph, dtype: str) -> tuple[ConstTensor, ...]:
-    info = dtype_info(dtype)
-    return tuple(
-        ConstTensor(
-            name=initializer.name,
-            shape=initializer.type.shape,
-            data=tuple(
-                info.np_dtype.type(value) for value in initializer.data.ravel()
-            ),
+def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
+    constants: list[ConstTensor] = []
+    for initializer in graph.initializers:
+        dtype = _ensure_supported_dtype(initializer.type.dtype)
+        info = dtype_info(dtype)
+        constants.append(
+            ConstTensor(
+                name=initializer.name,
+                shape=initializer.type.shape,
+                data=tuple(
+                    info.np_dtype.type(value)
+                    for value in initializer.data.ravel()
+                ),
+                dtype=dtype,
+            )
         )
-        for initializer in graph.initializers
-    )
+    return tuple(constants)
 
 
-def _model_dtype(graph: Graph) -> str:
-    dtypes = {value.type.dtype for value in graph.inputs + graph.outputs}
-    dtypes.update(initializer.type.dtype for initializer in graph.initializers)
-    if len(dtypes) != 1:
-        raise UnsupportedOpError(
-            f"Mixed dtypes are not supported, got {', '.join(sorted(dtypes))}"
-        )
-    dtype = next(iter(dtypes))
+def _ensure_supported_dtype(dtype: str) -> str:
     if dtype not in {"float", "bool", "int64", "int32", "int16", "int8"}:
         raise UnsupportedOpError(f"Unsupported dtype {dtype}")
     return dtype
+
+
+def _value_dtype(graph: Graph, name: str, node: Node | None = None) -> str:
+    try:
+        value = graph.find_value(name)
+    except KeyError as exc:
+        op_type = node.op_type if node is not None else "unknown"
+        raise ShapeInferenceError(
+            f"Missing dtype for value '{name}' in op {op_type}. "
+            "Hint: run ONNX shape inference or export with static shapes."
+        ) from exc
+    return _ensure_supported_dtype(value.type.dtype)
+
+
+def _node_dtype(graph: Graph, node: Node, *names: str) -> str:
+    dtypes = {_value_dtype(graph, name, node) for name in names}
+    if len(dtypes) != 1:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching dtypes, got {', '.join(sorted(dtypes))}"
+        )
+    return next(iter(dtypes))
 
 
 def _element_count(shape: tuple[int, ...]) -> int:

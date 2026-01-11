@@ -9,30 +9,24 @@ static uint64_t rng_next_u64(void) {
     return x * 0x2545f4914f6cdd1dull;
 }
 
-{% if dtype == "float" %}
 static float rng_next_float(void) {
     return (float)((double)rng_next_u64() * (1.0 / 18446744073709551616.0));
 }
-{% else %}
+
 static int64_t rng_next_i64(void) {
     return (int64_t)rng_next_u64();
 }
-{% endif %}
 
 int main(void) {
 {% for input in inputs %}
-    {{ c_type }} {{ input.name }}{{ input.array_suffix }};
-    {{ c_type }} *{{ input.name }}_ptr = ({{ c_type }} *){{ input.name }};
+    {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
+    {{ input.c_type }} *{{ input.name }}_ptr = ({{ input.c_type }} *){{ input.name }};
     for (size_t i = 0; i < {{ input.count }}; ++i) {
-{% if dtype == "float" %}
-        {{ input.name }}_ptr[i] = rng_next_float();
-{% else %}
-        {{ input.name }}_ptr[i] = rng_next_i64();
-{% endif %}
+        {{ input.name }}_ptr[i] = {{ input.random_expr }};
     }
 {% endfor %}
-    {{ c_type }} {{ output.name }}{{ output.array_suffix }};
-    {{ c_type }} *{{ output.name }}_ptr = ({{ c_type }} *){{ output.name }};
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
+    {{ output.c_type }} *{{ output.name }}_ptr = ({{ output.c_type }} *){{ output.name }};
     {{ model_name }}({% for input in inputs %}{{ input.name }}, {% endfor %}{{ output.name }});
     printf("{\"inputs\":{");
 {% for input in inputs %}
@@ -50,7 +44,7 @@ int main(void) {
 {{ input.loop_indents[depth] }}    printf("[");
 {% endif %}
 {% endfor %}
-{{ input.inner_indent }}printf("{{ print_format }}", {{ print_cast }}{{ input.name }}_ptr[{{ input.index_expr }}]);
+{{ input.inner_indent }}printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}_ptr[{{ input.index_expr }}]);
 {% for depth in range(input.rank - 1, -1, -1) %}
 {% if depth < input.rank - 1 %}
 {{ input.loop_indents[depth] }}    printf("]");
@@ -70,7 +64,7 @@ int main(void) {
 {{ output.loop_indents[depth] }}    printf("[");
 {% endif %}
 {% endfor %}
-{{ output.inner_indent }}printf("{{ print_format }}", {{ print_cast }}{{ output.name }}_ptr[{{ output.index_expr }}]);
+{{ output.inner_indent }}printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}_ptr[{{ output.index_expr }}]);
 {% for depth in range(output.rank - 1, -1, -1) %}
 {% if depth < output.rank - 1 %}
 {{ output.loop_indents[depth] }}    printf("]");
