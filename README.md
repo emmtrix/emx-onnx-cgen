@@ -14,6 +14,10 @@ Verify an ONNX model end-to-end against ONNX Runtime:
 python -m onnx2c verify path/to/model.onnx
 ```
 
+## Official ONNX test coverage
+
+See [`OFFICIAL_ONNX_FILE_SUPPORT.md`](OFFICIAL_ONNX_FILE_SUPPORT.md) for the generated support matrix derived from `tests/official_onnx_expected_errors.json`.
+
 ### CLI Parameters
 
 The CLI currently exposes a single `compile` command with the following parameters:
