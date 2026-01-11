@@ -122,6 +122,9 @@ class Compiler:
             if node.op_type == "Softmax":
                 ops.append(self._lower_softmax_op(graph, node))
                 continue
+            if node.op_type == "Dropout":
+                ops.append(self._lower_dropout_op(graph, node))
+                continue
             if node.op_type not in _BINARY_OP_TYPES | _UNARY_OP_TYPES:
                 raise UnsupportedOpError(f"Unsupported op {node.op_type}")
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -324,6 +327,17 @@ class Compiler:
                 )
                 value = values[node.inputs[0]]
                 values[node.outputs[0]] = _apply_softmax(value, axis)
+                continue
+            if node.op_type == "Dropout":
+                if len(node.outputs) not in {1, 2} or len(node.inputs) != 1:
+                    raise UnsupportedOpError(
+                        "Dropout supports only the data input and 1 or 2 outputs"
+                    )
+                if len(node.outputs) == 2 and _is_value_used(graph, node.outputs[1]):
+                    raise UnsupportedOpError(
+                        "Dropout mask output is not supported"
+                    )
+                values[node.outputs[0]] = values[node.inputs[0]].copy()
                 continue
             if node.op_type == "Concat":
                 axis = int(node.attrs.get("axis", 0))
@@ -539,6 +553,35 @@ class Compiler:
             axis=axis,
             shape=input_shape,
             dtype=op_dtype,
+        )
+
+    def _lower_dropout_op(self, graph: Graph, node: Node) -> ReshapeOp:
+        if len(node.outputs) not in {1, 2} or len(node.inputs) != 1:
+            raise UnsupportedOpError(
+                "Dropout supports only the data input and 1 or 2 outputs"
+            )
+        if len(node.outputs) == 2 and _is_value_used(graph, node.outputs[1]):
+            raise UnsupportedOpError("Dropout mask output is not supported")
+        input_shape = _value_shape(graph, node.inputs[0], node)
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        if input_shape != output_shape:
+            raise ShapeInferenceError(
+                "Dropout output shape must match input shape, "
+                f"got {output_shape} for input {input_shape}"
+            )
+        input_dtype = _value_dtype(graph, node.inputs[0], node)
+        output_dtype = _value_dtype(graph, node.outputs[0], node)
+        if input_dtype != output_dtype:
+            raise UnsupportedOpError(
+                "Dropout expects matching input/output dtypes, "
+                f"got {input_dtype} and {output_dtype}"
+            )
+        return ReshapeOp(
+            input0=node.inputs[0],
+            output=node.outputs[0],
+            input_shape=input_shape,
+            output_shape=output_shape,
+            dtype=input_dtype,
         )
 
     def _lower_attention_op(self, graph: Graph, node: Node) -> AttentionOp:
@@ -1065,6 +1108,12 @@ def _unique_value_name(graph: Graph, base: str) -> str:
         candidate = f"{base}_{index}"
         index += 1
     return candidate
+
+
+def _is_value_used(graph: Graph, name: str) -> bool:
+    if any(value.name == name for value in graph.outputs):
+        return True
+    return any(name in node.inputs for node in graph.nodes)
 
 
 def _unary_op_symbol(op_type: str, *, dtype: str) -> str | None:

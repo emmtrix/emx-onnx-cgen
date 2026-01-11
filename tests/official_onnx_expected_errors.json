@@ -25,11 +25,11 @@
   ],
   [
     "light/light_squeezenet.onnx",
-    "Unsupported op Dropout"
+    "Unsupported op GlobalAveragePool"
   ],
   [
     "light/light_vgg19.onnx",
-    "Unsupported op Dropout"
+    ""
   ],
   [
     "light/light_zfnet512.onnx",
@@ -2321,7 +2321,7 @@
   ],
   [
     "node/test_dropout_default/model.onnx",
-    "Unsupported op Dropout"
+    ""
   ],
   [
     "node/test_dropout_default_mask/model.onnx",
@@ -2333,15 +2333,15 @@
   ],
   [
     "node/test_dropout_default_old/model.onnx",
-    "Unsupported op Dropout"
+    ""
   ],
   [
     "node/test_dropout_default_ratio/model.onnx",
-    "Unsupported op Dropout"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_dropout_random_old/model.onnx",
-    "Unsupported op Dropout"
+    ""
   ],
   [
     "node/test_dynamicquantizelinear/model.onnx",
@@ -6425,11 +6425,11 @@
   ],
   [
     "node/test_training_dropout/model.onnx",
-    "Unsupported op Dropout"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_training_dropout_default/model.onnx",
-    "Unsupported op Dropout"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_training_dropout_default_mask/model.onnx",
@@ -6441,7 +6441,7 @@
   ],
   [
     "node/test_training_dropout_zero_ratio/model.onnx",
-    "Unsupported op Dropout"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_training_dropout_zero_ratio_mask/model.onnx",
