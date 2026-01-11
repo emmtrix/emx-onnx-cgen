@@ -1821,6 +1821,9 @@ OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
 OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
     Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT.md"
 )
+OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
+    Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md"
+)
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
 
 
@@ -1842,6 +1845,8 @@ def _render_official_onnx_file_support_markdown(
         "",
         f"ONNX version: {onnx_version}",
         "",
+        "See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md) for the error histogram.",
+        "",
         "| File | Supported | Error |",
         "| --- | --- | --- |",
     ]
@@ -1849,18 +1854,17 @@ def _render_official_onnx_file_support_markdown(
         supported = "✅" if not error else "❌"
         message = error.replace("\n", " ").strip()
         lines.append(f"| `{path}` | {supported} | {message} |")
-    lines.extend(_render_error_histogram(expectations))
     return "\n".join(lines)
 
 
-def _render_error_histogram(expectations: list[tuple[str, str]]) -> list[str]:
+def _render_error_histogram_markdown(expectations: list[tuple[str, str]]) -> str:
     def _sanitize_error(error: str) -> str:
         return re.sub(r"'[^']*'", "'*'", error)
 
     errors = [_sanitize_error(error) for _, error in expectations if error]
     counts = Counter(errors)
     if not counts:
-        return [""]
+        return ""
     max_count = max(counts.values())
     bar_width = 30
 
@@ -1871,8 +1875,7 @@ def _render_error_histogram(expectations: list[tuple[str, str]]) -> list[str]:
         return "█" * length
 
     lines = [
-        "",
-        "## Error frequency",
+        "# Error frequency",
         "",
         "| Error message | Count | Histogram |",
         "| --- | --- | --- |",
@@ -1880,7 +1883,7 @@ def _render_error_histogram(expectations: list[tuple[str, str]]) -> list[str]:
     for error, count in counts.most_common():
         lines.append(f"| {error} | {count} | {bar(count)} |")
     lines.append("")
-    return lines
+    return "\n".join(lines)
 
 
 def _collect_onnx_files(data_root: Path) -> list[str]:
@@ -1935,11 +1938,18 @@ def test_official_onnx_expected_errors() -> None:
 def test_official_onnx_file_support_doc() -> None:
     expectations = _load_official_onnx_file_expectations()
     expected_markdown = _render_official_onnx_file_support_markdown(expectations)
+    expected_histogram = _render_error_histogram_markdown(expectations)
     if os.getenv("UPDATE_REFS"):
         OFFICIAL_ONNX_FILE_SUPPORT_PATH.write_text(
             expected_markdown,
             encoding="utf-8",
         )
+        OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH.write_text(
+            expected_histogram,
+            encoding="utf-8",
+        )
         return
     actual_markdown = OFFICIAL_ONNX_FILE_SUPPORT_PATH.read_text(encoding="utf-8")
+    actual_histogram = OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH.read_text(encoding="utf-8")
     assert actual_markdown == expected_markdown
+    assert actual_histogram == expected_histogram
