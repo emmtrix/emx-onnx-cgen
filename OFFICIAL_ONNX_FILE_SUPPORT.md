@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 128 / 1802 official ONNX files.
+Support 137 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1620,13 +1620,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_training_dropout_mask/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_training_dropout_zero_ratio/model.onnx` | ❌ | Dropout expects matching dtypes, got bool, float |
 | `node/test_training_dropout_zero_ratio_mask/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_transpose_all_permutations_0/model.onnx` | ❌ | Unsupported op Transpose |
-| `node/test_transpose_all_permutations_1/model.onnx` | ❌ | Unsupported op Transpose |
-| `node/test_transpose_all_permutations_2/model.onnx` | ❌ | Unsupported op Transpose |
-| `node/test_transpose_all_permutations_3/model.onnx` | ❌ | Unsupported op Transpose |
-| `node/test_transpose_all_permutations_4/model.onnx` | ❌ | Unsupported op Transpose |
-| `node/test_transpose_all_permutations_5/model.onnx` | ❌ | Unsupported op Transpose |
-| `node/test_transpose_default/model.onnx` | ❌ | Unsupported op Transpose |
+| `node/test_transpose_all_permutations_0/model.onnx` | ✅ |  |
+| `node/test_transpose_all_permutations_1/model.onnx` | ✅ |  |
+| `node/test_transpose_all_permutations_2/model.onnx` | ✅ |  |
+| `node/test_transpose_all_permutations_3/model.onnx` | ✅ |  |
+| `node/test_transpose_all_permutations_4/model.onnx` | ✅ |  |
+| `node/test_transpose_all_permutations_5/model.onnx` | ✅ |  |
+| `node/test_transpose_default/model.onnx` | ✅ |  |
 | `node/test_tril/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_tril_neg/model.onnx` | ❌ | Unsupported op Trilu |
 | `node/test_tril_one_row_neg/model.onnx` | ❌ | Unsupported op Trilu |
@@ -1719,7 +1719,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_LeakyReLU/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `pytorch-converted/test_LeakyReLU_with_negval/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `pytorch-converted/test_Linear/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
-| `pytorch-converted/test_Linear_no_bias/model.onnx` | ❌ | Unsupported op Transpose |
+| `pytorch-converted/test_Linear_no_bias/model.onnx` | ✅ |  |
 | `pytorch-converted/test_LogSoftmax/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `pytorch-converted/test_MaxPool1d/model.onnx` | ❌ | Unsupported op MaxPool |
 | `pytorch-converted/test_MaxPool1d_stride/model.onnx` | ❌ | Unsupported op MaxPool |
@@ -1774,7 +1774,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_non_float_params/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_pad/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-operator/test_operator_params/model.onnx` | ❌ | Unsupported op Sigmoid |
-| `pytorch-operator/test_operator_permute2/model.onnx` | ❌ | Unsupported op Transpose |
+| `pytorch-operator/test_operator_permute2/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_pow/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_reduced_mean/model.onnx` | ❌ | Unsupported op ReduceMean |
 | `pytorch-operator/test_operator_reduced_mean_keepdim/model.onnx` | ❌ | Unsupported op ReduceMean |
