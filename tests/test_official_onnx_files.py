@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from pathlib import Path
 
 import onnx
@@ -1846,8 +1847,35 @@ def _render_official_onnx_file_support_markdown(
         supported = "✅" if not error else "❌"
         message = error.replace("\n", " ").strip()
         lines.append(f"| `{path}` | {supported} | {message} |")
-    lines.append("")
+    lines.extend(_render_error_histogram(expectations))
     return "\n".join(lines)
+
+
+def _render_error_histogram(expectations: list[tuple[str, str]]) -> list[str]:
+    errors = [error for _, error in expectations if error]
+    counts = Counter(errors)
+    if not counts:
+        return [""]
+    max_count = max(counts.values())
+    bar_width = 30
+
+    def bar(count: int) -> str:
+        if max_count == 0:
+            return ""
+        length = max(1, round(count / max_count * bar_width))
+        return "█" * length
+
+    lines = [
+        "",
+        "## Error frequency",
+        "",
+        "| Error message | Count | Histogram |",
+        "| --- | --- | --- |",
+    ]
+    for error, count in counts.most_common():
+        lines.append(f"| {error} | {count} | {bar(count)} |")
+    lines.append("")
+    return lines
 
 
 def _collect_onnx_files(data_root: Path) -> list[str]:

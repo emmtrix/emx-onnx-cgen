@@ -1808,3 +1808,290 @@ ONNX version: 1.20.1
 | `simple/test_strnorm_model_monday_empty_output/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT). |
 | `simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT). |
 | `simple/test_strnorm_model_nostopwords_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT). |
+
+## Error frequency
+
+| Error message | Count | Histogram |
+| --- | --- | --- |
+| Unsupported elem_type 7 (INT64) for axes. Supported elem_types: 1 (FLOAT). | 116 | ██████████████████████████████ |
+| Unsupported elem_type 7 (INT64) for y. Supported elem_types: 1 (FLOAT). | 85 | ██████████████████████ |
+| Unsupported op Attention | 57 | ███████████████ |
+| Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT). | 46 | ████████████ |
+| Unsupported elem_type 7 (INT64) for target. Supported elem_types: 1 (FLOAT). | 36 | █████████ |
+| Unsupported op Conv | 33 | █████████ |
+| Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). | 32 | ████████ |
+| Unsupported elem_type 6 (INT32) for x. Supported elem_types: 1 (FLOAT). | 30 | ████████ |
+| Unsupported elem_type 7 (INT64) for x. Supported elem_types: 1 (FLOAT). | 28 | ███████ |
+| Unsupported elem_type 7 (INT64) for indices. Supported elem_types: 1 (FLOAT). | 28 | ███████ |
+| Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). | 27 | ███████ |
+| Unsupported elem_type 7 (INT64) for shape. Supported elem_types: 1 (FLOAT). | 26 | ███████ |
+| Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT). | 25 | ██████ |
+| Unsupported op AveragePool | 25 | ██████ |
+| Unsupported elem_type 8 (STRING) for x. Supported elem_types: 1 (FLOAT). | 25 | ██████ |
+| Unsupported op MaxPool | 25 | ██████ |
+| Only one- or two-node graphs are supported, got 30 | 21 | █████ |
+| Unsupported elem_type 7 (INT64) for sizes. Supported elem_types: 1 (FLOAT). | 20 | █████ |
+| Unsupported elem_type 3 (INT8) for x. Supported elem_types: 1 (FLOAT). | 19 | █████ |
+| Unsupported op LayerNormalization | 19 | █████ |
+| Only one- or two-node graphs are supported, got 31 | 19 | █████ |
+| Unsupported op Resize | 19 | █████ |
+| Unsupported op RMSNormalization | 19 | █████ |
+| Only one- or two-node graphs are supported, got 16 | 19 | █████ |
+| Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT). | 18 | █████ |
+| Unsupported op GridSample | 18 | █████ |
+| Only one- or two-node graphs are supported, got 7 | 17 | ████ |
+| Only one- or two-node graphs are supported, got 6 | 17 | ████ |
+| Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT). | 16 | ████ |
+| Unsupported elem_type 11 (DOUBLE) for x. Supported elem_types: 1 (FLOAT). | 16 | ████ |
+| Unsupported elem_type 11 (DOUBLE) for data. Supported elem_types: 1 (FLOAT). | 16 | ████ |
+| Unsupported elem_type 5 (INT16) for x. Supported elem_types: 1 (FLOAT). | 15 | ████ |
+| Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT). | 14 | ████ |
+| Unsupported op ConvTranspose | 14 | ████ |
+| Unsupported op Concat | 13 | ███ |
+| Unsupported op Flatten | 11 | ███ |
+| Gemm must have 2 inputs and 1 output | 11 | ███ |
+| Only one- or two-node graphs are supported, got 4 | 10 | ███ |
+| Unsupported op Clip | 10 | ███ |
+| Unsupported op LogSoftmax | 10 | ███ |
+| Only one- or two-node graphs are supported, got 5 | 10 | ███ |
+| Unsupported elem_type 7 (INT64) for position_ids. Supported elem_types: 1 (FLOAT). | 10 | ███ |
+| Unsupported op Softmax | 10 | ███ |
+| Unsupported elem_type 7 (INT64) for split. Supported elem_types: 1 (FLOAT). | 10 | ███ |
+| Unsupported op BatchNormalization | 9 | ██ |
+| Only one- or two-node graphs are supported, got 3 | 9 | ██ |
+| Unsupported elem_type 26 (INT2) for input. Supported elem_types: 1 (FLOAT). | 9 | ██ |
+| Unsupported elem_type 22 (INT4) for input. Supported elem_types: 1 (FLOAT). | 9 | ██ |
+| Unsupported elem_type 25 (UINT2) for input. Supported elem_types: 1 (FLOAT). | 9 | ██ |
+| Unsupported elem_type 21 (UINT4) for input. Supported elem_types: 1 (FLOAT). | 9 | ██ |
+| Unsupported elem_type 2 (UINT8) for data. Supported elem_types: 1 (FLOAT). | 9 | ██ |
+| Unsupported elem_type 7 (INT64) for max_output_boxes_per_class. Supported elem_types: 1 (FLOAT). | 9 | ██ |
+| Unsupported op Split | 9 | ██ |
+| Unsupported op Transpose | 9 | ██ |
+| Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). | 8 | ██ |
+| Only one- or two-node graphs are supported, got 75 | 8 | ██ |
+| Unsupported op LpPool | 8 | ██ |
+| Missing elem_type for x0 | 8 | ██ |
+| Unsupported elem_type 7 (INT64) for starts. Supported elem_types: 1 (FLOAT). | 8 | ██ |
+| Unsupported elem_type 7 (INT64) for T. Supported elem_types: 1 (FLOAT). | 7 | ██ |
+| Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT). | 7 | ██ |
+| Only one- or two-node graphs are supported, got 71 | 7 | ██ |
+| Only one- or two-node graphs are supported, got 65 | 7 | ██ |
+| Unsupported elem_type 9 (BOOL) for condition. Supported elem_types: 1 (FLOAT). | 7 | ██ |
+| Unsupported op Hardmax | 7 | ██ |
+| Unsupported elem_type 6 (INT32) for X. Supported elem_types: 1 (FLOAT). | 7 | ██ |
+| Only one- or two-node graphs are supported, got 74 | 6 | ██ |
+| Only one- or two-node graphs are supported, got 62 | 6 | ██ |
+| Only one- or two-node graphs are supported, got 61 | 6 | ██ |
+| Unsupported elem_type 11 (DOUBLE) for input. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for input. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for input. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for input. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Unsupported elem_type 2 (UINT8) for y. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Only one- or two-node graphs are supported, got 12 | 6 | ██ |
+| Unsupported op LpNormalization | 6 | ██ |
+| Missing elem_type for optional_input | 6 | ██ |
+| Unsupported elem_type 9 (BOOL) for t. Supported elem_types: 1 (FLOAT). | 6 | ██ |
+| Only one- or two-node graphs are supported, got 64 | 5 | █ |
+| Unsupported elem_type 7 (INT64) for image_shape. Supported elem_types: 1 (FLOAT). | 5 | █ |
+| Unsupported op LeakyRelu | 5 | █ |
+| Unsupported op Selu | 5 | █ |
+| Only one- or two-node graphs are supported, got 13 | 5 | █ |
+| Unsupported op Pad | 5 | █ |
+| Unsupported elem_type 11 (DOUBLE) for 0. Supported elem_types: 1 (FLOAT). | 5 | █ |
+| Unsupported elem_type 9 (BOOL) for attn_mask. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 10 (FLOAT16) for Q. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported op DeformConv | 4 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for like. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for like. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported op Dropout | 4 | █ |
+| Unsupported op Elu | 4 | █ |
+| Only one- or two-node graphs are supported, got 11 | 4 | █ |
+| Unsupported op Gelu | 4 | █ |
+| Unsupported elem_type 9 (BOOL) for greater_equal. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported op GRU | 4 | █ |
+| Unsupported op HardSigmoid | 4 | █ |
+| Unsupported elem_type 9 (BOOL) for y. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 9 (BOOL) for less_equal. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 9 (BOOL) for output. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 3 (INT8) for a. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported elem_type 2 (UINT8) for a. Supported elem_types: 1 (FLOAT). | 4 | █ |
+| Unsupported op RNN | 4 | █ |
+| Only one- or two-node graphs are supported, got 72 | 3 | █ |
+| Only one- or two-node graphs are supported, got 84 | 3 | █ |
+| Unsupported elem_type 16 (BFLOAT16) for input. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported op Constant | 3 | █ |
+| Unsupported elem_type 7 (INT64) for pads. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for x. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported elem_type 7 (INT64) for axis. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported op DFT | 3 | █ |
+| Missing elem_type for x | 3 | █ |
+| Unsupported elem_type 9 (BOOL) for cond. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported op InstanceNormalization | 3 | █ |
+| Unsupported elem_type 10 (FLOAT16) for x. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported elem_type 7 (INT64) for trip_count. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported op LSTM | 3 | █ |
+| Unsupported elem_type 2 (UINT8) for y_zero_point. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported elem_type 7 (INT64) for batch_indices. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported op RotaryEmbedding | 3 | █ |
+| Unsupported op Shrink | 3 | █ |
+| Unsupported op Sigmoid | 3 | █ |
+| Unsupported op Softplus | 3 | █ |
+| Unsupported elem_type 7 (INT64) for write_indices. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported op ThresholdedRelu | 3 | █ |
+| Unsupported elem_type 7 (INT64) for k. Supported elem_types: 1 (FLOAT). | 3 | █ |
+| Unsupported elem_type 7 (INT64) for initializer conv1/7x7_s2_w_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 2 | █ |
+| Unsupported op Acos | 2 | █ |
+| Unsupported op Acosh | 2 | █ |
+| Unsupported op Asin | 2 | █ |
+| Unsupported op Asinh | 2 | █ |
+| Unsupported op Atan | 2 | █ |
+| Unsupported elem_type 7 (INT64) for nonpad_kv_seqlen. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Only one- or two-node graphs are supported, got 78 | 2 | █ |
+| Only one- or two-node graphs are supported, got 63 | 2 | █ |
+| Unsupported elem_type 11 (DOUBLE) for y. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for output. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for output. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for input. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 16 (BFLOAT16) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 11 (DOUBLE) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 10 (FLOAT16) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 26 (INT2) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 22 (INT4) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 25 (UINT2) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 21 (UINT4) for like. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported op Identity | 2 | █ |
+| Unsupported op Less | 2 | █ |
+| Unsupported op Cosh | 2 | █ |
+| Unsupported op DepthToSpace | 2 | █ |
+| Unsupported op Det | 2 | █ |
+| Unsupported elem_type 9 (BOOL) for z. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 7 (INT64) for new_shape. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 6 (INT32) for data. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Only one- or two-node graphs are supported, got 19 | 2 | █ |
+| Unsupported op GlobalAveragePool | 2 | █ |
+| Unsupported op GlobalMaxPool | 2 | █ |
+| Unsupported elem_type 9 (BOOL) for greater. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported op GroupNormalization | 2 | █ |
+| Only one- or two-node graphs are supported, got 34 | 2 | █ |
+| Unsupported elem_type 9 (BOOL) for less. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported op LRN | 2 | █ |
+| Max must have 2 inputs and 1 output | 2 | █ |
+| Unsupported elem_type 10 (FLOAT16) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 11 (DOUBLE) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 5 (INT16) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 6 (INT32) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 7 (INT64) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 3 (INT8) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 4 (UINT16) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 12 (UINT32) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 13 (UINT64) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 2 (UINT8) for data_0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 7 (INT64) for z. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported elem_type 7 (INT64) for xI. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Mean must have 2 inputs and 1 output | 2 | █ |
+| Min must have 2 inputs and 1 output | 2 | █ |
+| Unsupported op OneHot | 2 | █ |
+| Unsupported elem_type 6 (INT32) for start. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported op Reciprocal | 2 | █ |
+| Unsupported elem_type 9 (BOOL) for data. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported op ReduceMax | 2 | █ |
+| Unsupported op ReduceMin | 2 | █ |
+| Unsupported op ReduceProd | 2 | █ |
+| Unsupported elem_type 7 (INT64) for sequence_lens. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported op Scan | 2 | █ |
+| Missing elem_type for sequence | 2 | █ |
+| Missing elem_type for in_seq | 2 | █ |
+| Unsupported op Sign | 2 | █ |
+| Unsupported op Sinh | 2 | █ |
+| Unsupported op Softsign | 2 | █ |
+| Unsupported op SpaceToDepth | 2 | █ |
+| Unsupported elem_type 7 (INT64) for frame_step. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Sum must have 2 inputs and 1 output | 2 | █ |
+| Unsupported elem_type 7 (INT64) for 0. Supported elem_types: 1 (FLOAT). | 2 | █ |
+| Unsupported op ReduceMean | 2 | █ |
+| Unsupported op ReduceSum | 2 | █ |
+| Unsupported elem_type 7 (INT64) for initializer pos_erase. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 2 | █ |
+| Unsupported elem_type 7 (INT64) for initializer conv1_b_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer conv1_w_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer gpu_0/conv1_w_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer gpu_0/conv3_0_w_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer conv10_b_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer conv1_1_w_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer gpu_0/conv1_b_0__SHAPE. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported op Binarizer | 1 | █ |
+| Unsupported op TreeEnsemble | 1 | █ |
+| Unsupported elem_type 11 (DOUBLE) for X. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Only one- or two-node graphs are supported, got 79 | 1 | █ |
+| Only one- or two-node graphs are supported, got 67 | 1 | █ |
+| Unsupported op Bernoulli | 1 | █ |
+| Unsupported elem_type 16 (BFLOAT16) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 11 (DOUBLE) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 10 (FLOAT16) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 26 (INT2) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 22 (INT4) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 25 (UINT2) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 21 (UINT4) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for output. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported op Celu | 1 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for x. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for x. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 26 (INT2) for x. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 22 (INT4) for x. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 25 (UINT2) for x. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 21 (UINT4) for x. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported op Erf | 1 | █ |
+| Unsupported op HardSwish | 1 | █ |
+| Missing elem_type for opt_in | 1 | █ |
+| Unsupported elem_type 6 (INT32) for sequence_lens. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| MatMul supports 2D inputs only, got (3,) x (3,) | 1 | █ |
+| MatMul supports 2D inputs only, got (4,) x (2, 4, 1) | 1 | █ |
+| MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) | 1 | █ |
+| MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) | 1 | █ |
+| MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,) | 1 | █ |
+| MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2) | 1 | █ |
+| Unsupported elem_type 2 (UINT8) for A. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 6 (INT32) for num_mel_bins. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported op Mish | 1 | █ |
+| Unsupported op MeanVarianceNormalization | 1 | █ |
+| Unsupported op OptionalGetElement | 1 | █ |
+| Scalar outputs are not supported | 1 | █ |
+| Unsupported elem_type 6 (INT32) for y. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 12 (UINT32) for y. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 13 (UINT64) for y. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 5 (INT16) for y. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 5 (INT16) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 26 (INT2) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 22 (INT4) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 4 (UINT16) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 25 (UINT2) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 21 (UINT4) for y_zero_point. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported op Range | 1 | █ |
+| Only one- or two-node graphs are supported, got 9 | 1 | █ |
+| Only one- or two-node graphs are supported, got 38 | 1 | █ |
+| Unsupported op Round | 1 | █ |
+| Missing elem_type for seq | 1 | █ |
+| Unsupported op Swish | 1 | █ |
+| Unsupported elem_type 7 (INT64) for X. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported op Upsample | 1 | █ |
+| Unsupported op Neg | 1 | █ |
+| Unsupported op Gemm | 1 | █ |
+| Unsupported op Slice | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer 1. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Unsupported op Gradient | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer pos. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Dynamic dim for out | 1 | █ |
+| Unsupported op SequenceConstruct | 1 | █ |
+| Unsupported elem_type 7 (INT64) for len. Supported elem_types: 1 (FLOAT). | 1 | █ |
+| Unsupported elem_type 7 (INT64) for initializer pos_at. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers. | 1 | █ |
+| Dynamic dim for X | 1 | █ |
