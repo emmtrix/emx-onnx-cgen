@@ -19,6 +19,7 @@ from .codegen.c_emitter import (
     ConvOp,
     ConcatOp,
     ConstantOfShapeOp,
+    GemmOp,
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
@@ -80,6 +81,7 @@ class Compiler:
             BinaryOp
             | UnaryOp
             | MatMulOp
+            | GemmOp
             | AttentionOp
             | ConvOp
             | AveragePoolOp
@@ -98,7 +100,7 @@ class Compiler:
                 continue
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
-                    ops.extend(self._lower_gemm_ops(graph, node))
+                    ops.append(self._lower_gemm_op(graph, node))
                 else:
                     ops.append(self._lower_matmul_op(graph, node))
                 continue
@@ -186,19 +188,41 @@ class Compiler:
         for node in graph.nodes:
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
-                    _validate_gemm(node)
-                left = values[node.inputs[0]]
-                right = values[node.inputs[1]]
-                result = _apply_matmul(left, right)
-                if len(node.inputs) == 3:
-                    bias = values[node.inputs[2]]
-                    if bias.shape != result.shape:
-                        raise ShapeInferenceError(
-                            "Gemm bias input must match output shape, "
-                            f"got {bias.shape} vs {result.shape}"
+                    op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                    spec = _resolve_gemm_spec(graph, node, op_dtype)
+                    left = values[node.inputs[0]]
+                    right = values[node.inputs[1]]
+                    if spec.trans_a:
+                        left = left.T
+                    if spec.trans_b:
+                        right = right.T
+                    result = _apply_matmul(left, right)
+                    alpha = (
+                        float(spec.alpha)
+                        if op_dtype == "float"
+                        else int(spec.alpha)
+                    )
+                    beta = (
+                        float(spec.beta)
+                        if op_dtype == "float"
+                        else int(spec.beta)
+                    )
+                    if alpha != 1:
+                        result = result * alpha
+                    if len(node.inputs) == 3:
+                        bias = values[node.inputs[2]]
+                        _validate_gemm_bias_shape(
+                            (spec.m, spec.n), bias.shape, node
                         )
-                    result = result + bias
-                values[node.outputs[0]] = result
+                        if beta != 1:
+                            bias = bias * beta
+                        result = result + bias
+                    values[node.outputs[0]] = result
+                else:
+                    left = values[node.inputs[0]]
+                    right = values[node.inputs[1]]
+                    result = _apply_matmul(left, right)
+                    values[node.outputs[0]] = result
                 continue
             if node.op_type == "Attention":
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -428,72 +452,24 @@ class Compiler:
             dtype=op_dtype,
         )
 
-    def _lower_gemm_ops(
-        self, graph: Graph, node: Node
-    ) -> list[MatMulOp | BinaryOp]:
-        _validate_gemm(node)
+    def _lower_gemm_op(self, graph: Graph, node: Node) -> GemmOp:
         op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        input0_shape = _value_shape(graph, node.inputs[0], node)
-        input1_shape = _value_shape(graph, node.inputs[1], node)
-        if len(input0_shape) != 2 or len(input1_shape) != 2:
-            raise UnsupportedOpError(
-                f"Gemm supports 2D inputs only, got {input0_shape} x {input1_shape}"
-            )
-        m, k_left = input0_shape
-        k_right, n = input1_shape
-        if k_left != k_right:
-            raise ShapeInferenceError(
-                f"Gemm inner dimensions must match, got {k_left} and {k_right}"
-            )
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        if output_shape != (m, n):
-            raise ShapeInferenceError(
-                f"Gemm output shape must be {(m, n)}, got {output_shape}"
-            )
-        if len(node.inputs) == 2:
-            return [
-                MatMulOp(
-                    input0=node.inputs[0],
-                    input1=node.inputs[1],
-                    output=node.outputs[0],
-                    m=m,
-                    n=n,
-                    k=k_left,
-                    dtype=op_dtype,
-                )
-            ]
-        bias_shape = _value_shape(graph, node.inputs[2], node)
-        if bias_shape != output_shape:
-            raise ShapeInferenceError(
-                "Gemm bias input must match output shape, "
-                f"got {bias_shape} vs {output_shape}"
-            )
-        op_spec = _binary_op_symbol("Add", None, dtype=op_dtype)
-        if op_spec is None:
-            raise UnsupportedOpError("Unsupported Add op for Gemm bias")
-        matmul_output = _unique_value_name(
-            graph, f"{node.outputs[0]}_matmul"
+        spec = _resolve_gemm_spec(graph, node, op_dtype)
+        return GemmOp(
+            input_a=node.inputs[0],
+            input_b=node.inputs[1],
+            input_c=node.inputs[2] if len(node.inputs) == 3 else None,
+            output=node.outputs[0],
+            m=spec.m,
+            n=spec.n,
+            k=spec.k,
+            trans_a=spec.trans_a,
+            trans_b=spec.trans_b,
+            alpha=spec.alpha,
+            beta=spec.beta,
+            c_shape=spec.c_shape,
+            dtype=op_dtype,
         )
-        return [
-            MatMulOp(
-                input0=node.inputs[0],
-                input1=node.inputs[1],
-                output=matmul_output,
-                m=m,
-                n=n,
-                k=k_left,
-                dtype=op_dtype,
-            ),
-            BinaryOp(
-                input0=matmul_output,
-                input1=node.inputs[2],
-                output=node.outputs[0],
-                operator=op_spec.operator,
-                operator_kind=op_spec.kind,
-                shape=output_shape,
-                dtype=op_dtype,
-            ),
-        ]
 
     def _lower_transpose_op(self, graph: Graph, node: Node) -> TransposeOp:
         if len(node.inputs) != 1 or len(node.outputs) != 1:
@@ -977,17 +953,107 @@ def _binary_op_symbol(
     return None
 
 
-def _validate_gemm(node: Node) -> None:
+@dataclass(frozen=True)
+class _GemmSpec:
+    m: int
+    n: int
+    k: int
+    alpha: float | int
+    beta: float | int
+    trans_a: bool
+    trans_b: bool
+    c_shape: tuple[int, ...] | None
+
+
+def _resolve_gemm_spec(graph: Graph, node: Node, dtype: str) -> _GemmSpec:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
         raise UnsupportedOpError("Gemm must have 2 or 3 inputs and 1 output")
+    alpha, beta, trans_a, trans_b = _resolve_gemm_attrs(node, dtype)
+    input0_shape = _value_shape(graph, node.inputs[0], node)
+    input1_shape = _value_shape(graph, node.inputs[1], node)
+    if len(input0_shape) != 2 or len(input1_shape) != 2:
+        raise UnsupportedOpError(
+            f"Gemm supports 2D inputs only, got {input0_shape} x {input1_shape}"
+        )
+    if trans_a:
+        m, k_left = input0_shape[1], input0_shape[0]
+    else:
+        m, k_left = input0_shape
+    if trans_b:
+        n, k_right = input1_shape[0], input1_shape[1]
+    else:
+        k_right, n = input1_shape
+    if k_left != k_right:
+        raise ShapeInferenceError(
+            f"Gemm inner dimensions must match, got {k_left} and {k_right}"
+        )
+    output_shape = _value_shape(graph, node.outputs[0], node)
+    if output_shape != (m, n):
+        raise ShapeInferenceError(
+            f"Gemm output shape must be {(m, n)}, got {output_shape}"
+        )
+    c_shape = None
+    if len(node.inputs) == 3:
+        bias_shape = _value_shape(graph, node.inputs[2], node)
+        c_shape = _validate_gemm_bias_shape((m, n), bias_shape, node)
+    return _GemmSpec(
+        m=m,
+        n=n,
+        k=k_left,
+        alpha=alpha,
+        beta=beta,
+        trans_a=trans_a,
+        trans_b=trans_b,
+        c_shape=c_shape,
+    )
+
+
+def _resolve_gemm_attrs(
+    node: Node, dtype: str
+) -> tuple[float | int, float | int, bool, bool]:
     alpha = float(node.attrs.get("alpha", 1.0))
     beta = float(node.attrs.get("beta", 1.0))
     trans_a = int(node.attrs.get("transA", 0))
     trans_b = int(node.attrs.get("transB", 0))
-    if alpha != 1.0 or beta != 1.0 or trans_a != 0 or trans_b != 0:
+    if trans_a not in {0, 1} or trans_b not in {0, 1}:
         raise UnsupportedOpError(
-            "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
+            "Gemm only supports transA/transB values of 0 or 1"
         )
+    if dtype == "bool":
+        raise UnsupportedOpError("Gemm supports numeric inputs only")
+    if dtype != "float":
+        alpha_int = int(alpha)
+        beta_int = int(beta)
+        if alpha != alpha_int or beta != beta_int:
+            raise UnsupportedOpError(
+                "Gemm alpha and beta must be integers for non-float inputs"
+            )
+        alpha = alpha_int
+        beta = beta_int
+    return alpha, beta, bool(trans_a), bool(trans_b)
+
+
+def _validate_gemm_bias_shape(
+    output_shape: tuple[int, int], bias_shape: tuple[int, ...], node: Node
+) -> tuple[int, ...]:
+    if len(bias_shape) == 1:
+        if bias_shape[0] != output_shape[1]:
+            raise ShapeInferenceError(
+                "Gemm bias input must be broadcastable to output shape, "
+                f"got {bias_shape} vs {output_shape}"
+            )
+        return bias_shape
+    if len(bias_shape) == 2:
+        m, n = output_shape
+        if bias_shape[0] not in {1, m} or bias_shape[1] not in {1, n}:
+            raise ShapeInferenceError(
+                "Gemm bias input must be broadcastable to output shape, "
+                f"got {bias_shape} vs {output_shape}"
+            )
+        return bias_shape
+    raise ShapeInferenceError(
+        f"Gemm bias input must be rank 1 or 2, got {bias_shape}"
+    )
 
 
 def _unique_value_name(graph: Graph, base: str) -> str:

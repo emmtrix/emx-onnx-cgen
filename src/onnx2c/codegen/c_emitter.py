@@ -41,6 +41,23 @@ class MatMulOp:
 
 
 @dataclass(frozen=True)
+class GemmOp:
+    input_a: str
+    input_b: str
+    input_c: str | None
+    output: str
+    m: int
+    n: int
+    k: int
+    trans_a: bool
+    trans_b: bool
+    alpha: float | int
+    beta: float | int
+    c_shape: tuple[int, ...] | None
+    dtype: str
+
+
+@dataclass(frozen=True)
 class AttentionOp:
     input_q: str
     input_k: str
@@ -216,6 +233,7 @@ class LoweredModel:
         BinaryOp
         | UnaryOp
         | MatMulOp
+        | GemmOp
         | AttentionOp
         | ConvOp
         | AveragePoolOp
@@ -244,6 +262,7 @@ class CEmitter:
             binary_template = self._env.get_template("binary_op.c.j2")
             unary_template = self._env.get_template("unary_op.c.j2")
             matmul_template = self._env.get_template("matmul_op.c.j2")
+            gemm_template = self._env.get_template("gemm_op.c.j2")
             attention_template = self._env.get_template("attention_op.c.j2")
             conv_template = self._env.get_template("conv_op.c.j2")
             avg_pool_template = self._env.get_template("average_pool_op.c.j2")
@@ -285,6 +304,7 @@ class CEmitter:
                 binary_template=binary_template,
                 unary_template=unary_template,
                 matmul_template=matmul_template,
+                gemm_template=gemm_template,
                 attention_template=attention_template,
                 conv_template=conv_template,
                 avg_pool_template=avg_pool_template,
@@ -411,6 +431,7 @@ class CEmitter:
             BinaryOp
             | UnaryOp
             | MatMulOp
+            | GemmOp
             | AttentionOp
             | ConvOp
             | AveragePoolOp
@@ -444,6 +465,13 @@ class CEmitter:
         for index, op in enumerate(resolved_ops):
             if isinstance(op, (BinaryOp, MatMulOp)):
                 call = f"{op.input0}, {op.input1}, {op.output}"
+            elif isinstance(op, GemmOp):
+                if op.input_c is None:
+                    call = f"{op.input_a}, {op.input_b}, {op.output}"
+                else:
+                    call = (
+                        f"{op.input_a}, {op.input_b}, {op.input_c}, {op.output}"
+                    )
             elif isinstance(op, AttentionOp):
                 call = (
                     f"{op.input_q}, {op.input_k}, {op.input_v}, {op.output}"
@@ -499,6 +527,7 @@ class CEmitter:
         op: BinaryOp
         | UnaryOp
         | MatMulOp
+        | GemmOp
         | AttentionOp
         | ConvOp
         | AveragePoolOp
@@ -514,6 +543,7 @@ class CEmitter:
         BinaryOp
         | UnaryOp
         | MatMulOp
+        | GemmOp
         | AttentionOp
         | ConvOp
         | AveragePoolOp
@@ -543,6 +573,26 @@ class CEmitter:
                 m=op.m,
                 n=op.n,
                 k=op.k,
+                dtype=op.dtype,
+            )
+        if isinstance(op, GemmOp):
+            return GemmOp(
+                input_a=temp_map.get(op.input_a, op.input_a),
+                input_b=temp_map.get(op.input_b, op.input_b),
+                input_c=(
+                    temp_map.get(op.input_c, op.input_c)
+                    if op.input_c is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                trans_a=op.trans_a,
+                trans_b=op.trans_b,
+                alpha=op.alpha,
+                beta=op.beta,
+                c_shape=op.c_shape,
                 dtype=op.dtype,
             )
         if isinstance(op, AttentionOp):
@@ -695,6 +745,7 @@ class CEmitter:
         op: BinaryOp
         | UnaryOp
         | MatMulOp
+        | GemmOp
         | AttentionOp
         | ConvOp
         | AveragePoolOp
@@ -717,6 +768,7 @@ class CEmitter:
         binary_template,
         unary_template,
         matmul_template,
+        gemm_template,
         attention_template,
         conv_template,
         avg_pool_template,
@@ -784,6 +836,52 @@ class CEmitter:
                 m=op.m,
                 n=op.n,
                 k=op.k,
+            ).rstrip()
+        if isinstance(op, GemmOp):
+            input_a_shape = (op.k, op.m) if op.trans_a else (op.m, op.k)
+            input_b_shape = (op.n, op.k) if op.trans_b else (op.k, op.n)
+            alpha_literal = CEmitter._format_literal(op.dtype, op.alpha)
+            beta_literal = CEmitter._format_literal(op.dtype, op.beta)
+            if op.c_shape is None:
+                c_rank = 0
+                c_dim0 = 0
+                c_dim1 = 0
+            elif len(op.c_shape) == 1:
+                c_rank = 1
+                c_dim0 = 1
+                c_dim1 = op.c_shape[0]
+            else:
+                c_rank = 2
+                c_dim0 = op.c_shape[0]
+                c_dim1 = op.c_shape[1]
+            return gemm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input_a=op.input_a,
+                input_b=op.input_b,
+                input_c=op.input_c,
+                output=op.output,
+                c_type=c_type,
+                acc_type=c_type,
+                zero_literal=zero_literal,
+                alpha_literal=alpha_literal,
+                beta_literal=beta_literal,
+                trans_a=int(op.trans_a),
+                trans_b=int(op.trans_b),
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                input_a_suffix=CEmitter._array_suffix(input_a_shape),
+                input_b_suffix=CEmitter._array_suffix(input_b_shape),
+                output_suffix=CEmitter._array_suffix((op.m, op.n)),
+                c_suffix=(
+                    CEmitter._array_suffix(op.c_shape)
+                    if op.c_shape is not None
+                    else None
+                ),
+                c_rank=c_rank,
+                c_dim0=c_dim0,
+                c_dim1=c_dim1,
             ).rstrip()
         if isinstance(op, AttentionOp):
             return attention_template.render(
@@ -1046,6 +1144,7 @@ class CEmitter:
         op: BinaryOp
         | UnaryOp
         | MatMulOp
+        | GemmOp
         | AttentionOp
         | ConvOp
         | AveragePoolOp
@@ -1064,6 +1163,7 @@ class CEmitter:
         op: BinaryOp
         | UnaryOp
         | MatMulOp
+        | GemmOp
         | AttentionOp
         | ConvOp
         | AveragePoolOp
@@ -1080,6 +1180,8 @@ class CEmitter:
         if isinstance(op, UnaryOp):
             return op.shape
         if isinstance(op, MatMulOp):
+            return (op.m, op.n)
+        if isinstance(op, GemmOp):
             return (op.m, op.n)
         if isinstance(op, ConvOp):
             return (op.batch, op.out_channels, op.out_h, op.out_w)
@@ -1106,6 +1208,7 @@ class CEmitter:
         op: BinaryOp
         | UnaryOp
         | MatMulOp
+        | GemmOp
         | AttentionOp
         | ConvOp
         | AveragePoolOp
