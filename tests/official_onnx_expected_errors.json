@@ -857,83 +857,83 @@
   ],
   [
     "node/test_averagepool_1d_default/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool expects 2D kernel_shape"
   ],
   [
     "node/test_averagepool_2d_ceil/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool supports ceil_mode=0 only"
   ],
   [
     "node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool supports ceil_mode=0 only"
   ],
   [
     "node/test_averagepool_2d_default/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "node/test_averagepool_2d_dilations/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool has unsupported attributes"
   ],
   [
     "node/test_averagepool_2d_pads/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "node/test_averagepool_2d_pads_count_include_pad/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "node/test_averagepool_2d_precomputed_pads/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "node/test_averagepool_2d_precomputed_pads_count_include_pad/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "node/test_averagepool_2d_precomputed_same_upper/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool supports auto_pad=NOTSET only"
   ],
   [
     "node/test_averagepool_2d_precomputed_strides/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "node/test_averagepool_2d_same_lower/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool supports auto_pad=NOTSET only"
   ],
   [
     "node/test_averagepool_2d_same_upper/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool supports auto_pad=NOTSET only"
   ],
   [
     "node/test_averagepool_2d_strides/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "node/test_averagepool_3d_default/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool expects 2D kernel_shape"
   ],
   [
     "node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool has unsupported attributes"
   ],
   [
     "node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool has unsupported attributes"
   ],
   [
     "node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool has unsupported attributes"
   ],
   [
     "node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool has unsupported attributes"
   ],
   [
     "node/test_averagepool_3d_dilations_small/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool has unsupported attributes"
   ],
   [
     "node/test_basic_conv_with_padding/model.onnx",
@@ -6657,23 +6657,23 @@
   ],
   [
     "pytorch-converted/test_AvgPool2d/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "pytorch-converted/test_AvgPool2d_stride/model.onnx",
-    "Unsupported op AveragePool"
+    ""
   ],
   [
     "pytorch-converted/test_AvgPool3d/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool expects 2D kernel_shape"
   ],
   [
     "pytorch-converted/test_AvgPool3d_stride/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool expects 2D kernel_shape"
   ],
   [
     "pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input/model.onnx",
-    "Unsupported op AveragePool"
+    "AveragePool expects 2D kernel_shape"
   ],
   [
     "pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx",
