@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Mapping
@@ -8,6 +9,7 @@ import numpy as np
 import onnx
 
 from .codegen.c_emitter import (
+    AttentionOp,
     BinaryOp,
     CEmitter,
     ConstTensor,
@@ -55,6 +57,8 @@ class Compiler:
             if node.op_type == "Gemm":
                 _validate_gemm(node)
             return self._lower_matmul(graph, node, dtype)
+        if node.op_type == "Attention":
+            return self._lower_attention(graph, node, dtype)
         op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
         unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
         if op_spec is None and unary_symbol is None:
@@ -189,6 +193,13 @@ class Compiler:
             right = resolved_feeds.fetch(node.inputs[1])
             result = _apply_matmul(left, right)
             return {node.outputs[0]: result}
+        if node.op_type == "Attention":
+            spec = _resolve_attention_spec(graph, node, dtype)
+            query = resolved_feeds.fetch(node.inputs[0])
+            key = resolved_feeds.fetch(node.inputs[1])
+            value = resolved_feeds.fetch(node.inputs[2])
+            result = _apply_attention(spec, query, key, value)
+            return {node.outputs[0]: result}
         op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=dtype)
         unary_symbol = _unary_op_symbol(node.op_type, dtype=dtype)
         if op_spec is None and unary_symbol is None:
@@ -271,6 +282,41 @@ class Compiler:
                     m=m,
                     n=n,
                     k=k_left,
+                ),
+            ),
+        )
+
+    def _lower_attention(
+        self, graph: Graph, node: Node | None, dtype: str
+    ) -> LoweredModel:
+        if node is None:
+            raise UnsupportedOpError("Attention node is missing")
+        spec = _resolve_attention_spec(graph, node, dtype)
+        output_value = graph.outputs[0]
+        element_count = _element_count(output_value.type.shape)
+        return LoweredModel(
+            name=self._options.model_name,
+            dtype=dtype,
+            input_names=tuple(value.name for value in graph.inputs),
+            input_shapes=tuple(value.type.shape for value in graph.inputs),
+            output_name=node.outputs[0],
+            element_count=element_count,
+            output_shape=output_value.type.shape,
+            constants=_lowered_constants(graph, dtype),
+            ops=(
+                AttentionOp(
+                    input_q=node.inputs[0],
+                    input_k=node.inputs[1],
+                    input_v=node.inputs[2],
+                    output=node.outputs[0],
+                    batch=spec.batch,
+                    heads=spec.heads,
+                    q_seq=spec.q_seq,
+                    kv_seq=spec.kv_seq,
+                    qk_head_size=spec.qk_head_size,
+                    v_head_size=spec.v_head_size,
+                    scale=spec.scale,
+                    is_causal=spec.is_causal,
                 ),
             ),
         )
@@ -482,3 +528,81 @@ def _apply_matmul(left: np.ndarray, right: np.ndarray) -> np.ndarray:
             f"MatMul inner dimensions must match, got {left.shape[1]} and {right.shape[0]}"
         )
     return np.matmul(left, right)
+
+
+@dataclass(frozen=True)
+class _AttentionSpec:
+    batch: int
+    heads: int
+    q_seq: int
+    kv_seq: int
+    qk_head_size: int
+    v_head_size: int
+    scale: float
+    is_causal: bool
+
+
+def _resolve_attention_spec(
+    graph: Graph, node: Node, dtype: str
+) -> _AttentionSpec:
+    if dtype != "float":
+        raise UnsupportedOpError("Unsupported op Attention")
+    if len(node.inputs) != 3 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Unsupported op Attention")
+    if set(node.attrs) - {"scale", "is_causal"}:
+        raise UnsupportedOpError("Unsupported op Attention")
+    q_shape = graph.find_value(node.inputs[0]).type.shape
+    k_shape = graph.find_value(node.inputs[1]).type.shape
+    v_shape = graph.find_value(node.inputs[2]).type.shape
+    if len(q_shape) != 4 or len(k_shape) != 4 or len(v_shape) != 4:
+        raise UnsupportedOpError("Unsupported op Attention")
+    batch, q_heads, q_seq, qk_head_size = q_shape
+    batch_k, kv_heads, kv_seq, k_head_size = k_shape
+    batch_v, v_heads, kv_seq_v, v_head_size = v_shape
+    if batch != batch_k or batch != batch_v:
+        raise ShapeInferenceError("Attention batch sizes must match")
+    if kv_seq != kv_seq_v:
+        raise ShapeInferenceError("Attention key/value sequence lengths must match")
+    if qk_head_size != k_head_size:
+        raise ShapeInferenceError("Attention Q/K head sizes must match")
+    if q_heads != kv_heads or kv_heads != v_heads:
+        raise UnsupportedOpError("Unsupported op Attention")
+    output_value = graph.outputs[0]
+    expected_output_shape = (batch, q_heads, q_seq, v_head_size)
+    if output_value.type.shape != expected_output_shape:
+        raise ShapeInferenceError(
+            "Attention output shape must be "
+            f"{expected_output_shape}, got {output_value.type.shape}"
+        )
+    scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
+    is_causal = int(node.attrs.get("is_causal", 0))
+    if is_causal not in (0, 1):
+        raise UnsupportedOpError("Unsupported op Attention")
+    return _AttentionSpec(
+        batch=batch,
+        heads=q_heads,
+        q_seq=q_seq,
+        kv_seq=kv_seq,
+        qk_head_size=qk_head_size,
+        v_head_size=v_head_size,
+        scale=scale,
+        is_causal=bool(is_causal),
+    )
+
+
+def _apply_attention(
+    spec: _AttentionSpec,
+    query: np.ndarray,
+    key: np.ndarray,
+    value: np.ndarray,
+) -> np.ndarray:
+    k_transpose = np.transpose(key, (0, 1, 3, 2))
+    scores = np.matmul(query, k_transpose) * spec.scale
+    if spec.is_causal:
+        mask = np.triu(np.ones((spec.q_seq, spec.kv_seq), dtype=bool), k=1)
+        scores = scores.copy()
+        scores[..., mask] = -np.inf
+    max_scores = np.max(scores, axis=-1, keepdims=True)
+    weights = np.exp(scores - max_scores)
+    weights /= np.sum(weights, axis=-1, keepdims=True)
+    return np.matmul(weights, value)

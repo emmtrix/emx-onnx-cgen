@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 70 / 1802 official ONNX files.
+Support 76 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -142,7 +142,7 @@ ONNX version: 1.20.1
 | `node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 79 |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 75 |
-| `node/test_attention_4d/model.onnx` | ❌ | Unsupported op Attention |
+| `node/test_attention_4d/model.onnx` | ✅ |  |
 | `node/test_attention_4d_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_3d/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_3d_causal/model.onnx` | ❌ | Unsupported op Attention |
@@ -157,17 +157,17 @@ ONNX version: 1.20.1
 | `node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64). |
 | `node/test_attention_4d_attn_mask_bool_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64). |
 | `node/test_attention_4d_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
-| `node/test_attention_4d_causal/model.onnx` | ❌ | Unsupported op Attention |
+| `node/test_attention_4d_causal/model.onnx` | ✅ |  |
 | `node/test_attention_4d_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
 | `node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_attention_4d_diff_heads_sizes/model.onnx` | ❌ | Unsupported op Attention |
+| `node/test_attention_4d_diff_heads_sizes/model.onnx` | ✅ |  |
 | `node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 62 |
-| `node/test_attention_4d_diff_heads_sizes_causal/model.onnx` | ❌ | Unsupported op Attention |
+| `node/test_attention_4d_diff_heads_sizes_causal/model.onnx` | ✅ |  |
 | `node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 74 |
 | `node/test_attention_4d_diff_heads_sizes_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
-| `node/test_attention_4d_diff_heads_sizes_scaled/model.onnx` | ❌ | Unsupported op Attention |
+| `node/test_attention_4d_diff_heads_sizes_scaled/model.onnx` | ✅ |  |
 | `node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
 | `node/test_attention_4d_diff_heads_sizes_softcap/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
@@ -194,7 +194,7 @@ ONNX version: 1.20.1
 | `node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 64 |
 | `node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64). |
 | `node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64). |
-| `node/test_attention_4d_scaled/model.onnx` | ❌ | Unsupported op Attention |
+| `node/test_attention_4d_scaled/model.onnx` | ✅ |  |
 | `node/test_attention_4d_scaled_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 61 |
 | `node/test_attention_4d_softcap/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_softcap_expanded/model.onnx` | ❌ | Only one- or two-node graphs are supported, got 65 |
@@ -1814,7 +1814,7 @@ ONNX version: 1.20.1
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Mixed dtypes are not supported, got float, int64 | 440 | ██████████████████████████████ |
-| Unsupported op Attention | 57 | ████ |
+| Unsupported op Attention | 51 | ███ |
 | Unsupported elem_type 10 (FLOAT16) for input. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64). | 46 | ███ |
 | Unsupported op Conv | 33 | ██ |
 | Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT), 3 (INT8), 5 (INT16), 6 (INT32), 7 (INT64). | 27 | ██ |
