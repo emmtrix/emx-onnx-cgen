@@ -84,6 +84,14 @@ OPERATOR_CASES = [
         "attrs": {},
     },
     {
+        "name": "AddInt64",
+        "op_type": "Add",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.INT64,
+        "attrs": {},
+    },
+    {
         "name": "Mul",
         "op_type": "Mul",
         "input_shapes": [[2, 3], [2, 3]],

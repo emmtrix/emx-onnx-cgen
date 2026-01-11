@@ -13,7 +13,9 @@ from typing import Sequence
 import onnx
 
 from .compiler import Compiler, CompilerOptions
+from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
+from .onnx_import import import_onnx
 
 LOGGER = logging.getLogger(__name__)
 
@@ -139,6 +141,14 @@ def _handle_verify(args: argparse.Namespace) -> int:
         LOGGER.error("Failed to compile %s: %s", model_path, exc)
         return 1
 
+    try:
+        graph = import_onnx(model)
+        output_dtype = graph.outputs[0].type.dtype
+        info = dtype_info(output_dtype)
+    except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
+        LOGGER.error("Failed to resolve model dtype: %s", exc)
+        return 1
+
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
         c_path = temp_path / "model.c"
@@ -180,16 +190,19 @@ def _handle_verify(args: argparse.Namespace) -> int:
         return 1
 
     inputs = {
-        name: np.array(value["data"], dtype=np.float32)
+        name: np.array(value["data"], dtype=info.np_dtype)
         for name, value in payload["inputs"].items()
     }
     sess = ort.InferenceSession(
         model.SerializeToString(), providers=["CPUExecutionProvider"]
     )
     (ort_out,) = sess.run(None, inputs)
-    output_data = np.array(payload["output"]["data"], dtype=np.float32)
+    output_data = np.array(payload["output"]["data"], dtype=info.np_dtype)
     try:
-        np.testing.assert_allclose(output_data, ort_out, rtol=1e-4, atol=1e-5)
+        if output_dtype == "float":
+            np.testing.assert_allclose(output_data, ort_out, rtol=1e-4, atol=1e-5)
+        else:
+            np.testing.assert_array_equal(output_data, ort_out)
     except AssertionError as exc:
         LOGGER.error("Verification failed: %s", exc)
         return 1
