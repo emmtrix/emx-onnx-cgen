@@ -84,6 +84,22 @@ OPERATOR_CASES = [
         "attrs": {},
     },
     {
+        "name": "AndBool",
+        "op_type": "And",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.BOOL,
+        "attrs": {},
+    },
+    {
+        "name": "NotBool",
+        "op_type": "Not",
+        "input_shapes": [[2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.BOOL,
+        "attrs": {},
+    },
+    {
         "name": "AddInt64",
         "op_type": "Add",
         "input_shapes": [[2, 3], [2, 3]],

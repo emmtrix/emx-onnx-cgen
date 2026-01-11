@@ -16,6 +16,7 @@ class DTypeInfo:
 
 ONNX_TO_DTYPE = {
     onnx.TensorProto.FLOAT: "float",
+    onnx.TensorProto.BOOL: "bool",
     onnx.TensorProto.INT8: "int8",
     onnx.TensorProto.INT16: "int16",
     onnx.TensorProto.INT32: "int32",
@@ -29,6 +30,12 @@ DTYPE_INFO = {
         c_type="float",
         np_dtype=np.dtype("float32"),
         zero_literal="0.0f",
+    ),
+    "bool": DTypeInfo(
+        name="bool",
+        c_type="bool",
+        np_dtype=np.dtype("bool"),
+        zero_literal="false",
     ),
     "int64": DTypeInfo(
         name="int64",
