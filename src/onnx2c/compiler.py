@@ -231,7 +231,7 @@ def _model_dtype(graph: Graph) -> str:
             f"Mixed dtypes are not supported, got {', '.join(sorted(dtypes))}"
         )
     dtype = next(iter(dtypes))
-    if dtype not in {"float", "int64", "int32", "int16", "int8"}:
+    if dtype not in {"float", "bool", "int64", "int32", "int16", "int8"}:
         raise UnsupportedOpError(f"Unsupported dtype {dtype}")
     return dtype
 
@@ -261,6 +261,20 @@ def _value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int
 def _binary_op_symbol(
     op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: str
 ) -> _BinaryOpSpec | None:
+    if dtype == "bool":
+        if op_type == "And":
+            return _BinaryOpSpec(
+                "&&", "infix", lambda left, right: np.logical_and(left, right)
+            )
+        if op_type == "Or":
+            return _BinaryOpSpec(
+                "||", "infix", lambda left, right: np.logical_or(left, right)
+            )
+        if op_type == "Xor":
+            return _BinaryOpSpec(
+                "!=", "infix", lambda left, right: np.logical_xor(left, right)
+            )
+        return None
     if dtype in {"int64", "int32", "int16", "int8"}:
         if op_type in {"Add", "Sum"}:
             return _BinaryOpSpec("+", "infix", lambda left, right: left + right)
@@ -323,6 +337,10 @@ def _validate_gemm(node: Node) -> None:
 
 
 def _unary_op_symbol(op_type: str, *, dtype: str) -> str | None:
+    if dtype == "bool":
+        if op_type == "Not":
+            return "!"
+        return None
     if dtype in {"int64", "int32", "int16", "int8"}:
         if op_type == "Abs":
             return "llabs" if dtype == "int64" else "abs"
@@ -371,6 +389,8 @@ def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
         return np.abs(value)
     if op_symbol == "llabs":
         return np.abs(value)
+    if op_symbol == "!":
+        return np.logical_not(value)
     if op_symbol == "ceilf":
         return np.ceil(value)
     if op_symbol == "cosf":

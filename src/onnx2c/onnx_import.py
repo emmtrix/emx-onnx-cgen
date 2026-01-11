@@ -50,6 +50,8 @@ def _initializer(value: onnx.TensorProto) -> Initializer:
     data = numpy_helper.to_array(value)
     if dtype == "float" and data.dtype != "float32":
         data = data.astype("float32", copy=False)
+    if dtype == "bool" and data.dtype != "bool":
+        data = data.astype("bool", copy=False)
     if dtype == "int64" and data.dtype != "int64":
         data = data.astype("int64", copy=False)
     if dtype == "int32" and data.dtype != "int32":
