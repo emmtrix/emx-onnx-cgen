@@ -12,6 +12,7 @@ from onnx import numpy_helper
 from .codegen.c_emitter import (
     AttentionOp,
     AveragePoolOp,
+    BatchNormOp,
     BinaryOp,
     CEmitter,
     ConstTensor,
@@ -30,6 +31,7 @@ from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Node
 from .lowering import get_lowering
 from .lowering.average_pool import lower_average_pool
+from .lowering.batch_normalization import lower_batch_normalization
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .onnx_import import import_onnx
 
@@ -78,6 +80,7 @@ class Compiler:
             | AttentionOp
             | ConvOp
             | AveragePoolOp
+            | BatchNormOp
             | SoftmaxOp
             | MaxPoolOp
             | ConcatOp
@@ -201,6 +204,62 @@ class Compiler:
                 bias = values[node.inputs[2]] if len(node.inputs) > 2 else None
                 values[node.outputs[0]] = _apply_conv(
                     spec, data, weights, bias
+                )
+                continue
+            if node.op_type == "BatchNormalization":
+                if len(node.inputs) != 5 or len(node.outputs) != 1:
+                    raise UnsupportedOpError(
+                        "BatchNormalization must have 5 inputs and 1 output"
+                    )
+                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                if op_dtype != "float":
+                    raise UnsupportedOpError(
+                        "BatchNormalization supports float inputs only"
+                    )
+                is_test = int(node.attrs.get("is_test", 1))
+                if is_test != 1:
+                    raise UnsupportedOpError(
+                        "BatchNormalization supports is_test=1 only"
+                    )
+                training_mode = int(node.attrs.get("training_mode", 0))
+                if training_mode != 0:
+                    raise UnsupportedOpError(
+                        "BatchNormalization supports training_mode=0 only"
+                    )
+                spatial = int(node.attrs.get("spatial", 1))
+                if spatial != 1:
+                    raise UnsupportedOpError(
+                        "BatchNormalization supports spatial=1 only"
+                    )
+                epsilon = float(node.attrs.get("epsilon", 1e-5))
+                input_shape = _value_shape(graph, node.inputs[0], node)
+                if len(input_shape) < 2:
+                    raise UnsupportedOpError(
+                        "BatchNormalization expects input rank of at least 2"
+                    )
+                channels = input_shape[1]
+                for name in node.inputs[1:]:
+                    shape = _value_shape(graph, name, node)
+                    if shape != (channels,):
+                        raise ShapeInferenceError(
+                            "BatchNormalization parameter shape must be "
+                            f"({channels},), got {shape}"
+                        )
+                data = values[node.inputs[0]]
+                scale = values[node.inputs[1]].reshape(
+                    (1, channels) + (1,) * (data.ndim - 2)
+                )
+                bias = values[node.inputs[2]].reshape(
+                    (1, channels) + (1,) * (data.ndim - 2)
+                )
+                mean = values[node.inputs[3]].reshape(
+                    (1, channels) + (1,) * (data.ndim - 2)
+                )
+                variance = values[node.inputs[4]].reshape(
+                    (1, channels) + (1,) * (data.ndim - 2)
+                )
+                values[node.outputs[0]] = (
+                    (data - mean) / np.sqrt(variance + epsilon) * scale + bias
                 )
                 continue
             if node.op_type == "AveragePool":
