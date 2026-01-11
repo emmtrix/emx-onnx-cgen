@@ -22,6 +22,7 @@ def _make_operator_model(
     output_shape: list[int],
     dtype: int,
     attrs: dict[str, object] | None = None,
+    opset: int = 13,
 ) -> onnx.ModelProto:
     input_names = [f"in{idx}" for idx in range(len(input_shapes))]
     inputs = [
@@ -39,7 +40,7 @@ def _make_operator_model(
     model = helper.make_model(
         graph,
         producer_name="onnx2c",
-        opset_imports=[helper.make_operatorsetid("", 13)],
+        opset_imports=[helper.make_operatorsetid("", opset)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -89,6 +90,85 @@ OPERATOR_CASES = [
         "output_shape": [2, 3],
         "dtype": TensorProto.FLOAT,
         "attrs": {},
+    },
+    {
+        "name": "Sub",
+        "op_type": "Sub",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+    },
+    {
+        "name": "Div",
+        "op_type": "Div",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+    },
+    {
+        "name": "Pow",
+        "op_type": "Pow",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 13,
+    },
+    {
+        "name": "Mod",
+        "op_type": "Mod",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"fmod": 1},
+        "opset": 13,
+    },
+    {
+        "name": "Min",
+        "op_type": "Min",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 13,
+    },
+    {
+        "name": "Max",
+        "op_type": "Max",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 13,
+    },
+    {
+        "name": "Mean",
+        "op_type": "Mean",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 13,
+    },
+    {
+        "name": "Sum",
+        "op_type": "Sum",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 13,
+    },
+    {
+        "name": "PRelu",
+        "op_type": "PRelu",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 13,
     },
     {
         "name": "Tanh",
@@ -171,6 +251,15 @@ OPERATOR_CASES = [
         "attrs": {},
     },
     {
+        "name": "Gemm",
+        "op_type": "Gemm",
+        "input_shapes": [[2, 3], [3, 4]],
+        "output_shape": [2, 4],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+        "opset": 13,
+    },
+    {
         "name": "Sin",
         "op_type": "Sin",
         "input_shapes": [[2, 3]],
@@ -205,5 +294,6 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         output_shape=case["output_shape"],
         dtype=case["dtype"],
         attrs=case["attrs"],
+        opset=case.get("opset", 13),
     )
     _run_cli_verify(model)

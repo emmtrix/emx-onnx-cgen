@@ -2,7 +2,7 @@ void {{ op_name }}(const float {{ input0 }}{{ array_suffix }}, const float {{ in
 {% for dim in shape %}
 {{ loop_indents[loop.index0] }}for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} {{ operator }} {{ input1 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {% if operator_kind == "func" %}{{ operator }}({{ left_expr }}, {{ right_expr }}){% elif operator_kind == "expr" %}{{ operator_expr }}{% else %}{{ left_expr }} {{ operator }} {{ right_expr }}{% endif %};
 {% for _ in shape %}
 {{ loop_indents[loop.revindex0] }}}
 {% endfor %}

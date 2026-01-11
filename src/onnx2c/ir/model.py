@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Sequence
+from typing import Mapping, Sequence
 
 import numpy as np
 
@@ -23,6 +23,7 @@ class Node:
     op_type: str
     inputs: tuple[str, ...]
     outputs: tuple[str, ...]
+    attrs: Mapping[str, object]
 
 
 @dataclass(frozen=True)
