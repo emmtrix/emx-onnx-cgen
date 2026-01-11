@@ -314,8 +314,28 @@ def _binary_op_symbol(op_type: str) -> str | None:
 
 
 def _unary_op_symbol(op_type: str) -> str | None:
+    if op_type == "Abs":
+        return "fabsf"
+    if op_type == "Ceil":
+        return "ceilf"
+    if op_type == "Cos":
+        return "cosf"
+    if op_type == "Exp":
+        return "expf"
+    if op_type == "Floor":
+        return "floorf"
+    if op_type == "Log":
+        return "logf"
+    if op_type == "Neg":
+        return "neg"
     if op_type == "Relu":
         return "relu"
+    if op_type == "Sin":
+        return "sinf"
+    if op_type == "Sqrt":
+        return "sqrtf"
+    if op_type == "Tan":
+        return "tanf"
     if op_type == "Tanh":
         return "tanhf"
     if op_type == "Atanh":
@@ -330,8 +350,28 @@ def _apply_binary_op(op_symbol: str, left: np.ndarray, right: np.ndarray) -> np.
 
 
 def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
+    if op_symbol == "fabsf":
+        return np.abs(value)
+    if op_symbol == "ceilf":
+        return np.ceil(value)
+    if op_symbol == "cosf":
+        return np.cos(value)
+    if op_symbol == "expf":
+        return np.exp(value)
+    if op_symbol == "floorf":
+        return np.floor(value)
+    if op_symbol == "logf":
+        return np.log(value)
+    if op_symbol == "neg":
+        return -value
     if op_symbol == "relu":
         return np.maximum(value, 0)
+    if op_symbol == "sinf":
+        return np.sin(value)
+    if op_symbol == "sqrtf":
+        return np.sqrt(value)
+    if op_symbol == "tanf":
+        return np.tan(value)
     if op_symbol == "tanhf":
         return np.tanh(value)
     if op_symbol == "atanhf":
