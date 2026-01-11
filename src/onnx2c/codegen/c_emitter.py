@@ -110,7 +110,7 @@ class CEmitter:
         includes = ["#include <stddef.h>"]
         if emit_testbench:
             includes.extend(("#include <stdio.h>", "#include <stdint.h>"))
-        if model.dtype == "int64" and "#include <stdint.h>" not in includes:
+        if model.dtype != "float" and "#include <stdint.h>" not in includes:
             includes.append("#include <stdint.h>")
         math_ops = {
             "atanhf",
@@ -126,7 +126,7 @@ class CEmitter:
             "tanhf",
         }
         if any(
-            isinstance(op, UnaryOp) and op.operator == "llabs"
+            isinstance(op, UnaryOp) and op.operator in {"llabs", "abs"}
             for op in resolved_ops
         ):
             includes.append("#include <stdlib.h>")
@@ -443,11 +443,24 @@ class CEmitter:
             return "INT64_MIN"
         return f"{int(value)}LL"
 
+    @staticmethod
+    def _format_int(value: int, bits: int, min_macro: str) -> str:
+        min_value = -(2 ** (bits - 1))
+        if value == min_value:
+            return min_macro
+        return str(int(value))
+
     def _format_value(self, value: float | int, dtype: str) -> str:
         if dtype == "float":
             return self._format_float(float(value))
         if dtype == "int64":
             return self._format_int64(int(value))
+        if dtype == "int32":
+            return self._format_int(int(value), 32, "INT32_MIN")
+        if dtype == "int16":
+            return self._format_int(int(value), 16, "INT16_MIN")
+        if dtype == "int8":
+            return self._format_int(int(value), 8, "INT8_MIN")
         raise CodegenError(f"Unsupported dtype {dtype}")
 
     @staticmethod
@@ -456,6 +469,12 @@ class CEmitter:
             return "%.8g"
         if dtype == "int64":
             return "%lld"
+        if dtype == "int32":
+            return "%d"
+        if dtype == "int16":
+            return "%hd"
+        if dtype == "int8":
+            return "%hhd"
         raise CodegenError(f"Unsupported dtype {dtype}")
 
     @staticmethod
@@ -464,4 +483,6 @@ class CEmitter:
             return "(double)"
         if dtype == "int64":
             return "(long long)"
+        if dtype in {"int32", "int16", "int8"}:
+            return "(int)"
         raise CodegenError(f"Unsupported dtype {dtype}")
