@@ -13,6 +13,7 @@ from .codegen.c_emitter import (
     BinaryOp,
     CEmitter,
     ConstTensor,
+    ConvOp,
     LoweredModel,
     MatMulOp,
     UnaryOp,
@@ -60,7 +61,7 @@ class Compiler:
         input_dtypes = tuple(
             _value_dtype(graph, value.name) for value in graph.inputs
         )
-        ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp] = []
+        ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp] = []
         for node in graph.nodes:
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
@@ -69,6 +70,9 @@ class Compiler:
                 continue
             if node.op_type == "Attention":
                 ops.append(self._lower_attention_op(graph, node))
+                continue
+            if node.op_type == "Conv":
+                ops.append(self._lower_conv_op(graph, node))
                 continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(
@@ -147,6 +151,18 @@ class Compiler:
                 value = values[node.inputs[2]]
                 values[node.outputs[0]] = _apply_attention(spec, query, key, value)
                 continue
+            if node.op_type == "Conv":
+                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                if op_dtype != "float":
+                    raise UnsupportedOpError("Conv supports float inputs only")
+                spec = _resolve_conv_spec(graph, node)
+                data = values[node.inputs[0]]
+                weights = values[node.inputs[1]]
+                bias = values[node.inputs[2]] if len(node.inputs) > 2 else None
+                values[node.outputs[0]] = _apply_conv(
+                    spec, data, weights, bias
+                )
+                continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
             unary_symbol = _unary_op_symbol(node.op_type, dtype=op_dtype)
@@ -208,6 +224,36 @@ class Compiler:
             v_head_size=spec.v_head_size,
             scale=spec.scale,
             is_causal=spec.is_causal,
+            dtype=op_dtype,
+        )
+
+    def _lower_conv_op(self, graph: Graph, node: Node) -> ConvOp:
+        if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
+            raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        if op_dtype != "float":
+            raise UnsupportedOpError("Conv supports float inputs only")
+        spec = _resolve_conv_spec(graph, node)
+        return ConvOp(
+            input0=node.inputs[0],
+            weights=node.inputs[1],
+            bias=node.inputs[2] if len(node.inputs) == 3 else None,
+            output=node.outputs[0],
+            batch=spec.batch,
+            in_channels=spec.in_channels,
+            out_channels=spec.out_channels,
+            in_h=spec.in_h,
+            in_w=spec.in_w,
+            out_h=spec.out_h,
+            out_w=spec.out_w,
+            kernel_h=spec.kernel_h,
+            kernel_w=spec.kernel_w,
+            stride_h=spec.stride_h,
+            stride_w=spec.stride_w,
+            pad_top=spec.pad_top,
+            pad_left=spec.pad_left,
+            dilation_h=spec.dilation_h,
+            dilation_w=spec.dilation_w,
             dtype=op_dtype,
         )
 
@@ -535,3 +581,155 @@ def _apply_attention(
     weights = np.exp(scores - max_scores)
     weights /= np.sum(weights, axis=-1, keepdims=True)
     return np.matmul(weights, value)
+
+
+@dataclass(frozen=True)
+class _ConvSpec:
+    batch: int
+    in_channels: int
+    out_channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_h: int
+    kernel_w: int
+    stride_h: int
+    stride_w: int
+    pad_top: int
+    pad_left: int
+    pad_bottom: int
+    pad_right: int
+    dilation_h: int
+    dilation_w: int
+
+
+def _resolve_conv_spec(graph: Graph, node: Node) -> _ConvSpec:
+    if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
+        raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
+    supported_attrs = {
+        "auto_pad",
+        "dilations",
+        "group",
+        "kernel_shape",
+        "pads",
+        "strides",
+    }
+    if set(node.attrs) - supported_attrs:
+        raise UnsupportedOpError("Conv has unsupported attributes")
+    auto_pad = node.attrs.get("auto_pad", b"NOTSET")
+    if isinstance(auto_pad, bytes):
+        auto_pad = auto_pad.decode("utf-8", errors="ignore")
+    if auto_pad not in ("", "NOTSET"):
+        raise UnsupportedOpError("Conv supports auto_pad=NOTSET only")
+    group = int(node.attrs.get("group", 1))
+    if group != 1:
+        raise UnsupportedOpError("Conv supports group=1 only")
+    strides = tuple(int(value) for value in node.attrs.get("strides", (1, 1)))
+    if len(strides) != 2:
+        raise UnsupportedOpError("Conv expects 2D strides")
+    dilations = tuple(int(value) for value in node.attrs.get("dilations", (1, 1)))
+    if len(dilations) != 2:
+        raise UnsupportedOpError("Conv expects 2D dilations")
+    pads = tuple(int(value) for value in node.attrs.get("pads", (0, 0, 0, 0)))
+    if len(pads) != 4:
+        raise UnsupportedOpError("Conv expects 4D pads")
+    pad_top, pad_left, pad_bottom, pad_right = pads
+    input_shape = _value_shape(graph, node.inputs[0], node)
+    weight_shape = _value_shape(graph, node.inputs[1], node)
+    if len(input_shape) != 4 or len(weight_shape) != 4:
+        raise UnsupportedOpError("Conv supports NCHW 2D inputs only")
+    batch, in_channels, in_h, in_w = input_shape
+    out_channels, weight_in_channels, kernel_h, kernel_w = weight_shape
+    kernel_shape = node.attrs.get("kernel_shape")
+    if kernel_shape is not None:
+        kernel_shape = tuple(int(value) for value in kernel_shape)
+        if len(kernel_shape) != 2:
+            raise UnsupportedOpError("Conv expects 2D kernel_shape")
+        if kernel_shape != (kernel_h, kernel_w):
+            raise ShapeInferenceError(
+                "Conv kernel_shape must match weights, "
+                f"got {kernel_shape} and {(kernel_h, kernel_w)}"
+            )
+    if in_channels != weight_in_channels:
+        raise ShapeInferenceError(
+            "Conv input channels must match weight channels, "
+            f"got {in_channels} and {weight_in_channels}"
+        )
+    if len(node.inputs) == 3:
+        bias_shape = _value_shape(graph, node.inputs[2], node)
+        if bias_shape != (out_channels,):
+            raise ShapeInferenceError(
+                f"Conv bias shape must be {(out_channels,)}, got {bias_shape}"
+            )
+    stride_h, stride_w = strides
+    dilation_h, dilation_w = dilations
+    effective_kernel_h = dilation_h * (kernel_h - 1) + 1
+    effective_kernel_w = dilation_w * (kernel_w - 1) + 1
+    out_h = (in_h + pad_top + pad_bottom - effective_kernel_h) // stride_h + 1
+    out_w = (in_w + pad_left + pad_right - effective_kernel_w) // stride_w + 1
+    if out_h <= 0 or out_w <= 0:
+        raise ShapeInferenceError("Conv output shape must be positive")
+    output_shape = _value_shape(graph, node.outputs[0], node)
+    expected_output_shape = (batch, out_channels, out_h, out_w)
+    if output_shape != expected_output_shape:
+        raise ShapeInferenceError(
+            "Conv output shape must be "
+            f"{expected_output_shape}, got {output_shape}"
+        )
+    return _ConvSpec(
+        batch=batch,
+        in_channels=in_channels,
+        out_channels=out_channels,
+        in_h=in_h,
+        in_w=in_w,
+        out_h=out_h,
+        out_w=out_w,
+        kernel_h=kernel_h,
+        kernel_w=kernel_w,
+        stride_h=stride_h,
+        stride_w=stride_w,
+        pad_top=pad_top,
+        pad_left=pad_left,
+        pad_bottom=pad_bottom,
+        pad_right=pad_right,
+        dilation_h=dilation_h,
+        dilation_w=dilation_w,
+    )
+
+
+def _apply_conv(
+    spec: _ConvSpec,
+    data: np.ndarray,
+    weights: np.ndarray,
+    bias: np.ndarray | None,
+) -> np.ndarray:
+    output = np.zeros(
+        (spec.batch, spec.out_channels, spec.out_h, spec.out_w),
+        dtype=data.dtype,
+    )
+    for n in range(spec.batch):
+        for oc in range(spec.out_channels):
+            base = bias[oc] if bias is not None else 0.0
+            for oh in range(spec.out_h):
+                for ow in range(spec.out_w):
+                    acc = base
+                    for ic in range(spec.in_channels):
+                        for kh in range(spec.kernel_h):
+                            ih = oh * spec.stride_h + kh * spec.dilation_h - spec.pad_top
+                            if ih < 0 or ih >= spec.in_h:
+                                continue
+                            for kw in range(spec.kernel_w):
+                                iw = (
+                                    ow * spec.stride_w
+                                    + kw * spec.dilation_w
+                                    - spec.pad_left
+                                )
+                                if iw < 0 or iw >= spec.in_w:
+                                    continue
+                                acc += (
+                                    data[n, ic, ih, iw]
+                                    * weights[oc, ic, kh, kw]
+                                )
+                    output[n, oc, oh, ow] = acc
+    return output

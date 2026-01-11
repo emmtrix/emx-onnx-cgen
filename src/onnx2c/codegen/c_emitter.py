@@ -58,6 +58,30 @@ class AttentionOp:
 
 
 @dataclass(frozen=True)
+class ConvOp:
+    input0: str
+    weights: str
+    bias: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_h: int
+    kernel_w: int
+    stride_h: int
+    stride_w: int
+    pad_top: int
+    pad_left: int
+    dilation_h: int
+    dilation_w: int
+    dtype: str
+
+
+@dataclass(frozen=True)
 class ConstTensor:
     name: str
     shape: tuple[int, ...]
@@ -83,7 +107,7 @@ class LoweredModel:
     element_count: int
     output_shape: tuple[int, ...]
     constants: tuple[ConstTensor, ...]
-    ops: tuple[BinaryOp | UnaryOp | MatMulOp | AttentionOp, ...]
+    ops: tuple[BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp, ...]
 
 
 class CEmitter:
@@ -101,6 +125,7 @@ class CEmitter:
             unary_template = self._env.get_template("unary_op.c.j2")
             matmul_template = self._env.get_template("matmul_op.c.j2")
             attention_template = self._env.get_template("attention_op.c.j2")
+            conv_template = self._env.get_template("conv_op.c.j2")
             testbench_template = None
             if emit_testbench:
                 testbench_template = self._env.get_template("testbench.c.j2")
@@ -130,6 +155,7 @@ class CEmitter:
                 unary_template=unary_template,
                 matmul_template=matmul_template,
                 attention_template=attention_template,
+                conv_template=conv_template,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -210,7 +236,7 @@ class CEmitter:
     def _emit_model_wrapper(
         self,
         model: LoweredModel,
-        resolved_ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp],
+        resolved_ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp],
         temp_buffers: tuple[TempBuffer, ...],
         array_suffix: str,
     ) -> str:
@@ -236,6 +262,11 @@ class CEmitter:
                 call = (
                     f"{op.input_q}, {op.input_k}, {op.input_v}, {op.output}"
                 )
+            elif isinstance(op, ConvOp):
+                if op.bias is None:
+                    call = f"{op.input0}, {op.weights}, {op.output}"
+                else:
+                    call = f"{op.input0}, {op.weights}, {op.bias}, {op.output}"
             else:
                 call = f"{op.input0}, {op.output}"
             lines.append(f"    {model.name}_op{index}({call});")
@@ -264,8 +295,9 @@ class CEmitter:
 
     @staticmethod
     def _resolve_op(
-        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp, temp_map: dict[str, str]
-    ) -> BinaryOp | UnaryOp | MatMulOp | AttentionOp:
+        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp,
+        temp_map: dict[str, str],
+    ) -> BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp:
         if isinstance(op, BinaryOp):
             return BinaryOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -302,6 +334,29 @@ class CEmitter:
                 is_causal=op.is_causal,
                 dtype=op.dtype,
             )
+        if isinstance(op, ConvOp):
+            return ConvOp(
+                input0=temp_map.get(op.input0, op.input0),
+                weights=temp_map.get(op.weights, op.weights),
+                bias=temp_map.get(op.bias, op.bias) if op.bias else None,
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                dtype=op.dtype,
+            )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
@@ -313,7 +368,7 @@ class CEmitter:
     @staticmethod
     def _render_op(
         model: LoweredModel,
-        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp,
+        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp,
         index: int,
         *,
         array_suffix: str,
@@ -326,6 +381,7 @@ class CEmitter:
         unary_template,
         matmul_template,
         attention_template,
+        conv_template,
     ) -> str:
         if isinstance(op, BinaryOp):
             shape = op.shape
@@ -415,6 +471,39 @@ class CEmitter:
                     (op.batch, op.heads, op.q_seq, op.v_head_size)
                 ),
             ).rstrip()
+        if isinstance(op, ConvOp):
+            input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
+            weight_shape = (op.out_channels, op.in_channels, op.kernel_h, op.kernel_w)
+            output_shape = (op.batch, op.out_channels, op.out_h, op.out_w)
+            return conv_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                weights=op.weights,
+                bias=op.bias,
+                output=op.output,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                input_suffix=CEmitter._array_suffix(input_shape),
+                weight_suffix=CEmitter._array_suffix(weight_shape),
+                bias_suffix=CEmitter._array_suffix((op.out_channels,)),
+                output_suffix=CEmitter._array_suffix(output_shape),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+            ).rstrip()
         shape = op.shape
         loop_vars = CEmitter._loop_vars(shape)
         loop_indents = CEmitter._loop_indents(shape)
@@ -440,12 +529,14 @@ class CEmitter:
         ).rstrip()
 
     @staticmethod
-    def _op_output(op: BinaryOp | UnaryOp | MatMulOp | AttentionOp) -> str:
+    def _op_output(
+        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp,
+    ) -> str:
         return op.output
 
     @staticmethod
     def _op_output_shape(
-        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp,
+        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return op.shape
@@ -453,11 +544,13 @@ class CEmitter:
             return op.shape
         if isinstance(op, MatMulOp):
             return (op.m, op.n)
+        if isinstance(op, ConvOp):
+            return (op.batch, op.out_channels, op.out_h, op.out_w)
         return (op.batch, op.heads, op.q_seq, op.v_head_size)
 
     @staticmethod
     def _op_output_dtype(
-        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp,
+        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp,
     ) -> str:
         return op.dtype
 

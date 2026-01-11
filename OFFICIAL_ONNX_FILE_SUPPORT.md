@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 104 / 1802 official ONNX files.
+Support 106 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -242,8 +242,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx` | ❌ | Unsupported op AveragePool |
 | `node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx` | ❌ | Unsupported op AveragePool |
 | `node/test_averagepool_3d_dilations_small/model.onnx` | ❌ | Unsupported op AveragePool |
-| `node/test_basic_conv_with_padding/model.onnx` | ❌ | Unsupported op Conv |
-| `node/test_basic_conv_without_padding/model.onnx` | ❌ | Unsupported op Conv |
+| `node/test_basic_conv_with_padding/model.onnx` | ✅ |  |
+| `node/test_basic_conv_without_padding/model.onnx` | ✅ |  |
 | `node/test_basic_deform_conv_with_padding/model.onnx` | ❌ | Unsupported op DeformConv |
 | `node/test_basic_deform_conv_without_padding/model.onnx` | ❌ | Unsupported op DeformConv |
 | `node/test_batchnorm_epsilon/model.onnx` | ❌ | Unsupported op BatchNormalization |
@@ -523,7 +523,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_constantofshape_float_ones/model.onnx` | ❌ | ConstantOfShape expects matching dtypes, got float, int64 |
 | `node/test_constantofshape_int_shape_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
 | `node/test_constantofshape_int_zeros/model.onnx` | ❌ | ConstantOfShape expects matching dtypes, got int32, int64 |
-| `node/test_conv_with_autopad_same/model.onnx` | ❌ | Unsupported op Conv |
+| `node/test_conv_with_autopad_same/model.onnx` | ❌ | Conv supports auto_pad=NOTSET only |
 | `node/test_conv_with_strides_and_asymmetric_padding/model.onnx` | ❌ | Unsupported op Conv |
 | `node/test_conv_with_strides_no_padding/model.onnx` | ❌ | Unsupported op Conv |
 | `node/test_conv_with_strides_padding/model.onnx` | ❌ | Unsupported op Conv |
