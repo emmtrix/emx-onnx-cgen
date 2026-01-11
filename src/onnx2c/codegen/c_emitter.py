@@ -82,6 +82,18 @@ class ConvOp:
 
 
 @dataclass(frozen=True)
+class SoftmaxOp:
+    input0: str
+    output: str
+    outer: int
+    axis_size: int
+    inner: int
+    axis: int
+    shape: tuple[int, ...]
+    dtype: str
+
+
+@dataclass(frozen=True)
 class MaxPoolOp:
     input0: str
     output: str
@@ -150,6 +162,7 @@ class LoweredModel:
         | MatMulOp
         | AttentionOp
         | ConvOp
+        | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp,
@@ -173,6 +186,7 @@ class CEmitter:
             matmul_template = self._env.get_template("matmul_op.c.j2")
             attention_template = self._env.get_template("attention_op.c.j2")
             conv_template = self._env.get_template("conv_op.c.j2")
+            softmax_template = self._env.get_template("softmax_op.c.j2")
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
             concat_template = self._env.get_template("concat_op.c.j2")
             transpose_template = self._env.get_template("transpose_op.c.j2")
@@ -207,6 +221,7 @@ class CEmitter:
                 matmul_template=matmul_template,
                 attention_template=attention_template,
                 conv_template=conv_template,
+                softmax_template=softmax_template,
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
                 transpose_template=transpose_template,
@@ -268,6 +283,9 @@ class CEmitter:
         if any(isinstance(op, AttentionOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
+        if any(isinstance(op, SoftmaxOp) for op in resolved_ops):
+            if "#include <math.h>" not in includes:
+                includes.append("#include <math.h>")
         if any(isinstance(op, MaxPoolOp) for op in resolved_ops):
             if any(
                 op.dtype == "float"
@@ -313,6 +331,7 @@ class CEmitter:
             | MatMulOp
             | AttentionOp
             | ConvOp
+            | SoftmaxOp
             | MaxPoolOp
             | ConcatOp
         ],
@@ -346,6 +365,8 @@ class CEmitter:
                     call = f"{op.input0}, {op.weights}, {op.output}"
                 else:
                     call = f"{op.input0}, {op.weights}, {op.bias}, {op.output}"
+            elif isinstance(op, SoftmaxOp):
+                call = f"{op.input0}, {op.output}"
             elif isinstance(op, ConcatOp):
                 call = ", ".join((*op.inputs, op.output))
             else:
@@ -381,6 +402,7 @@ class CEmitter:
         | MatMulOp
         | AttentionOp
         | ConvOp
+        | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp,
@@ -391,6 +413,7 @@ class CEmitter:
         | MatMulOp
         | AttentionOp
         | ConvOp
+        | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -454,6 +477,17 @@ class CEmitter:
                 dilation_w=op.dilation_w,
                 dtype=op.dtype,
             )
+        if isinstance(op, SoftmaxOp):
+            return SoftmaxOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                axis=op.axis,
+                shape=op.shape,
+                dtype=op.dtype,
+            )
         if isinstance(op, MaxPoolOp):
             return MaxPoolOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -504,6 +538,7 @@ class CEmitter:
         | MatMulOp
         | AttentionOp
         | ConvOp
+        | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp,
@@ -521,6 +556,7 @@ class CEmitter:
         matmul_template,
         attention_template,
         conv_template,
+        softmax_template,
         maxpool_template,
         concat_template,
         transpose_template,
@@ -646,6 +682,18 @@ class CEmitter:
                 dilation_h=op.dilation_h,
                 dilation_w=op.dilation_w,
             ).rstrip()
+        if isinstance(op, SoftmaxOp):
+            return softmax_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                array_suffix=CEmitter._array_suffix(op.shape),
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+            ).rstrip()
         if isinstance(op, MaxPoolOp):
             input_shape = (op.batch, op.channels, *op.in_spatial)
             output_shape = (op.batch, op.channels, *op.out_spatial)
@@ -746,6 +794,7 @@ class CEmitter:
         | MatMulOp
         | AttentionOp
         | ConvOp
+        | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp,
@@ -759,6 +808,7 @@ class CEmitter:
         | MatMulOp
         | AttentionOp
         | ConvOp
+        | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp,
@@ -771,6 +821,8 @@ class CEmitter:
             return (op.m, op.n)
         if isinstance(op, ConvOp):
             return (op.batch, op.out_channels, op.out_h, op.out_w)
+        if isinstance(op, SoftmaxOp):
+            return op.shape
         if isinstance(op, MaxPoolOp):
             return (op.batch, op.channels, *op.out_spatial)
         if isinstance(op, ConcatOp):
@@ -786,6 +838,7 @@ class CEmitter:
         | MatMulOp
         | AttentionOp
         | ConvOp
+        | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp,

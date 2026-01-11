@@ -15,7 +15,6 @@
 | Unsupported op Attention | 29 | ██████ |
 | Unsupported op CastLike | 29 | ██████ |
 | Unsupported op AveragePool | 25 | █████ |
-| Unsupported op MaxPool | 25 | █████ |
 | Unsupported elem_type 13 (UINT64) for tensor '*'. | 21 | ████ |
 | ReduceMax expects matching dtypes, got float, int64 | 21 | ████ |
 | Unsupported elem_type 4 (UINT16) for tensor '*'. | 19 | ████ |
@@ -41,7 +40,6 @@
 | Less expects matching dtypes, got bool, float | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
-| Unsupported op Softmax | 11 | ██ |
 | ConstantOfShape expects matching dtypes, got float, int64 | 10 | ██ |
 | Unsupported op LogSoftmax | 10 | ██ |
 | Shape expects matching dtypes, got float, int64 | 10 | ██ |
