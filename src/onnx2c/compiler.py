@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
+from typing import Callable, Mapping
 
 import numpy as np
 import onnx
@@ -49,13 +49,15 @@ class Compiler:
                 f"Only one- or two-node graphs are supported, got {len(graph.nodes)}"
             )
         node = graph.nodes[0]
-        if node.op_type == "MatMul":
+        if node.op_type in {"MatMul", "Gemm"}:
+            if node.op_type == "Gemm":
+                _validate_gemm(node)
             return self._lower_matmul(graph, node)
-        op_symbol = _binary_op_symbol(node.op_type)
+        op_spec = _binary_op_symbol(node.op_type, node.attrs)
         unary_symbol = _unary_op_symbol(node.op_type)
-        if op_symbol is None and unary_symbol is None:
+        if op_spec is None and unary_symbol is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if op_symbol is not None:
+        if op_spec is not None:
             if len(node.inputs) != 2 or len(node.outputs) != 1:
                 raise UnsupportedOpError(
                     f"{node.op_type} must have 2 inputs and 1 output"
@@ -106,18 +108,19 @@ class Compiler:
                     input0=node.inputs[0],
                     input1=node.inputs[1],
                     output=node.outputs[0],
-                    operator=op_symbol,
+                    operator=op_spec.operator,
+                    operator_kind=op_spec.kind,
                 ),
             ),
         )
 
     def _lower_binary_chain_model(self, graph: Graph) -> LoweredModel:
         node1, node2 = graph.nodes
-        op1_symbol = _binary_op_symbol(node1.op_type)
-        if op1_symbol is None:
+        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs)
+        if op1_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_symbol = _binary_op_symbol(node2.op_type)
-        if op2_symbol is None:
+        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs)
+        if op2_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
         if len(node1.inputs) != 2 or len(node1.outputs) != 1:
             raise UnsupportedOpError(
@@ -155,13 +158,15 @@ class Compiler:
                     input0=node1.inputs[0],
                     input1=node1.inputs[1],
                     output=intermediate,
-                    operator=op1_symbol,
+                    operator=op1_spec.operator,
+                    operator_kind=op1_spec.kind,
                 ),
                 BinaryOp(
                     input0=node2.inputs[0],
                     input1=node2.inputs[1],
                     output=node2.outputs[0],
-                    operator=op2_symbol,
+                    operator=op2_spec.operator,
+                    operator_kind=op2_spec.kind,
                 ),
             ),
         )
@@ -179,19 +184,21 @@ class Compiler:
                 return self._run_binary_chain(graph, resolved_feeds)
             raise UnsupportedOpError("Only one- or two-node graphs are supported")
         node = graph.nodes[0]
-        if node.op_type == "MatMul":
+        if node.op_type in {"MatMul", "Gemm"}:
+            if node.op_type == "Gemm":
+                _validate_gemm(node)
             left = resolved_feeds.fetch(node.inputs[0])
             right = resolved_feeds.fetch(node.inputs[1])
             result = _apply_matmul(left, right)
             return {node.outputs[0]: result}
-        op_symbol = _binary_op_symbol(node.op_type)
+        op_spec = _binary_op_symbol(node.op_type, node.attrs)
         unary_symbol = _unary_op_symbol(node.op_type)
-        if op_symbol is None and unary_symbol is None:
+        if op_spec is None and unary_symbol is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if op_symbol is not None:
+        if op_spec is not None:
             left = resolved_feeds.fetch(node.inputs[0])
             right = resolved_feeds.fetch(node.inputs[1])
-            result = _apply_binary_op(op_symbol, left, right)
+            result = _apply_binary_op(op_spec, left, right)
         else:
             value = resolved_feeds.fetch(node.inputs[0])
             result = _apply_unary_op(unary_symbol, value)
@@ -201,11 +208,11 @@ class Compiler:
         self, graph: Graph, feeds: _ResolvedFeeds
     ) -> dict[str, np.ndarray]:
         node1, node2 = graph.nodes
-        op1_symbol = _binary_op_symbol(node1.op_type)
-        if op1_symbol is None:
+        op1_spec = _binary_op_symbol(node1.op_type, node1.attrs)
+        if op1_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node1.op_type}")
-        op2_symbol = _binary_op_symbol(node2.op_type)
-        if op2_symbol is None:
+        op2_spec = _binary_op_symbol(node2.op_type, node2.attrs)
+        if op2_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node2.op_type}")
         intermediate = node1.outputs[0]
         if intermediate not in node2.inputs:
@@ -214,14 +221,14 @@ class Compiler:
             )
         left = feeds.fetch(node1.inputs[0])
         right = feeds.fetch(node1.inputs[1])
-        tmp = _apply_binary_op(op1_symbol, left, right)
+        tmp = _apply_binary_op(op1_spec, left, right)
         if node2.inputs[0] == intermediate:
             left = tmp
             right = feeds.fetch(node2.inputs[1])
         else:
             left = feeds.fetch(node2.inputs[0])
             right = tmp
-        result = _apply_binary_op(op2_symbol, left, right)
+        result = _apply_binary_op(op2_spec, left, right)
         return {node2.outputs[0]: result}
 
     def _lower_matmul(self, graph: Graph, node: Node | None = None) -> LoweredModel:
@@ -283,6 +290,13 @@ class _ResolvedFeeds:
         return self.feeds[name]
 
 
+@dataclass(frozen=True)
+class _BinaryOpSpec:
+    operator: str
+    kind: str
+    apply: Callable[[np.ndarray, np.ndarray], np.ndarray]
+
+
 def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
     return tuple(
         ConstTensor(
@@ -305,12 +319,60 @@ def _element_count(shape: tuple[int, ...]) -> int:
     return count
 
 
-def _binary_op_symbol(op_type: str) -> str | None:
+def _binary_op_symbol(
+    op_type: str, attrs: Mapping[str, object] | None = None
+) -> _BinaryOpSpec | None:
     if op_type == "Add":
-        return "+"
+        return _BinaryOpSpec("+", "infix", lambda left, right: left + right)
+    if op_type == "Div":
+        return _BinaryOpSpec("/", "infix", lambda left, right: left / right)
+    if op_type == "Max":
+        return _BinaryOpSpec("fmaxf", "func", np.maximum)
+    if op_type == "Mean":
+        return _BinaryOpSpec(
+            "({left} + {right}) * 0.5f",
+            "expr",
+            lambda left, right: (left + right) * 0.5,
+        )
+    if op_type == "Min":
+        return _BinaryOpSpec("fminf", "func", np.minimum)
+    if op_type == "Mod":
+        fmod = 0
+        if attrs is not None:
+            fmod = int(attrs.get("fmod", 0))
+        if fmod != 1:
+            raise UnsupportedOpError(
+                "Mod only supports fmod=1 for floating point types"
+            )
+        return _BinaryOpSpec("fmodf", "func", np.fmod)
     if op_type == "Mul":
-        return "*"
+        return _BinaryOpSpec("*", "infix", lambda left, right: left * right)
+    if op_type == "Pow":
+        return _BinaryOpSpec("powf", "func", np.power)
+    if op_type == "PRelu":
+        return _BinaryOpSpec(
+            "({left} > 0.0f ? {left} : {right} * {left})",
+            "expr",
+            lambda left, right: np.where(left > 0.0, left, right * left),
+        )
+    if op_type == "Sub":
+        return _BinaryOpSpec("-", "infix", lambda left, right: left - right)
+    if op_type == "Sum":
+        return _BinaryOpSpec("+", "infix", lambda left, right: left + right)
     return None
+
+
+def _validate_gemm(node: Node) -> None:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Gemm must have 2 inputs and 1 output")
+    alpha = float(node.attrs.get("alpha", 1.0))
+    beta = float(node.attrs.get("beta", 1.0))
+    trans_a = int(node.attrs.get("transA", 0))
+    trans_b = int(node.attrs.get("transB", 0))
+    if alpha != 1.0 or beta != 1.0 or trans_a != 0 or trans_b != 0:
+        raise UnsupportedOpError(
+            "Gemm only supports alpha=1, beta=1, transA=0, transB=0"
+        )
 
 
 def _unary_op_symbol(op_type: str) -> str | None:
@@ -343,10 +405,10 @@ def _unary_op_symbol(op_type: str) -> str | None:
     return None
 
 
-def _apply_binary_op(op_symbol: str, left: np.ndarray, right: np.ndarray) -> np.ndarray:
-    if op_symbol == "+":
-        return left + right
-    return left * right
+def _apply_binary_op(
+    op_spec: _BinaryOpSpec, left: np.ndarray, right: np.ndarray
+) -> np.ndarray:
+    return op_spec.apply(left, right)
 
 
 def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:

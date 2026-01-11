@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Iterable
 
 import onnx
-from onnx import numpy_helper
+from onnx import helper, numpy_helper
 
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Initializer, Node, TensorType, Value
@@ -66,6 +66,10 @@ def _initializer(value: onnx.TensorProto) -> Initializer:
     )
 
 
+def _node_attrs(node: onnx.NodeProto) -> dict[str, object]:
+    return {attr.name: helper.get_attribute_value(attr) for attr in node.attribute}
+
+
 def import_onnx(model: onnx.ModelProto) -> Graph:
     graph = model.graph
     initializers = tuple(_initializer(value) for value in graph.initializer)
@@ -75,6 +79,7 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
             op_type=node.op_type,
             inputs=tuple(node.input),
             outputs=tuple(node.output),
+            attrs=_node_attrs(node),
         )
         for node in graph.node
     )
