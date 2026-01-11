@@ -20,21 +20,21 @@
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op Less | 18 | ████ |
 | Unsupported op GridSample | 18 | ████ |
-| Unsupported op Reshape | 17 | ███ |
 | Unsupported elem_type 12 (UINT32) for tensor '*'. | 17 | ███ |
 | Unsupported op Unsqueeze | 16 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
+| Gemm must have 2 inputs and 1 output | 15 | ███ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
+| Unsupported op LogSoftmax | 14 | ███ |
 | Unsupported op Clip | 13 | ███ |
-| Gemm must have 2 inputs and 1 output | 13 | ███ |
 | Conv expects 2D strides | 13 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
@@ -42,7 +42,6 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
-| Unsupported op LogSoftmax | 10 | ██ |
 | Unsupported op ReduceMin | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
 | Conv supports group=1 only | 9 | ██ |
@@ -51,6 +50,7 @@
 | Unsupported op ReduceL2 | 9 | ██ |
 | Unsupported op ReduceProd | 9 | ██ |
 | Unsupported op ReduceSumSquare | 9 | ██ |
+| Reshape requires a constant shape input | 9 | ██ |
 | Unsupported op Dropout | 8 | ██ |
 | Unsupported op Greater | 8 | ██ |
 | Unsupported op LpPool | 8 | ██ |
@@ -91,6 +91,7 @@
 | Unsupported op Softplus | 4 | █ |
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op SoftmaxCrossEntropyLoss | 4 | █ |
+| Unsupported op Tile | 4 | █ |
 | AveragePool supports auto_pad=NOTSET only | 3 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
@@ -105,7 +106,6 @@
 | Unsupported op Shrink | 3 | █ |
 | Unsupported op TensorScatter | 3 | █ |
 | Unsupported op ThresholdedRelu | 3 | █ |
-| Unsupported op Tile | 3 | █ |
 | Unsupported op Acos | 2 | █ |
 | Unsupported op Acosh | 2 | █ |
 | Unsupported op Asin | 2 | █ |

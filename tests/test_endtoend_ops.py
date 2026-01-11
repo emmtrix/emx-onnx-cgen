@@ -129,6 +129,44 @@ def _make_constant_of_shape_model() -> onnx.ModelProto:
     return model
 
 
+def _make_reshape_model() -> onnx.ModelProto:
+    input_shape = [2, 3, 4]
+    output_shape = [2, 12]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    shape_values = np.array([0, -1], dtype=np.int64)
+    shape_tensor = helper.make_tensor(
+        "shape",
+        TensorProto.INT64,
+        dims=shape_values.shape,
+        vals=shape_values.tolist(),
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    node = helper.make_node(
+        "Reshape",
+        inputs=["in0", "shape"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "reshape_graph",
+        [input_info],
+        [output],
+        initializer=[shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_conv_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     weight_shape = [1, 1, 3, 3]
@@ -737,6 +775,11 @@ def test_constant_op_matches_onnxruntime() -> None:
 
 def test_constant_of_shape_matches_onnxruntime() -> None:
     model = _make_constant_of_shape_model()
+    _run_cli_verify(model)
+
+
+def test_reshape_op_matches_onnxruntime() -> None:
+    model = _make_reshape_model()
     _run_cli_verify(model)
 
 
