@@ -72,8 +72,7 @@ When making architectural decisions, prefer clean and maintainable design even i
 pytest -n auto -q
 ```
 
-When running tests, ensure the test duration is always emitted in the output
-(for example, by adding `--durations=0` to pytest).
+When reporting executed tests, include the test duration in your feedback.
 
 ## Compiler Pipeline (conceptual)
 
