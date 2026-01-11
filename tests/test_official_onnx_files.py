@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from collections import Counter
 from pathlib import Path
 
@@ -1902,6 +1903,7 @@ def test_official_onnx_expected_errors() -> None:
     expected_paths = [path for path, _ in expectations]
     assert expected_paths == OFFICIAL_ONNX_FILES
     compiler = Compiler()
+    actual_expectations: list[tuple[str, str]] = []
     for rel_path, expected_error in expectations:
         model_path = data_root / rel_path
         model = onnx.load_model(model_path)
@@ -1911,14 +1913,29 @@ def test_official_onnx_expected_errors() -> None:
             actual_error = str(exc)
         else:
             actual_error = ""
+        actual_expectations.append((rel_path, actual_error))
+        if os.getenv("UPDATE_REFS"):
+            continue
         assert actual_error == expected_error, (
             f"Unexpected result for {rel_path}. Expected: {expected_error!r}. "
             f"Got: {actual_error!r}."
         )
+    if os.getenv("UPDATE_REFS"):
+        OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH.write_text(
+            json.dumps(actual_expectations, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return
 
 
 def test_official_onnx_file_support_doc() -> None:
     expectations = _load_official_onnx_file_expectations()
     expected_markdown = _render_official_onnx_file_support_markdown(expectations)
+    if os.getenv("UPDATE_REFS"):
+        OFFICIAL_ONNX_FILE_SUPPORT_PATH.write_text(
+            expected_markdown,
+            encoding="utf-8",
+        )
+        return
     actual_markdown = OFFICIAL_ONNX_FILE_SUPPORT_PATH.read_text(encoding="utf-8")
     assert actual_markdown == expected_markdown
