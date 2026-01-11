@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-import json
 import os
-import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-import numpy as np
 import onnx
-import onnxruntime as ort
 import pytest
 
 from onnx import TensorProto, helper
@@ -50,15 +46,9 @@ def _make_operator_model(
     return model
 
 
-def _compile_and_run_testbench(model: onnx.ModelProto) -> dict[str, object]:
-    compiler_cmd = os.environ.get("CC") or shutil.which("cc") or shutil.which("gcc")
-    if compiler_cmd is None:
-        pytest.skip("C compiler not available (set CC or install gcc/clang)")
+def _run_cli_verify(model: onnx.ModelProto) -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
-        temp_path = Path(temp_dir)
-        c_path = temp_path / "model.c"
-        exe_path = temp_path / "model"
-        model_path = temp_path / "model.onnx"
+        model_path = Path(temp_dir) / "model.onnx"
         onnx.save_model(model, model_path)
         env = os.environ.copy()
         python_path = str(SRC_ROOT)
@@ -70,12 +60,10 @@ def _compile_and_run_testbench(model: onnx.ModelProto) -> dict[str, object]:
                 sys.executable,
                 "-m",
                 "onnx2c",
-                "compile",
+                "verify",
                 str(model_path),
-                str(c_path),
                 "--template-dir",
                 str(PROJECT_ROOT / "templates"),
-                "--emit-testbench",
             ],
             check=True,
             capture_output=True,
@@ -83,19 +71,6 @@ def _compile_and_run_testbench(model: onnx.ModelProto) -> dict[str, object]:
             cwd=PROJECT_ROOT,
             env=env,
         )
-        subprocess.run(
-            [compiler_cmd, "-std=c99", "-O2", str(c_path), "-o", str(exe_path), "-lm"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        result = subprocess.run(
-            [str(exe_path)],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    return json.loads(result.stdout)
 
 
 OPERATOR_CASES = [
@@ -151,18 +126,4 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         dtype=case["dtype"],
         attrs=case["attrs"],
     )
-    with tempfile.TemporaryDirectory() as temp_dir:
-        model_path = Path(temp_dir) / f"{case['op_type'].lower()}.onnx"
-        onnx.save_model(model, model_path)
-        loaded_model = onnx.load_model(model_path)
-    payload = _compile_and_run_testbench(loaded_model)
-    inputs = {
-        name: np.array(value["data"], dtype=np.float32)
-        for name, value in payload["inputs"].items()
-    }
-    sess = ort.InferenceSession(
-        loaded_model.SerializeToString(), providers=["CPUExecutionProvider"]
-    )
-    (ort_out,) = sess.run(None, inputs)
-    output_data = np.array(payload["output"]["data"], dtype=np.float32)
-    np.testing.assert_allclose(output_data, ort_out, rtol=1e-4, atol=1e-5)
+    _run_cli_verify(model)

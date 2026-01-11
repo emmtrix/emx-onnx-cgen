@@ -10,7 +10,6 @@ from pathlib import Path
 
 import numpy as np
 import onnx
-import onnxruntime as ort
 import pytest
 
 from onnx import TensorProto, helper
@@ -100,17 +99,37 @@ def _compile_and_run_testbench(model: onnx.ModelProto) -> tuple[dict[str, object
     return json.loads(result.stdout), generated
 
 
+def _run_cli_verify(model_path: Path) -> None:
+    env = os.environ.copy()
+    python_path = str(SRC_ROOT)
+    if env.get("PYTHONPATH"):
+        python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
+    env["PYTHONPATH"] = python_path
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "onnx2c",
+            "verify",
+            str(model_path),
+            "--template-dir",
+            str(PROJECT_ROOT / "templates"),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=PROJECT_ROOT,
+        env=env,
+    )
+
+
 def test_initializer_weights_emitted_as_static_arrays() -> None:
     model, weights = _make_add_initializer_model()
     payload, generated = _compile_and_run_testbench(model)
     assert "static const float weight" in generated
-    inputs = {
-        name: np.array(value["data"], dtype=np.float32)
-        for name, value in payload["inputs"].items()
-    }
-    sess = ort.InferenceSession(
-        model.SerializeToString(), providers=["CPUExecutionProvider"]
-    )
-    (ort_out,) = sess.run(None, {**inputs, "weight": weights})
     output_data = np.array(payload["output"]["data"], dtype=np.float32)
-    np.testing.assert_allclose(output_data, ort_out, rtol=1e-4, atol=1e-5)
+    assert output_data.shape == weights.shape
+    with tempfile.TemporaryDirectory() as temp_dir:
+        model_path = Path(temp_dir) / "add_init.onnx"
+        onnx.save_model(model, model_path)
+        _run_cli_verify(model_path)
