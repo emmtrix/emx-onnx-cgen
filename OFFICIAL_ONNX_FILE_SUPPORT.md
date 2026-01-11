@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 184 / 1802 official ONNX files.
+Support 191 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -9,11 +9,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | File | Supported | Error |
 | --- | --- | --- |
 | `light/light_bvlc_alexnet.onnx` | ❌ | Unsupported op LRN |
-| `light/light_densenet121.onnx` | ❌ | Unsupported op BatchNormalization |
+| `light/light_densenet121.onnx` | ❌ | Unsupported op Unsqueeze |
 | `light/light_inception_v1.onnx` | ❌ | Unsupported op LRN |
-| `light/light_inception_v2.onnx` | ❌ | Unsupported op BatchNormalization |
-| `light/light_resnet50.onnx` | ❌ | Unsupported op BatchNormalization |
-| `light/light_shufflenet.onnx` | ❌ | Unsupported op BatchNormalization |
+| `light/light_inception_v2.onnx` | ❌ | Unsupported op Unsqueeze |
+| `light/light_resnet50.onnx` | ❌ | Unsupported op Reshape |
+| `light/light_shufflenet.onnx` | ❌ | Conv supports group=1 only |
 | `light/light_squeezenet.onnx` | ❌ | Unsupported op Dropout |
 | `light/light_vgg19.onnx` | ❌ | Unsupported op Reshape |
 | `light/light_zfnet512.onnx` | ❌ | Unsupported op LRN |
@@ -246,9 +246,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_basic_conv_without_padding/model.onnx` | ✅ |  |
 | `node/test_basic_deform_conv_with_padding/model.onnx` | ❌ | Unsupported op DeformConv |
 | `node/test_basic_deform_conv_without_padding/model.onnx` | ❌ | Unsupported op DeformConv |
-| `node/test_batchnorm_epsilon/model.onnx` | ❌ | Unsupported op BatchNormalization |
+| `node/test_batchnorm_epsilon/model.onnx` | ✅ |  |
 | `node/test_batchnorm_epsilon_training_mode/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_batchnorm_example/model.onnx` | ❌ | Unsupported op BatchNormalization |
+| `node/test_batchnorm_example/model.onnx` | ✅ |  |
 | `node/test_batchnorm_example_training_mode/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_bernoulli/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_bernoulli_double/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
@@ -1677,11 +1677,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_AvgPool3d/model.onnx` | ❌ | AveragePool expects 2D kernel_shape |
 | `pytorch-converted/test_AvgPool3d_stride/model.onnx` | ❌ | AveragePool expects 2D kernel_shape |
 | `pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input/model.onnx` | ❌ | AveragePool expects 2D kernel_shape |
-| `pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx` | ❌ | Unsupported op BatchNormalization |
-| `pytorch-converted/test_BatchNorm2d_eval/model.onnx` | ❌ | Unsupported op BatchNormalization |
-| `pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx` | ❌ | Unsupported op BatchNormalization |
-| `pytorch-converted/test_BatchNorm3d_eval/model.onnx` | ❌ | Unsupported op BatchNormalization |
-| `pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx` | ❌ | Unsupported op BatchNormalization |
+| `pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx` | ✅ |  |
+| `pytorch-converted/test_BatchNorm2d_eval/model.onnx` | ✅ |  |
+| `pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx` | ✅ |  |
+| `pytorch-converted/test_BatchNorm3d_eval/model.onnx` | ✅ |  |
+| `pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ConstantPad2d/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-converted/test_Conv1d/model.onnx` | ❌ | Conv expects 2D strides |
 | `pytorch-converted/test_Conv1d_dilated/model.onnx` | ❌ | Conv expects 2D strides |

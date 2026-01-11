@@ -5,7 +5,7 @@
   ],
   [
     "light/light_densenet121.onnx",
-    "Unsupported op BatchNormalization"
+    "Unsupported op Unsqueeze"
   ],
   [
     "light/light_inception_v1.onnx",
@@ -13,15 +13,15 @@
   ],
   [
     "light/light_inception_v2.onnx",
-    "Unsupported op BatchNormalization"
+    "Unsupported op Unsqueeze"
   ],
   [
     "light/light_resnet50.onnx",
-    "Unsupported op BatchNormalization"
+    "Unsupported op Reshape"
   ],
   [
     "light/light_shufflenet.onnx",
-    "Unsupported op BatchNormalization"
+    "Conv supports group=1 only"
   ],
   [
     "light/light_squeezenet.onnx",
@@ -953,7 +953,7 @@
   ],
   [
     "node/test_batchnorm_epsilon/model.onnx",
-    "Unsupported op BatchNormalization"
+    ""
   ],
   [
     "node/test_batchnorm_epsilon_training_mode/model.onnx",
@@ -961,7 +961,7 @@
   ],
   [
     "node/test_batchnorm_example/model.onnx",
-    "Unsupported op BatchNormalization"
+    ""
   ],
   [
     "node/test_batchnorm_example_training_mode/model.onnx",
@@ -6677,23 +6677,23 @@
   ],
   [
     "pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx",
-    "Unsupported op BatchNormalization"
+    ""
   ],
   [
     "pytorch-converted/test_BatchNorm2d_eval/model.onnx",
-    "Unsupported op BatchNormalization"
+    ""
   ],
   [
     "pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx",
-    "Unsupported op BatchNormalization"
+    ""
   ],
   [
     "pytorch-converted/test_BatchNorm3d_eval/model.onnx",
-    "Unsupported op BatchNormalization"
+    ""
   ],
   [
     "pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx",
-    "Unsupported op BatchNormalization"
+    ""
   ],
   [
     "pytorch-converted/test_ConstantPad2d/model.onnx",
