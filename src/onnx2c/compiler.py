@@ -17,6 +17,7 @@ from .codegen.c_emitter import (
     ConcatOp,
     LoweredModel,
     MatMulOp,
+    TransposeOp,
     UnaryOp,
 )
 from .dtypes import dtype_info
@@ -63,7 +64,13 @@ class Compiler:
             _value_dtype(graph, value.name) for value in graph.inputs
         )
         ops: list[
-            BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp | ConcatOp
+            BinaryOp
+            | UnaryOp
+            | MatMulOp
+            | AttentionOp
+            | ConvOp
+            | ConcatOp
+            | TransposeOp
         ] = []
         for node in graph.nodes:
             if node.op_type in {"MatMul", "Gemm"}:
@@ -79,6 +86,9 @@ class Compiler:
                 continue
             if node.op_type == "Conv":
                 ops.append(self._lower_conv_op(graph, node))
+                continue
+            if node.op_type == "Transpose":
+                ops.append(self._lower_transpose_op(graph, node))
                 continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(
@@ -174,6 +184,14 @@ class Compiler:
                 tensors = [values[name] for name in node.inputs]
                 values[node.outputs[0]] = np.concatenate(tensors, axis=axis)
                 continue
+            if node.op_type == "Transpose":
+                perm = node.attrs.get("perm")
+                if perm is None:
+                    perm = tuple(reversed(range(values[node.inputs[0]].ndim)))
+                values[node.outputs[0]] = np.transpose(
+                    values[node.inputs[0]], axes=tuple(perm)
+                )
+                continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
             unary_symbol = _unary_op_symbol(node.op_type, dtype=op_dtype)
@@ -216,6 +234,41 @@ class Compiler:
             m=m,
             n=n,
             k=k_left,
+            dtype=op_dtype,
+        )
+
+    def _lower_transpose_op(self, graph: Graph, node: Node) -> TransposeOp:
+        if len(node.inputs) != 1 or len(node.outputs) != 1:
+            raise UnsupportedOpError("Transpose must have 1 input and 1 output")
+        input_shape = _value_shape(graph, node.inputs[0], node)
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        perm = node.attrs.get("perm")
+        if perm is None:
+            perm = tuple(reversed(range(len(input_shape))))
+        else:
+            perm = tuple(int(axis) for axis in perm)
+        if len(perm) != len(input_shape):
+            raise ShapeInferenceError(
+                "Transpose perm must match input rank, "
+                f"got perm {perm} for shape {input_shape}"
+            )
+        if set(perm) != set(range(len(input_shape))):
+            raise UnsupportedOpError(
+                f"Transpose perm must be a permutation, got {perm}"
+            )
+        expected_shape = tuple(input_shape[axis] for axis in perm)
+        if output_shape != expected_shape:
+            raise ShapeInferenceError(
+                "Transpose output shape must match permuted input shape, "
+                f"expected {expected_shape}, got {output_shape}"
+            )
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        return TransposeOp(
+            input0=node.inputs[0],
+            output=node.outputs[0],
+            perm=perm,
+            input_shape=input_shape,
+            output_shape=output_shape,
             dtype=op_dtype,
         )
 
