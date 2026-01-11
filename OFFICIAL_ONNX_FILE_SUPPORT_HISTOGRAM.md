@@ -21,12 +21,11 @@
 | Unsupported op Less | 18 | ████ |
 | Unsupported op GridSample | 18 | ████ |
 | Unsupported elem_type 12 (UINT32) for tensor '*'. | 17 | ███ |
-| Unsupported op Unsqueeze | 16 | ███ |
+| Gemm must have 2 inputs and 1 output | 16 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
-| Gemm must have 2 inputs and 1 output | 15 | ███ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 14 | ███ |
@@ -57,6 +56,7 @@
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Slice | 8 | ██ |
 | Dynamic or zero dims are not supported | 7 | █ |
+| Unsupported op GatherElements | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
 | AveragePool has unsupported attributes | 6 | █ |
@@ -91,16 +91,18 @@
 | Unsupported op Softplus | 4 | █ |
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op SoftmaxCrossEntropyLoss | 4 | █ |
+| Unsupported op Squeeze | 4 | █ |
 | Unsupported op Tile | 4 | █ |
+| Unsupported op GlobalAveragePool | 3 | █ |
 | AveragePool supports auto_pad=NOTSET only | 3 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
-| Unsupported op GatherElements | 3 | █ |
 | Unsupported op GatherND | 3 | █ |
 | Unsupported op GRU | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
 | Unsupported op IsInf | 3 | █ |
 | Unsupported op LSTM | 3 | █ |
+| Unsupported op Cast | 3 | █ |
 | Unsupported op RNN | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
@@ -122,7 +124,6 @@
 | Unsupported op DepthToSpace | 2 | █ |
 | Unsupported op Div | 2 | █ |
 | Unsupported op EyeLike | 2 | █ |
-| Unsupported op GlobalAveragePool | 2 | █ |
 | Unsupported op GlobalMaxPool | 2 | █ |
 | Unsupported op GroupNormalization | 2 | █ |
 | Unsupported op HammingWindow | 2 | █ |
@@ -137,7 +138,6 @@
 | Unsupported op QLinearMatMul | 2 | █ |
 | Unsupported op QuantizeLinear | 2 | █ |
 | Unsupported op Range | 2 | █ |
-| Unsupported op Cast | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
 | Unsupported op ReverseSequence | 2 | █ |
 | Unsupported op Scatter | 2 | █ |
@@ -145,7 +145,6 @@
 | Unsupported op Sinh | 2 | █ |
 | Unsupported op Softsign | 2 | █ |
 | Unsupported op SpaceToDepth | 2 | █ |
-| Unsupported op Squeeze | 2 | █ |
 | Unsupported op STFT | 2 | █ |
 | Sum must have 2 inputs and 1 output | 2 | █ |
 | Unsupported op Where | 2 | █ |
