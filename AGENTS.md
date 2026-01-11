@@ -83,6 +83,16 @@ after intentional changes, set `UPDATE_REFS=1` when running tests:
 UPDATE_REFS=1 pytest -n auto -q
 ```
 
+### Test execution policy
+
+Prefer running targeted single tests while working (e.g., a specific test module or
+test case) to keep iteration fast. At the end of every change, run the full test
+suite with reference updates enabled:
+
+```bash
+UPDATE_REFS=1 pytest -n auto -q
+```
+
 ## Compiler Pipeline (conceptual)
 
 1. **Load ONNX**
