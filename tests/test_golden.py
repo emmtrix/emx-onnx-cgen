@@ -7,11 +7,49 @@ from pathlib import Path
 import numpy as np
 import onnx
 import onnxruntime as ort
-from onnx import helper, TensorProto
+import pytest
+from typing import Callable
+from onnx import TensorProto, helper
 
 from onnx2c import Compiler
 from onnx2c.compiler import CompilerOptions
 from golden_utils import assert_golden
+
+
+def _make_binary_model(op_type: str, shape: list[int]) -> onnx.ModelProto:
+    input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, shape)
+    input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, shape)
+    node = helper.make_node(op_type, inputs=["a", "b"], outputs=["out"])
+    graph = helper.make_graph(
+        [node], f"{op_type.lower()}_graph", [input_a, input_b], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_mod_model() -> onnx.ModelProto:
+    input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3])
+    input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2, 3])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
+    node = helper.make_node(
+        "Mod", inputs=["a", "b"], outputs=["out"], fmod=1
+    )
+    graph = helper.make_graph([node], "mod_graph", [input_a, input_b], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
 
 
 def _make_add_model() -> onnx.ModelProto:
@@ -232,6 +270,47 @@ def test_mul_matches_onnxruntime() -> None:
 
     compiled = compiler.run(model, {"a": input_a, "b": input_b})
     np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+
+
+@pytest.mark.parametrize(
+    "op_type, expected_fn",
+    [
+        ("Sub", lambda left, right: left - right),
+        ("Div", lambda left, right: left / right),
+        ("Pow", np.power),
+        ("Min", np.minimum),
+        ("Max", np.maximum),
+        ("Mean", lambda left, right: (left + right) * 0.5),
+        ("Sum", lambda left, right: left + right),
+        ("PRelu", lambda left, right: np.where(left > 0.0, left, right * left)),
+    ],
+    ids=["Sub", "Div", "Pow", "Min", "Max", "Mean", "Sum", "PRelu"],
+)
+def test_binary_ops_match_numpy(
+    op_type: str, expected_fn: Callable[[np.ndarray, np.ndarray], np.ndarray]
+) -> None:
+    model = _make_binary_model(op_type, [2, 3])
+    compiler = Compiler()
+    left = np.random.uniform(-1.0, 1.0, size=(2, 3)).astype(np.float32)
+    right = np.random.uniform(0.1, 2.0, size=(2, 3)).astype(np.float32)
+    if op_type in {"Div", "Pow"}:
+        left = np.random.uniform(0.1, 2.0, size=(2, 3)).astype(np.float32)
+    if op_type == "PRelu":
+        left = np.random.uniform(-1.0, 1.0, size=(2, 3)).astype(np.float32)
+        right = np.random.uniform(0.1, 1.0, size=(2, 3)).astype(np.float32)
+    expected = expected_fn(left, right)
+    compiled = compiler.run(model, {"a": left, "b": right})
+    np.testing.assert_allclose(compiled["out"], expected, rtol=1e-4, atol=1e-5)
+
+
+def test_mod_matches_numpy() -> None:
+    model = _make_mod_model()
+    compiler = Compiler()
+    left = np.random.uniform(0.1, 2.0, size=(2, 3)).astype(np.float32)
+    right = np.random.uniform(0.1, 2.0, size=(2, 3)).astype(np.float32)
+    expected = np.fmod(left, right)
+    compiled = compiler.run(model, {"a": left, "b": right})
+    np.testing.assert_allclose(compiled["out"], expected, rtol=1e-4, atol=1e-5)
 
 
 def test_codegen_golden_mul_add() -> None:
