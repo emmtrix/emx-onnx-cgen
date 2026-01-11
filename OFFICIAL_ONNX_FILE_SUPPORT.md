@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 137 / 1802 official ONNX files.
+Support 173 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -926,23 +926,23 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_max_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'data_0'. |
 | `node/test_max_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'data_0'. |
 | `node/test_max_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data_0'. |
-| `node/test_maxpool_1d_default/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_ceil/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_default/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_dilations/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_pads/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_precomputed_pads/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_precomputed_same_upper/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_precomputed_strides/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_same_lower/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_same_upper/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_strides/model.onnx` | ❌ | Unsupported op MaxPool |
+| `node/test_maxpool_1d_default/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_ceil/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_default/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_dilations/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_pads/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_precomputed_pads/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_precomputed_same_upper/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_precomputed_strides/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_same_lower/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_same_upper/model.onnx` | ✅ |  |
+| `node/test_maxpool_2d_strides/model.onnx` | ✅ |  |
 | `node/test_maxpool_2d_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| `node/test_maxpool_3d_default/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_3d_dilations/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_3d_dilations_use_ref_impl/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx` | ❌ | Unsupported op MaxPool |
+| `node/test_maxpool_3d_default/model.onnx` | ✅ |  |
+| `node/test_maxpool_3d_dilations/model.onnx` | ✅ |  |
+| `node/test_maxpool_3d_dilations_use_ref_impl/model.onnx` | ✅ |  |
+| `node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx` | ✅ |  |
 | `node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_maxunpool_export_with_output_shape/model.onnx` | ❌ | MaxUnpool expects matching dtypes, got float, int64 |
@@ -1498,25 +1498,25 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_slice_neg_steps/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
 | `node/test_slice_negative_axes/model.onnx` | ❌ | Slice expects matching dtypes, got float, int64 |
 | `node/test_slice_start_out_of_bounds/model.onnx` | ❌ | Dynamic or zero dims are not supported |
-| `node/test_softmax_axis_0/model.onnx` | ❌ | Unsupported op Softmax |
+| `node/test_softmax_axis_0/model.onnx` | ✅ |  |
 | `node/test_softmax_axis_0_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_softmax_axis_0_expanded_ver18/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
-| `node/test_softmax_axis_1/model.onnx` | ❌ | Unsupported op Softmax |
+| `node/test_softmax_axis_1/model.onnx` | ✅ |  |
 | `node/test_softmax_axis_1_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_softmax_axis_1_expanded_ver18/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
-| `node/test_softmax_axis_2/model.onnx` | ❌ | Unsupported op Softmax |
+| `node/test_softmax_axis_2/model.onnx` | ✅ |  |
 | `node/test_softmax_axis_2_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_softmax_axis_2_expanded_ver18/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
-| `node/test_softmax_default_axis/model.onnx` | ❌ | Unsupported op Softmax |
+| `node/test_softmax_default_axis/model.onnx` | ✅ |  |
 | `node/test_softmax_default_axis_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_softmax_default_axis_expanded_ver18/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
-| `node/test_softmax_example/model.onnx` | ❌ | Unsupported op Softmax |
+| `node/test_softmax_example/model.onnx` | ✅ |  |
 | `node/test_softmax_example_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_softmax_example_expanded_ver18/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
-| `node/test_softmax_large_number/model.onnx` | ❌ | Unsupported op Softmax |
+| `node/test_softmax_large_number/model.onnx` | ✅ |  |
 | `node/test_softmax_large_number_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_softmax_large_number_expanded_ver18/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
-| `node/test_softmax_negative_axis/model.onnx` | ❌ | Unsupported op Softmax |
+| `node/test_softmax_negative_axis/model.onnx` | ✅ |  |
 | `node/test_softmax_negative_axis_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_softmax_negative_axis_expanded_ver18/model.onnx` | ❌ | ReduceMax expects matching dtypes, got float, int64 |
 | `node/test_softplus/model.onnx` | ❌ | Unsupported op Softplus |
@@ -1721,14 +1721,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_Linear/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `pytorch-converted/test_Linear_no_bias/model.onnx` | ✅ |  |
 | `pytorch-converted/test_LogSoftmax/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `pytorch-converted/test_MaxPool1d/model.onnx` | ❌ | Unsupported op MaxPool |
-| `pytorch-converted/test_MaxPool1d_stride/model.onnx` | ❌ | Unsupported op MaxPool |
-| `pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx` | ❌ | Unsupported op MaxPool |
-| `pytorch-converted/test_MaxPool2d/model.onnx` | ❌ | Unsupported op MaxPool |
-| `pytorch-converted/test_MaxPool2d_stride_padding_dilation/model.onnx` | ❌ | Unsupported op MaxPool |
-| `pytorch-converted/test_MaxPool3d/model.onnx` | ❌ | Unsupported op MaxPool |
-| `pytorch-converted/test_MaxPool3d_stride/model.onnx` | ❌ | Unsupported op MaxPool |
-| `pytorch-converted/test_MaxPool3d_stride_padding/model.onnx` | ❌ | Unsupported op MaxPool |
+| `pytorch-converted/test_MaxPool1d/model.onnx` | ✅ |  |
+| `pytorch-converted/test_MaxPool1d_stride/model.onnx` | ✅ |  |
+| `pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx` | ✅ |  |
+| `pytorch-converted/test_MaxPool2d/model.onnx` | ✅ |  |
+| `pytorch-converted/test_MaxPool2d_stride_padding_dilation/model.onnx` | ✅ |  |
+| `pytorch-converted/test_MaxPool3d/model.onnx` | ✅ |  |
+| `pytorch-converted/test_MaxPool3d_stride/model.onnx` | ✅ |  |
+| `pytorch-converted/test_MaxPool3d_stride_padding/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PReLU_1d/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PReLU_1d_multiparam/model.onnx` | ✅ |  |
 | `pytorch-converted/test_PReLU_2d/model.onnx` | ✅ |  |
@@ -1742,16 +1742,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_ReplicationPad2d/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-converted/test_SELU/model.onnx` | ❌ | Unsupported op Selu |
 | `pytorch-converted/test_Sigmoid/model.onnx` | ❌ | Unsupported op Sigmoid |
-| `pytorch-converted/test_Softmax/model.onnx` | ❌ | Unsupported op Softmax |
-| `pytorch-converted/test_Softmin/model.onnx` | ❌ | Unsupported op Softmax |
+| `pytorch-converted/test_Softmax/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Softmin/model.onnx` | ✅ |  |
 | `pytorch-converted/test_Softplus/model.onnx` | ❌ | Unsupported op Softplus |
 | `pytorch-converted/test_Softsign/model.onnx` | ❌ | Scalar outputs are not supported |
 | `pytorch-converted/test_Tanh/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ZeroPad2d/model.onnx` | ❌ | Unsupported op Pad |
 | `pytorch-converted/test_log_softmax_dim3/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `pytorch-converted/test_log_softmax_lastdim/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `pytorch-converted/test_softmax_functional_dim3/model.onnx` | ❌ | Unsupported op Softmax |
-| `pytorch-converted/test_softmax_lastdim/model.onnx` | ❌ | Unsupported op Softmax |
+| `pytorch-converted/test_softmax_functional_dim3/model.onnx` | ✅ |  |
+| `pytorch-converted/test_softmax_lastdim/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_add_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
 | `pytorch-operator/test_operator_add_size1_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
 | `pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
@@ -1768,7 +1768,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_flatten/model.onnx` | ❌ | Unsupported op Flatten |
 | `pytorch-operator/test_operator_index/model.onnx` | ❌ | Unsupported op Slice |
 | `pytorch-operator/test_operator_max/model.onnx` | ✅ |  |
-| `pytorch-operator/test_operator_maxpool/model.onnx` | ❌ | Unsupported op MaxPool |
+| `pytorch-operator/test_operator_maxpool/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_min/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_mm/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `pytorch-operator/test_operator_non_float_params/model.onnx` | ✅ |  |
