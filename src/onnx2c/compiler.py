@@ -629,18 +629,14 @@ class Compiler:
             batch=spec.batch,
             in_channels=spec.in_channels,
             out_channels=spec.out_channels,
-            in_h=spec.in_h,
-            in_w=spec.in_w,
-            out_h=spec.out_h,
-            out_w=spec.out_w,
-            kernel_h=spec.kernel_h,
-            kernel_w=spec.kernel_w,
-            stride_h=spec.stride_h,
-            stride_w=spec.stride_w,
-            pad_top=spec.pad_top,
-            pad_left=spec.pad_left,
-            dilation_h=spec.dilation_h,
-            dilation_w=spec.dilation_w,
+            spatial_rank=spec.spatial_rank,
+            in_spatial=spec.in_spatial,
+            out_spatial=spec.out_spatial,
+            kernel_shape=spec.kernel_shape,
+            strides=spec.strides,
+            pads=spec.pads,
+            dilations=spec.dilations,
+            group=spec.group,
             dtype=op_dtype,
         )
 
@@ -1311,20 +1307,14 @@ class _ConvSpec:
     batch: int
     in_channels: int
     out_channels: int
-    in_h: int
-    in_w: int
-    out_h: int
-    out_w: int
-    kernel_h: int
-    kernel_w: int
-    stride_h: int
-    stride_w: int
-    pad_top: int
-    pad_left: int
-    pad_bottom: int
-    pad_right: int
-    dilation_h: int
-    dilation_w: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    group: int
 
 
 def _resolve_conv_spec(graph: Graph, node: Node) -> _ConvSpec:
@@ -1340,44 +1330,45 @@ def _resolve_conv_spec(graph: Graph, node: Node) -> _ConvSpec:
     }
     if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("Conv has unsupported attributes")
-    auto_pad = node.attrs.get("auto_pad", b"NOTSET")
-    if isinstance(auto_pad, bytes):
-        auto_pad = auto_pad.decode("utf-8", errors="ignore")
-    if auto_pad not in ("", "NOTSET"):
-        raise UnsupportedOpError("Conv supports auto_pad=NOTSET only")
-    group = int(node.attrs.get("group", 1))
-    if group != 1:
-        raise UnsupportedOpError("Conv supports group=1 only")
-    strides = tuple(int(value) for value in node.attrs.get("strides", (1, 1)))
-    if len(strides) != 2:
-        raise UnsupportedOpError("Conv expects 2D strides")
-    dilations = tuple(int(value) for value in node.attrs.get("dilations", (1, 1)))
-    if len(dilations) != 2:
-        raise UnsupportedOpError("Conv expects 2D dilations")
-    pads = tuple(int(value) for value in node.attrs.get("pads", (0, 0, 0, 0)))
-    if len(pads) != 4:
-        raise UnsupportedOpError("Conv expects 4D pads")
-    pad_top, pad_left, pad_bottom, pad_right = pads
     input_shape = _value_shape(graph, node.inputs[0], node)
     weight_shape = _value_shape(graph, node.inputs[1], node)
-    if len(input_shape) != 4 or len(weight_shape) != 4:
-        raise UnsupportedOpError("Conv supports NCHW 2D inputs only")
-    batch, in_channels, in_h, in_w = input_shape
-    out_channels, weight_in_channels, kernel_h, kernel_w = weight_shape
+    if len(input_shape) < 3:
+        raise UnsupportedOpError("Conv expects NCHW inputs with spatial dims")
+    spatial_rank = len(input_shape) - 2
+    if spatial_rank not in {1, 2, 3}:
+        raise UnsupportedOpError("Conv supports 1D/2D/3D inputs only")
+    if len(weight_shape) != spatial_rank + 2:
+        raise UnsupportedOpError("Conv weight rank must match spatial rank")
+    batch, in_channels = input_shape[0], input_shape[1]
+    in_spatial = input_shape[2:]
+    out_channels, weight_in_channels, *kernel_shape = weight_shape
     kernel_shape = node.attrs.get("kernel_shape")
     if kernel_shape is not None:
         kernel_shape = tuple(int(value) for value in kernel_shape)
-        if len(kernel_shape) != 2:
-            raise UnsupportedOpError("Conv expects 2D kernel_shape")
-        if kernel_shape != (kernel_h, kernel_w):
+        if len(kernel_shape) != spatial_rank:
+            raise UnsupportedOpError(
+                "Conv kernel_shape rank must match input spatial rank"
+            )
+        if kernel_shape != tuple(weight_shape[2:]):
             raise ShapeInferenceError(
                 "Conv kernel_shape must match weights, "
-                f"got {kernel_shape} and {(kernel_h, kernel_w)}"
+                f"got {kernel_shape} and {tuple(weight_shape[2:])}"
             )
-    if in_channels != weight_in_channels:
+    else:
+        kernel_shape = tuple(weight_shape[2:])
+    group = int(node.attrs.get("group", 1))
+    if group <= 0:
+        raise UnsupportedOpError("Conv expects group >= 1")
+    if in_channels % group != 0 or out_channels % group != 0:
+        raise ShapeInferenceError(
+            "Conv expects group to evenly divide in/out channels, "
+            f"got group={group}, in_channels={in_channels}, "
+            f"out_channels={out_channels}"
+        )
+    if weight_in_channels != in_channels // group:
         raise ShapeInferenceError(
             "Conv input channels must match weight channels, "
-            f"got {in_channels} and {weight_in_channels}"
+            f"got {in_channels} and {weight_in_channels * group}"
         )
     if len(node.inputs) == 3:
         bias_shape = _value_shape(graph, node.inputs[2], node)
@@ -1385,16 +1376,63 @@ def _resolve_conv_spec(graph: Graph, node: Node) -> _ConvSpec:
             raise ShapeInferenceError(
                 f"Conv bias shape must be {(out_channels,)}, got {bias_shape}"
             )
-    stride_h, stride_w = strides
-    dilation_h, dilation_w = dilations
-    effective_kernel_h = dilation_h * (kernel_h - 1) + 1
-    effective_kernel_w = dilation_w * (kernel_w - 1) + 1
-    out_h = (in_h + pad_top + pad_bottom - effective_kernel_h) // stride_h + 1
-    out_w = (in_w + pad_left + pad_right - effective_kernel_w) // stride_w + 1
-    if out_h <= 0 or out_w <= 0:
-        raise ShapeInferenceError("Conv output shape must be positive")
+    strides = tuple(
+        int(value) for value in node.attrs.get("strides", (1,) * spatial_rank)
+    )
+    if len(strides) != spatial_rank:
+        raise UnsupportedOpError("Conv stride rank mismatch")
+    dilations = tuple(
+        int(value) for value in node.attrs.get("dilations", (1,) * spatial_rank)
+    )
+    if len(dilations) != spatial_rank:
+        raise UnsupportedOpError("Conv dilation rank mismatch")
+    pads = tuple(
+        int(value)
+        for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
+    )
+    if len(pads) != 2 * spatial_rank:
+        raise UnsupportedOpError("Conv pads rank mismatch")
+    auto_pad = node.attrs.get("auto_pad", b"NOTSET")
+    if isinstance(auto_pad, bytes):
+        auto_pad = auto_pad.decode("utf-8", errors="ignore")
+    if auto_pad in ("", "NOTSET"):
+        pad_begin = pads[:spatial_rank]
+        pad_end = pads[spatial_rank:]
+    elif auto_pad == "VALID":
+        pad_begin = (0,) * spatial_rank
+        pad_end = (0,) * spatial_rank
+    elif auto_pad in {"SAME_UPPER", "SAME_LOWER"}:
+        pad_begin = []
+        pad_end = []
+        for dim, stride, dilation, kernel in zip(
+            in_spatial, strides, dilations, kernel_shape
+        ):
+            effective_kernel = dilation * (kernel - 1) + 1
+            out_dim = math.ceil(dim / stride)
+            pad_needed = max(
+                0, (out_dim - 1) * stride + effective_kernel - dim
+            )
+            if auto_pad == "SAME_UPPER":
+                pad_start = pad_needed // 2
+            else:
+                pad_start = (pad_needed + 1) // 2
+            pad_begin.append(pad_start)
+            pad_end.append(pad_needed - pad_start)
+        pad_begin = tuple(pad_begin)
+        pad_end = tuple(pad_end)
+    else:
+        raise UnsupportedOpError("Conv has unsupported auto_pad mode")
+    out_spatial = []
+    for dim, stride, dilation, kernel, pad_start, pad_finish in zip(
+        in_spatial, strides, dilations, kernel_shape, pad_begin, pad_end
+    ):
+        effective_kernel = dilation * (kernel - 1) + 1
+        out_dim = (dim + pad_start + pad_finish - effective_kernel) // stride + 1
+        if out_dim <= 0:
+            raise ShapeInferenceError("Conv output shape must be positive")
+        out_spatial.append(out_dim)
     output_shape = _value_shape(graph, node.outputs[0], node)
-    expected_output_shape = (batch, out_channels, out_h, out_w)
+    expected_output_shape = (batch, out_channels, *out_spatial)
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "Conv output shape must be "
@@ -1404,20 +1442,14 @@ def _resolve_conv_spec(graph: Graph, node: Node) -> _ConvSpec:
         batch=batch,
         in_channels=in_channels,
         out_channels=out_channels,
-        in_h=in_h,
-        in_w=in_w,
-        out_h=out_h,
-        out_w=out_w,
-        kernel_h=kernel_h,
-        kernel_w=kernel_w,
-        stride_h=stride_h,
-        stride_w=stride_w,
-        pad_top=pad_top,
-        pad_left=pad_left,
-        pad_bottom=pad_bottom,
-        pad_right=pad_right,
-        dilation_h=dilation_h,
-        dilation_w=dilation_w,
+        spatial_rank=spatial_rank,
+        in_spatial=in_spatial,
+        out_spatial=tuple(out_spatial),
+        kernel_shape=kernel_shape,
+        strides=strides,
+        pads=(*pad_begin, *pad_end),
+        dilations=dilations,
+        group=group,
     )
 
 
@@ -1428,33 +1460,52 @@ def _apply_conv(
     bias: np.ndarray | None,
 ) -> np.ndarray:
     output = np.zeros(
-        (spec.batch, spec.out_channels, spec.out_h, spec.out_w),
+        (spec.batch, spec.out_channels, *spec.out_spatial),
         dtype=data.dtype,
     )
+    pad_begin = spec.pads[: spec.spatial_rank]
+    group_in_channels = spec.in_channels // spec.group
+    group_out_channels = spec.out_channels // spec.group
     for n in range(spec.batch):
-        for oc in range(spec.out_channels):
-            base = bias[oc] if bias is not None else 0.0
-            for oh in range(spec.out_h):
-                for ow in range(spec.out_w):
+        for g in range(spec.group):
+            oc_base = g * group_out_channels
+            ic_base = g * group_in_channels
+            for oc in range(group_out_channels):
+                oc_global = oc_base + oc
+                base = bias[oc_global] if bias is not None else 0.0
+                for out_index in np.ndindex(*spec.out_spatial):
                     acc = base
-                    for ic in range(spec.in_channels):
-                        for kh in range(spec.kernel_h):
-                            ih = oh * spec.stride_h + kh * spec.dilation_h - spec.pad_top
-                            if ih < 0 or ih >= spec.in_h:
+                    for ic in range(group_in_channels):
+                        ic_global = ic_base + ic
+                        for kernel_index in np.ndindex(*spec.kernel_shape):
+                            in_index = []
+                            valid = True
+                            for (
+                                out_dim,
+                                kernel_dim,
+                                stride,
+                                dilation,
+                                pad,
+                                in_size,
+                            ) in zip(
+                                out_index,
+                                kernel_index,
+                                spec.strides,
+                                spec.dilations,
+                                pad_begin,
+                                spec.in_spatial,
+                            ):
+                                in_dim = out_dim * stride + kernel_dim * dilation - pad
+                                if in_dim < 0 or in_dim >= in_size:
+                                    valid = False
+                                    break
+                                in_index.append(in_dim)
+                            if not valid:
                                 continue
-                            for kw in range(spec.kernel_w):
-                                iw = (
-                                    ow * spec.stride_w
-                                    + kw * spec.dilation_w
-                                    - spec.pad_left
-                                )
-                                if iw < 0 or iw >= spec.in_w:
-                                    continue
-                                acc += (
-                                    data[n, ic, ih, iw]
-                                    * weights[oc, ic, kh, kw]
-                                )
-                    output[n, oc, oh, ow] = acc
+                            acc += data[
+                                (n, ic_global, *in_index)
+                            ] * weights[(oc_global, ic, *kernel_index)]
+                    output[(n, oc_global, *out_index)] = acc
     return output
 
 

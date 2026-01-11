@@ -1,7 +1,7 @@
 [
   [
     "light/light_bvlc_alexnet.onnx",
-    "Conv supports group=1 only"
+    "'ConvOp' object has no attribute 'out_h'"
   ],
   [
     "light/light_densenet121.onnx",
@@ -9,19 +9,19 @@
   ],
   [
     "light/light_inception_v1.onnx",
-    ""
+    "'ConvOp' object has no attribute 'out_h'"
   ],
   [
     "light/light_inception_v2.onnx",
-    ""
+    "'ConvOp' object has no attribute 'out_h'"
   ],
   [
     "light/light_resnet50.onnx",
-    ""
+    "'ConvOp' object has no attribute 'out_h'"
   ],
   [
     "light/light_shufflenet.onnx",
-    "Conv supports group=1 only"
+    "'ConvOp' object has no attribute 'out_h'"
   ],
   [
     "light/light_squeezenet.onnx",
@@ -29,11 +29,11 @@
   ],
   [
     "light/light_vgg19.onnx",
-    ""
+    "'ConvOp' object has no attribute 'out_h'"
   ],
   [
     "light/light_zfnet512.onnx",
-    ""
+    "'ConvOp' object has no attribute 'out_h'"
   ],
   [
     "node/test_abs/model.onnx",
@@ -2061,7 +2061,7 @@
   ],
   [
     "node/test_conv_with_autopad_same/model.onnx",
-    "Conv supports auto_pad=NOTSET only"
+    ""
   ],
   [
     "node/test_conv_with_strides_and_asymmetric_padding/model.onnx",
@@ -6701,35 +6701,35 @@
   ],
   [
     "pytorch-converted/test_Conv1d/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d_dilated/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d_groups/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d_pad1/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d_pad1size1/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d_pad2/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d_pad2size1/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d_stride/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv2d/model.onnx",
@@ -6737,19 +6737,19 @@
   ],
   [
     "pytorch-converted/test_Conv2d_depthwise/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv2d_depthwise_padded/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv2d_depthwise_strided/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv2d_depthwise_with_multiplier/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv2d_dilated/model.onnx",
@@ -6757,11 +6757,11 @@
   ],
   [
     "pytorch-converted/test_Conv2d_groups/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv2d_groups_thnn/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv2d_no_bias/model.onnx",
@@ -6777,31 +6777,31 @@
   ],
   [
     "pytorch-converted/test_Conv3d/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv3d_dilated/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv3d_dilated_strided/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv3d_groups/model.onnx",
-    "Conv supports group=1 only"
+    ""
   ],
   [
     "pytorch-converted/test_Conv3d_no_bias/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv3d_stride/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_Conv3d_stride_padding/model.onnx",
-    "Conv expects 2D strides"
+    ""
   ],
   [
     "pytorch-converted/test_ConvTranspose2d/model.onnx",

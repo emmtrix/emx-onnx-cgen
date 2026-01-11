@@ -83,18 +83,14 @@ class ConvOp:
     batch: int
     in_channels: int
     out_channels: int
-    in_h: int
-    in_w: int
-    out_h: int
-    out_w: int
-    kernel_h: int
-    kernel_w: int
-    stride_h: int
-    stride_w: int
-    pad_top: int
-    pad_left: int
-    dilation_h: int
-    dilation_w: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    group: int
     dtype: str
 
 
@@ -643,18 +639,14 @@ class CEmitter:
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
-                in_h=op.in_h,
-                in_w=op.in_w,
-                out_h=op.out_h,
-                out_w=op.out_w,
-                kernel_h=op.kernel_h,
-                kernel_w=op.kernel_w,
-                stride_h=op.stride_h,
-                stride_w=op.stride_w,
-                pad_top=op.pad_top,
-                pad_left=op.pad_left,
-                dilation_h=op.dilation_h,
-                dilation_w=op.dilation_w,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                group=op.group,
                 dtype=op.dtype,
             )
         if isinstance(op, AveragePoolOp):
@@ -953,9 +945,21 @@ class CEmitter:
                 ),
             ).rstrip()
         if isinstance(op, ConvOp):
-            input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
-            weight_shape = (op.out_channels, op.in_channels, op.kernel_h, op.kernel_w)
-            output_shape = (op.batch, op.out_channels, op.out_h, op.out_w)
+            input_shape = (op.batch, op.in_channels, *op.in_spatial)
+            weight_shape = (
+                op.out_channels,
+                op.in_channels // op.group,
+                *op.kernel_shape,
+            )
+            output_shape = (op.batch, op.out_channels, *op.out_spatial)
+            out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
+            kernel_indices = tuple(
+                f"kd{dim}" for dim in range(op.spatial_rank)
+            )
+            in_indices = tuple(f"id{dim}" for dim in range(op.spatial_rank))
+            pad_begin = op.pads[: op.spatial_rank]
+            group_in_channels = op.in_channels // op.group
+            group_out_channels = op.out_channels // op.group
             return conv_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -972,18 +976,19 @@ class CEmitter:
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
-                in_h=op.in_h,
-                in_w=op.in_w,
-                out_h=op.out_h,
-                out_w=op.out_w,
-                kernel_h=op.kernel_h,
-                kernel_w=op.kernel_w,
-                stride_h=op.stride_h,
-                stride_w=op.stride_w,
-                pad_top=op.pad_top,
-                pad_left=op.pad_left,
-                dilation_h=op.dilation_h,
-                dilation_w=op.dilation_w,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads_begin=pad_begin,
+                dilations=op.dilations,
+                group=op.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                in_indices=in_indices,
             ).rstrip()
         if isinstance(op, AveragePoolOp):
             input_shape = (op.batch, op.channels, op.in_h, op.in_w)
