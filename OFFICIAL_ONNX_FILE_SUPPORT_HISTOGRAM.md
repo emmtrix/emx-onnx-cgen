@@ -33,14 +33,12 @@
 | Unsupported op ConvTranspose | 14 | ███ |
 | Unsupported op LogSoftmax | 14 | ███ |
 | Unsupported op Clip | 13 | ███ |
-| Conv expects 2D strides | 13 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported op ReduceMean | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
-| Conv supports group=1 only | 10 | ██ |
 | Unsupported op ReduceMin | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
@@ -106,6 +104,7 @@
 | Unsupported op Shrink | 3 | █ |
 | Unsupported op TensorScatter | 3 | █ |
 | Unsupported op ThresholdedRelu | 3 | █ |
+| Conv supports group=1 only | 2 | █ |
 | Unsupported op Acos | 2 | █ |
 | Unsupported op Acosh | 2 | █ |
 | Unsupported op Asin | 2 | █ |
