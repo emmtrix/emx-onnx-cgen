@@ -1,7 +1,7 @@
-void {{ op_name }}(const float {{ input0 }}{{ input0_suffix }}, const float {{ input1 }}{{ input1_suffix }}, float {{ output }}{{ output_suffix }}) {
+void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input0_suffix }}, const {{ c_type }} {{ input1 }}{{ input1_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
     for (size_t i = 0; i < {{ m }}; ++i) {
         for (size_t j = 0; j < {{ n }}; ++j) {
-            float acc = 0.0f;
+            {{ acc_type }} acc = {{ zero_literal }};
             for (size_t k = 0; k < {{ k }}; ++k) {
                 acc += {{ input0 }}[i][k] * {{ input1 }}[k][j];
             }

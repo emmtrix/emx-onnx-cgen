@@ -5,13 +5,9 @@ from typing import Iterable
 import onnx
 from onnx import helper, numpy_helper
 
+from .dtypes import ONNX_TO_DTYPE
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Initializer, Node, TensorType, Value
-
-_ONNX_TO_DTYPE = {
-    onnx.TensorProto.FLOAT: "float",
-}
-
 
 def _format_elem_type(elem_type: int) -> str:
     try:
@@ -25,13 +21,13 @@ def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
     tensor_type = value_info.type.tensor_type
     if not tensor_type.HasField("elem_type"):
         raise ShapeInferenceError(f"Missing elem_type for {value_info.name}")
-    dtype = _ONNX_TO_DTYPE.get(tensor_type.elem_type)
+    dtype = ONNX_TO_DTYPE.get(tensor_type.elem_type)
     if dtype is None:
         raise UnsupportedOpError(
             "Unsupported elem_type "
             f"{_format_elem_type(tensor_type.elem_type)} for {value_info.name}. "
             "Supported elem_types: "
-            f"{', '.join(_format_elem_type(elem) for elem in _ONNX_TO_DTYPE)}."
+            f"{', '.join(_format_elem_type(elem) for elem in ONNX_TO_DTYPE)}."
         )
     shape = []
     for dim in tensor_type.shape.dim:
@@ -46,18 +42,20 @@ def _values(value_infos: Iterable[onnx.ValueInfoProto]) -> tuple[Value, ...]:
 
 
 def _initializer(value: onnx.TensorProto) -> Initializer:
-    dtype = _ONNX_TO_DTYPE.get(value.data_type)
+    dtype = ONNX_TO_DTYPE.get(value.data_type)
     if dtype is None:
         raise UnsupportedOpError(
             "Unsupported elem_type "
             f"{_format_elem_type(value.data_type)} for initializer {value.name}. "
             "Supported elem_types: "
-            f"{', '.join(_format_elem_type(elem) for elem in _ONNX_TO_DTYPE)}. "
+            f"{', '.join(_format_elem_type(elem) for elem in ONNX_TO_DTYPE)}. "
             "Hint: export the model with float32 initializers."
         )
     data = numpy_helper.to_array(value)
     if dtype == "float" and data.dtype != "float32":
         data = data.astype("float32", copy=False)
+    if dtype == "int64" and data.dtype != "int64":
+        data = data.astype("int64", copy=False)
     return Initializer(
         name=value.name,
         type=TensorType(dtype=dtype, shape=tuple(data.shape)),
