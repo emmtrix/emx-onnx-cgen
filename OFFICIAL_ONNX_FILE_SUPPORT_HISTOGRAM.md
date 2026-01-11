@@ -21,11 +21,11 @@
 | Unsupported op Less | 18 | ████ |
 | Unsupported op GridSample | 18 | ████ |
 | Unsupported elem_type 12 (UINT32) for tensor '*'. | 17 | ███ |
+| Unsupported op Reshape | 16 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
-| Unsupported op Reshape | 15 | ███ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 14 | ███ |
@@ -39,7 +39,7 @@
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported op ReduceMean | 12 | ██ |
-| Unsupported op ConstantOfShape | 11 | ██ |
+| Unsupported op BatchNormalization | 11 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
@@ -51,14 +51,13 @@
 | Unsupported op ReduceL2 | 9 | ██ |
 | Unsupported op ReduceProd | 9 | ██ |
 | Unsupported op ReduceSumSquare | 9 | ██ |
+| Unsupported op Dropout | 8 | ██ |
 | Unsupported op Greater | 8 | ██ |
 | Unsupported op LpPool | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Slice | 8 | ██ |
 | Conv supports group=1 only | 8 | ██ |
-| Unsupported op BatchNormalization | 7 | █ |
 | Dynamic or zero dims are not supported | 7 | █ |
-| Unsupported op Dropout | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
 | AveragePool has unsupported attributes | 6 | █ |
@@ -70,6 +69,7 @@
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op Mod | 6 | █ |
 | Unsupported op ScatterElements | 6 | █ |
+| Unsupported op LRN | 5 | █ |
 | AveragePool expects 2D kernel_shape | 5 | █ |
 | Unsupported op Elu | 5 | █ |
 | Unsupported op Col2Im | 5 | █ |
@@ -128,7 +128,6 @@
 | Unsupported op GroupNormalization | 2 | █ |
 | Unsupported op HammingWindow | 2 | █ |
 | Unsupported op HannWindow | 2 | █ |
-| Unsupported op LRN | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
 | Unsupported op MaxUnpool | 2 | █ |
 | Mean must have 2 inputs and 1 output | 2 | █ |

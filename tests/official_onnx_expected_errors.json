@@ -1,39 +1,39 @@
 [
   [
     "light/light_bvlc_alexnet.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op LRN"
   ],
   [
     "light/light_densenet121.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op BatchNormalization"
   ],
   [
     "light/light_inception_v1.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op LRN"
   ],
   [
     "light/light_inception_v2.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op BatchNormalization"
   ],
   [
     "light/light_resnet50.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op BatchNormalization"
   ],
   [
     "light/light_shufflenet.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op BatchNormalization"
   ],
   [
     "light/light_squeezenet.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op Dropout"
   ],
   [
     "light/light_vgg19.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op Reshape"
   ],
   [
     "light/light_zfnet512.onnx",
-    "Unsupported op ConstantOfShape"
+    "Unsupported op LRN"
   ],
   [
     "node/test_abs/model.onnx",
@@ -2049,7 +2049,7 @@
   ],
   [
     "node/test_constantofshape_float_ones/model.onnx",
-    "Unsupported op ConstantOfShape"
+    ""
   ],
   [
     "node/test_constantofshape_int_shape_zero/model.onnx",
@@ -2057,7 +2057,7 @@
   ],
   [
     "node/test_constantofshape_int_zeros/model.onnx",
-    "Unsupported op ConstantOfShape"
+    ""
   ],
   [
     "node/test_conv_with_autopad_same/model.onnx",
