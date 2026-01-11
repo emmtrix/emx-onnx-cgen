@@ -20,17 +20,17 @@ def _format_elem_type(elem_type: int) -> str:
 def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
     tensor_type = value_info.type.tensor_type
     if not tensor_type.HasField("elem_type"):
-        raise ShapeInferenceError(f"Missing elem_type for {value_info.name}")
+        raise ShapeInferenceError(f"Missing elem_type for tensor '{value_info.name}'")
     dtype = ONNX_TO_DTYPE.get(tensor_type.elem_type)
     if dtype is None:
         raise UnsupportedOpError(
             "Unsupported elem_type "
-            f"{_format_elem_type(tensor_type.elem_type)} for {value_info.name}."
+            f"{_format_elem_type(tensor_type.elem_type)} for tensor '{value_info.name}'."
         )
     shape = []
     for dim in tensor_type.shape.dim:
         if not dim.HasField("dim_value"):
-            raise ShapeInferenceError(f"Dynamic dim for {value_info.name}")
+            raise ShapeInferenceError(f"Dynamic dim for tensor '{value_info.name}'")
         shape.append(dim.dim_value)
     return TensorType(dtype=dtype, shape=tuple(shape))
 
@@ -44,7 +44,7 @@ def _initializer(value: onnx.TensorProto) -> Initializer:
     if dtype is None:
         raise UnsupportedOpError(
             "Unsupported elem_type "
-            f"{_format_elem_type(value.data_type)} for initializer {value.name}. "
+            f"{_format_elem_type(value.data_type)} for initializer '{value.name}'. "
             "Hint: export the model with float32 initializers."
         )
     data = numpy_helper.to_array(value)
