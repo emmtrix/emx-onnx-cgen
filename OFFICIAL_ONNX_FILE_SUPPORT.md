@@ -1814,125 +1814,82 @@ ONNX version: 1.20.1
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Mixed dtypes are not supported, got float, int64 | 413 | ██████████████████████████████ |
+| Unsupported elem_type 9 (BOOL) for tensor '*'. | 147 | ███████████ |
+| Dynamic dim for tensor '*' | 123 | █████████ |
 | Only single-output graphs are supported | 64 | █████ |
+| Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 60 | ████ |
+| Unsupported elem_type 11 (DOUBLE) for tensor '*'. | 54 | ████ |
 | Unsupported op Constant | 51 | ████ |
-| Unsupported elem_type 10 (FLOAT16) for tensor 'input'. | 46 | ███ |
+| Unsupported elem_type 2 (UINT8) for tensor '*'. | 50 | ████ |
 | Unsupported op Conv | 33 | ██ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ██ |
 | Unsupported op Attention | 29 | ██ |
-| Unsupported elem_type 9 (BOOL) for tensor 'x'. | 27 | ██ |
-| Unsupported elem_type 2 (UINT8) for tensor 'x'. | 25 | ██ |
+| Missing elem_type for tensor '*' | 29 | ██ |
 | Unsupported op AveragePool | 25 | ██ |
-| Unsupported elem_type 8 (STRING) for tensor 'x'. | 25 | ██ |
 | Unsupported op MaxPool | 25 | ██ |
+| Unsupported elem_type 13 (UINT64) for tensor '*'. | 21 | ██ |
+| Unsupported elem_type 4 (UINT16) for tensor '*'. | 19 | █ |
 | Unsupported op Resize | 19 | █ |
 | Unsupported op RMSNormalization | 19 | █ |
-| Unsupported elem_type 13 (UINT64) for tensor 'x'. | 18 | █ |
 | Mixed dtypes are not supported, got float, int32 | 18 | █ |
 | Unsupported op GridSample | 18 | █ |
-| Unsupported elem_type 4 (UINT16) for tensor 'x'. | 16 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'x'. | 16 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'data'. | 16 | █ |
+| Unsupported elem_type 12 (UINT32) for tensor '*'. | 17 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | █ |
 | Unsupported op Trilu | 16 | █ |
-| Unsupported elem_type 12 (UINT32) for tensor 'x'. | 14 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | █ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 14 | █ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 14 | █ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 14 | █ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | █ |
 | Unsupported op ConvTranspose | 14 | █ |
 | Unsupported op Clip | 13 | █ |
 | Unsupported op Concat | 13 | █ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | █ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | █ |
 | Gemm must have 2 inputs and 1 output | 12 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | █ |
 | Unsupported op Flatten | 11 | █ |
 | Unsupported op Softmax | 11 | █ |
 | Unsupported op LogSoftmax | 10 | █ |
-| Unsupported elem_type 26 (INT2) for tensor 'input'. | 9 | █ |
-| Unsupported elem_type 22 (INT4) for tensor 'input'. | 9 | █ |
-| Unsupported elem_type 25 (UINT2) for tensor 'input'. | 9 | █ |
-| Unsupported elem_type 21 (UINT4) for tensor 'input'. | 9 | █ |
-| Unsupported elem_type 2 (UINT8) for tensor 'data'. | 9 | █ |
 | Unsupported op Transpose | 9 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. | 8 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. | 8 | █ |
 | Unsupported op LpPool | 8 | █ |
-| Missing elem_type for tensor 'x0' | 8 | █ |
-| Unsupported elem_type 8 (STRING) for tensor 'X'. | 7 | █ |
 | Unsupported op BatchNormalization | 7 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'condition'. | 7 | █ |
 | Mixed dtypes are not supported, got int32, int64 | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'input'. | 6 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. | 6 | █ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. | 6 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. | 6 | █ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. | 6 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. | 6 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'z'. | 6 | █ |
-| Unsupported elem_type 2 (UINT8) for tensor 'y'. | 6 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'cond'. | 6 | █ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op Mod | 6 | █ |
-| Missing elem_type for tensor 'optional_input' | 6 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 't'. | 6 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
 | Unsupported op Selu | 5 | █ |
 | Unsupported op Sigmoid | 5 | █ |
 | Unsupported op Pad | 5 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor '0'. | 5 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'attn_mask'. | 4 | █ |
-| Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. | 4 | █ |
 | Unsupported op DeformConv | 4 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. | 4 | █ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. | 4 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. | 4 | █ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. | 4 | █ |
 | Unsupported op Dropout | 4 | █ |
 | Unsupported op Elu | 4 | █ |
 | Unsupported op Gelu | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'greater'. | 4 | █ |
 | Unsupported op HardSigmoid | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'y'. | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'less'. | 4 | █ |
 | Unsupported op Max | 4 | █ |
 | Unsupported op Min | 4 | █ |
 | Unsupported op Softplus | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'output'. | 4 | █ |
-| Unsupported elem_type 2 (UINT8) for tensor 'a'. | 4 | █ |
-| Missing elem_type for tensor 'seq_1' | 4 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'y'. | 3 | █ |
-| Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. | 3 | █ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. | 3 | █ |
 | Mixed dtypes are not supported, got float, int16 | 3 | █ |
 | Scalar outputs are not supported | 3 | █ |
 | Unsupported op DFT | 3 | █ |
 | Unsupported op GRU | 3 | █ |
-| Missing elem_type for tensor 'x' | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
-| Unsupported elem_type 10 (FLOAT16) for tensor 'x'. | 3 | █ |
-| Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. | 3 | █ |
 | Unsupported op RNN | 3 | █ |
 | Unsupported op RotaryEmbedding | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
-| Missing elem_type for tensor 'seq' | 3 | █ |
 | Unsupported op ThresholdedRelu | 3 | █ |
 | Unsupported op Acos | 2 | █ |
 | Unsupported op Acosh | 2 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'X'. | 2 | █ |
 | Unsupported op Asin | 2 | █ |
 | Unsupported op Asinh | 2 | █ |
 | Unsupported op Atan | 2 | █ |
 | Unsupported op BitwiseAnd | 2 | █ |
 | Unsupported op BitwiseOr | 2 | █ |
 | Unsupported op BitwiseXor | 2 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. | 2 | █ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. | 2 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. | 2 | █ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. | 2 | █ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. | 2 | █ |
-| Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. | 2 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'like'. | 2 | █ |
-| Unsupported elem_type 10 (FLOAT16) for tensor 'like'. | 2 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. | 2 | █ |
-| Unsupported elem_type 26 (INT2) for tensor 'like'. | 2 | █ |
-| Unsupported elem_type 22 (INT4) for tensor 'like'. | 2 | █ |
-| Unsupported elem_type 25 (UINT2) for tensor 'like'. | 2 | █ |
-| Unsupported elem_type 21 (UINT4) for tensor 'like'. | 2 | █ |
 | Unsupported op Cosh | 2 | █ |
 | Unsupported op CumSum | 2 | █ |
 | Unsupported op DepthToSpace | 2 | █ |
@@ -1940,48 +1897,19 @@ ONNX version: 1.20.1
 | Unsupported op GlobalAveragePool | 2 | █ |
 | Unsupported op GlobalMaxPool | 2 | █ |
 | Unsupported op GroupNormalization | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' | 2 | █ |
-| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' | 2 | █ |
 | Unsupported op LRN | 2 | █ |
 | Unsupported op LSTM | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
-| Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. | 2 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'. | 2 | █ |
-| Unsupported elem_type 4 (UINT16) for tensor 'data_0'. | 2 | █ |
-| Unsupported elem_type 12 (UINT32) for tensor 'data_0'. | 2 | █ |
-| Unsupported elem_type 13 (UINT64) for tensor 'data_0'. | 2 | █ |
-| Unsupported elem_type 2 (UINT8) for tensor 'data_0'. | 2 | █ |
 | Mean must have 2 inputs and 1 output | 2 | █ |
 | Min must have 2 inputs and 1 output | 2 | █ |
 | Unsupported op OneHot | 2 | █ |
 | Unsupported op Pow | 2 | █ |
-| Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. | 2 | █ |
 | Mixed dtypes are not supported, got float, int8 | 2 | █ |
 | Unsupported op Range | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'data'. | 2 | █ |
 | Unsupported op ReduceMax | 2 | █ |
 | Unsupported op ReduceMin | 2 | █ |
 | Unsupported op ReduceProd | 2 | █ |
-| Missing elem_type for tensor 'sequence' | 2 | █ |
-| Missing elem_type for tensor 'in_seq' | 2 | █ |
 | Unsupported op Sign | 2 | █ |
 | Unsupported op Sinh | 2 | █ |
 | Unsupported op Softsign | 2 | █ |
@@ -1992,194 +1920,25 @@ ONNX version: 1.20.1
 | Unsupported op Split | 2 | █ |
 | Unsupported op ReduceMean | 2 | █ |
 | Unsupported op ReduceSum | 2 | █ |
-| Dynamic dim for tensor 'out' | 2 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_2d_align_corners_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_2d_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_3d_align_corners_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_3d_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op TreeEnsemble | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_attn_mask_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_causal_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_3d_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_4d_expanded_function_NGQACond1'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_NGQACond1'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_NGQACond1'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_AttnBias' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_gqa_attn_mask_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_AttnBias' | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_AttnBias' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_NGQACond1'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_NGQACond1'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_NGQACond1'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_NGQACond1'. | 1 | █ |
-| Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_NGQACond1'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_NGQACond1'. | 1 | █ |
 | Unsupported op Bernoulli | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Bernoulli_test_bernoulli_seed_expanded_function_X_greater'. | 1 | █ |
 | Unsupported op BitwiseNot | 1 | █ |
-| Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_expanded_function_Range' | 1 | █ |
-| Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range' | 1 | █ |
-| Unsupported elem_type 16 (BFLOAT16) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 10 (FLOAT16) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 26 (INT2) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 22 (INT4) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 25 (UINT2) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 21 (UINT4) for tensor 'output'. | 1 | █ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'. | 1 | █ |
 | Unsupported op Celu | 1 | █ |
-| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input' | 1 | █ |
-| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_chw_expanded_function_padded_input' | 1 | █ |
-| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_hwc_expanded_function_padded_input' | 1 | █ |
-| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_expanded_function_padded_input' | 1 | █ |
-| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_negative_axes_hwc_expanded_function_padded_input' | 1 | █ |
-| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_int8_max_expanded_function_input_large_than_max'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_int8_min_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_max_expanded_function_input_large_than_max'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_min_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_example_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_inbounds_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_min_greater_than_max_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_outbounds_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_splitbounds_expanded_function_input_less_than_min'. | 1 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. | 1 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. | 1 | █ |
-| Unsupported elem_type 26 (INT2) for tensor 'x'. | 1 | █ |
-| Unsupported elem_type 22 (INT4) for tensor 'x'. | 1 | █ |
-| Unsupported elem_type 25 (UINT2) for tensor 'x'. | 1 | █ |
-| Unsupported elem_type 21 (UINT4) for tensor 'x'. | 1 | █ |
 | Unsupported op Det | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_default_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_example_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_expanded_function_XLessThanZero'. | 1 | █ |
 | Unsupported op Erf | 1 | █ |
 | Unsupported op EyeLike | 1 | █ |
-| Dynamic dim for tensor 'GroupNormalization_test_group_normalization_epsilon_expanded_function_XReshaped' | 1 | █ |
-| Dynamic dim for tensor 'GroupNormalization_test_group_normalization_example_expanded_function_XReshaped' | 1 | █ |
-| Dynamic dim for tensor 'HammingWindow_test_hammingwindow_expanded_function_Range' | 1 | █ |
-| Dynamic dim for tensor 'HammingWindow_test_hammingwindow_symmetric_expanded_function_Range' | 1 | █ |
-| Dynamic dim for tensor 'HannWindow_test_hannwindow_expanded_function_Range' | 1 | █ |
-| Dynamic dim for tensor 'HannWindow_test_hannwindow_symmetric_expanded_function_Range' | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
-| Missing elem_type for tensor 'opt_in' | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_default_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_example_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_expanded_function_XLessThanZero'. | 1 | █ |
 | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) | 1 | █ |
 | MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) | 1 | █ |
 | MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) | 1 | █ |
 | MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,) | 1 | █ |
 | MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2) | 1 | █ |
-| Unsupported elem_type 2 (UINT8) for tensor 'A'. | 1 | █ |
 | Unsupported op Mish | 1 | █ |
 | Unsupported op MeanVarianceNormalization | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_ii_expanded_function_mask'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_mean_weight_negative_ii_expanded_function_mask'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_weight_ii_expanded_function_mask'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded_function_mask'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded_function_mask'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded_function_mask'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded_function_mask'. | 1 | █ |
 | Mixed dtypes are not supported, got float, int32, int64 | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
-| Unsupported elem_type 12 (UINT32) for tensor 'y'. | 1 | █ |
-| Unsupported elem_type 13 (UINT64) for tensor 'y'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'PRelu_test_prelu_broadcast_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'PRelu_test_prelu_example_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 4 (UINT16) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Range_test_range_float_type_positive_delta_expanded_function_ceil_result_relu_bool'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Range_test_range_int32_type_negative_delta_expanded_function_ceil_result_relu_bool'. | 1 | █ |
-| Unsupported elem_type 11 (DOUBLE) for tensor 'ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double'. | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis0_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis1_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_1_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_2_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis0_epsilon_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis1_epsilon_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis2_epsilon_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_1_epsilon_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_2_epsilon_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_3_epsilon_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis0_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis1_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis2_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis3_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_1_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_2_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_3_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_4_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_default_axis_expanded_function_ReduceAxes' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_XIn' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_expanded_function_CosCacheSliced' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_interleaved_expanded_function_CosCacheSliced' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_expanded_function_CosCacheSliced' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_interleaved_expanded_function_CosCacheSliced' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_rotary_dim_expanded_function_CosCacheSliced' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced' | 1 | █ |
-| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced' | 1 | █ |
 | Unsupported op Round | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_default_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_example_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_expanded_function_XLessThanZero'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Shrink_test_shrink_hard_expanded_function_InputLessThanNegLambda'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'Shrink_test_shrink_soft_expanded_function_InputLessThanNegLambda'. | 1 | █ |
 | Unsupported op Swish | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_default_expanded_function_AlphaLessThanX'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_example_expanded_function_AlphaLessThanX'. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_expanded_function_AlphaLessThanX'. | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
 | Unsupported op Slice | 1 | █ |
-| Dynamic dim for tensor 'X' | 1 | █ |
