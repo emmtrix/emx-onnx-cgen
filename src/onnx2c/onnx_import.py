@@ -13,6 +13,14 @@ _ONNX_TO_DTYPE = {
 }
 
 
+def _format_elem_type(elem_type: int) -> str:
+    try:
+        name = onnx.TensorProto.DataType.Name(elem_type)
+    except ValueError:
+        name = "UNKNOWN"
+    return f"{elem_type} ({name})"
+
+
 def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
     tensor_type = value_info.type.tensor_type
     if not tensor_type.HasField("elem_type"):
@@ -20,7 +28,11 @@ def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
     dtype = _ONNX_TO_DTYPE.get(tensor_type.elem_type)
     if dtype is None:
         raise UnsupportedOpError(
-            f"Unsupported elem_type {tensor_type.elem_type} for {value_info.name}"
+            "Unsupported elem_type "
+            f"{_format_elem_type(tensor_type.elem_type)} for {value_info.name}. "
+            "Supported elem_types: "
+            f"{', '.join(_format_elem_type(elem) for elem in _ONNX_TO_DTYPE)}. "
+            "Hint: export the model with float32 tensors."
         )
     shape = []
     for dim in tensor_type.shape.dim:
@@ -38,7 +50,11 @@ def _initializer(value: onnx.TensorProto) -> Initializer:
     dtype = _ONNX_TO_DTYPE.get(value.data_type)
     if dtype is None:
         raise UnsupportedOpError(
-            f"Unsupported elem_type {value.data_type} for initializer {value.name}"
+            "Unsupported elem_type "
+            f"{_format_elem_type(value.data_type)} for initializer {value.name}. "
+            "Supported elem_types: "
+            f"{', '.join(_format_elem_type(elem) for elem in _ONNX_TO_DTYPE)}. "
+            "Hint: export the model with float32 initializers."
         )
     data = numpy_helper.to_array(value)
     if dtype == "float" and data.dtype != "float32":

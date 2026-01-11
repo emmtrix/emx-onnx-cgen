@@ -1814,97 +1814,122 @@ OFFICIAL_ONNX_FILES = [
 OFFICIAL_ONNX_FILE_EXPECTATIONS = [
     (
         "light/light_bvlc_alexnet.onnx",
-        "Unsupported elem_type 7 for initializer conv1_b_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer conv1_b_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_densenet121.onnx",
-        "Unsupported elem_type 7 for initializer conv1_w_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer conv1_w_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_inception_v1.onnx",
-        "Unsupported elem_type 7 for initializer conv1/7x7_s2_w_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer conv1/7x7_s2_w_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_inception_v2.onnx",
-        "Unsupported elem_type 7 for initializer conv1/7x7_s2_w_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer conv1/7x7_s2_w_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_resnet50.onnx",
-        "Unsupported elem_type 7 for initializer gpu_0/conv1_w_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer gpu_0/conv1_w_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_shufflenet.onnx",
-        "Unsupported elem_type 7 for initializer gpu_0/conv3_0_w_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer gpu_0/conv3_0_w_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_squeezenet.onnx",
-        "Unsupported elem_type 7 for initializer conv10_b_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer conv10_b_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_vgg19.onnx",
-        "Unsupported elem_type 7 for initializer conv1_1_w_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer conv1_1_w_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     (
         "light/light_zfnet512.onnx",
-        "Unsupported elem_type 7 for initializer gpu_0/conv1_b_0__SHAPE",
+        "Unsupported elem_type 7 (INT64) for initializer gpu_0/conv1_b_0__SHAPE. "
+        "Supported elem_types: 1 (FLOAT). Hint: export the model with float32 initializers.",
     ),
     ("node/test_abs/model.onnx", "Unsupported op Abs"),
     ("node/test_acos/model.onnx", "Unsupported op Acos"),
     ("node/test_acos_example/model.onnx", "Unsupported op Acos"),
     ("node/test_acosh/model.onnx", "Unsupported op Acosh"),
     ("node/test_acosh_example/model.onnx", "Unsupported op Acosh"),
-    ("node/test_adagrad/model.onnx", "Unsupported elem_type 7 for T"),
-    ("node/test_adagrad_multiple/model.onnx", "Unsupported elem_type 7 for T"),
-    ("node/test_adam/model.onnx", "Unsupported elem_type 7 for T"),
-    ("node/test_adam_multiple/model.onnx", "Unsupported elem_type 7 for T"),
+    (
+        "node/test_adagrad/model.onnx",
+        "Unsupported elem_type 7 (INT64) for T. Supported elem_types: 1 (FLOAT). "
+        "Hint: export the model with float32 tensors.",
+    ),
+    (
+        "node/test_adagrad_multiple/model.onnx",
+        "Unsupported elem_type 7 (INT64) for T. Supported elem_types: 1 (FLOAT). "
+        "Hint: export the model with float32 tensors.",
+    ),
+    (
+        "node/test_adam/model.onnx",
+        "Unsupported elem_type 7 (INT64) for T. Supported elem_types: 1 (FLOAT). "
+        "Hint: export the model with float32 tensors.",
+    ),
+    (
+        "node/test_adam_multiple/model.onnx",
+        "Unsupported elem_type 7 (INT64) for T. Supported elem_types: 1 (FLOAT). "
+        "Hint: export the model with float32 tensors.",
+    ),
     ("node/test_add/model.onnx", ""),
     ("node/test_add_bcast/model.onnx", ""),
-    ("node/test_add_int16/model.onnx", "Unsupported elem_type 5 for x"),
-    ("node/test_add_int8/model.onnx", "Unsupported elem_type 3 for x"),
-    ("node/test_add_uint16/model.onnx", "Unsupported elem_type 4 for x"),
-    ("node/test_add_uint32/model.onnx", "Unsupported elem_type 12 for x"),
-    ("node/test_add_uint64/model.onnx", "Unsupported elem_type 13 for x"),
-    ("node/test_add_uint8/model.onnx", "Unsupported elem_type 2 for x"),
-    ("node/test_affine_grid_2d/model.onnx", "Unsupported elem_type 7 for size"),
+    ("node/test_add_int16/model.onnx", "Unsupported elem_type 5 (INT16) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_add_int8/model.onnx", "Unsupported elem_type 3 (INT8) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_add_uint16/model.onnx", "Unsupported elem_type 4 (UINT16) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_add_uint32/model.onnx", "Unsupported elem_type 12 (UINT32) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_add_uint64/model.onnx", "Unsupported elem_type 13 (UINT64) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_add_uint8/model.onnx", "Unsupported elem_type 2 (UINT8) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_affine_grid_2d/model.onnx", "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
     (
         "node/test_affine_grid_2d_align_corners/model.onnx",
-        "Unsupported elem_type 7 for size",
+        "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_affine_grid_2d_align_corners_expanded/model.onnx",
-        "Unsupported elem_type 7 for size",
+        "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
-    ("node/test_affine_grid_2d_expanded/model.onnx", "Unsupported elem_type 7 for size"),
-    ("node/test_affine_grid_3d/model.onnx", "Unsupported elem_type 7 for size"),
+    ("node/test_affine_grid_2d_expanded/model.onnx", "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_affine_grid_3d/model.onnx", "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
     (
         "node/test_affine_grid_3d_align_corners/model.onnx",
-        "Unsupported elem_type 7 for size",
+        "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_affine_grid_3d_align_corners_expanded/model.onnx",
-        "Unsupported elem_type 7 for size",
+        "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
-    ("node/test_affine_grid_3d_expanded/model.onnx", "Unsupported elem_type 7 for size"),
+    ("node/test_affine_grid_3d_expanded/model.onnx", "Unsupported elem_type 7 (INT64) for size. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
     (
         "node/test_ai_onnx_ml_array_feature_extractor/model.onnx",
-        "Unsupported elem_type 7 for y",
+        "Unsupported elem_type 7 (INT64) for y. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     ("node/test_ai_onnx_ml_binarizer/model.onnx", "Unsupported op Binarizer"),
     (
         "node/test_ai_onnx_ml_label_encoder_string_int/model.onnx",
-        "Unsupported elem_type 8 for X",
+        "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx",
-        "Unsupported elem_type 8 for X",
+        "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx",
-        "Unsupported elem_type 8 for X",
+        "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx",
-        "Unsupported elem_type 8 for X",
+        "Unsupported elem_type 8 (STRING) for X. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx",
@@ -1912,143 +1937,143 @@ OFFICIAL_ONNX_FILE_EXPECTATIONS = [
     ),
     (
         "node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx",
-        "Unsupported elem_type 11 for X",
+        "Unsupported elem_type 11 (DOUBLE) for X. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
-    ("node/test_and2d/model.onnx", "Unsupported elem_type 9 for x"),
-    ("node/test_and3d/model.onnx", "Unsupported elem_type 9 for x"),
-    ("node/test_and4d/model.onnx", "Unsupported elem_type 9 for x"),
-    ("node/test_and_bcast3v1d/model.onnx", "Unsupported elem_type 9 for x"),
-    ("node/test_and_bcast3v2d/model.onnx", "Unsupported elem_type 9 for x"),
-    ("node/test_and_bcast4v2d/model.onnx", "Unsupported elem_type 9 for x"),
-    ("node/test_and_bcast4v3d/model.onnx", "Unsupported elem_type 9 for x"),
-    ("node/test_and_bcast4v4d/model.onnx", "Unsupported elem_type 9 for x"),
+    ("node/test_and2d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_and3d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_and4d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_and_bcast3v1d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_and_bcast3v2d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_and_bcast4v2d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_and_bcast4v3d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
+    ("node/test_and_bcast4v4d/model.onnx", "Unsupported elem_type 9 (BOOL) for x. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors."),
     (
         "node/test_argmax_default_axis_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_default_axis_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_default_axis_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_default_axis_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_keepdims_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_keepdims_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_keepdims_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_keepdims_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_negative_axis_keepdims_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_negative_axis_keepdims_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_negative_axis_keepdims_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_negative_axis_keepdims_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_no_keepdims_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_no_keepdims_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_no_keepdims_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmax_no_keepdims_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_default_axis_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_default_axis_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_default_axis_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_default_axis_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_keepdims_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_keepdims_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_keepdims_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_keepdims_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_negative_axis_keepdims_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_negative_axis_keepdims_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_negative_axis_keepdims_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_no_keepdims_example/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_no_keepdims_example_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_no_keepdims_random/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     (
         "node/test_argmin_no_keepdims_random_select_last_index/model.onnx",
-        "Unsupported elem_type 7 for result",
+        "Unsupported elem_type 7 (INT64) for result. Supported elem_types: 1 (FLOAT). Hint: export the model with float32 tensors.",
     ),
     ("node/test_asin/model.onnx", "Unsupported op Asin"),
     ("node/test_asin_example/model.onnx", "Unsupported op Asin"),
