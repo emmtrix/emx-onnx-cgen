@@ -1818,6 +1818,7 @@ OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
 OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
     Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT.md"
 )
+ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
 
 
 def _load_official_onnx_file_expectations() -> list[tuple[str, str]]:
@@ -1830,12 +1831,13 @@ def _render_official_onnx_file_support_markdown(
 ) -> str:
     supported_count = sum(1 for _, error in expectations if not error)
     total_count = len(expectations)
+    onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
     lines = [
         "# Official ONNX file support",
         "",
         f"Support {supported_count} / {total_count} official ONNX files.",
         "",
-        "This list is derived from `tests/official_onnx_expected_errors.json`.",
+        f"ONNX version: {onnx_version}",
         "",
         "| File | Supported | Error |",
         "| --- | --- | --- |",
