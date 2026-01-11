@@ -136,6 +136,71 @@ def _make_conv_model() -> onnx.ModelProto:
     return model
 
 
+def _maxpool_output_shape(
+    input_shape: list[int],
+    kernel_shape: list[int],
+    strides: list[int],
+    pads: list[int],
+    ceil_mode: int,
+) -> list[int]:
+    spatial_rank = len(kernel_shape)
+    pad_begin = pads[:spatial_rank]
+    pad_end = pads[spatial_rank:]
+    out_spatial = []
+    for dim, kernel, stride, pad_start, pad_finish in zip(
+        input_shape[2:], kernel_shape, strides, pad_begin, pad_end
+    ):
+        numerator = dim + pad_start + pad_finish - kernel
+        if ceil_mode:
+            out_dim = (numerator + stride - 1) // stride + 1
+            if (out_dim - 1) * stride >= dim + pad_start:
+                out_dim -= 1
+        else:
+            out_dim = numerator // stride + 1
+        out_spatial.append(out_dim)
+    return [input_shape[0], input_shape[1], *out_spatial]
+
+
+def _make_maxpool_model(
+    *,
+    input_shape: list[int],
+    kernel_shape: list[int],
+    strides: list[int],
+    pads: list[int],
+    ceil_mode: int,
+    dtype: int = TensorProto.FLOAT,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    output_shape = _maxpool_output_shape(
+        input_shape, kernel_shape, strides, pads, ceil_mode
+    )
+    input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
+    output = helper.make_tensor_value_info("out", dtype, output_shape)
+    node = helper.make_node(
+        "MaxPool",
+        inputs=["in0"],
+        outputs=[output.name],
+        kernel_shape=kernel_shape,
+        strides=strides,
+        pads=pads,
+        ceil_mode=ceil_mode,
+    )
+    graph = helper.make_graph(
+        [node],
+        "maxpool_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _run_cli_verify(model: onnx.ModelProto) -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         model_path = Path(temp_dir) / "model.onnx"
@@ -457,6 +522,25 @@ OPERATOR_CASES = [
     },
 ]
 
+MAXPOOL_CASES = [
+    {
+        "name": "MaxPool2dBasic",
+        "input_shape": [1, 1, 4, 4],
+        "kernel_shape": [2, 2],
+        "strides": [2, 2],
+        "pads": [0, 0, 0, 0],
+        "ceil_mode": 0,
+    },
+    {
+        "name": "MaxPool2dPadCeil",
+        "input_shape": [1, 1, 3, 3],
+        "kernel_shape": [2, 2],
+        "strides": [2, 2],
+        "pads": [1, 1, 1, 1],
+        "ceil_mode": 1,
+    },
+]
+
 
 @pytest.mark.parametrize("case", OPERATOR_CASES, ids=lambda case: case["name"])
 def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> None:
@@ -478,4 +562,16 @@ def test_constant_op_matches_onnxruntime() -> None:
 
 def test_conv_op_matches_onnxruntime() -> None:
     model = _make_conv_model()
+    _run_cli_verify(model)
+
+
+@pytest.mark.parametrize("case", MAXPOOL_CASES, ids=lambda case: case["name"])
+def test_maxpool_op_matches_onnxruntime(case: dict[str, object]) -> None:
+    model = _make_maxpool_model(
+        input_shape=case["input_shape"],
+        kernel_shape=case["kernel_shape"],
+        strides=case["strides"],
+        pads=case["pads"],
+        ceil_mode=case["ceil_mode"],
+    )
     _run_cli_verify(model)
