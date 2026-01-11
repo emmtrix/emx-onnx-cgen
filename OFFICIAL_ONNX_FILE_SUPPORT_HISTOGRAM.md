@@ -12,7 +12,6 @@
 | Missing dtype for value '*' in op Resize. Hint: run ONNX shape inference or export with static shapes. | 39 | ████████ |
 | Missing elem_type for tensor '*' | 33 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
-| Unsupported op Conv | 30 | ██████ |
 | Unsupported op Attention | 29 | ██████ |
 | Unsupported op CastLike | 29 | ██████ |
 | Unsupported op AveragePool | 25 | █████ |
@@ -37,6 +36,7 @@
 | Unsupported op ConvTranspose | 14 | ███ |
 | Unsupported op Concat | 13 | ███ |
 | Gemm must have 2 inputs and 1 output | 13 | ███ |
+| Conv expects 2D strides | 13 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | Less expects matching dtypes, got bool, float | 12 | ██ |
@@ -54,6 +54,7 @@
 | ReduceSumSquare expects matching dtypes, got float, int64 | 9 | ██ |
 | Unsupported op Transpose | 9 | ██ |
 | Unsupported op LpPool | 8 | ██ |
+| Conv supports group=1 only | 8 | ██ |
 | Unsupported op BatchNormalization | 7 | █ |
 | Dynamic or zero dims are not supported | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |

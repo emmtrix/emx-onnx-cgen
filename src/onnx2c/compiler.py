@@ -14,6 +14,7 @@ from .codegen.c_emitter import (
     CEmitter,
     ConstTensor,
     ConvOp,
+    ConcatOp,
     LoweredModel,
     MatMulOp,
     UnaryOp,
@@ -61,12 +62,17 @@ class Compiler:
         input_dtypes = tuple(
             _value_dtype(graph, value.name) for value in graph.inputs
         )
-        ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp] = []
+        ops: list[
+            BinaryOp | UnaryOp | MatMulOp | AttentionOp | ConvOp | ConcatOp
+        ] = []
         for node in graph.nodes:
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
                     _validate_gemm(node)
                 ops.append(self._lower_matmul_op(graph, node))
+                continue
+            if node.op_type == "Concat":
+                ops.append(self._lower_concat_op(graph, node))
                 continue
             if node.op_type == "Attention":
                 ops.append(self._lower_attention_op(graph, node))
@@ -163,6 +169,11 @@ class Compiler:
                     spec, data, weights, bias
                 )
                 continue
+            if node.op_type == "Concat":
+                axis = int(node.attrs.get("axis", 0))
+                tensors = [values[name] for name in node.inputs]
+                values[node.outputs[0]] = np.concatenate(tensors, axis=axis)
+                continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
             unary_symbol = _unary_op_symbol(node.op_type, dtype=op_dtype)
@@ -254,6 +265,59 @@ class Compiler:
             pad_left=spec.pad_left,
             dilation_h=spec.dilation_h,
             dilation_w=spec.dilation_w,
+            dtype=op_dtype,
+        )
+
+    def _lower_concat_op(self, graph: Graph, node: Node) -> ConcatOp:
+        if len(node.inputs) < 1 or len(node.outputs) != 1:
+            raise UnsupportedOpError("Concat must have at least 1 input and 1 output")
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        input_shapes = tuple(
+            _value_shape(graph, name, node) for name in node.inputs
+        )
+        ranks = {len(shape) for shape in input_shapes}
+        if len(ranks) != 1:
+            raise ShapeInferenceError(
+                f"Concat inputs must have matching ranks, got {input_shapes}"
+            )
+        rank = ranks.pop()
+        axis = int(node.attrs.get("axis", 0))
+        if axis < 0:
+            axis += rank
+        if axis < 0 or axis >= rank:
+            raise ShapeInferenceError(
+                f"Concat axis out of range for rank {rank}: {axis}"
+            )
+        base_shape = list(input_shapes[0])
+        axis_dim = 0
+        for shape in input_shapes:
+            if len(shape) != rank:
+                raise ShapeInferenceError(
+                    f"Concat inputs must have matching ranks, got {input_shapes}"
+                )
+            for dim_index, dim in enumerate(shape):
+                if dim_index == axis:
+                    continue
+                if dim != base_shape[dim_index]:
+                    raise ShapeInferenceError(
+                        "Concat inputs must match on non-axis dimensions, "
+                        f"got {input_shapes}"
+                    )
+            axis_dim += shape[axis]
+        base_shape[axis] = axis_dim
+        expected_output_shape = tuple(base_shape)
+        if output_shape != expected_output_shape:
+            raise ShapeInferenceError(
+                "Concat output shape must be "
+                f"{expected_output_shape}, got {output_shape}"
+            )
+        return ConcatOp(
+            inputs=node.inputs,
+            output=node.outputs[0],
+            axis=axis,
+            input_shapes=input_shapes,
+            output_shape=output_shape,
             dtype=op_dtype,
         )
 

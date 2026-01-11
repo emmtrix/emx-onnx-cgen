@@ -1985,51 +1985,51 @@
   ],
   [
     "node/test_concat_1d_axis_0/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_1d_axis_negative_1/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_2d_axis_0/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_2d_axis_1/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_2d_axis_negative_1/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_2d_axis_negative_2/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_3d_axis_0/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_3d_axis_1/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_3d_axis_2/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_3d_axis_negative_1/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_3d_axis_negative_2/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_concat_3d_axis_negative_3/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "node/test_constant/model.onnx",
@@ -7013,7 +7013,7 @@
   ],
   [
     "pytorch-operator/test_operator_concat2/model.onnx",
-    "Unsupported op Concat"
+    ""
   ],
   [
     "pytorch-operator/test_operator_conv/model.onnx",
