@@ -56,6 +56,12 @@ def _initializer(value: onnx.TensorProto) -> Initializer:
         data = data.astype("float32", copy=False)
     if dtype == "int64" and data.dtype != "int64":
         data = data.astype("int64", copy=False)
+    if dtype == "int32" and data.dtype != "int32":
+        data = data.astype("int32", copy=False)
+    if dtype == "int16" and data.dtype != "int16":
+        data = data.astype("int16", copy=False)
+    if dtype == "int8" and data.dtype != "int8":
+        data = data.astype("int8", copy=False)
     return Initializer(
         name=value.name,
         type=TensorType(dtype=dtype, shape=tuple(data.shape)),
