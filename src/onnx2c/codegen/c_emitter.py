@@ -16,6 +16,7 @@ class BinaryOp:
     output: str
     operator: str
     operator_kind: str
+    shape: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,7 @@ class UnaryOp:
     input0: str
     output: str
     operator: str
+    shape: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -59,6 +61,12 @@ class ConstTensor:
 
 
 @dataclass(frozen=True)
+class TempBuffer:
+    name: str
+    shape: tuple[int, ...]
+
+
+@dataclass(frozen=True)
 class LoweredModel:
     name: str
     dtype: str
@@ -91,10 +99,11 @@ class CEmitter:
                 testbench_template = self._env.get_template("testbench.c.j2")
         except Exception as exc:  # pragma: no cover - template load failure
             raise CodegenError("Failed to load C template") from exc
-        temp_map = self._temp_buffers(model)
-        resolved_ops = [
-            self._resolve_op(op, temp_map) for op in model.ops
-        ]
+        temp_buffers = self._temp_buffers(model)
+        temp_name_map = {
+            original: buffer.name for original, buffer in temp_buffers.items()
+        }
+        resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
         dtype = dtype_info(model.dtype)
         array_suffix = self._array_suffix(model.output_shape)
         loop_vars = self._loop_vars(model.output_shape)
@@ -121,7 +130,7 @@ class CEmitter:
         wrapper_fn = self._emit_model_wrapper(
             model,
             resolved_ops,
-            tuple(temp_map.values()),
+            tuple(temp_buffers.values()),
             array_suffix,
             c_type=dtype.c_type,
         )
@@ -186,7 +195,7 @@ class CEmitter:
         self,
         model: LoweredModel,
         resolved_ops: list[BinaryOp | UnaryOp | MatMulOp | AttentionOp],
-        temp_buffers: tuple[str, ...],
+        temp_buffers: tuple[TempBuffer, ...],
         array_suffix: str,
         *,
         c_type: str,
@@ -199,7 +208,9 @@ class CEmitter:
             f"void {model.name}({signature}, {c_type} {model.output_name}{array_suffix}) {{"
         ]
         for temp in temp_buffers:
-            lines.append(f"    {c_type} {temp}{array_suffix};")
+            lines.append(
+                f"    {c_type} {temp.name}{self._array_suffix(temp.shape)};"
+            )
         for index, op in enumerate(resolved_ops):
             if isinstance(op, (BinaryOp, MatMulOp)):
                 call = f"{op.input0}, {op.input1}, {op.output}"
@@ -213,19 +224,20 @@ class CEmitter:
         lines.append("}")
         return "\n".join(lines)
 
-    def _temp_buffers(self, model: LoweredModel) -> dict[str, str]:
+    def _temp_buffers(self, model: LoweredModel) -> dict[str, TempBuffer]:
         intermediates = [
-            self._op_output(op)
+            (self._op_output(op), self._op_output_shape(op))
             for op in model.ops
             if self._op_output(op) != model.output_name
         ]
         if not intermediates:
             return {}
         if len(intermediates) == 1:
-            return {intermediates[0]: "tmp"}
+            name, shape = intermediates[0]
+            return {name: TempBuffer(name="tmp", shape=shape)}
         return {
-            name: f"tmp{index}"
-            for index, name in enumerate(intermediates)
+            name: TempBuffer(name=f"tmp{index}", shape=shape)
+            for index, (name, shape) in enumerate(intermediates)
         }
 
     @staticmethod
@@ -239,6 +251,7 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 operator=op.operator,
                 operator_kind=op.operator_kind,
+                shape=op.shape,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -268,6 +281,7 @@ class CEmitter:
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
             operator=op.operator,
+            shape=op.shape,
         )
 
     @staticmethod
@@ -287,19 +301,24 @@ class CEmitter:
         matmul_template,
         attention_template,
     ) -> str:
-        common = {
-            "model_name": model.name,
-            "op_name": f"{model.name}_op{index}",
-            "element_count": model.element_count,
-            "array_suffix": array_suffix,
-            "shape": model.output_shape,
-            "loop_vars": loop_vars,
-            "loop_indents": loop_indents,
-            "inner_indent": inner_indent,
-            "c_type": c_type,
-            "zero_literal": zero_literal,
-        }
         if isinstance(op, BinaryOp):
+            shape = op.shape
+            loop_vars = CEmitter._loop_vars(shape)
+            loop_indents = CEmitter._loop_indents(shape)
+            inner_indent = CEmitter._inner_indent(shape)
+            array_suffix = CEmitter._array_suffix(shape)
+            common = {
+                "model_name": model.name,
+                "op_name": f"{model.name}_op{index}",
+                "element_count": CEmitter._element_count(shape),
+                "array_suffix": array_suffix,
+                "shape": shape,
+                "loop_vars": loop_vars,
+                "loop_indents": loop_indents,
+                "inner_indent": inner_indent,
+                "c_type": c_type,
+                "zero_literal": zero_literal,
+            }
             left_expr = f"{op.input0}" + "".join(
                 f"[{var}]" for var in loop_vars
             )
@@ -370,6 +389,23 @@ class CEmitter:
                     (op.batch, op.heads, op.q_seq, op.v_head_size)
                 ),
             ).rstrip()
+        shape = op.shape
+        loop_vars = CEmitter._loop_vars(shape)
+        loop_indents = CEmitter._loop_indents(shape)
+        inner_indent = CEmitter._inner_indent(shape)
+        array_suffix = CEmitter._array_suffix(shape)
+        common = {
+            "model_name": model.name,
+            "op_name": f"{model.name}_op{index}",
+            "element_count": CEmitter._element_count(shape),
+            "array_suffix": array_suffix,
+            "shape": shape,
+            "loop_vars": loop_vars,
+            "loop_indents": loop_indents,
+            "inner_indent": inner_indent,
+            "c_type": c_type,
+            "zero_literal": zero_literal,
+        }
         return unary_template.render(
             **common,
             input0=op.input0,
@@ -380,6 +416,18 @@ class CEmitter:
     @staticmethod
     def _op_output(op: BinaryOp | UnaryOp | MatMulOp | AttentionOp) -> str:
         return op.output
+
+    @staticmethod
+    def _op_output_shape(
+        op: BinaryOp | UnaryOp | MatMulOp | AttentionOp,
+    ) -> tuple[int, ...]:
+        if isinstance(op, BinaryOp):
+            return op.shape
+        if isinstance(op, UnaryOp):
+            return op.shape
+        if isinstance(op, MatMulOp):
+            return (op.m, op.n)
+        return (op.batch, op.heads, op.q_seq, op.v_head_size)
 
     @staticmethod
     def _array_suffix(shape: tuple[int, ...]) -> str:
