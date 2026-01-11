@@ -681,6 +681,24 @@ OPERATOR_CASES = [
         "opset": 13,
     },
     {
+        "name": "GemmBiasBroadcast",
+        "op_type": "Gemm",
+        "input_shapes": [[3, 2], [3, 4], [4]],
+        "output_shape": [2, 4],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"transA": 1, "alpha": 0.5, "beta": 1.5},
+        "opset": 13,
+    },
+    {
+        "name": "GemmTransBColumnBias",
+        "op_type": "Gemm",
+        "input_shapes": [[2, 3], [4, 3], [2, 1]],
+        "output_shape": [2, 4],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"transB": 1, "alpha": 2.0, "beta": 0.75},
+        "opset": 13,
+    },
+    {
         "name": "ConcatAxis0",
         "op_type": "Concat",
         "input_shapes": [[2, 3], [1, 3]],
@@ -821,6 +839,23 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         opset=case.get("opset", 13),
     )
     _run_cli_verify(model)
+
+
+def test_gemm_run_matches_numpy() -> None:
+    model = _make_operator_model(
+        op_type="Gemm",
+        input_shapes=[[3, 2], [4, 3], [4]],
+        output_shape=[2, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={"transA": 1, "transB": 1, "alpha": 0.5, "beta": 1.25},
+    )
+    compiler = Compiler()
+    a = np.arange(6, dtype=np.float32).reshape(3, 2)
+    b = np.arange(12, dtype=np.float32).reshape(4, 3)
+    c = np.arange(4, dtype=np.float32)
+    outputs = compiler.run(model, {"in0": a, "in1": b, "in2": c})
+    expected = 0.5 * (a.T @ b.T) + 1.25 * c
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
 @pytest.mark.parametrize("case", AVG_POOL_CASES, ids=lambda case: case["name"])
