@@ -2,18 +2,18 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Mixed dtypes are not supported, got float, int64 | 413 | ██████████████████████████████ |
-| Unsupported elem_type 9 (BOOL) for tensor '*'. | 147 | ███████████ |
-| Dynamic dim for tensor '*' | 123 | █████████ |
+| Mixed dtypes are not supported, got float, int64 | 420 | ██████████████████████████████ |
+| Dynamic dim for tensor '*' | 146 | ██████████ |
+| Unsupported op Constant | 67 | █████ |
 | Only single-output graphs are supported | 64 | █████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 60 | ████ |
 | Unsupported elem_type 11 (DOUBLE) for tensor '*'. | 54 | ████ |
-| Unsupported op Constant | 51 | ████ |
 | Unsupported elem_type 2 (UINT8) for tensor '*'. | 50 | ████ |
 | Unsupported op Conv | 33 | ██ |
+| Missing elem_type for tensor '*' | 33 | ██ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ██ |
+| Mixed dtypes are not supported, got bool, float | 32 | ██ |
 | Unsupported op Attention | 29 | ██ |
-| Missing elem_type for tensor '*' | 29 | ██ |
 | Unsupported op AveragePool | 25 | ██ |
 | Unsupported op MaxPool | 25 | ██ |
 | Unsupported elem_type 13 (UINT64) for tensor '*'. | 21 | ██ |
@@ -39,11 +39,15 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | █ |
 | Unsupported op Flatten | 11 | █ |
 | Unsupported op Softmax | 11 | █ |
+| Unsupported op Less | 10 | █ |
 | Unsupported op LogSoftmax | 10 | █ |
 | Unsupported op Transpose | 9 | █ |
 | Unsupported op LpPool | 8 | █ |
 | Unsupported op BatchNormalization | 7 | █ |
 | Mixed dtypes are not supported, got int32, int64 | 7 | █ |
+| Scalar outputs are not supported | 7 | █ |
+| Mixed dtypes are not supported, got bool, int16 | 7 | █ |
+| Mixed dtypes are not supported, got bool, int8 | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
@@ -60,10 +64,10 @@
 | Unsupported op Max | 4 | █ |
 | Unsupported op Min | 4 | █ |
 | Unsupported op Softplus | 4 | █ |
+| Mixed dtypes are not supported, got bool, int64 | 4 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
 | Mixed dtypes are not supported, got float, int16 | 3 | █ |
-| Scalar outputs are not supported | 3 | █ |
 | Unsupported op DFT | 3 | █ |
 | Unsupported op GRU | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
@@ -83,6 +87,7 @@
 | Unsupported op CumSum | 2 | █ |
 | Unsupported op DepthToSpace | 2 | █ |
 | Unsupported op Div | 2 | █ |
+| Mixed dtypes are not supported, got bool, int32 | 2 | █ |
 | Unsupported op GlobalAveragePool | 2 | █ |
 | Unsupported op GlobalMaxPool | 2 | █ |
 | Unsupported op GroupNormalization | 2 | █ |
@@ -95,6 +100,7 @@
 | Unsupported op Pow | 2 | █ |
 | Mixed dtypes are not supported, got float, int8 | 2 | █ |
 | Unsupported op Range | 2 | █ |
+| Unsupported op Cast | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
 | Unsupported op ReduceMax | 2 | █ |
 | Unsupported op ReduceMin | 2 | █ |
@@ -112,12 +118,14 @@
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op TreeEnsemble | 1 | █ |
 | Unsupported op Bernoulli | 1 | █ |
+| Unsupported op RandomUniformLike | 1 | █ |
 | Unsupported op BitwiseNot | 1 | █ |
 | Unsupported op Celu | 1 | █ |
 | Unsupported op Det | 1 | █ |
 | Unsupported op Erf | 1 | █ |
 | Unsupported op EyeLike | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
+| Mixed dtypes are not supported, got bool, float, int64 | 1 | █ |
 | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) | 1 | █ |
 | MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) | 1 | █ |
 | MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) | 1 | █ |

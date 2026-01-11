@@ -57,7 +57,7 @@ class AttentionOp:
 class ConstTensor:
     name: str
     shape: tuple[int, ...]
-    data: tuple[float | int, ...]
+    data: tuple[float | int | bool, ...]
 
 
 @dataclass(frozen=True)
@@ -139,6 +139,8 @@ class CEmitter:
             includes.extend(("#include <stdio.h>", "#include <stdint.h>"))
         if model.dtype != "float" and "#include <stdint.h>" not in includes:
             includes.append("#include <stdint.h>")
+        if model.dtype == "bool":
+            includes.append("#include <stdbool.h>")
         math_ops = {
             "atanhf",
             "ceilf",
@@ -570,9 +572,11 @@ class CEmitter:
             return min_macro
         return str(int(value))
 
-    def _format_value(self, value: float | int, dtype: str) -> str:
+    def _format_value(self, value: float | int | bool, dtype: str) -> str:
         if dtype == "float":
             return self._format_float(float(value))
+        if dtype == "bool":
+            return "true" if bool(value) else "false"
         if dtype == "int64":
             return self._format_int64(int(value))
         if dtype == "int32":
@@ -587,6 +591,8 @@ class CEmitter:
     def _print_format(dtype: str) -> str:
         if dtype == "float":
             return "%.8g"
+        if dtype == "bool":
+            return "%d"
         if dtype == "int64":
             return "%lld"
         if dtype == "int32":
@@ -601,6 +607,8 @@ class CEmitter:
     def _print_cast(dtype: str) -> str:
         if dtype == "float":
             return "(double)"
+        if dtype == "bool":
+            return "(int)"
         if dtype == "int64":
             return "(long long)"
         if dtype in {"int32", "int16", "int8"}:
