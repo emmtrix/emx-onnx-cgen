@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 182 / 1802 official ONNX files.
+Support 184 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -8,15 +8,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 | File | Supported | Error |
 | --- | --- | --- |
-| `light/light_bvlc_alexnet.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_densenet121.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_inception_v1.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_inception_v2.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_resnet50.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_shufflenet.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_squeezenet.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_vgg19.onnx` | ❌ | Unsupported op ConstantOfShape |
-| `light/light_zfnet512.onnx` | ❌ | Unsupported op ConstantOfShape |
+| `light/light_bvlc_alexnet.onnx` | ❌ | Unsupported op LRN |
+| `light/light_densenet121.onnx` | ❌ | Unsupported op BatchNormalization |
+| `light/light_inception_v1.onnx` | ❌ | Unsupported op LRN |
+| `light/light_inception_v2.onnx` | ❌ | Unsupported op BatchNormalization |
+| `light/light_resnet50.onnx` | ❌ | Unsupported op BatchNormalization |
+| `light/light_shufflenet.onnx` | ❌ | Unsupported op BatchNormalization |
+| `light/light_squeezenet.onnx` | ❌ | Unsupported op Dropout |
+| `light/light_vgg19.onnx` | ❌ | Unsupported op Reshape |
+| `light/light_zfnet512.onnx` | ❌ | Unsupported op LRN |
 | `node/test_abs/model.onnx` | ✅ |  |
 | `node/test_acos/model.onnx` | ❌ | Unsupported op Acos |
 | `node/test_acos_example/model.onnx` | ❌ | Unsupported op Acos |
@@ -520,9 +520,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_constant_pad/model.onnx` | ❌ | Unsupported op Pad |
 | `node/test_constant_pad_axes/model.onnx` | ❌ | Unsupported op Pad |
 | `node/test_constant_pad_negative_axes/model.onnx` | ❌ | Unsupported op Pad |
-| `node/test_constantofshape_float_ones/model.onnx` | ❌ | Unsupported op ConstantOfShape |
+| `node/test_constantofshape_float_ones/model.onnx` | ✅ |  |
 | `node/test_constantofshape_int_shape_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
-| `node/test_constantofshape_int_zeros/model.onnx` | ❌ | Unsupported op ConstantOfShape |
+| `node/test_constantofshape_int_zeros/model.onnx` | ✅ |  |
 | `node/test_conv_with_autopad_same/model.onnx` | ❌ | Conv supports auto_pad=NOTSET only |
 | `node/test_conv_with_strides_and_asymmetric_padding/model.onnx` | ✅ |  |
 | `node/test_conv_with_strides_no_padding/model.onnx` | ✅ |  |

@@ -153,6 +153,17 @@ class TransposeOp:
 
 
 @dataclass(frozen=True)
+class ConstantOfShapeOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    shape: tuple[int, ...]
+    value: float | int | bool
+    dtype: str
+    input_dtype: str
+
+
+@dataclass(frozen=True)
 class ConstTensor:
     name: str
     shape: tuple[int, ...]
@@ -188,7 +199,8 @@ class LoweredModel:
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
-        | TransposeOp,
+        | TransposeOp
+        | ConstantOfShapeOp,
         ...,
     ]
 
@@ -214,6 +226,9 @@ class CEmitter:
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
             concat_template = self._env.get_template("concat_op.c.j2")
             transpose_template = self._env.get_template("transpose_op.c.j2")
+            constant_of_shape_template = self._env.get_template(
+                "constant_of_shape_op.c.j2"
+            )
             testbench_template = None
             if emit_testbench:
                 testbench_template = self._env.get_template("testbench.c.j2")
@@ -250,6 +265,7 @@ class CEmitter:
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
                 transpose_template=transpose_template,
+                constant_of_shape_template=constant_of_shape_template,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -262,11 +278,17 @@ class CEmitter:
         includes = ["#include <stddef.h>"]
         if emit_testbench:
             includes.extend(("#include <stdio.h>", "#include <stdint.h>"))
+        constant_of_shape_inputs = {
+            op.input_dtype
+            for op in resolved_ops
+            if isinstance(op, ConstantOfShapeOp)
+        }
         model_dtypes = {
             *model.input_dtypes,
             model.output_dtype,
             *(const.dtype for const in model.constants),
             *(op.dtype for op in resolved_ops),
+            *constant_of_shape_inputs,
         }
         if (
             any(dtype in {"int64", "int32", "int16", "int8"} for dtype in model_dtypes)
@@ -360,20 +382,23 @@ class CEmitter:
             | SoftmaxOp
             | MaxPoolOp
             | ConcatOp
+            | ConstantOfShapeOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
         array_suffix: str,
     ) -> str:
-        signature = ", ".join(
+        params = [
             f"const {dtype_info(dtype).c_type} {name}{self._array_suffix(shape)}"
             for name, shape, dtype in zip(
                 model.input_names, model.input_shapes, model.input_dtypes
             )
-        )
-        output_type = dtype_info(model.output_dtype).c_type
-        lines = [
-            f"void {model.name}({signature}, {output_type} {model.output_name}{array_suffix}) {{"
         ]
+        output_type = dtype_info(model.output_dtype).c_type
+        params.append(
+            f"{output_type} {model.output_name}{array_suffix}"
+        )
+        signature = ", ".join(params)
+        lines = [f"void {model.name}({signature}) {{"]
         for temp in temp_buffers:
             c_type = dtype_info(temp.dtype).c_type
             lines.append(
@@ -397,6 +422,8 @@ class CEmitter:
                 call = f"{op.input0}, {op.output}"
             elif isinstance(op, ConcatOp):
                 call = ", ".join((*op.inputs, op.output))
+            elif isinstance(op, ConstantOfShapeOp):
+                call = f"{op.input0}, {op.output}"
             else:
                 call = f"{op.input0}, {op.output}"
             lines.append(f"    {model.name}_op{index}({call});")
@@ -434,7 +461,8 @@ class CEmitter:
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
-        | TransposeOp,
+        | TransposeOp
+        | ConstantOfShapeOp,
         temp_map: dict[str, str],
     ) -> (
         BinaryOp
@@ -447,6 +475,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
+        | ConstantOfShapeOp
     ):
         if isinstance(op, BinaryOp):
             return BinaryOp(
@@ -564,6 +593,16 @@ class CEmitter:
                 output_shape=op.output_shape,
                 dtype=op.dtype,
             )
+        if isinstance(op, ConstantOfShapeOp):
+            return ConstantOfShapeOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                shape=op.shape,
+                value=op.value,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -593,7 +632,8 @@ class CEmitter:
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
-        | TransposeOp,
+        | TransposeOp
+        | ConstantOfShapeOp,
         index: int,
         *,
         array_suffix: str,
@@ -613,6 +653,7 @@ class CEmitter:
         maxpool_template,
         concat_template,
         transpose_template,
+        constant_of_shape_template,
     ) -> str:
         if isinstance(op, BinaryOp):
             shape = op.shape
@@ -844,6 +885,27 @@ class CEmitter:
                 inner_indent=inner_indent,
                 input_indices=input_indices,
             ).rstrip()
+        if isinstance(op, ConstantOfShapeOp):
+            shape = op.shape
+            loop_vars = CEmitter._loop_vars(shape)
+            loop_indents = CEmitter._loop_indents(shape)
+            inner_indent = CEmitter._inner_indent(shape)
+            array_suffix = CEmitter._array_suffix(shape)
+            return constant_of_shape_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                input_c_type=dtype_info(op.input_dtype).c_type,
+                c_type=c_type,
+                input_suffix=CEmitter._array_suffix(op.input_shape),
+                array_suffix=array_suffix,
+                shape=shape,
+                loop_vars=loop_vars,
+                loop_indents=loop_indents,
+                inner_indent=inner_indent,
+                value_literal=CEmitter._format_literal(op.dtype, op.value),
+            ).rstrip()
         shape = op.shape
         loop_vars = CEmitter._loop_vars(shape)
         loop_indents = CEmitter._loop_indents(shape)
@@ -879,7 +941,8 @@ class CEmitter:
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
-        | TransposeOp,
+        | TransposeOp
+        | ConstantOfShapeOp,
     ) -> str:
         return op.output
 
@@ -894,7 +957,8 @@ class CEmitter:
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
-        | TransposeOp,
+        | TransposeOp
+        | ConstantOfShapeOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return op.shape
@@ -914,6 +978,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, TransposeOp):
             return op.output_shape
+        if isinstance(op, ConstantOfShapeOp):
+            return op.shape
         return (op.batch, op.heads, op.q_seq, op.v_head_size)
 
     @staticmethod
@@ -927,7 +993,8 @@ class CEmitter:
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
-        | TransposeOp,
+        | TransposeOp
+        | ConstantOfShapeOp,
     ) -> str:
         return op.dtype
 
@@ -1082,6 +1149,22 @@ class CEmitter:
         if value == min_value:
             return min_macro
         return str(int(value))
+
+    @staticmethod
+    def _format_literal(dtype: str, value: float | int | bool) -> str:
+        if dtype == "float":
+            return CEmitter._format_float(float(value))
+        if dtype == "bool":
+            return "true" if bool(value) else "false"
+        if dtype == "int64":
+            return CEmitter._format_int64(int(value))
+        if dtype == "int32":
+            return CEmitter._format_int(int(value), 32, "INT32_MIN")
+        if dtype == "int16":
+            return CEmitter._format_int(int(value), 16, "INT16_MIN")
+        if dtype == "int8":
+            return CEmitter._format_int(int(value), 8, "INT8_MIN")
+        raise CodegenError(f"Unsupported dtype {dtype}")
 
     def _format_value(self, value: float | int | bool, dtype: str) -> str:
         if dtype == "float":

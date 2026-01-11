@@ -7,6 +7,7 @@ from typing import Callable, Mapping
 
 import numpy as np
 import onnx
+from onnx import numpy_helper
 
 from .codegen.c_emitter import (
     AttentionOp,
@@ -16,6 +17,7 @@ from .codegen.c_emitter import (
     ConstTensor,
     ConvOp,
     ConcatOp,
+    ConstantOfShapeOp,
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
@@ -23,11 +25,12 @@ from .codegen.c_emitter import (
     TransposeOp,
     UnaryOp,
 )
-from .dtypes import dtype_info
+from .dtypes import ONNX_TO_DTYPE, dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Node
 from .lowering import get_lowering
 from .lowering.average_pool import lower_average_pool
+from .lowering.constant_of_shape import lower_constant_of_shape
 from .onnx_import import import_onnx
 
 
@@ -79,6 +82,7 @@ class Compiler:
             | MaxPoolOp
             | ConcatOp
             | TransposeOp
+            | ConstantOfShapeOp
         ] = []
         for node in graph.nodes:
             lowering = get_lowering(node.op_type)
@@ -235,6 +239,37 @@ class Compiler:
                     perm = tuple(reversed(range(values[node.inputs[0]].ndim)))
                 values[node.outputs[0]] = np.transpose(
                     values[node.inputs[0]], axes=tuple(perm)
+                )
+                continue
+            if node.op_type == "ConstantOfShape":
+                output_shape = _value_shape(graph, node.outputs[0], node)
+                output_dtype = _value_dtype(graph, node.outputs[0], node)
+                value_attr = node.attrs.get("value")
+                if value_attr is None:
+                    if output_dtype != "float":
+                        raise UnsupportedOpError(
+                            "ConstantOfShape output dtype must be float when value is omitted"
+                        )
+                    fill_value = 0.0
+                else:
+                    value_dtype = ONNX_TO_DTYPE.get(value_attr.data_type)
+                    if value_dtype is None:
+                        raise UnsupportedOpError(
+                            f"Unsupported dtype {value_attr.data_type}"
+                        )
+                    if value_dtype != output_dtype:
+                        raise UnsupportedOpError(
+                            "ConstantOfShape output dtype must match value dtype"
+                        )
+                    value_data = numpy_helper.to_array(value_attr)
+                    if value_data.size != 1:
+                        raise UnsupportedOpError(
+                            "ConstantOfShape value must be a scalar"
+                        )
+                    fill_value = value_data.reshape(-1)[0].item()
+                info = dtype_info(output_dtype)
+                values[node.outputs[0]] = np.full(
+                    output_shape, fill_value, dtype=info.np_dtype
                 )
                 continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
