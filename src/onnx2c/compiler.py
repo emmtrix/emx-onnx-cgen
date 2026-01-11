@@ -108,6 +108,8 @@ class Compiler:
             if node.op_type == "Softmax":
                 ops.append(self._lower_softmax_op(graph, node))
                 continue
+            if node.op_type not in _BINARY_OP_TYPES | _UNARY_OP_TYPES:
+                raise UnsupportedOpError(f"Unsupported op {node.op_type}")
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(
                 node.op_type, node.attrs, dtype=op_dtype
@@ -500,6 +502,41 @@ def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
             )
         )
     return tuple(constants)
+
+
+_BINARY_OP_TYPES = {
+    "Add",
+    "And",
+    "Div",
+    "Max",
+    "Mean",
+    "Min",
+    "Mod",
+    "Mul",
+    "Or",
+    "PRelu",
+    "Pow",
+    "Sub",
+    "Sum",
+    "Xor",
+}
+
+_UNARY_OP_TYPES = {
+    "Abs",
+    "Atanh",
+    "Ceil",
+    "Cos",
+    "Exp",
+    "Floor",
+    "Log",
+    "Neg",
+    "Not",
+    "Relu",
+    "Sin",
+    "Sqrt",
+    "Tan",
+    "Tanh",
+}
 
 
 def _ensure_supported_dtype(dtype: str) -> str:
