@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 219 / 1802 official ONNX files.
+Support 240 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1683,32 +1683,32 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-converted/test_BatchNorm3d_eval/model.onnx` | ✅ |  |
 | `pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ConstantPad2d/model.onnx` | ❌ | Unsupported op Pad |
-| `pytorch-converted/test_Conv1d/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv1d_dilated/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv1d_groups/model.onnx` | ❌ | Conv supports group=1 only |
-| `pytorch-converted/test_Conv1d_pad1/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv1d_pad1size1/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv1d_pad2/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv1d_pad2size1/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv1d_stride/model.onnx` | ❌ | Conv expects 2D strides |
+| `pytorch-converted/test_Conv1d/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv1d_dilated/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv1d_groups/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv1d_pad1/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv1d_pad1size1/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv1d_pad2/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv1d_pad2size1/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv1d_stride/model.onnx` | ✅ |  |
 | `pytorch-converted/test_Conv2d/model.onnx` | ✅ |  |
-| `pytorch-converted/test_Conv2d_depthwise/model.onnx` | ❌ | Conv supports group=1 only |
-| `pytorch-converted/test_Conv2d_depthwise_padded/model.onnx` | ❌ | Conv supports group=1 only |
-| `pytorch-converted/test_Conv2d_depthwise_strided/model.onnx` | ❌ | Conv supports group=1 only |
-| `pytorch-converted/test_Conv2d_depthwise_with_multiplier/model.onnx` | ❌ | Conv supports group=1 only |
+| `pytorch-converted/test_Conv2d_depthwise/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv2d_depthwise_padded/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv2d_depthwise_strided/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv2d_depthwise_with_multiplier/model.onnx` | ✅ |  |
 | `pytorch-converted/test_Conv2d_dilated/model.onnx` | ✅ |  |
-| `pytorch-converted/test_Conv2d_groups/model.onnx` | ❌ | Conv supports group=1 only |
-| `pytorch-converted/test_Conv2d_groups_thnn/model.onnx` | ❌ | Conv supports group=1 only |
+| `pytorch-converted/test_Conv2d_groups/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv2d_groups_thnn/model.onnx` | ✅ |  |
 | `pytorch-converted/test_Conv2d_no_bias/model.onnx` | ✅ |  |
 | `pytorch-converted/test_Conv2d_padding/model.onnx` | ✅ |  |
 | `pytorch-converted/test_Conv2d_strided/model.onnx` | ✅ |  |
-| `pytorch-converted/test_Conv3d/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv3d_dilated/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv3d_dilated_strided/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv3d_groups/model.onnx` | ❌ | Conv supports group=1 only |
-| `pytorch-converted/test_Conv3d_no_bias/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv3d_stride/model.onnx` | ❌ | Conv expects 2D strides |
-| `pytorch-converted/test_Conv3d_stride_padding/model.onnx` | ❌ | Conv expects 2D strides |
+| `pytorch-converted/test_Conv3d/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv3d_dilated/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv3d_dilated_strided/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv3d_groups/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv3d_no_bias/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv3d_stride/model.onnx` | ✅ |  |
+| `pytorch-converted/test_Conv3d_stride_padding/model.onnx` | ✅ |  |
 | `pytorch-converted/test_ConvTranspose2d/model.onnx` | ❌ | Unsupported op ConvTranspose |
 | `pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx` | ❌ | Unsupported op ConvTranspose |
 | `pytorch-converted/test_ELU/model.onnx` | ❌ | Unsupported op Elu |
