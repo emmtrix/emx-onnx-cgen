@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 115 / 1802 official ONNX files.
+Support 128 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -504,18 +504,18 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_compress_1/model.onnx` | ❌ | Compress expects matching dtypes, got bool, float |
 | `node/test_compress_default_axis/model.onnx` | ❌ | Compress expects matching dtypes, got bool, float |
 | `node/test_compress_negative_axis/model.onnx` | ❌ | Compress expects matching dtypes, got bool, float |
-| `node/test_concat_1d_axis_0/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_1d_axis_negative_1/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_2d_axis_0/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_2d_axis_1/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_2d_axis_negative_1/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_2d_axis_negative_2/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_3d_axis_0/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_3d_axis_1/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_3d_axis_2/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_3d_axis_negative_1/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_3d_axis_negative_2/model.onnx` | ❌ | Unsupported op Concat |
-| `node/test_concat_3d_axis_negative_3/model.onnx` | ❌ | Unsupported op Concat |
+| `node/test_concat_1d_axis_0/model.onnx` | ✅ |  |
+| `node/test_concat_1d_axis_negative_1/model.onnx` | ✅ |  |
+| `node/test_concat_2d_axis_0/model.onnx` | ✅ |  |
+| `node/test_concat_2d_axis_1/model.onnx` | ✅ |  |
+| `node/test_concat_2d_axis_negative_1/model.onnx` | ✅ |  |
+| `node/test_concat_2d_axis_negative_2/model.onnx` | ✅ |  |
+| `node/test_concat_3d_axis_0/model.onnx` | ✅ |  |
+| `node/test_concat_3d_axis_1/model.onnx` | ✅ |  |
+| `node/test_concat_3d_axis_2/model.onnx` | ✅ |  |
+| `node/test_concat_3d_axis_negative_1/model.onnx` | ✅ |  |
+| `node/test_concat_3d_axis_negative_2/model.onnx` | ✅ |  |
+| `node/test_concat_3d_axis_negative_3/model.onnx` | ✅ |  |
 | `node/test_constant/model.onnx` | ❌ | Graph must contain at least one node |
 | `node/test_constant_pad/model.onnx` | ❌ | Pad expects matching dtypes, got float, int64 |
 | `node/test_constant_pad_axes/model.onnx` | ❌ | Pad expects matching dtypes, got float, int64 |
@@ -1761,7 +1761,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_basic/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `pytorch-operator/test_operator_chunk/model.onnx` | ❌ | Only single-output graphs are supported |
 | `pytorch-operator/test_operator_clip/model.onnx` | ❌ | Unsupported op Clip |
-| `pytorch-operator/test_operator_concat2/model.onnx` | ❌ | Unsupported op Concat |
+| `pytorch-operator/test_operator_concat2/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_conv/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_convtranspose/model.onnx` | ❌ | Unsupported op ConvTranspose |
 | `pytorch-operator/test_operator_exp/model.onnx` | ✅ |  |

@@ -34,7 +34,6 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
-| Unsupported op Concat | 13 | ███ |
 | Gemm must have 2 inputs and 1 output | 13 | ███ |
 | Conv expects 2D strides | 13 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
