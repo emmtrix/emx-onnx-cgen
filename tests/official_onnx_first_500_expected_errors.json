@@ -353,11 +353,11 @@
   ],
   [
     "node/test_atanh/model.onnx",
-    "Unsupported op Atanh"
+    ""
   ],
   [
     "node/test_atanh_example/model.onnx",
-    "Unsupported op Atanh"
+    ""
   ],
   [
     "node/test_attention_3d/model.onnx",

@@ -318,6 +318,8 @@ def _unary_op_symbol(op_type: str) -> str | None:
         return "relu"
     if op_type == "Tanh":
         return "tanhf"
+    if op_type == "Atanh":
+        return "atanhf"
     return None
 
 
@@ -332,6 +334,8 @@ def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
         return np.maximum(value, 0)
     if op_symbol == "tanhf":
         return np.tanh(value)
+    if op_symbol == "atanhf":
+        return np.arctanh(value)
     raise UnsupportedOpError(f"Unsupported unary op {op_symbol}")
 
 
