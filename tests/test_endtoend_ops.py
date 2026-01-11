@@ -167,6 +167,35 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _make_dropout_model() -> onnx.ModelProto:
+    input_shape = [2, 3, 4]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, input_shape
+    )
+    node = helper.make_node(
+        "Dropout",
+        inputs=["in0"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "dropout_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _unsqueeze_output_shape(
     input_shape: list[int], axes: list[int]
 ) -> list[int]:
@@ -893,6 +922,19 @@ def test_constant_of_shape_matches_onnxruntime() -> None:
 
 def test_reshape_op_matches_onnxruntime() -> None:
     model = _make_reshape_model()
+    _run_cli_verify(model)
+
+
+def test_dropout_run_matches_numpy() -> None:
+    model = _make_dropout_model()
+    compiler = Compiler()
+    input_data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    outputs = compiler.run(model, {"in0": input_data})
+    np.testing.assert_allclose(outputs["out"], input_data, rtol=1e-6, atol=1e-6)
+
+
+def test_dropout_op_matches_onnxruntime() -> None:
+    model = _make_dropout_model()
     _run_cli_verify(model)
 
 

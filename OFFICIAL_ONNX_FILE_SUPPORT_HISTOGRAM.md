@@ -40,7 +40,6 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
-| Gemm only supports alpha=1, beta=1, transA=0, transB=0 | 10 | ██ |
 | Unsupported op ReduceMin | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
 | Conv supports group=1 only | 9 | ██ |
@@ -50,7 +49,6 @@
 | Unsupported op ReduceProd | 9 | ██ |
 | Unsupported op ReduceSumSquare | 9 | ██ |
 | Reshape requires a constant shape input | 9 | ██ |
-| Unsupported op Dropout | 8 | ██ |
 | Unsupported op Greater | 8 | ██ |
 | Unsupported op LpPool | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
@@ -78,9 +76,11 @@
 | Unsupported op ScatterND | 5 | █ |
 | Unsupported op Selu | 5 | █ |
 | Unsupported op Sigmoid | 5 | █ |
+| Unsupported op GlobalAveragePool | 4 | █ |
 | Unsupported op AffineGrid | 4 | █ |
 | Unsupported op DeformConv | 4 | █ |
 | Unsupported op Compress | 4 | █ |
+| Dropout supports only the data input and 1 or 2 outputs | 4 | █ |
 | Unsupported op Equal | 4 | █ |
 | Unsupported op Gelu | 4 | █ |
 | Unsupported op GreaterOrEqual | 4 | █ |
@@ -93,7 +93,6 @@
 | Unsupported op SoftmaxCrossEntropyLoss | 4 | █ |
 | Unsupported op Squeeze | 4 | █ |
 | Unsupported op Tile | 4 | █ |
-| Unsupported op GlobalAveragePool | 3 | █ |
 | AveragePool supports auto_pad=NOTSET only | 3 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
@@ -162,10 +161,8 @@
 | Unsupported op DequantizeLinear | 1 | █ |
 | Unsupported op Det | 1 | █ |
 | Unsupported op Erf | 1 | █ |
-| Gemm bias input must match output shape, got () vs (2, 4) | 1 | █ |
-| Gemm bias input must match output shape, got (1,) vs (3, 3) | 1 | █ |
-| Gemm bias input must match output shape, got (1, 4) vs (2, 4) | 1 | █ |
-| Gemm bias input must match output shape, got (1, 4) vs (3, 4) | 1 | █ |
+| Gemm bias input must be rank 1 or 2, got () | 1 | █ |
+| Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3) | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
 | Unsupported op If | 1 | █ |
 | Unsupported op IsNaN | 1 | █ |
@@ -184,4 +181,4 @@
 | Unsupported op Swish | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
 | Unsupported elem_type 11 (DOUBLE) for Constant '*'. | 1 | █ |
-| Gemm bias input must match output shape, got (4,) vs (2, 4) | 1 | █ |
+| Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) | 1 | █ |
