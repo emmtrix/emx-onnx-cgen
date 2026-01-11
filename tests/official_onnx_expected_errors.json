@@ -1801,7 +1801,7 @@
   ],
   [
     "node/test_celu_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op Elu"
   ],
   [
     "node/test_center_crop_pad_crop/model.onnx",
@@ -2033,7 +2033,7 @@
   ],
   [
     "node/test_constant/model.onnx",
-    "Unsupported op Constant"
+    "Graph must contain at least one node"
   ],
   [
     "node/test_constant_pad/model.onnx",
@@ -2405,7 +2405,7 @@
   ],
   [
     "node/test_elu_default_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_elu_example/model.onnx",
@@ -2413,11 +2413,11 @@
   ],
   [
     "node/test_elu_example_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_elu_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_equal/model.onnx",
@@ -2581,7 +2581,7 @@
   ],
   [
     "node/test_gelu_default_1_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_gelu_default_2/model.onnx",
@@ -2589,7 +2589,7 @@
   ],
   [
     "node/test_gelu_default_2_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_gelu_tanh_1/model.onnx",
@@ -2597,7 +2597,7 @@
   ],
   [
     "node/test_gelu_tanh_1_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_gelu_tanh_2/model.onnx",
@@ -2605,7 +2605,7 @@
   ],
   [
     "node/test_gelu_tanh_2_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_gemm_all_attributes/model.onnx",
@@ -2937,7 +2937,7 @@
   ],
   [
     "node/test_hardsigmoid_default_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_hardsigmoid_example/model.onnx",
@@ -2945,11 +2945,11 @@
   ],
   [
     "node/test_hardsigmoid_example_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_hardsigmoid_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_hardswish/model.onnx",
@@ -3309,7 +3309,7 @@
   ],
   [
     "node/test_leakyrelu_default_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_leakyrelu_example/model.onnx",
@@ -3317,11 +3317,11 @@
   ],
   [
     "node/test_leakyrelu_example_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_leakyrelu_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_less/model.onnx",
@@ -3433,11 +3433,11 @@
   ],
   [
     "node/test_logsoftmax_axis_0_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_logsoftmax_axis_0_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_logsoftmax_axis_1/model.onnx",
@@ -3445,11 +3445,11 @@
   ],
   [
     "node/test_logsoftmax_axis_1_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_logsoftmax_axis_1_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_logsoftmax_axis_2/model.onnx",
@@ -3457,11 +3457,11 @@
   ],
   [
     "node/test_logsoftmax_axis_2_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_logsoftmax_axis_2_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_logsoftmax_default_axis/model.onnx",
@@ -3469,11 +3469,11 @@
   ],
   [
     "node/test_logsoftmax_default_axis_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_logsoftmax_default_axis_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_logsoftmax_example_1/model.onnx",
@@ -3481,11 +3481,11 @@
   ],
   [
     "node/test_logsoftmax_example_1_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_logsoftmax_example_1_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_logsoftmax_large_number/model.onnx",
@@ -3493,11 +3493,11 @@
   ],
   [
     "node/test_logsoftmax_large_number_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_logsoftmax_large_number_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_logsoftmax_negative_axis/model.onnx",
@@ -3505,11 +3505,11 @@
   ],
   [
     "node/test_logsoftmax_negative_axis_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_loop11/model.onnx",
@@ -3937,11 +3937,11 @@
   ],
   [
     "node/test_mvn_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMean"
   ],
   [
     "node/test_mvn_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMean expects matching dtypes, got float, int64"
   ],
   [
     "node/test_neg/model.onnx",
@@ -3961,7 +3961,7 @@
   ],
   [
     "node/test_nllloss_NC_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op Unsqueeze"
   ],
   [
     "node/test_nllloss_NCd1/model.onnx",
@@ -4009,7 +4009,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op Unsqueeze"
   ],
   [
     "node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx",
@@ -4041,7 +4041,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op Unsqueeze"
   ],
   [
     "node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx",
@@ -4073,7 +4073,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op Unsqueeze"
   ],
   [
     "node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx",
@@ -4097,7 +4097,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op Unsqueeze"
   ],
   [
     "node/test_nonmaxsuppression_center_point_box_format/model.onnx",
@@ -4297,7 +4297,7 @@
   ],
   [
     "node/test_prelu_broadcast_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_prelu_example/model.onnx",
@@ -4305,7 +4305,7 @@
   ],
   [
     "node/test_prelu_example_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_qlinearconv/model.onnx",
@@ -4965,7 +4965,7 @@
   ],
   [
     "node/test_relu_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_reshape_allowzero_reordered/model.onnx",
@@ -5489,7 +5489,7 @@
   ],
   [
     "node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Reshape expects matching dtypes, got float, int64"
   ],
   [
     "node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx",
@@ -5537,7 +5537,7 @@
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Reshape expects matching dtypes, got float, int64"
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx",
@@ -5697,7 +5697,7 @@
   ],
   [
     "node/test_sce_none_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Reshape expects matching dtypes, got float, int64"
   ],
   [
     "node/test_sce_none_log_prob/model.onnx",
@@ -5713,7 +5713,7 @@
   ],
   [
     "node/test_sce_none_weights_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Reshape expects matching dtypes, got float, int64"
   ],
   [
     "node/test_sce_none_weights_log_prob/model.onnx",
@@ -5749,7 +5749,7 @@
   ],
   [
     "node/test_selu_default_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_selu_example/model.onnx",
@@ -5757,11 +5757,11 @@
   ],
   [
     "node/test_selu_example_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_selu_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_sequence_insert_at_back/model.onnx",
@@ -5869,7 +5869,7 @@
   ],
   [
     "node/test_shrink_hard_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_shrink_soft/model.onnx",
@@ -5877,7 +5877,7 @@
   ],
   [
     "node/test_shrink_soft_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_sigmoid/model.onnx",
@@ -5965,11 +5965,11 @@
   ],
   [
     "node/test_softmax_axis_0_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_softmax_axis_0_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_softmax_axis_1/model.onnx",
@@ -5977,11 +5977,11 @@
   ],
   [
     "node/test_softmax_axis_1_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_softmax_axis_1_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_softmax_axis_2/model.onnx",
@@ -5989,11 +5989,11 @@
   ],
   [
     "node/test_softmax_axis_2_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_softmax_axis_2_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_softmax_default_axis/model.onnx",
@@ -6001,11 +6001,11 @@
   ],
   [
     "node/test_softmax_default_axis_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_softmax_default_axis_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_softmax_example/model.onnx",
@@ -6013,11 +6013,11 @@
   ],
   [
     "node/test_softmax_example_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_softmax_example_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_softmax_large_number/model.onnx",
@@ -6025,11 +6025,11 @@
   ],
   [
     "node/test_softmax_large_number_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_softmax_large_number_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_softmax_negative_axis/model.onnx",
@@ -6037,11 +6037,11 @@
   ],
   [
     "node/test_softmax_negative_axis_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op ReduceMax"
   ],
   [
     "node/test_softmax_negative_axis_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "ReduceMax expects matching dtypes, got float, int64"
   ],
   [
     "node/test_softplus/model.onnx",
@@ -6053,11 +6053,11 @@
   ],
   [
     "node/test_softplus_example_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_softplus_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_softsign/model.onnx",
@@ -6069,11 +6069,11 @@
   ],
   [
     "node/test_softsign_example_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_softsign_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_spacetodepth/model.onnx",
@@ -6305,7 +6305,7 @@
   ],
   [
     "node/test_swish_expanded/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_tan/model.onnx",
@@ -6373,7 +6373,7 @@
   ],
   [
     "node/test_thresholdedrelu_default_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_thresholdedrelu_example/model.onnx",
@@ -6381,11 +6381,11 @@
   ],
   [
     "node/test_thresholdedrelu_example_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_thresholdedrelu_expanded_ver18/model.onnx",
-    "Unsupported op Constant"
+    "Unsupported op CastLike"
   ],
   [
     "node/test_tile/model.onnx",
@@ -6909,11 +6909,11 @@
   ],
   [
     "pytorch-converted/test_PixelShuffle/model.onnx",
-    "Unsupported op Constant"
+    "Reshape expects matching dtypes, got float, int64"
   ],
   [
     "pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx",
-    "Unsupported op Constant"
+    ""
   ],
   [
     "pytorch-converted/test_ReLU/model.onnx",
@@ -6949,7 +6949,7 @@
   ],
   [
     "pytorch-converted/test_Softsign/model.onnx",
-    "Unsupported op Constant"
+    "Scalar outputs are not supported"
   ],
   [
     "pytorch-converted/test_Tanh/model.onnx",
@@ -6993,7 +6993,7 @@
   ],
   [
     "pytorch-operator/test_operator_addconstant/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor '0'."
+    "Unsupported elem_type 11 (DOUBLE) for Constant '1'."
   ],
   [
     "pytorch-operator/test_operator_addmm/model.onnx",
@@ -7049,7 +7049,7 @@
   ],
   [
     "pytorch-operator/test_operator_mm/model.onnx",
-    "Unsupported op Constant"
+    "Gemm must have 2 inputs and 1 output"
   ],
   [
     "pytorch-operator/test_operator_non_float_params/model.onnx",
@@ -7089,11 +7089,11 @@
   ],
   [
     "pytorch-operator/test_operator_repeat/model.onnx",
-    "Unsupported op Constant"
+    "Tile expects matching dtypes, got float, int64"
   ],
   [
     "pytorch-operator/test_operator_repeat_dim_overflow/model.onnx",
-    "Unsupported op Constant"
+    "Reshape expects matching dtypes, got float, int64"
   ],
   [
     "pytorch-operator/test_operator_selu/model.onnx",

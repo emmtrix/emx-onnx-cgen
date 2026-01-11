@@ -4,10 +4,9 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Only single-output graphs are supported | 129 | ███████████████████████████ |
-| Unsupported op Constant | 76 | ████████████████ |
-| Scalar outputs are not supported | 61 | █████████████ |
+| Scalar outputs are not supported | 62 | █████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 60 | ████████████ |
-| Unsupported elem_type 11 (DOUBLE) for tensor '*'. | 54 | ███████████ |
+| Unsupported elem_type 11 (DOUBLE) for tensor '*'. | 53 | ███████████ |
 | Unsupported elem_type 2 (UINT8) for tensor '*'. | 50 | ██████████ |
 | ReduceSum expects matching dtypes, got float, int64 | 43 | █████████ |
 | Missing dtype for value '*' in op Resize. Hint: run ONNX shape inference or export with static shapes. | 39 | ████████ |
@@ -15,9 +14,11 @@
 | Missing elem_type for tensor '*' | 33 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported op Attention | 29 | ██████ |
+| Unsupported op CastLike | 29 | ██████ |
 | Unsupported op AveragePool | 25 | █████ |
 | Unsupported op MaxPool | 25 | █████ |
 | Unsupported elem_type 13 (UINT64) for tensor '*'. | 21 | ████ |
+| ReduceMax expects matching dtypes, got float, int64 | 21 | ████ |
 | Unsupported elem_type 4 (UINT16) for tensor '*'. | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
@@ -25,7 +26,9 @@
 | ArgMax expects matching dtypes, got float, int64 | 16 | ███ |
 | ArgMin expects matching dtypes, got float, int64 | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
+| Unsupported op ReduceMax | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
+| Reshape expects matching dtypes, got float, int64 | 15 | ███ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 14 | ███ |
@@ -33,10 +36,10 @@
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
 | Unsupported op Concat | 13 | ███ |
+| Gemm must have 2 inputs and 1 output | 13 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | Less expects matching dtypes, got bool, float | 12 | ██ |
-| Gemm must have 2 inputs and 1 output | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
 | Unsupported op Softmax | 11 | ██ |
@@ -44,18 +47,17 @@
 | Unsupported op LogSoftmax | 10 | ██ |
 | Shape expects matching dtypes, got float, int64 | 10 | ██ |
 | Unsupported op Clip | 9 | ██ |
+| ReduceMean expects matching dtypes, got float, int64 | 9 | ██ |
 | NonMaxSuppression expects matching dtypes, got float, int64 | 9 | ██ |
 | ReduceL1 expects matching dtypes, got float, int64 | 9 | ██ |
 | ReduceL2 expects matching dtypes, got float, int64 | 9 | ██ |
 | ReduceSumSquare expects matching dtypes, got float, int64 | 9 | ██ |
-| Reshape expects matching dtypes, got float, int64 | 9 | ██ |
 | Unsupported op Transpose | 9 | ██ |
 | Unsupported op LpPool | 8 | ██ |
-| ReduceMean expects matching dtypes, got float, int64 | 8 | ██ |
 | Unsupported op BatchNormalization | 7 | █ |
 | Dynamic or zero dims are not supported | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
-| ReduceMax expects matching dtypes, got float, int64 | 7 | █ |
+| Unsupported op Unsqueeze | 7 | █ |
 | ReduceMin expects matching dtypes, got float, int64 | 7 | █ |
 | ReduceProd expects matching dtypes, got float, int64 | 7 | █ |
 | Slice expects matching dtypes, got float, int64 | 7 | █ |
@@ -68,6 +70,7 @@
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op Mod | 6 | █ |
 | ScatterElements expects matching dtypes, got float, int64 | 6 | █ |
+| Unsupported op Elu | 5 | █ |
 | Col2Im expects matching dtypes, got float, int64 | 5 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
 | NegativeLogLikelihoodLoss expects matching dtypes, got float, int64 | 5 | █ |
@@ -83,7 +86,6 @@
 | Less expects matching dtypes, got bool, int8 | 4 | █ |
 | Compress expects matching dtypes, got bool, float | 4 | █ |
 | Unsupported op Dropout | 4 | █ |
-| Unsupported op Elu | 4 | █ |
 | Unsupported op Gelu | 4 | █ |
 | Greater expects matching dtypes, got bool, float | 4 | █ |
 | Unsupported op HardSigmoid | 4 | █ |
@@ -102,12 +104,14 @@
 | Unsupported op InstanceNormalization | 3 | █ |
 | IsInf expects matching dtypes, got bool, float | 3 | █ |
 | Missing dtype for value '*' in op LSTM. Hint: run ONNX shape inference or export with static shapes. | 3 | █ |
+| Unsupported op ReduceMean | 3 | █ |
 | Missing dtype for value '*' in op RNN. Hint: run ONNX shape inference or export with static shapes. | 3 | █ |
 | RoiAlign expects matching dtypes, got float, int64 | 3 | █ |
 | Unsupported op RotaryEmbedding | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
 | TensorScatter expects matching dtypes, got float, int64 | 3 | █ |
 | Unsupported op ThresholdedRelu | 3 | █ |
+| Tile expects matching dtypes, got float, int64 | 3 | █ |
 | Dropout expects matching dtypes, got bool, float | 3 | █ |
 | Unsupported op Acos | 2 | █ |
 | Unsupported op Acosh | 2 | █ |
@@ -148,7 +152,6 @@
 | QuantizeLinear expects matching dtypes, got float, int16 | 2 | █ |
 | Unsupported op Range | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
-| Unsupported op ReduceMax | 2 | █ |
 | Unsupported op ReduceMin | 2 | █ |
 | Unsupported op ReduceProd | 2 | █ |
 | ReverseSequence expects matching dtypes, got float, int64 | 2 | █ |
@@ -159,10 +162,7 @@
 | Unsupported op SpaceToDepth | 2 | █ |
 | Squeeze expects matching dtypes, got float, int64 | 2 | █ |
 | Sum must have 2 inputs and 1 output | 2 | █ |
-| Tile expects matching dtypes, got float, int64 | 2 | █ |
-| Unsupported op Unsqueeze | 2 | █ |
 | Unsupported op Split | 2 | █ |
-| Unsupported op ReduceMean | 2 | █ |
 | Unsupported op ReduceSum | 2 | █ |
 | ArrayFeatureExtractor expects matching dtypes, got float, int64 | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
@@ -172,6 +172,7 @@
 | Unsupported op RandomUniformLike | 1 | █ |
 | Unsupported op BitwiseNot | 1 | █ |
 | Unsupported op Celu | 1 | █ |
+| Graph must contain at least one node | 1 | █ |
 | ConstantOfShape expects matching dtypes, got int32, int64 | 1 | █ |
 | DequantizeLinear expects matching dtypes, got float, int16 | 1 | █ |
 | Unsupported op Det | 1 | █ |
@@ -212,4 +213,5 @@
 | Unsupported op Upsample | 1 | █ |
 | Where expects matching dtypes, got bool, float | 1 | █ |
 | Where expects matching dtypes, got bool, int64 | 1 | █ |
+| Unsupported elem_type 11 (DOUBLE) for Constant '*'. | 1 | █ |
 | Unsupported op Slice | 1 | █ |

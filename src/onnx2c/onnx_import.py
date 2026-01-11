@@ -3,11 +3,35 @@ from __future__ import annotations
 from typing import Iterable
 
 import onnx
+import numpy as np
 from onnx import helper, numpy_helper, shape_inference
 
 from .dtypes import ONNX_TO_DTYPE
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Initializer, Node, TensorType, Value
+
+
+def _normalize_initializer_data(dtype: str, data: object) -> np.ndarray:
+    if isinstance(data, (onnx.TensorProto, onnx.SparseTensorProto)):
+        array = numpy_helper.to_array(data)
+    elif isinstance(data, np.ndarray):
+        array = data
+    else:
+        array = np.array(data)
+    if dtype == "float" and array.dtype != "float32":
+        array = array.astype("float32", copy=False)
+    if dtype == "bool" and array.dtype != "bool":
+        array = array.astype("bool", copy=False)
+    if dtype == "int64" and array.dtype != "int64":
+        array = array.astype("int64", copy=False)
+    if dtype == "int32" and array.dtype != "int32":
+        array = array.astype("int32", copy=False)
+    if dtype == "int16" and array.dtype != "int16":
+        array = array.astype("int16", copy=False)
+    if dtype == "int8" and array.dtype != "int8":
+        array = array.astype("int8", copy=False)
+    return array
+
 
 def _format_elem_type(elem_type: int) -> str:
     try:
@@ -47,19 +71,7 @@ def _initializer(value: onnx.TensorProto) -> Initializer:
             f"{_format_elem_type(value.data_type)} for initializer '{value.name}'. "
             "Hint: export the model with float32 initializers."
         )
-    data = numpy_helper.to_array(value)
-    if dtype == "float" and data.dtype != "float32":
-        data = data.astype("float32", copy=False)
-    if dtype == "bool" and data.dtype != "bool":
-        data = data.astype("bool", copy=False)
-    if dtype == "int64" and data.dtype != "int64":
-        data = data.astype("int64", copy=False)
-    if dtype == "int32" and data.dtype != "int32":
-        data = data.astype("int32", copy=False)
-    if dtype == "int16" and data.dtype != "int16":
-        data = data.astype("int16", copy=False)
-    if dtype == "int8" and data.dtype != "int8":
-        data = data.astype("int8", copy=False)
+    data = _normalize_initializer_data(dtype, value)
     return Initializer(
         name=value.name,
         type=TensorType(dtype=dtype, shape=tuple(data.shape)),
@@ -71,25 +83,87 @@ def _node_attrs(node: onnx.NodeProto) -> dict[str, object]:
     return {attr.name: helper.get_attribute_value(attr) for attr in node.attribute}
 
 
+def _constant_initializer(node: onnx.NodeProto) -> Initializer:
+    if len(node.output) != 1:
+        raise UnsupportedOpError("Constant must have exactly one output")
+    attrs = _node_attrs(node)
+    output_name = node.output[0]
+    if "value" in attrs:
+        tensor = attrs["value"]
+        dtype = ONNX_TO_DTYPE.get(tensor.data_type)
+        if dtype is None:
+            raise UnsupportedOpError(
+                "Unsupported elem_type "
+                f"{_format_elem_type(tensor.data_type)} for Constant '{output_name}'."
+            )
+        data = _normalize_initializer_data(dtype, tensor)
+        return Initializer(
+            name=output_name,
+            type=TensorType(dtype=dtype, shape=tuple(data.shape)),
+            data=data,
+        )
+    if "sparse_value" in attrs:
+        tensor = attrs["sparse_value"]
+        dtype = ONNX_TO_DTYPE.get(tensor.values.data_type)
+        if dtype is None:
+            raise UnsupportedOpError(
+                "Unsupported elem_type "
+                f"{_format_elem_type(tensor.values.data_type)} for Constant '{output_name}'."
+            )
+        data = _normalize_initializer_data(dtype, tensor)
+        return Initializer(
+            name=output_name,
+            type=TensorType(dtype=dtype, shape=tuple(data.shape)),
+            data=data,
+        )
+    if "value_float" in attrs or "value_floats" in attrs:
+        values = attrs.get("value_floats", attrs.get("value_float"))
+        data = _normalize_initializer_data("float", values)
+        return Initializer(
+            name=output_name,
+            type=TensorType(dtype="float", shape=tuple(data.shape)),
+            data=data,
+        )
+    if "value_int" in attrs or "value_ints" in attrs:
+        values = attrs.get("value_ints", attrs.get("value_int"))
+        data = _normalize_initializer_data("int64", values)
+        return Initializer(
+            name=output_name,
+            type=TensorType(dtype="int64", shape=tuple(data.shape)),
+            data=data,
+        )
+    if "value_string" in attrs or "value_strings" in attrs:
+        raise UnsupportedOpError(
+            f"Constant '{output_name}' has unsupported string values"
+        )
+    raise UnsupportedOpError(f"Constant '{output_name}' requires a value attribute")
+
+
 def import_onnx(model: onnx.ModelProto) -> Graph:
     try:
         model = shape_inference.infer_shapes(model)
     except Exception as exc:  # pragma: no cover - onnx inference errors
         raise ShapeInferenceError("ONNX shape inference failed") from exc
     graph = model.graph
-    initializers = tuple(_initializer(value) for value in graph.initializer)
-    initializer_names = {initializer.name for initializer in initializers}
+    base_initializers = [_initializer(value) for value in graph.initializer]
+    constant_initializers: list[Initializer] = []
     input_names = {value_info.name for value_info in graph.input}
     output_names = {value_info.name for value_info in graph.output}
-    nodes = tuple(
-        Node(
-            op_type=node.op_type,
-            inputs=tuple(node.input),
-            outputs=tuple(node.output),
-            attrs=_node_attrs(node),
+    nodes: list[Node] = []
+    for node in graph.node:
+        if node.op_type == "Constant":
+            constant_initializers.append(_constant_initializer(node))
+            continue
+        nodes.append(
+            Node(
+                op_type=node.op_type,
+                inputs=tuple(node.input),
+                outputs=tuple(node.output),
+                attrs=_node_attrs(node),
+            )
         )
-        for node in graph.node
-    )
+    initializers = tuple(base_initializers + constant_initializers)
+    initializer_names = {initializer.name for initializer in initializers}
     inputs = _values(
         value_info for value_info in graph.input if value_info.name not in initializer_names
     )
