@@ -145,6 +145,9 @@ def _handle_verify(args: argparse.Namespace) -> int:
         graph = import_onnx(model)
         output_dtype = graph.outputs[0].type.dtype
         info = dtype_info(output_dtype)
+        input_dtypes = {
+            value.name: dtype_info(value.type.dtype) for value in graph.inputs
+        }
     except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
         LOGGER.error("Failed to resolve model dtype: %s", exc)
         return 1
@@ -190,7 +193,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
         return 1
 
     inputs = {
-        name: np.array(value["data"], dtype=info.np_dtype)
+        name: np.array(value["data"], dtype=input_dtypes[name].np_dtype)
         for name, value in payload["inputs"].items()
     }
     sess = ort.InferenceSession(
