@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 215 / 1802 official ONNX files.
+Support 219 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -8,15 +8,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 | File | Supported | Error |
 | --- | --- | --- |
-| `light/light_bvlc_alexnet.onnx` | ❌ | Unsupported op LRN |
+| `light/light_bvlc_alexnet.onnx` | ❌ | Conv supports group=1 only |
 | `light/light_densenet121.onnx` | ❌ | Unsupported op GlobalAveragePool |
-| `light/light_inception_v1.onnx` | ❌ | Unsupported op LRN |
+| `light/light_inception_v1.onnx` | ✅ |  |
 | `light/light_inception_v2.onnx` | ✅ |  |
 | `light/light_resnet50.onnx` | ✅ |  |
 | `light/light_shufflenet.onnx` | ❌ | Conv supports group=1 only |
 | `light/light_squeezenet.onnx` | ❌ | Unsupported op GlobalAveragePool |
 | `light/light_vgg19.onnx` | ✅ |  |
-| `light/light_zfnet512.onnx` | ❌ | Unsupported op LRN |
+| `light/light_zfnet512.onnx` | ✅ |  |
 | `node/test_abs/model.onnx` | ✅ |  |
 | `node/test_acos/model.onnx` | ❌ | Unsupported op Acos |
 | `node/test_acos_example/model.onnx` | ❌ | Unsupported op Acos |
@@ -898,8 +898,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_lppool_2d_same_upper/model.onnx` | ❌ | Unsupported op LpPool |
 | `node/test_lppool_2d_strides/model.onnx` | ❌ | Unsupported op LpPool |
 | `node/test_lppool_3d_default/model.onnx` | ❌ | Unsupported op LpPool |
-| `node/test_lrn/model.onnx` | ❌ | Unsupported op LRN |
-| `node/test_lrn_default/model.onnx` | ❌ | Unsupported op LRN |
+| `node/test_lrn/model.onnx` | ✅ |  |
+| `node/test_lrn_default/model.onnx` | ✅ |  |
 | `node/test_lstm_batchwise/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_lstm_defaults/model.onnx` | ❌ | Unsupported op LSTM |
 | `node/test_lstm_with_initial_bias/model.onnx` | ❌ | Unsupported op LSTM |

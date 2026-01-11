@@ -20,6 +20,7 @@ from .codegen.c_emitter import (
     ConcatOp,
     ConstantOfShapeOp,
     GemmOp,
+    LrnOp,
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
@@ -35,6 +36,7 @@ from .lowering import get_lowering
 from .lowering.average_pool import lower_average_pool
 from .lowering.batch_normalization import lower_batch_normalization
 from .lowering.constant_of_shape import lower_constant_of_shape
+from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.reshape import lower_reshape
 from .lowering.unsqueeze import lower_unsqueeze
 from .onnx_import import import_onnx
@@ -86,6 +88,7 @@ class Compiler:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LrnOp
             | SoftmaxOp
             | MaxPoolOp
             | ConcatOp
@@ -302,6 +305,14 @@ class Compiler:
                 values[node.outputs[0]] = (
                     (data - mean) / np.sqrt(variance + epsilon) * scale + bias
                 )
+                continue
+            if node.op_type == "LRN":
+                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                if op_dtype != "float":
+                    raise UnsupportedOpError("LRN supports float inputs only")
+                spec = resolve_lrn_spec(graph, node)
+                data = values[node.inputs[0]]
+                values[node.outputs[0]] = _apply_lrn(spec, data)
                 continue
             if node.op_type == "AveragePool":
                 op = lower_average_pool(graph, node)
@@ -1444,6 +1455,28 @@ def _apply_conv(
                                     * weights[oc, ic, kh, kw]
                                 )
                     output[n, oc, oh, ow] = acc
+    return output
+
+
+def _apply_lrn(spec: LrnSpec, data: np.ndarray) -> np.ndarray:
+    output = np.empty_like(data)
+    spatial_shape = spec.shape[2:]
+    spatial_indices = [()]
+    if spatial_shape:
+        spatial_indices = list(np.ndindex(*spatial_shape))
+    for n in range(spec.shape[0]):
+        for c in range(spec.channels):
+            start = max(0, c - spec.half)
+            end = min(spec.channels - 1, c + spec.half)
+            for index in spatial_indices:
+                sum_val = 0.0
+                for i in range(start, end + 1):
+                    value = data[(n, i, *index)]
+                    sum_val += value * value
+                scale = spec.bias + (spec.alpha / spec.size) * sum_val
+                output[(n, c, *index)] = data[(n, c, *index)] / math.pow(
+                    scale, spec.beta
+                )
     return output
 
 

@@ -1,7 +1,7 @@
 [
   [
     "light/light_bvlc_alexnet.onnx",
-    "Unsupported op LRN"
+    "Conv supports group=1 only"
   ],
   [
     "light/light_densenet121.onnx",
@@ -9,7 +9,7 @@
   ],
   [
     "light/light_inception_v1.onnx",
-    "Unsupported op LRN"
+    ""
   ],
   [
     "light/light_inception_v2.onnx",
@@ -33,7 +33,7 @@
   ],
   [
     "light/light_zfnet512.onnx",
-    "Unsupported op LRN"
+    ""
   ],
   [
     "node/test_abs/model.onnx",
@@ -3561,11 +3561,11 @@
   ],
   [
     "node/test_lrn/model.onnx",
-    "Unsupported op LRN"
+    ""
   ],
   [
     "node/test_lrn_default/model.onnx",
-    "Unsupported op LRN"
+    ""
   ],
   [
     "node/test_lstm_batchwise/model.onnx",

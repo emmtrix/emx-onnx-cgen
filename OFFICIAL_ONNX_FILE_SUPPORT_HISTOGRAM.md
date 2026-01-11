@@ -40,9 +40,9 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
+| Conv supports group=1 only | 10 | ██ |
 | Unsupported op ReduceMin | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
-| Conv supports group=1 only | 9 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
 | Unsupported op ReduceL1 | 9 | ██ |
 | Unsupported op ReduceL2 | 9 | ██ |
@@ -66,7 +66,6 @@
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op Mod | 6 | █ |
 | Unsupported op ScatterElements | 6 | █ |
-| Unsupported op LRN | 5 | █ |
 | AveragePool expects 2D kernel_shape | 5 | █ |
 | Unsupported op Elu | 5 | █ |
 | Unsupported op Col2Im | 5 | █ |

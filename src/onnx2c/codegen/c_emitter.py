@@ -147,6 +147,20 @@ class BatchNormOp:
 
 
 @dataclass(frozen=True)
+class LrnOp:
+    input0: str
+    output: str
+    shape: tuple[int, ...]
+    channels: int
+    size: int
+    half: int
+    alpha: float
+    beta: float
+    bias: float
+    dtype: str
+
+
+@dataclass(frozen=True)
 class MaxPoolOp:
     input0: str
     output: str
@@ -238,6 +252,7 @@ class LoweredModel:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LrnOp
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
@@ -267,6 +282,7 @@ class CEmitter:
             conv_template = self._env.get_template("conv_op.c.j2")
             avg_pool_template = self._env.get_template("average_pool_op.c.j2")
             batch_norm_template = self._env.get_template("batch_norm_op.c.j2")
+            lrn_template = self._env.get_template("lrn_op.c.j2")
             softmax_template = self._env.get_template("softmax_op.c.j2")
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
             concat_template = self._env.get_template("concat_op.c.j2")
@@ -309,6 +325,7 @@ class CEmitter:
                 conv_template=conv_template,
                 avg_pool_template=avg_pool_template,
                 batch_norm_template=batch_norm_template,
+                lrn_template=lrn_template,
                 softmax_template=softmax_template,
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
@@ -382,6 +399,9 @@ class CEmitter:
         if any(isinstance(op, BatchNormOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
+        if any(isinstance(op, LrnOp) for op in resolved_ops):
+            if "#include <math.h>" not in includes:
+                includes.append("#include <math.h>")
         if any(isinstance(op, SoftmaxOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
@@ -436,6 +456,7 @@ class CEmitter:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LrnOp
             | SoftmaxOp
             | MaxPoolOp
             | ConcatOp
@@ -532,6 +553,7 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LrnOp
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
@@ -548,6 +570,7 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LrnOp
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
@@ -668,6 +691,19 @@ class CEmitter:
                 epsilon=op.epsilon,
                 dtype=op.dtype,
             )
+        if isinstance(op, LrnOp):
+            return LrnOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                shape=op.shape,
+                channels=op.channels,
+                size=op.size,
+                half=op.half,
+                alpha=op.alpha,
+                beta=op.beta,
+                bias=op.bias,
+                dtype=op.dtype,
+            )
         if isinstance(op, SoftmaxOp):
             return SoftmaxOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -750,6 +786,7 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LrnOp
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
@@ -773,6 +810,7 @@ class CEmitter:
         conv_template,
         avg_pool_template,
         batch_norm_template,
+        lrn_template,
         softmax_template,
         maxpool_template,
         concat_template,
@@ -1002,6 +1040,30 @@ class CEmitter:
                 inner_indent=inner_indent,
                 epsilon_literal=CEmitter._format_float(op.epsilon),
             ).rstrip()
+        if isinstance(op, LrnOp):
+            shape = op.shape
+            loop_vars = CEmitter._loop_vars(shape)
+            loop_indents = CEmitter._loop_indents(shape)
+            inner_indent = CEmitter._inner_indent(shape)
+            return lrn_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                input_suffix=CEmitter._array_suffix(shape),
+                output_suffix=CEmitter._array_suffix(shape),
+                shape=shape,
+                channels=op.channels,
+                half=op.half,
+                loop_vars=loop_vars,
+                loop_indents=loop_indents,
+                inner_indent=inner_indent,
+                zero_literal=zero_literal,
+                alpha_div_size_literal=CEmitter._format_float(op.alpha / op.size),
+                beta_literal=CEmitter._format_float(op.beta),
+                bias_literal=CEmitter._format_float(op.bias),
+            ).rstrip()
         if isinstance(op, SoftmaxOp):
             return softmax_template.render(
                 model_name=model.name,
@@ -1149,6 +1211,7 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LrnOp
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
@@ -1168,6 +1231,7 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LrnOp
         | SoftmaxOp
         | MaxPoolOp
         | ConcatOp
@@ -1188,6 +1252,8 @@ class CEmitter:
         if isinstance(op, AveragePoolOp):
             return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, BatchNormOp):
+            return op.shape
+        if isinstance(op, LrnOp):
             return op.shape
         if isinstance(op, SoftmaxOp):
             return op.shape
