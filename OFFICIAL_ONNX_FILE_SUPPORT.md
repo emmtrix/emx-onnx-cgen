@@ -28,34 +28,34 @@ ONNX version: 1.20.1
 | `node/test_add_bcast/model.onnx` | ✅ |  |
 | `node/test_add_int16/model.onnx` | ✅ |  |
 | `node/test_add_int8/model.onnx` | ✅ |  |
-| `node/test_add_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_add_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_add_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_add_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_add_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_add_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_add_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_add_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_affine_grid_2d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_affine_grid_2d_align_corners/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_affine_grid_2d_align_corners_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_2d_align_corners_expanded_function_constant_align_corners_equal_zero. |
-| `node/test_affine_grid_2d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_2d_expanded_function_constant_align_corners_equal_zero. |
+| `node/test_affine_grid_2d_align_corners_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_2d_align_corners_expanded_function_constant_align_corners_equal_zero'. |
+| `node/test_affine_grid_2d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_2d_expanded_function_constant_align_corners_equal_zero'. |
 | `node/test_affine_grid_3d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_affine_grid_3d_align_corners/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_affine_grid_3d_align_corners_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_3d_align_corners_expanded_function_constant_align_corners_equal_zero. |
-| `node/test_affine_grid_3d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_3d_expanded_function_constant_align_corners_equal_zero. |
+| `node/test_affine_grid_3d_align_corners_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_3d_align_corners_expanded_function_constant_align_corners_equal_zero'. |
+| `node/test_affine_grid_3d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_3d_expanded_function_constant_align_corners_equal_zero'. |
 | `node/test_ai_onnx_ml_array_feature_extractor/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_ai_onnx_ml_binarizer/model.onnx` | ❌ | Unsupported op Binarizer |
-| `node/test_ai_onnx_ml_label_encoder_string_int/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
-| `node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
-| `node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
-| `node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
+| `node/test_ai_onnx_ml_label_encoder_string_int/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
+| `node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
+| `node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
+| `node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | `node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx` | ❌ | Unsupported op TreeEnsemble |
-| `node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for X. |
-| `node/test_and2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_and3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_and4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_and_bcast3v1d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_and_bcast3v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_and_bcast4v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_and_bcast4v3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_and_bcast4v4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
+| `node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'X'. |
+| `node/test_and2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_and3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_and4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_and_bcast3v1d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_and_bcast3v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_and_bcast4v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_and_bcast4v3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_and_bcast4v4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
 | `node/test_argmax_default_axis_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_argmax_default_axis_example_select_last_index/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_argmax_default_axis_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -98,128 +98,128 @@ ONNX version: 1.20.1
 | `node/test_atanh_example/model.onnx` | ✅ |  |
 | `node/test_attention_3d/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_attn_mask_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_attn_mask_expanded_function_QIntermediate |
+| `node/test_attention_3d_attn_mask_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_attn_mask_expanded_function_QIntermediate' |
 | `node/test_attention_3d_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_causal_expanded_function_QIntermediate |
+| `node/test_attention_3d_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_causal_expanded_function_QIntermediate' |
 | `node/test_attention_3d_diff_heads_sizes/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_QIntermediate |
+| `node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_QIntermediate' |
 | `node/test_attention_3d_diff_heads_sizes_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_QIntermediate |
-| `node/test_attention_3d_diff_heads_sizes_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_expanded_function_QIntermediate |
+| `node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_QIntermediate' |
+| `node/test_attention_3d_diff_heads_sizes_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_QIntermediate' |
 | `node/test_attention_3d_diff_heads_sizes_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate |
+| `node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate' |
 | `node/test_attention_3d_diff_heads_sizes_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate |
+| `node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate' |
 | `node/test_attention_3d_diff_heads_with_past_and_present/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate |
-| `node/test_attention_3d_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_expanded_function_QIntermediate |
+| `node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate' |
+| `node/test_attention_3d_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_QIntermediate' |
 | `node/test_attention_3d_gqa/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_3d_gqa_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_attn_mask_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_gqa_attn_mask_expanded_function_QIntermediate |
+| `node/test_attention_3d_gqa_attn_mask_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_QIntermediate' |
 | `node/test_attention_3d_gqa_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_gqa_causal_expanded_function_QIntermediate |
-| `node/test_attention_3d_gqa_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_gqa_expanded_function_QIntermediate |
+| `node/test_attention_3d_gqa_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_QIntermediate' |
+| `node/test_attention_3d_gqa_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_expanded_function_QIntermediate' |
 | `node/test_attention_3d_gqa_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_scaled_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate |
+| `node/test_attention_3d_gqa_scaled_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate' |
 | `node/test_attention_3d_gqa_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_gqa_softcap_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate |
+| `node/test_attention_3d_gqa_softcap_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate' |
 | `node/test_attention_3d_gqa_with_past_and_present/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate |
+| `node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate' |
 | `node/test_attention_3d_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_scaled_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_scaled_expanded_function_QIntermediate |
+| `node/test_attention_3d_scaled_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_QIntermediate' |
 | `node/test_attention_3d_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_softcap_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_softcap_expanded_function_QIntermediate |
+| `node/test_attention_3d_softcap_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_QIntermediate' |
 | `node/test_attention_3d_transpose_verification/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_3d_transpose_verification_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate |
+| `node/test_attention_3d_transpose_verification_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate' |
 | `node/test_attention_3d_with_past_and_present/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_3d_with_past_and_present_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate |
+| `node/test_attention_3d_with_past_and_present_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate' |
 | `node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate' |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate' |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate' |
 | `node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate |
+| `node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate' |
 | `node/test_attention_4d/model.onnx` | ✅ |  |
 | `node/test_attention_4d_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_3d/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_3d_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow |
-| `node/test_attention_4d_attn_mask_3d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_attn_mask_3d_expanded_function_NGQACond1. |
+| `node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow' |
+| `node/test_attention_4d_attn_mask_3d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_3d_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_attn_mask_4d/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_attn_mask_4d_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow |
-| `node/test_attention_4d_attn_mask_4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_attn_mask_4d_expanded_function_NGQACond1. |
-| `node/test_attention_4d_attn_mask_bool/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
-| `node/test_attention_4d_attn_mask_bool_4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
-| `node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
-| `node/test_attention_4d_attn_mask_bool_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for attn_mask. |
-| `node/test_attention_4d_attn_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_attn_mask_expanded_function_NGQACond1. |
+| `node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow' |
+| `node/test_attention_4d_attn_mask_4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_4d_expanded_function_NGQACond1'. |
+| `node/test_attention_4d_attn_mask_bool/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'attn_mask'. |
+| `node/test_attention_4d_attn_mask_bool_4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'attn_mask'. |
+| `node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'attn_mask'. |
+| `node/test_attention_4d_attn_mask_bool_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'attn_mask'. |
+| `node/test_attention_4d_attn_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_causal/model.onnx` | ✅ |  |
-| `node/test_attention_4d_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_causal_expanded_function_AttnBias |
+| `node/test_attention_4d_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_AttnBias' |
 | `node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias |
+| `node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' |
 | `node/test_attention_4d_diff_heads_sizes/model.onnx` | ✅ |  |
 | `node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_NGQACond1. |
+| `node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_diff_heads_sizes_causal/model.onnx` | ✅ |  |
-| `node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_AttnBias |
-| `node/test_attention_4d_diff_heads_sizes_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_expanded_function_AttnBias |
+| `node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_AttnBias' |
+| `node/test_attention_4d_diff_heads_sizes_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_AttnBias' |
 | `node/test_attention_4d_diff_heads_sizes_scaled/model.onnx` | ✅ |  |
-| `node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias |
+| `node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias' |
 | `node/test_attention_4d_diff_heads_sizes_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias |
+| `node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias' |
 | `node/test_attention_4d_diff_heads_with_past_and_present/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_NGQACond1. |
+| `node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_NGQACond1. |
+| `node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_NGQACond1. |
-| `node/test_attention_4d_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_expanded_function_AttnBias |
-| `node/test_attention_4d_fp16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
-| `node/test_attention_4d_fp16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
+| `node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_NGQACond1'. |
+| `node/test_attention_4d_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_AttnBias' |
+| `node/test_attention_4d_fp16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
+| `node/test_attention_4d_fp16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
 | `node/test_attention_4d_gqa/model.onnx` | ❌ | Unsupported op Attention |
 | `node/test_attention_4d_gqa_attn_mask/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_attn_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_gqa_attn_mask_expanded_function_NGQACond1. |
+| `node/test_attention_4d_gqa_attn_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_gqa_attn_mask_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_gqa_causal/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_gqa_causal_expanded_function_AttnBias |
-| `node/test_attention_4d_gqa_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_gqa_expanded_function_AttnBias |
+| `node/test_attention_4d_gqa_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_AttnBias' |
+| `node/test_attention_4d_gqa_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_expanded_function_AttnBias' |
 | `node/test_attention_4d_gqa_scaled/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_scaled_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias |
+| `node/test_attention_4d_gqa_scaled_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias' |
 | `node/test_attention_4d_gqa_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_gqa_softcap_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias |
+| `node/test_attention_4d_gqa_softcap_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias' |
 | `node/test_attention_4d_gqa_with_past_and_present/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_NGQACond1. |
-| `node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
-| `node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for Q. |
+| `node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_NGQACond1'. |
+| `node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
+| `node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
 | `node/test_attention_4d_scaled/model.onnx` | ✅ |  |
-| `node/test_attention_4d_scaled_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_scaled_expanded_function_AttnBias |
+| `node/test_attention_4d_scaled_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_AttnBias' |
 | `node/test_attention_4d_softcap/model.onnx` | ❌ | Unsupported op Attention |
-| `node/test_attention_4d_softcap_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_softcap_expanded_function_AttnBias |
+| `node/test_attention_4d_softcap_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_AttnBias' |
 | `node/test_attention_4d_with_past_and_present/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_with_past_and_present_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_expanded_function_NGQACond1. |
+| `node/test_attention_4d_with_past_and_present_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_NGQACond1. |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow' |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_NGQACond1. |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_NGQACond1. |
-| `node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_NGQACond1. |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow' |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_NGQACond1'. |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_NGQACond1'. |
+| `node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_with_qk_matmul/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_attention_4d_with_qk_matmul_bias/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_NGQACond1. |
-| `node/test_attention_4d_with_qk_matmul_expanded/model.onnx` | ❌ | Dynamic dim for Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias |
+| `node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_NGQACond1'. |
+| `node/test_attention_4d_with_qk_matmul_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias' |
 | `node/test_attention_4d_with_qk_matmul_softcap/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_NGQACond1. |
+| `node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_NGQACond1'. |
 | `node/test_attention_4d_with_qk_matmul_softmax/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_NGQACond1. |
+| `node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_NGQACond1'. |
 | `node/test_averagepool_1d_default/model.onnx` | ❌ | Unsupported op AveragePool |
 | `node/test_averagepool_2d_ceil/model.onnx` | ❌ | Unsupported op AveragePool |
 | `node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx` | ❌ | Unsupported op AveragePool |
@@ -248,260 +248,260 @@ ONNX version: 1.20.1
 | `node/test_batchnorm_epsilon_training_mode/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_batchnorm_example/model.onnx` | ❌ | Unsupported op BatchNormalization |
 | `node/test_batchnorm_example_training_mode/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_bernoulli/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_bernoulli_double/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for y. |
-| `node/test_bernoulli_double_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for y. |
-| `node/test_bernoulli_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
+| `node/test_bernoulli/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_bernoulli_double/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
+| `node/test_bernoulli_double_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
+| `node/test_bernoulli_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_bernoulli_seed/model.onnx` | ❌ | Unsupported op Bernoulli |
-| `node/test_bernoulli_seed_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Bernoulli_test_bernoulli_seed_expanded_function_X_greater. |
-| `node/test_bitshift_left_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_bitshift_left_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_bitshift_left_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_bitshift_left_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_bitshift_right_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_bitshift_right_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_bitshift_right_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_bitshift_right_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_bernoulli_seed_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Bernoulli_test_bernoulli_seed_expanded_function_X_greater'. |
+| `node/test_bitshift_left_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_bitshift_left_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_bitshift_left_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_bitshift_left_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_bitshift_right_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_bitshift_right_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_bitshift_right_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_bitshift_right_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_bitwise_and_i16_3d/model.onnx` | ❌ | Unsupported op BitwiseAnd |
 | `node/test_bitwise_and_i32_2d/model.onnx` | ❌ | Unsupported op BitwiseAnd |
-| `node/test_bitwise_and_ui64_bcast_3v1d/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_bitwise_and_ui8_bcast_4v3d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_bitwise_and_ui64_bcast_3v1d/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_bitwise_and_ui8_bcast_4v3d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_bitwise_not_2d/model.onnx` | ❌ | Unsupported op BitwiseNot |
-| `node/test_bitwise_not_3d/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_bitwise_not_4d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_bitwise_not_3d/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_bitwise_not_4d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_bitwise_or_i16_4d/model.onnx` | ❌ | Unsupported op BitwiseOr |
 | `node/test_bitwise_or_i32_2d/model.onnx` | ❌ | Unsupported op BitwiseOr |
-| `node/test_bitwise_or_ui64_bcast_3v1d/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_bitwise_or_ui8_bcast_4v3d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_bitwise_or_ui64_bcast_3v1d/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_bitwise_or_ui8_bcast_4v3d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_bitwise_xor_i16_3d/model.onnx` | ❌ | Unsupported op BitwiseXor |
 | `node/test_bitwise_xor_i32_2d/model.onnx` | ❌ | Unsupported op BitwiseXor |
-| `node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_blackmanwindow/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_blackmanwindow_expanded/model.onnx` | ❌ | Dynamic dim for BlackmanWindow_test_blackmanwindow_expanded_function_Range |
+| `node/test_blackmanwindow_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_expanded_function_Range' |
 | `node/test_blackmanwindow_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_blackmanwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range |
-| `node/test_cast_BFLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for input. |
-| `node/test_cast_DOUBLE_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for input. |
-| `node/test_cast_DOUBLE_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for input. |
-| `node/test_cast_FLOAT16_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_INT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_INT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT16_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for input. |
-| `node/test_cast_FLOAT4E2M1_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for input. |
-| `node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. |
-| `node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. |
-| `node/test_cast_FLOAT8E4M3FN_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for input. |
-| `node/test_cast_FLOAT8E4M3FN_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for input. |
-| `node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. |
-| `node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. |
-| `node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for input. |
-| `node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for input. |
-| `node/test_cast_FLOAT_to_BFLOAT16/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for output. |
-| `node/test_cast_FLOAT_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for output. |
-| `node/test_cast_FLOAT_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for output. |
-| `node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for output. |
-| `node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for output. |
-| `node/test_cast_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output. |
-| `node/test_cast_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for output. |
-| `node/test_cast_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output. |
-| `node/test_cast_FLOAT_to_INT2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for output. |
-| `node/test_cast_FLOAT_to_INT4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for output. |
-| `node/test_cast_FLOAT_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for output. |
-| `node/test_cast_FLOAT_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for output. |
-| `node/test_cast_INT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_cast_INT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_cast_INT2_to_INT8/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_cast_INT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_cast_INT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_cast_INT4_to_INT8/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_cast_UINT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_cast_UINT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_cast_UINT2_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_cast_UINT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_cast_UINT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_cast_UINT4_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_cast_e8m0_FLOAT16_to_FLOAT8E8M0/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for input. |
-| `node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for input. |
-| `node/test_cast_e8m0_FLOAT_to_FLOAT8E8M0/model.onnx` | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for output. |
-| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for output. |
-| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output. |
-| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for output. |
-| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output. |
-| `node/test_castlike_BFLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for input. |
-| `node/test_castlike_BFLOAT16_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for input. |
-| `node/test_castlike_DOUBLE_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for input. |
-| `node/test_castlike_DOUBLE_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for input. |
-| `node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for input. |
-| `node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for input. |
-| `node/test_castlike_FLOAT16_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_INT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_INT2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_INT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_INT4_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_UINT2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT16_to_UINT4_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for input. |
-| `node/test_castlike_FLOAT4E2M1_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for input. |
-| `node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for input. |
-| `node/test_castlike_FLOAT4E2M1_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for input. |
-| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. |
-| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. |
-| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. |
-| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. |
-| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for input. |
-| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for input. |
-| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for input. |
-| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for input. |
-| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. |
-| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. |
-| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. |
-| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. |
-| `node/test_castlike_FLOAT8E5M2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for input. |
-| `node/test_castlike_FLOAT8E5M2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for input. |
-| `node/test_castlike_FLOAT8E5M2_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for input. |
-| `node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for input. |
-| `node/test_castlike_FLOAT_to_BFLOAT16/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for like. |
-| `node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for like. |
-| `node/test_castlike_FLOAT_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for like. |
-| `node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. |
-| `node/test_castlike_FLOAT_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for like. |
-| `node/test_castlike_FLOAT_to_INT2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for like. |
-| `node/test_castlike_FLOAT_to_INT2_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for like. |
-| `node/test_castlike_FLOAT_to_INT4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for like. |
-| `node/test_castlike_FLOAT_to_INT4_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for like. |
-| `node/test_castlike_FLOAT_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for like. |
-| `node/test_castlike_FLOAT_to_UINT2_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for like. |
-| `node/test_castlike_FLOAT_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for like. |
-| `node/test_castlike_FLOAT_to_UINT4_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for like. |
-| `node/test_castlike_INT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_castlike_INT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_castlike_INT2_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_castlike_INT2_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_castlike_INT2_to_INT8/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_castlike_INT2_to_INT8_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for input. |
-| `node/test_castlike_INT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_castlike_INT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_castlike_INT4_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_castlike_INT4_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_castlike_INT4_to_INT8/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_castlike_INT4_to_INT8_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for input. |
-| `node/test_castlike_UINT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_castlike_UINT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_castlike_UINT2_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_castlike_UINT2_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_castlike_UINT2_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_castlike_UINT2_to_UINT8_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for input. |
-| `node/test_castlike_UINT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_castlike_UINT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_castlike_UINT4_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_castlike_UINT4_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_castlike_UINT4_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_castlike_UINT4_to_UINT8_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for input. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for like. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for like. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for like. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. |
-| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for like. |
+| `node/test_blackmanwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range' |
+| `node/test_cast_BFLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
+| `node/test_cast_DOUBLE_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| `node/test_cast_DOUBLE_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_INT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_INT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT16_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| `node/test_cast_FLOAT4E2M1_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| `node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| `node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| `node/test_cast_FLOAT8E4M3FN_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| `node/test_cast_FLOAT8E4M3FN_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| `node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| `node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| `node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| `node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| `node/test_cast_FLOAT_to_BFLOAT16/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_INT2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_INT4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'output'. |
+| `node/test_cast_FLOAT_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'output'. |
+| `node/test_cast_INT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_cast_INT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_cast_INT2_to_INT8/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_cast_INT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_cast_INT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_cast_INT4_to_INT8/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_cast_UINT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_cast_UINT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_cast_UINT2_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_cast_UINT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_cast_UINT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_cast_UINT4_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_cast_e8m0_FLOAT16_to_FLOAT8E8M0/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. |
+| `node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. |
+| `node/test_cast_e8m0_FLOAT_to_FLOAT8E8M0/model.onnx` | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'. |
+| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
+| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
+| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
+| `node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
+| `node/test_castlike_BFLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
+| `node/test_castlike_BFLOAT16_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
+| `node/test_castlike_DOUBLE_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| `node/test_castlike_DOUBLE_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| `node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| `node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_INT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_INT2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_INT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_INT4_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_UINT2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT16_to_UINT4_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| `node/test_castlike_FLOAT4E2M1_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| `node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| `node/test_castlike_FLOAT4E2M1_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E4M3FN_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| `node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| `node/test_castlike_FLOAT_to_BFLOAT16/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_DOUBLE/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_INT2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_INT2_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_INT4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_INT4_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_UINT2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_UINT2_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_UINT4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'like'. |
+| `node/test_castlike_FLOAT_to_UINT4_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'like'. |
+| `node/test_castlike_INT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_castlike_INT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_castlike_INT2_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_castlike_INT2_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_castlike_INT2_to_INT8/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_castlike_INT2_to_INT8_expanded/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| `node/test_castlike_INT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_castlike_INT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_castlike_INT4_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_castlike_INT4_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_castlike_INT4_to_INT8/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_castlike_INT4_to_INT8_expanded/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| `node/test_castlike_UINT2_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_castlike_UINT2_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_castlike_UINT2_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_castlike_UINT2_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_castlike_UINT2_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_castlike_UINT2_to_UINT8_expanded/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| `node/test_castlike_UINT4_to_FLOAT/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_castlike_UINT4_to_FLOAT16/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_castlike_UINT4_to_FLOAT16_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_castlike_UINT4_to_FLOAT_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_castlike_UINT4_to_UINT8/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_castlike_UINT4_to_UINT8_expanded/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx` | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| `node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
 | `node/test_ceil/model.onnx` | ✅ |  |
 | `node/test_ceil_example/model.onnx` | ✅ |  |
 | `node/test_celu/model.onnx` | ❌ | Unsupported op Celu |
 | `node/test_celu_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_center_crop_pad_crop/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_center_crop_pad_crop_and_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_center_crop_pad_crop_and_pad_expanded/model.onnx` | ❌ | Dynamic dim for CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input |
+| `node/test_center_crop_pad_crop_and_pad_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input' |
 | `node/test_center_crop_pad_crop_axes_chw/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx` | ❌ | Dynamic dim for CenterCropPad_test_center_crop_pad_crop_axes_chw_expanded_function_padded_input |
+| `node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_chw_expanded_function_padded_input' |
 | `node/test_center_crop_pad_crop_axes_hwc/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx` | ❌ | Dynamic dim for CenterCropPad_test_center_crop_pad_crop_axes_hwc_expanded_function_padded_input |
-| `node/test_center_crop_pad_crop_expanded/model.onnx` | ❌ | Dynamic dim for CenterCropPad_test_center_crop_pad_crop_expanded_function_padded_input |
+| `node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_hwc_expanded_function_padded_input' |
+| `node/test_center_crop_pad_crop_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_expanded_function_padded_input' |
 | `node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx` | ❌ | Dynamic dim for CenterCropPad_test_center_crop_pad_crop_negative_axes_hwc_expanded_function_padded_input |
+| `node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_negative_axes_hwc_expanded_function_padded_input' |
 | `node/test_center_crop_pad_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_center_crop_pad_pad_expanded/model.onnx` | ❌ | Dynamic dim for CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input |
+| `node/test_center_crop_pad_pad_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input' |
 | `node/test_clip/model.onnx` | ❌ | Unsupported op Clip |
 | `node/test_clip_default_inbounds/model.onnx` | ❌ | Unsupported op Clip |
 | `node/test_clip_default_inbounds_expanded/model.onnx` | ❌ | Unsupported op Identity |
 | `node/test_clip_default_int8_inbounds/model.onnx` | ❌ | Unsupported op Clip |
 | `node/test_clip_default_int8_inbounds_expanded/model.onnx` | ❌ | Unsupported op Identity |
 | `node/test_clip_default_int8_max/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_int8_max_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_int8_max_expanded_function_input_large_than_max. |
+| `node/test_clip_default_int8_max_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_int8_max_expanded_function_input_large_than_max'. |
 | `node/test_clip_default_int8_min/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_int8_min_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_int8_min_expanded_function_input_less_than_min. |
+| `node/test_clip_default_int8_min_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_int8_min_expanded_function_input_less_than_min'. |
 | `node/test_clip_default_max/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_max_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_max_expanded_function_input_large_than_max. |
+| `node/test_clip_default_max_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_max_expanded_function_input_large_than_max'. |
 | `node/test_clip_default_min/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_default_min_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_min_expanded_function_input_less_than_min. |
+| `node/test_clip_default_min_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_min_expanded_function_input_less_than_min'. |
 | `node/test_clip_example/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_example_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_example_expanded_function_input_less_than_min. |
-| `node/test_clip_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_expanded_function_input_less_than_min. |
+| `node/test_clip_example_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_example_expanded_function_input_less_than_min'. |
+| `node/test_clip_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_expanded_function_input_less_than_min'. |
 | `node/test_clip_inbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_inbounds_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_inbounds_expanded_function_input_less_than_min. |
+| `node/test_clip_inbounds_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_inbounds_expanded_function_input_less_than_min'. |
 | `node/test_clip_min_greater_than_max/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_min_greater_than_max_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_min_greater_than_max_expanded_function_input_less_than_min. |
+| `node/test_clip_min_greater_than_max_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_min_greater_than_max_expanded_function_input_less_than_min'. |
 | `node/test_clip_outbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_outbounds_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_outbounds_expanded_function_input_less_than_min. |
+| `node/test_clip_outbounds_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_outbounds_expanded_function_input_less_than_min'. |
 | `node/test_clip_splitbounds/model.onnx` | ❌ | Unsupported op Clip |
-| `node/test_clip_splitbounds_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Clip_test_clip_splitbounds_expanded_function_input_less_than_min. |
+| `node/test_clip_splitbounds_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_splitbounds_expanded_function_input_less_than_min'. |
 | `node/test_col2im/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_col2im_5d/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_col2im_dilations/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_col2im_pads/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_col2im_strides/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_compress_0/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for condition. |
-| `node/test_compress_1/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for condition. |
-| `node/test_compress_default_axis/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for condition. |
-| `node/test_compress_negative_axis/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for condition. |
+| `node/test_compress_0/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'condition'. |
+| `node/test_compress_1/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'condition'. |
+| `node/test_compress_default_axis/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'condition'. |
+| `node/test_compress_negative_axis/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'condition'. |
 | `node/test_concat_1d_axis_0/model.onnx` | ❌ | Unsupported op Concat |
 | `node/test_concat_1d_axis_negative_1/model.onnx` | ❌ | Unsupported op Concat |
 | `node/test_concat_2d_axis_0/model.onnx` | ❌ | Unsupported op Concat |
@@ -525,8 +525,8 @@ ONNX version: 1.20.1
 | `node/test_conv_with_strides_and_asymmetric_padding/model.onnx` | ❌ | Unsupported op Conv |
 | `node/test_conv_with_strides_no_padding/model.onnx` | ❌ | Unsupported op Conv |
 | `node/test_conv_with_strides_padding/model.onnx` | ❌ | Unsupported op Conv |
-| `node/test_convinteger_with_padding/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_convinteger_without_padding/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_convinteger_with_padding/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_convinteger_without_padding/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_convtranspose/model.onnx` | ❌ | Unsupported op ConvTranspose |
 | `node/test_convtranspose_1d/model.onnx` | ❌ | Unsupported op ConvTranspose |
 | `node/test_convtranspose_3d/model.onnx` | ❌ | Unsupported op ConvTranspose |
@@ -542,33 +542,33 @@ ONNX version: 1.20.1
 | `node/test_cos_example/model.onnx` | ✅ |  |
 | `node/test_cosh/model.onnx` | ❌ | Unsupported op Cosh |
 | `node/test_cosh_example/model.onnx` | ❌ | Unsupported op Cosh |
-| `node/test_cumsum_1d/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_cumsum_1d_exclusive/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
+| `node/test_cumsum_1d/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_cumsum_1d_exclusive/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_cumsum_1d_int32_exclusive/model.onnx` | ❌ | Unsupported op CumSum |
-| `node/test_cumsum_1d_reverse/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_cumsum_1d_reverse_exclusive/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_cumsum_2d_axis_0/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_cumsum_2d_axis_1/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
+| `node/test_cumsum_1d_reverse/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_cumsum_1d_reverse_exclusive/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_cumsum_2d_axis_0/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_cumsum_2d_axis_1/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_cumsum_2d_int32/model.onnx` | ❌ | Unsupported op CumSum |
-| `node/test_cumsum_2d_negative_axis/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
+| `node/test_cumsum_2d_negative_axis/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_deform_conv_with_mask_bias/model.onnx` | ❌ | Unsupported op DeformConv |
 | `node/test_deform_conv_with_multiple_offset_groups/model.onnx` | ❌ | Unsupported op DeformConv |
 | `node/test_depthtospace_crd_mode_example/model.onnx` | ❌ | Unsupported op DepthToSpace |
 | `node/test_depthtospace_example/model.onnx` | ❌ | Unsupported op DepthToSpace |
-| `node/test_dequantizelinear/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_dequantizelinear_axis/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_dequantizelinear_blocked/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_dequantizelinear_e4m3fn/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for x. |
-| `node/test_dequantizelinear_e4m3fn_float16/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for x. |
-| `node/test_dequantizelinear_e4m3fn_zero_point/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for x. |
-| `node/test_dequantizelinear_e5m2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for x. |
-| `node/test_dequantizelinear_float4e2m1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for x. |
+| `node/test_dequantizelinear/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_dequantizelinear_axis/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_dequantizelinear_blocked/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_dequantizelinear_e4m3fn/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
+| `node/test_dequantizelinear_e4m3fn_float16/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
+| `node/test_dequantizelinear_e4m3fn_zero_point/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
+| `node/test_dequantizelinear_e5m2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. |
+| `node/test_dequantizelinear_float4e2m1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
 | `node/test_dequantizelinear_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int16 |
-| `node/test_dequantizelinear_int2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for x. |
-| `node/test_dequantizelinear_int4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for x. |
-| `node/test_dequantizelinear_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_dequantizelinear_uint2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for x. |
-| `node/test_dequantizelinear_uint4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for x. |
+| `node/test_dequantizelinear_int2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'x'. |
+| `node/test_dequantizelinear_int4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'x'. |
+| `node/test_dequantizelinear_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_dequantizelinear_uint2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
+| `node/test_dequantizelinear_uint4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
 | `node/test_det_2d/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_det_nd/model.onnx` | ❌ | Unsupported op Det |
 | `node/test_dft/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -582,52 +582,52 @@ ONNX version: 1.20.1
 | `node/test_div_example/model.onnx` | ✅ |  |
 | `node/test_div_int16/model.onnx` | ❌ | Unsupported op Div |
 | `node/test_div_int8/model.onnx` | ❌ | Unsupported op Div |
-| `node/test_div_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_div_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_div_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_div_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_div_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_div_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_div_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_div_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_dropout_default/model.onnx` | ❌ | Unsupported op Dropout |
-| `node/test_dropout_default_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
-| `node/test_dropout_default_mask_ratio/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
+| `node/test_dropout_default_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'z'. |
+| `node/test_dropout_default_mask_ratio/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'z'. |
 | `node/test_dropout_default_old/model.onnx` | ❌ | Unsupported op Dropout |
 | `node/test_dropout_default_ratio/model.onnx` | ❌ | Unsupported op Dropout |
 | `node/test_dropout_random_old/model.onnx` | ❌ | Unsupported op Dropout |
-| `node/test_dynamicquantizelinear/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y. |
-| `node/test_dynamicquantizelinear_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y. |
-| `node/test_dynamicquantizelinear_max_adjusted/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y. |
-| `node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y. |
-| `node/test_dynamicquantizelinear_min_adjusted/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y. |
-| `node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y. |
+| `node/test_dynamicquantizelinear/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
+| `node/test_dynamicquantizelinear_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
+| `node/test_dynamicquantizelinear_max_adjusted/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
+| `node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
+| `node/test_dynamicquantizelinear_min_adjusted/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
+| `node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
 | `node/test_edge_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
-| `node/test_einsum_batch_diagonal/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_einsum_batch_matmul/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_einsum_inner_prod/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_einsum_scalar/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_einsum_sum/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
-| `node/test_einsum_transpose/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
+| `node/test_einsum_batch_diagonal/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_einsum_batch_matmul/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_einsum_inner_prod/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_einsum_scalar/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_einsum_sum/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| `node/test_einsum_transpose/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_elu/model.onnx` | ❌ | Unsupported op Elu |
 | `node/test_elu_default/model.onnx` | ❌ | Unsupported op Elu |
-| `node/test_elu_default_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Elu_test_elu_default_expanded_function_XLessThanZero. |
+| `node/test_elu_default_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_default_expanded_function_XLessThanZero'. |
 | `node/test_elu_example/model.onnx` | ❌ | Unsupported op Elu |
-| `node/test_elu_example_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Elu_test_elu_example_expanded_function_XLessThanZero. |
-| `node/test_elu_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Elu_test_elu_expanded_function_XLessThanZero. |
-| `node/test_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
-| `node/test_equal_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
-| `node/test_equal_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
-| `node/test_equal_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for z. |
-| `node/test_equal_string/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_equal_string_broadcast/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_equal_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_elu_example_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_example_expanded_function_XLessThanZero'. |
+| `node/test_elu_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_expanded_function_XLessThanZero'. |
+| `node/test_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'z'. |
+| `node/test_equal_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'z'. |
+| `node/test_equal_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'z'. |
+| `node/test_equal_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'z'. |
+| `node/test_equal_string/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_equal_string_broadcast/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_equal_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_erf/model.onnx` | ❌ | Unsupported op Erf |
 | `node/test_exp/model.onnx` | ✅ |  |
 | `node/test_exp_example/model.onnx` | ✅ |  |
 | `node/test_expand_dim_changed/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_expand_dim_unchanged/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_eyelike_populate_off_main_diagonal/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_eyelike_with_dtype/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for y. |
+| `node/test_eyelike_with_dtype/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
 | `node/test_eyelike_without_dtype/model.onnx` | ❌ | Unsupported op EyeLike |
 | `node/test_flatten_axis0/model.onnx` | ❌ | Unsupported op Flatten |
 | `node/test_flatten_axis1/model.onnx` | ❌ | Unsupported op Flatten |
@@ -673,30 +673,30 @@ ONNX version: 1.20.1
 | `node/test_globalaveragepool_precomputed/model.onnx` | ❌ | Unsupported op GlobalAveragePool |
 | `node/test_globalmaxpool/model.onnx` | ❌ | Unsupported op GlobalMaxPool |
 | `node/test_globalmaxpool_precomputed/model.onnx` | ❌ | Unsupported op GlobalMaxPool |
-| `node/test_greater/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater. |
-| `node/test_greater_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater. |
-| `node/test_greater_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_bcast_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_int16_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_int8_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater_equal. |
-| `node/test_greater_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_greater_equal_uint16_expanded/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_greater_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_greater_equal_uint32_expanded/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_greater_equal_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_greater_equal_uint64_expanded/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_greater_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_greater_equal_uint8_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_greater_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater. |
-| `node/test_greater_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for greater. |
-| `node/test_greater_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_greater_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_greater_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_greater_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_greater/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater'. |
+| `node/test_greater_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater'. |
+| `node/test_greater_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_bcast_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_int16_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_int8_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. |
+| `node/test_greater_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_greater_equal_uint16_expanded/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_greater_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_greater_equal_uint32_expanded/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_greater_equal_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_greater_equal_uint64_expanded/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_greater_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_greater_equal_uint8_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_greater_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater'. |
+| `node/test_greater_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'greater'. |
+| `node/test_greater_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_greater_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_greater_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_greater_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_gridsample/model.onnx` | ❌ | Unsupported op GridSample |
 | `node/test_gridsample_aligncorners_true/model.onnx` | ❌ | Unsupported op GridSample |
 | `node/test_gridsample_bicubic/model.onnx` | ❌ | Unsupported op GridSample |
@@ -716,21 +716,21 @@ ONNX version: 1.20.1
 | `node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx` | ❌ | Unsupported op GridSample |
 | `node/test_gridsample_zeros_padding/model.onnx` | ❌ | Unsupported op GridSample |
 | `node/test_group_normalization_epsilon/model.onnx` | ❌ | Unsupported op GroupNormalization |
-| `node/test_group_normalization_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for GroupNormalization_test_group_normalization_epsilon_expanded_function_XReshaped |
+| `node/test_group_normalization_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'GroupNormalization_test_group_normalization_epsilon_expanded_function_XReshaped' |
 | `node/test_group_normalization_example/model.onnx` | ❌ | Unsupported op GroupNormalization |
-| `node/test_group_normalization_example_expanded/model.onnx` | ❌ | Dynamic dim for GroupNormalization_test_group_normalization_example_expanded_function_XReshaped |
+| `node/test_group_normalization_example_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'GroupNormalization_test_group_normalization_example_expanded_function_XReshaped' |
 | `node/test_gru_batchwise/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_gru_defaults/model.onnx` | ❌ | Unsupported op GRU |
 | `node/test_gru_seq_length/model.onnx` | ❌ | Unsupported op GRU |
 | `node/test_gru_with_initial_bias/model.onnx` | ❌ | Unsupported op GRU |
 | `node/test_hammingwindow/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_hammingwindow_expanded/model.onnx` | ❌ | Dynamic dim for HammingWindow_test_hammingwindow_expanded_function_Range |
+| `node/test_hammingwindow_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HammingWindow_test_hammingwindow_expanded_function_Range' |
 | `node/test_hammingwindow_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_hammingwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for HammingWindow_test_hammingwindow_symmetric_expanded_function_Range |
+| `node/test_hammingwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HammingWindow_test_hammingwindow_symmetric_expanded_function_Range' |
 | `node/test_hannwindow/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_hannwindow_expanded/model.onnx` | ❌ | Dynamic dim for HannWindow_test_hannwindow_expanded_function_Range |
+| `node/test_hannwindow_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HannWindow_test_hannwindow_expanded_function_Range' |
 | `node/test_hannwindow_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
-| `node/test_hannwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for HannWindow_test_hannwindow_symmetric_expanded_function_Range |
+| `node/test_hannwindow_symmetric_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'HannWindow_test_hannwindow_symmetric_expanded_function_Range' |
 | `node/test_hardmax_axis_0/model.onnx` | ❌ | Unsupported op Hardmax |
 | `node/test_hardmax_axis_1/model.onnx` | ❌ | Unsupported op Hardmax |
 | `node/test_hardmax_axis_2/model.onnx` | ❌ | Unsupported op Hardmax |
@@ -747,120 +747,120 @@ ONNX version: 1.20.1
 | `node/test_hardswish/model.onnx` | ❌ | Unsupported op HardSwish |
 | `node/test_hardswish_expanded/model.onnx` | ❌ | Unsupported op HardSigmoid |
 | `node/test_identity/model.onnx` | ❌ | Unsupported op Identity |
-| `node/test_identity_opt/model.onnx` | ❌ | Missing elem_type for opt_in |
-| `node/test_identity_sequence/model.onnx` | ❌ | Missing elem_type for x |
-| `node/test_if/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
-| `node/test_if_opt/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
-| `node/test_if_seq/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
-| `node/test_image_decoder_decode_bmp_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_jpeg2k_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_jpeg_bgr/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_jpeg_grayscale/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_jpeg_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_png_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_pnm_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_tiff_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
-| `node/test_image_decoder_decode_webp_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data. |
+| `node/test_identity_opt/model.onnx` | ❌ | Missing elem_type for tensor 'opt_in' |
+| `node/test_identity_sequence/model.onnx` | ❌ | Missing elem_type for tensor 'x' |
+| `node/test_if/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'cond'. |
+| `node/test_if_opt/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'cond'. |
+| `node/test_if_seq/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'cond'. |
+| `node/test_image_decoder_decode_bmp_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_jpeg2k_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_jpeg_bgr/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_jpeg_grayscale/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_jpeg_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_png_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_pnm_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_tiff_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| `node/test_image_decoder_decode_webp_rgb/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
 | `node/test_instancenorm_epsilon/model.onnx` | ❌ | Unsupported op InstanceNormalization |
 | `node/test_instancenorm_example/model.onnx` | ❌ | Unsupported op InstanceNormalization |
-| `node/test_isinf/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for y. |
-| `node/test_isinf_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for x. |
-| `node/test_isinf_negative/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for y. |
-| `node/test_isinf_positive/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for y. |
-| `node/test_isnan/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for y. |
-| `node/test_isnan_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for x. |
+| `node/test_isinf/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'y'. |
+| `node/test_isinf_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'x'. |
+| `node/test_isinf_negative/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'y'. |
+| `node/test_isinf_positive/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'y'. |
+| `node/test_isnan/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'y'. |
+| `node/test_isnan_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'x'. |
 | `node/test_l1normalization_axis_0/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_l1normalization_axis_1/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_l1normalization_axis_last/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_l2normalization_axis_0/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_l2normalization_axis_1/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_layer_normalization_2d_axis0/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_2d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape |
-| `node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape |
+| `node/test_layer_normalization_2d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_2d_axis1/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_2d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape |
-| `node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape |
+| `node/test_layer_normalization_2d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_2d_axis_negative_1/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape |
-| `node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape |
+| `node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_2d_axis_negative_2/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape |
-| `node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape |
+| `node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_3d_axis0_epsilon/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape |
-| `node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape |
+| `node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_3d_axis1_epsilon/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape |
-| `node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape |
+| `node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_3d_axis2_epsilon/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape |
-| `node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape |
+| `node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape |
-| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape |
+| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape |
-| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape |
+| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape |
-| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape |
+| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis0/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis1/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis2/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis2_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis2_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis3/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis3_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis3_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis_negative_1/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis_negative_2/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis_negative_3/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_4d_axis_negative_4/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape |
-| `node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape |
+| `node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' |
 | `node/test_layer_normalization_default_axis/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_layer_normalization_default_axis_expanded/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape |
-| `node/test_layer_normalization_default_axis_expanded_ver18/model.onnx` | ❌ | Dynamic dim for LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape |
+| `node/test_layer_normalization_default_axis_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
+| `node/test_layer_normalization_default_axis_expanded_ver18/model.onnx` | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
 | `node/test_leakyrelu/model.onnx` | ❌ | Unsupported op LeakyRelu |
 | `node/test_leakyrelu_default/model.onnx` | ❌ | Unsupported op LeakyRelu |
-| `node/test_leakyrelu_default_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for LeakyRelu_test_leakyrelu_default_expanded_function_XLessThanZero. |
+| `node/test_leakyrelu_default_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_default_expanded_function_XLessThanZero'. |
 | `node/test_leakyrelu_example/model.onnx` | ❌ | Unsupported op LeakyRelu |
-| `node/test_leakyrelu_example_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for LeakyRelu_test_leakyrelu_example_expanded_function_XLessThanZero. |
-| `node/test_leakyrelu_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for LeakyRelu_test_leakyrelu_expanded_function_XLessThanZero. |
-| `node/test_less/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less. |
-| `node/test_less_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less. |
-| `node/test_less_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_bcast_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_int16_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_int8_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less_equal. |
-| `node/test_less_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_less_equal_uint16_expanded/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_less_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_less_equal_uint32_expanded/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_less_equal_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_less_equal_uint64_expanded/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_less_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_less_equal_uint8_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_less_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less. |
-| `node/test_less_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for less. |
-| `node/test_less_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_less_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_less_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_less_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_leakyrelu_example_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_example_expanded_function_XLessThanZero'. |
+| `node/test_leakyrelu_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_expanded_function_XLessThanZero'. |
+| `node/test_less/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less'. |
+| `node/test_less_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less'. |
+| `node/test_less_equal/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_bcast/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_bcast_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_int16_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_int8_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. |
+| `node/test_less_equal_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_less_equal_uint16_expanded/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_less_equal_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_less_equal_uint32_expanded/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_less_equal_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_less_equal_uint64_expanded/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_less_equal_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_less_equal_uint8_expanded/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_less_int16/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less'. |
+| `node/test_less_int8/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'less'. |
+| `node/test_less_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_less_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_less_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_less_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_log/model.onnx` | ✅ |  |
 | `node/test_log_example/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_axis_0/model.onnx` | ❌ | Unsupported op LogSoftmax |
@@ -884,9 +884,9 @@ ONNX version: 1.20.1
 | `node/test_logsoftmax_negative_axis/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `node/test_logsoftmax_negative_axis_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
-| `node/test_loop11/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
-| `node/test_loop13_seq/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
-| `node/test_loop16_seq_none/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for cond. |
+| `node/test_loop11/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'cond'. |
+| `node/test_loop13_seq/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'cond'. |
+| `node/test_loop16_seq_none/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'cond'. |
 | `node/test_lpnormalization_default/model.onnx` | ❌ | Unsupported op LpNormalization |
 | `node/test_lppool_1d_default/model.onnx` | ❌ | Unsupported op LpPool |
 | `node/test_lppool_2d_default/model.onnx` | ❌ | Unsupported op LpPool |
@@ -909,21 +909,21 @@ ONNX version: 1.20.1
 | `node/test_matmul_4d/model.onnx` | ❌ | MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) |
 | `node/test_matmul_4d_1d/model.onnx` | ❌ | MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,) |
 | `node/test_matmul_bcast/model.onnx` | ❌ | MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2) |
-| `node/test_matmulinteger/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for A. |
+| `node/test_matmulinteger/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'A'. |
 | `node/test_max_example/model.onnx` | ❌ | Max must have 2 inputs and 1 output |
-| `node/test_max_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for data_0. |
+| `node/test_max_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. |
 | `node/test_max_float32/model.onnx` | ✅ |  |
-| `node/test_max_float64/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data_0. |
+| `node/test_max_float64/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'. |
 | `node/test_max_int16/model.onnx` | ❌ | Unsupported op Max |
 | `node/test_max_int32/model.onnx` | ❌ | Unsupported op Max |
 | `node/test_max_int64/model.onnx` | ❌ | Unsupported op Max |
 | `node/test_max_int8/model.onnx` | ❌ | Unsupported op Max |
 | `node/test_max_one_input/model.onnx` | ❌ | Max must have 2 inputs and 1 output |
 | `node/test_max_two_inputs/model.onnx` | ✅ |  |
-| `node/test_max_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for data_0. |
-| `node/test_max_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for data_0. |
-| `node/test_max_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for data_0. |
-| `node/test_max_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data_0. |
+| `node/test_max_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'data_0'. |
+| `node/test_max_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'data_0'. |
+| `node/test_max_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'data_0'. |
+| `node/test_max_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data_0'. |
 | `node/test_maxpool_1d_default/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_2d_ceil/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx` | ❌ | Unsupported op MaxPool |
@@ -936,7 +936,7 @@ ONNX version: 1.20.1
 | `node/test_maxpool_2d_same_lower/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_2d_same_upper/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_2d_strides/model.onnx` | ❌ | Unsupported op MaxPool |
-| `node/test_maxpool_2d_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_maxpool_2d_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_maxpool_3d_default/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_3d_dilations/model.onnx` | ❌ | Unsupported op MaxPool |
 | `node/test_maxpool_3d_dilations_use_ref_impl/model.onnx` | ❌ | Unsupported op MaxPool |
@@ -950,34 +950,34 @@ ONNX version: 1.20.1
 | `node/test_mean_two_inputs/model.onnx` | ✅ |  |
 | `node/test_melweightmatrix/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
 | `node/test_min_example/model.onnx` | ❌ | Min must have 2 inputs and 1 output |
-| `node/test_min_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for data_0. |
+| `node/test_min_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. |
 | `node/test_min_float32/model.onnx` | ✅ |  |
-| `node/test_min_float64/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data_0. |
+| `node/test_min_float64/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'. |
 | `node/test_min_int16/model.onnx` | ❌ | Unsupported op Min |
 | `node/test_min_int32/model.onnx` | ❌ | Unsupported op Min |
 | `node/test_min_int64/model.onnx` | ❌ | Unsupported op Min |
 | `node/test_min_int8/model.onnx` | ❌ | Unsupported op Min |
 | `node/test_min_one_input/model.onnx` | ❌ | Min must have 2 inputs and 1 output |
 | `node/test_min_two_inputs/model.onnx` | ✅ |  |
-| `node/test_min_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for data_0. |
-| `node/test_min_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for data_0. |
-| `node/test_min_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for data_0. |
-| `node/test_min_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for data_0. |
+| `node/test_min_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'data_0'. |
+| `node/test_min_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'data_0'. |
+| `node/test_min_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'data_0'. |
+| `node/test_min_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data_0'. |
 | `node/test_mish/model.onnx` | ❌ | Unsupported op Mish |
 | `node/test_mish_expanded/model.onnx` | ❌ | Unsupported op Softplus |
 | `node/test_mod_broadcast/model.onnx` | ❌ | Unsupported op Mod |
 | `node/test_mod_int64_fmod/model.onnx` | ❌ | Unsupported op Mod |
-| `node/test_mod_mixed_sign_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for x. |
+| `node/test_mod_mixed_sign_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'x'. |
 | `node/test_mod_mixed_sign_float32/model.onnx` | ✅ |  |
-| `node/test_mod_mixed_sign_float64/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for x. |
+| `node/test_mod_mixed_sign_float64/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | `node/test_mod_mixed_sign_int16/model.onnx` | ❌ | Unsupported op Mod |
 | `node/test_mod_mixed_sign_int32/model.onnx` | ❌ | Unsupported op Mod |
 | `node/test_mod_mixed_sign_int64/model.onnx` | ❌ | Unsupported op Mod |
 | `node/test_mod_mixed_sign_int8/model.onnx` | ❌ | Unsupported op Mod |
-| `node/test_mod_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_mod_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_mod_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_mod_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_mod_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_mod_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_mod_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_mod_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_momentum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_momentum_multiple/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_mul/model.onnx` | ✅ |  |
@@ -985,10 +985,10 @@ ONNX version: 1.20.1
 | `node/test_mul_example/model.onnx` | ✅ |  |
 | `node/test_mul_int16/model.onnx` | ✅ |  |
 | `node/test_mul_int8/model.onnx` | ✅ |  |
-| `node/test_mul_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_mul_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_mul_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_mul_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_mul_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_mul_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_mul_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_mul_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_mvn/model.onnx` | ❌ | Unsupported op MeanVarianceNormalization |
 | `node/test_mvn_expanded/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_mvn_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
@@ -1000,17 +1000,17 @@ ONNX version: 1.20.1
 | `node/test_nllloss_NCd1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1_ii_expanded_function_mask. |
+| `node/test_nllloss_NCd1_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_ii_expanded_function_mask'. |
 | `node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1_mean_weight_negative_ii_expanded_function_mask. |
+| `node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_mean_weight_negative_ii_expanded_function_mask'. |
 | `node/test_nllloss_NCd1_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1_weight_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1_weight_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1_weight_ii_expanded_function_mask. |
+| `node/test_nllloss_NCd1_weight_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_weight_ii_expanded_function_mask'. |
 | `node/test_nllloss_NCd1d2/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded_function_mask. |
+| `node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded_function_mask'. |
 | `node/test_nllloss_NCd1d2_reduction_mean/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2_reduction_sum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1022,11 +1022,11 @@ ONNX version: 1.20.1
 | `node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded_function_mask. |
+| `node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded_function_mask'. |
 | `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded_function_mask. |
+| `node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded_function_mask'. |
 | `node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded_function_mask. |
+| `node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded_function_mask'. |
 | `node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1040,75 +1040,75 @@ ONNX version: 1.20.1
 | `node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nonmaxsuppression_two_batches/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_nonmaxsuppression_two_classes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_nonzero_example/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for condition. |
-| `node/test_not_2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_not_3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_not_4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
+| `node/test_nonzero_example/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'condition'. |
+| `node/test_not_2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_not_3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_not_4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
 | `node/test_onehot_negative_indices/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_onehot_with_axis/model.onnx` | ❌ | Unsupported op OneHot |
 | `node/test_onehot_with_negative_axis/model.onnx` | ❌ | Unsupported op OneHot |
 | `node/test_onehot_without_axis/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32, int64 |
-| `node/test_optional_get_element_optional_sequence/model.onnx` | ❌ | Missing elem_type for optional_input |
-| `node/test_optional_get_element_optional_tensor/model.onnx` | ❌ | Missing elem_type for optional_input |
-| `node/test_optional_get_element_sequence/model.onnx` | ❌ | Missing elem_type for optional_input |
+| `node/test_optional_get_element_optional_sequence/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
+| `node/test_optional_get_element_optional_tensor/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
+| `node/test_optional_get_element_sequence/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
 | `node/test_optional_get_element_tensor/model.onnx` | ❌ | Unsupported op OptionalGetElement |
-| `node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for output. |
-| `node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for output. |
-| `node/test_optional_has_element_empty_no_input_optional_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for output. |
-| `node/test_optional_has_element_empty_no_input_tensor_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for output. |
-| `node/test_optional_has_element_empty_optional_input/model.onnx` | ❌ | Missing elem_type for optional_input |
-| `node/test_optional_has_element_optional_input/model.onnx` | ❌ | Missing elem_type for optional_input |
-| `node/test_optional_has_element_tensor_input/model.onnx` | ❌ | Missing elem_type for optional_input |
-| `node/test_or2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_or3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_or4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_or_bcast3v1d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_or_bcast3v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_or_bcast4v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_or_bcast4v3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_or_bcast4v4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
+| `node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'output'. |
+| `node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'output'. |
+| `node/test_optional_has_element_empty_no_input_optional_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'output'. |
+| `node/test_optional_has_element_empty_no_input_tensor_input/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'output'. |
+| `node/test_optional_has_element_empty_optional_input/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
+| `node/test_optional_has_element_optional_input/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
+| `node/test_optional_has_element_tensor_input/model.onnx` | ❌ | Missing elem_type for tensor 'optional_input' |
+| `node/test_or2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_or3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_or4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_or_bcast3v1d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_or_bcast3v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_or_bcast4v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_or_bcast4v3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_or_bcast4v4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
 | `node/test_pow/model.onnx` | ✅ |  |
 | `node/test_pow_bcast_array/model.onnx` | ✅ |  |
 | `node/test_pow_bcast_scalar/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_pow_example/model.onnx` | ✅ |  |
 | `node/test_pow_types_float32_int32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
 | `node/test_pow_types_float32_int64/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_pow_types_float32_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for y. |
-| `node/test_pow_types_float32_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for y. |
+| `node/test_pow_types_float32_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'y'. |
+| `node/test_pow_types_float32_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'y'. |
 | `node/test_pow_types_int32_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
 | `node/test_pow_types_int32_int32/model.onnx` | ❌ | Unsupported op Pow |
 | `node/test_pow_types_int64_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_pow_types_int64_int64/model.onnx` | ❌ | Unsupported op Pow |
 | `node/test_prelu_broadcast/model.onnx` | ✅ |  |
-| `node/test_prelu_broadcast_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for PRelu_test_prelu_broadcast_expanded_function_XLessThanZero. |
+| `node/test_prelu_broadcast_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'PRelu_test_prelu_broadcast_expanded_function_XLessThanZero'. |
 | `node/test_prelu_example/model.onnx` | ✅ |  |
-| `node/test_prelu_example_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for PRelu_test_prelu_example_expanded_function_XLessThanZero. |
-| `node/test_qlinearconv/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
-| `node/test_qlinearmatmul_2D_int8_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for a_scale. |
+| `node/test_prelu_example_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'PRelu_test_prelu_example_expanded_function_XLessThanZero'. |
+| `node/test_qlinearconv/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| `node/test_qlinearmatmul_2D_int8_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
 | `node/test_qlinearmatmul_2D_int8_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int8 |
-| `node/test_qlinearmatmul_2D_uint8_float16/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for a. |
-| `node/test_qlinearmatmul_2D_uint8_float32/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for a. |
-| `node/test_qlinearmatmul_3D_int8_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for a_scale. |
+| `node/test_qlinearmatmul_2D_uint8_float16/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
+| `node/test_qlinearmatmul_2D_uint8_float32/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
+| `node/test_qlinearmatmul_3D_int8_float16/model.onnx` | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
 | `node/test_qlinearmatmul_3D_int8_float32/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int8 |
-| `node/test_qlinearmatmul_3D_uint8_float16/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for a. |
-| `node/test_qlinearmatmul_3D_uint8_float32/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for a. |
-| `node/test_quantizelinear/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y_zero_point. |
-| `node/test_quantizelinear_axis/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y_zero_point. |
-| `node/test_quantizelinear_blocked_asymmetric/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for y_zero_point. |
+| `node/test_qlinearmatmul_3D_uint8_float16/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
+| `node/test_qlinearmatmul_3D_uint8_float32/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
+| `node/test_quantizelinear/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_axis/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_blocked_asymmetric/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_blocked_symmetric/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int16 |
-| `node/test_quantizelinear_e4m3fn/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for y_zero_point. |
-| `node/test_quantizelinear_e5m2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for y_zero_point. |
-| `node/test_quantizelinear_float4e2m1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for y_zero_point. |
+| `node/test_quantizelinear_e4m3fn/model.onnx` | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_e5m2/model.onnx` | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_float4e2m1/model.onnx` | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
 | `node/test_quantizelinear_int16/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int16 |
-| `node/test_quantizelinear_int2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for y_zero_point. |
-| `node/test_quantizelinear_int4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for y_zero_point. |
-| `node/test_quantizelinear_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for y_zero_point. |
-| `node/test_quantizelinear_uint2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for y_zero_point. |
-| `node/test_quantizelinear_uint4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for y_zero_point. |
+| `node/test_quantizelinear_int2/model.onnx` | ❌ | Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_int4/model.onnx` | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_uint2/model.onnx` | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
+| `node/test_quantizelinear_uint4/model.onnx` | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | `node/test_range_float_type_positive_delta/model.onnx` | ❌ | Unsupported op Range |
-| `node/test_range_float_type_positive_delta_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Range_test_range_float_type_positive_delta_expanded_function_ceil_result_relu_bool. |
+| `node/test_range_float_type_positive_delta_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Range_test_range_float_type_positive_delta_expanded_function_ceil_result_relu_bool'. |
 | `node/test_range_int32_type_negative_delta/model.onnx` | ❌ | Unsupported op Range |
-| `node/test_range_int32_type_negative_delta_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Range_test_range_int32_type_negative_delta_expanded_function_ceil_result_relu_bool. |
+| `node/test_range_int32_type_negative_delta_expanded/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Range_test_range_int32_type_negative_delta_expanded_function_ceil_result_relu_bool'. |
 | `node/test_reciprocal/model.onnx` | ❌ | Unsupported op Reciprocal |
 | `node/test_reciprocal_example/model.onnx` | ❌ | Unsupported op Reciprocal |
 | `node/test_reduce_l1_default_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1155,27 +1155,27 @@ ONNX version: 1.20.1
 | `node/test_reduce_log_sum_desc_axes_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reduce_log_sum_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reduce_log_sum_empty_set_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
+| `node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_empty_set/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double. |
-| `node/test_reduce_log_sum_exp_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
-| `node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for data. |
+| `node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double'. |
+| `node/test_reduce_log_sum_exp_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| `node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reduce_log_sum_negative_axes_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_max_bool_inputs/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for data. |
+| `node/test_reduce_max_bool_inputs/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'data'. |
 | `node/test_reduce_max_default_axes_keepdim_example/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_reduce_max_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMax |
 | `node/test_reduce_max_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1193,7 +1193,7 @@ ONNX version: 1.20.1
 | `node/test_reduce_mean_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reduce_mean_negative_axes_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reduce_mean_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_reduce_min_bool_inputs/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for data. |
+| `node/test_reduce_min_bool_inputs/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'data'. |
 | `node/test_reduce_min_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMin |
 | `node/test_reduce_min_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMin |
 | `node/test_reduce_min_do_not_keepdims_example/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1243,9 +1243,9 @@ ONNX version: 1.20.1
 | `node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reflect_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
-| `node/test_regex_full_match_basic/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
-| `node/test_regex_full_match_email_domain/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
-| `node/test_regex_full_match_empty/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for X. |
+| `node/test_regex_full_match_basic/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
+| `node/test_regex_full_match_email_domain/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
+| `node/test_regex_full_match_empty/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | `node/test_relu/model.onnx` | ✅ |  |
 | `node/test_relu_expanded_ver18/model.onnx` | ❌ | Unsupported op Constant |
 | `node/test_reshape_allowzero_reordered/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1300,63 +1300,63 @@ ONNX version: 1.20.1
 | `node/test_reversesequence_batch/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_reversesequence_time/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rms_normalization_2d_axis0/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis0_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_2d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis0_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_2d_axis1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis1_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_2d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis1_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_2d_axis_negative_1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis_negative_1_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_1_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_2d_axis_negative_2/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis_negative_2_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_2_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_3d_axis0_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis0_epsilon_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis0_epsilon_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_3d_axis1_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis1_epsilon_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis1_epsilon_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_3d_axis2_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis2_epsilon_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis2_epsilon_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis_negative_1_epsilon_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_1_epsilon_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis_negative_2_epsilon_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_2_epsilon_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis_negative_3_epsilon_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_3_epsilon_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis0/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis0_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis0_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis0_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis1_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis1_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis2/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis2_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis2_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis2_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis2_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis3/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis3_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis3_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis3_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis3_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis_negative_1/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_1_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_1_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis_negative_2/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_2_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_2_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis_negative_3/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_3_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_3_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_4d_axis_negative_4/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_4_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_4_expanded_function_ReduceAxes' |
 | `node/test_rms_normalization_default_axis/model.onnx` | ❌ | Unsupported op RMSNormalization |
-| `node/test_rms_normalization_default_axis_expanded/model.onnx` | ❌ | Dynamic dim for RMSNormalization_test_rms_normalization_default_axis_expanded_function_ReduceAxes |
+| `node/test_rms_normalization_default_axis_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_default_axis_expanded_function_ReduceAxes' |
 | `node/test_rnn_seq_length/model.onnx` | ❌ | Unsupported op RNN |
 | `node/test_roialign_aligned_false/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_roialign_aligned_true/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_roialign_mode_max/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rotary_embedding/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_rotary_embedding_3d_input/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_rotary_embedding_3d_input_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_XIn |
-| `node/test_rotary_embedding_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_expanded_function_CosCacheSliced |
+| `node/test_rotary_embedding_3d_input_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_XIn' |
+| `node/test_rotary_embedding_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_interleaved/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_rotary_embedding_interleaved_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_interleaved_expanded_function_CosCacheSliced |
+| `node/test_rotary_embedding_interleaved_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_interleaved_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_no_position_ids/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
-| `node/test_rotary_embedding_no_position_ids_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_no_position_ids_expanded_function_CosCacheSliced |
+| `node/test_rotary_embedding_no_position_ids_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_no_position_ids_interleaved/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
-| `node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_no_position_ids_interleaved_expanded_function_CosCacheSliced |
+| `node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_interleaved_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx` | ❌ | Unsupported op RotaryEmbedding |
-| `node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_no_position_ids_rotary_dim_expanded_function_CosCacheSliced |
+| `node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_rotary_dim_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced |
+| `node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced' |
 | `node/test_rotary_embedding_with_rotary_dim/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced |
+| `node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx` | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced' |
 | `node/test_round/model.onnx` | ❌ | Unsupported op Round |
 | `node/test_scan9_sum/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_scan_sum/model.onnx` | ❌ | Only single-output graphs are supported |
@@ -1443,24 +1443,24 @@ ONNX version: 1.20.1
 | `node/test_sce_sum_log_prob_expanded/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_selu/model.onnx` | ❌ | Unsupported op Selu |
 | `node/test_selu_default/model.onnx` | ❌ | Unsupported op Selu |
-| `node/test_selu_default_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Selu_test_selu_default_expanded_function_XLessThanZero. |
+| `node/test_selu_default_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_default_expanded_function_XLessThanZero'. |
 | `node/test_selu_example/model.onnx` | ❌ | Unsupported op Selu |
-| `node/test_selu_example_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Selu_test_selu_example_expanded_function_XLessThanZero. |
-| `node/test_selu_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Selu_test_selu_expanded_function_XLessThanZero. |
-| `node/test_sequence_insert_at_back/model.onnx` | ❌ | Missing elem_type for sequence |
-| `node/test_sequence_insert_at_front/model.onnx` | ❌ | Missing elem_type for sequence |
-| `node/test_sequence_map_add_1_sequence_1_tensor/model.onnx` | ❌ | Missing elem_type for x0 |
-| `node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx` | ❌ | Missing elem_type for x0 |
-| `node/test_sequence_map_add_2_sequences/model.onnx` | ❌ | Missing elem_type for x0 |
-| `node/test_sequence_map_add_2_sequences_expanded/model.onnx` | ❌ | Missing elem_type for x0 |
-| `node/test_sequence_map_extract_shapes/model.onnx` | ❌ | Missing elem_type for in_seq |
-| `node/test_sequence_map_extract_shapes_expanded/model.onnx` | ❌ | Missing elem_type for in_seq |
-| `node/test_sequence_map_identity_1_sequence/model.onnx` | ❌ | Missing elem_type for x |
-| `node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx` | ❌ | Missing elem_type for x0 |
-| `node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx` | ❌ | Missing elem_type for x0 |
-| `node/test_sequence_map_identity_1_sequence_expanded/model.onnx` | ❌ | Missing elem_type for x |
-| `node/test_sequence_map_identity_2_sequences/model.onnx` | ❌ | Missing elem_type for x0 |
-| `node/test_sequence_map_identity_2_sequences_expanded/model.onnx` | ❌ | Missing elem_type for x0 |
+| `node/test_selu_example_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_example_expanded_function_XLessThanZero'. |
+| `node/test_selu_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_expanded_function_XLessThanZero'. |
+| `node/test_sequence_insert_at_back/model.onnx` | ❌ | Missing elem_type for tensor 'sequence' |
+| `node/test_sequence_insert_at_front/model.onnx` | ❌ | Missing elem_type for tensor 'sequence' |
+| `node/test_sequence_map_add_1_sequence_1_tensor/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
+| `node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
+| `node/test_sequence_map_add_2_sequences/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
+| `node/test_sequence_map_add_2_sequences_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
+| `node/test_sequence_map_extract_shapes/model.onnx` | ❌ | Missing elem_type for tensor 'in_seq' |
+| `node/test_sequence_map_extract_shapes_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'in_seq' |
+| `node/test_sequence_map_identity_1_sequence/model.onnx` | ❌ | Missing elem_type for tensor 'x' |
+| `node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
+| `node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
+| `node/test_sequence_map_identity_1_sequence_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'x' |
+| `node/test_sequence_map_identity_2_sequences/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
+| `node/test_sequence_map_identity_2_sequences_expanded/model.onnx` | ❌ | Missing elem_type for tensor 'x0' |
 | `node/test_shape/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_shape_clip_end/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_shape_clip_start/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1473,9 +1473,9 @@ ONNX version: 1.20.1
 | `node/test_shape_start_greater_than_end/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_shape_start_negative_1/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_shrink_hard/model.onnx` | ❌ | Unsupported op Shrink |
-| `node/test_shrink_hard_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Shrink_test_shrink_hard_expanded_function_InputLessThanNegLambda. |
+| `node/test_shrink_hard_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Shrink_test_shrink_hard_expanded_function_InputLessThanNegLambda'. |
 | `node/test_shrink_soft/model.onnx` | ❌ | Unsupported op Shrink |
-| `node/test_shrink_soft_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for Shrink_test_shrink_soft_expanded_function_InputLessThanNegLambda. |
+| `node/test_shrink_soft_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'Shrink_test_shrink_soft_expanded_function_InputLessThanNegLambda'. |
 | `node/test_sigmoid/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `node/test_sigmoid_example/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `node/test_sign/model.onnx` | ❌ | Unsupported op Sign |
@@ -1535,9 +1535,9 @@ ONNX version: 1.20.1
 | `node/test_split_equal_parts_2d_opset13/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_split_equal_parts_default_axis_opset13/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_split_equal_parts_default_axis_opset18/model.onnx` | ❌ | Only single-output graphs are supported |
-| `node/test_split_to_sequence_1/model.onnx` | ❌ | Missing elem_type for seq |
-| `node/test_split_to_sequence_2/model.onnx` | ❌ | Missing elem_type for seq |
-| `node/test_split_to_sequence_nokeepdims/model.onnx` | ❌ | Missing elem_type for seq |
+| `node/test_split_to_sequence_1/model.onnx` | ❌ | Missing elem_type for tensor 'seq' |
+| `node/test_split_to_sequence_2/model.onnx` | ❌ | Missing elem_type for tensor 'seq' |
+| `node/test_split_to_sequence_nokeepdims/model.onnx` | ❌ | Missing elem_type for tensor 'seq' |
 | `node/test_split_variable_parts_1d_opset13/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_split_variable_parts_1d_opset18/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_split_variable_parts_2d_opset13/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1552,32 +1552,32 @@ ONNX version: 1.20.1
 | `node/test_squeeze_negative_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_stft/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_stft_with_window/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_string_concat/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_concat_broadcasting/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_concat_empty_string/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_concat_utf8/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_concat_zero_dimensional/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_split_basic/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_split_consecutive_delimiters/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_split_empty_string_delimiter/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_split_empty_tensor/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_split_maxsplit/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_string_split_no_delimiter/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_strnormalizer_export_monday_empty_output/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `node/test_strnormalizer_nostopwords_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
+| `node/test_string_concat/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_concat_broadcasting/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_concat_empty_string/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_concat_utf8/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_concat_zero_dimensional/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_split_basic/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_split_consecutive_delimiters/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_split_empty_string_delimiter/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_split_empty_tensor/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_split_maxsplit/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_string_split_no_delimiter/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_strnormalizer_export_monday_empty_output/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `node/test_strnormalizer_nostopwords_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | `node/test_sub/model.onnx` | ✅ |  |
 | `node/test_sub_bcast/model.onnx` | ✅ |  |
 | `node/test_sub_example/model.onnx` | ✅ |  |
 | `node/test_sub_int16/model.onnx` | ✅ |  |
 | `node/test_sub_int8/model.onnx` | ✅ |  |
-| `node/test_sub_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for x. |
-| `node/test_sub_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for x. |
-| `node/test_sub_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_sub_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for x. |
+| `node/test_sub_uint16/model.onnx` | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| `node/test_sub_uint32/model.onnx` | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
+| `node/test_sub_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_sub_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_sum_example/model.onnx` | ❌ | Sum must have 2 inputs and 1 output |
 | `node/test_sum_one_input/model.onnx` | ❌ | Sum must have 2 inputs and 1 output |
 | `node/test_sum_two_inputs/model.onnx` | ✅ |  |
@@ -1599,10 +1599,10 @@ ONNX version: 1.20.1
 | `node/test_tfidfvectorizer_tf_uniandbigrams_skip5/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int32 |
 | `node/test_thresholdedrelu/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
 | `node/test_thresholdedrelu_default/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
-| `node/test_thresholdedrelu_default_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for ThresholdedRelu_test_thresholdedrelu_default_expanded_function_AlphaLessThanX. |
+| `node/test_thresholdedrelu_default_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_default_expanded_function_AlphaLessThanX'. |
 | `node/test_thresholdedrelu_example/model.onnx` | ❌ | Unsupported op ThresholdedRelu |
-| `node/test_thresholdedrelu_example_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for ThresholdedRelu_test_thresholdedrelu_example_expanded_function_AlphaLessThanX. |
-| `node/test_thresholdedrelu_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for ThresholdedRelu_test_thresholdedrelu_expanded_function_AlphaLessThanX. |
+| `node/test_thresholdedrelu_example_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_example_expanded_function_AlphaLessThanX'. |
+| `node/test_thresholdedrelu_expanded_ver18/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_expanded_function_AlphaLessThanX'. |
 | `node/test_tile/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_tile_precomputed/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_top_k/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
@@ -1611,13 +1611,13 @@ ONNX version: 1.20.1
 | `node/test_top_k_same_values_2d/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_top_k_same_values_largest/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_top_k_smallest/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
-| `node/test_top_k_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for x. |
-| `node/test_training_dropout/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for t. |
-| `node/test_training_dropout_default/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for t. |
-| `node/test_training_dropout_default_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for t. |
-| `node/test_training_dropout_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for t. |
-| `node/test_training_dropout_zero_ratio/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for t. |
-| `node/test_training_dropout_zero_ratio_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for t. |
+| `node/test_top_k_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| `node/test_training_dropout/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 't'. |
+| `node/test_training_dropout_default/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 't'. |
+| `node/test_training_dropout_default_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 't'. |
+| `node/test_training_dropout_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 't'. |
+| `node/test_training_dropout_zero_ratio/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 't'. |
+| `node/test_training_dropout_zero_ratio_mask/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 't'. |
 | `node/test_transpose_all_permutations_0/model.onnx` | ❌ | Unsupported op Transpose |
 | `node/test_transpose_all_permutations_1/model.onnx` | ❌ | Unsupported op Transpose |
 | `node/test_transpose_all_permutations_2/model.onnx` | ❌ | Unsupported op Transpose |
@@ -1657,17 +1657,17 @@ ONNX version: 1.20.1
 | `node/test_unsqueeze_two_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_unsqueeze_unsorted_axes/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `node/test_upsample_nearest/model.onnx` | ❌ | Unsupported op Upsample |
-| `node/test_where_example/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for condition. |
-| `node/test_where_long_example/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for condition. |
+| `node/test_where_example/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'condition'. |
+| `node/test_where_long_example/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'condition'. |
 | `node/test_wrap_pad/model.onnx` | ❌ | Mixed dtypes are not supported, got int32, int64 |
-| `node/test_xor2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_xor3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_xor4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_xor_bcast3v1d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_xor_bcast3v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_xor_bcast4v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_xor_bcast4v3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
-| `node/test_xor_bcast4v4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for x. |
+| `node/test_xor2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_xor3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_xor4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_xor_bcast3v1d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_xor_bcast3v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_xor_bcast4v2d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_xor_bcast4v3d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
+| `node/test_xor_bcast4v4d/model.onnx` | ❌ | Unsupported elem_type 9 (BOOL) for tensor 'x'. |
 | `pytorch-converted/test_AvgPool1d/model.onnx` | ❌ | Unsupported op Unsqueeze |
 | `pytorch-converted/test_AvgPool1d_stride/model.onnx` | ❌ | Unsupported op Unsqueeze |
 | `pytorch-converted/test_AvgPool2d/model.onnx` | ❌ | Unsupported op AveragePool |
@@ -1750,11 +1750,11 @@ ONNX version: 1.20.1
 | `pytorch-converted/test_log_softmax_lastdim/model.onnx` | ❌ | Unsupported op LogSoftmax |
 | `pytorch-converted/test_softmax_functional_dim3/model.onnx` | ❌ | Unsupported op Softmax |
 | `pytorch-converted/test_softmax_lastdim/model.onnx` | ❌ | Unsupported op Softmax |
-| `pytorch-operator/test_operator_add_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
-| `pytorch-operator/test_operator_add_size1_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
-| `pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
-| `pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
-| `pytorch-operator/test_operator_addconstant/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for 0. |
+| `pytorch-operator/test_operator_add_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
+| `pytorch-operator/test_operator_add_size1_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
+| `pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
+| `pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
+| `pytorch-operator/test_operator_addconstant/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
 | `pytorch-operator/test_operator_addmm/model.onnx` | ❌ | Gemm must have 2 inputs and 1 output |
 | `pytorch-operator/test_operator_basic/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `pytorch-operator/test_operator_chunk/model.onnx` | ❌ | Only single-output graphs are supported |
@@ -1791,23 +1791,23 @@ ONNX version: 1.20.1
 | `simple/test_expand_shape_model4/model.onnx` | ❌ | Mixed dtypes are not supported, got float, int64 |
 | `simple/test_gradient_of_add/model.onnx` | ❌ | Only single-output graphs are supported |
 | `simple/test_gradient_of_add_and_mul/model.onnx` | ❌ | Only single-output graphs are supported |
-| `simple/test_sequence_model1/model.onnx` | ❌ | Dynamic dim for out |
-| `simple/test_sequence_model2/model.onnx` | ❌ | Missing elem_type for seq_1 |
-| `simple/test_sequence_model3/model.onnx` | ❌ | Missing elem_type for seq_1 |
-| `simple/test_sequence_model4/model.onnx` | ❌ | Dynamic dim for out |
-| `simple/test_sequence_model5/model.onnx` | ❌ | Missing elem_type for seq_1 |
-| `simple/test_sequence_model6/model.onnx` | ❌ | Missing elem_type for seq_1 |
-| `simple/test_sequence_model7/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for X. |
-| `simple/test_sequence_model8/model.onnx` | ❌ | Dynamic dim for X |
+| `simple/test_sequence_model1/model.onnx` | ❌ | Dynamic dim for tensor 'out' |
+| `simple/test_sequence_model2/model.onnx` | ❌ | Missing elem_type for tensor 'seq_1' |
+| `simple/test_sequence_model3/model.onnx` | ❌ | Missing elem_type for tensor 'seq_1' |
+| `simple/test_sequence_model4/model.onnx` | ❌ | Dynamic dim for tensor 'out' |
+| `simple/test_sequence_model5/model.onnx` | ❌ | Missing elem_type for tensor 'seq_1' |
+| `simple/test_sequence_model6/model.onnx` | ❌ | Missing elem_type for tensor 'seq_1' |
+| `simple/test_sequence_model7/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'X'. |
+| `simple/test_sequence_model8/model.onnx` | ❌ | Dynamic dim for tensor 'X' |
 | `simple/test_shrink/model.onnx` | ❌ | Unsupported op Shrink |
 | `simple/test_sign_model/model.onnx` | ❌ | Unsupported op Sign |
 | `simple/test_single_relu_model/model.onnx` | ✅ |  |
-| `simple/test_strnorm_model_monday_casesensintive_lower/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `simple/test_strnorm_model_monday_casesensintive_upper/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `simple/test_strnorm_model_monday_empty_output/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
-| `simple/test_strnorm_model_nostopwords_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for x. |
+| `simple/test_strnorm_model_monday_casesensintive_lower/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `simple/test_strnorm_model_monday_casesensintive_upper/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `simple/test_strnorm_model_monday_empty_output/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| `simple/test_strnorm_model_nostopwords_nochangecase/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 
 ## Error frequency
 
@@ -1816,24 +1816,24 @@ ONNX version: 1.20.1
 | Mixed dtypes are not supported, got float, int64 | 413 | ██████████████████████████████ |
 | Only single-output graphs are supported | 64 | █████ |
 | Unsupported op Constant | 51 | ████ |
-| Unsupported elem_type 10 (FLOAT16) for input. | 46 | ███ |
+| Unsupported elem_type 10 (FLOAT16) for tensor 'input'. | 46 | ███ |
 | Unsupported op Conv | 33 | ██ |
 | Unsupported op Attention | 29 | ██ |
-| Unsupported elem_type 9 (BOOL) for x. | 27 | ██ |
-| Unsupported elem_type 2 (UINT8) for x. | 25 | ██ |
+| Unsupported elem_type 9 (BOOL) for tensor 'x'. | 27 | ██ |
+| Unsupported elem_type 2 (UINT8) for tensor 'x'. | 25 | ██ |
 | Unsupported op AveragePool | 25 | ██ |
-| Unsupported elem_type 8 (STRING) for x. | 25 | ██ |
+| Unsupported elem_type 8 (STRING) for tensor 'x'. | 25 | ██ |
 | Unsupported op MaxPool | 25 | ██ |
 | Unsupported op Resize | 19 | █ |
 | Unsupported op RMSNormalization | 19 | █ |
-| Unsupported elem_type 13 (UINT64) for x. | 18 | █ |
+| Unsupported elem_type 13 (UINT64) for tensor 'x'. | 18 | █ |
 | Mixed dtypes are not supported, got float, int32 | 18 | █ |
 | Unsupported op GridSample | 18 | █ |
-| Unsupported elem_type 4 (UINT16) for x. | 16 | █ |
-| Unsupported elem_type 11 (DOUBLE) for x. | 16 | █ |
-| Unsupported elem_type 11 (DOUBLE) for data. | 16 | █ |
+| Unsupported elem_type 4 (UINT16) for tensor 'x'. | 16 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'x'. | 16 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'data'. | 16 | █ |
 | Unsupported op Trilu | 16 | █ |
-| Unsupported elem_type 12 (UINT32) for x. | 14 | █ |
+| Unsupported elem_type 12 (UINT32) for tensor 'x'. | 14 | █ |
 | Unsupported op ConvTranspose | 14 | █ |
 | Unsupported op Clip | 13 | █ |
 | Unsupported op Concat | 13 | █ |
@@ -1841,98 +1841,98 @@ ONNX version: 1.20.1
 | Unsupported op Flatten | 11 | █ |
 | Unsupported op Softmax | 11 | █ |
 | Unsupported op LogSoftmax | 10 | █ |
-| Unsupported elem_type 26 (INT2) for input. | 9 | █ |
-| Unsupported elem_type 22 (INT4) for input. | 9 | █ |
-| Unsupported elem_type 25 (UINT2) for input. | 9 | █ |
-| Unsupported elem_type 21 (UINT4) for input. | 9 | █ |
-| Unsupported elem_type 2 (UINT8) for data. | 9 | █ |
+| Unsupported elem_type 26 (INT2) for tensor 'input'. | 9 | █ |
+| Unsupported elem_type 22 (INT4) for tensor 'input'. | 9 | █ |
+| Unsupported elem_type 25 (UINT2) for tensor 'input'. | 9 | █ |
+| Unsupported elem_type 21 (UINT4) for tensor 'input'. | 9 | █ |
+| Unsupported elem_type 2 (UINT8) for tensor 'data'. | 9 | █ |
 | Unsupported op Transpose | 9 | █ |
-| Unsupported elem_type 9 (BOOL) for greater_equal. | 8 | █ |
-| Unsupported elem_type 9 (BOOL) for less_equal. | 8 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'greater_equal'. | 8 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'less_equal'. | 8 | █ |
 | Unsupported op LpPool | 8 | █ |
-| Missing elem_type for x0 | 8 | █ |
-| Unsupported elem_type 8 (STRING) for X. | 7 | █ |
+| Missing elem_type for tensor 'x0' | 8 | █ |
+| Unsupported elem_type 8 (STRING) for tensor 'X'. | 7 | █ |
 | Unsupported op BatchNormalization | 7 | █ |
-| Unsupported elem_type 9 (BOOL) for condition. | 7 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'condition'. | 7 | █ |
 | Mixed dtypes are not supported, got int32, int64 | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
-| Unsupported elem_type 11 (DOUBLE) for input. | 6 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for input. | 6 | █ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for input. | 6 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for input. | 6 | █ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for input. | 6 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for input. | 6 | █ |
-| Unsupported elem_type 9 (BOOL) for z. | 6 | █ |
-| Unsupported elem_type 2 (UINT8) for y. | 6 | █ |
-| Unsupported elem_type 9 (BOOL) for cond. | 6 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'input'. | 6 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. | 6 | █ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. | 6 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. | 6 | █ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. | 6 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. | 6 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'z'. | 6 | █ |
+| Unsupported elem_type 2 (UINT8) for tensor 'y'. | 6 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'cond'. | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op Mod | 6 | █ |
-| Missing elem_type for optional_input | 6 | █ |
-| Unsupported elem_type 9 (BOOL) for t. | 6 | █ |
+| Missing elem_type for tensor 'optional_input' | 6 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 't'. | 6 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
 | Unsupported op Selu | 5 | █ |
 | Unsupported op Sigmoid | 5 | █ |
 | Unsupported op Pad | 5 | █ |
-| Unsupported elem_type 11 (DOUBLE) for 0. | 5 | █ |
-| Unsupported elem_type 9 (BOOL) for attn_mask. | 4 | █ |
-| Unsupported elem_type 10 (FLOAT16) for Q. | 4 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor '0'. | 5 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'attn_mask'. | 4 | █ |
+| Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. | 4 | █ |
 | Unsupported op DeformConv | 4 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for like. | 4 | █ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for like. | 4 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for like. | 4 | █ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for like. | 4 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. | 4 | █ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. | 4 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. | 4 | █ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. | 4 | █ |
 | Unsupported op Dropout | 4 | █ |
 | Unsupported op Elu | 4 | █ |
 | Unsupported op Gelu | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for greater. | 4 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'greater'. | 4 | █ |
 | Unsupported op HardSigmoid | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for y. | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for less. | 4 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'y'. | 4 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'less'. | 4 | █ |
 | Unsupported op Max | 4 | █ |
 | Unsupported op Min | 4 | █ |
 | Unsupported op Softplus | 4 | █ |
-| Unsupported elem_type 9 (BOOL) for output. | 4 | █ |
-| Unsupported elem_type 2 (UINT8) for a. | 4 | █ |
-| Missing elem_type for seq_1 | 4 | █ |
-| Unsupported elem_type 11 (DOUBLE) for y. | 3 | █ |
-| Unsupported elem_type 16 (BFLOAT16) for input. | 3 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'output'. | 4 | █ |
+| Unsupported elem_type 2 (UINT8) for tensor 'a'. | 4 | █ |
+| Missing elem_type for tensor 'seq_1' | 4 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'y'. | 3 | █ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for x. | 3 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. | 3 | █ |
 | Mixed dtypes are not supported, got float, int16 | 3 | █ |
 | Scalar outputs are not supported | 3 | █ |
 | Unsupported op DFT | 3 | █ |
 | Unsupported op GRU | 3 | █ |
-| Missing elem_type for x | 3 | █ |
+| Missing elem_type for tensor 'x' | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
-| Unsupported elem_type 10 (FLOAT16) for x. | 3 | █ |
-| Unsupported elem_type 2 (UINT8) for y_zero_point. | 3 | █ |
+| Unsupported elem_type 10 (FLOAT16) for tensor 'x'. | 3 | █ |
+| Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. | 3 | █ |
 | Unsupported op RNN | 3 | █ |
 | Unsupported op RotaryEmbedding | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
-| Missing elem_type for seq | 3 | █ |
+| Missing elem_type for tensor 'seq' | 3 | █ |
 | Unsupported op ThresholdedRelu | 3 | █ |
 | Unsupported op Acos | 2 | █ |
 | Unsupported op Acosh | 2 | █ |
-| Unsupported elem_type 11 (DOUBLE) for X. | 2 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'X'. | 2 | █ |
 | Unsupported op Asin | 2 | █ |
 | Unsupported op Asinh | 2 | █ |
 | Unsupported op Atan | 2 | █ |
 | Unsupported op BitwiseAnd | 2 | █ |
 | Unsupported op BitwiseOr | 2 | █ |
 | Unsupported op BitwiseXor | 2 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for output. | 2 | █ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for output. | 2 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for output. | 2 | █ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for output. | 2 | █ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for input. | 2 | █ |
-| Unsupported elem_type 16 (BFLOAT16) for like. | 2 | █ |
-| Unsupported elem_type 11 (DOUBLE) for like. | 2 | █ |
-| Unsupported elem_type 10 (FLOAT16) for like. | 2 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for like. | 2 | █ |
-| Unsupported elem_type 26 (INT2) for like. | 2 | █ |
-| Unsupported elem_type 22 (INT4) for like. | 2 | █ |
-| Unsupported elem_type 25 (UINT2) for like. | 2 | █ |
-| Unsupported elem_type 21 (UINT4) for like. | 2 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. | 2 | █ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. | 2 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. | 2 | █ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. | 2 | █ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. | 2 | █ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. | 2 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'like'. | 2 | █ |
+| Unsupported elem_type 10 (FLOAT16) for tensor 'like'. | 2 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. | 2 | █ |
+| Unsupported elem_type 26 (INT2) for tensor 'like'. | 2 | █ |
+| Unsupported elem_type 22 (INT4) for tensor 'like'. | 2 | █ |
+| Unsupported elem_type 25 (UINT2) for tensor 'like'. | 2 | █ |
+| Unsupported elem_type 21 (UINT4) for tensor 'like'. | 2 | █ |
 | Unsupported op Cosh | 2 | █ |
 | Unsupported op CumSum | 2 | █ |
 | Unsupported op DepthToSpace | 2 | █ |
@@ -1940,48 +1940,48 @@ ONNX version: 1.20.1
 | Unsupported op GlobalAveragePool | 2 | █ |
 | Unsupported op GlobalMaxPool | 2 | █ |
 | Unsupported op GroupNormalization | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape | 2 | █ |
-| Dynamic dim for LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' | 2 | █ |
+| Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' | 2 | █ |
 | Unsupported op LRN | 2 | █ |
 | Unsupported op LSTM | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
-| Unsupported elem_type 10 (FLOAT16) for data_0. | 2 | █ |
-| Unsupported elem_type 11 (DOUBLE) for data_0. | 2 | █ |
-| Unsupported elem_type 4 (UINT16) for data_0. | 2 | █ |
-| Unsupported elem_type 12 (UINT32) for data_0. | 2 | █ |
-| Unsupported elem_type 13 (UINT64) for data_0. | 2 | █ |
-| Unsupported elem_type 2 (UINT8) for data_0. | 2 | █ |
+| Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. | 2 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'. | 2 | █ |
+| Unsupported elem_type 4 (UINT16) for tensor 'data_0'. | 2 | █ |
+| Unsupported elem_type 12 (UINT32) for tensor 'data_0'. | 2 | █ |
+| Unsupported elem_type 13 (UINT64) for tensor 'data_0'. | 2 | █ |
+| Unsupported elem_type 2 (UINT8) for tensor 'data_0'. | 2 | █ |
 | Mean must have 2 inputs and 1 output | 2 | █ |
 | Min must have 2 inputs and 1 output | 2 | █ |
 | Unsupported op OneHot | 2 | █ |
 | Unsupported op Pow | 2 | █ |
-| Unsupported elem_type 10 (FLOAT16) for a_scale. | 2 | █ |
+| Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. | 2 | █ |
 | Mixed dtypes are not supported, got float, int8 | 2 | █ |
 | Unsupported op Range | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
-| Unsupported elem_type 9 (BOOL) for data. | 2 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'data'. | 2 | █ |
 | Unsupported op ReduceMax | 2 | █ |
 | Unsupported op ReduceMin | 2 | █ |
 | Unsupported op ReduceProd | 2 | █ |
-| Missing elem_type for sequence | 2 | █ |
-| Missing elem_type for in_seq | 2 | █ |
+| Missing elem_type for tensor 'sequence' | 2 | █ |
+| Missing elem_type for tensor 'in_seq' | 2 | █ |
 | Unsupported op Sign | 2 | █ |
 | Unsupported op Sinh | 2 | █ |
 | Unsupported op Softsign | 2 | █ |
@@ -1992,194 +1992,194 @@ ONNX version: 1.20.1
 | Unsupported op Split | 2 | █ |
 | Unsupported op ReduceMean | 2 | █ |
 | Unsupported op ReduceSum | 2 | █ |
-| Dynamic dim for out | 2 | █ |
-| Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_2d_align_corners_expanded_function_constant_align_corners_equal_zero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_2d_expanded_function_constant_align_corners_equal_zero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_3d_align_corners_expanded_function_constant_align_corners_equal_zero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for AffineGrid_test_affine_grid_3d_expanded_function_constant_align_corners_equal_zero. | 1 | █ |
+| Dynamic dim for tensor 'out' | 2 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_2d_align_corners_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_2d_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_3d_align_corners_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'AffineGrid_test_affine_grid_3d_expanded_function_constant_align_corners_equal_zero'. | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op TreeEnsemble | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_attn_mask_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_causal_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_gqa_attn_mask_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_gqa_causal_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_gqa_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_scaled_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_softcap_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_attn_mask_3d_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_attn_mask_4d_expanded_function_NGQACond1. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_attn_mask_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_causal_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_NGQACond1. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_NGQACond1. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_expanded_function_AttnBias | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_gqa_attn_mask_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_gqa_causal_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_gqa_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_scaled_expanded_function_AttnBias | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_softcap_expanded_function_AttnBias | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_NGQACond1. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_NGQACond1. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_NGQACond1. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_NGQACond1. | 1 | █ |
-| Dynamic dim for Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_NGQACond1. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_NGQACond1. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_attn_mask_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_causal_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_3d_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_4d_expanded_function_NGQACond1'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_attn_mask_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_NGQACond1'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_NGQACond1'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_AttnBias' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_gqa_attn_mask_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_AttnBias' | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_AttnBias' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_NGQACond1'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_NGQACond1'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_NGQACond1'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_NGQACond1'. | 1 | █ |
+| Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_NGQACond1'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_NGQACond1'. | 1 | █ |
 | Unsupported op Bernoulli | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Bernoulli_test_bernoulli_seed_expanded_function_X_greater. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Bernoulli_test_bernoulli_seed_expanded_function_X_greater'. | 1 | █ |
 | Unsupported op BitwiseNot | 1 | █ |
-| Dynamic dim for BlackmanWindow_test_blackmanwindow_expanded_function_Range | 1 | █ |
-| Dynamic dim for BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range | 1 | █ |
-| Unsupported elem_type 16 (BFLOAT16) for output. | 1 | █ |
-| Unsupported elem_type 11 (DOUBLE) for output. | 1 | █ |
-| Unsupported elem_type 10 (FLOAT16) for output. | 1 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for output. | 1 | █ |
-| Unsupported elem_type 26 (INT2) for output. | 1 | █ |
-| Unsupported elem_type 22 (INT4) for output. | 1 | █ |
-| Unsupported elem_type 25 (UINT2) for output. | 1 | █ |
-| Unsupported elem_type 21 (UINT4) for output. | 1 | █ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for output. | 1 | █ |
+| Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_expanded_function_Range' | 1 | █ |
+| Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range' | 1 | █ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 10 (FLOAT16) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 26 (INT2) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 22 (INT4) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 25 (UINT2) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 21 (UINT4) for tensor 'output'. | 1 | █ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'. | 1 | █ |
 | Unsupported op Celu | 1 | █ |
-| Dynamic dim for CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input | 1 | █ |
-| Dynamic dim for CenterCropPad_test_center_crop_pad_crop_axes_chw_expanded_function_padded_input | 1 | █ |
-| Dynamic dim for CenterCropPad_test_center_crop_pad_crop_axes_hwc_expanded_function_padded_input | 1 | █ |
-| Dynamic dim for CenterCropPad_test_center_crop_pad_crop_expanded_function_padded_input | 1 | █ |
-| Dynamic dim for CenterCropPad_test_center_crop_pad_crop_negative_axes_hwc_expanded_function_padded_input | 1 | █ |
-| Dynamic dim for CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_int8_max_expanded_function_input_large_than_max. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_int8_min_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_max_expanded_function_input_large_than_max. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_default_min_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_example_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_inbounds_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_min_greater_than_max_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_outbounds_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Clip_test_clip_splitbounds_expanded_function_input_less_than_min. | 1 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for x. | 1 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for x. | 1 | █ |
-| Unsupported elem_type 26 (INT2) for x. | 1 | █ |
-| Unsupported elem_type 22 (INT4) for x. | 1 | █ |
-| Unsupported elem_type 25 (UINT2) for x. | 1 | █ |
-| Unsupported elem_type 21 (UINT4) for x. | 1 | █ |
+| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input' | 1 | █ |
+| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_chw_expanded_function_padded_input' | 1 | █ |
+| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_hwc_expanded_function_padded_input' | 1 | █ |
+| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_expanded_function_padded_input' | 1 | █ |
+| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_negative_axes_hwc_expanded_function_padded_input' | 1 | █ |
+| Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_int8_max_expanded_function_input_large_than_max'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_int8_min_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_max_expanded_function_input_large_than_max'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_default_min_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_example_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_inbounds_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_min_greater_than_max_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_outbounds_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Clip_test_clip_splitbounds_expanded_function_input_less_than_min'. | 1 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. | 1 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. | 1 | █ |
+| Unsupported elem_type 26 (INT2) for tensor 'x'. | 1 | █ |
+| Unsupported elem_type 22 (INT4) for tensor 'x'. | 1 | █ |
+| Unsupported elem_type 25 (UINT2) for tensor 'x'. | 1 | █ |
+| Unsupported elem_type 21 (UINT4) for tensor 'x'. | 1 | █ |
 | Unsupported op Det | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Elu_test_elu_default_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Elu_test_elu_example_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Elu_test_elu_expanded_function_XLessThanZero. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_default_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_example_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Elu_test_elu_expanded_function_XLessThanZero'. | 1 | █ |
 | Unsupported op Erf | 1 | █ |
 | Unsupported op EyeLike | 1 | █ |
-| Dynamic dim for GroupNormalization_test_group_normalization_epsilon_expanded_function_XReshaped | 1 | █ |
-| Dynamic dim for GroupNormalization_test_group_normalization_example_expanded_function_XReshaped | 1 | █ |
-| Dynamic dim for HammingWindow_test_hammingwindow_expanded_function_Range | 1 | █ |
-| Dynamic dim for HammingWindow_test_hammingwindow_symmetric_expanded_function_Range | 1 | █ |
-| Dynamic dim for HannWindow_test_hannwindow_expanded_function_Range | 1 | █ |
-| Dynamic dim for HannWindow_test_hannwindow_symmetric_expanded_function_Range | 1 | █ |
+| Dynamic dim for tensor 'GroupNormalization_test_group_normalization_epsilon_expanded_function_XReshaped' | 1 | █ |
+| Dynamic dim for tensor 'GroupNormalization_test_group_normalization_example_expanded_function_XReshaped' | 1 | █ |
+| Dynamic dim for tensor 'HammingWindow_test_hammingwindow_expanded_function_Range' | 1 | █ |
+| Dynamic dim for tensor 'HammingWindow_test_hammingwindow_symmetric_expanded_function_Range' | 1 | █ |
+| Dynamic dim for tensor 'HannWindow_test_hannwindow_expanded_function_Range' | 1 | █ |
+| Dynamic dim for tensor 'HannWindow_test_hannwindow_symmetric_expanded_function_Range' | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
-| Missing elem_type for opt_in | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for LeakyRelu_test_leakyrelu_default_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for LeakyRelu_test_leakyrelu_example_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for LeakyRelu_test_leakyrelu_expanded_function_XLessThanZero. | 1 | █ |
+| Missing elem_type for tensor 'opt_in' | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_default_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_example_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'LeakyRelu_test_leakyrelu_expanded_function_XLessThanZero'. | 1 | █ |
 | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) | 1 | █ |
 | MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) | 1 | █ |
 | MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) | 1 | █ |
 | MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,) | 1 | █ |
 | MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2) | 1 | █ |
-| Unsupported elem_type 2 (UINT8) for A. | 1 | █ |
+| Unsupported elem_type 2 (UINT8) for tensor 'A'. | 1 | █ |
 | Unsupported op Mish | 1 | █ |
 | Unsupported op MeanVarianceNormalization | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1_ii_expanded_function_mask. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1_mean_weight_negative_ii_expanded_function_mask. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1_weight_ii_expanded_function_mask. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded_function_mask. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded_function_mask. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded_function_mask. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded_function_mask. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_ii_expanded_function_mask'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_mean_weight_negative_ii_expanded_function_mask'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1_weight_ii_expanded_function_mask'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded_function_mask'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded_function_mask'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded_function_mask'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'NegativeLogLikelihoodLoss_test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded_function_mask'. | 1 | █ |
 | Mixed dtypes are not supported, got float, int32, int64 | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
-| Unsupported elem_type 12 (UINT32) for y. | 1 | █ |
-| Unsupported elem_type 13 (UINT64) for y. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for PRelu_test_prelu_broadcast_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for PRelu_test_prelu_example_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 26 (INT2) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 22 (INT4) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 4 (UINT16) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 25 (UINT2) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 21 (UINT4) for y_zero_point. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Range_test_range_float_type_positive_delta_expanded_function_ceil_result_relu_bool. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Range_test_range_int32_type_negative_delta_expanded_function_ceil_result_relu_bool. | 1 | █ |
-| Unsupported elem_type 11 (DOUBLE) for ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double. | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis0_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis1_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis_negative_1_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_2d_axis_negative_2_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis0_epsilon_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis1_epsilon_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis2_epsilon_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis_negative_1_epsilon_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis_negative_2_epsilon_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_3d_axis_negative_3_epsilon_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis0_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis1_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis2_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis3_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_1_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_2_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_3_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_4d_axis_negative_4_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RMSNormalization_test_rms_normalization_default_axis_expanded_function_ReduceAxes | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_XIn | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_expanded_function_CosCacheSliced | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_interleaved_expanded_function_CosCacheSliced | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_no_position_ids_expanded_function_CosCacheSliced | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_no_position_ids_interleaved_expanded_function_CosCacheSliced | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_no_position_ids_rotary_dim_expanded_function_CosCacheSliced | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced | 1 | █ |
-| Dynamic dim for RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced | 1 | █ |
+| Unsupported elem_type 12 (UINT32) for tensor 'y'. | 1 | █ |
+| Unsupported elem_type 13 (UINT64) for tensor 'y'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'PRelu_test_prelu_broadcast_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'PRelu_test_prelu_example_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 4 (UINT16) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Range_test_range_float_type_positive_delta_expanded_function_ceil_result_relu_bool'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Range_test_range_int32_type_negative_delta_expanded_function_ceil_result_relu_bool'. | 1 | █ |
+| Unsupported elem_type 11 (DOUBLE) for tensor 'ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double'. | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis0_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis1_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_1_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_2_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis0_epsilon_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis1_epsilon_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis2_epsilon_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_1_epsilon_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_2_epsilon_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_3_epsilon_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis0_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis1_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis2_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis3_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_1_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_2_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_3_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_4_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_default_axis_expanded_function_ReduceAxes' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_XIn' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_expanded_function_CosCacheSliced' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_interleaved_expanded_function_CosCacheSliced' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_expanded_function_CosCacheSliced' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_interleaved_expanded_function_CosCacheSliced' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_rotary_dim_expanded_function_CosCacheSliced' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced' | 1 | █ |
+| Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced' | 1 | █ |
 | Unsupported op Round | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Selu_test_selu_default_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Selu_test_selu_example_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Selu_test_selu_expanded_function_XLessThanZero. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Shrink_test_shrink_hard_expanded_function_InputLessThanNegLambda. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for Shrink_test_shrink_soft_expanded_function_InputLessThanNegLambda. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_default_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_example_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Selu_test_selu_expanded_function_XLessThanZero'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Shrink_test_shrink_hard_expanded_function_InputLessThanNegLambda'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'Shrink_test_shrink_soft_expanded_function_InputLessThanNegLambda'. | 1 | █ |
 | Unsupported op Swish | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for ThresholdedRelu_test_thresholdedrelu_default_expanded_function_AlphaLessThanX. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for ThresholdedRelu_test_thresholdedrelu_example_expanded_function_AlphaLessThanX. | 1 | █ |
-| Unsupported elem_type 9 (BOOL) for ThresholdedRelu_test_thresholdedrelu_expanded_function_AlphaLessThanX. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_default_expanded_function_AlphaLessThanX'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_example_expanded_function_AlphaLessThanX'. | 1 | █ |
+| Unsupported elem_type 9 (BOOL) for tensor 'ThresholdedRelu_test_thresholdedrelu_expanded_function_AlphaLessThanX'. | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
 | Unsupported op Slice | 1 | █ |
-| Dynamic dim for X | 1 | █ |
+| Dynamic dim for tensor 'X' | 1 | █ |
