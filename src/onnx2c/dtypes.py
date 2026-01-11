@@ -16,6 +16,9 @@ class DTypeInfo:
 
 ONNX_TO_DTYPE = {
     onnx.TensorProto.FLOAT: "float",
+    onnx.TensorProto.INT8: "int8",
+    onnx.TensorProto.INT16: "int16",
+    onnx.TensorProto.INT32: "int32",
     onnx.TensorProto.INT64: "int64",
 }
 
@@ -31,6 +34,24 @@ DTYPE_INFO = {
         name="int64",
         c_type="int64_t",
         np_dtype=np.dtype("int64"),
+        zero_literal="0",
+    ),
+    "int32": DTypeInfo(
+        name="int32",
+        c_type="int32_t",
+        np_dtype=np.dtype("int32"),
+        zero_literal="0",
+    ),
+    "int16": DTypeInfo(
+        name="int16",
+        c_type="int16_t",
+        np_dtype=np.dtype("int16"),
+        zero_literal="0",
+    ),
+    "int8": DTypeInfo(
+        name="int8",
+        c_type="int8_t",
+        np_dtype=np.dtype("int8"),
         zero_literal="0",
     ),
 }
