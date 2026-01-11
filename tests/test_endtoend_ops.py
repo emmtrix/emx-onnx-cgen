@@ -12,6 +12,8 @@ import pytest
 
 from onnx import TensorProto, helper
 
+from onnx2c.compiler import Compiler
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PROJECT_ROOT / "src"
 
@@ -173,6 +175,53 @@ def _make_conv_model() -> onnx.ModelProto:
     model.ir_version = 7
     onnx.checker.check_model(model)
     return model
+
+
+def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
+    input_shape = [2, 3, 2, 2]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    params = {
+        "scale": np.array([1.0, 1.5, -0.5], dtype=np.float32),
+        "bias": np.array([0.0, 0.1, -0.2], dtype=np.float32),
+        "mean": np.array([0.5, -0.5, 1.0], dtype=np.float32),
+        "var": np.array([0.25, 0.5, 1.5], dtype=np.float32),
+    }
+    initializers = []
+    for name, values in params.items():
+        initializers.append(
+            helper.make_tensor(
+                name,
+                TensorProto.FLOAT,
+                dims=values.shape,
+                vals=values.flatten().tolist(),
+            )
+        )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, input_shape
+    )
+    node = helper.make_node(
+        "BatchNormalization",
+        inputs=["in0", "scale", "bias", "mean", "var"],
+        outputs=[output.name],
+        epsilon=1e-5,
+    )
+    graph = helper.make_graph(
+        [node],
+        "batchnorm_graph",
+        [input_info],
+        [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model, params
 
 
 def _maxpool_output_shape(
@@ -693,6 +742,27 @@ def test_constant_of_shape_matches_onnxruntime() -> None:
 
 def test_conv_op_matches_onnxruntime() -> None:
     model = _make_conv_model()
+    _run_cli_verify(model)
+
+
+def test_batchnorm_run_matches_numpy() -> None:
+    model, params = _make_batchnorm_model()
+    compiler = Compiler()
+    input_data = np.arange(24, dtype=np.float32).reshape(2, 3, 2, 2)
+    outputs = compiler.run(model, {"in0": input_data})
+    output = outputs["out"]
+    epsilon = 1e-5
+    reshape_dims = (1, input_data.shape[1], 1, 1)
+    scale = params["scale"].reshape(reshape_dims)
+    bias = params["bias"].reshape(reshape_dims)
+    mean = params["mean"].reshape(reshape_dims)
+    var = params["var"].reshape(reshape_dims)
+    expected = (input_data - mean) / np.sqrt(var + epsilon) * scale + bias
+    np.testing.assert_allclose(output, expected, rtol=1e-5, atol=1e-6)
+
+
+def test_batchnorm_op_matches_onnxruntime() -> None:
+    model, _ = _make_batchnorm_model()
     _run_cli_verify(model)
 
 

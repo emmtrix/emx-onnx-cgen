@@ -20,8 +20,9 @@
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op Less | 18 | ████ |
 | Unsupported op GridSample | 18 | ████ |
+| Unsupported op Reshape | 17 | ███ |
 | Unsupported elem_type 12 (UINT32) for tensor '*'. | 17 | ███ |
-| Unsupported op Reshape | 16 | ███ |
+| Unsupported op Unsqueeze | 16 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
@@ -32,20 +33,19 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
-| Unsupported op Unsqueeze | 14 | ███ |
 | Unsupported op Clip | 13 | ███ |
 | Gemm must have 2 inputs and 1 output | 13 | ███ |
 | Conv expects 2D strides | 13 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported op ReduceMean | 12 | ██ |
-| Unsupported op BatchNormalization | 11 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
 | Unsupported op LogSoftmax | 10 | ██ |
 | Unsupported op ReduceMin | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
+| Conv supports group=1 only | 9 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
 | Unsupported op ReduceL1 | 9 | ██ |
 | Unsupported op ReduceL2 | 9 | ██ |
@@ -56,7 +56,6 @@
 | Unsupported op LpPool | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Slice | 8 | ██ |
-| Conv supports group=1 only | 8 | ██ |
 | Dynamic or zero dims are not supported | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
