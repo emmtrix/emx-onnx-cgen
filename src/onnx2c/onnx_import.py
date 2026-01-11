@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Iterable
 
 import onnx
-from onnx import helper, numpy_helper
+from onnx import helper, numpy_helper, shape_inference
 
 from .dtypes import ONNX_TO_DTYPE
 from .errors import ShapeInferenceError, UnsupportedOpError
@@ -70,9 +70,15 @@ def _node_attrs(node: onnx.NodeProto) -> dict[str, object]:
 
 
 def import_onnx(model: onnx.ModelProto) -> Graph:
+    try:
+        model = shape_inference.infer_shapes(model)
+    except Exception as exc:  # pragma: no cover - onnx inference errors
+        raise ShapeInferenceError("ONNX shape inference failed") from exc
     graph = model.graph
     initializers = tuple(_initializer(value) for value in graph.initializer)
     initializer_names = {initializer.name for initializer in initializers}
+    input_names = {value_info.name for value_info in graph.input}
+    output_names = {value_info.name for value_info in graph.output}
     nodes = tuple(
         Node(
             op_type=node.op_type,
@@ -86,9 +92,16 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
         value_info for value_info in graph.input if value_info.name not in initializer_names
     )
     outputs = _values(graph.output)
+    values = _values(
+        value_info
+        for value_info in graph.value_info
+        if value_info.name
+        not in initializer_names | input_names | output_names
+    )
     return Graph(
         inputs=inputs,
         outputs=outputs,
         nodes=nodes,
         initializers=initializers,
+        values=values,
     )
