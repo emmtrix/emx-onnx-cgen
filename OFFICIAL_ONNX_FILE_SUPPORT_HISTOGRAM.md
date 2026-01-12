@@ -48,7 +48,6 @@
 | ReduceMean axes input must be constant | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Slice | 8 | ██ |
-| '*' object has no attribute '*' | 7 | █ |
 | Dynamic or zero dims are not supported | 7 | █ |
 | Unsupported op GatherElements | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
