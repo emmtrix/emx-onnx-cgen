@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
+import subprocess
 from collections import Counter
 from pathlib import Path
 
@@ -1891,19 +1893,54 @@ def _collect_onnx_files(data_root: Path) -> list[str]:
     return sorted(p.relative_to(data_root).as_posix() for p in data_root.rglob("*.onnx"))
 
 
+def _maybe_init_onnx_org() -> None:
+    auto_init = os.getenv("ONNX_ORG_AUTO_INIT", "1").strip().lower()
+    if auto_init in {"0", "false", "no", "off"}:
+        return
+    repo_root = Path(__file__).resolve().parents[1]
+    if shutil.which("git") is None:
+        return
+    subprocess.run(
+        ["git", "submodule", "update", "--init", "--recursive", "onnx-org"],
+        cwd=repo_root,
+        check=False,
+    )
+    lfs_probe = subprocess.run(
+        ["git", "lfs", "version"],
+        cwd=repo_root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if lfs_probe.returncode != 0:
+        return
+    subprocess.run(
+        ["git", "lfs", "pull", "--include", "onnx/backend/test/data/**"],
+        cwd=repo_root / "onnx-org",
+        check=False,
+    )
+
+
 def _ensure_official_onnx_files_present(data_root: Path) -> None:
     if not data_root.exists():
-        raise AssertionError(
+        _maybe_init_onnx_org()
+    if not data_root.exists():
+        pytest.skip(
             "onnx-org test data is unavailable. Initialize the onnx-org submodule "
-            "and fetch its data files."
+            "and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
         )
     missing = [path for path in OFFICIAL_ONNX_FILES if not (data_root / path).exists()]
     if missing:
+        _maybe_init_onnx_org()
+        missing = [path for path in OFFICIAL_ONNX_FILES if not (data_root / path).exists()]
+        if not missing:
+            return
         preview = ", ".join(missing[:5])
         suffix = "..." if len(missing) > 5 else ""
-        raise AssertionError(
+        pytest.skip(
             "onnx-org test data is incomplete; missing files include: "
-            f"{preview}{suffix}. Initialize the submodule and fetch any LFS data."
+            f"{preview}{suffix}. Initialize the submodule and fetch any LFS data or "
+            "set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
         )
 
 
@@ -1957,6 +1994,13 @@ def test_official_onnx_expected_errors() -> None:
 
 @pytest.mark.order(after="test_official_onnx_expected_errors")
 def test_official_onnx_file_support_doc() -> None:
+    if not ONNX_VERSION_PATH.exists():
+        _maybe_init_onnx_org()
+    if not ONNX_VERSION_PATH.exists():
+        pytest.skip(
+            "onnx-org version metadata is unavailable. Initialize the onnx-org "
+            "submodule and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
+        )
     expectations = _load_official_onnx_file_expectations()
     expected_markdown = _render_official_onnx_file_support_markdown(expectations)
     expected_histogram = _render_error_histogram_markdown(expectations)
