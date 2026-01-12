@@ -59,57 +59,171 @@ def _format_float_literal(value: float, dtype: str) -> str:
     return formatted
 
 
+UNARY_SYMBOLS_BOOL = {
+    "Not": "!",
+}
+
+UNARY_SYMBOLS_INT64 = {
+    "Abs": "llabs",
+    "Neg": "neg",
+}
+
+UNARY_SYMBOLS_INT32 = {
+    "Abs": "abs",
+    "Neg": "neg",
+}
+
+UNARY_SYMBOLS_INT16 = {
+    "Abs": "abs",
+    "Neg": "neg",
+}
+
+UNARY_SYMBOLS_INT8 = {
+    "Abs": "abs",
+    "Neg": "neg",
+}
+
+UNARY_SYMBOLS_DOUBLE = {
+    "Abs": "fabs",
+    "Ceil": "ceil",
+    "Cos": "cos",
+    "Exp": "exp",
+    "Floor": "floor",
+    "Log": "log",
+    "Neg": "neg",
+    "Relu": "relu",
+    "Sin": "sin",
+    "Sqrt": "sqrt",
+    "Tan": "tan",
+    "Tanh": "tanh",
+    "Atanh": "atanh",
+}
+
+UNARY_SYMBOLS_FLOAT = {
+    "Abs": "fabsf",
+    "Ceil": "ceilf",
+    "Cos": "cosf",
+    "Exp": "expf",
+    "Floor": "floorf",
+    "Log": "logf",
+    "Neg": "neg",
+    "Relu": "relu",
+    "Sin": "sinf",
+    "Sqrt": "sqrtf",
+    "Tan": "tanf",
+    "Tanh": "tanhf",
+    "Atanh": "atanhf",
+}
+
+BINARY_SPECS_BOOL = {
+    "And": BinaryOpSpec("&&", "infix", lambda left, right: np.logical_and(left, right)),
+    "Or": BinaryOpSpec("||", "infix", lambda left, right: np.logical_or(left, right)),
+    "Xor": BinaryOpSpec("!=", "infix", lambda left, right: np.logical_xor(left, right)),
+}
+
+BINARY_SPECS_INT = {
+    "Add": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+    "Sub": BinaryOpSpec("-", "infix", lambda left, right: left - right),
+    "Mul": BinaryOpSpec("*", "infix", lambda left, right: left * right),
+    "Sum": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+}
+
+BINARY_SPECS_DOUBLE = {
+    "Add": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+    "Div": BinaryOpSpec("/", "infix", lambda left, right: left / right),
+    "Max": BinaryOpSpec("fmax", "func", np.maximum),
+    "Mean": BinaryOpSpec(
+        f"({{left}} + {{right}}) * {_format_float_literal(0.5, 'double')}",
+        "expr",
+        lambda left, right: (left + right) * 0.5,
+    ),
+    "Min": BinaryOpSpec("fmin", "func", np.minimum),
+    "Mul": BinaryOpSpec("*", "infix", lambda left, right: left * right),
+    "Pow": BinaryOpSpec("pow", "func", np.power),
+    "Sub": BinaryOpSpec("-", "infix", lambda left, right: left - right),
+    "Sum": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+}
+
+BINARY_SPECS_FLOAT = {
+    "Add": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+    "Div": BinaryOpSpec("/", "infix", lambda left, right: left / right),
+    "Max": BinaryOpSpec("fmaxf", "func", np.maximum),
+    "Mean": BinaryOpSpec(
+        f"({{left}} + {{right}}) * {_format_float_literal(0.5, 'float')}",
+        "expr",
+        lambda left, right: (left + right) * 0.5,
+    ),
+    "Min": BinaryOpSpec("fminf", "func", np.minimum),
+    "Mul": BinaryOpSpec("*", "infix", lambda left, right: left * right),
+    "Pow": BinaryOpSpec("powf", "func", np.power),
+    "Sub": BinaryOpSpec("-", "infix", lambda left, right: left - right),
+    "Sum": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+}
+
+UNARY_SYMBOLS_BY_DTYPE = {
+    "bool": UNARY_SYMBOLS_BOOL,
+    "int64": UNARY_SYMBOLS_INT64,
+    "int32": UNARY_SYMBOLS_INT32,
+    "int16": UNARY_SYMBOLS_INT16,
+    "int8": UNARY_SYMBOLS_INT8,
+    "double": UNARY_SYMBOLS_DOUBLE,
+    "float": UNARY_SYMBOLS_FLOAT,
+}
+
+BINARY_SPECS_BY_DTYPE = {
+    "bool": BINARY_SPECS_BOOL,
+    "int64": BINARY_SPECS_INT,
+    "int32": BINARY_SPECS_INT,
+    "int16": BINARY_SPECS_INT,
+    "int8": BINARY_SPECS_INT,
+    "uint64": BINARY_SPECS_INT,
+    "uint32": BINARY_SPECS_INT,
+    "uint16": BINARY_SPECS_INT,
+    "uint8": BINARY_SPECS_INT,
+    "double": BINARY_SPECS_DOUBLE,
+    "float": BINARY_SPECS_FLOAT,
+}
+
+UNARY_APPLY_FUNCS = {
+    "fabsf": np.abs,
+    "fabs": np.abs,
+    "abs": np.abs,
+    "llabs": np.abs,
+    "!": np.logical_not,
+    "ceilf": np.ceil,
+    "ceil": np.ceil,
+    "cosf": np.cos,
+    "cos": np.cos,
+    "expf": np.exp,
+    "exp": np.exp,
+    "floorf": np.floor,
+    "floor": np.floor,
+    "logf": np.log,
+    "log": np.log,
+    "neg": lambda value: -value,
+    "relu": lambda value: np.maximum(value, 0),
+    "sinf": np.sin,
+    "sin": np.sin,
+    "sqrtf": np.sqrt,
+    "sqrt": np.sqrt,
+    "tanf": np.tan,
+    "tan": np.tan,
+    "tanhf": np.tanh,
+    "tanh": np.tanh,
+    "atanhf": np.arctanh,
+    "atanh": np.arctanh,
+}
+
 def binary_op_symbol(
     op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: str
 ) -> BinaryOpSpec | None:
-    if dtype == "bool":
-        if op_type == "And":
-            return BinaryOpSpec(
-                "&&", "infix", lambda left, right: np.logical_and(left, right)
-            )
-        if op_type == "Or":
-            return BinaryOpSpec(
-                "||", "infix", lambda left, right: np.logical_or(left, right)
-            )
-        if op_type == "Xor":
-            return BinaryOpSpec(
-                "!=", "infix", lambda left, right: np.logical_xor(left, right)
-            )
+    specs = BINARY_SPECS_BY_DTYPE.get(dtype)
+    if specs is not None:
+        op_spec = specs.get(op_type)
+        if op_spec is not None:
+            return op_spec
+    if dtype not in {"float", "double"}:
         return None
-    if dtype in {
-        "int64",
-        "int32",
-        "int16",
-        "int8",
-        "uint64",
-        "uint32",
-        "uint16",
-        "uint8",
-    }:
-        if op_type in {"Add", "Sum"}:
-            return BinaryOpSpec("+", "infix", lambda left, right: left + right)
-        if op_type == "Sub":
-            return BinaryOpSpec("-", "infix", lambda left, right: left - right)
-        if op_type == "Mul":
-            return BinaryOpSpec("*", "infix", lambda left, right: left * right)
-        return None
-    if op_type == "Add":
-        return BinaryOpSpec("+", "infix", lambda left, right: left + right)
-    if op_type == "Div":
-        return BinaryOpSpec("/", "infix", lambda left, right: left / right)
-    if op_type == "Max":
-        func = "fmaxf" if dtype == "float" else "fmax"
-        return BinaryOpSpec(func, "func", np.maximum)
-    if op_type == "Mean":
-        mean_literal = _format_float_literal(0.5, dtype)
-        return BinaryOpSpec(
-            f"({{left}} + {{right}}) * {mean_literal}",
-            "expr",
-            lambda left, right: (left + right) * 0.5,
-        )
-    if op_type == "Min":
-        func = "fminf" if dtype == "float" else "fmin"
-        return BinaryOpSpec(func, "func", np.minimum)
     if op_type == "Mod":
         fmod = 0
         if attrs is not None:
@@ -120,11 +234,6 @@ def binary_op_symbol(
             )
         func = "fmodf" if dtype == "float" else "fmod"
         return BinaryOpSpec(func, "func", np.fmod)
-    if op_type == "Mul":
-        return BinaryOpSpec("*", "infix", lambda left, right: left * right)
-    if op_type == "Pow":
-        func = "powf" if dtype == "float" else "pow"
-        return BinaryOpSpec(func, "func", np.power)
     if op_type == "PRelu":
         zero_literal = _format_float_literal(0.0, dtype)
         return BinaryOpSpec(
@@ -132,79 +241,11 @@ def binary_op_symbol(
             "expr",
             lambda left, right: np.where(left > 0.0, left, right * left),
         )
-    if op_type == "Sub":
-        return BinaryOpSpec("-", "infix", lambda left, right: left - right)
-    if op_type == "Sum":
-        return BinaryOpSpec("+", "infix", lambda left, right: left + right)
     return None
 
 
 def unary_op_symbol(op_type: str, *, dtype: str) -> str | None:
-    if dtype == "bool":
-        if op_type == "Not":
-            return "!"
-        return None
-    if dtype in {"int64", "int32", "int16", "int8"}:
-        if op_type == "Abs":
-            return "llabs" if dtype == "int64" else "abs"
-        if op_type == "Neg":
-            return "neg"
-        return None
-    if dtype == "double":
-        if op_type == "Abs":
-            return "fabs"
-        if op_type == "Ceil":
-            return "ceil"
-        if op_type == "Cos":
-            return "cos"
-        if op_type == "Exp":
-            return "exp"
-        if op_type == "Floor":
-            return "floor"
-        if op_type == "Log":
-            return "log"
-        if op_type == "Neg":
-            return "neg"
-        if op_type == "Relu":
-            return "relu"
-        if op_type == "Sin":
-            return "sin"
-        if op_type == "Sqrt":
-            return "sqrt"
-        if op_type == "Tan":
-            return "tan"
-        if op_type == "Tanh":
-            return "tanh"
-        if op_type == "Atanh":
-            return "atanh"
-        return None
-    if op_type == "Abs":
-        return "fabsf"
-    if op_type == "Ceil":
-        return "ceilf"
-    if op_type == "Cos":
-        return "cosf"
-    if op_type == "Exp":
-        return "expf"
-    if op_type == "Floor":
-        return "floorf"
-    if op_type == "Log":
-        return "logf"
-    if op_type == "Neg":
-        return "neg"
-    if op_type == "Relu":
-        return "relu"
-    if op_type == "Sin":
-        return "sinf"
-    if op_type == "Sqrt":
-        return "sqrtf"
-    if op_type == "Tan":
-        return "tanf"
-    if op_type == "Tanh":
-        return "tanhf"
-    if op_type == "Atanh":
-        return "atanhf"
-    return None
+    return UNARY_SYMBOLS_BY_DTYPE.get(dtype, {}).get(op_type)
 
 
 def apply_binary_op(
@@ -214,36 +255,7 @@ def apply_binary_op(
 
 
 def apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
-    if op_symbol in {"fabsf", "fabs"}:
-        return np.abs(value)
-    if op_symbol == "abs":
-        return np.abs(value)
-    if op_symbol == "llabs":
-        return np.abs(value)
-    if op_symbol == "!":
-        return np.logical_not(value)
-    if op_symbol in {"ceilf", "ceil"}:
-        return np.ceil(value)
-    if op_symbol in {"cosf", "cos"}:
-        return np.cos(value)
-    if op_symbol in {"expf", "exp"}:
-        return np.exp(value)
-    if op_symbol in {"floorf", "floor"}:
-        return np.floor(value)
-    if op_symbol in {"logf", "log"}:
-        return np.log(value)
-    if op_symbol == "neg":
-        return -value
-    if op_symbol == "relu":
-        return np.maximum(value, 0)
-    if op_symbol in {"sinf", "sin"}:
-        return np.sin(value)
-    if op_symbol in {"sqrtf", "sqrt"}:
-        return np.sqrt(value)
-    if op_symbol in {"tanf", "tan"}:
-        return np.tan(value)
-    if op_symbol in {"tanhf", "tanh"}:
-        return np.tanh(value)
-    if op_symbol in {"atanhf", "atanh"}:
-        return np.arctanh(value)
+    func = UNARY_APPLY_FUNCS.get(op_symbol)
+    if func is not None:
+        return func(value)
     raise UnsupportedOpError(f"Unsupported unary op {op_symbol}")
