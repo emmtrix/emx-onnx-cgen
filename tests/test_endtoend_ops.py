@@ -209,6 +209,60 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _shape_output_shape(
+    input_shape: list[int], start: int | None, end: int | None
+) -> list[int]:
+    rank = len(input_shape)
+    start_index = 0 if start is None else start
+    end_index = rank if end is None else end
+    if start_index < 0:
+        start_index += rank
+    if end_index < 0:
+        end_index += rank
+    start_index = max(0, min(start_index, rank))
+    end_index = max(0, min(end_index, rank))
+    if end_index <= start_index:
+        raise ValueError("Shape start must be less than end")
+    return [end_index - start_index]
+
+
+def _make_shape_model(
+    *, input_shape: list[int], start: int | None = None, end: int | None = None, opset: int = 13
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output_shape = _shape_output_shape(input_shape, start, end)
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.INT64, output_shape
+    )
+    attrs: dict[str, object] = {}
+    if start is not None:
+        attrs["start"] = start
+    if end is not None:
+        attrs["end"] = end
+    node = helper.make_node(
+        "Shape",
+        inputs=["in0"],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "shape_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_resize_model() -> onnx.ModelProto:
     input_shape = [1, 1, 2, 2]
     output_shape = [1, 1, 4, 4]
@@ -1179,6 +1233,21 @@ def test_reshape_op_matches_onnxruntime() -> None:
 
 def test_resize_op_matches_onnxruntime() -> None:
     model = _make_resize_model()
+    _run_cli_verify(model)
+
+
+def test_shape_op_matches_onnxruntime() -> None:
+    model = _make_shape_model(input_shape=[2, 3, 4])
+    _run_cli_verify(model)
+
+
+def test_shape_slice_op_matches_onnxruntime() -> None:
+    model = _make_shape_model(
+        input_shape=[2, 3, 4, 5],
+        start=1,
+        end=3,
+        opset=15,
+    )
     _run_cli_verify(model)
 
 

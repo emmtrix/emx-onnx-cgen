@@ -6,6 +6,7 @@ from .c_emitter import (
     GemmOp,
     LoweredModel,
     MatMulOp,
+    ShapeOp,
     UnaryOp,
 )
 
@@ -17,5 +18,6 @@ __all__ = [
     "GemmOp",
     "LoweredModel",
     "MatMulOp",
+    "ShapeOp",
     "UnaryOp",
 ]
