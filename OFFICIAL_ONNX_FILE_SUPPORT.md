@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 507 / 1802 official ONNX files.
+Support 511 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -900,10 +900,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_lppool_3d_default/model.onnx | ❌ | Unsupported op LpPool |
 | node/test_lrn/model.onnx | ✅ |  |
 | node/test_lrn_default/model.onnx | ✅ |  |
-| node/test_lstm_batchwise/model.onnx | ❌ | Unsupported op LSTM |
-| node/test_lstm_defaults/model.onnx | ❌ | Unsupported op LSTM |
-| node/test_lstm_with_initial_bias/model.onnx | ❌ | Unsupported op LSTM |
-| node/test_lstm_with_peepholes/model.onnx | ❌ | Unsupported op LSTM |
+| node/test_lstm_batchwise/model.onnx | ✅ |  |
+| node/test_lstm_defaults/model.onnx | ✅ |  |
+| node/test_lstm_with_initial_bias/model.onnx | ✅ |  |
+| node/test_lstm_with_peepholes/model.onnx | ✅ |  |
 | node/test_matmul_1d_1d/model.onnx | ❌ | MatMul supports 2D inputs only, got (3,) x (3,) |
 | node/test_matmul_1d_3d/model.onnx | ❌ | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) |
 | node/test_matmul_2d/model.onnx | ✅ |  |

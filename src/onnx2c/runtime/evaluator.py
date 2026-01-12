@@ -17,6 +17,7 @@ from ..lowering.conv import resolve_conv_spec
 from ..lowering.dropout import lower_dropout
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
+from ..lowering.lstm import ACTIVATION_KIND_BY_NAME, resolve_lstm_spec
 from ..lowering.lrn import resolve_lrn_spec
 from ..lowering.matmul import lower_matmul
 from ..lowering.maxpool import resolve_maxpool_spec
@@ -160,6 +161,77 @@ def _eval_attention(evaluator: Evaluator, node: Node) -> None:
         evaluator.values[present_value_name] = present_value
     if qk_matmul_output_name is not None:
         evaluator.values[qk_matmul_output_name] = qk_output
+
+
+def _apply_lstm_activation(
+    kind: int, value: np.ndarray, alpha: float, beta: float
+) -> np.ndarray:
+    if kind == ACTIVATION_KIND_BY_NAME["Relu"]:
+        return np.maximum(value, 0)
+    if kind == ACTIVATION_KIND_BY_NAME["Tanh"]:
+        return np.tanh(value)
+    if kind == ACTIVATION_KIND_BY_NAME["Sigmoid"]:
+        return 1 / (1 + np.exp(-value))
+    if kind == ACTIVATION_KIND_BY_NAME["Affine"]:
+        return alpha * value + beta
+    if kind == ACTIVATION_KIND_BY_NAME["LeakyRelu"]:
+        return np.where(value < 0, alpha * value, value)
+    if kind == ACTIVATION_KIND_BY_NAME["ThresholdedRelu"]:
+        return np.where(value > alpha, value, 0)
+    if kind == ACTIVATION_KIND_BY_NAME["ScaledTanh"]:
+        return alpha * np.tanh(beta * value)
+    if kind == ACTIVATION_KIND_BY_NAME["HardSigmoid"]:
+        return np.clip(alpha * value + beta, 0, 1)
+    if kind == ACTIVATION_KIND_BY_NAME["Elu"]:
+        return np.where(value >= 0, value, alpha * (np.exp(value) - 1))
+    if kind == ACTIVATION_KIND_BY_NAME["Softsign"]:
+        return value / (1 + np.abs(value))
+    if kind == ACTIVATION_KIND_BY_NAME["Softplus"]:
+        return np.log1p(np.exp(value))
+    raise UnsupportedOpError(f"Unsupported LSTM activation kind {kind}")
+
+
+@register_evaluator("LSTM")
+def _eval_lstm(evaluator: Evaluator, node: Node) -> None:
+    spec = resolve_lstm_spec(evaluator.graph, node)
+    inputs = evaluator.values
+    x = inputs[spec.input_x]
+    w = inputs[spec.input_w]
+    r = inputs[spec.input_r]
+    b = inputs[spec.input_b] if spec.input_b is not None else None
+    sequence_lens = (
+        inputs[spec.input_sequence_lens]
+        if spec.input_sequence_lens is not None
+        else None
+    )
+    initial_h = (
+        inputs[spec.input_initial_h]
+        if spec.input_initial_h is not None
+        else None
+    )
+    initial_c = (
+        inputs[spec.input_initial_c]
+        if spec.input_initial_c is not None
+        else None
+    )
+    p = inputs[spec.input_p] if spec.input_p is not None else None
+    output_y, output_y_h, output_y_c = _apply_lstm(
+        spec,
+        x,
+        w,
+        r,
+        b,
+        sequence_lens,
+        initial_h,
+        initial_c,
+        p,
+    )
+    if spec.output_y is not None:
+        evaluator.values[spec.output_y] = output_y
+    if spec.output_y_h is not None:
+        evaluator.values[spec.output_y_h] = output_y_h
+    if spec.output_y_c is not None:
+        evaluator.values[spec.output_y_c] = output_y_c
 
 
 @register_evaluator("Conv")
@@ -659,3 +731,113 @@ def _apply_maxpool(spec, data: np.ndarray) -> np.ndarray:
                         max_value = value
                 output[(n, c, *out_index)] = max_value
     return output
+
+
+def _apply_lstm(
+    spec,
+    x: np.ndarray,
+    w: np.ndarray,
+    r: np.ndarray,
+    b: np.ndarray | None,
+    sequence_lens: np.ndarray | None,
+    initial_h: np.ndarray | None,
+    initial_c: np.ndarray | None,
+    p: np.ndarray | None,
+) -> tuple[np.ndarray | None, np.ndarray | None, np.ndarray | None]:
+    if spec.layout == 1:
+        x = np.swapaxes(x, 0, 1)
+    seq_length = spec.seq_length
+    batch_size = spec.batch_size
+    hidden_size = spec.hidden_size
+    num_directions = spec.num_directions
+    if sequence_lens is None:
+        sequence_lens = np.full((batch_size,), seq_length, dtype=np.int64)
+    else:
+        sequence_lens = sequence_lens.astype(np.int64, copy=False)
+    if b is None:
+        b = np.zeros((num_directions, 8 * hidden_size), dtype=x.dtype)
+    if p is None:
+        p = np.zeros((num_directions, 3 * hidden_size), dtype=x.dtype)
+    if initial_h is None:
+        initial_h = np.zeros((num_directions, batch_size, hidden_size), dtype=x.dtype)
+    if initial_c is None:
+        initial_c = np.zeros((num_directions, batch_size, hidden_size), dtype=x.dtype)
+    output_y = None
+    if spec.output_y is not None:
+        output_y = np.zeros(
+            (seq_length, num_directions, batch_size, hidden_size), dtype=x.dtype
+        )
+    output_y_h = (
+        np.zeros((num_directions, batch_size, hidden_size), dtype=x.dtype)
+        if spec.output_y_h is not None
+        else None
+    )
+    output_y_c = (
+        np.zeros((num_directions, batch_size, hidden_size), dtype=x.dtype)
+        if spec.output_y_c is not None
+        else None
+    )
+    directions = (
+        ("forward", "reverse")
+        if spec.direction == "bidirectional"
+        else (spec.direction,)
+    )
+    for dir_index, dir_kind in enumerate(directions):
+        w_dir = w[dir_index]
+        r_dir = r[dir_index]
+        b_dir = b[dir_index]
+        bias = b_dir[: 4 * hidden_size] + b_dir[4 * hidden_size :]
+        p_dir = p[dir_index]
+        p_i = p_dir[:hidden_size]
+        p_o = p_dir[hidden_size : 2 * hidden_size]
+        p_f = p_dir[2 * hidden_size :]
+        h_prev = initial_h[dir_index].copy()
+        c_prev = initial_c[dir_index].copy()
+        act_offset = dir_index * 3
+        act_f = spec.activation_kinds[act_offset]
+        act_g = spec.activation_kinds[act_offset + 1]
+        act_h = spec.activation_kinds[act_offset + 2]
+        alpha_f = spec.activation_alphas[act_offset]
+        alpha_g = spec.activation_alphas[act_offset + 1]
+        alpha_h = spec.activation_alphas[act_offset + 2]
+        beta_f = spec.activation_betas[act_offset]
+        beta_g = spec.activation_betas[act_offset + 1]
+        beta_h = spec.activation_betas[act_offset + 2]
+        for step in range(seq_length):
+            t_index = step if dir_kind == "forward" else seq_length - 1 - step
+            x_t = x[t_index]
+            gates = x_t @ w_dir.T + h_prev @ r_dir.T + bias
+            if spec.clip is not None and spec.clip > 0:
+                gates = np.clip(gates, -spec.clip, spec.clip)
+            i, o, f, c = np.split(gates, 4, axis=1)
+            i = _apply_lstm_activation(act_f, i + p_i * c_prev, alpha_f, beta_f)
+            if spec.input_forget:
+                f = 1 - i
+            else:
+                f = _apply_lstm_activation(
+                    act_f, f + p_f * c_prev, alpha_f, beta_f
+                )
+            c_tilde = _apply_lstm_activation(act_g, c, alpha_g, beta_g)
+            c_new = f * c_prev + i * c_tilde
+            o = _apply_lstm_activation(act_f, o + p_o * c_new, alpha_f, beta_f)
+            h_new = o * _apply_lstm_activation(act_h, c_new, alpha_h, beta_h)
+            active_mask = step < sequence_lens
+            if not np.all(active_mask):
+                h_new = np.where(active_mask[:, None], h_new, h_prev)
+                c_new = np.where(active_mask[:, None], c_new, c_prev)
+                if output_y is not None:
+                    output_y[step, dir_index] = np.where(
+                        active_mask[:, None], h_new, 0
+                    )
+            else:
+                if output_y is not None:
+                    output_y[step, dir_index] = h_new
+            h_prev = h_new
+            c_prev = c_new
+        if output_y_h is not None:
+            output_y_h[dir_index] = h_prev
+        if output_y_c is not None:
+            output_y_c[dir_index] = c_prev
+    if output_y is not None and spec.layout == 1:
+        output_y = np.transpose(output_y, (2, 0, 1, 3))
+    return output_y, output_y_h, output_y_c

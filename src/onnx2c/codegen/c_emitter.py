@@ -210,6 +210,35 @@ class LrnOp:
 
 
 @dataclass(frozen=True)
+class LstmOp:
+    input_x: str
+    input_w: str
+    input_r: str
+    input_b: str | None
+    input_sequence_lens: str | None
+    input_initial_h: str | None
+    input_initial_c: str | None
+    input_p: str | None
+    output_y: str | None
+    output_y_h: str | None
+    output_y_c: str | None
+    seq_length: int
+    batch_size: int
+    input_size: int
+    hidden_size: int
+    num_directions: int
+    direction: str
+    layout: int
+    input_forget: int
+    clip: float | None
+    activation_kinds: tuple[int, ...]
+    activation_alphas: tuple[float, ...]
+    activation_betas: tuple[float, ...]
+    dtype: str
+    sequence_lens_dtype: str | None
+
+
+@dataclass(frozen=True)
 class MaxPoolOp:
     input0: str
     output: str
@@ -356,6 +385,7 @@ class LoweredModel:
         | AveragePoolOp
         | BatchNormOp
         | LrnOp
+        | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
         | MaxPoolOp
@@ -390,6 +420,7 @@ class CEmitter:
             avg_pool_template = self._env.get_template("average_pool_op.c.j2")
             batch_norm_template = self._env.get_template("batch_norm_op.c.j2")
             lrn_template = self._env.get_template("lrn_op.c.j2")
+            lstm_template = self._env.get_template("lstm_op.c.j2")
             softmax_template = self._env.get_template("softmax_op.c.j2")
             logsoftmax_template = self._env.get_template("logsoftmax_op.c.j2")
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
@@ -434,6 +465,7 @@ class CEmitter:
                 avg_pool_template=avg_pool_template,
                 batch_norm_template=batch_norm_template,
                 lrn_template=lrn_template,
+                lstm_template=lstm_template,
                 softmax_template=softmax_template,
                 logsoftmax_template=logsoftmax_template,
                 maxpool_template=maxpool_template,
@@ -487,6 +519,7 @@ class CEmitter:
             avg_pool_template = self._env.get_template("average_pool_op.c.j2")
             batch_norm_template = self._env.get_template("batch_norm_op.c.j2")
             lrn_template = self._env.get_template("lrn_op.c.j2")
+            lstm_template = self._env.get_template("lstm_op.c.j2")
             softmax_template = self._env.get_template("softmax_op.c.j2")
             logsoftmax_template = self._env.get_template("logsoftmax_op.c.j2")
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
@@ -531,6 +564,7 @@ class CEmitter:
                 avg_pool_template=avg_pool_template,
                 batch_norm_template=batch_norm_template,
                 lrn_template=lrn_template,
+                lstm_template=lstm_template,
                 softmax_template=softmax_template,
                 logsoftmax_template=logsoftmax_template,
                 maxpool_template=maxpool_template,
@@ -624,6 +658,7 @@ class CEmitter:
             | AveragePoolOp
             | BatchNormOp
             | LrnOp
+            | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
             | MaxPoolOp
@@ -715,6 +750,9 @@ class CEmitter:
         if any(isinstance(op, LrnOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
+        if any(isinstance(op, LstmOp) for op in resolved_ops):
+            if "#include <math.h>" not in includes:
+                includes.append("#include <math.h>")
         if any(isinstance(op, SoftmaxOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
@@ -787,6 +825,7 @@ class CEmitter:
             | AveragePoolOp
             | BatchNormOp
             | LrnOp
+            | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
             | MaxPoolOp
@@ -856,6 +895,25 @@ class CEmitter:
                     f"{op.input0}, {op.scale}, {op.bias}, "
                     f"{op.mean}, {op.variance}, {op.output}"
                 )
+            elif isinstance(op, LstmOp):
+                call_parts = [op.input_x, op.input_w, op.input_r]
+                if op.input_b is not None:
+                    call_parts.append(op.input_b)
+                if op.input_sequence_lens is not None:
+                    call_parts.append(op.input_sequence_lens)
+                if op.input_initial_h is not None:
+                    call_parts.append(op.input_initial_h)
+                if op.input_initial_c is not None:
+                    call_parts.append(op.input_initial_c)
+                if op.input_p is not None:
+                    call_parts.append(op.input_p)
+                if op.output_y is not None:
+                    call_parts.append(op.output_y)
+                if op.output_y_h is not None:
+                    call_parts.append(op.output_y_h)
+                if op.output_y_c is not None:
+                    call_parts.append(op.output_y_c)
+                call = ", ".join(call_parts)
             elif isinstance(op, (SoftmaxOp, LogSoftmaxOp)):
                 call = f"{op.input0}, {op.output}"
             elif isinstance(op, ConcatOp):
@@ -911,6 +969,7 @@ class CEmitter:
         | AveragePoolOp
         | BatchNormOp
         | LrnOp
+        | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
         | MaxPoolOp
@@ -932,6 +991,7 @@ class CEmitter:
         | AveragePoolOp
         | BatchNormOp
         | LrnOp
+        | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
         | MaxPoolOp
@@ -1057,6 +1117,66 @@ class CEmitter:
                 mask_kv_seq=op.mask_kv_seq,
                 head_group_size=op.head_group_size,
                 dtype=op.dtype,
+            )
+        if isinstance(op, LstmOp):
+            return LstmOp(
+                input_x=temp_map.get(op.input_x, op.input_x),
+                input_w=temp_map.get(op.input_w, op.input_w),
+                input_r=temp_map.get(op.input_r, op.input_r),
+                input_b=(
+                    temp_map.get(op.input_b, op.input_b)
+                    if op.input_b is not None
+                    else None
+                ),
+                input_sequence_lens=(
+                    temp_map.get(op.input_sequence_lens, op.input_sequence_lens)
+                    if op.input_sequence_lens is not None
+                    else None
+                ),
+                input_initial_h=(
+                    temp_map.get(op.input_initial_h, op.input_initial_h)
+                    if op.input_initial_h is not None
+                    else None
+                ),
+                input_initial_c=(
+                    temp_map.get(op.input_initial_c, op.input_initial_c)
+                    if op.input_initial_c is not None
+                    else None
+                ),
+                input_p=(
+                    temp_map.get(op.input_p, op.input_p)
+                    if op.input_p is not None
+                    else None
+                ),
+                output_y=(
+                    temp_map.get(op.output_y, op.output_y)
+                    if op.output_y is not None
+                    else None
+                ),
+                output_y_h=(
+                    temp_map.get(op.output_y_h, op.output_y_h)
+                    if op.output_y_h is not None
+                    else None
+                ),
+                output_y_c=(
+                    temp_map.get(op.output_y_c, op.output_y_c)
+                    if op.output_y_c is not None
+                    else None
+                ),
+                seq_length=op.seq_length,
+                batch_size=op.batch_size,
+                input_size=op.input_size,
+                hidden_size=op.hidden_size,
+                num_directions=op.num_directions,
+                direction=op.direction,
+                layout=op.layout,
+                input_forget=op.input_forget,
+                clip=op.clip,
+                activation_kinds=op.activation_kinds,
+                activation_alphas=op.activation_alphas,
+                activation_betas=op.activation_betas,
+                dtype=op.dtype,
+                sequence_lens_dtype=op.sequence_lens_dtype,
             )
         if isinstance(op, ConvOp):
             return ConvOp(
@@ -1276,6 +1396,7 @@ class CEmitter:
         | AveragePoolOp
         | BatchNormOp
         | LrnOp
+        | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
         | MaxPoolOp
@@ -1305,6 +1426,7 @@ class CEmitter:
         avg_pool_template,
         batch_norm_template,
         lrn_template,
+        lstm_template,
         softmax_template,
         logsoftmax_template,
         maxpool_template,
@@ -1680,6 +1802,105 @@ class CEmitter:
                 beta_literal=CEmitter._format_floating(op.beta, op.dtype),
                 bias_literal=CEmitter._format_floating(op.bias, op.dtype),
                 pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
+            ).rstrip()
+        if isinstance(op, LstmOp):
+            input_x_shape = (
+                (op.seq_length, op.batch_size, op.input_size)
+                if op.layout == 0
+                else (op.batch_size, op.seq_length, op.input_size)
+            )
+            w_shape = (op.num_directions, 4 * op.hidden_size, op.input_size)
+            r_shape = (op.num_directions, 4 * op.hidden_size, op.hidden_size)
+            b_shape = (
+                (op.num_directions, 8 * op.hidden_size)
+                if op.input_b is not None
+                else None
+            )
+            seq_shape = (op.batch_size,) if op.input_sequence_lens is not None else None
+            h_shape = (
+                (op.num_directions, op.batch_size, op.hidden_size)
+                if op.input_initial_h is not None
+                else None
+            )
+            c_shape = (
+                (op.num_directions, op.batch_size, op.hidden_size)
+                if op.input_initial_c is not None
+                else None
+            )
+            p_shape = (
+                (op.num_directions, 3 * op.hidden_size)
+                if op.input_p is not None
+                else None
+            )
+            y_shape = (
+                (op.seq_length, op.num_directions, op.batch_size, op.hidden_size)
+                if op.layout == 0
+                else (op.batch_size, op.seq_length, op.num_directions, op.hidden_size)
+            )
+            return lstm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input_x=op.input_x,
+                input_w=op.input_w,
+                input_r=op.input_r,
+                input_b=op.input_b,
+                input_sequence_lens=op.input_sequence_lens,
+                input_initial_h=op.input_initial_h,
+                input_initial_c=op.input_initial_c,
+                input_p=op.input_p,
+                output_y=op.output_y,
+                output_y_h=op.output_y_h,
+                output_y_c=op.output_y_c,
+                c_type=c_type,
+                seq_c_type=dtype_info(op.sequence_lens_dtype or "int64").c_type,
+                zero_literal=zero_literal,
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+                clip_literal=(
+                    CEmitter._format_floating(op.clip, op.dtype)
+                    if op.clip is not None
+                    else CEmitter._format_literal(op.dtype, 0)
+                ),
+                use_clip=int(op.clip is not None and op.clip > 0),
+                input_suffix=CEmitter._array_suffix(input_x_shape),
+                w_suffix=CEmitter._array_suffix(w_shape),
+                r_suffix=CEmitter._array_suffix(r_shape),
+                b_suffix=CEmitter._array_suffix(b_shape) if b_shape else None,
+                seq_suffix=CEmitter._array_suffix(seq_shape) if seq_shape else None,
+                h_suffix=CEmitter._array_suffix(h_shape) if h_shape else None,
+                c_suffix=CEmitter._array_suffix(c_shape) if c_shape else None,
+                p_suffix=CEmitter._array_suffix(p_shape) if p_shape else None,
+                y_suffix=CEmitter._array_suffix(y_shape) if op.output_y else None,
+                y_h_suffix=(
+                    CEmitter._array_suffix((op.num_directions, op.batch_size, op.hidden_size))
+                    if op.output_y_h
+                    else None
+                ),
+                y_c_suffix=(
+                    CEmitter._array_suffix((op.num_directions, op.batch_size, op.hidden_size))
+                    if op.output_y_c
+                    else None
+                ),
+                seq_length=op.seq_length,
+                batch_size=op.batch_size,
+                input_size=op.input_size,
+                hidden_size=op.hidden_size,
+                num_directions=op.num_directions,
+                layout=op.layout,
+                direction=op.direction,
+                input_forget=op.input_forget,
+                activation_kinds=op.activation_kinds,
+                activation_alphas=tuple(
+                    CEmitter._format_floating(value, op.dtype)
+                    for value in op.activation_alphas
+                ),
+                activation_betas=tuple(
+                    CEmitter._format_floating(value, op.dtype)
+                    for value in op.activation_betas
+                ),
+                exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
+                tanh_fn=CEmitter._math_fn(op.dtype, "tanhf", "tanh"),
+                log1p_fn=CEmitter._math_fn(op.dtype, "log1pf", "log1p"),
+                fabs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
             ).rstrip()
         if isinstance(op, SoftmaxOp):
             return softmax_template.render(
@@ -2070,6 +2291,7 @@ class CEmitter:
         | AveragePoolOp
         | BatchNormOp
         | LrnOp
+        | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
         | MaxPoolOp
@@ -2094,6 +2316,7 @@ class CEmitter:
         | AveragePoolOp
         | BatchNormOp
         | LrnOp
+        | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
         | MaxPoolOp
@@ -2132,6 +2355,41 @@ class CEmitter:
                         (op.batch, op.q_heads, op.q_seq, op.total_seq),
                         op.dtype,
                     )
+            )
+            return tuple(outputs)
+        if isinstance(op, LstmOp):
+            outputs: list[tuple[str, tuple[int, ...], str]] = []
+            if op.output_y is not None:
+                if op.layout == 0:
+                    y_shape = (
+                        op.seq_length,
+                        op.num_directions,
+                        op.batch_size,
+                        op.hidden_size,
+                    )
+                else:
+                    y_shape = (
+                        op.batch_size,
+                        op.seq_length,
+                        op.num_directions,
+                        op.hidden_size,
+                    )
+                outputs.append((op.output_y, y_shape, op.dtype))
+            if op.output_y_h is not None:
+                outputs.append(
+                    (
+                        op.output_y_h,
+                        (op.num_directions, op.batch_size, op.hidden_size),
+                        op.dtype,
+                    )
+                )
+            if op.output_y_c is not None:
+                outputs.append(
+                    (
+                        op.output_y_c,
+                        (op.num_directions, op.batch_size, op.hidden_size),
+                        op.dtype,
+                    )
                 )
             return tuple(outputs)
         return ((op.output, CEmitter._op_output_shape(op), op.dtype),)
@@ -2147,6 +2405,7 @@ class CEmitter:
         | AveragePoolOp
         | BatchNormOp
         | LrnOp
+        | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
         | MaxPoolOp
