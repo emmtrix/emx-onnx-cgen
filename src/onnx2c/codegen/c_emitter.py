@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
 from ..errors import CodegenError
 from ..dtypes import dtype_info
@@ -490,44 +490,69 @@ class CEmitter:
         )
         self._restrict_arrays = restrict_arrays
 
-    def emit_model(self, model: LoweredModel, *, emit_testbench: bool = False) -> str:
+    def _load_templates(self, emit_testbench: bool) -> dict[str, Template]:
         try:
-            binary_template = self._env.get_template("binary_op.c.j2")
-            unary_template = self._env.get_template("unary_op.c.j2")
-            matmul_template = self._env.get_template("matmul_op.c.j2")
-            gemm_template = self._env.get_template("gemm_op.c.j2")
-            attention_template = self._env.get_template("attention_op.c.j2")
-            conv_template = self._env.get_template("conv_op.c.j2")
-            avg_pool_template = self._env.get_template("average_pool_op.c.j2")
-            batch_norm_template = self._env.get_template("batch_norm_op.c.j2")
-            lrn_template = self._env.get_template("lrn_op.c.j2")
-            lstm_template = self._env.get_template("lstm_op.c.j2")
-            softmax_template = self._env.get_template("softmax_op.c.j2")
-            logsoftmax_template = self._env.get_template("logsoftmax_op.c.j2")
-            nllloss_template = self._env.get_template(
-                "negative_log_likelihood_loss_op.c.j2"
-            )
-            softmax_cross_entropy_loss_template = self._env.get_template(
-                "softmax_cross_entropy_loss_op.c.j2"
-            )
-            softmax_cross_entropy_loss_template = self._env.get_template(
-                "softmax_cross_entropy_loss_op.c.j2"
-            )
-            maxpool_template = self._env.get_template("maxpool_op.c.j2")
-            concat_template = self._env.get_template("concat_op.c.j2")
-            transpose_template = self._env.get_template("transpose_op.c.j2")
-            reshape_template = self._env.get_template("reshape_op.c.j2")
-            resize_template = self._env.get_template("resize_op.c.j2")
-            reduce_template = self._env.get_template("reduce_op.c.j2")
-            constant_of_shape_template = self._env.get_template(
-                "constant_of_shape_op.c.j2"
-            )
-            shape_template = self._env.get_template("shape_op.c.j2")
-            testbench_template = None
+            templates = {
+                "binary": self._env.get_template("binary_op.c.j2"),
+                "unary": self._env.get_template("unary_op.c.j2"),
+                "matmul": self._env.get_template("matmul_op.c.j2"),
+                "gemm": self._env.get_template("gemm_op.c.j2"),
+                "attention": self._env.get_template("attention_op.c.j2"),
+                "conv": self._env.get_template("conv_op.c.j2"),
+                "avg_pool": self._env.get_template("average_pool_op.c.j2"),
+                "batch_norm": self._env.get_template("batch_norm_op.c.j2"),
+                "lrn": self._env.get_template("lrn_op.c.j2"),
+                "lstm": self._env.get_template("lstm_op.c.j2"),
+                "softmax": self._env.get_template("softmax_op.c.j2"),
+                "logsoftmax": self._env.get_template("logsoftmax_op.c.j2"),
+                "nllloss": self._env.get_template(
+                    "negative_log_likelihood_loss_op.c.j2"
+                ),
+                "softmax_cross_entropy_loss": self._env.get_template(
+                    "softmax_cross_entropy_loss_op.c.j2"
+                ),
+                "maxpool": self._env.get_template("maxpool_op.c.j2"),
+                "concat": self._env.get_template("concat_op.c.j2"),
+                "transpose": self._env.get_template("transpose_op.c.j2"),
+                "reshape": self._env.get_template("reshape_op.c.j2"),
+                "resize": self._env.get_template("resize_op.c.j2"),
+                "reduce": self._env.get_template("reduce_op.c.j2"),
+                "constant_of_shape": self._env.get_template(
+                    "constant_of_shape_op.c.j2"
+                ),
+                "shape": self._env.get_template("shape_op.c.j2"),
+            }
             if emit_testbench:
-                testbench_template = self._env.get_template("testbench.c.j2")
+                templates["testbench"] = self._env.get_template("testbench.c.j2")
         except Exception as exc:  # pragma: no cover - template load failure
             raise CodegenError("Failed to load C template") from exc
+        return templates
+
+    def emit_model(self, model: LoweredModel, *, emit_testbench: bool = False) -> str:
+        templates = self._load_templates(emit_testbench)
+        binary_template = templates["binary"]
+        unary_template = templates["unary"]
+        matmul_template = templates["matmul"]
+        gemm_template = templates["gemm"]
+        attention_template = templates["attention"]
+        conv_template = templates["conv"]
+        avg_pool_template = templates["avg_pool"]
+        batch_norm_template = templates["batch_norm"]
+        lrn_template = templates["lrn"]
+        lstm_template = templates["lstm"]
+        softmax_template = templates["softmax"]
+        logsoftmax_template = templates["logsoftmax"]
+        nllloss_template = templates["nllloss"]
+        softmax_cross_entropy_loss_template = templates["softmax_cross_entropy_loss"]
+        maxpool_template = templates["maxpool"]
+        concat_template = templates["concat"]
+        transpose_template = templates["transpose"]
+        reshape_template = templates["reshape"]
+        resize_template = templates["resize"]
+        reduce_template = templates["reduce"]
+        constant_of_shape_template = templates["constant_of_shape"]
+        shape_template = templates["shape"]
+        testbench_template = templates.get("testbench")
         temp_buffers = self._temp_buffers(model)
         temp_name_map = {
             original: buffer.name for original, buffer in temp_buffers.items()
@@ -601,40 +626,30 @@ class CEmitter:
     def emit_model_with_data_file(
         self, model: LoweredModel, *, emit_testbench: bool = False
     ) -> tuple[str, str]:
-        try:
-            binary_template = self._env.get_template("binary_op.c.j2")
-            unary_template = self._env.get_template("unary_op.c.j2")
-            matmul_template = self._env.get_template("matmul_op.c.j2")
-            gemm_template = self._env.get_template("gemm_op.c.j2")
-            attention_template = self._env.get_template("attention_op.c.j2")
-            conv_template = self._env.get_template("conv_op.c.j2")
-            avg_pool_template = self._env.get_template("average_pool_op.c.j2")
-            batch_norm_template = self._env.get_template("batch_norm_op.c.j2")
-            lrn_template = self._env.get_template("lrn_op.c.j2")
-            lstm_template = self._env.get_template("lstm_op.c.j2")
-            softmax_template = self._env.get_template("softmax_op.c.j2")
-            logsoftmax_template = self._env.get_template("logsoftmax_op.c.j2")
-            nllloss_template = self._env.get_template(
-                "negative_log_likelihood_loss_op.c.j2"
-            )
-            softmax_cross_entropy_loss_template = self._env.get_template(
-                "softmax_cross_entropy_loss_op.c.j2"
-            )
-            maxpool_template = self._env.get_template("maxpool_op.c.j2")
-            concat_template = self._env.get_template("concat_op.c.j2")
-            transpose_template = self._env.get_template("transpose_op.c.j2")
-            reshape_template = self._env.get_template("reshape_op.c.j2")
-            resize_template = self._env.get_template("resize_op.c.j2")
-            reduce_template = self._env.get_template("reduce_op.c.j2")
-            constant_of_shape_template = self._env.get_template(
-                "constant_of_shape_op.c.j2"
-            )
-            shape_template = self._env.get_template("shape_op.c.j2")
-            testbench_template = None
-            if emit_testbench:
-                testbench_template = self._env.get_template("testbench.c.j2")
-        except Exception as exc:  # pragma: no cover - template load failure
-            raise CodegenError("Failed to load C template") from exc
+        templates = self._load_templates(emit_testbench)
+        binary_template = templates["binary"]
+        unary_template = templates["unary"]
+        matmul_template = templates["matmul"]
+        gemm_template = templates["gemm"]
+        attention_template = templates["attention"]
+        conv_template = templates["conv"]
+        avg_pool_template = templates["avg_pool"]
+        batch_norm_template = templates["batch_norm"]
+        lrn_template = templates["lrn"]
+        lstm_template = templates["lstm"]
+        softmax_template = templates["softmax"]
+        logsoftmax_template = templates["logsoftmax"]
+        nllloss_template = templates["nllloss"]
+        softmax_cross_entropy_loss_template = templates["softmax_cross_entropy_loss"]
+        maxpool_template = templates["maxpool"]
+        concat_template = templates["concat"]
+        transpose_template = templates["transpose"]
+        reshape_template = templates["reshape"]
+        resize_template = templates["resize"]
+        reduce_template = templates["reduce"]
+        constant_of_shape_template = templates["constant_of_shape"]
+        shape_template = templates["shape"]
+        testbench_template = templates.get("testbench")
         temp_buffers = self._temp_buffers(model)
         temp_name_map = {
             original: buffer.name for original, buffer in temp_buffers.items()
