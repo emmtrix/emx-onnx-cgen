@@ -4,11 +4,11 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
-| ReduceSum axes input must be constant | 43 | █████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
 | Reshape input and output element counts must match | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
+| ReduceSum axes input must be constant | 32 | ███████ |
 | Unsupported op CastLike | 31 | ██████ |
 | Unsupported op Cast | 22 | █████ |
 | Unsupported op LayerNormalization | 19 | ████ |
@@ -39,22 +39,21 @@
 | Unsupported op CumSum | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
-| ReduceL1 axes input must be constant | 9 | ██ |
-| ReduceL2 axes input must be constant | 9 | ██ |
-| ReduceLogSumExp axes input must be constant | 9 | ██ |
-| ReduceSumSquare axes input must be constant | 9 | ██ |
 | Unsupported op BitShift | 8 | ██ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██ |
 | Unsupported op LpPool | 8 | ██ |
 | Unsupported op Max | 8 | ██ |
 | Unsupported op Min | 8 | ██ |
-| ReduceMean axes input must be constant | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Slice | 8 | ██ |
 | Unsupported op Hardmax | 7 | █ |
+| ReduceL1 axes input must be constant | 7 | █ |
+| ReduceL2 axes input must be constant | 7 | █ |
+| ReduceLogSumExp axes input must be constant | 7 | █ |
 | ReduceMax axes input must be constant | 7 | █ |
 | ReduceMin axes input must be constant | 7 | █ |
 | ReduceProd axes input must be constant | 7 | █ |
+| ReduceSumSquare axes input must be constant | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
 | Unsupported op TopK | 7 | █ |
 | AveragePool has unsupported attributes | 6 | █ |
@@ -67,6 +66,7 @@
 | Unsupported op Gather | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op QuantizeLinear | 6 | █ |
+| ReduceMean axes input must be constant | 6 | █ |
 | Unsupported op ScatterElements | 6 | █ |
 | Unsupported op Unique | 6 | █ |
 | AveragePool expects 2D kernel_shape | 5 | █ |
@@ -74,7 +74,6 @@
 | Unsupported op Col2Im | 5 | █ |
 | Unsupported op DequantizeLinear | 5 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
-| ReduceLogSum axes input must be constant | 5 | █ |
 | Unsupported op ScatterND | 5 | █ |
 | Unsupported op Selu | 5 | █ |
 | Unsupported op Sigmoid | 5 | █ |
@@ -92,6 +91,7 @@
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |
 | Unsupported op QLinearMatMul | 4 | █ |
+| ReduceLogSum axes input must be constant | 4 | █ |
 | Unsupported op RNN | 4 | █ |
 | Unsupported op Squeeze | 4 | █ |
 | Unsupported op Tile | 4 | █ |
@@ -107,6 +107,7 @@
 | Unsupported op InstanceNormalization | 3 | █ |
 | Unsupported op IsInf | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
+| ReduceSum output shape must be (1, 1, 1), got () | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
 | Sum must have 2 inputs and 1 output | 3 | █ |
