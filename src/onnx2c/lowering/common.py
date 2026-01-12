@@ -6,7 +6,7 @@ from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 
 
-def _ensure_supported_dtype(dtype: str) -> str:
+def ensure_supported_dtype(dtype: str) -> str:
     if dtype not in {
         "float",
         "double",
@@ -24,23 +24,25 @@ def _ensure_supported_dtype(dtype: str) -> str:
     return dtype
 
 
-def value_dtype(graph: Graph, name: str, node: Node) -> str:
+def value_dtype(graph: Graph, name: str, node: Node | None = None) -> str:
     try:
         value = graph.find_value(name)
     except KeyError as exc:
+        op_type = node.op_type if node is not None else "unknown"
         raise ShapeInferenceError(
-            f"Missing dtype for value '{name}' in op {node.op_type}. "
+            f"Missing dtype for value '{name}' in op {op_type}. "
             "Hint: run ONNX shape inference or export with static shapes."
         ) from exc
-    return _ensure_supported_dtype(value.type.dtype)
+    return ensure_supported_dtype(value.type.dtype)
 
 
-def value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
+def value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int, ...]:
     try:
         return graph.find_value(name).type.shape
     except KeyError as exc:
+        op_type = node.op_type if node is not None else "unknown"
         raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {node.op_type}. "
+            f"Missing shape for value '{name}' in op {op_type}. "
             "Hint: run ONNX shape inference or export with static shapes."
         ) from exc
 
