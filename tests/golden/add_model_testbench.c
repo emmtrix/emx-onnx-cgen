@@ -98,7 +98,8 @@ int main(void) {
         printf("]");
     }
     printf("]}");
-    printf("},\"output\":{\"name\":\"out\",\"shape\":[2,3,4],\"data\":");
+    printf("},\"outputs\":{");
+    printf("\"out\":{\"shape\":[2,3,4],\"data\":");
     printf("[");
     for (size_t i0 = 0; i0 < 2; ++i0) {
         if (i0) {
@@ -120,6 +121,7 @@ int main(void) {
         }
         printf("]");
     }
-    printf("]}}\n");
+    printf("]}");
+    printf("}}\n");
     return 0;
 }

@@ -143,8 +143,9 @@ def _handle_verify(args: argparse.Namespace) -> int:
 
     try:
         graph = import_onnx(model)
-        output_dtype = graph.outputs[0].type.dtype
-        info = dtype_info(output_dtype)
+        output_dtypes = {
+            value.name: dtype_info(value.type.dtype) for value in graph.outputs
+        }
         input_dtypes = {
             value.name: dtype_info(value.type.dtype) for value in graph.inputs
         }
@@ -199,13 +200,21 @@ def _handle_verify(args: argparse.Namespace) -> int:
     sess = ort.InferenceSession(
         model.SerializeToString(), providers=["CPUExecutionProvider"]
     )
-    (ort_out,) = sess.run(None, inputs)
-    output_data = np.array(payload["output"]["data"], dtype=info.np_dtype)
+    ort_outputs = sess.run(None, inputs)
+    payload_outputs = payload.get("outputs", {})
     try:
-        if output_dtype == "float":
-            np.testing.assert_allclose(output_data, ort_out, rtol=1e-4, atol=1e-5)
-        else:
-            np.testing.assert_array_equal(output_data, ort_out)
+        for value, ort_out in zip(graph.outputs, ort_outputs):
+            output_payload = payload_outputs.get(value.name)
+            if output_payload is None:
+                raise AssertionError(f"Missing output {value.name} in testbench data")
+            info = output_dtypes[value.name]
+            output_data = np.array(output_payload["data"], dtype=info.np_dtype)
+            if value.type.dtype == "float":
+                np.testing.assert_allclose(
+                    output_data, ort_out, rtol=1e-4, atol=1e-5
+                )
+            else:
+                np.testing.assert_array_equal(output_data, ort_out)
     except AssertionError as exc:
         LOGGER.error("Verification failed: %s", exc)
         return 1

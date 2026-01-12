@@ -127,7 +127,7 @@ def test_initializer_weights_emitted_as_static_arrays() -> None:
     model, weights = _make_add_initializer_model()
     payload, generated = _compile_and_run_testbench(model)
     assert "static const float weight" in generated
-    output_data = np.array(payload["output"]["data"], dtype=np.float32)
+    output_data = np.array(payload["outputs"]["out"]["data"], dtype=np.float32)
     assert output_data.shape == weights.shape
     with tempfile.TemporaryDirectory() as temp_dir:
         model_path = Path(temp_dir) / "add_init.onnx"

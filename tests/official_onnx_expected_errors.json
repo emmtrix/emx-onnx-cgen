@@ -57,19 +57,19 @@
   ],
   [
     "node/test_adagrad/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Adagrad"
   ],
   [
     "node/test_adagrad_multiple/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Adagrad"
   ],
   [
     "node/test_adam/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Adam"
   ],
   [
     "node/test_adam_multiple/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Adam"
   ],
   [
     "node/test_add/model.onnx",
@@ -421,7 +421,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx",
@@ -473,7 +473,7 @@
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx",
@@ -505,7 +505,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_3d_with_past_and_present_expanded/model.onnx",
@@ -513,11 +513,11 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
@@ -529,7 +529,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx",
@@ -537,7 +537,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx",
@@ -661,7 +661,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx",
@@ -669,7 +669,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx",
@@ -677,7 +677,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx",
@@ -737,7 +737,7 @@
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx",
@@ -769,7 +769,7 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_with_past_and_present_expanded/model.onnx",
@@ -777,19 +777,19 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx",
@@ -801,11 +801,11 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Attention"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx",
@@ -825,11 +825,11 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul/model.onnx",
-    "Only single-output graphs are supported"
+    "Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_attention_4d_with_qk_matmul_bias/model.onnx",
-    "Only single-output graphs are supported"
+    "Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx",
@@ -841,7 +841,7 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softcap/model.onnx",
-    "Only single-output graphs are supported"
+    "Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx",
@@ -849,7 +849,7 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softmax/model.onnx",
-    "Only single-output graphs are supported"
+    "Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx",
@@ -957,7 +957,7 @@
   ],
   [
     "node/test_batchnorm_epsilon_training_mode/model.onnx",
-    "Only single-output graphs are supported"
+    "BatchNormalization must have 5 inputs and 1 output"
   ],
   [
     "node/test_batchnorm_example/model.onnx",
@@ -965,7 +965,7 @@
   ],
   [
     "node/test_batchnorm_example_training_mode/model.onnx",
-    "Only single-output graphs are supported"
+    "BatchNormalization must have 5 inputs and 1 output"
   ],
   [
     "node/test_bernoulli/model.onnx",
@@ -2325,11 +2325,11 @@
   ],
   [
     "node/test_dropout_default_mask/model.onnx",
-    "Only single-output graphs are supported"
+    "Dropout mask output is not supported"
   ],
   [
     "node/test_dropout_default_mask_ratio/model.onnx",
-    "Only single-output graphs are supported"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_dropout_default_old/model.onnx",
@@ -2853,7 +2853,7 @@
   ],
   [
     "node/test_gru_batchwise/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op GRU"
   ],
   [
     "node/test_gru_defaults/model.onnx",
@@ -3073,7 +3073,7 @@
   ],
   [
     "node/test_layer_normalization_2d_axis0/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded/model.onnx",
@@ -3085,7 +3085,7 @@
   ],
   [
     "node/test_layer_normalization_2d_axis1/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded/model.onnx",
@@ -3097,7 +3097,7 @@
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx",
@@ -3109,7 +3109,7 @@
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_2/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx",
@@ -3121,7 +3121,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx",
@@ -3133,7 +3133,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx",
@@ -3145,7 +3145,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx",
@@ -3157,7 +3157,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx",
@@ -3169,7 +3169,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx",
@@ -3181,7 +3181,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx",
@@ -3193,7 +3193,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis0/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded/model.onnx",
@@ -3205,7 +3205,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis1/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded/model.onnx",
@@ -3217,7 +3217,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis2/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded/model.onnx",
@@ -3229,7 +3229,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis3/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded/model.onnx",
@@ -3241,7 +3241,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx",
@@ -3253,7 +3253,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_2/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx",
@@ -3265,7 +3265,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_3/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx",
@@ -3277,7 +3277,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_4/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx",
@@ -3289,7 +3289,7 @@
   ],
   [
     "node/test_layer_normalization_default_axis/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LayerNormalization"
   ],
   [
     "node/test_layer_normalization_default_axis_expanded/model.onnx",
@@ -3513,7 +3513,7 @@
   ],
   [
     "node/test_loop11/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Loop"
   ],
   [
     "node/test_loop13_seq/model.onnx",
@@ -3569,7 +3569,7 @@
   ],
   [
     "node/test_lstm_batchwise/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LSTM"
   ],
   [
     "node/test_lstm_defaults/model.onnx",
@@ -3741,11 +3741,11 @@
   ],
   [
     "node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx",
-    "Only single-output graphs are supported"
+    "MaxPool must have 1 input and 1 output"
   ],
   [
     "node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx",
-    "Only single-output graphs are supported"
+    "MaxPool must have 1 input and 1 output"
   ],
   [
     "node/test_maxunpool_export_with_output_shape/model.onnx",
@@ -3889,11 +3889,11 @@
   ],
   [
     "node/test_momentum/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Momentum"
   ],
   [
     "node/test_momentum_multiple/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Momentum"
   ],
   [
     "node/test_mul/model.onnx",
@@ -3953,7 +3953,7 @@
   ],
   [
     "node/test_nesterov_momentum/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Momentum"
   ],
   [
     "node/test_nllloss_NC/model.onnx",
@@ -5409,11 +5409,11 @@
   ],
   [
     "node/test_scan9_sum/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Scan"
   ],
   [
     "node/test_scan_sum/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Scan"
   ],
   [
     "node/test_scatter_elements_with_axis/model.onnx",
@@ -5477,11 +5477,11 @@
   ],
   [
     "node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx",
@@ -5493,11 +5493,11 @@
   ],
   [
     "node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op SoftmaxCrossEntropyLoss"
   ],
   [
     "node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx",
@@ -5509,11 +5509,11 @@
   ],
   [
     "node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx",
@@ -5525,11 +5525,11 @@
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx",
@@ -5541,11 +5541,11 @@
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op SoftmaxCrossEntropyLoss"
   ],
   [
     "node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_mean/model.onnx",
@@ -5561,11 +5561,11 @@
   ],
   [
     "node/test_sce_mean_3d_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_3d_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_expanded/model.onnx",
@@ -5573,11 +5573,11 @@
   ],
   [
     "node/test_sce_mean_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_no_weight_ii/model.onnx",
@@ -5593,11 +5593,11 @@
   ],
   [
     "node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_no_weight_ii_4d/model.onnx",
@@ -5609,11 +5609,11 @@
   ],
   [
     "node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_no_weight_ii_expanded/model.onnx",
@@ -5621,11 +5621,11 @@
   ],
   [
     "node/test_sce_mean_no_weight_ii_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight/model.onnx",
@@ -5649,11 +5649,11 @@
   ],
   [
     "node/test_sce_mean_weight_ii_3d_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight_ii_4d/model.onnx",
@@ -5665,11 +5665,11 @@
   ],
   [
     "node/test_sce_mean_weight_ii_4d_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight_ii_expanded/model.onnx",
@@ -5677,19 +5677,19 @@
   ],
   [
     "node/test_sce_mean_weight_ii_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_mean_weight_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_none/model.onnx",
@@ -5701,11 +5701,11 @@
   ],
   [
     "node/test_sce_none_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op SoftmaxCrossEntropyLoss"
   ],
   [
     "node/test_sce_none_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_none_weights/model.onnx",
@@ -5717,11 +5717,11 @@
   ],
   [
     "node/test_sce_none_weights_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op SoftmaxCrossEntropyLoss"
   ],
   [
     "node/test_sce_none_weights_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op LogSoftmax"
   ],
   [
     "node/test_sce_sum/model.onnx",
@@ -5733,11 +5733,11 @@
   ],
   [
     "node/test_sce_sum_log_prob/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_sce_sum_log_prob_expanded/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_selu/model.onnx",
@@ -5893,7 +5893,7 @@
   ],
   [
     "node/test_simple_rnn_batchwise/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op RNN"
   ],
   [
     "node/test_simple_rnn_defaults/model.onnx",
@@ -6085,35 +6085,35 @@
   ],
   [
     "node/test_split_1d_uneven_split_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_2d_uneven_split_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_equal_parts_1d_opset13/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_equal_parts_1d_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_equal_parts_2d/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_equal_parts_2d_opset13/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_equal_parts_default_axis_opset13/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_equal_parts_default_axis_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_to_sequence_1/model.onnx",
@@ -6129,35 +6129,35 @@
   ],
   [
     "node/test_split_variable_parts_1d_opset13/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_variable_parts_1d_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_variable_parts_2d_opset13/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_variable_parts_2d_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_variable_parts_default_axis_opset13/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_variable_parts_default_axis_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "node/test_split_zero_size_splits_opset13/model.onnx",
-    "Only single-output graphs are supported"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_split_zero_size_splits_opset18/model.onnx",
-    "Only single-output graphs are supported"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_sqrt/model.onnx",
@@ -6397,27 +6397,27 @@
   ],
   [
     "node/test_top_k/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op TopK"
   ],
   [
     "node/test_top_k_negative_axis/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op TopK"
   ],
   [
     "node/test_top_k_same_values/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op TopK"
   ],
   [
     "node/test_top_k_same_values_2d/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op TopK"
   ],
   [
     "node/test_top_k_same_values_largest/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op TopK"
   ],
   [
     "node/test_top_k_smallest/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op TopK"
   ],
   [
     "node/test_top_k_uint64/model.onnx",
@@ -6433,11 +6433,11 @@
   ],
   [
     "node/test_training_dropout_default_mask/model.onnx",
-    "Only single-output graphs are supported"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_training_dropout_mask/model.onnx",
-    "Only single-output graphs are supported"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_training_dropout_zero_ratio/model.onnx",
@@ -6445,7 +6445,7 @@
   ],
   [
     "node/test_training_dropout_zero_ratio_mask/model.onnx",
-    "Only single-output graphs are supported"
+    "Dropout supports only the data input and 1 or 2 outputs"
   ],
   [
     "node/test_transpose_all_permutations_0/model.onnx",
@@ -6549,27 +6549,27 @@
   ],
   [
     "node/test_unique_length_1/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Unique"
   ],
   [
     "node/test_unique_not_sorted_without_axis/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Unique"
   ],
   [
     "node/test_unique_sorted_with_axis/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Unique"
   ],
   [
     "node/test_unique_sorted_with_axis_3d/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Unique"
   ],
   [
     "node/test_unique_sorted_with_negative_axis/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Unique"
   ],
   [
     "node/test_unique_sorted_without_axis/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Unique"
   ],
   [
     "node/test_unsqueeze_axis_0/model.onnx",
@@ -7005,7 +7005,7 @@
   ],
   [
     "pytorch-operator/test_operator_chunk/model.onnx",
-    "Only single-output graphs are supported"
+    "Unsupported op Split"
   ],
   [
     "pytorch-operator/test_operator_clip/model.onnx",
@@ -7109,7 +7109,7 @@
   ],
   [
     "pytorch-operator/test_operator_symbolic_override_nested/model.onnx",
-    "Only single-output graphs are supported"
+    "Sum must have 2 inputs and 1 output"
   ],
   [
     "pytorch-operator/test_operator_view/model.onnx",
@@ -7133,11 +7133,11 @@
   ],
   [
     "simple/test_gradient_of_add/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "simple/test_gradient_of_add_and_mul/model.onnx",
-    "Only single-output graphs are supported"
+    "Scalar outputs are not supported"
   ],
   [
     "simple/test_sequence_model1/model.onnx",

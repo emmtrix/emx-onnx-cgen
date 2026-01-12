@@ -259,10 +259,9 @@ class LoweredModel:
     input_names: tuple[str, ...]
     input_shapes: tuple[tuple[int, ...], ...]
     input_dtypes: tuple[str, ...]
-    output_name: str
-    output_dtype: str
-    element_count: int
-    output_shape: tuple[int, ...]
+    output_names: tuple[str, ...]
+    output_shapes: tuple[tuple[int, ...], ...]
+    output_dtypes: tuple[str, ...]
     constants: tuple[ConstTensor, ...]
     ops: tuple[
         BinaryOp
@@ -324,19 +323,15 @@ class CEmitter:
             original: buffer.name for original, buffer in temp_buffers.items()
         }
         resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
-        array_suffix = self._array_suffix(model.output_shape)
-        loop_vars = self._loop_vars(model.output_shape)
-        loop_indents = self._loop_indents(model.output_shape)
-        inner_indent = self._inner_indent(model.output_shape)
         operator_fns = "\n\n".join(
             self._render_op(
                 model,
                 op,
                 index,
-                array_suffix=array_suffix,
-                loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
+                array_suffix="",
+                loop_vars=(),
+                loop_indents=(),
+                inner_indent="",
                 c_type=dtype_info(op.dtype).c_type,
                 zero_literal=dtype_info(op.dtype).zero_literal,
                 min_literal=dtype_info(op.dtype).min_literal,
@@ -364,7 +359,6 @@ class CEmitter:
             model,
             resolved_ops,
             tuple(temp_buffers.values()),
-            array_suffix,
         )
         includes = ["#include <stddef.h>"]
         if emit_testbench:
@@ -376,7 +370,7 @@ class CEmitter:
         }
         model_dtypes = {
             *model.input_dtypes,
-            model.output_dtype,
+            *model.output_dtypes,
             *(const.dtype for const in model.constants),
             *(op.dtype for op in resolved_ops),
             *constant_of_shape_inputs,
@@ -518,7 +512,6 @@ class CEmitter:
             | ConstantOfShapeOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
-        array_suffix: str,
     ) -> str:
         params = [
             f"const {dtype_info(dtype).c_type} {name}{self._array_suffix(shape)}"
@@ -526,10 +519,11 @@ class CEmitter:
                 model.input_names, model.input_shapes, model.input_dtypes
             )
         ]
-        output_type = dtype_info(model.output_dtype).c_type
-        params.append(
-            f"{output_type} {model.output_name}{array_suffix}"
-        )
+        for name, shape, dtype in zip(
+            model.output_names, model.output_shapes, model.output_dtypes
+        ):
+            output_type = dtype_info(dtype).c_type
+            params.append(f"{output_type} {name}{self._array_suffix(shape)}")
         signature = ", ".join(params)
         lines = [f"void {model.name}({signature}) {{"]
         for temp in temp_buffers:
@@ -578,6 +572,7 @@ class CEmitter:
         return "\n".join(lines)
 
     def _temp_buffers(self, model: LoweredModel) -> dict[str, TempBuffer]:
+        output_names = set(model.output_names)
         intermediates = [
             (
                 self._op_output(op),
@@ -585,7 +580,7 @@ class CEmitter:
                 self._op_output_dtype(op),
             )
             for op in model.ops
-            if self._op_output(op) != model.output_name
+            if self._op_output(op) not in output_names
         ]
         if not intermediates:
             return {}
@@ -1544,28 +1539,34 @@ class CEmitter:
                     "print_cast": self._print_cast(dtype),
                 }
             )
-        output_info = dtype_info(model.output_dtype)
-        output_loop_vars = self._loop_vars(model.output_shape)
-        output = {
-            "name": model.output_name,
-            "shape": model.output_shape,
-            "shape_literal": ",".join(str(dim) for dim in model.output_shape),
-            "count": self._element_count(model.output_shape),
-            "array_suffix": self._array_suffix(model.output_shape),
-            "loop_vars": output_loop_vars,
-            "loop_indents": self._loop_indents(model.output_shape),
-            "inner_indent": self._inner_indent(model.output_shape),
-            "rank": len(model.output_shape),
-            "index_expr": self._index_expr(model.output_shape, output_loop_vars),
-            "dtype": model.output_dtype,
-            "c_type": output_info.c_type,
-            "print_format": self._print_format(model.output_dtype),
-            "print_cast": self._print_cast(model.output_dtype),
-        }
+        outputs = []
+        for name, shape, dtype in zip(
+            model.output_names, model.output_shapes, model.output_dtypes
+        ):
+            output_info = dtype_info(dtype)
+            output_loop_vars = self._loop_vars(shape)
+            outputs.append(
+                {
+                    "name": name,
+                    "shape": shape,
+                    "shape_literal": ",".join(str(dim) for dim in shape),
+                    "count": self._element_count(shape),
+                    "array_suffix": self._array_suffix(shape),
+                    "loop_vars": output_loop_vars,
+                    "loop_indents": self._loop_indents(shape),
+                    "inner_indent": self._inner_indent(shape),
+                    "rank": len(shape),
+                    "index_expr": self._index_expr(shape, output_loop_vars),
+                    "dtype": dtype,
+                    "c_type": output_info.c_type,
+                    "print_format": self._print_format(dtype),
+                    "print_cast": self._print_cast(dtype),
+                }
+            )
         return testbench_template.render(
             model_name=model.name,
             inputs=inputs,
-            output=output,
+            outputs=outputs,
         ).rstrip()
 
     def _emit_constants(self, constants: tuple[ConstTensor, ...]) -> str:
