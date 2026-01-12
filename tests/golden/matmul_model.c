@@ -21,6 +21,13 @@
 
 #include <stddef.h>
 
+/*
+ * Node 0:
+ * OpType: MatMul
+ * Inputs: a, b
+ * Outputs: out
+ * Attrs: n/a
+ */
 static inline void model_op0(const float a[2][3], const float b[3][4], float out[2][4]) {
 for (size_t i0 = 0; i0 < 2; ++i0) {
     for (size_t i1 = 0; i1 < 4; ++i1) {

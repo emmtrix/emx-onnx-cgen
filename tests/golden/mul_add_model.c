@@ -21,6 +21,13 @@
 
 #include <stddef.h>
 
+/*
+ * Node 0:
+ * OpType: Mul
+ * Inputs: a, b
+ * Outputs: mul_out
+ * Attrs: n/a
+ */
 static inline void model_op0(const float a[2][3], const float b[2][3], float tmp[2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
@@ -29,6 +36,13 @@ static inline void model_op0(const float a[2][3], const float b[2][3], float tmp
     }
 }
 
+/*
+ * Node 1:
+ * OpType: Add
+ * Inputs: mul_out, c
+ * Outputs: out
+ * Attrs: n/a
+ */
 static inline void model_op1(const float tmp[2][3], const float c[2][3], float out[2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
