@@ -376,7 +376,20 @@ class CEmitter:
             *constant_of_shape_inputs,
         }
         if (
-            any(dtype in {"int64", "int32", "int16", "int8"} for dtype in model_dtypes)
+            any(
+                dtype
+                in {
+                    "int64",
+                    "int32",
+                    "int16",
+                    "int8",
+                    "uint64",
+                    "uint32",
+                    "uint16",
+                    "uint8",
+                }
+                for dtype in model_dtypes
+            )
             and "#include <stdint.h>" not in includes
         ):
             includes.append("#include <stdint.h>")
@@ -1630,11 +1643,26 @@ class CEmitter:
         return str(int(value))
 
     @staticmethod
+    def _format_uint(value: int, bits: int, max_macro: str) -> str:
+        max_value = 2**bits - 1
+        if value == max_value:
+            return max_macro
+        return str(int(value))
+
+    @staticmethod
     def _format_literal(dtype: str, value: float | int | bool) -> str:
         if dtype == "float":
             return CEmitter._format_float(float(value))
         if dtype == "bool":
             return "true" if bool(value) else "false"
+        if dtype == "uint64":
+            return CEmitter._format_uint(int(value), 64, "UINT64_MAX")
+        if dtype == "uint32":
+            return CEmitter._format_uint(int(value), 32, "UINT32_MAX")
+        if dtype == "uint16":
+            return CEmitter._format_uint(int(value), 16, "UINT16_MAX")
+        if dtype == "uint8":
+            return CEmitter._format_uint(int(value), 8, "UINT8_MAX")
         if dtype == "int64":
             return CEmitter._format_int64(int(value))
         if dtype == "int32":
@@ -1650,6 +1678,14 @@ class CEmitter:
             return self._format_float(float(value))
         if dtype == "bool":
             return "true" if bool(value) else "false"
+        if dtype == "uint64":
+            return self._format_uint(int(value), 64, "UINT64_MAX")
+        if dtype == "uint32":
+            return self._format_uint(int(value), 32, "UINT32_MAX")
+        if dtype == "uint16":
+            return self._format_uint(int(value), 16, "UINT16_MAX")
+        if dtype == "uint8":
+            return self._format_uint(int(value), 8, "UINT8_MAX")
         if dtype == "int64":
             return self._format_int64(int(value))
         if dtype == "int32":
@@ -1666,6 +1702,14 @@ class CEmitter:
             return "%.8g"
         if dtype == "bool":
             return "%d"
+        if dtype == "uint64":
+            return "%llu"
+        if dtype == "uint32":
+            return "%u"
+        if dtype == "uint16":
+            return "%hu"
+        if dtype == "uint8":
+            return "%hhu"
         if dtype == "int64":
             return "%lld"
         if dtype == "int32":
@@ -1682,6 +1726,10 @@ class CEmitter:
             return "(double)"
         if dtype == "bool":
             return "(int)"
+        if dtype == "uint64":
+            return "(unsigned long long)"
+        if dtype in {"uint32", "uint16", "uint8"}:
+            return "(unsigned int)"
         if dtype == "int64":
             return "(long long)"
         if dtype in {"int32", "int16", "int8"}:

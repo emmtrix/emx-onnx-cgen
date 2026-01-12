@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 285 / 1802 official ONNX files.
+Support 298 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -30,10 +30,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_add_bcast/model.onnx | ✅ |  |
 | node/test_add_int16/model.onnx | ✅ |  |
 | node/test_add_int8/model.onnx | ✅ |  |
-| node/test_add_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_add_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_add_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_add_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_add_uint16/model.onnx | ✅ |  |
+| node/test_add_uint32/model.onnx | ✅ |  |
+| node/test_add_uint64/model.onnx | ✅ |  |
+| node/test_add_uint8/model.onnx | ✅ |  |
 | node/test_affine_grid_2d/model.onnx | ❌ | Unsupported op AffineGrid |
 | node/test_affine_grid_2d_align_corners/model.onnx | ❌ | Unsupported op AffineGrid |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_2d_align_corners_expanded_function_W' |
@@ -256,29 +256,29 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_bernoulli_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | node/test_bernoulli_seed/model.onnx | ❌ | Unsupported op Bernoulli |
 | node/test_bernoulli_seed_expanded/model.onnx | ❌ | Unsupported op RandomUniformLike |
-| node/test_bitshift_left_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_bitshift_left_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_bitshift_left_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_bitshift_left_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| node/test_bitshift_right_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_bitshift_right_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_bitshift_right_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_bitshift_right_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_bitshift_left_uint16/model.onnx | ❌ | Unsupported op BitShift |
+| node/test_bitshift_left_uint32/model.onnx | ❌ | Unsupported op BitShift |
+| node/test_bitshift_left_uint64/model.onnx | ❌ | Unsupported op BitShift |
+| node/test_bitshift_left_uint8/model.onnx | ❌ | Unsupported op BitShift |
+| node/test_bitshift_right_uint16/model.onnx | ❌ | Unsupported op BitShift |
+| node/test_bitshift_right_uint32/model.onnx | ❌ | Unsupported op BitShift |
+| node/test_bitshift_right_uint64/model.onnx | ❌ | Unsupported op BitShift |
+| node/test_bitshift_right_uint8/model.onnx | ❌ | Unsupported op BitShift |
 | node/test_bitwise_and_i16_3d/model.onnx | ❌ | Unsupported op BitwiseAnd |
 | node/test_bitwise_and_i32_2d/model.onnx | ❌ | Unsupported op BitwiseAnd |
-| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported op BitwiseAnd |
+| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported op BitwiseAnd |
 | node/test_bitwise_not_2d/model.onnx | ❌ | Unsupported op BitwiseNot |
-| node/test_bitwise_not_3d/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_bitwise_not_4d/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_bitwise_not_3d/model.onnx | ❌ | Unsupported op BitwiseNot |
+| node/test_bitwise_not_4d/model.onnx | ❌ | Unsupported op BitwiseNot |
 | node/test_bitwise_or_i16_4d/model.onnx | ❌ | Unsupported op BitwiseOr |
 | node/test_bitwise_or_i32_2d/model.onnx | ❌ | Unsupported op BitwiseOr |
-| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported op BitwiseOr |
+| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported op BitwiseOr |
 | node/test_bitwise_xor_i16_3d/model.onnx | ❌ | Unsupported op BitwiseXor |
 | node/test_bitwise_xor_i32_2d/model.onnx | ❌ | Unsupported op BitwiseXor |
-| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported op BitwiseXor |
+| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported op BitwiseXor |
 | node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
 | node/test_blackmanwindow_expanded/model.onnx | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_expanded_function_Range' |
 | node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
@@ -527,8 +527,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_conv_with_strides_and_asymmetric_padding/model.onnx | ✅ |  |
 | node/test_conv_with_strides_no_padding/model.onnx | ✅ |  |
 | node/test_conv_with_strides_padding/model.onnx | ✅ |  |
-| node/test_convinteger_with_padding/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| node/test_convinteger_without_padding/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_convinteger_with_padding/model.onnx | ❌ | Unsupported op ConvInteger |
+| node/test_convinteger_without_padding/model.onnx | ❌ | Unsupported op ConvInteger |
 | node/test_convtranspose/model.onnx | ❌ | Unsupported op ConvTranspose |
 | node/test_convtranspose_1d/model.onnx | ❌ | Unsupported op ConvTranspose |
 | node/test_convtranspose_3d/model.onnx | ❌ | Unsupported op ConvTranspose |
@@ -557,9 +557,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_deform_conv_with_multiple_offset_groups/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_depthtospace_crd_mode_example/model.onnx | ❌ | Unsupported op DepthToSpace |
 | node/test_depthtospace_example/model.onnx | ❌ | Unsupported op DepthToSpace |
-| node/test_dequantizelinear/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| node/test_dequantizelinear_axis/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| node/test_dequantizelinear_blocked/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_dequantizelinear/model.onnx | ❌ | Unsupported op DequantizeLinear |
+| node/test_dequantizelinear_axis/model.onnx | ❌ | Unsupported op DequantizeLinear |
+| node/test_dequantizelinear_blocked/model.onnx | ❌ | Unsupported op DequantizeLinear |
 | node/test_dequantizelinear_e4m3fn/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | node/test_dequantizelinear_e4m3fn_float16/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
@@ -568,7 +568,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dequantizelinear_int16/model.onnx | ❌ | Unsupported op DequantizeLinear |
 | node/test_dequantizelinear_int2/model.onnx | ❌ | Unsupported elem_type 26 (INT2) for tensor 'x'. |
 | node/test_dequantizelinear_int4/model.onnx | ❌ | Unsupported elem_type 22 (INT4) for tensor 'x'. |
-| node/test_dequantizelinear_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
+| node/test_dequantizelinear_uint16/model.onnx | ❌ | Unsupported op DequantizeLinear |
 | node/test_dequantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
 | node/test_dequantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
 | node/test_det_2d/model.onnx | ❌ | Scalar outputs are not supported |
@@ -584,22 +584,22 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_div_example/model.onnx | ✅ |  |
 | node/test_div_int16/model.onnx | ❌ | Unsupported op Div |
 | node/test_div_int8/model.onnx | ❌ | Unsupported op Div |
-| node/test_div_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_div_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_div_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_div_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_div_uint16/model.onnx | ❌ | Unsupported op Div |
+| node/test_div_uint32/model.onnx | ❌ | Unsupported op Div |
+| node/test_div_uint64/model.onnx | ❌ | Unsupported op Div |
+| node/test_div_uint8/model.onnx | ❌ | Unsupported op Div |
 | node/test_dropout_default/model.onnx | ✅ |  |
 | node/test_dropout_default_mask/model.onnx | ❌ | Dropout mask output is not supported |
 | node/test_dropout_default_mask_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_default_old/model.onnx | ✅ |  |
 | node/test_dropout_default_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_random_old/model.onnx | ✅ |  |
-| node/test_dynamicquantizelinear/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
-| node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
-| node/test_dynamicquantizelinear_max_adjusted/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
-| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
-| node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
-| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y'. |
+| node/test_dynamicquantizelinear/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_dynamicquantizelinear_max_adjusted/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_edge_pad/model.onnx | ❌ | Unsupported op Pad |
 | node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
@@ -619,10 +619,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_equal_int8/model.onnx | ❌ | Unsupported op Equal |
 | node/test_equal_string/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | node/test_equal_string_broadcast/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| node/test_equal_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_equal_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_equal_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_equal_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_equal_uint16/model.onnx | ❌ | Unsupported op Equal |
+| node/test_equal_uint32/model.onnx | ❌ | Unsupported op Equal |
+| node/test_equal_uint64/model.onnx | ❌ | Unsupported op Equal |
+| node/test_equal_uint8/model.onnx | ❌ | Unsupported op Equal |
 | node/test_erf/model.onnx | ❌ | Unsupported op Erf |
 | node/test_exp/model.onnx | ✅ |  |
 | node/test_exp_example/model.onnx | ✅ |  |
@@ -685,20 +685,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_greater_equal_int16_expanded/model.onnx | ❌ | Unsupported op Greater |
 | node/test_greater_equal_int8/model.onnx | ❌ | Unsupported op GreaterOrEqual |
 | node/test_greater_equal_int8_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_greater_equal_uint16_expanded/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_greater_equal_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_greater_equal_uint32_expanded/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_greater_equal_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_greater_equal_uint64_expanded/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_greater_equal_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| node/test_greater_equal_uint8_expanded/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_greater_equal_uint16/model.onnx | ❌ | Unsupported op GreaterOrEqual |
+| node/test_greater_equal_uint16_expanded/model.onnx | ❌ | Unsupported op Greater |
+| node/test_greater_equal_uint32/model.onnx | ❌ | Unsupported op GreaterOrEqual |
+| node/test_greater_equal_uint32_expanded/model.onnx | ❌ | Unsupported op Greater |
+| node/test_greater_equal_uint64/model.onnx | ❌ | Unsupported op GreaterOrEqual |
+| node/test_greater_equal_uint64_expanded/model.onnx | ❌ | Unsupported op Greater |
+| node/test_greater_equal_uint8/model.onnx | ❌ | Unsupported op GreaterOrEqual |
+| node/test_greater_equal_uint8_expanded/model.onnx | ❌ | Unsupported op Greater |
 | node/test_greater_int16/model.onnx | ❌ | Unsupported op Greater |
 | node/test_greater_int8/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_greater_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_greater_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_greater_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_greater_uint16/model.onnx | ❌ | Unsupported op Greater |
+| node/test_greater_uint32/model.onnx | ❌ | Unsupported op Greater |
+| node/test_greater_uint64/model.onnx | ❌ | Unsupported op Greater |
+| node/test_greater_uint8/model.onnx | ❌ | Unsupported op Greater |
 | node/test_gridsample/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_gridsample_aligncorners_true/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_gridsample_bicubic/model.onnx | ❌ | Unsupported op GridSample |
@@ -754,15 +754,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_if/model.onnx | ❌ | Unsupported op If |
 | node/test_if_opt/model.onnx | ❌ | Missing elem_type for tensor 'sequence' |
 | node/test_if_seq/model.onnx | ❌ | Missing elem_type for tensor 'res' |
-| node/test_image_decoder_decode_bmp_rgb/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_jpeg_bgr/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_jpeg_grayscale/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_jpeg_rgb/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_png_rgb/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_pnm_rgb/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_tiff_rgb/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
-| node/test_image_decoder_decode_webp_rgb/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data'. |
+| node/test_image_decoder_decode_bmp_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_jpeg_bgr/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_jpeg_grayscale/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_jpeg_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_png_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_pnm_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_tiff_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
+| node/test_image_decoder_decode_webp_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
 | node/test_instancenorm_epsilon/model.onnx | ❌ | Unsupported op InstanceNormalization |
 | node/test_instancenorm_example/model.onnx | ❌ | Unsupported op InstanceNormalization |
 | node/test_isinf/model.onnx | ❌ | Unsupported op IsInf |
@@ -849,20 +849,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_less_equal_int16_expanded/model.onnx | ❌ | Unsupported op Less |
 | node/test_less_equal_int8/model.onnx | ❌ | Unsupported op LessOrEqual |
 | node/test_less_equal_int8_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_less_equal_uint16_expanded/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_less_equal_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_less_equal_uint32_expanded/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_less_equal_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_less_equal_uint64_expanded/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_less_equal_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| node/test_less_equal_uint8_expanded/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_less_equal_uint16/model.onnx | ❌ | Unsupported op LessOrEqual |
+| node/test_less_equal_uint16_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_less_equal_uint32/model.onnx | ❌ | Unsupported op LessOrEqual |
+| node/test_less_equal_uint32_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_less_equal_uint64/model.onnx | ❌ | Unsupported op LessOrEqual |
+| node/test_less_equal_uint64_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_less_equal_uint8/model.onnx | ❌ | Unsupported op LessOrEqual |
+| node/test_less_equal_uint8_expanded/model.onnx | ❌ | Unsupported op Less |
 | node/test_less_int16/model.onnx | ❌ | Unsupported op Less |
 | node/test_less_int8/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_less_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_less_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_less_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_less_uint16/model.onnx | ❌ | Unsupported op Less |
+| node/test_less_uint32/model.onnx | ❌ | Unsupported op Less |
+| node/test_less_uint64/model.onnx | ❌ | Unsupported op Less |
+| node/test_less_uint8/model.onnx | ❌ | Unsupported op Less |
 | node/test_log/model.onnx | ✅ |  |
 | node/test_log_example/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_0/model.onnx | ❌ | Unsupported op LogSoftmax |
@@ -911,7 +911,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_matmul_4d/model.onnx | ❌ | MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) |
 | node/test_matmul_4d_1d/model.onnx | ❌ | MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,) |
 | node/test_matmul_bcast/model.onnx | ❌ | MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2) |
-| node/test_matmulinteger/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'A'. |
+| node/test_matmulinteger/model.onnx | ❌ | Unsupported op MatMulInteger |
 | node/test_max_example/model.onnx | ❌ | Max must have 2 inputs and 1 output |
 | node/test_max_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. |
 | node/test_max_float32/model.onnx | ✅ |  |
@@ -922,10 +922,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_max_int8/model.onnx | ❌ | Unsupported op Max |
 | node/test_max_one_input/model.onnx | ❌ | Max must have 2 inputs and 1 output |
 | node/test_max_two_inputs/model.onnx | ✅ |  |
-| node/test_max_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'data_0'. |
-| node/test_max_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'data_0'. |
-| node/test_max_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'data_0'. |
-| node/test_max_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data_0'. |
+| node/test_max_uint16/model.onnx | ❌ | Unsupported op Max |
+| node/test_max_uint32/model.onnx | ❌ | Unsupported op Max |
+| node/test_max_uint64/model.onnx | ❌ | Unsupported op Max |
+| node/test_max_uint8/model.onnx | ❌ | Unsupported op Max |
 | node/test_maxpool_1d_default/model.onnx | ✅ |  |
 | node/test_maxpool_2d_ceil/model.onnx | ✅ |  |
 | node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx | ✅ |  |
@@ -938,7 +938,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_maxpool_2d_same_lower/model.onnx | ✅ |  |
 | node/test_maxpool_2d_same_upper/model.onnx | ✅ |  |
 | node/test_maxpool_2d_strides/model.onnx | ✅ |  |
-| node/test_maxpool_2d_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_maxpool_2d_uint8/model.onnx | ✅ |  |
 | node/test_maxpool_3d_default/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations_use_ref_impl/model.onnx | ✅ |  |
@@ -961,10 +961,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_min_int8/model.onnx | ❌ | Unsupported op Min |
 | node/test_min_one_input/model.onnx | ❌ | Min must have 2 inputs and 1 output |
 | node/test_min_two_inputs/model.onnx | ✅ |  |
-| node/test_min_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'data_0'. |
-| node/test_min_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'data_0'. |
-| node/test_min_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'data_0'. |
-| node/test_min_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'data_0'. |
+| node/test_min_uint16/model.onnx | ❌ | Unsupported op Min |
+| node/test_min_uint32/model.onnx | ❌ | Unsupported op Min |
+| node/test_min_uint64/model.onnx | ❌ | Unsupported op Min |
+| node/test_min_uint8/model.onnx | ❌ | Unsupported op Min |
 | node/test_mish/model.onnx | ❌ | Unsupported op Mish |
 | node/test_mish_expanded/model.onnx | ❌ | Unsupported op Softplus |
 | node/test_mod_broadcast/model.onnx | ❌ | Unsupported op Mod |
@@ -976,10 +976,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mod_mixed_sign_int32/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_mixed_sign_int64/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_mixed_sign_int8/model.onnx | ❌ | Unsupported op Mod |
-| node/test_mod_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_mod_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_mod_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_mod_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_mod_uint16/model.onnx | ❌ | Unsupported op Mod |
+| node/test_mod_uint32/model.onnx | ❌ | Unsupported op Mod |
+| node/test_mod_uint64/model.onnx | ❌ | Unsupported op Mod |
+| node/test_mod_uint8/model.onnx | ❌ | Unsupported op Mod |
 | node/test_momentum/model.onnx | ❌ | Unsupported op Momentum |
 | node/test_momentum_multiple/model.onnx | ❌ | Unsupported op Momentum |
 | node/test_mul/model.onnx | ✅ |  |
@@ -987,10 +987,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mul_example/model.onnx | ✅ |  |
 | node/test_mul_int16/model.onnx | ✅ |  |
 | node/test_mul_int8/model.onnx | ✅ |  |
-| node/test_mul_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_mul_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_mul_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_mul_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_mul_uint16/model.onnx | ✅ |  |
+| node/test_mul_uint32/model.onnx | ✅ |  |
+| node/test_mul_uint64/model.onnx | ✅ |  |
+| node/test_mul_uint8/model.onnx | ✅ |  |
 | node/test_mvn/model.onnx | ❌ | Unsupported op MeanVarianceNormalization |
 | node/test_mvn_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_mvn_expanded_ver18/model.onnx | ❌ | Scalar outputs are not supported |
@@ -1075,8 +1075,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_pow_example/model.onnx | ✅ |  |
 | node/test_pow_types_float32_int32/model.onnx | ❌ | Pow expects matching dtypes, got float, int32 |
 | node/test_pow_types_float32_int64/model.onnx | ❌ | Pow expects matching dtypes, got float, int64 |
-| node/test_pow_types_float32_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'y'. |
-| node/test_pow_types_float32_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'y'. |
+| node/test_pow_types_float32_uint32/model.onnx | ❌ | Pow expects matching dtypes, got float, uint32 |
+| node/test_pow_types_float32_uint64/model.onnx | ❌ | Pow expects matching dtypes, got float, uint64 |
 | node/test_pow_types_int32_float32/model.onnx | ❌ | Pow expects matching dtypes, got float, int32 |
 | node/test_pow_types_int32_int32/model.onnx | ❌ | Unsupported op Pow |
 | node/test_pow_types_int64_float32/model.onnx | ❌ | Pow expects matching dtypes, got float, int64 |
@@ -1085,18 +1085,18 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_prelu_broadcast_expanded/model.onnx | ❌ | Unsupported op CastLike |
 | node/test_prelu_example/model.onnx | ✅ |  |
 | node/test_prelu_example_expanded/model.onnx | ❌ | Unsupported op CastLike |
-| node/test_qlinearconv/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_qlinearconv/model.onnx | ❌ | Unsupported op QLinearConv |
 | node/test_qlinearmatmul_2D_int8_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
 | node/test_qlinearmatmul_2D_int8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| node/test_qlinearmatmul_2D_uint8_float16/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
-| node/test_qlinearmatmul_2D_uint8_float32/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
+| node/test_qlinearmatmul_2D_uint8_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
+| node/test_qlinearmatmul_2D_uint8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
 | node/test_qlinearmatmul_3D_int8_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
 | node/test_qlinearmatmul_3D_int8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| node/test_qlinearmatmul_3D_uint8_float16/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
-| node/test_qlinearmatmul_3D_uint8_float32/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'a'. |
-| node/test_quantizelinear/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
-| node/test_quantizelinear_axis/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
-| node/test_quantizelinear_blocked_asymmetric/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'. |
+| node/test_qlinearmatmul_3D_uint8_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'. |
+| node/test_qlinearmatmul_3D_uint8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
+| node/test_quantizelinear/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_quantizelinear_axis/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_quantizelinear_blocked_asymmetric/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_quantizelinear_blocked_symmetric/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_quantizelinear_e4m3fn/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_e5m2/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
@@ -1104,7 +1104,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_quantizelinear_int16/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_quantizelinear_int2/model.onnx | ❌ | Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_int4/model.onnx | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
-| node/test_quantizelinear_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'y_zero_point'. |
+| node/test_quantizelinear_uint16/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_quantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | node/test_range_float_type_positive_delta/model.onnx | ❌ | Unsupported op Range |
@@ -1576,10 +1576,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sub_example/model.onnx | ✅ |  |
 | node/test_sub_int16/model.onnx | ✅ |  |
 | node/test_sub_int8/model.onnx | ✅ |  |
-| node/test_sub_uint16/model.onnx | ❌ | Unsupported elem_type 4 (UINT16) for tensor 'x'. |
-| node/test_sub_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
-| node/test_sub_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
-| node/test_sub_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
+| node/test_sub_uint16/model.onnx | ✅ |  |
+| node/test_sub_uint32/model.onnx | ✅ |  |
+| node/test_sub_uint64/model.onnx | ✅ |  |
+| node/test_sub_uint8/model.onnx | ✅ |  |
 | node/test_sum_example/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
 | node/test_sum_one_input/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
 | node/test_sum_two_inputs/model.onnx | ✅ |  |
@@ -1613,7 +1613,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_top_k_same_values_2d/model.onnx | ❌ | Unsupported op TopK |
 | node/test_top_k_same_values_largest/model.onnx | ❌ | Unsupported op TopK |
 | node/test_top_k_smallest/model.onnx | ❌ | Unsupported op TopK |
-| node/test_top_k_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
+| node/test_top_k_uint64/model.onnx | ❌ | Unsupported op TopK |
 | node/test_training_dropout/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_training_dropout_default/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_training_dropout_default_mask/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |

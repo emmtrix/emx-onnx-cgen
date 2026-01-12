@@ -89,19 +89,19 @@
   ],
   [
     "node/test_add_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    ""
   ],
   [
     "node/test_add_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    ""
   ],
   [
     "node/test_add_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    ""
   ],
   [
     "node/test_add_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    ""
   ],
   [
     "node/test_affine_grid_2d/model.onnx",
@@ -993,35 +993,35 @@
   ],
   [
     "node/test_bitshift_left_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitshift_left_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitshift_left_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitshift_left_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitshift_right_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitshift_right_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitshift_right_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitshift_right_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op BitShift"
   ],
   [
     "node/test_bitwise_and_i16_3d/model.onnx",
@@ -1033,11 +1033,11 @@
   ],
   [
     "node/test_bitwise_and_ui64_bcast_3v1d/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op BitwiseAnd"
   ],
   [
     "node/test_bitwise_and_ui8_bcast_4v3d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op BitwiseAnd"
   ],
   [
     "node/test_bitwise_not_2d/model.onnx",
@@ -1045,11 +1045,11 @@
   ],
   [
     "node/test_bitwise_not_3d/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op BitwiseNot"
   ],
   [
     "node/test_bitwise_not_4d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op BitwiseNot"
   ],
   [
     "node/test_bitwise_or_i16_4d/model.onnx",
@@ -1061,11 +1061,11 @@
   ],
   [
     "node/test_bitwise_or_ui64_bcast_3v1d/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op BitwiseOr"
   ],
   [
     "node/test_bitwise_or_ui8_bcast_4v3d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op BitwiseOr"
   ],
   [
     "node/test_bitwise_xor_i16_3d/model.onnx",
@@ -1077,11 +1077,11 @@
   ],
   [
     "node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op BitwiseXor"
   ],
   [
     "node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op BitwiseXor"
   ],
   [
     "node/test_blackmanwindow/model.onnx",
@@ -2077,11 +2077,11 @@
   ],
   [
     "node/test_convinteger_with_padding/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op ConvInteger"
   ],
   [
     "node/test_convinteger_without_padding/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op ConvInteger"
   ],
   [
     "node/test_convtranspose/model.onnx",
@@ -2197,15 +2197,15 @@
   ],
   [
     "node/test_dequantizelinear/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op DequantizeLinear"
   ],
   [
     "node/test_dequantizelinear_axis/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op DequantizeLinear"
   ],
   [
     "node/test_dequantizelinear_blocked/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op DequantizeLinear"
   ],
   [
     "node/test_dequantizelinear_e4m3fn/model.onnx",
@@ -2241,7 +2241,7 @@
   ],
   [
     "node/test_dequantizelinear_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op DequantizeLinear"
   ],
   [
     "node/test_dequantizelinear_uint2/model.onnx",
@@ -2305,19 +2305,19 @@
   ],
   [
     "node/test_div_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op Div"
   ],
   [
     "node/test_div_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op Div"
   ],
   [
     "node/test_div_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op Div"
   ],
   [
     "node/test_div_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op Div"
   ],
   [
     "node/test_dropout_default/model.onnx",
@@ -2345,27 +2345,27 @@
   ],
   [
     "node/test_dynamicquantizelinear/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y'."
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_dynamicquantizelinear_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y'."
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y'."
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y'."
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y'."
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y'."
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_edge_pad/model.onnx",
@@ -2445,19 +2445,19 @@
   ],
   [
     "node/test_equal_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op Equal"
   ],
   [
     "node/test_equal_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op Equal"
   ],
   [
     "node/test_equal_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op Equal"
   ],
   [
     "node/test_equal_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op Equal"
   ],
   [
     "node/test_erf/model.onnx",
@@ -2709,35 +2709,35 @@
   ],
   [
     "node/test_greater_equal_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op GreaterOrEqual"
   ],
   [
     "node/test_greater_equal_uint16_expanded/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_greater_equal_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op GreaterOrEqual"
   ],
   [
     "node/test_greater_equal_uint32_expanded/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_greater_equal_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op GreaterOrEqual"
   ],
   [
     "node/test_greater_equal_uint64_expanded/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_greater_equal_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op GreaterOrEqual"
   ],
   [
     "node/test_greater_equal_uint8_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_greater_int16/model.onnx",
@@ -2749,19 +2749,19 @@
   ],
   [
     "node/test_greater_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_greater_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_greater_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_greater_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op Greater"
   ],
   [
     "node/test_gridsample/model.onnx",
@@ -2985,39 +2985,39 @@
   ],
   [
     "node/test_image_decoder_decode_bmp_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_jpeg2k_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_jpeg_bgr/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_jpeg_grayscale/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_jpeg_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_png_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_pnm_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_tiff_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_image_decoder_decode_webp_rgb/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data'."
+    "Unsupported op ImageDecoder"
   ],
   [
     "node/test_instancenorm_epsilon/model.onnx",
@@ -3365,35 +3365,35 @@
   ],
   [
     "node/test_less_equal_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op LessOrEqual"
   ],
   [
     "node/test_less_equal_uint16_expanded/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_less_equal_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op LessOrEqual"
   ],
   [
     "node/test_less_equal_uint32_expanded/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_less_equal_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op LessOrEqual"
   ],
   [
     "node/test_less_equal_uint64_expanded/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_less_equal_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op LessOrEqual"
   ],
   [
     "node/test_less_equal_uint8_expanded/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_less_int16/model.onnx",
@@ -3405,19 +3405,19 @@
   ],
   [
     "node/test_less_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_less_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_less_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_less_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op Less"
   ],
   [
     "node/test_log/model.onnx",
@@ -3613,7 +3613,7 @@
   ],
   [
     "node/test_matmulinteger/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'A'."
+    "Unsupported op MatMulInteger"
   ],
   [
     "node/test_max_example/model.onnx",
@@ -3657,19 +3657,19 @@
   ],
   [
     "node/test_max_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'data_0'."
+    "Unsupported op Max"
   ],
   [
     "node/test_max_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'data_0'."
+    "Unsupported op Max"
   ],
   [
     "node/test_max_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'data_0'."
+    "Unsupported op Max"
   ],
   [
     "node/test_max_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data_0'."
+    "Unsupported op Max"
   ],
   [
     "node/test_maxpool_1d_default/model.onnx",
@@ -3721,7 +3721,7 @@
   ],
   [
     "node/test_maxpool_2d_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    ""
   ],
   [
     "node/test_maxpool_3d_default/model.onnx",
@@ -3813,19 +3813,19 @@
   ],
   [
     "node/test_min_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'data_0'."
+    "Unsupported op Min"
   ],
   [
     "node/test_min_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'data_0'."
+    "Unsupported op Min"
   ],
   [
     "node/test_min_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'data_0'."
+    "Unsupported op Min"
   ],
   [
     "node/test_min_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'data_0'."
+    "Unsupported op Min"
   ],
   [
     "node/test_mish/model.onnx",
@@ -3873,19 +3873,19 @@
   ],
   [
     "node/test_mod_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    "Unsupported op Mod"
   ],
   [
     "node/test_mod_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    "Unsupported op Mod"
   ],
   [
     "node/test_mod_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op Mod"
   ],
   [
     "node/test_mod_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op Mod"
   ],
   [
     "node/test_momentum/model.onnx",
@@ -3917,19 +3917,19 @@
   ],
   [
     "node/test_mul_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    ""
   ],
   [
     "node/test_mul_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    ""
   ],
   [
     "node/test_mul_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    ""
   ],
   [
     "node/test_mul_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    ""
   ],
   [
     "node/test_mvn/model.onnx",
@@ -4269,11 +4269,11 @@
   ],
   [
     "node/test_pow_types_float32_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'y'."
+    "Pow expects matching dtypes, got float, uint32"
   ],
   [
     "node/test_pow_types_float32_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'y'."
+    "Pow expects matching dtypes, got float, uint64"
   ],
   [
     "node/test_pow_types_int32_float32/model.onnx",
@@ -4309,7 +4309,7 @@
   ],
   [
     "node/test_qlinearconv/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    "Unsupported op QLinearConv"
   ],
   [
     "node/test_qlinearmatmul_2D_int8_float16/model.onnx",
@@ -4321,11 +4321,11 @@
   ],
   [
     "node/test_qlinearmatmul_2D_uint8_float16/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'a'."
+    "Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'."
   ],
   [
     "node/test_qlinearmatmul_2D_uint8_float32/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'a'."
+    "Unsupported op QLinearMatMul"
   ],
   [
     "node/test_qlinearmatmul_3D_int8_float16/model.onnx",
@@ -4337,23 +4337,23 @@
   ],
   [
     "node/test_qlinearmatmul_3D_uint8_float16/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'a'."
+    "Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'."
   ],
   [
     "node/test_qlinearmatmul_3D_uint8_float32/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'a'."
+    "Unsupported op QLinearMatMul"
   ],
   [
     "node/test_quantizelinear/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'."
+    "Unsupported op QuantizeLinear"
   ],
   [
     "node/test_quantizelinear_axis/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'."
+    "Unsupported op QuantizeLinear"
   ],
   [
     "node/test_quantizelinear_blocked_asymmetric/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'y_zero_point'."
+    "Unsupported op QuantizeLinear"
   ],
   [
     "node/test_quantizelinear_blocked_symmetric/model.onnx",
@@ -4385,7 +4385,7 @@
   ],
   [
     "node/test_quantizelinear_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'y_zero_point'."
+    "Unsupported op QuantizeLinear"
   ],
   [
     "node/test_quantizelinear_uint2/model.onnx",
@@ -6273,19 +6273,19 @@
   ],
   [
     "node/test_sub_uint16/model.onnx",
-    "Unsupported elem_type 4 (UINT16) for tensor 'x'."
+    ""
   ],
   [
     "node/test_sub_uint32/model.onnx",
-    "Unsupported elem_type 12 (UINT32) for tensor 'x'."
+    ""
   ],
   [
     "node/test_sub_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    ""
   ],
   [
     "node/test_sub_uint8/model.onnx",
-    "Unsupported elem_type 2 (UINT8) for tensor 'x'."
+    ""
   ],
   [
     "node/test_sum_example/model.onnx",
@@ -6421,7 +6421,7 @@
   ],
   [
     "node/test_top_k_uint64/model.onnx",
-    "Unsupported elem_type 13 (UINT64) for tensor 'x'."
+    "Unsupported op TopK"
   ],
   [
     "node/test_training_dropout/model.onnx",
