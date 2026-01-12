@@ -5,9 +5,9 @@
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
 | ReduceSum axes input must be constant | 43 | █████████ |
-| Reshape requires a constant shape input | 43 | █████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
+| Reshape input and output element counts must match | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported op CastLike | 31 | ██████ |
 | Unsupported op Less | 26 | █████ |
