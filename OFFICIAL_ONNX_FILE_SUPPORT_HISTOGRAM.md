@@ -4,17 +4,17 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
+| Unsupported op NegativeLogLikelihoodLoss | 35 | ███████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
-| Reshape input and output element counts must match | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | ReduceSum axes input must be constant | 32 | ███████ |
 | Unsupported op CastLike | 31 | ██████ |
 | Unsupported op Cast | 22 | █████ |
+| Unsupported op Identity | 20 | ████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
-| Unsupported op NegativeLogLikelihoodLoss | 18 | ████ |
 | Unsupported op Split | 17 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
@@ -100,7 +100,6 @@
 | Unsupported op RandomUniformLike | 3 | █ |
 | Unsupported op BitwiseNot | 3 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
-| Unsupported op Identity | 3 | █ |
 | Unsupported op DynamicQuantizeLinear | 3 | █ |
 | Unsupported op EyeLike | 3 | █ |
 | Unsupported op GatherND | 3 | █ |
