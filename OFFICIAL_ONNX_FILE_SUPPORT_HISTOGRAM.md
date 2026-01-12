@@ -3,12 +3,13 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
-| Scalar outputs are not supported | 98 | ████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 62 | █████████████ |
 | Unsupported elem_type 11 (DOUBLE) for tensor '*'. | 53 | ███████████ |
 | Unsupported op Attention | 47 | ██████████ |
+| Unsupported op LogSoftmax | 44 | █████████ |
 | ReduceSum axes input must be constant | 43 | █████████ |
 | Unsupported op Resize | 39 | ████████ |
+| Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
 | Missing elem_type for tensor '*' | 33 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported op CastLike | 29 | ██████ |
@@ -16,11 +17,12 @@
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
-| Unsupported op LogSoftmax | 18 | ████ |
+| Unsupported op NegativeLogLikelihoodLoss | 18 | ████ |
 | Unsupported op Split | 17 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
+| Unsupported op Clip | 16 | ███ |
 | Unsupported op Greater | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | ███ |
@@ -29,7 +31,7 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
-| Unsupported op Clip | 13 | ███ |
+| Unsupported op GatherElements | 14 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
@@ -39,6 +41,7 @@
 | Unsupported op Shape | 10 | ██ |
 | Dynamic or zero dims are not supported | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |
+| Unsupported op Cast | 9 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
 | ReduceL1 axes input must be constant | 9 | ██ |
 | ReduceL2 axes input must be constant | 9 | ██ |
@@ -54,9 +57,7 @@
 | Unsupported op Min | 8 | ██ |
 | ReduceMean axes input must be constant | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
-| Unsupported op SoftmaxCrossEntropyLoss | 8 | ██ |
 | Unsupported op Slice | 8 | ██ |
-| Unsupported op GatherElements | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
 | ReduceMax axes input must be constant | 7 | █ |
 | ReduceMin axes input must be constant | 7 | █ |
@@ -80,7 +81,6 @@
 | Unsupported op Col2Im | 5 | █ |
 | Unsupported op DequantizeLinear | 5 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
-| Unsupported op NegativeLogLikelihoodLoss | 5 | █ |
 | ReduceLogSum axes input must be constant | 5 | █ |
 | Unsupported op ScatterND | 5 | █ |
 | Unsupported op Selu | 5 | █ |
@@ -97,6 +97,7 @@
 | Unsupported op LSTM | 4 | █ |
 | Unsupported op Softplus | 4 | █ |
 | Unsupported op OneHot | 4 | █ |
+| Unsupported op OptionalHasElement | 4 | █ |
 | Unsupported op QLinearMatMul | 4 | █ |
 | Unsupported op RNN | 4 | █ |
 | Unsupported op Squeeze | 4 | █ |
@@ -105,11 +106,11 @@
 | Unsupported op BitwiseNot | 3 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
+| Unsupported op DynamicQuantizeLinear | 3 | █ |
 | Unsupported op GatherND | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
 | Unsupported op IsInf | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
-| Unsupported op Cast | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
 | Sum must have 2 inputs and 1 output | 3 | █ |
@@ -130,6 +131,7 @@
 | Unsupported op Cosh | 2 | █ |
 | Unsupported op CumSum | 2 | █ |
 | Unsupported op DepthToSpace | 2 | █ |
+| Unsupported op Det | 2 | █ |
 | Unsupported op EyeLike | 2 | █ |
 | Unsupported op GlobalMaxPool | 2 | █ |
 | Unsupported op GroupNormalization | 2 | █ |
@@ -150,10 +152,12 @@
 | Unsupported op Scatter | 2 | █ |
 | Unsupported op Sign | 2 | █ |
 | Unsupported op Sinh | 2 | █ |
+| Unsupported op Size | 2 | █ |
 | Unsupported op Softsign | 2 | █ |
 | Unsupported op SpaceToDepth | 2 | █ |
 | Unsupported op STFT | 2 | █ |
 | Unsupported op Where | 2 | █ |
+| Unsupported op Gradient | 2 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op TreeEnsemble | 1 | █ |
@@ -161,7 +165,6 @@
 | Unsupported op RandomUniformLike | 1 | █ |
 | Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
-| Unsupported op Det | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Unsupported op Erf | 1 | █ |
 | Gemm bias input must be rank 1 or 2, got () | 1 | █ |
@@ -170,6 +173,7 @@
 | Unsupported op If | 1 | █ |
 | Unsupported op IsNaN | 1 | █ |
 | Unsupported op Loop | 1 | █ |
+| MatMul supports 2D inputs only, got (3,) x (3,) | 1 | █ |
 | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) | 1 | █ |
 | MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) | 1 | █ |
 | MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) | 1 | █ |
