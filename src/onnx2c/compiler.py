@@ -27,6 +27,7 @@ from .codegen.c_emitter import (
     MaxPoolOp,
     ReduceOp,
     ReshapeOp,
+    ResizeOp,
     SoftmaxOp,
     TransposeOp,
     UnaryOp,
@@ -48,6 +49,7 @@ from .lowering.reduce import (
     resolve_reduce_axes,
 )
 from .lowering.reshape import lower_reshape
+from .lowering.resize import lower_resize
 from .lowering.unsqueeze import lower_unsqueeze
 from .onnx_import import import_onnx
 
@@ -110,6 +112,7 @@ class Compiler:
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
+            | ResizeOp
             | ReduceOp
         ] = []
         for node in graph.nodes:

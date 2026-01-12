@@ -6,7 +6,7 @@
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
 | Unsupported op Shape | 44 | █████████ |
 | ReduceSum axes input must be constant | 43 | █████████ |
-| Unsupported op Resize | 39 | ████████ |
+| Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs | 39 | ████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
