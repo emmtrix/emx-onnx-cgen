@@ -93,6 +93,18 @@ class ConvOp:
     group: int
     dtype: str
 
+    @property
+    def out_h(self) -> int:
+        if self.spatial_rank < 1:
+            raise ValueError("Conv output height is undefined for spatial_rank < 1")
+        return self.out_spatial[0]
+
+    @property
+    def out_w(self) -> int:
+        if self.spatial_rank < 2:
+            raise ValueError("Conv output width is undefined for spatial_rank < 2")
+        return self.out_spatial[1]
+
 
 @dataclass(frozen=True)
 class AveragePoolOp:
@@ -1421,7 +1433,7 @@ class CEmitter:
         if isinstance(op, GemmOp):
             return (op.m, op.n)
         if isinstance(op, ConvOp):
-            return (op.batch, op.out_channels, op.out_h, op.out_w)
+            return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, AveragePoolOp):
             return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, BatchNormOp):
