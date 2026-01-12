@@ -30,6 +30,7 @@ from ..lowering.shape import lower_shape
 from ..lowering.softmax import lower_softmax
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
+from ..lowering.registry import resolve_dispatch
 from ..lowering.common import node_dtype, optional_name
 from ..ops import (
     BINARY_OP_TYPES,
@@ -80,14 +81,15 @@ class Evaluator:
         }
 
     def _dispatch(self, node: Node) -> None:
-        handler = _EVAL_REGISTRY.get(node.op_type)
-        if handler is not None:
-            handler(self, node)
-            return
-        if node.op_type in BINARY_OP_TYPES | UNARY_OP_TYPES:
-            _eval_binary_unary(self, node)
-            return
-        raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+        handler = resolve_dispatch(
+            node.op_type,
+            _EVAL_REGISTRY,
+            binary_types=BINARY_OP_TYPES,
+            unary_types=UNARY_OP_TYPES,
+            binary_fallback=lambda: _eval_binary_unary,
+            unary_fallback=lambda: _eval_binary_unary,
+        )
+        handler(self, node)
 
 
 @register_evaluator("MatMul")
