@@ -25,9 +25,11 @@ int main(void) {
         {{ input.name }}_ptr[i] = {{ input.random_expr }};
     }
 {% endfor %}
+{% for output in outputs %}
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
     {{ output.c_type }} *{{ output.name }}_ptr = ({{ output.c_type }} *){{ output.name }};
-    {{ model_name }}({% for input in inputs %}{{ input.name }}, {% endfor %}{{ output.name }});
+{% endfor %}
+    {{ model_name }}({% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
     printf("{\"inputs\":{");
 {% for input in inputs %}
 {% if not loop.first %}
@@ -53,7 +55,12 @@ int main(void) {
 {% endfor %}
     printf("]}");
 {% endfor %}
-    printf("},\"output\":{\"name\":\"{{ output.name }}\",\"shape\":[{{ output.shape_literal }}],\"data\":");
+    printf("},\"outputs\":{");
+{% for output in outputs %}
+{% if not loop.first %}
+    printf(",");
+{% endif %}
+    printf("\"{{ output.name }}\":{\"shape\":[{{ output.shape_literal }}],\"data\":");
     printf("[");
 {% for depth in range(output.rank) %}
 {{ output.loop_indents[depth] }}for (size_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
@@ -71,6 +78,8 @@ int main(void) {
 {% endif %}
 {{ output.loop_indents[depth] }}}
 {% endfor %}
-    printf("]}}\n");
+    printf("]}");
+{% endfor %}
+    printf("}}\n");
     return 0;
 }

@@ -73,15 +73,19 @@ class Compiler:
         )
 
     def _lower_model(self, graph: Graph) -> LoweredModel:
-        if len(graph.outputs) != 1:
-            raise UnsupportedOpError("Only single-output graphs are supported")
+        if not graph.outputs:
+            raise UnsupportedOpError("Graph must have at least one output")
         if not graph.nodes:
             raise UnsupportedOpError("Graph must contain at least one node")
-        output_value = graph.outputs[0]
-        output_dtype = _value_dtype(graph, output_value.name)
-        element_count = _element_count(output_value.type.shape)
-        if element_count <= 0:
-            raise ShapeInferenceError("Output shape must be fully defined")
+        output_names = tuple(value.name for value in graph.outputs)
+        output_shapes = tuple(value.type.shape for value in graph.outputs)
+        output_dtypes = tuple(
+            _value_dtype(graph, value.name) for value in graph.outputs
+        )
+        for shape in output_shapes:
+            element_count = _element_count(shape)
+            if element_count <= 0:
+                raise ShapeInferenceError("Output shape must be fully defined")
         constants = _lowered_constants(graph)
         input_names = tuple(value.name for value in graph.inputs)
         input_shapes = tuple(value.type.shape for value in graph.inputs)
@@ -184,10 +188,9 @@ class Compiler:
             input_names=input_names,
             input_shapes=input_shapes,
             input_dtypes=input_dtypes,
-            output_name=output_value.name,
-            output_dtype=output_dtype,
-            element_count=element_count,
-            output_shape=output_value.type.shape,
+            output_names=output_names,
+            output_shapes=output_shapes,
+            output_dtypes=output_dtypes,
             constants=constants,
             ops=tuple(ops),
         )

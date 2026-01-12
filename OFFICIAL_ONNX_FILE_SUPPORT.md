@@ -22,10 +22,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_acos_example/model.onnx | ❌ | Unsupported op Acos |
 | node/test_acosh/model.onnx | ❌ | Unsupported op Acosh |
 | node/test_acosh_example/model.onnx | ❌ | Unsupported op Acosh |
-| node/test_adagrad/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_adagrad_multiple/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_adam/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_adam_multiple/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_adagrad/model.onnx | ❌ | Unsupported op Adagrad |
+| node/test_adagrad_multiple/model.onnx | ❌ | Unsupported op Adagrad |
+| node/test_adam/model.onnx | ❌ | Unsupported op Adam |
+| node/test_adam_multiple/model.onnx | ❌ | Unsupported op Adam |
 | node/test_add/model.onnx | ✅ |  |
 | node/test_add_bcast/model.onnx | ✅ |  |
 | node/test_add_int16/model.onnx | ✅ |  |
@@ -113,7 +113,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate' |
 | node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate' |
-| node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate' |
 | node/test_attention_3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_QIntermediate' |
 | node/test_attention_3d_gqa/model.onnx | ❌ | Unsupported op Attention |
@@ -126,7 +126,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate' |
 | node/test_attention_3d_gqa_softcap/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate' |
-| node/test_attention_3d_gqa_with_past_and_present/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_3d_gqa_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate' |
 | node/test_attention_3d_scaled/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_QIntermediate' |
@@ -134,15 +134,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_QIntermediate' |
 | node/test_attention_3d_transpose_verification/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_transpose_verification_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_3d_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate' |
 | node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate' |
 | node/test_attention_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask/model.onnx | ❌ | Unsupported op Attention |
@@ -173,11 +173,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias' |
 | node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias' |
-| node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_KExpanded' |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_KExpanded' |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_KExpanded' |
 | node/test_attention_4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_AttnBias' |
 | node/test_attention_4d_fp16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
@@ -192,7 +192,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias' |
 | node/test_attention_4d_gqa_softcap/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias' |
-| node/test_attention_4d_gqa_with_past_and_present/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_gqa_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_KExpanded' |
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
 | node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
@@ -200,27 +200,27 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_AttnBias' |
 | node/test_attention_4d_softcap/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_AttnBias' |
-| node/test_attention_4d_with_past_and_present/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_expanded_function_KExpanded' |
-| node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_KExpanded' |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ❌ | Unsupported op Attention |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_KExpanded' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_KExpanded' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_KExpanded' |
-| node/test_attention_4d_with_qk_matmul/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_attention_4d_with_qk_matmul_bias/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_with_qk_matmul/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_attention_4d_with_qk_matmul_bias/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
 | node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_KExpanded' |
 | node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias' |
-| node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
 | node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_KExpanded' |
-| node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_KExpanded' |
 | node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
@@ -247,9 +247,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_basic_deform_conv_with_padding/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_basic_deform_conv_without_padding/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_batchnorm_epsilon/model.onnx | ✅ |  |
-| node/test_batchnorm_epsilon_training_mode/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_batchnorm_epsilon_training_mode/model.onnx | ❌ | BatchNormalization must have 5 inputs and 1 output |
 | node/test_batchnorm_example/model.onnx | ✅ |  |
-| node/test_batchnorm_example_training_mode/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_batchnorm_example_training_mode/model.onnx | ❌ | BatchNormalization must have 5 inputs and 1 output |
 | node/test_bernoulli/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | node/test_bernoulli_double/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
 | node/test_bernoulli_double_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
@@ -589,8 +589,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_div_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | node/test_div_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | node/test_dropout_default/model.onnx | ✅ |  |
-| node/test_dropout_default_mask/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_dropout_default_mask_ratio/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_dropout_default_mask/model.onnx | ❌ | Dropout mask output is not supported |
+| node/test_dropout_default_mask_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_default_old/model.onnx | ✅ |  |
 | node/test_dropout_default_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_random_old/model.onnx | ✅ |  |
@@ -721,7 +721,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_group_normalization_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'GroupNormalization_test_group_normalization_epsilon_expanded_function_XReshaped' |
 | node/test_group_normalization_example/model.onnx | ❌ | Unsupported op GroupNormalization |
 | node/test_group_normalization_example_expanded/model.onnx | ❌ | Dynamic dim for tensor 'GroupNormalization_test_group_normalization_example_expanded_function_XReshaped' |
-| node/test_gru_batchwise/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_gru_batchwise/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_defaults/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_seq_length/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_with_initial_bias/model.onnx | ❌ | Unsupported op GRU |
@@ -776,61 +776,61 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_l1normalization_axis_last/model.onnx | ❌ | Unsupported op LpNormalization |
 | node/test_l2normalization_axis_0/model.onnx | ❌ | Unsupported op LpNormalization |
 | node/test_l2normalization_axis_1/model.onnx | ❌ | Unsupported op LpNormalization |
-| node/test_layer_normalization_2d_axis0/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_2d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis0_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape' |
-| node/test_layer_normalization_2d_axis1/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_2d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape' |
-| node/test_layer_normalization_2d_axis_negative_1/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
-| node/test_layer_normalization_2d_axis_negative_2/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_2d_axis_negative_2/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis0/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis0_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis1/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis2/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis2/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis3/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis3/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis3_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_1/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_2/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis_negative_2/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_3/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis_negative_3/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_4/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_4d_axis_negative_4/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' |
-| node/test_layer_normalization_default_axis/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_layer_normalization_default_axis/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_default_axis_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
 | node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
 | node/test_leakyrelu/model.onnx | ❌ | Unsupported op LeakyRelu |
@@ -886,7 +886,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_logsoftmax_negative_axis/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_logsoftmax_negative_axis_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | ✅ |  |
-| node/test_loop11/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_loop11/model.onnx | ❌ | Unsupported op Loop |
 | node/test_loop13_seq/model.onnx | ❌ | Missing elem_type for tensor 'seq_empty' |
 | node/test_loop16_seq_none/model.onnx | ❌ | Missing elem_type for tensor 'opt_seq' |
 | node/test_lpnormalization_default/model.onnx | ❌ | Unsupported op LpNormalization |
@@ -900,7 +900,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_lppool_3d_default/model.onnx | ❌ | Unsupported op LpPool |
 | node/test_lrn/model.onnx | ✅ |  |
 | node/test_lrn_default/model.onnx | ✅ |  |
-| node/test_lstm_batchwise/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_lstm_batchwise/model.onnx | ❌ | Unsupported op LSTM |
 | node/test_lstm_defaults/model.onnx | ❌ | Unsupported op LSTM |
 | node/test_lstm_with_initial_bias/model.onnx | ❌ | Unsupported op LSTM |
 | node/test_lstm_with_peepholes/model.onnx | ❌ | Unsupported op LSTM |
@@ -943,8 +943,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_maxpool_3d_dilations/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations_use_ref_impl/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx | ✅ |  |
-| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
+| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
 | node/test_maxunpool_export_with_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | node/test_maxunpool_export_without_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | node/test_mean_example/model.onnx | ❌ | Mean must have 2 inputs and 1 output |
@@ -980,8 +980,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mod_uint32/model.onnx | ❌ | Unsupported elem_type 12 (UINT32) for tensor 'x'. |
 | node/test_mod_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | node/test_mod_uint8/model.onnx | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
-| node/test_momentum/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_momentum_multiple/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_momentum/model.onnx | ❌ | Unsupported op Momentum |
+| node/test_momentum_multiple/model.onnx | ❌ | Unsupported op Momentum |
 | node/test_mul/model.onnx | ✅ |  |
 | node/test_mul_bcast/model.onnx | ✅ |  |
 | node/test_mul_example/model.onnx | ✅ |  |
@@ -996,7 +996,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mvn_expanded_ver18/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_neg/model.onnx | ✅ |  |
 | node/test_neg_example/model.onnx | ✅ |  |
-| node/test_nesterov_momentum/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_nesterov_momentum/model.onnx | ❌ | Unsupported op Momentum |
 | node/test_nllloss_NC/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
 | node/test_nllloss_NC_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1/model.onnx | ❌ | Scalar outputs are not supported |
@@ -1360,8 +1360,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
 | node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced' |
 | node/test_round/model.onnx | ❌ | Unsupported op Round |
-| node/test_scan9_sum/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_scan_sum/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_scan9_sum/model.onnx | ❌ | Unsupported op Scan |
+| node/test_scan_sum/model.onnx | ❌ | Unsupported op Scan |
 | node/test_scatter_elements_with_axis/model.onnx | ❌ | Unsupported op ScatterElements |
 | node/test_scatter_elements_with_duplicate_indices/model.onnx | ❌ | Unsupported op ScatterElements |
 | node/test_scatter_elements_with_negative_indices/model.onnx | ❌ | Unsupported op ScatterElements |
@@ -1377,72 +1377,72 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_scatternd_multiply/model.onnx | ❌ | Unsupported op ScatterND |
 | node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_mean/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_3d/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_3d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_3d_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_3d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_no_weight_ii/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_no_weight_ii_3d/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_no_weight_ii_4d/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight_ii/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight_ii_3d/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight_ii_4d/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_weight_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_mean_weight_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_weight_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_none/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_none_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_none_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_none_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_none_weights/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_none_weights_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_none_weights_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_none_weights_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_sum/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_sce_sum_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_sum_log_prob/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_sce_sum_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
 | node/test_selu/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
@@ -1481,7 +1481,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sigmoid/model.onnx | ❌ | Unsupported op Sigmoid |
 | node/test_sigmoid_example/model.onnx | ❌ | Unsupported op Sigmoid |
 | node/test_sign/model.onnx | ❌ | Unsupported op Sign |
-| node/test_simple_rnn_batchwise/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_simple_rnn_batchwise/model.onnx | ❌ | Unsupported op RNN |
 | node/test_simple_rnn_defaults/model.onnx | ❌ | Unsupported op RNN |
 | node/test_simple_rnn_with_initial_bias/model.onnx | ❌ | Unsupported op RNN |
 | node/test_sin/model.onnx | ✅ |  |
@@ -1529,25 +1529,25 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_softsign_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
 | node/test_spacetodepth/model.onnx | ❌ | Unsupported op SpaceToDepth |
 | node/test_spacetodepth_example/model.onnx | ❌ | Unsupported op SpaceToDepth |
-| node/test_split_1d_uneven_split_opset18/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_2d_uneven_split_opset18/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_equal_parts_1d_opset13/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_equal_parts_1d_opset18/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_equal_parts_2d/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_equal_parts_2d_opset13/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_equal_parts_default_axis_opset13/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_equal_parts_default_axis_opset18/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_split_1d_uneven_split_opset18/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_2d_uneven_split_opset18/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_equal_parts_1d_opset13/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_equal_parts_1d_opset18/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_equal_parts_2d/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_equal_parts_2d_opset13/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_equal_parts_default_axis_opset13/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_equal_parts_default_axis_opset18/model.onnx | ❌ | Unsupported op Split |
 | node/test_split_to_sequence_1/model.onnx | ❌ | Missing elem_type for tensor 'seq' |
 | node/test_split_to_sequence_2/model.onnx | ❌ | Missing elem_type for tensor 'seq' |
 | node/test_split_to_sequence_nokeepdims/model.onnx | ❌ | Missing elem_type for tensor 'seq' |
-| node/test_split_variable_parts_1d_opset13/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_variable_parts_1d_opset18/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_variable_parts_2d_opset13/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_variable_parts_2d_opset18/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_variable_parts_default_axis_opset13/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_variable_parts_default_axis_opset18/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_zero_size_splits_opset13/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_split_zero_size_splits_opset18/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_split_variable_parts_1d_opset13/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_variable_parts_1d_opset18/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_variable_parts_2d_opset13/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_variable_parts_2d_opset18/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_variable_parts_default_axis_opset13/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_variable_parts_default_axis_opset18/model.onnx | ❌ | Unsupported op Split |
+| node/test_split_zero_size_splits_opset13/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_split_zero_size_splits_opset18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_sqrt/model.onnx | ✅ |  |
 | node/test_sqrt_example/model.onnx | ✅ |  |
 | node/test_squeeze/model.onnx | ❌ | Unsupported op Squeeze |
@@ -1607,19 +1607,19 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_thresholdedrelu_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
 | node/test_tile/model.onnx | ❌ | Unsupported op Tile |
 | node/test_tile_precomputed/model.onnx | ❌ | Unsupported op Tile |
-| node/test_top_k/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_top_k_negative_axis/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_top_k_same_values/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_top_k_same_values_2d/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_top_k_same_values_largest/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_top_k_smallest/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_top_k/model.onnx | ❌ | Unsupported op TopK |
+| node/test_top_k_negative_axis/model.onnx | ❌ | Unsupported op TopK |
+| node/test_top_k_same_values/model.onnx | ❌ | Unsupported op TopK |
+| node/test_top_k_same_values_2d/model.onnx | ❌ | Unsupported op TopK |
+| node/test_top_k_same_values_largest/model.onnx | ❌ | Unsupported op TopK |
+| node/test_top_k_smallest/model.onnx | ❌ | Unsupported op TopK |
 | node/test_top_k_uint64/model.onnx | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | node/test_training_dropout/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_training_dropout_default/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
-| node/test_training_dropout_default_mask/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_training_dropout_mask/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_training_dropout_default_mask/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
+| node/test_training_dropout_mask/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_training_dropout_zero_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
-| node/test_training_dropout_zero_ratio_mask/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_training_dropout_zero_ratio_mask/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_transpose_all_permutations_0/model.onnx | ✅ |  |
 | node/test_transpose_all_permutations_1/model.onnx | ✅ |  |
 | node/test_transpose_all_permutations_2/model.onnx | ✅ |  |
@@ -1645,12 +1645,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_triu_square/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_triu_square_neg/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_triu_zero/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_unique_length_1/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_unique_not_sorted_without_axis/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_unique_sorted_with_axis/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_unique_sorted_with_axis_3d/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_unique_sorted_with_negative_axis/model.onnx | ❌ | Only single-output graphs are supported |
-| node/test_unique_sorted_without_axis/model.onnx | ❌ | Only single-output graphs are supported |
+| node/test_unique_length_1/model.onnx | ❌ | Unsupported op Unique |
+| node/test_unique_not_sorted_without_axis/model.onnx | ❌ | Unsupported op Unique |
+| node/test_unique_sorted_with_axis/model.onnx | ❌ | Unsupported op Unique |
+| node/test_unique_sorted_with_axis_3d/model.onnx | ❌ | Unsupported op Unique |
+| node/test_unique_sorted_with_negative_axis/model.onnx | ❌ | Unsupported op Unique |
+| node/test_unique_sorted_without_axis/model.onnx | ❌ | Unsupported op Unique |
 | node/test_unsqueeze_axis_0/model.onnx | ✅ |  |
 | node/test_unsqueeze_axis_1/model.onnx | ✅ |  |
 | node/test_unsqueeze_axis_2/model.onnx | ✅ |  |
@@ -1759,7 +1759,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_addconstant/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for Constant '1'. |
 | pytorch-operator/test_operator_addmm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_basic/model.onnx | ❌ | Unsupported op Sigmoid |
-| pytorch-operator/test_operator_chunk/model.onnx | ❌ | Only single-output graphs are supported |
+| pytorch-operator/test_operator_chunk/model.onnx | ❌ | Unsupported op Split |
 | pytorch-operator/test_operator_clip/model.onnx | ❌ | Unsupported op Clip |
 | pytorch-operator/test_operator_concat2/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_conv/model.onnx | ✅ |  |
@@ -1785,14 +1785,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_selu/model.onnx | ❌ | Unsupported op Selu |
 | pytorch-operator/test_operator_sqrt/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Unsupported op InstanceNormalization |
-| pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Only single-output graphs are supported |
+| pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
 | pytorch-operator/test_operator_view/model.onnx | ❌ | Unsupported op Flatten |
 | simple/test_expand_shape_model1/model.onnx | ❌ | Unsupported op Expand |
 | simple/test_expand_shape_model2/model.onnx | ❌ | Unsupported op Expand |
 | simple/test_expand_shape_model3/model.onnx | ❌ | Unsupported op Expand |
 | simple/test_expand_shape_model4/model.onnx | ❌ | Unsupported op Expand |
-| simple/test_gradient_of_add/model.onnx | ❌ | Only single-output graphs are supported |
-| simple/test_gradient_of_add_and_mul/model.onnx | ❌ | Only single-output graphs are supported |
+| simple/test_gradient_of_add/model.onnx | ❌ | Scalar outputs are not supported |
+| simple/test_gradient_of_add_and_mul/model.onnx | ❌ | Scalar outputs are not supported |
 | simple/test_sequence_model1/model.onnx | ❌ | Dynamic dim for tensor 'out' |
 | simple/test_sequence_model2/model.onnx | ❌ | Missing elem_type for tensor 'seq_1' |
 | simple/test_sequence_model3/model.onnx | ❌ | Missing elem_type for tensor 'seq_1' |
