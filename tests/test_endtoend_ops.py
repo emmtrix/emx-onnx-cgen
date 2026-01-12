@@ -50,6 +50,48 @@ def _make_operator_model(
     return model
 
 
+def _make_reduce_model(
+    *,
+    op_type: str,
+    input_shape: list[int],
+    output_shape: list[int],
+    axes: list[int],
+    keepdims: int,
+    dtype: int,
+    opset: int = 18,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
+    output = helper.make_tensor_value_info("out", dtype, output_shape)
+    axes_values = np.array(axes, dtype=np.int64)
+    axes_tensor = helper.make_tensor(
+        "axes",
+        TensorProto.INT64,
+        dims=axes_values.shape,
+        vals=axes_values.tolist(),
+    )
+    node = helper.make_node(
+        op_type,
+        inputs=["in0", "axes"],
+        outputs=[output.name],
+        keepdims=keepdims,
+    )
+    graph = helper.make_graph(
+        [node],
+        f"{op_type.lower()}_graph",
+        [input_info],
+        [output],
+        initializer=[axes_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_constant_add_model() -> onnx.ModelProto:
     input_shape = [2, 3]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -219,6 +261,23 @@ def _unsqueeze_output_shape(
             output_dims.append(input_shape[input_index])
             input_index += 1
     return output_dims
+
+
+def _reduce_output_shape(
+    input_shape: list[int], axes: list[int], keepdims: int
+) -> list[int]:
+    rank = len(input_shape)
+    normalized = []
+    for axis in axes:
+        if axis < 0:
+            axis += rank
+        normalized.append(axis)
+    if keepdims:
+        return [
+            1 if axis in normalized else dim
+            for axis, dim in enumerate(input_shape)
+        ]
+    return [dim for axis, dim in enumerate(input_shape) if axis not in normalized]
 
 
 def _make_unsqueeze_model(
@@ -810,6 +869,86 @@ OPERATOR_CASES = [
     },
 ]
 
+REDUCE_CASES = [
+    {
+        "name": "ReduceSumAxis1KeepDims",
+        "op_type": "ReduceSum",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceSumAxis1NoKeepDims",
+        "op_type": "ReduceSum",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 0,
+    },
+    {
+        "name": "ReduceMeanAxis1",
+        "op_type": "ReduceMean",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceMaxAxis1",
+        "op_type": "ReduceMax",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceMinAxis1",
+        "op_type": "ReduceMin",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceProdAxis1",
+        "op_type": "ReduceProd",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceL1Axis1",
+        "op_type": "ReduceL1",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceL2Axis1",
+        "op_type": "ReduceL2",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceLogSumAxis1",
+        "op_type": "ReduceLogSum",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceLogSumExpAxis1",
+        "op_type": "ReduceLogSumExp",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+    {
+        "name": "ReduceSumSquareAxis1",
+        "op_type": "ReduceSumSquare",
+        "input_shape": [2, 3, 4],
+        "axes": [1],
+        "keepdims": 1,
+    },
+]
+
 AVG_POOL_CASES = [
     {
         "name": "Kernel2Stride2",
@@ -866,6 +1005,22 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         dtype=case["dtype"],
         attrs=case["attrs"],
         opset=case.get("opset", 13),
+    )
+    _run_cli_verify(model)
+
+
+@pytest.mark.parametrize("case", REDUCE_CASES, ids=lambda case: case["name"])
+def test_reduce_op_matches_onnxruntime(case: dict[str, object]) -> None:
+    output_shape = _reduce_output_shape(
+        case["input_shape"], case["axes"], case["keepdims"]
+    )
+    model = _make_reduce_model(
+        op_type=case["op_type"],
+        input_shape=case["input_shape"],
+        output_shape=output_shape,
+        axes=case["axes"],
+        keepdims=case["keepdims"],
+        dtype=TensorProto.FLOAT,
     )
     _run_cli_verify(model)
 

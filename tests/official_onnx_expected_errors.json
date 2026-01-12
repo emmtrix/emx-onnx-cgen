@@ -3433,11 +3433,11 @@
   ],
   [
     "node/test_logsoftmax_axis_0_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_axis_0_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_axis_1/model.onnx",
@@ -3445,11 +3445,11 @@
   ],
   [
     "node/test_logsoftmax_axis_1_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_axis_1_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_axis_2/model.onnx",
@@ -3457,11 +3457,11 @@
   ],
   [
     "node/test_logsoftmax_axis_2_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_axis_2_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_default_axis/model.onnx",
@@ -3469,11 +3469,11 @@
   ],
   [
     "node/test_logsoftmax_default_axis_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_default_axis_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_example_1/model.onnx",
@@ -3481,11 +3481,11 @@
   ],
   [
     "node/test_logsoftmax_example_1_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_example_1_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_large_number/model.onnx",
@@ -3493,11 +3493,11 @@
   ],
   [
     "node/test_logsoftmax_large_number_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_large_number_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_negative_axis/model.onnx",
@@ -3505,11 +3505,11 @@
   ],
   [
     "node/test_logsoftmax_negative_axis_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_loop11/model.onnx",
@@ -3937,11 +3937,11 @@
   ],
   [
     "node/test_mvn_expanded/model.onnx",
-    "Unsupported op ReduceMean"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_mvn_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMean"
+    "Scalar outputs are not supported"
   ],
   [
     "node/test_neg/model.onnx",
@@ -4421,179 +4421,179 @@
   ],
   [
     "node/test_reduce_l1_default_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_default_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_default_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_empty_set/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_empty_set_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_keep_dims_example/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_keep_dims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_keep_dims_random/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_keep_dims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_negative_axes_keep_dims_example/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_negative_axes_keep_dims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l1_negative_axes_keep_dims_random/model.onnx",
-    "Unsupported op ReduceL1"
+    "ReduceL1 axes input must be constant"
   ],
   [
     "node/test_reduce_l1_negative_axes_keep_dims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_default_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_empty_set/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_empty_set_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_keep_dims_example/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_keep_dims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_keep_dims_random/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_keep_dims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx",
-    "Unsupported op ReduceL2"
+    "ReduceL2 axes input must be constant"
   ],
   [
     "node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_asc_axes/model.onnx",
-    "Unsupported op ReduceLogSum"
+    "ReduceLogSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_asc_axes_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_default/model.onnx",
-    "Unsupported op ReduceLogSum"
+    "ReduceLogSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_default_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_desc_axes/model.onnx",
-    "Unsupported op ReduceLogSum"
+    "ReduceLogSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_desc_axes_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_empty_set/model.onnx",
-    "Unsupported op ReduceLogSum"
+    "ReduceLogSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_empty_set_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx",
@@ -4629,7 +4629,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set/model.onnx",
-    "Unsupported op ReduceLogSumExp"
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx",
@@ -4669,187 +4669,187 @@
   ],
   [
     "node/test_reduce_log_sum_negative_axes/model.onnx",
-    "Unsupported op ReduceLogSum"
+    "ReduceLogSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_negative_axes_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_max_bool_inputs/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax does not support dtype bool"
   ],
   [
     "node/test_reduce_max_default_axes_keepdim_example/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_reduce_max_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_reduce_max_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax axes input must be constant"
   ],
   [
     "node/test_reduce_max_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax axes input must be constant"
   ],
   [
     "node/test_reduce_max_empty_set/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax axes input must be constant"
   ],
   [
     "node/test_reduce_max_keepdims_example/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax axes input must be constant"
   ],
   [
     "node/test_reduce_max_keepdims_random/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax axes input must be constant"
   ],
   [
     "node/test_reduce_max_negative_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax axes input must be constant"
   ],
   [
     "node/test_reduce_max_negative_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceMax"
+    "ReduceMax axes input must be constant"
   ],
   [
     "node/test_reduce_mean_default_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_mean_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_mean_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_mean_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_mean_keepdims_example/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_mean_keepdims_random/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_mean_negative_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_mean_negative_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceMean"
+    "ReduceMean axes input must be constant"
   ],
   [
     "node/test_reduce_min_bool_inputs/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin does not support dtype bool"
   ],
   [
     "node/test_reduce_min_default_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceMin"
+    ""
   ],
   [
     "node/test_reduce_min_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceMin"
+    ""
   ],
   [
     "node/test_reduce_min_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin axes input must be constant"
   ],
   [
     "node/test_reduce_min_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin axes input must be constant"
   ],
   [
     "node/test_reduce_min_empty_set/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin axes input must be constant"
   ],
   [
     "node/test_reduce_min_keepdims_example/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin axes input must be constant"
   ],
   [
     "node/test_reduce_min_keepdims_random/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin axes input must be constant"
   ],
   [
     "node/test_reduce_min_negative_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin axes input must be constant"
   ],
   [
     "node/test_reduce_min_negative_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceMin"
+    "ReduceMin axes input must be constant"
   ],
   [
     "node/test_reduce_prod_default_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceProd"
+    ""
   ],
   [
     "node/test_reduce_prod_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceProd"
+    ""
   ],
   [
     "node/test_reduce_prod_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceProd"
+    "ReduceProd axes input must be constant"
   ],
   [
     "node/test_reduce_prod_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceProd"
+    "ReduceProd axes input must be constant"
   ],
   [
     "node/test_reduce_prod_empty_set/model.onnx",
-    "Unsupported op ReduceProd"
+    "ReduceProd axes input must be constant"
   ],
   [
     "node/test_reduce_prod_keepdims_example/model.onnx",
-    "Unsupported op ReduceProd"
+    "ReduceProd axes input must be constant"
   ],
   [
     "node/test_reduce_prod_keepdims_random/model.onnx",
-    "Unsupported op ReduceProd"
+    "ReduceProd axes input must be constant"
   ],
   [
     "node/test_reduce_prod_negative_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceProd"
+    "ReduceProd axes input must be constant"
   ],
   [
     "node/test_reduce_prod_negative_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceProd"
+    "ReduceProd axes input must be constant"
   ],
   [
     "node/test_reduce_sum_default_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_empty_axes_input_noop/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_empty_axes_input_noop_example/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_empty_set/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx",
@@ -4857,91 +4857,91 @@
   ],
   [
     "node/test_reduce_sum_keepdims_example/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_keepdims_random/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_negative_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_negative_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_default_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_default_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_do_not_keepdims_example/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_do_not_keepdims_random/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_empty_set/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_empty_set_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_keepdims_example/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_keepdims_random/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_negative_axes_keepdims_example/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx",
-    "Unsupported op ReduceSumSquare"
+    "ReduceSumSquare axes input must be constant"
   ],
   [
     "node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported op ReduceSum"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reflect_pad/model.onnx",
@@ -5965,11 +5965,11 @@
   ],
   [
     "node/test_softmax_axis_0_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_axis_0_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_axis_1/model.onnx",
@@ -5977,11 +5977,11 @@
   ],
   [
     "node/test_softmax_axis_1_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_axis_1_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_axis_2/model.onnx",
@@ -5989,11 +5989,11 @@
   ],
   [
     "node/test_softmax_axis_2_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_axis_2_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_default_axis/model.onnx",
@@ -6001,11 +6001,11 @@
   ],
   [
     "node/test_softmax_default_axis_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_default_axis_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_example/model.onnx",
@@ -6013,11 +6013,11 @@
   ],
   [
     "node/test_softmax_example_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_example_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_large_number/model.onnx",
@@ -6025,11 +6025,11 @@
   ],
   [
     "node/test_softmax_large_number_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_large_number_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_negative_axis/model.onnx",
@@ -6037,11 +6037,11 @@
   ],
   [
     "node/test_softmax_negative_axis_expanded/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softmax_negative_axis_expanded_ver18/model.onnx",
-    "Unsupported op ReduceMax"
+    ""
   ],
   [
     "node/test_softplus/model.onnx",
@@ -7073,19 +7073,19 @@
   ],
   [
     "pytorch-operator/test_operator_reduced_mean/model.onnx",
-    "Unsupported op ReduceMean"
+    ""
   ],
   [
     "pytorch-operator/test_operator_reduced_mean_keepdim/model.onnx",
-    "Unsupported op ReduceMean"
+    ""
   ],
   [
     "pytorch-operator/test_operator_reduced_sum/model.onnx",
-    "Unsupported op ReduceSum"
+    ""
   ],
   [
     "pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx",
-    "Unsupported op ReduceSum"
+    ""
   ],
   [
     "pytorch-operator/test_operator_repeat/model.onnx",

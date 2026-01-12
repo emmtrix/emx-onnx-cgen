@@ -1,0 +1,17 @@
+void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+{% for dim in output_shape %}
+{{ output_loop_indents[loop.index0] }}for (size_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ output_inner_indent }}{{ c_type }} acc = {{ init_literal }};
+{% for dim in reduce_dims %}
+{{ reduce_loop_indents[loop.index0] }}for (size_t {{ reduce_loop_vars[loop.index0] }} = 0; {{ reduce_loop_vars[loop.index0] }} < {{ dim }}; ++{{ reduce_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ reduce_inner_indent }}{{ update_expr }}
+{% for _ in reduce_dims %}
+{{ reduce_loop_indents[loop.revindex0] }}}
+{% endfor %}
+{{ output_inner_indent }}{{ output }}{{ output_index_expr }} = {{ final_expr }};
+{% for _ in output_shape %}
+{{ output_loop_indents[loop.revindex0] }}}
+{% endfor %}
+}
