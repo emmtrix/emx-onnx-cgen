@@ -258,14 +258,30 @@ class ReshapeOp:
 class ResizeOp:
     input0: str
     output: str
-    batch: int
-    channels: int
-    in_h: int
-    in_w: int
-    out_h: int
-    out_w: int
-    scale_h: float
-    scale_w: float
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    scales: tuple[float, ...]
+    scales_input: str | None
+    sizes_input: str | None
+    roi_input: str | None
+    axes: tuple[int, ...]
+    scales_shape: tuple[int, ...] | None
+    sizes_shape: tuple[int, ...] | None
+    roi_shape: tuple[int, ...] | None
+    scales_dtype: str | None
+    sizes_dtype: str | None
+    roi_dtype: str | None
+    scales_axes: tuple[int, ...] | None
+    sizes_axes: tuple[int, ...] | None
+    roi_axes: tuple[int, ...] | None
+    mode: str
+    coordinate_transformation_mode: str
+    nearest_mode: str
+    cubic_coeff_a: float
+    exclude_outside: bool
+    extrapolation_value: float
+    antialias: bool
+    keep_aspect_ratio_policy: str
     dtype: str
 
 
@@ -454,6 +470,9 @@ class CEmitter:
             and "#include <stdint.h>" not in includes
         ):
             includes.append("#include <stdint.h>")
+        if any(isinstance(op, ResizeOp) for op in resolved_ops):
+            if "#include <stdint.h>" not in includes:
+                includes.append("#include <stdint.h>")
         if "bool" in model_dtypes:
             includes.append("#include <stdbool.h>")
         math_ops = {
@@ -499,6 +518,9 @@ class CEmitter:
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
         if any(isinstance(op, LogSoftmaxOp) for op in resolved_ops):
+            if "#include <math.h>" not in includes:
+                includes.append("#include <math.h>")
+        if any(isinstance(op, ResizeOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
         if any(
@@ -586,6 +608,7 @@ class CEmitter:
             | MaxPoolOp
             | ConcatOp
             | ReshapeOp
+            | ResizeOp
             | ReduceOp
             | ConstantOfShapeOp
         ],
@@ -657,6 +680,16 @@ class CEmitter:
                 call = f"{op.input0}, {op.output}"
             elif isinstance(op, ReshapeOp):
                 call = f"{op.input0}, {op.output}"
+            elif isinstance(op, ResizeOp):
+                call_parts = [op.input0]
+                if op.roi_input is not None:
+                    call_parts.append(op.roi_input)
+                if op.scales_input is not None:
+                    call_parts.append(op.scales_input)
+                if op.sizes_input is not None:
+                    call_parts.append(op.sizes_input)
+                call_parts.append(op.output)
+                call = ", ".join(call_parts)
             else:
                 call = f"{op.input0}, {op.output}"
             lines.append(f"    {model.name}_op{index}({call});")
@@ -980,14 +1013,36 @@ class CEmitter:
             return ResizeOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                batch=op.batch,
-                channels=op.channels,
-                in_h=op.in_h,
-                in_w=op.in_w,
-                out_h=op.out_h,
-                out_w=op.out_w,
-                scale_h=op.scale_h,
-                scale_w=op.scale_w,
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                scales=op.scales,
+                scales_input=temp_map.get(op.scales_input, op.scales_input)
+                if op.scales_input
+                else None,
+                sizes_input=temp_map.get(op.sizes_input, op.sizes_input)
+                if op.sizes_input
+                else None,
+                roi_input=temp_map.get(op.roi_input, op.roi_input)
+                if op.roi_input
+                else None,
+                axes=op.axes,
+                scales_shape=op.scales_shape,
+                sizes_shape=op.sizes_shape,
+                roi_shape=op.roi_shape,
+                scales_dtype=op.scales_dtype,
+                sizes_dtype=op.sizes_dtype,
+                roi_dtype=op.roi_dtype,
+                scales_axes=op.scales_axes,
+                sizes_axes=op.sizes_axes,
+                roi_axes=op.roi_axes,
+                mode=op.mode,
+                coordinate_transformation_mode=op.coordinate_transformation_mode,
+                nearest_mode=op.nearest_mode,
+                cubic_coeff_a=op.cubic_coeff_a,
+                exclude_outside=op.exclude_outside,
+                extrapolation_value=op.extrapolation_value,
+                antialias=op.antialias,
+                keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
                 dtype=op.dtype,
             )
         if isinstance(op, ReduceOp):
@@ -1533,26 +1588,97 @@ class CEmitter:
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
         if isinstance(op, ResizeOp):
+            input_suffix = CEmitter._array_suffix(op.input_shape)
+            output_suffix = CEmitter._array_suffix(op.output_shape)
+            params = [f"const {c_type} {op.input0}{input_suffix}"]
+            roi_suffix = None
+            scales_suffix = None
+            sizes_suffix = None
+            roi_c_type = None
+            scales_c_type = None
+            sizes_c_type = None
+            if op.roi_input and op.roi_shape and op.roi_dtype:
+                roi_suffix = CEmitter._array_suffix(op.roi_shape)
+                roi_c_type = dtype_info(op.roi_dtype).c_type
+                params.append(
+                    f"const {roi_c_type} {op.roi_input}{roi_suffix}"
+                )
+            if op.scales_input and op.scales_shape and op.scales_dtype:
+                scales_suffix = CEmitter._array_suffix(op.scales_shape)
+                scales_c_type = dtype_info(op.scales_dtype).c_type
+                params.append(
+                    f"const {scales_c_type} {op.scales_input}{scales_suffix}"
+                )
+            if op.sizes_input and op.sizes_shape and op.sizes_dtype:
+                sizes_suffix = CEmitter._array_suffix(op.sizes_shape)
+                sizes_c_type = dtype_info(op.sizes_dtype).c_type
+                params.append(
+                    f"const {sizes_c_type} {op.sizes_input}{sizes_suffix}"
+                )
+            params.append(f"{c_type} {op.output}{output_suffix}")
+            scales_axis_map = None
+            if op.scales_input:
+                scales_axis_map = (
+                    tuple(range(len(op.scales_axes)))
+                    if op.scales_axes
+                    else op.axes
+                )
+            sizes_axis_map = None
+            if op.sizes_input:
+                sizes_axis_map = (
+                    tuple(range(len(op.sizes_axes)))
+                    if op.sizes_axes
+                    else op.axes
+                )
+            roi_axis_map = None
+            if op.roi_input:
+                roi_axis_map = (
+                    tuple(range(len(op.roi_axes)))
+                    if op.roi_axes
+                    else op.axes
+                )
             return resize_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
+                params=params,
                 input0=op.input0,
                 output=op.output,
                 c_type=c_type,
-                input_suffix=CEmitter._array_suffix(
-                    (op.batch, op.channels, op.in_h, op.in_w)
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                rank=len(op.input_shape),
+                loop_vars=CEmitter._loop_vars(op.output_shape),
+                loop_indents=CEmitter._loop_indents(op.output_shape),
+                inner_indent=CEmitter._inner_indent(op.output_shape),
+                scales=op.scales,
+                scales_input=op.scales_input,
+                sizes_input=op.sizes_input,
+                roi_input=op.roi_input,
+                roi_suffix=roi_suffix,
+                scales_suffix=scales_suffix,
+                sizes_suffix=sizes_suffix,
+                roi_c_type=roi_c_type,
+                scales_c_type=scales_c_type,
+                sizes_c_type=sizes_c_type,
+                axes=op.axes,
+                scales_axes=op.scales_axes,
+                sizes_axes=op.sizes_axes,
+                roi_axes=op.roi_axes,
+                scales_axis_map=scales_axis_map,
+                sizes_axis_map=sizes_axis_map,
+                roi_axis_map=roi_axis_map,
+                mode=op.mode,
+                coordinate_transformation_mode=op.coordinate_transformation_mode,
+                nearest_mode=op.nearest_mode,
+                cubic_coeff_a=CEmitter._format_double(op.cubic_coeff_a),
+                exclude_outside=op.exclude_outside,
+                extrapolation_value=CEmitter._format_double(
+                    op.extrapolation_value
                 ),
-                output_suffix=CEmitter._array_suffix(
-                    (op.batch, op.channels, op.out_h, op.out_w)
-                ),
-                batch=op.batch,
-                channels=op.channels,
-                in_h=op.in_h,
-                in_w=op.in_w,
-                out_h=op.out_h,
-                out_w=op.out_w,
-                scale_h_literal=CEmitter._format_double(op.scale_h),
-                scale_w_literal=CEmitter._format_double(op.scale_w),
+                antialias=op.antialias,
+                keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
             ).rstrip()
         if isinstance(op, ReduceOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
@@ -1839,7 +1965,7 @@ class CEmitter:
         if isinstance(op, ReshapeOp):
             return op.output_shape
         if isinstance(op, ResizeOp):
-            return (op.batch, op.channels, op.out_h, op.out_w)
+            return op.output_shape
         if isinstance(op, ReduceOp):
             return op.output_shape
         if isinstance(op, ConstantOfShapeOp):
