@@ -46,6 +46,14 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Emit a JSON-producing testbench main() for validation",
     )
+    compile_parser.add_argument(
+        "--emit-data-file",
+        action="store_true",
+        help=(
+            "Emit constant data arrays to a separate C file "
+            "named like the output with a _data suffix"
+        ),
+    )
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -98,7 +106,11 @@ def _handle_compile(args: argparse.Namespace) -> int:
             emit_testbench=args.emit_testbench,
         )
         compiler = Compiler(options)
-        generated = compiler.compile(model)
+        if args.emit_data_file:
+            generated, data_source = compiler.compile_with_data_file(model)
+        else:
+            generated = compiler.compile(model)
+            data_source = None
     except (OSError, CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         LOGGER.error("Failed to compile %s: %s", model_path, exc)
         return 1
@@ -106,6 +118,12 @@ def _handle_compile(args: argparse.Namespace) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generated, encoding="utf-8")
     LOGGER.info("Wrote C source to %s", output_path)
+    if data_source is not None:
+        data_path = output_path.with_name(
+            f"{output_path.stem}_data{output_path.suffix}"
+        )
+        data_path.write_text(data_source, encoding="utf-8")
+        LOGGER.info("Wrote data source to %s", data_path)
     return 0
 
 
