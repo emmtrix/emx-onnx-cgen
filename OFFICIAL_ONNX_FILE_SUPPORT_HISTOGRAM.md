@@ -86,7 +86,6 @@
 | Unsupported op Gelu | 4 | █ |
 | Unsupported op GRU | 4 | █ |
 | Unsupported op HardSigmoid | 4 | █ |
-| Unsupported op LSTM | 4 | █ |
 | Unsupported op Softplus | 4 | █ |
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |

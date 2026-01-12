@@ -241,6 +241,152 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _make_lstm_model(
+    *,
+    seq_length: int,
+    batch_size: int,
+    input_size: int,
+    hidden_size: int,
+    dtype: int,
+    include_optional_inputs: bool,
+    include_y: bool,
+    include_y_h: bool,
+    include_y_c: bool,
+    layout: int = 0,
+) -> onnx.ModelProto:
+    x_shape = (
+        [seq_length, batch_size, input_size]
+        if layout == 0
+        else [batch_size, seq_length, input_size]
+    )
+    inputs = [
+        helper.make_tensor_value_info("X", dtype, x_shape),
+        helper.make_tensor_value_info(
+            "W", dtype, [1, 4 * hidden_size, input_size]
+        ),
+        helper.make_tensor_value_info(
+            "R", dtype, [1, 4 * hidden_size, hidden_size]
+        ),
+    ]
+    input_names = ["X", "W", "R"]
+    if include_optional_inputs:
+        inputs.extend(
+            [
+                helper.make_tensor_value_info(
+                    "B", dtype, [1, 8 * hidden_size]
+                ),
+                helper.make_tensor_value_info(
+                    "sequence_lens", TensorProto.INT32, [batch_size]
+                ),
+                helper.make_tensor_value_info(
+                    "initial_h", dtype, [1, batch_size, hidden_size]
+                ),
+                helper.make_tensor_value_info(
+                    "initial_c", dtype, [1, batch_size, hidden_size]
+                ),
+                helper.make_tensor_value_info(
+                    "P", dtype, [1, 3 * hidden_size]
+                ),
+            ]
+        )
+        input_names.extend(
+            ["B", "sequence_lens", "initial_h", "initial_c", "P"]
+        )
+    outputs = []
+    output_names: list[str] = []
+    if include_y:
+        y_shape = (
+            [seq_length, 1, batch_size, hidden_size]
+            if layout == 0
+            else [batch_size, seq_length, 1, hidden_size]
+        )
+        outputs.append(
+            helper.make_tensor_value_info("Y", dtype, y_shape)
+        )
+        output_names.append("Y")
+    if include_y_h:
+        outputs.append(
+            helper.make_tensor_value_info(
+                "Y_h", dtype, [1, batch_size, hidden_size]
+            )
+        )
+        output_names.append("Y_h")
+    if include_y_c:
+        outputs.append(
+            helper.make_tensor_value_info(
+                "Y_c", dtype, [1, batch_size, hidden_size]
+            )
+        )
+        output_names.append("Y_c")
+    node = helper.make_node(
+        "LSTM",
+        inputs=input_names,
+        outputs=output_names,
+        hidden_size=hidden_size,
+        layout=layout,
+    )
+    graph = helper.make_graph(
+        [node],
+        "lstm_graph",
+        inputs,
+        outputs,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 14)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _lstm_reference(
+    *,
+    x: np.ndarray,
+    w: np.ndarray,
+    r: np.ndarray,
+    b: np.ndarray,
+    sequence_lens: np.ndarray,
+    initial_h: np.ndarray,
+    initial_c: np.ndarray,
+    p: np.ndarray,
+    layout: int,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    if layout == 1:
+        x = np.swapaxes(x, 0, 1)
+    seq_length, batch_size, _ = x.shape
+    hidden_size = r.shape[-1]
+    y = np.zeros((seq_length, 1, batch_size, hidden_size), dtype=x.dtype)
+    h_prev = initial_h[0].copy()
+    c_prev = initial_c[0].copy()
+    bias = b[0, : 4 * hidden_size] + b[0, 4 * hidden_size :]
+    p_i = p[0, :hidden_size]
+    p_o = p[0, hidden_size : 2 * hidden_size]
+    p_f = p[0, 2 * hidden_size :]
+    for step in range(seq_length):
+        active_mask = step < sequence_lens
+        if not np.all(active_mask):
+            y[step, 0] = np.where(active_mask[:, None], y[step, 0], 0)
+        x_t = x[step]
+        gates = x_t @ w[0].T + h_prev @ r[0].T + bias
+        i, o, f, c = np.split(gates, 4, axis=1)
+        i = 1 / (1 + np.exp(-(i + p_i * c_prev)))
+        f = 1 / (1 + np.exp(-(f + p_f * c_prev)))
+        c_tilde = np.tanh(c)
+        c_new = f * c_prev + i * c_tilde
+        o = 1 / (1 + np.exp(-(o + p_o * c_new)))
+        h_new = o * np.tanh(c_new)
+        h_prev = np.where(active_mask[:, None], h_new, h_prev)
+        c_prev = np.where(active_mask[:, None], c_new, c_prev)
+        y[step, 0] = np.where(active_mask[:, None], h_prev, 0)
+    y_h = h_prev.reshape(1, batch_size, hidden_size)
+    y_c = c_prev.reshape(1, batch_size, hidden_size)
+    if layout == 1:
+        y = np.transpose(y, (2, 0, 1, 3))
+    return y, y_h, y_c
+
+
 def _shape_output_shape(
     input_shape: list[int], start: int | None, end: int | None
 ) -> list[int]:
@@ -1348,6 +1494,83 @@ def test_dropout_run_matches_numpy() -> None:
 
 def test_dropout_op_matches_onnxruntime() -> None:
     model = _make_dropout_model()
+    _run_cli_verify(model)
+
+
+def test_lstm_run_matches_numpy() -> None:
+    seq_length = 3
+    batch_size = 2
+    input_size = 4
+    hidden_size = 3
+    model = _make_lstm_model(
+        seq_length=seq_length,
+        batch_size=batch_size,
+        input_size=input_size,
+        hidden_size=hidden_size,
+        dtype=TensorProto.FLOAT,
+        include_optional_inputs=True,
+        include_y=True,
+        include_y_h=True,
+        include_y_c=True,
+        layout=0,
+    )
+    compiler = Compiler()
+    x = np.linspace(
+        0.1, 1.2, num=seq_length * batch_size * input_size, dtype=np.float32
+    ).reshape(seq_length, batch_size, input_size)
+    w = np.linspace(
+        0.2, 0.8, num=4 * hidden_size * input_size, dtype=np.float32
+    ).reshape(1, 4 * hidden_size, input_size)
+    r = np.linspace(
+        0.3, 0.9, num=4 * hidden_size * hidden_size, dtype=np.float32
+    ).reshape(1, 4 * hidden_size, hidden_size)
+    b = np.full((1, 8 * hidden_size), 0.05, dtype=np.float32)
+    sequence_lens = np.array([3, 2], dtype=np.int32)
+    initial_h = np.zeros((1, batch_size, hidden_size), dtype=np.float32)
+    initial_c = np.zeros((1, batch_size, hidden_size), dtype=np.float32)
+    p = np.full((1, 3 * hidden_size), 0.02, dtype=np.float32)
+    outputs = compiler.run(
+        model,
+        {
+            "X": x,
+            "W": w,
+            "R": r,
+            "B": b,
+            "sequence_lens": sequence_lens,
+            "initial_h": initial_h,
+            "initial_c": initial_c,
+            "P": p,
+        },
+    )
+    expected_y, expected_y_h, expected_y_c = _lstm_reference(
+        x=x,
+        w=w,
+        r=r,
+        b=b,
+        sequence_lens=sequence_lens,
+        initial_h=initial_h,
+        initial_c=initial_c,
+        p=p,
+        layout=0,
+    )
+    np.testing.assert_allclose(outputs["Y"], expected_y, rtol=1e-4, atol=1e-5)
+    np.testing.assert_allclose(outputs["Y_h"], expected_y_h, rtol=1e-4, atol=1e-5)
+    np.testing.assert_allclose(outputs["Y_c"], expected_y_c, rtol=1e-4, atol=1e-5)
+
+
+def test_lstm_op_matches_onnxruntime() -> None:
+    model = _make_lstm_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        dtype=TensorProto.FLOAT,
+        include_optional_inputs=False,
+        include_y=True,
+        include_y_h=True,
+        include_y_c=False,
+        layout=0,
+    )
     _run_cli_verify(model)
 
 
