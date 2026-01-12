@@ -177,6 +177,7 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
 def _reduce_dtype_supported(dtype: str) -> bool:
     return dtype in {
         "float",
+        "double",
         "int64",
         "int32",
         "int16",
@@ -202,9 +203,12 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
         raise UnsupportedOpError(
             f"{node.op_type} does not support dtype {op_dtype}"
         )
-    if node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY and op_dtype != "float":
+    if node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY and op_dtype not in {
+        "float",
+        "double",
+    }:
         raise UnsupportedOpError(
-            f"{node.op_type} supports float inputs only"
+            f"{node.op_type} supports float and double inputs only"
         )
     spec = _resolve_reduce_spec(graph, node)
     if spec is None:

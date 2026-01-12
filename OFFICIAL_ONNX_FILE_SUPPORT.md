@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 302 / 1802 official ONNX files.
+Support 310 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -49,7 +49,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx | ❌ | Unsupported op TreeEnsemble |
-| node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'X'. |
+| node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx | ❌ | Unsupported op TreeEnsemble |
 | node/test_and2d/model.onnx | ✅ |  |
 | node/test_and3d/model.onnx | ✅ |  |
 | node/test_and4d/model.onnx | ✅ |  |
@@ -250,10 +250,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_batchnorm_epsilon_training_mode/model.onnx | ❌ | BatchNormalization must have 5 inputs and 1 output |
 | node/test_batchnorm_example/model.onnx | ✅ |  |
 | node/test_batchnorm_example_training_mode/model.onnx | ❌ | BatchNormalization must have 5 inputs and 1 output |
-| node/test_bernoulli/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_bernoulli_double/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
-| node/test_bernoulli_double_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
-| node/test_bernoulli_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| node/test_bernoulli/model.onnx | ❌ | Unsupported op Bernoulli |
+| node/test_bernoulli_double/model.onnx | ❌ | Unsupported op Bernoulli |
+| node/test_bernoulli_double_expanded/model.onnx | ❌ | Unsupported op RandomUniformLike |
+| node/test_bernoulli_expanded/model.onnx | ❌ | Unsupported op RandomUniformLike |
 | node/test_bernoulli_seed/model.onnx | ❌ | Unsupported op Bernoulli |
 | node/test_bernoulli_seed_expanded/model.onnx | ❌ | Unsupported op RandomUniformLike |
 | node/test_bitshift_left_uint16/model.onnx | ❌ | Unsupported op BitShift |
@@ -284,8 +284,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
 | node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range' |
 | node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
-| node/test_cast_DOUBLE_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
-| node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| node/test_cast_DOUBLE_to_FLOAT/model.onnx | ❌ | Unsupported op Cast |
+| node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_DOUBLE/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
 | node/test_cast_FLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
 | node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
@@ -308,7 +308,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_cast_FLOAT_to_BFLOAT16/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'output'. |
-| node/test_cast_FLOAT_to_DOUBLE/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'output'. |
+| node/test_cast_FLOAT_to_DOUBLE/model.onnx | ❌ | Unsupported op Cast |
 | node/test_cast_FLOAT_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'output'. |
 | node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
@@ -345,10 +345,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
 | node/test_castlike_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | node/test_castlike_BFLOAT16_to_FLOAT_expanded/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
-| node/test_castlike_DOUBLE_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
-| node/test_castlike_DOUBLE_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
-| node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
-| node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'input'. |
+| node/test_castlike_DOUBLE_to_FLOAT/model.onnx | ❌ | Unsupported op CastLike |
+| node/test_castlike_DOUBLE_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
+| node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
+| node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx | ❌ | Unsupported op Cast |
 | node/test_castlike_FLOAT16_to_DOUBLE/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
 | node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
 | node/test_castlike_FLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
@@ -393,8 +393,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_castlike_FLOAT_to_BFLOAT16/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
 | node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
-| node/test_castlike_FLOAT_to_DOUBLE/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'like'. |
-| node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'like'. |
+| node/test_castlike_FLOAT_to_DOUBLE/model.onnx | ❌ | Unsupported op CastLike |
+| node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | ❌ | Unsupported op Cast |
 | node/test_castlike_FLOAT_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
 | node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
 | node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
@@ -544,15 +544,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_cos_example/model.onnx | ✅ |  |
 | node/test_cosh/model.onnx | ❌ | Unsupported op Cosh |
 | node/test_cosh_example/model.onnx | ❌ | Unsupported op Cosh |
-| node/test_cumsum_1d/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_cumsum_1d_exclusive/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| node/test_cumsum_1d/model.onnx | ❌ | Unsupported op CumSum |
+| node/test_cumsum_1d_exclusive/model.onnx | ❌ | Unsupported op CumSum |
 | node/test_cumsum_1d_int32_exclusive/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_1d_reverse/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_cumsum_1d_reverse_exclusive/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_cumsum_2d_axis_0/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_cumsum_2d_axis_1/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| node/test_cumsum_1d_reverse/model.onnx | ❌ | Unsupported op CumSum |
+| node/test_cumsum_1d_reverse_exclusive/model.onnx | ❌ | Unsupported op CumSum |
+| node/test_cumsum_2d_axis_0/model.onnx | ❌ | Unsupported op CumSum |
+| node/test_cumsum_2d_axis_1/model.onnx | ❌ | Unsupported op CumSum |
 | node/test_cumsum_2d_int32/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_2d_negative_axis/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| node/test_cumsum_2d_negative_axis/model.onnx | ❌ | Unsupported op CumSum |
 | node/test_deform_conv_with_mask_bias/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_deform_conv_with_multiple_offset_groups/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_depthtospace_crd_mode_example/model.onnx | ❌ | Unsupported op DepthToSpace |
@@ -601,12 +601,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
 | node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported op Clip |
 | node/test_edge_pad/model.onnx | ❌ | Unsupported op Pad |
-| node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_einsum_inner_prod/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_einsum_scalar/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_einsum_sum/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
-| node/test_einsum_transpose/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported op Einsum |
+| node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported op Einsum |
+| node/test_einsum_inner_prod/model.onnx | ❌ | Unsupported op Einsum |
+| node/test_einsum_scalar/model.onnx | ❌ | Unsupported op Einsum |
+| node/test_einsum_sum/model.onnx | ❌ | Unsupported op Einsum |
+| node/test_einsum_transpose/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_elu/model.onnx | ❌ | Unsupported op Elu |
 | node/test_elu_default/model.onnx | ❌ | Unsupported op Elu |
 | node/test_elu_default_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
@@ -629,7 +629,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_expand_dim_changed/model.onnx | ❌ | Unsupported op Expand |
 | node/test_expand_dim_unchanged/model.onnx | ❌ | Unsupported op Expand |
 | node/test_eyelike_populate_off_main_diagonal/model.onnx | ❌ | Unsupported op EyeLike |
-| node/test_eyelike_with_dtype/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'y'. |
+| node/test_eyelike_with_dtype/model.onnx | ❌ | Unsupported op EyeLike |
 | node/test_eyelike_without_dtype/model.onnx | ❌ | Unsupported op EyeLike |
 | node/test_flatten_axis0/model.onnx | ❌ | Unsupported op Flatten |
 | node/test_flatten_axis1/model.onnx | ❌ | Unsupported op Flatten |
@@ -915,7 +915,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_max_example/model.onnx | ❌ | Max must have 2 inputs and 1 output |
 | node/test_max_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. |
 | node/test_max_float32/model.onnx | ✅ |  |
-| node/test_max_float64/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'. |
+| node/test_max_float64/model.onnx | ✅ |  |
 | node/test_max_int16/model.onnx | ❌ | Unsupported op Max |
 | node/test_max_int32/model.onnx | ❌ | Unsupported op Max |
 | node/test_max_int64/model.onnx | ❌ | Unsupported op Max |
@@ -954,7 +954,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_min_example/model.onnx | ❌ | Min must have 2 inputs and 1 output |
 | node/test_min_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. |
 | node/test_min_float32/model.onnx | ✅ |  |
-| node/test_min_float64/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'. |
+| node/test_min_float64/model.onnx | ✅ |  |
 | node/test_min_int16/model.onnx | ❌ | Unsupported op Min |
 | node/test_min_int32/model.onnx | ❌ | Unsupported op Min |
 | node/test_min_int64/model.onnx | ❌ | Unsupported op Min |
@@ -971,7 +971,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mod_int64_fmod/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_mixed_sign_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'x'. |
 | node/test_mod_mixed_sign_float32/model.onnx | ✅ |  |
-| node/test_mod_mixed_sign_float64/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
+| node/test_mod_mixed_sign_float64/model.onnx | ✅ |  |
 | node/test_mod_mixed_sign_int16/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_mixed_sign_int32/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_mixed_sign_int64/model.onnx | ❌ | Unsupported op Mod |
@@ -1157,24 +1157,24 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_log_sum_desc_axes_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_empty_set/model.onnx | ❌ | ReduceLogSum axes input must be constant |
 | node/test_reduce_log_sum_empty_set_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
 | node/test_reduce_log_sum_exp_empty_set/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double'. |
-| node/test_reduce_log_sum_exp_keepdims_example/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_keepdims_random/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
+| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
 | node/test_reduce_log_sum_negative_axes/model.onnx | ❌ | ReduceLogSum axes input must be constant |
 | node/test_reduce_log_sum_negative_axes_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_max_bool_inputs/model.onnx | ❌ | ReduceMax does not support dtype bool |
@@ -1752,11 +1752,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_log_softmax_lastdim/model.onnx | ❌ | Unsupported op LogSoftmax |
 | pytorch-converted/test_softmax_functional_dim3/model.onnx | ✅ |  |
 | pytorch-converted/test_softmax_lastdim/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_add_broadcast/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
-| pytorch-operator/test_operator_add_size1_broadcast/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
-| pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
-| pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor '0'. |
-| pytorch-operator/test_operator_addconstant/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for Constant '1'. |
+| pytorch-operator/test_operator_add_broadcast/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_add_size1_broadcast/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_addconstant/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_addmm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_basic/model.onnx | ❌ | Unsupported op Sigmoid |
 | pytorch-operator/test_operator_chunk/model.onnx | ❌ | Unsupported op Split |
@@ -1799,7 +1799,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | simple/test_sequence_model4/model.onnx | ❌ | Dynamic dim for tensor 'out' |
 | simple/test_sequence_model5/model.onnx | ❌ | Missing elem_type for tensor 'seq_1' |
 | simple/test_sequence_model6/model.onnx | ❌ | Missing elem_type for tensor 'seq_1' |
-| simple/test_sequence_model7/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'X'. |
+| simple/test_sequence_model7/model.onnx | ❌ | Missing elem_type for tensor 'seq_1' |
 | simple/test_sequence_model8/model.onnx | ❌ | Dynamic dim for tensor 'X' |
 | simple/test_shrink/model.onnx | ❌ | Unsupported op Shrink |
 | simple/test_sign_model/model.onnx | ❌ | Unsupported op Sign |

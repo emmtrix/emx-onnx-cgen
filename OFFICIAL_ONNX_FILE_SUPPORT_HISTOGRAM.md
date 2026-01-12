@@ -3,17 +3,17 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
-| Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 62 | █████████████ |
-| Unsupported elem_type 11 (DOUBLE) for tensor '*'. | 53 | ███████████ |
+| Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
 | Unsupported op Attention | 47 | ██████████ |
 | Unsupported op LogSoftmax | 44 | █████████ |
 | ReduceSum axes input must be constant | 43 | █████████ |
 | Unsupported op Resize | 39 | ████████ |
+| Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
-| Missing elem_type for tensor '*' | 33 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
-| Unsupported op CastLike | 29 | ██████ |
+| Unsupported op CastLike | 31 | ██████ |
 | Unsupported op Less | 26 | █████ |
+| Unsupported op Cast | 22 | █████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
@@ -40,11 +40,12 @@
 | Unsupported op Mod | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
 | Dynamic or zero dims are not supported | 9 | ██ |
+| Unsupported op CumSum | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |
-| Unsupported op Cast | 9 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
 | ReduceL1 axes input must be constant | 9 | ██ |
 | ReduceL2 axes input must be constant | 9 | ██ |
+| ReduceLogSumExp axes input must be constant | 9 | ██ |
 | ReduceSumSquare axes input must be constant | 9 | ██ |
 | Reshape requires a constant shape input | 9 | ██ |
 | Unsupported op BitShift | 8 | ██ |
@@ -69,6 +70,7 @@
 | Unsupported op CenterCropPad | 6 | █ |
 | Unsupported op DFT | 6 | █ |
 | Unsupported op Div | 6 | █ |
+| Unsupported op Einsum | 6 | █ |
 | Unsupported op Expand | 6 | █ |
 | Unsupported op Gather | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
@@ -103,10 +105,13 @@
 | Unsupported op Squeeze | 4 | █ |
 | Unsupported op Tile | 4 | █ |
 | AveragePool supports auto_pad=NOTSET only | 3 | █ |
+| Unsupported op Bernoulli | 3 | █ |
+| Unsupported op RandomUniformLike | 3 | █ |
 | Unsupported op BitwiseNot | 3 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op Identity | 3 | █ |
 | Unsupported op DynamicQuantizeLinear | 3 | █ |
+| Unsupported op EyeLike | 3 | █ |
 | Unsupported op GatherND | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
 | Unsupported op IsInf | 3 | █ |
@@ -120,6 +125,7 @@
 | Unsupported op Acosh | 2 | █ |
 | Unsupported op Adagrad | 2 | █ |
 | Unsupported op Adam | 2 | █ |
+| Unsupported op TreeEnsemble | 2 | █ |
 | Unsupported op Asin | 2 | █ |
 | Unsupported op Asinh | 2 | █ |
 | Unsupported op Atan | 2 | █ |
@@ -129,10 +135,8 @@
 | Unsupported op BlackmanWindow | 2 | █ |
 | Unsupported op ConvInteger | 2 | █ |
 | Unsupported op Cosh | 2 | █ |
-| Unsupported op CumSum | 2 | █ |
 | Unsupported op DepthToSpace | 2 | █ |
 | Unsupported op Det | 2 | █ |
-| Unsupported op EyeLike | 2 | █ |
 | Unsupported op GlobalMaxPool | 2 | █ |
 | Unsupported op GroupNormalization | 2 | █ |
 | Unsupported op HammingWindow | 2 | █ |
@@ -160,9 +164,6 @@
 | Unsupported op Gradient | 2 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
-| Unsupported op TreeEnsemble | 1 | █ |
-| Unsupported op Bernoulli | 1 | █ |
-| Unsupported op RandomUniformLike | 1 | █ |
 | Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
@@ -188,11 +189,9 @@
 | Pow expects matching dtypes, got float, uint32 | 1 | █ |
 | Pow expects matching dtypes, got float, uint64 | 1 | █ |
 | Unsupported op QLinearConv | 1 | █ |
-| ReduceLogSumExp axes input must be constant | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
 | Unsupported op Round | 1 | █ |
 | Unsupported op Swish | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
-| Unsupported elem_type 11 (DOUBLE) for Constant '*'. | 1 | █ |
 | Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) | 1 | █ |

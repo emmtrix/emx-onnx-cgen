@@ -209,7 +209,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
                 raise AssertionError(f"Missing output {value.name} in testbench data")
             info = output_dtypes[value.name]
             output_data = np.array(output_payload["data"], dtype=info.np_dtype)
-            if value.type.dtype == "float":
+            if np.issubdtype(info.np_dtype, np.floating):
                 np.testing.assert_allclose(
                     output_data, ort_out, rtol=1e-4, atol=1e-5
                 )
