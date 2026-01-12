@@ -29,6 +29,7 @@ from .codegen.c_emitter import (
     ReshapeOp,
     ResizeOp,
     SoftmaxOp,
+    ShapeOp,
     TransposeOp,
     UnaryOp,
 )
@@ -50,6 +51,7 @@ from .lowering.reduce import (
 )
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
+from .lowering.shape import lower_shape
 from .lowering.unsqueeze import lower_unsqueeze
 from .onnx_import import import_onnx
 
@@ -114,6 +116,7 @@ class Compiler:
             | ReshapeOp
             | ResizeOp
             | ReduceOp
+            | ShapeOp
         ] = []
         for node in graph.nodes:
             lowering = get_lowering(node.op_type)
@@ -554,6 +557,28 @@ class Compiler:
                 values[node.outputs[0]] = np.full(
                     output_shape, fill_value, dtype=info.np_dtype
                 )
+                continue
+            if node.op_type == "Shape":
+                if len(node.inputs) != 1 or len(node.outputs) != 1:
+                    raise UnsupportedOpError("Shape must have 1 input and 1 output")
+                input_value = values[node.inputs[0]]
+                rank = input_value.ndim
+                start_index, end_index = _normalize_shape_slice(
+                    rank,
+                    start=node.attrs.get("start"),
+                    end=node.attrs.get("end"),
+                )
+                if end_index <= start_index:
+                    raise ShapeInferenceError(
+                        "Shape start must be less than end"
+                    )
+                output_dtype = _value_dtype(graph, node.outputs[0], node)
+                if output_dtype != "int64":
+                    raise UnsupportedOpError("Shape output dtype must be int64")
+                output_values = np.array(
+                    input_value.shape[start_index:end_index], dtype=np.int64
+                )
+                values[node.outputs[0]] = output_values
                 continue
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
             op_spec = _binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
@@ -1063,6 +1088,20 @@ def _normalize_axis(axis: int, shape: tuple[int, ...], node: Node) -> int:
             f"{node.op_type} axis {axis} is out of range for rank {rank}"
         )
     return axis
+
+
+def _normalize_shape_slice(
+    rank: int, *, start: int | None, end: int | None
+) -> tuple[int, int]:
+    normalized_start = 0 if start is None else int(start)
+    normalized_end = rank if end is None else int(end)
+    if normalized_start < 0:
+        normalized_start += rank
+    if normalized_end < 0:
+        normalized_end += rank
+    normalized_start = max(0, min(normalized_start, rank))
+    normalized_end = max(0, min(normalized_end, rank))
+    return normalized_start, normalized_end
 
 
 def _find_initializer(graph: Graph, name: str) -> Initializer | None:

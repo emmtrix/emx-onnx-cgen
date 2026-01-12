@@ -4,8 +4,8 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
-| Unsupported op Shape | 44 | █████████ |
 | ReduceSum axes input must be constant | 43 | █████████ |
+| Reshape requires a constant shape input | 43 | █████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
@@ -44,7 +44,6 @@
 | ReduceL2 axes input must be constant | 9 | ██ |
 | ReduceLogSumExp axes input must be constant | 9 | ██ |
 | ReduceSumSquare axes input must be constant | 9 | ██ |
-| Reshape requires a constant shape input | 9 | ██ |
 | Unsupported op BitShift | 8 | ██ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██ |
 | Unsupported op Equal | 8 | ██ |

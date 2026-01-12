@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 413 / 1802 official ONNX files.
+Support 423 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1376,73 +1376,73 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_scatternd_min/model.onnx | ❌ | Unsupported op ScatterND |
 | node/test_scatternd_multiply/model.onnx | ❌ | Unsupported op ScatterND |
 | node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_mean_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_3d_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_3d_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
-| node/test_sce_mean_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
+| node/test_sce_mean_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_no_weight_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_mean_no_weight_ii_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_no_weight_ii_4d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
-| node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
+| node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_weight_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_mean_weight_ii_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_weight_ii_4d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
-| node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
+| node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_weight_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_mean_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_none/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_none_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_none_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_none_weights/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_weights_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_none_weights_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_none_weights_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_sum/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_sum_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_sum_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_sce_sum_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_selu/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
@@ -1463,17 +1463,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sequence_map_identity_1_sequence_expanded/model.onnx | ❌ | Missing elem_type for tensor 'x' |
 | node/test_sequence_map_identity_2_sequences/model.onnx | ❌ | Missing elem_type for tensor 'x0' |
 | node/test_sequence_map_identity_2_sequences_expanded/model.onnx | ❌ | Missing elem_type for tensor 'x0' |
-| node/test_shape/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_clip_end/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_clip_start/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_end_1/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_end_negative_1/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_example/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_start_1/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_start_1_end_2/model.onnx | ❌ | Unsupported op Shape |
-| node/test_shape_start_1_end_negative_1/model.onnx | ❌ | Unsupported op Shape |
+| node/test_shape/model.onnx | ✅ |  |
+| node/test_shape_clip_end/model.onnx | ✅ |  |
+| node/test_shape_clip_start/model.onnx | ✅ |  |
+| node/test_shape_end_1/model.onnx | ✅ |  |
+| node/test_shape_end_negative_1/model.onnx | ✅ |  |
+| node/test_shape_example/model.onnx | ✅ |  |
+| node/test_shape_start_1/model.onnx | ✅ |  |
+| node/test_shape_start_1_end_2/model.onnx | ✅ |  |
+| node/test_shape_start_1_end_negative_1/model.onnx | ✅ |  |
 | node/test_shape_start_greater_than_end/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_shape_start_negative_1/model.onnx | ❌ | Unsupported op Shape |
+| node/test_shape_start_negative_1/model.onnx | ✅ |  |
 | node/test_shrink_hard/model.onnx | ❌ | Unsupported op Shrink |
 | node/test_shrink_hard_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
 | node/test_shrink_soft/model.onnx | ❌ | Unsupported op Shrink |
