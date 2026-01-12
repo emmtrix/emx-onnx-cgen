@@ -854,7 +854,18 @@ _UNARY_OP_TYPES = {
 
 
 def _ensure_supported_dtype(dtype: str) -> str:
-    if dtype not in {"float", "bool", "int64", "int32", "int16", "int8"}:
+    if dtype not in {
+        "float",
+        "bool",
+        "int64",
+        "int32",
+        "int16",
+        "int8",
+        "uint64",
+        "uint32",
+        "uint16",
+        "uint8",
+    }:
         raise UnsupportedOpError(f"Unsupported dtype {dtype}")
     return dtype
 
@@ -1030,7 +1041,7 @@ def _binary_op_symbol(
                 "!=", "infix", lambda left, right: np.logical_xor(left, right)
             )
         return None
-    if dtype in {"int64", "int32", "int16", "int8"}:
+    if dtype in {"int64", "int32", "int16", "int8", "uint64", "uint32", "uint16", "uint8"}:
         if op_type in {"Add", "Sum"}:
             return _BinaryOpSpec("+", "infix", lambda left, right: left + right)
         if op_type == "Sub":
