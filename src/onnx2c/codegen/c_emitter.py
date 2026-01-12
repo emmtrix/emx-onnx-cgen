@@ -18,6 +18,7 @@ class BinaryOp:
     operator_kind: str
     shape: tuple[int, ...]
     dtype: str
+    input_dtype: str
 
 
 @dataclass(frozen=True)
@@ -782,6 +783,7 @@ class CEmitter:
                 operator_kind=op.operator_kind,
                 shape=op.shape,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -1151,6 +1153,8 @@ class CEmitter:
             loop_indents = CEmitter._loop_indents(shape)
             inner_indent = CEmitter._inner_indent(shape)
             array_suffix = CEmitter._array_suffix(shape)
+            input_c_type = dtype_info(op.input_dtype).c_type
+            output_c_type = dtype_info(op.dtype).c_type
             common = {
                 "model_name": model.name,
                 "op_name": f"{model.name}_op{index}",
@@ -1160,7 +1164,8 @@ class CEmitter:
                 "loop_vars": loop_vars,
                 "loop_indents": loop_indents,
                 "inner_indent": inner_indent,
-                "c_type": c_type,
+                "input_c_type": input_c_type,
+                "output_c_type": output_c_type,
                 "zero_literal": zero_literal,
             }
             left_expr = f"{op.input0}" + "".join(

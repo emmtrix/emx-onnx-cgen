@@ -71,6 +71,7 @@ from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
 from .ops import (
     BINARY_OP_TYPES,
+    COMPARE_OP_TYPES,
     UNARY_OP_TYPES,
     binary_op_symbol,
     unary_op_symbol,
@@ -190,6 +191,31 @@ def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
 
 
 def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
+    if node.op_type in COMPARE_OP_TYPES:
+        input_dtype = node_dtype(graph, node, *node.inputs)
+        output_dtype = value_dtype(graph, node.outputs[0], node)
+        op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=input_dtype)
+        if op_spec is None:
+            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node.op_type} must have 2 inputs and 1 output"
+            )
+        if output_dtype != "bool":
+            raise UnsupportedOpError(
+                f"{node.op_type} expects bool output, got {output_dtype}"
+            )
+        output_shape = value_shape(graph, node.outputs[0], node)
+        return BinaryOp(
+            input0=node.inputs[0],
+            input1=node.inputs[1],
+            output=node.outputs[0],
+            operator=op_spec.operator,
+            operator_kind=op_spec.kind,
+            shape=output_shape,
+            dtype=output_dtype,
+            input_dtype=input_dtype,
+        )
     op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
     op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
     unary_symbol = unary_op_symbol(node.op_type, dtype=op_dtype)
@@ -209,6 +235,7 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             operator_kind=op_spec.kind,
             shape=output_shape,
             dtype=op_dtype,
+            input_dtype=op_dtype,
         )
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError(f"{node.op_type} must have 1 input and 1 output")

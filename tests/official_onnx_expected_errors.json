@@ -1877,7 +1877,7 @@
   ],
   [
     "node/test_clip_default_int8_max_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_default_int8_min/model.onnx",
@@ -1885,7 +1885,7 @@
   ],
   [
     "node/test_clip_default_int8_min_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_default_max/model.onnx",
@@ -1893,7 +1893,7 @@
   ],
   [
     "node/test_clip_default_max_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_default_min/model.onnx",
@@ -1901,7 +1901,7 @@
   ],
   [
     "node/test_clip_default_min_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_example/model.onnx",
@@ -1909,11 +1909,11 @@
   ],
   [
     "node/test_clip_example_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_inbounds/model.onnx",
@@ -1921,7 +1921,7 @@
   ],
   [
     "node/test_clip_inbounds_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_min_greater_than_max/model.onnx",
@@ -1929,7 +1929,7 @@
   ],
   [
     "node/test_clip_min_greater_than_max_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_outbounds/model.onnx",
@@ -1937,7 +1937,7 @@
   ],
   [
     "node/test_clip_outbounds_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_clip_splitbounds/model.onnx",
@@ -1945,7 +1945,7 @@
   ],
   [
     "node/test_clip_splitbounds_expanded/model.onnx",
-    "Unsupported op Less"
+    "Unsupported op Where"
   ],
   [
     "node/test_col2im/model.onnx",
@@ -2421,19 +2421,19 @@
   ],
   [
     "node/test_equal/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_equal_bcast/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_equal_int16/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_equal_int8/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_equal_string/model.onnx",
@@ -2445,19 +2445,19 @@
   ],
   [
     "node/test_equal_uint16/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_equal_uint32/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_equal_uint64/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_equal_uint8/model.onnx",
-    "Unsupported op Equal"
+    ""
   ],
   [
     "node/test_erf/model.onnx",
@@ -2669,99 +2669,99 @@
   ],
   [
     "node/test_greater/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_bcast/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_bcast/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_bcast_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal_int16/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_int16_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal_int8/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_int8_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal_uint16/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_uint16_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal_uint32/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_uint32_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal_uint64/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_uint64_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_equal_uint8/model.onnx",
-    "Unsupported op GreaterOrEqual"
+    ""
   ],
   [
     "node/test_greater_equal_uint8_expanded/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_int16/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_int8/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_uint16/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_uint32/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_uint64/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_greater_uint8/model.onnx",
-    "Unsupported op Greater"
+    ""
   ],
   [
     "node/test_gridsample/model.onnx",
@@ -3325,99 +3325,99 @@
   ],
   [
     "node/test_less/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_bcast/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_bcast/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_bcast_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal_int16/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_int16_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal_int8/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_int8_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal_uint16/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_uint16_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal_uint32/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_uint32_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal_uint64/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_uint64_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_equal_uint8/model.onnx",
-    "Unsupported op LessOrEqual"
+    ""
   ],
   [
     "node/test_less_equal_uint8_expanded/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_int16/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_int8/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_uint16/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_uint32/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_uint64/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_less_uint8/model.onnx",
-    "Unsupported op Less"
+    ""
   ],
   [
     "node/test_log/model.onnx",
