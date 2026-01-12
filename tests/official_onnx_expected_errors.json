@@ -3569,19 +3569,19 @@
   ],
   [
     "node/test_lstm_batchwise/model.onnx",
-    "Unsupported op LSTM"
+    ""
   ],
   [
     "node/test_lstm_defaults/model.onnx",
-    "Unsupported op LSTM"
+    ""
   ],
   [
     "node/test_lstm_with_initial_bias/model.onnx",
-    "Unsupported op LSTM"
+    ""
   ],
   [
     "node/test_lstm_with_peepholes/model.onnx",
-    "Unsupported op LSTM"
+    ""
   ],
   [
     "node/test_matmul_1d_1d/model.onnx",

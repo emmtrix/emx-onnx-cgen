@@ -19,6 +19,7 @@ from .codegen.c_emitter import (
     ConstantOfShapeOp,
     GemmOp,
     LrnOp,
+    LstmOp,
     LogSoftmaxOp,
     NegativeLogLikelihoodLossOp,
     LoweredModel,
@@ -141,6 +142,7 @@ class Compiler:
             | AveragePoolOp
             | BatchNormOp
             | LrnOp
+            | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
             | NegativeLogLikelihoodLossOp
