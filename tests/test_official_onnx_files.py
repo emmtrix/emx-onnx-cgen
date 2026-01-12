@@ -7,6 +7,7 @@ from collections import Counter
 from pathlib import Path
 
 import onnx
+import pytest
 
 from onnx2c.compiler import Compiler
 
@@ -1904,6 +1905,7 @@ def test_official_onnx_files() -> None:
     )
 
 
+@pytest.mark.order(1)
 def test_official_onnx_expected_errors() -> None:
     data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
     expectations = _load_official_onnx_file_expectations()
@@ -1935,6 +1937,7 @@ def test_official_onnx_expected_errors() -> None:
         return
 
 
+@pytest.mark.order(after="test_official_onnx_expected_errors")
 def test_official_onnx_file_support_doc() -> None:
     expectations = _load_official_onnx_file_expectations()
     expected_markdown = _render_official_onnx_file_support_markdown(expectations)
