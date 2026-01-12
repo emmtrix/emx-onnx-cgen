@@ -1726,6 +1726,10 @@ class CEmitter:
         shape_template,
     ) -> str:
         node_comment = CEmitter._emit_node_comment(model.node_infos[index], index)
+
+        def with_node_comment(rendered: str) -> str:
+            return f"{node_comment}\n{rendered}"
+
         if isinstance(op, BinaryOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
@@ -1769,7 +1773,7 @@ class CEmitter:
                 right_expr=right_expr,
                 operator_expr=operator_expr,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, MatMulOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             output_loop_vars = CEmitter._loop_vars(output_shape)
@@ -1818,7 +1822,7 @@ class CEmitter:
                 n=op.n,
                 k=op.k,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, GemmOp):
             input_a_shape = (op.k, op.m) if op.trans_a else (op.m, op.k)
             input_b_shape = (op.n, op.k) if op.trans_b else (op.k, op.n)
@@ -1865,7 +1869,7 @@ class CEmitter:
                 c_dim0=c_dim0,
                 c_dim1=c_dim1,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, AttentionOp):
             if op.q_rank == 4:
                 input_q_shape = (op.batch, op.q_heads, op.q_seq, op.qk_head_size)
@@ -1996,7 +2000,7 @@ class CEmitter:
                     else ""
                 ),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, ConvOp):
             input_shape = (op.batch, op.in_channels, *op.in_spatial)
             weight_shape = (
@@ -2043,7 +2047,7 @@ class CEmitter:
                 kernel_indices=kernel_indices,
                 in_indices=in_indices,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, AveragePoolOp):
             input_shape = (op.batch, op.channels, op.in_h, op.in_w)
             output_shape = (op.batch, op.channels, op.out_h, op.out_w)
@@ -2072,7 +2076,7 @@ class CEmitter:
                 pad_right=op.pad_right,
                 count_include_pad=int(op.count_include_pad),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, BatchNormOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
@@ -2101,7 +2105,7 @@ class CEmitter:
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
                 sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, LrnOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
@@ -2129,7 +2133,7 @@ class CEmitter:
                 bias_literal=CEmitter._format_floating(op.bias, op.dtype),
                 pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, LstmOp):
             input_x_shape = (
                 (op.seq_length, op.batch_size, op.input_size)
@@ -2229,7 +2233,7 @@ class CEmitter:
                 log1p_fn=CEmitter._math_fn(op.dtype, "log1pf", "log1p"),
                 fabs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
             rendered = softmax_template.render(
                 model_name=model.name,
@@ -2243,7 +2247,7 @@ class CEmitter:
                 inner=op.inner,
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, LogSoftmaxOp):
             rendered = logsoftmax_template.render(
                 model_name=model.name,
@@ -2258,7 +2262,7 @@ class CEmitter:
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
                 log_fn=CEmitter._math_fn(op.dtype, "logf", "log"),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
             rendered = nllloss_template.render(
                 model_name=model.name,
@@ -2280,7 +2284,7 @@ class CEmitter:
                 zero_literal=zero_literal,
                 one_literal=CEmitter._format_literal(op.dtype, 1),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             use_ignore_index = int(op.ignore_index is not None)
             ignore_index = op.ignore_index if op.ignore_index is not None else -1
@@ -2313,7 +2317,7 @@ class CEmitter:
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
                 log_fn=CEmitter._math_fn(op.dtype, "logf", "log"),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, MaxPoolOp):
             input_shape = (op.batch, op.channels, *op.in_spatial)
             output_shape = (op.batch, op.channels, *op.out_spatial)
@@ -2337,7 +2341,7 @@ class CEmitter:
                 dilations=op.dilations,
                 ceil_mode=int(op.ceil_mode),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, ConcatOp):
             axis = op.axis
             if axis < 0:
@@ -2360,7 +2364,7 @@ class CEmitter:
                 outer=outer,
                 inner=inner,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, TransposeOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
@@ -2388,7 +2392,7 @@ class CEmitter:
                 inner_indent=inner_indent,
                 input_indices=input_indices,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, ReshapeOp):
             rendered = reshape_template.render(
                 model_name=model.name,
@@ -2400,7 +2404,7 @@ class CEmitter:
                 output_suffix=CEmitter._array_suffix(op.output_shape),
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
             input_suffix = CEmitter._array_suffix(op.input_shape)
             output_suffix = CEmitter._array_suffix(op.output_shape)
@@ -2494,7 +2498,7 @@ class CEmitter:
                 antialias=op.antialias,
                 keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, ReduceOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             output_loop_vars = CEmitter._loop_vars(output_shape)
@@ -2610,7 +2614,7 @@ class CEmitter:
                 update_expr=update_expr,
                 final_expr=final_expr,
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
@@ -2632,7 +2636,7 @@ class CEmitter:
                 inner_indent=inner_indent,
                 value_literal=CEmitter._format_literal(op.dtype, op.value),
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         if isinstance(op, ShapeOp):
             rendered = shape_template.render(
                 model_name=model.name,
@@ -2648,7 +2652,7 @@ class CEmitter:
                     for value in op.values
                 ],
             ).rstrip()
-            return f"{node_comment}\n{rendered}"
+            return with_node_comment(rendered)
         shape = CEmitter._codegen_shape(op.shape)
         loop_vars = CEmitter._loop_vars(shape)
         loop_indents = CEmitter._loop_indents(shape)
@@ -2672,7 +2676,7 @@ class CEmitter:
             output=op.output,
             operator=op.operator,
         ).rstrip()
-        return f"{node_comment}\n{rendered}"
+        return with_node_comment(rendered)
 
     @staticmethod
     def _op_output(
