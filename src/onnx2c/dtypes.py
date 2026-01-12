@@ -18,6 +18,7 @@ class DTypeInfo:
 
 ONNX_TO_DTYPE = {
     onnx.TensorProto.FLOAT: "float",
+    onnx.TensorProto.DOUBLE: "double",
     onnx.TensorProto.BOOL: "bool",
     onnx.TensorProto.UINT8: "uint8",
     onnx.TensorProto.UINT16: "uint16",
@@ -36,6 +37,14 @@ DTYPE_INFO = {
         c_type="float",
         np_dtype=np.dtype("float32"),
         zero_literal="0.0f",
+        min_literal="-INFINITY",
+        max_literal="INFINITY",
+    ),
+    "double": DTypeInfo(
+        name="double",
+        c_type="double",
+        np_dtype=np.dtype("float64"),
+        zero_literal="0.0",
         min_literal="-INFINITY",
         max_literal="INFINITY",
     ),

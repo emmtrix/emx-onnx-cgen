@@ -165,7 +165,7 @@
   ],
   [
     "node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'X'."
+    "Unsupported op TreeEnsemble"
   ],
   [
     "node/test_and2d/model.onnx",
@@ -969,19 +969,19 @@
   ],
   [
     "node/test_bernoulli/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op Bernoulli"
   ],
   [
     "node/test_bernoulli_double/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'y'."
+    "Unsupported op Bernoulli"
   ],
   [
     "node/test_bernoulli_double_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'y'."
+    "Unsupported op RandomUniformLike"
   ],
   [
     "node/test_bernoulli_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op RandomUniformLike"
   ],
   [
     "node/test_bernoulli_seed/model.onnx",
@@ -1105,11 +1105,11 @@
   ],
   [
     "node/test_cast_DOUBLE_to_FLOAT/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'input'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_cast_DOUBLE_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'input'."
+    "Unsupported elem_type 10 (FLOAT16) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_DOUBLE/model.onnx",
@@ -1201,7 +1201,7 @@
   ],
   [
     "node/test_cast_FLOAT_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'output'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT16/model.onnx",
@@ -1349,19 +1349,19 @@
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'input'."
+    "Unsupported op CastLike"
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'input'."
+    "Unsupported elem_type 10 (FLOAT16) for tensor 'like'."
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'input'."
+    "Unsupported elem_type 10 (FLOAT16) for tensor 'like'."
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'input'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_castlike_FLOAT16_to_DOUBLE/model.onnx",
@@ -1541,11 +1541,11 @@
   ],
   [
     "node/test_castlike_FLOAT_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'like'."
+    "Unsupported op CastLike"
   ],
   [
     "node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'like'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT16/model.onnx",
@@ -2145,11 +2145,11 @@
   ],
   [
     "node/test_cumsum_1d/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op CumSum"
   ],
   [
     "node/test_cumsum_1d_exclusive/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op CumSum"
   ],
   [
     "node/test_cumsum_1d_int32_exclusive/model.onnx",
@@ -2157,19 +2157,19 @@
   ],
   [
     "node/test_cumsum_1d_reverse/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op CumSum"
   ],
   [
     "node/test_cumsum_1d_reverse_exclusive/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op CumSum"
   ],
   [
     "node/test_cumsum_2d_axis_0/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op CumSum"
   ],
   [
     "node/test_cumsum_2d_axis_1/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op CumSum"
   ],
   [
     "node/test_cumsum_2d_int32/model.onnx",
@@ -2177,7 +2177,7 @@
   ],
   [
     "node/test_cumsum_2d_negative_axis/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op CumSum"
   ],
   [
     "node/test_deform_conv_with_mask_bias/model.onnx",
@@ -2373,27 +2373,27 @@
   ],
   [
     "node/test_einsum_batch_diagonal/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op Einsum"
   ],
   [
     "node/test_einsum_batch_matmul/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op Einsum"
   ],
   [
     "node/test_einsum_inner_prod/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op Einsum"
   ],
   [
     "node/test_einsum_scalar/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op Einsum"
   ],
   [
     "node/test_einsum_sum/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op Einsum"
   ],
   [
     "node/test_einsum_transpose/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    "Unsupported op Einsum"
   ],
   [
     "node/test_elu/model.onnx",
@@ -2485,7 +2485,7 @@
   ],
   [
     "node/test_eyelike_with_dtype/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'y'."
+    "Unsupported op EyeLike"
   ],
   [
     "node/test_eyelike_without_dtype/model.onnx",
@@ -3629,7 +3629,7 @@
   ],
   [
     "node/test_max_float64/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'."
+    ""
   ],
   [
     "node/test_max_int16/model.onnx",
@@ -3785,7 +3785,7 @@
   ],
   [
     "node/test_min_float64/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data_0'."
+    ""
   ],
   [
     "node/test_min_int16/model.onnx",
@@ -3853,7 +3853,7 @@
   ],
   [
     "node/test_mod_mixed_sign_float64/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'x'."
+    ""
   ],
   [
     "node/test_mod_mixed_sign_int16/model.onnx",
@@ -4597,35 +4597,35 @@
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set/model.onnx",
@@ -4633,39 +4633,39 @@
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "ReduceLogSumExp axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'data'."
+    "Unsupported op Cast"
   ],
   [
     "node/test_reduce_log_sum_negative_axes/model.onnx",
@@ -6977,23 +6977,23 @@
   ],
   [
     "pytorch-operator/test_operator_add_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor '0'."
+    ""
   ],
   [
     "pytorch-operator/test_operator_add_size1_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor '0'."
+    ""
   ],
   [
     "pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor '0'."
+    ""
   ],
   [
     "pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor '0'."
+    ""
   ],
   [
     "pytorch-operator/test_operator_addconstant/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for Constant '1'."
+    ""
   ],
   [
     "pytorch-operator/test_operator_addmm/model.onnx",
@@ -7165,7 +7165,7 @@
   ],
   [
     "simple/test_sequence_model7/model.onnx",
-    "Unsupported elem_type 11 (DOUBLE) for tensor 'X'."
+    "Missing elem_type for tensor 'seq_1'"
   ],
   [
     "simple/test_sequence_model8/model.onnx",

@@ -458,7 +458,7 @@ class CEmitter:
                 if "#include <limits.h>" not in includes:
                     includes.append("#include <limits.h>")
             if any(
-                op.dtype == "float"
+                op.dtype in {"float", "double"}
                 for op in resolved_ops
                 if isinstance(op, ReduceOp)
                 and op.reduce_kind in {"min", "max"}
@@ -467,7 +467,7 @@ class CEmitter:
                     includes.append("#include <math.h>")
         if any(isinstance(op, MaxPoolOp) for op in resolved_ops):
             if any(
-                op.dtype == "float"
+                op.dtype in {"float", "double"}
                 for op in resolved_ops
                 if isinstance(op, MaxPoolOp)
             ):
@@ -1006,7 +1006,9 @@ class CEmitter:
                 output=op.output,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                scale_literal=CEmitter._format_float(op.scale),
+                scale_literal=CEmitter._format_floating(op.scale, op.dtype),
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+                exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
                 is_causal=int(op.is_causal),
                 batch=op.batch,
                 heads=op.heads,
@@ -1126,7 +1128,8 @@ class CEmitter:
                 loop_vars=loop_vars,
                 loop_indents=loop_indents,
                 inner_indent=inner_indent,
-                epsilon_literal=CEmitter._format_float(op.epsilon),
+                epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
             ).rstrip()
         if isinstance(op, LrnOp):
             shape = CEmitter._codegen_shape(op.shape)
@@ -1148,9 +1151,12 @@ class CEmitter:
                 loop_indents=loop_indents,
                 inner_indent=inner_indent,
                 zero_literal=zero_literal,
-                alpha_div_size_literal=CEmitter._format_float(op.alpha / op.size),
-                beta_literal=CEmitter._format_float(op.beta),
-                bias_literal=CEmitter._format_float(op.bias),
+                alpha_div_size_literal=CEmitter._format_floating(
+                    op.alpha / op.size, op.dtype
+                ),
+                beta_literal=CEmitter._format_floating(op.beta, op.dtype),
+                bias_literal=CEmitter._format_floating(op.bias, op.dtype),
+                pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
             ).rstrip()
         if isinstance(op, SoftmaxOp):
             return softmax_template.render(
@@ -1163,6 +1169,7 @@ class CEmitter:
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
+                exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
             ).rstrip()
         if isinstance(op, MaxPoolOp):
             input_shape = (op.batch, op.channels, *op.in_spatial)
@@ -1296,6 +1303,10 @@ class CEmitter:
             update_expr = None
             init_literal = None
             final_expr = "acc"
+            fabs_fn = CEmitter._math_fn(op.dtype, "fabsf", "fabs")
+            exp_fn = CEmitter._math_fn(op.dtype, "expf", "exp")
+            log_fn = CEmitter._math_fn(op.dtype, "logf", "log")
+            sqrt_fn = CEmitter._math_fn(op.dtype, "sqrtf", "sqrt")
             count_literal = CEmitter._format_literal(
                 op.dtype, op.reduce_count
             )
@@ -1317,19 +1328,19 @@ class CEmitter:
                 update_expr = f"acc *= {value_expr};"
             elif op.reduce_kind == "l1":
                 init_literal = zero_literal
-                update_expr = f"acc += fabsf({value_expr});"
+                update_expr = f"acc += {fabs_fn}({value_expr});"
             elif op.reduce_kind == "l2":
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr} * {value_expr};"
-                final_expr = "sqrtf(acc)"
+                final_expr = f"{sqrt_fn}(acc)"
             elif op.reduce_kind == "logsum":
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr};"
-                final_expr = "logf(acc)"
+                final_expr = f"{log_fn}(acc)"
             elif op.reduce_kind == "logsumexp":
                 init_literal = zero_literal
-                update_expr = f"acc += expf({value_expr});"
-                final_expr = "logf(acc)"
+                update_expr = f"acc += {exp_fn}({value_expr});"
+                final_expr = f"{log_fn}(acc)"
             elif op.reduce_kind == "sumsquare":
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr} * {value_expr};"
@@ -1544,6 +1555,8 @@ class CEmitter:
             loop_vars = self._loop_vars(codegen_shape)
             if dtype == "float":
                 random_expr = "rng_next_float()"
+            elif dtype == "double":
+                random_expr = "rng_next_double()"
             elif dtype == "bool":
                 random_expr = "((rng_next_u64() & 1ull) != 0)"
             else:
@@ -1646,6 +1659,25 @@ class CEmitter:
         return f"{formatted}f"
 
     @staticmethod
+    def _format_double(value: float) -> str:
+        formatted = f"{value:.17g}"
+        if "e" not in formatted and "E" not in formatted and "." not in formatted:
+            formatted = f"{formatted}.0"
+        return formatted
+
+    @staticmethod
+    def _format_floating(value: float, dtype: str) -> str:
+        if dtype == "double":
+            return CEmitter._format_double(value)
+        return CEmitter._format_float(value)
+
+    @staticmethod
+    def _math_fn(dtype: str, float_name: str, double_name: str) -> str:
+        if dtype == "double":
+            return double_name
+        return float_name
+
+    @staticmethod
     def _format_int64(value: int) -> str:
         min_value = -(2**63)
         if value == min_value:
@@ -1670,6 +1702,8 @@ class CEmitter:
     def _format_literal(dtype: str, value: float | int | bool) -> str:
         if dtype == "float":
             return CEmitter._format_float(float(value))
+        if dtype == "double":
+            return CEmitter._format_double(float(value))
         if dtype == "bool":
             return "true" if bool(value) else "false"
         if dtype == "uint64":
@@ -1693,6 +1727,8 @@ class CEmitter:
     def _format_value(self, value: float | int | bool, dtype: str) -> str:
         if dtype == "float":
             return self._format_float(float(value))
+        if dtype == "double":
+            return self._format_double(float(value))
         if dtype == "bool":
             return "true" if bool(value) else "false"
         if dtype == "uint64":
@@ -1717,6 +1753,8 @@ class CEmitter:
     def _print_format(dtype: str) -> str:
         if dtype == "float":
             return "%.8g"
+        if dtype == "double":
+            return "%.17g"
         if dtype == "bool":
             return "%d"
         if dtype == "uint64":
@@ -1739,7 +1777,7 @@ class CEmitter:
 
     @staticmethod
     def _print_cast(dtype: str) -> str:
-        if dtype == "float":
+        if dtype in {"float", "double"}:
             return "(double)"
         if dtype == "bool":
             return "(int)"
