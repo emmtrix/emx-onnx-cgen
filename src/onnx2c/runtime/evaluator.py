@@ -31,9 +31,10 @@ from ..lowering.softmax import lower_softmax
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
 from ..lowering.registry import resolve_dispatch
-from ..lowering.common import node_dtype, optional_name
+from ..lowering.common import node_dtype, optional_name, value_dtype
 from ..ops import (
     BINARY_OP_TYPES,
+    COMPARE_OP_TYPES,
     UNARY_OP_TYPES,
     apply_binary_op,
     apply_unary_op,
@@ -351,6 +352,26 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
 
 
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
+    if node.op_type in COMPARE_OP_TYPES:
+        input_dtype = node_dtype(evaluator.graph, node, *node.inputs)
+        output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+        if output_dtype != "bool":
+            raise UnsupportedOpError(
+                f"{node.op_type} expects bool output, got {output_dtype}"
+            )
+        op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=input_dtype)
+        if op_spec is None:
+            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node.op_type} must have 2 inputs and 1 output"
+            )
+        left = evaluator.values[node.inputs[0]]
+        right = evaluator.values[node.inputs[1]]
+        evaluator.values[node.outputs[0]] = apply_binary_op(
+            op_spec, left, right
+        )
+        return
     op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
     op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
     unary_symbol = unary_op_symbol(node.op_type, dtype=op_dtype)
