@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <math.h>
 
-void model_op0(const float x[2][3], float out[2][3]) {
+static inline void model_op0(const float x[2][3], float out[2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             out[i0][i1] = tanhf(x[i0][i1]);

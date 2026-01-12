@@ -5,7 +5,7 @@ static const float weight[2][3] = {
     0.100000001f, 0.200000003f, 0.300000012f, 0.400000006f, 0.5f, 0.600000024f
 };
 
-void model_op0(const float in0[2][3], const float weight[2][3], float out[2][3]) {
+static inline void model_op0(const float in0[2][3], const float weight[2][3], float out[2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             out[i0][i1] = in0[i0][i1] + weight[i0][i1];
