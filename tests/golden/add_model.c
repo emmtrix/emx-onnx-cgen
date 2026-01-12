@@ -21,6 +21,13 @@
 
 #include <stddef.h>
 
+/*
+ * Node 0:
+ * OpType: Add
+ * Inputs: a, b
+ * Outputs: out
+ * Attrs: n/a
+ */
 static inline void model_op0(const float a[2][3][4], const float b[2][3][4], float out[2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {

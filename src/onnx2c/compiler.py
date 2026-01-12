@@ -23,6 +23,7 @@ from .codegen.c_emitter import (
     LstmOp,
     LogSoftmaxOp,
     NegativeLogLikelihoodLossOp,
+    NodeInfo,
     SoftmaxCrossEntropyLossOp,
     LoweredModel,
     ModelHeader,
@@ -164,6 +165,7 @@ class Compiler:
             | ReduceOp
             | ShapeOp
         ] = []
+        node_infos: list[NodeInfo] = []
         for node in graph.nodes:
             lowering = resolve_dispatch(
                 node.op_type,
@@ -174,6 +176,14 @@ class Compiler:
                 unary_fallback=lambda: _lower_binary_unary,
             )
             ops.append(lowering(graph, node))
+            node_infos.append(
+                NodeInfo(
+                    op_type=node.op_type,
+                    inputs=tuple(node.inputs),
+                    outputs=tuple(node.outputs),
+                    attrs=dict(node.attrs),
+                )
+            )
         header = self._build_header(model, graph)
         return LoweredModel(
             name=self._options.model_name,
@@ -185,6 +195,7 @@ class Compiler:
             output_dtypes=output_dtypes,
             constants=constants,
             ops=tuple(ops),
+            node_infos=tuple(node_infos),
             header=header,
         )
 
