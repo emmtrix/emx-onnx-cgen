@@ -4,8 +4,6 @@ Support 281 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
-Hinweis: Dateien bitte nicht als Code ausgeben.
-
 See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md) for the error histogram.
 
 | File | Supported | Error |
