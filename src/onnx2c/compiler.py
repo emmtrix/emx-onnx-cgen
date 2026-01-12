@@ -100,6 +100,13 @@ class Compiler:
             lowered, emit_testbench=self._options.emit_testbench
         )
 
+    def compile_with_data_file(self, model: onnx.ModelProto) -> tuple[str, str]:
+        graph = import_onnx(model)
+        lowered = self._lower_model(graph)
+        return self._emitter.emit_model_with_data_file(
+            lowered, emit_testbench=self._options.emit_testbench
+        )
+
     def _lower_model(self, graph: Graph) -> LoweredModel:
         if not graph.outputs:
             raise UnsupportedOpError("Graph must have at least one output")
