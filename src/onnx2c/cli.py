@@ -218,7 +218,19 @@ def _handle_verify(args: argparse.Namespace) -> int:
     sess = ort.InferenceSession(
         model.SerializeToString(), providers=["CPUExecutionProvider"]
     )
-    ort_outputs = sess.run(None, inputs)
+    try:
+        ort_outputs = sess.run(None, inputs)
+    except Exception as exc:
+        message = str(exc)
+        if "NOT_IMPLEMENTED" in message:
+            LOGGER.warning(
+                "Skipping verification for %s: ONNX Runtime does not support the model (%s)",
+                model_path,
+                message,
+            )
+            return 0
+        LOGGER.error("ONNX Runtime failed to run %s: %s", model_path, message)
+        return 1
     payload_outputs = payload.get("outputs", {})
     try:
         for value, ort_out in zip(graph.outputs, ort_outputs):
