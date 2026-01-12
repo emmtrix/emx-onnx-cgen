@@ -892,8 +892,6 @@ def _node_dtype(graph: Graph, node: Node, *names: str) -> str:
 
 
 def _element_count(shape: tuple[int, ...]) -> int:
-    if not shape:
-        raise ShapeInferenceError("Scalar outputs are not supported")
     count = 1
     for dim in shape:
         if dim <= 0:

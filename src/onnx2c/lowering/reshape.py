@@ -27,8 +27,6 @@ def _value_dtype(graph: Graph, name: str, node: Node) -> str:
 
 
 def _shape_product(shape: tuple[int, ...]) -> int:
-    if not shape:
-        raise ShapeInferenceError("Reshape does not support scalar outputs")
     product = 1
     for dim in shape:
         if dim <= 0:

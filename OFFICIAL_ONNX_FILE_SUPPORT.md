@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 298 / 1802 official ONNX files.
+Support 302 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -571,7 +571,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dequantizelinear_uint16/model.onnx | ❌ | Unsupported op DequantizeLinear |
 | node/test_dequantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
 | node/test_dequantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
-| node/test_det_2d/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_det_2d/model.onnx | ❌ | Unsupported op Det |
 | node/test_det_nd/model.onnx | ❌ | Unsupported op Det |
 | node/test_dft/model.onnx | ❌ | Unsupported op DFT |
 | node/test_dft_axis/model.onnx | ❌ | Unsupported op DFT |
@@ -594,12 +594,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dropout_default_old/model.onnx | ✅ |  |
 | node/test_dropout_default_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_random_old/model.onnx | ✅ |  |
-| node/test_dynamicquantizelinear/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_dynamicquantizelinear_max_adjusted/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_dynamicquantizelinear/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
+| node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Unsupported op Clip |
+| node/test_dynamicquantizelinear_max_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
+| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Unsupported op Clip |
+| node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
+| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported op Clip |
 | node/test_edge_pad/model.onnx | ❌ | Unsupported op Pad |
 | node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
 | node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'x'. |
@@ -904,7 +904,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_lstm_defaults/model.onnx | ❌ | Unsupported op LSTM |
 | node/test_lstm_with_initial_bias/model.onnx | ❌ | Unsupported op LSTM |
 | node/test_lstm_with_peepholes/model.onnx | ❌ | Unsupported op LSTM |
-| node/test_matmul_1d_1d/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_matmul_1d_1d/model.onnx | ❌ | MatMul supports 2D inputs only, got (3,) x (3,) |
 | node/test_matmul_1d_3d/model.onnx | ❌ | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) |
 | node/test_matmul_2d/model.onnx | ✅ |  |
 | node/test_matmul_3d/model.onnx | ❌ | MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) |
@@ -992,45 +992,45 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mul_uint64/model.onnx | ✅ |  |
 | node/test_mul_uint8/model.onnx | ✅ |  |
 | node/test_mvn/model.onnx | ❌ | Unsupported op MeanVarianceNormalization |
-| node/test_mvn_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_mvn_expanded_ver18/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_mvn_expanded/model.onnx | ✅ |  |
+| node/test_mvn_expanded_ver18/model.onnx | ✅ |  |
 | node/test_neg/model.onnx | ✅ |  |
 | node/test_neg_example/model.onnx | ✅ |  |
 | node/test_nesterov_momentum/model.onnx | ❌ | Unsupported op Momentum |
 | node/test_nllloss_NC/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
 | node/test_nllloss_NC_expanded/model.onnx | ❌ | Unsupported op GatherElements |
-| node/test_nllloss_NCd1/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_weight/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_weight_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_nllloss_NCd1/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1_ii/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1_weight/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1_weight_ii/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
 | node/test_nllloss_NCd1d2/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
 | node/test_nllloss_NCd1d2_expanded/model.onnx | ❌ | Unsupported op GatherElements |
-| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_reduction_mean/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_reduction_sum/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1d2_reduction_mean/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_reduction_sum/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_with_weight/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
 | node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
-| node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
 | node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
 | node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
-| node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
+| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | ❌ | Unsupported op NegativeLogLikelihoodLoss |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nonmaxsuppression_center_point_box_format/model.onnx | ❌ | Unsupported op NonMaxSuppression |
@@ -1054,10 +1054,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_optional_get_element_optional_tensor/model.onnx | ❌ | Missing elem_type for tensor 'optional_input' |
 | node/test_optional_get_element_sequence/model.onnx | ❌ | Missing elem_type for tensor 'optional_input' |
 | node/test_optional_get_element_tensor/model.onnx | ❌ | Unsupported op OptionalGetElement |
-| node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_optional_has_element_empty_no_input_optional_input/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
+| node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
+| node/test_optional_has_element_empty_no_input_optional_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
+| node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
 | node/test_optional_has_element_empty_optional_input/model.onnx | ❌ | Missing elem_type for tensor 'optional_input' |
 | node/test_optional_has_element_optional_input/model.onnx | ❌ | Missing elem_type for tensor 'optional_input' |
 | node/test_optional_has_element_tensor_input/model.onnx | ❌ | Missing elem_type for tensor 'optional_input' |
@@ -1071,7 +1071,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_or_bcast4v4d/model.onnx | ✅ |  |
 | node/test_pow/model.onnx | ✅ |  |
 | node/test_pow_bcast_array/model.onnx | ✅ |  |
-| node/test_pow_bcast_scalar/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_pow_bcast_scalar/model.onnx | ✅ |  |
 | node/test_pow_example/model.onnx | ✅ |  |
 | node/test_pow_types_float32_int32/model.onnx | ❌ | Pow expects matching dtypes, got float, int32 |
 | node/test_pow_types_float32_int64/model.onnx | ❌ | Pow expects matching dtypes, got float, int64 |
@@ -1375,62 +1375,62 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_scatternd_max/model.onnx | ❌ | Unsupported op ScatterND |
 | node/test_scatternd_min/model.onnx | ❌ | Unsupported op ScatterND |
 | node/test_scatternd_multiply/model.onnx | ❌ | Unsupported op ScatterND |
-| node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_mean/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_3d/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_3d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_3d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_3d/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_4d/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_3d/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_4d/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_mean/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_3d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_no_weight_ii_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_4d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_ii_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_4d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_none/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_none_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_none_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
@@ -1439,10 +1439,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sce_none_weights_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_sce_none_weights_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_sum/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_sum_expanded/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_sum_log_prob/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_sce_sum/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_sum_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_sum_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
+| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
 | node/test_selu/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
@@ -1488,8 +1488,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sin_example/model.onnx | ✅ |  |
 | node/test_sinh/model.onnx | ❌ | Unsupported op Sinh |
 | node/test_sinh_example/model.onnx | ❌ | Unsupported op Sinh |
-| node/test_size/model.onnx | ❌ | Scalar outputs are not supported |
-| node/test_size_example/model.onnx | ❌ | Scalar outputs are not supported |
+| node/test_size/model.onnx | ❌ | Unsupported op Size |
+| node/test_size_example/model.onnx | ❌ | Unsupported op Size |
 | node/test_slice/model.onnx | ❌ | Unsupported op Slice |
 | node/test_slice_default_axes/model.onnx | ❌ | Unsupported op Slice |
 | node/test_slice_default_steps/model.onnx | ❌ | Unsupported op Slice |
@@ -1745,7 +1745,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_Softmax/model.onnx | ✅ |  |
 | pytorch-converted/test_Softmin/model.onnx | ✅ |  |
 | pytorch-converted/test_Softplus/model.onnx | ❌ | Unsupported op Softplus |
-| pytorch-converted/test_Softsign/model.onnx | ❌ | Scalar outputs are not supported |
+| pytorch-converted/test_Softsign/model.onnx | ✅ |  |
 | pytorch-converted/test_Tanh/model.onnx | ✅ |  |
 | pytorch-converted/test_ZeroPad2d/model.onnx | ❌ | Unsupported op Pad |
 | pytorch-converted/test_log_softmax_dim3/model.onnx | ❌ | Unsupported op LogSoftmax |
@@ -1791,8 +1791,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | simple/test_expand_shape_model2/model.onnx | ❌ | Unsupported op Expand |
 | simple/test_expand_shape_model3/model.onnx | ❌ | Unsupported op Expand |
 | simple/test_expand_shape_model4/model.onnx | ❌ | Unsupported op Expand |
-| simple/test_gradient_of_add/model.onnx | ❌ | Scalar outputs are not supported |
-| simple/test_gradient_of_add_and_mul/model.onnx | ❌ | Scalar outputs are not supported |
+| simple/test_gradient_of_add/model.onnx | ❌ | Unsupported op Gradient |
+| simple/test_gradient_of_add_and_mul/model.onnx | ❌ | Unsupported op Gradient |
 | simple/test_sequence_model1/model.onnx | ❌ | Dynamic dim for tensor 'out' |
 | simple/test_sequence_model2/model.onnx | ❌ | Missing elem_type for tensor 'seq_1' |
 | simple/test_sequence_model3/model.onnx | ❌ | Missing elem_type for tensor 'seq_1' |

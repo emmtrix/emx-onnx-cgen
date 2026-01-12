@@ -160,8 +160,6 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
             for axis, dim in enumerate(input_shape)
             if axis not in axes
         )
-    if not output_shape:
-        raise UnsupportedOpError("Scalar outputs are not supported")
     expected_output_shape = _value_shape(graph, node.outputs[0], node)
     if expected_output_shape != output_shape:
         raise ShapeInferenceError(
