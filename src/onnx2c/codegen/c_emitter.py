@@ -894,7 +894,7 @@ class CEmitter:
         constant_of_shape_template,
     ) -> str:
         if isinstance(op, BinaryOp):
-            shape = op.shape
+            shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             loop_indents = CEmitter._loop_indents(shape)
             inner_indent = CEmitter._inner_indent(shape)
@@ -1102,7 +1102,7 @@ class CEmitter:
                 count_include_pad=int(op.count_include_pad),
             ).rstrip()
         if isinstance(op, BatchNormOp):
-            shape = op.shape
+            shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             loop_indents = CEmitter._loop_indents(shape)
             inner_indent = CEmitter._inner_indent(shape)
@@ -1129,7 +1129,7 @@ class CEmitter:
                 epsilon_literal=CEmitter._format_float(op.epsilon),
             ).rstrip()
         if isinstance(op, LrnOp):
-            shape = op.shape
+            shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             loop_indents = CEmitter._loop_indents(shape)
             inner_indent = CEmitter._inner_indent(shape)
@@ -1210,15 +1210,18 @@ class CEmitter:
                 inner=inner,
             ).rstrip()
         if isinstance(op, TransposeOp):
-            output_shape = op.output_shape
+            output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
             loop_indents = CEmitter._loop_indents(output_shape)
             inner_indent = CEmitter._inner_indent(output_shape)
             output_suffix = CEmitter._array_suffix(output_shape)
             input_suffix = CEmitter._array_suffix(op.input_shape)
-            input_indices = [None] * len(op.perm)
-            for output_axis, input_axis in enumerate(op.perm):
-                input_indices[input_axis] = loop_vars[output_axis]
+            if not op.input_shape:
+                input_indices = [loop_vars[0]]
+            else:
+                input_indices = [None] * len(op.perm)
+                for output_axis, input_axis in enumerate(op.perm):
+                    input_indices[input_axis] = loop_vars[output_axis]
             return transpose_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -1245,12 +1248,18 @@ class CEmitter:
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
         if isinstance(op, ReduceOp):
-            output_shape = op.output_shape
+            output_shape = CEmitter._codegen_shape(op.output_shape)
             output_loop_vars = CEmitter._loop_vars(output_shape)
             output_loop_indents = CEmitter._loop_indents(output_shape)
             output_inner_indent = CEmitter._inner_indent(output_shape)
-            reduce_loop_vars = tuple(f"r{idx}" for idx in range(len(op.axes)))
-            reduce_dims = tuple(op.input_shape[axis] for axis in op.axes)
+            if not op.input_shape:
+                reduce_loop_vars = ("r0",)
+                reduce_dims = (1,)
+            else:
+                reduce_loop_vars = tuple(
+                    f"r{idx}" for idx in range(len(op.axes))
+                )
+                reduce_dims = tuple(op.input_shape[axis] for axis in op.axes)
             reduce_loop_indents = tuple(
                 output_inner_indent + "    " * idx
                 for idx in range(len(reduce_loop_vars))
@@ -1258,7 +1267,9 @@ class CEmitter:
             reduce_inner_indent = output_inner_indent + "    " * len(
                 reduce_loop_vars
             )
-            if op.keepdims:
+            if not op.input_shape:
+                input_indices = [reduce_loop_vars[0]]
+            elif op.keepdims:
                 input_indices = [
                     reduce_loop_vars[op.axes.index(axis)]
                     if axis in op.axes
@@ -1348,7 +1359,7 @@ class CEmitter:
                 final_expr=final_expr,
             ).rstrip()
         if isinstance(op, ConstantOfShapeOp):
-            shape = op.shape
+            shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             loop_indents = CEmitter._loop_indents(shape)
             inner_indent = CEmitter._inner_indent(shape)
@@ -1368,7 +1379,7 @@ class CEmitter:
                 inner_indent=inner_indent,
                 value_literal=CEmitter._format_literal(op.dtype, op.value),
             ).rstrip()
-        shape = op.shape
+        shape = CEmitter._codegen_shape(op.shape)
         loop_vars = CEmitter._loop_vars(shape)
         loop_indents = CEmitter._loop_indents(shape)
         inner_indent = CEmitter._inner_indent(shape)
@@ -1485,31 +1496,34 @@ class CEmitter:
         return op.dtype
 
     @staticmethod
-    def _array_suffix(shape: tuple[int, ...]) -> str:
+    def _codegen_shape(shape: tuple[int, ...]) -> tuple[int, ...]:
         if not shape:
-            raise CodegenError("Scalar outputs are not supported")
+            return (1,)
+        return shape
+
+    @staticmethod
+    def _array_suffix(shape: tuple[int, ...]) -> str:
+        shape = CEmitter._codegen_shape(shape)
         return "".join(f"[{dim}]" for dim in shape)
 
     @staticmethod
     def _loop_vars(shape: tuple[int, ...]) -> tuple[str, ...]:
-        if not shape:
-            raise CodegenError("Scalar outputs are not supported")
+        shape = CEmitter._codegen_shape(shape)
         return tuple(f"i{index}" for index in range(len(shape)))
 
     @staticmethod
     def _loop_indents(shape: tuple[int, ...]) -> tuple[str, ...]:
-        if not shape:
-            raise CodegenError("Scalar outputs are not supported")
+        shape = CEmitter._codegen_shape(shape)
         return tuple("    " * (index + 1) for index in range(len(shape)))
 
     @staticmethod
     def _inner_indent(shape: tuple[int, ...]) -> str:
-        if not shape:
-            raise CodegenError("Scalar outputs are not supported")
+        shape = CEmitter._codegen_shape(shape)
         return "    " * (len(shape) + 1)
 
     @staticmethod
     def _element_count(shape: tuple[int, ...]) -> int:
+        shape = CEmitter._codegen_shape(shape)
         count = 1
         for dim in shape:
             if dim <= 0:
@@ -1526,7 +1540,8 @@ class CEmitter:
             model.input_names, model.input_shapes, input_counts, model.input_dtypes
         ):
             info = dtype_info(dtype)
-            loop_vars = self._loop_vars(shape)
+            codegen_shape = self._codegen_shape(shape)
+            loop_vars = self._loop_vars(codegen_shape)
             if dtype == "float":
                 random_expr = "rng_next_float()"
             elif dtype == "bool":
@@ -1536,15 +1551,15 @@ class CEmitter:
             inputs.append(
                 {
                     "name": name,
-                    "shape": shape,
+                    "shape": codegen_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": count,
-                    "array_suffix": self._array_suffix(shape),
+                    "array_suffix": self._array_suffix(codegen_shape),
                     "loop_vars": loop_vars,
-                    "loop_indents": self._loop_indents(shape),
-                    "inner_indent": self._inner_indent(shape),
-                    "rank": len(shape),
-                    "index_expr": self._index_expr(shape, loop_vars),
+                    "loop_indents": self._loop_indents(codegen_shape),
+                    "inner_indent": self._inner_indent(codegen_shape),
+                    "rank": len(codegen_shape),
+                    "index_expr": self._index_expr(codegen_shape, loop_vars),
                     "dtype": dtype,
                     "c_type": info.c_type,
                     "random_expr": random_expr,
@@ -1557,19 +1572,20 @@ class CEmitter:
             model.output_names, model.output_shapes, model.output_dtypes
         ):
             output_info = dtype_info(dtype)
-            output_loop_vars = self._loop_vars(shape)
+            codegen_shape = self._codegen_shape(shape)
+            output_loop_vars = self._loop_vars(codegen_shape)
             outputs.append(
                 {
                     "name": name,
-                    "shape": shape,
+                    "shape": codegen_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
-                    "count": self._element_count(shape),
-                    "array_suffix": self._array_suffix(shape),
+                    "count": self._element_count(codegen_shape),
+                    "array_suffix": self._array_suffix(codegen_shape),
                     "loop_vars": output_loop_vars,
-                    "loop_indents": self._loop_indents(shape),
-                    "inner_indent": self._inner_indent(shape),
-                    "rank": len(shape),
-                    "index_expr": self._index_expr(shape, output_loop_vars),
+                    "loop_indents": self._loop_indents(codegen_shape),
+                    "inner_indent": self._inner_indent(codegen_shape),
+                    "rank": len(codegen_shape),
+                    "index_expr": self._index_expr(codegen_shape, output_loop_vars),
                     "dtype": dtype,
                     "c_type": output_info.c_type,
                     "print_format": self._print_format(dtype),
@@ -1612,10 +1628,11 @@ class CEmitter:
 
     @staticmethod
     def _index_expr(shape: tuple[int, ...], loop_vars: tuple[str, ...]) -> str:
+        shape = CEmitter._codegen_shape(shape)
         if len(shape) != len(loop_vars):
             raise CodegenError("Loop variables must match shape rank")
         if not shape:
-            raise CodegenError("Scalar outputs are not supported")
+            return "0"
         expr = loop_vars[0]
         for dim, var in zip(shape[1:], loop_vars[1:]):
             expr = f"({expr} * {dim} + {var})"
