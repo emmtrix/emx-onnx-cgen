@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-void model_op0(const float a[2][3][4], const float b[2][3][4], float out[2][3][4]) {
+static inline void model_op0(const float a[2][3][4], const float b[2][3][4], float out[2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
