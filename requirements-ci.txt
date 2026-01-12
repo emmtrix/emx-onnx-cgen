@@ -1,6 +1,6 @@
 # Core ONNX toolchain
 onnx==1.20.1
-onnxruntime==1.20.1
+onnxruntime==1.23.2
 protobuf>=4.25.0
 
 # Numerics
