@@ -70,19 +70,6 @@ def shape_product(shape: tuple[int, ...]) -> int:
     return product
 
 
-def normalize_axis(axis: int, shape: tuple[int, ...], node: Node) -> int:
-    if not shape:
-        raise ShapeInferenceError(f"{node.op_type} does not support scalar inputs")
-    rank = len(shape)
-    if axis < 0:
-        axis += rank
-    if axis < 0 or axis >= rank:
-        raise ShapeInferenceError(
-            f"{node.op_type} axis {axis} is out of range for rank {rank}"
-        )
-    return axis
-
-
 def optional_name(names: Sequence[str], index: int) -> str | None:
     if index >= len(names):
         return None

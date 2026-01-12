@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from ..codegen.c_emitter import LogSoftmaxOp
-from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype as _node_dtype
-from .common import normalize_axis as _normalize_axis
 from .common import shape_product as _shape_product
 from .common import value_shape as _value_shape
 from .registry import register_lowering
+from ..validation import ensure_output_shape_matches_input
+from ..validation import normalize_axis as _normalize_axis
 
 
 @register_lowering("LogSoftmax")
@@ -21,10 +22,7 @@ def lower_logsoftmax(graph: Graph, node: Node) -> LogSoftmaxOp:
         )
     input_shape = _value_shape(graph, node.inputs[0], node)
     output_shape = _value_shape(graph, node.outputs[0], node)
-    if input_shape != output_shape:
-        raise ShapeInferenceError(
-            f"LogSoftmax output shape must be {input_shape}, got {output_shape}"
-        )
+    ensure_output_shape_matches_input(node, input_shape, output_shape)
     axis = _normalize_axis(
         int(node.attrs.get("axis", -1)),
         input_shape,
