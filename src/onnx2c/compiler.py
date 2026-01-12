@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Mapping
+from typing import Callable, Mapping, Sequence
 
 import numpy as np
 import onnx
@@ -240,12 +240,38 @@ class Compiler:
                     values[node.outputs[0]] = result
                 continue
             if node.op_type == "Attention":
-                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                input_q = node.inputs[0]
+                input_k = node.inputs[1]
+                input_v = node.inputs[2]
+                output_y = node.outputs[0]
+                op_dtype = _node_dtype(
+                    graph, node, input_q, input_k, input_v, output_y
+                )
                 spec = _resolve_attention_spec(graph, node, op_dtype)
-                query = values[node.inputs[0]]
-                key = values[node.inputs[1]]
-                value = values[node.inputs[2]]
-                values[node.outputs[0]] = _apply_attention(spec, query, key, value)
+                attn_mask_name = _optional_name(node.inputs, 3)
+                past_key_name = _optional_name(node.inputs, 4)
+                past_value_name = _optional_name(node.inputs, 5)
+                nonpad_name = _optional_name(node.inputs, 6)
+                present_key_name = _optional_name(node.outputs, 1)
+                present_value_name = _optional_name(node.outputs, 2)
+                qk_matmul_output_name = _optional_name(node.outputs, 3)
+                output, present_key, present_value, qk_output = _apply_attention(
+                    spec,
+                    values[input_q],
+                    values[input_k],
+                    values[input_v],
+                    values[attn_mask_name] if attn_mask_name else None,
+                    values[past_key_name] if past_key_name else None,
+                    values[past_value_name] if past_value_name else None,
+                    values[nonpad_name] if nonpad_name else None,
+                )
+                values[output_y] = output
+                if present_key_name is not None:
+                    values[present_key_name] = present_key
+                if present_value_name is not None:
+                    values[present_value_name] = present_value
+                if qk_matmul_output_name is not None:
+                    values[qk_matmul_output_name] = qk_output
                 continue
             if node.op_type == "Conv":
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -671,21 +697,60 @@ class Compiler:
         )
 
     def _lower_attention_op(self, graph: Graph, node: Node) -> AttentionOp:
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        input_q = node.inputs[0]
+        input_k = node.inputs[1]
+        input_v = node.inputs[2]
+        output_y = node.outputs[0]
+        op_dtype = _node_dtype(graph, node, input_q, input_k, input_v, output_y)
         spec = _resolve_attention_spec(graph, node, op_dtype)
+        input_mask = _optional_name(node.inputs, 3)
+        input_past_key = _optional_name(node.inputs, 4)
+        input_past_value = _optional_name(node.inputs, 5)
+        input_nonpad = _optional_name(node.inputs, 6)
+        output_present_key = _optional_name(node.outputs, 1)
+        output_present_value = _optional_name(node.outputs, 2)
+        output_qk_matmul = _optional_name(node.outputs, 3)
         return AttentionOp(
-            input_q=node.inputs[0],
-            input_k=node.inputs[1],
-            input_v=node.inputs[2],
-            output=node.outputs[0],
+            input_q=input_q,
+            input_k=input_k,
+            input_v=input_v,
+            input_attn_mask=input_mask,
+            input_past_key=input_past_key,
+            input_past_value=input_past_value,
+            input_nonpad_kv_seqlen=input_nonpad,
+            output=output_y,
+            output_present_key=output_present_key,
+            output_present_value=output_present_value,
+            output_qk_matmul=output_qk_matmul,
             batch=spec.batch,
-            heads=spec.heads,
+            q_heads=spec.q_heads,
+            kv_heads=spec.kv_heads,
             q_seq=spec.q_seq,
             kv_seq=spec.kv_seq,
+            total_seq=spec.total_seq,
+            past_seq=spec.past_seq,
             qk_head_size=spec.qk_head_size,
             v_head_size=spec.v_head_size,
+            q_hidden_size=spec.q_hidden_size,
+            k_hidden_size=spec.k_hidden_size,
+            v_hidden_size=spec.v_hidden_size,
             scale=spec.scale,
             is_causal=spec.is_causal,
+            softcap=spec.softcap,
+            qk_matmul_output_mode=spec.qk_matmul_output_mode,
+            q_rank=spec.q_rank,
+            k_rank=spec.k_rank,
+            v_rank=spec.v_rank,
+            output_rank=spec.output_rank,
+            mask_shape=spec.mask_shape,
+            mask_is_bool=spec.mask_is_bool,
+            mask_rank=spec.mask_rank,
+            mask_broadcast_batch=spec.mask_broadcast_batch,
+            mask_broadcast_heads=spec.mask_broadcast_heads,
+            mask_broadcast_q_seq=spec.mask_broadcast_q_seq,
+            mask_q_seq=spec.mask_q_seq,
+            mask_kv_seq=spec.mask_kv_seq,
+            head_group_size=spec.head_group_size,
             dtype=op_dtype,
         )
 
@@ -893,7 +958,12 @@ def _value_dtype(graph: Graph, name: str, node: Node | None = None) -> str:
 
 
 def _node_dtype(graph: Graph, node: Node, *names: str) -> str:
-    dtypes = {_value_dtype(graph, name, node) for name in names}
+    filtered = [name for name in names if name]
+    if not filtered:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects at least one typed input or output"
+        )
+    dtypes = {_value_dtype(graph, name, node) for name in filtered}
     if len(dtypes) != 1:
         raise UnsupportedOpError(
             f"{node.op_type} expects matching dtypes, got {', '.join(sorted(dtypes))}"
@@ -1355,13 +1425,45 @@ def _apply_softmax(values: np.ndarray, axis: int) -> np.ndarray:
 @dataclass(frozen=True)
 class _AttentionSpec:
     batch: int
-    heads: int
+    q_heads: int
+    kv_heads: int
     q_seq: int
     kv_seq: int
+    total_seq: int
+    past_seq: int
     qk_head_size: int
     v_head_size: int
+    q_hidden_size: int | None
+    k_hidden_size: int | None
+    v_hidden_size: int | None
     scale: float
     is_causal: bool
+    softcap: float
+    qk_matmul_output_mode: int
+    q_rank: int
+    k_rank: int
+    v_rank: int
+    output_rank: int
+    mask_shape: tuple[int, ...] | None
+    mask_is_bool: bool
+    mask_rank: int | None
+    mask_broadcast_batch: bool
+    mask_broadcast_heads: bool
+    mask_broadcast_q_seq: bool
+    mask_q_seq: int | None
+    mask_kv_seq: int | None
+    head_group_size: int
+    has_attn_mask: bool
+    has_past: bool
+    has_present: bool
+    has_nonpad: bool
+
+
+def _optional_name(names: Sequence[str], index: int) -> str | None:
+    if index >= len(names):
+        return None
+    name = names[index]
+    return name or None
 
 
 def _resolve_attention_spec(
@@ -1369,46 +1471,307 @@ def _resolve_attention_spec(
 ) -> _AttentionSpec:
     if dtype not in {"float", "double"}:
         raise UnsupportedOpError("Unsupported op Attention")
-    if len(node.inputs) != 3 or len(node.outputs) != 1:
+    if len(node.inputs) < 3 or len(node.outputs) < 1:
         raise UnsupportedOpError("Unsupported op Attention")
-    if set(node.attrs) - {"scale", "is_causal"}:
+    supported_attrs = {
+        "scale",
+        "is_causal",
+        "q_num_heads",
+        "kv_num_heads",
+        "softmax_precision",
+        "softcap",
+        "qk_matmul_output_mode",
+    }
+    if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("Unsupported op Attention")
     q_shape = _value_shape(graph, node.inputs[0], node)
     k_shape = _value_shape(graph, node.inputs[1], node)
     v_shape = _value_shape(graph, node.inputs[2], node)
-    if len(q_shape) != 4 or len(k_shape) != 4 or len(v_shape) != 4:
+    q_rank = len(q_shape)
+    k_rank = len(k_shape)
+    v_rank = len(v_shape)
+    if q_rank not in {3, 4} or k_rank not in {3, 4} or v_rank not in {3, 4}:
         raise UnsupportedOpError("Unsupported op Attention")
-    batch, q_heads, q_seq, qk_head_size = q_shape
-    batch_k, kv_heads, kv_seq, k_head_size = k_shape
-    batch_v, v_heads, kv_seq_v, v_head_size = v_shape
-    if batch != batch_k or batch != batch_v:
+    if q_rank != k_rank or q_rank != v_rank:
+        raise UnsupportedOpError("Unsupported op Attention")
+    batch = q_shape[0]
+    if batch != k_shape[0] or batch != v_shape[0]:
         raise ShapeInferenceError("Attention batch sizes must match")
-    if kv_seq != kv_seq_v:
-        raise ShapeInferenceError("Attention key/value sequence lengths must match")
-    if qk_head_size != k_head_size:
-        raise ShapeInferenceError("Attention Q/K head sizes must match")
-    if q_heads != kv_heads or kv_heads != v_heads:
-        raise UnsupportedOpError("Unsupported op Attention")
+    q_hidden_size = None
+    k_hidden_size = None
+    v_hidden_size = None
+    if q_rank == 3:
+        q_heads = node.attrs.get("q_num_heads")
+        kv_heads = node.attrs.get("kv_num_heads")
+        if q_heads is None or kv_heads is None:
+            raise UnsupportedOpError("Unsupported op Attention")
+        q_heads = int(q_heads)
+        kv_heads = int(kv_heads)
+        q_seq = q_shape[1]
+        kv_seq = k_shape[1]
+        if kv_seq != v_shape[1]:
+            raise ShapeInferenceError(
+                "Attention key/value sequence lengths must match"
+            )
+        q_hidden_size = q_shape[2]
+        k_hidden_size = k_shape[2]
+        v_hidden_size = v_shape[2]
+        if q_hidden_size % q_heads != 0:
+            raise ShapeInferenceError(
+                "Attention query hidden size must be divisible by q_num_heads"
+            )
+        if k_hidden_size % kv_heads != 0:
+            raise ShapeInferenceError(
+                "Attention key hidden size must be divisible by kv_num_heads"
+            )
+        if v_hidden_size % kv_heads != 0:
+            raise ShapeInferenceError(
+                "Attention value hidden size must be divisible by kv_num_heads"
+            )
+        qk_head_size = q_hidden_size // q_heads
+        k_head_size = k_hidden_size // kv_heads
+        v_head_size = v_hidden_size // kv_heads
+        if qk_head_size != k_head_size:
+            raise ShapeInferenceError("Attention Q/K head sizes must match")
+    else:
+        q_heads = q_shape[1]
+        kv_heads = k_shape[1]
+        if kv_heads != v_shape[1]:
+            raise ShapeInferenceError("Attention key/value head counts must match")
+        q_seq = q_shape[2]
+        kv_seq = k_shape[2]
+        if kv_seq != v_shape[2]:
+            raise ShapeInferenceError(
+                "Attention key/value sequence lengths must match"
+            )
+        qk_head_size = q_shape[3]
+        k_head_size = k_shape[3]
+        v_head_size = v_shape[3]
+        if qk_head_size != k_head_size:
+            raise ShapeInferenceError("Attention Q/K head sizes must match")
+        attr_q_heads = node.attrs.get("q_num_heads")
+        attr_kv_heads = node.attrs.get("kv_num_heads")
+        if attr_q_heads is not None and int(attr_q_heads) != q_heads:
+            raise ShapeInferenceError(
+                "Attention q_num_heads must match query head dimension"
+            )
+        if attr_kv_heads is not None and int(attr_kv_heads) != kv_heads:
+            raise ShapeInferenceError(
+                "Attention kv_num_heads must match key/value head dimension"
+            )
+    if q_heads < kv_heads or q_heads % kv_heads != 0:
+        raise ShapeInferenceError(
+            "Attention requires q_num_heads to be a multiple of kv_num_heads"
+        )
+    head_group_size = q_heads // kv_heads
+    past_key_name = _optional_name(node.inputs, 4)
+    past_value_name = _optional_name(node.inputs, 5)
+    has_past = past_key_name is not None or past_value_name is not None
+    if has_past and (past_key_name is None or past_value_name is None):
+        raise UnsupportedOpError(
+            "Attention expects both past_key and past_value if either is provided"
+        )
+    past_seq = 0
+    if has_past:
+        past_key_shape = _value_shape(graph, past_key_name, node)
+        past_value_shape = _value_shape(graph, past_value_name, node)
+        if len(past_key_shape) != 4 or len(past_value_shape) != 4:
+            raise ShapeInferenceError("Attention past key/value must be 4D")
+        if (
+            past_key_shape[0] != batch
+            or past_value_shape[0] != batch
+            or past_key_shape[1] != kv_heads
+            or past_value_shape[1] != kv_heads
+        ):
+            raise ShapeInferenceError(
+                "Attention past key/value batch/head sizes must match"
+            )
+        if past_key_shape[3] != qk_head_size:
+            raise ShapeInferenceError(
+                "Attention past key head size must match key head size"
+            )
+        if past_value_shape[3] != v_head_size:
+            raise ShapeInferenceError(
+                "Attention past value head size must match value head size"
+            )
+        past_seq = past_key_shape[2]
+    total_seq = kv_seq + past_seq
     output_shape = _value_shape(graph, node.outputs[0], node)
-    expected_output_shape = (batch, q_heads, q_seq, v_head_size)
+    output_rank = len(output_shape)
+    if q_rank == 3:
+        expected_output_shape = (
+            batch,
+            q_seq,
+            q_heads * v_head_size,
+        )
+    else:
+        expected_output_shape = (batch, q_heads, q_seq, v_head_size)
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "Attention output shape must be "
             f"{expected_output_shape}, got {output_shape}"
         )
+    present_key_name = _optional_name(node.outputs, 1)
+    present_value_name = _optional_name(node.outputs, 2)
+    has_present = present_key_name is not None or present_value_name is not None
+    if has_present and (present_key_name is None or present_value_name is None):
+        raise UnsupportedOpError(
+            "Attention expects both present_key and present_value if either is provided"
+        )
+    if has_present and not has_past:
+        raise UnsupportedOpError(
+            "Attention present outputs require past key/value inputs"
+        )
+    if has_present:
+        present_key_shape = _value_shape(graph, present_key_name, node)
+        present_value_shape = _value_shape(graph, present_value_name, node)
+        expected_present_key = (batch, kv_heads, total_seq, qk_head_size)
+        expected_present_value = (batch, kv_heads, total_seq, v_head_size)
+        if present_key_shape != expected_present_key:
+            raise ShapeInferenceError(
+                "Attention present key shape must be "
+                f"{expected_present_key}, got {present_key_shape}"
+            )
+        if present_value_shape != expected_present_value:
+            raise ShapeInferenceError(
+                "Attention present value shape must be "
+                f"{expected_present_value}, got {present_value_shape}"
+            )
+    qk_matmul_output_name = _optional_name(node.outputs, 3)
+    if qk_matmul_output_name is not None:
+        qk_shape = _value_shape(graph, qk_matmul_output_name, node)
+        expected_qk_shape = (batch, q_heads, q_seq, total_seq)
+        if qk_shape != expected_qk_shape:
+            raise ShapeInferenceError(
+                "Attention qk_matmul_output shape must be "
+                f"{expected_qk_shape}, got {qk_shape}"
+            )
+    attn_mask_name = _optional_name(node.inputs, 3)
+    mask_shape = None
+    mask_rank = None
+    mask_is_bool = False
+    mask_broadcast_batch = False
+    mask_broadcast_heads = True
+    mask_broadcast_q_seq = False
+    mask_q_seq = None
+    mask_kv_seq = None
+    has_attn_mask = attn_mask_name is not None
+    if has_attn_mask:
+        mask_shape = _value_shape(graph, attn_mask_name, node)
+        mask_rank = len(mask_shape)
+        if mask_rank not in {2, 3, 4}:
+            raise ShapeInferenceError("Attention mask must be 2D/3D/4D")
+        mask_dtype = _value_dtype(graph, attn_mask_name, node)
+        if mask_dtype == "bool":
+            mask_is_bool = True
+        elif mask_dtype != dtype:
+            raise UnsupportedOpError(
+                "Attention mask must be bool or match attention dtype"
+            )
+        if mask_rank == 2:
+            mask_q_seq, mask_kv_seq = mask_shape
+            mask_broadcast_batch = True
+            mask_broadcast_heads = True
+            mask_broadcast_q_seq = mask_q_seq == 1
+            if mask_q_seq not in {1, q_seq}:
+                raise ShapeInferenceError(
+                    "Attention mask sequence length must match query length"
+                )
+        elif mask_rank == 3:
+            mask_batch, mask_q_seq, mask_kv_seq = mask_shape
+            mask_broadcast_batch = mask_batch == 1
+            mask_broadcast_heads = True
+            mask_broadcast_q_seq = mask_q_seq == 1
+            if mask_batch not in {1, batch}:
+                raise ShapeInferenceError(
+                    "Attention mask batch dimension must match batch size"
+                )
+            if mask_q_seq not in {1, q_seq}:
+                raise ShapeInferenceError(
+                    "Attention mask sequence length must match query length"
+                )
+        else:
+            mask_batch, mask_heads, mask_q_seq, mask_kv_seq = mask_shape
+            mask_broadcast_batch = mask_batch == 1
+            mask_broadcast_heads = mask_heads == 1
+            mask_broadcast_q_seq = mask_q_seq == 1
+            if mask_batch not in {1, batch}:
+                raise ShapeInferenceError(
+                    "Attention mask batch dimension must match batch size"
+                )
+            if mask_heads not in {1, q_heads}:
+                raise ShapeInferenceError(
+                    "Attention mask head dimension must match q_num_heads"
+                )
+            if mask_q_seq not in {1, q_seq}:
+                raise ShapeInferenceError(
+                    "Attention mask sequence length must match query length"
+                )
+        if mask_kv_seq is None:
+            raise ShapeInferenceError("Attention mask must include kv sequence")
+        if mask_kv_seq > total_seq:
+            raise ShapeInferenceError(
+                "Attention mask kv sequence length exceeds total sequence length"
+            )
+    nonpad_name = _optional_name(node.inputs, 6)
+    has_nonpad = nonpad_name is not None
+    if has_nonpad:
+        if has_past or has_present:
+            raise UnsupportedOpError(
+                "Attention nonpad_kv_seqlen is not supported with KV cache"
+            )
+        nonpad_shape = _value_shape(graph, nonpad_name, node)
+        if nonpad_shape != (batch,):
+            raise ShapeInferenceError(
+                "Attention nonpad_kv_seqlen must have shape (batch,)"
+            )
+        nonpad_dtype = _value_dtype(graph, nonpad_name, node)
+        if nonpad_dtype != "int64":
+            raise UnsupportedOpError(
+                "Attention nonpad_kv_seqlen must be int64"
+            )
     scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
+    softcap = float(node.attrs.get("softcap", 0.0))
     is_causal = int(node.attrs.get("is_causal", 0))
     if is_causal not in (0, 1):
         raise UnsupportedOpError("Unsupported op Attention")
+    qk_matmul_output_mode = int(node.attrs.get("qk_matmul_output_mode", 0))
+    if qk_matmul_output_mode not in {0, 1, 2, 3}:
+        raise UnsupportedOpError("Unsupported op Attention")
     return _AttentionSpec(
         batch=batch,
-        heads=q_heads,
+        q_heads=q_heads,
+        kv_heads=kv_heads,
         q_seq=q_seq,
         kv_seq=kv_seq,
+        total_seq=total_seq,
+        past_seq=past_seq,
         qk_head_size=qk_head_size,
         v_head_size=v_head_size,
+        q_hidden_size=q_hidden_size,
+        k_hidden_size=k_hidden_size,
+        v_hidden_size=v_hidden_size,
         scale=scale,
         is_causal=bool(is_causal),
+        softcap=softcap,
+        qk_matmul_output_mode=qk_matmul_output_mode,
+        q_rank=q_rank,
+        k_rank=k_rank,
+        v_rank=v_rank,
+        output_rank=output_rank,
+        mask_shape=mask_shape,
+        mask_is_bool=mask_is_bool,
+        mask_rank=mask_rank,
+        mask_broadcast_batch=mask_broadcast_batch,
+        mask_broadcast_heads=mask_broadcast_heads,
+        mask_broadcast_q_seq=mask_broadcast_q_seq,
+        mask_q_seq=mask_q_seq,
+        mask_kv_seq=mask_kv_seq,
+        head_group_size=head_group_size,
+        has_attn_mask=has_attn_mask,
+        has_past=has_past,
+        has_present=has_present,
+        has_nonpad=has_nonpad,
     )
 
 
@@ -1417,17 +1780,101 @@ def _apply_attention(
     query: np.ndarray,
     key: np.ndarray,
     value: np.ndarray,
-) -> np.ndarray:
-    k_transpose = np.transpose(key, (0, 1, 3, 2))
-    scores = np.matmul(query, k_transpose) * spec.scale
+    attn_mask: np.ndarray | None,
+    past_key: np.ndarray | None,
+    past_value: np.ndarray | None,
+    nonpad_kv_seqlen: np.ndarray | None,
+) -> tuple[
+    np.ndarray,
+    np.ndarray | None,
+    np.ndarray | None,
+    np.ndarray | None,
+]:
+    if spec.q_rank == 3:
+        query_4d = query.reshape(
+            spec.batch, spec.q_seq, spec.q_heads, spec.qk_head_size
+        ).transpose(0, 2, 1, 3)
+        key_4d = key.reshape(
+            spec.batch, spec.kv_seq, spec.kv_heads, spec.qk_head_size
+        ).transpose(0, 2, 1, 3)
+        value_4d = value.reshape(
+            spec.batch, spec.kv_seq, spec.kv_heads, spec.v_head_size
+        ).transpose(0, 2, 1, 3)
+    else:
+        query_4d = query
+        key_4d = key
+        value_4d = value
+    if past_key is not None and past_value is not None:
+        key_total = np.concatenate([past_key, key_4d], axis=2)
+        value_total = np.concatenate([past_value, value_4d], axis=2)
+    else:
+        key_total = key_4d
+        value_total = value_4d
+    if spec.head_group_size > 1:
+        key_total_expanded = np.repeat(key_total, spec.head_group_size, axis=1)
+        value_total_expanded = np.repeat(
+            value_total, spec.head_group_size, axis=1
+        )
+    else:
+        key_total_expanded = key_total
+        value_total_expanded = value_total
+    k_transpose = np.transpose(key_total_expanded, (0, 1, 3, 2))
+    scores = np.matmul(query_4d, k_transpose) * spec.scale
+    bias = np.zeros_like(scores)
+    if spec.has_attn_mask and attn_mask is not None:
+        if spec.mask_is_bool:
+            bias_mask = np.where(attn_mask, 0.0, -np.inf)
+        else:
+            bias_mask = attn_mask.astype(scores.dtype)
+        if spec.mask_rank == 2:
+            bias_mask = bias_mask[None, None, ...]
+        elif spec.mask_rank == 3:
+            bias_mask = bias_mask[:, None, ...]
+        bias_mask = np.broadcast_to(
+            bias_mask, (spec.batch, spec.q_heads, spec.q_seq, spec.mask_kv_seq)
+        )
+        if spec.mask_kv_seq < spec.total_seq:
+            pad_width = spec.total_seq - spec.mask_kv_seq
+            bias_mask = np.pad(
+                bias_mask,
+                ((0, 0), (0, 0), (0, 0), (0, pad_width)),
+                constant_values=-np.inf,
+            )
+        bias = bias + bias_mask
+    if spec.has_nonpad and nonpad_kv_seqlen is not None:
+        kv_range = np.arange(spec.total_seq)[None, None, None, :]
+        valid = kv_range < nonpad_kv_seqlen[:, None, None, None]
+        bias = bias + np.where(valid, 0.0, -np.inf)
     if spec.is_causal:
-        mask = np.triu(np.ones((spec.q_seq, spec.kv_seq), dtype=bool), k=1)
-        scores = scores.copy()
-        scores[..., mask] = -np.inf
-    max_scores = np.max(scores, axis=-1, keepdims=True)
-    weights = np.exp(scores - max_scores)
+        kv_range = np.arange(spec.total_seq)[None, :]
+        q_range = np.arange(spec.q_seq)[:, None] + spec.past_seq
+        causal_mask = kv_range > q_range
+        bias = bias + np.where(causal_mask, -np.inf, 0.0)[
+            None, None, :, :
+        ]
+    scores_with_bias = scores + bias
+    if spec.softcap != 0.0:
+        scores_softcap = spec.softcap * np.tanh(scores_with_bias / spec.softcap)
+    else:
+        scores_softcap = scores_with_bias
+    max_scores = np.max(scores_softcap, axis=-1, keepdims=True)
+    weights = np.exp(scores_softcap - max_scores)
     weights /= np.sum(weights, axis=-1, keepdims=True)
-    return np.matmul(weights, value)
+    output = np.matmul(weights, value_total_expanded)
+    if spec.q_rank == 3:
+        output = output.transpose(0, 2, 1, 3).reshape(
+            spec.batch, spec.q_seq, spec.q_heads * spec.v_head_size
+        )
+    qk_output = None
+    if spec.qk_matmul_output_mode == 0:
+        qk_output = scores
+    elif spec.qk_matmul_output_mode == 1:
+        qk_output = scores_with_bias
+    elif spec.qk_matmul_output_mode == 2:
+        qk_output = scores_softcap
+    else:
+        qk_output = weights
+    return output, key_total, value_total, qk_output
 
 
 @dataclass(frozen=True)
