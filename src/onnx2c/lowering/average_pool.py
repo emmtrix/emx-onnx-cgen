@@ -120,6 +120,41 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     )
 
 
+def _resolve_global_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("GlobalAveragePool must have 1 input and 1 output")
+    if node.attrs:
+        raise UnsupportedOpError("GlobalAveragePool has unsupported attributes")
+    input_shape = _value_shape(graph, node.inputs[0], node)
+    if len(input_shape) != 4:
+        raise UnsupportedOpError("GlobalAveragePool supports NCHW 2D inputs only")
+    batch, channels, in_h, in_w = input_shape
+    output_shape = _value_shape(graph, node.outputs[0], node)
+    expected_output_shape = (batch, channels, 1, 1)
+    if output_shape != expected_output_shape:
+        raise ShapeInferenceError(
+            "GlobalAveragePool output shape must be "
+            f"{expected_output_shape}, got {output_shape}"
+        )
+    return _AveragePoolSpec(
+        batch=batch,
+        channels=channels,
+        in_h=in_h,
+        in_w=in_w,
+        out_h=1,
+        out_w=1,
+        kernel_h=in_h,
+        kernel_w=in_w,
+        stride_h=1,
+        stride_w=1,
+        pad_top=0,
+        pad_left=0,
+        pad_bottom=0,
+        pad_right=0,
+        count_include_pad=False,
+    )
+
+
 @register_lowering("AveragePool")
 def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
     op_dtype = _value_dtype(graph, node.inputs[0], node)
@@ -132,6 +167,40 @@ def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
     if op_dtype != "float":
         raise UnsupportedOpError("AveragePool supports float inputs only")
     spec = _resolve_average_pool_spec(graph, node)
+    return AveragePoolOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        batch=spec.batch,
+        channels=spec.channels,
+        in_h=spec.in_h,
+        in_w=spec.in_w,
+        out_h=spec.out_h,
+        out_w=spec.out_w,
+        kernel_h=spec.kernel_h,
+        kernel_w=spec.kernel_w,
+        stride_h=spec.stride_h,
+        stride_w=spec.stride_w,
+        pad_top=spec.pad_top,
+        pad_left=spec.pad_left,
+        pad_bottom=spec.pad_bottom,
+        pad_right=spec.pad_right,
+        count_include_pad=spec.count_include_pad,
+        dtype=op_dtype,
+    )
+
+
+@register_lowering("GlobalAveragePool")
+def lower_global_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
+    op_dtype = _value_dtype(graph, node.inputs[0], node)
+    output_dtype = _value_dtype(graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            "GlobalAveragePool expects matching input/output dtypes, "
+            f"got {op_dtype} and {output_dtype}"
+        )
+    if op_dtype != "float":
+        raise UnsupportedOpError("GlobalAveragePool supports float inputs only")
+    spec = _resolve_global_average_pool_spec(graph, node)
     return AveragePoolOp(
         input0=node.inputs[0],
         output=node.outputs[0],

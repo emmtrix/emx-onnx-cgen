@@ -73,7 +73,6 @@
 | Unsupported op ScatterND | 5 | █ |
 | Unsupported op Selu | 5 | █ |
 | Unsupported op Sigmoid | 5 | █ |
-| Unsupported op GlobalAveragePool | 4 | █ |
 | Unsupported op AffineGrid | 4 | █ |
 | Unsupported op DeformConv | 4 | █ |
 | Unsupported op Compress | 4 | █ |

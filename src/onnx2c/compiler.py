@@ -34,7 +34,10 @@ from .dtypes import ONNX_TO_DTYPE, dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Initializer, Node
 from .lowering import get_lowering
-from .lowering.average_pool import lower_average_pool
+from .lowering.average_pool import (
+    lower_average_pool,
+    lower_global_average_pool,
+)
 from .lowering.batch_normalization import lower_batch_normalization
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
@@ -323,6 +326,11 @@ class Compiler:
                 continue
             if node.op_type == "AveragePool":
                 op = lower_average_pool(graph, node)
+                data = values[node.inputs[0]]
+                values[node.outputs[0]] = _apply_average_pool(op, data)
+                continue
+            if node.op_type == "GlobalAveragePool":
+                op = lower_global_average_pool(graph, node)
                 data = values[node.inputs[0]]
                 values[node.outputs[0]] = _apply_average_pool(op, data)
                 continue
