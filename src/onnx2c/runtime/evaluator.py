@@ -20,6 +20,9 @@ from ..lowering.logsoftmax import lower_logsoftmax
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from ..lowering.softmax_cross_entropy_loss import (
+    lower_softmax_cross_entropy_loss,
+)
 from ..lowering.lstm import ACTIVATION_KIND_BY_NAME, resolve_lstm_spec
 from ..lowering.lrn import resolve_lrn_spec
 from ..lowering.matmul import lower_matmul
@@ -335,6 +338,27 @@ def _eval_negative_log_likelihood_loss(
     )
 
 
+@register_evaluator("SoftmaxCrossEntropyLoss")
+def _eval_softmax_cross_entropy_loss(
+    evaluator: Evaluator, node: Node
+) -> None:
+    op = lower_softmax_cross_entropy_loss(evaluator.graph, node)
+    input_value = evaluator.values[op.input0]
+    target_value = evaluator.values[op.target]
+    weight_value = evaluator.values[op.weight] if op.weight is not None else None
+    loss, log_prob = _apply_softmax_cross_entropy_loss(
+        input_value,
+        target_value,
+        weight_value,
+        reduction=op.reduction,
+        ignore_index=op.ignore_index,
+        return_log_prob=op.log_prob is not None,
+    )
+    evaluator.values[op.output] = loss
+    if op.log_prob is not None and log_prob is not None:
+        evaluator.values[op.log_prob] = log_prob
+
+
 @register_evaluator("Dropout")
 def _eval_dropout(evaluator: Evaluator, node: Node) -> None:
     op = lower_dropout(evaluator.graph, node)
@@ -572,6 +596,74 @@ def _apply_negative_log_likelihood_loss(
     elif reduction == "sum":
         loss = np.sum(loss)
     return loss.astype(values.dtype)
+
+
+def _apply_softmax_cross_entropy_loss(
+    values: np.ndarray,
+    target: np.ndarray,
+    weight: np.ndarray | None,
+    *,
+    reduction: str,
+    ignore_index: int | None,
+    return_log_prob: bool,
+) -> tuple[np.ndarray, np.ndarray | None]:
+    input_shape = values.shape
+    if len(input_shape) < 2:
+        raise UnsupportedOpError(
+            "SoftmaxCrossEntropyLoss input must be at least 2D"
+        )
+    target_shape = target.shape
+    if input_shape[0] != target_shape[0]:
+        raise ShapeInferenceError(
+            "SoftmaxCrossEntropyLoss target batch dimension must match input"
+        )
+    if input_shape[2:] != target_shape[1:]:
+        raise ShapeInferenceError(
+            "SoftmaxCrossEntropyLoss target spatial dimensions must match input"
+        )
+    log_prob = _apply_logsoftmax(values, axis=1)
+    log_prob_output = log_prob if return_log_prob else None
+    if weight is not None:
+        gather_weight = np.take(weight, target.astype(np.int32), mode="clip")
+        if ignore_index is not None:
+            gather_weight = np.where(target == ignore_index, 0, gather_weight).astype(
+                dtype=values.dtype
+            )
+    elif ignore_index is not None:
+        gather_weight = np.where(target == ignore_index, 0, 1).astype(
+            dtype=values.dtype
+        )
+    else:
+        gather_weight = None
+    n = input_shape[0]
+    c = input_shape[1]
+    if len(input_shape) != 3:
+        log_prob = log_prob.reshape((n, c, -1))
+        target = target.reshape((n, -1))
+    d = log_prob.shape[2]
+    loss = np.zeros((n, d), dtype=values.dtype)
+    for i in range(n):
+        for d_index in range(d):
+            if ignore_index is None or target[i][d_index] != ignore_index:
+                loss[i][d_index] = -log_prob[i][target[i][d_index]][d_index]
+    if len(input_shape) != 3:
+        loss = loss.reshape(target_shape)
+    if gather_weight is not None:
+        loss = gather_weight * loss
+        if reduction == "mean":
+            loss = loss.sum() / gather_weight.sum()
+            loss = loss.astype(values.dtype)
+            if return_log_prob:
+                return loss, log_prob.astype(values.dtype)
+            return loss, None
+    if reduction == "mean":
+        loss = np.mean(loss)
+    elif reduction == "sum":
+        loss = np.sum(loss)
+    loss = loss.astype(values.dtype)
+    if return_log_prob and log_prob_output is not None:
+        return loss, log_prob_output.astype(values.dtype)
+    return loss, None
 
 
 def _apply_attention(

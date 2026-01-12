@@ -22,6 +22,7 @@ from .codegen.c_emitter import (
     LstmOp,
     LogSoftmaxOp,
     NegativeLogLikelihoodLossOp,
+    SoftmaxCrossEntropyLossOp,
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
@@ -58,6 +59,9 @@ from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
 from .lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
+)
+from .lowering.softmax_cross_entropy_loss import (
+    lower_softmax_cross_entropy_loss,
 )
 from .lowering.matmul import lower_matmul
 from .lowering.maxpool import MaxPoolSpec, resolve_maxpool_spec
@@ -146,6 +150,7 @@ class Compiler:
             | SoftmaxOp
             | LogSoftmaxOp
             | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
             | TransposeOp
