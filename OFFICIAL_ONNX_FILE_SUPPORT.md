@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 281 / 1802 official ONNX files.
+Support 285 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -9,12 +9,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | File | Supported | Error |
 | --- | --- | --- |
 | light/light_bvlc_alexnet.onnx | ✅ |  |
-| light/light_densenet121.onnx | ❌ | Unsupported op GlobalAveragePool |
+| light/light_densenet121.onnx | ✅ |  |
 | light/light_inception_v1.onnx | ✅ |  |
 | light/light_inception_v2.onnx | ✅ |  |
 | light/light_resnet50.onnx | ✅ |  |
 | light/light_shufflenet.onnx | ✅ |  |
-| light/light_squeezenet.onnx | ❌ | Unsupported op GlobalAveragePool |
+| light/light_squeezenet.onnx | ✅ |  |
 | light/light_vgg19.onnx | ✅ |  |
 | light/light_zfnet512.onnx | ✅ |  |
 | node/test_abs/model.onnx | ✅ |  |
@@ -671,8 +671,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gemm_default_zero_bias/model.onnx | ✅ |  |
 | node/test_gemm_transposeA/model.onnx | ✅ |  |
 | node/test_gemm_transposeB/model.onnx | ✅ |  |
-| node/test_globalaveragepool/model.onnx | ❌ | Unsupported op GlobalAveragePool |
-| node/test_globalaveragepool_precomputed/model.onnx | ❌ | Unsupported op GlobalAveragePool |
+| node/test_globalaveragepool/model.onnx | ✅ |  |
+| node/test_globalaveragepool_precomputed/model.onnx | ✅ |  |
 | node/test_globalmaxpool/model.onnx | ❌ | Unsupported op GlobalMaxPool |
 | node/test_globalmaxpool_precomputed/model.onnx | ❌ | Unsupported op GlobalMaxPool |
 | node/test_greater/model.onnx | ❌ | Unsupported op Greater |
