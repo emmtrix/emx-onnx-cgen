@@ -3585,11 +3585,11 @@
   ],
   [
     "node/test_matmul_1d_1d/model.onnx",
-    "MatMul supports 2D inputs only, got (3,) x (3,)"
+    ""
   ],
   [
     "node/test_matmul_1d_3d/model.onnx",
-    "MatMul supports 2D inputs only, got (4,) x (2, 4, 1)"
+    ""
   ],
   [
     "node/test_matmul_2d/model.onnx",
@@ -3597,19 +3597,19 @@
   ],
   [
     "node/test_matmul_3d/model.onnx",
-    "MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3)"
+    ""
   ],
   [
     "node/test_matmul_4d/model.onnx",
-    "MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3)"
+    ""
   ],
   [
     "node/test_matmul_4d_1d/model.onnx",
-    "MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,)"
+    ""
   ],
   [
     "node/test_matmul_bcast/model.onnx",
-    "MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2)"
+    ""
   ],
   [
     "node/test_matmulinteger/model.onnx",

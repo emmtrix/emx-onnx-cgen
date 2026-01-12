@@ -1,11 +1,13 @@
 void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input0_suffix }}, const {{ c_type }} {{ input1 }}{{ input1_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
-    for (size_t i = 0; i < {{ m }}; ++i) {
-        for (size_t j = 0; j < {{ n }}; ++j) {
-            {{ acc_type }} acc = {{ zero_literal }};
-            for (size_t k = 0; k < {{ k }}; ++k) {
-                acc += {{ input0 }}[i][k] * {{ input1 }}[k][j];
-            }
-            {{ output }}[i][j] = acc;
-        }
-    }
+{% for idx in range(output_loop_vars | length) %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (size_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ acc_type }} acc = {{ zero_literal }};
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (size_t k = 0; k < {{ k }}; ++k) {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += {{ input0_index_expr }} * {{ input1_index_expr }};
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = acc;
+{% for idx in range(output_loop_vars | length) | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
 }
