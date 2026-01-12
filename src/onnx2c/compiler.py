@@ -34,7 +34,6 @@ from .codegen.c_emitter import (
 from .dtypes import dtype_info
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph
-from .lowering import get_lowering
 from .lowering.attention import AttentionSpec, resolve_attention_spec
 from .lowering.average_pool import (
     lower_average_pool,
@@ -68,6 +67,7 @@ from .lowering.shape import lower_shape
 from .lowering.softmax import lower_softmax
 from .lowering.transpose import lower_transpose
 from .lowering.unsqueeze import lower_unsqueeze
+from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
 from .ops import (
     BINARY_OP_TYPES,
@@ -141,49 +141,15 @@ class Compiler:
             | ShapeOp
         ] = []
         for node in graph.nodes:
-            lowering = get_lowering(node.op_type)
-            if lowering is not None:
-                ops.append(lowering(graph, node))
-                continue
-            if node.op_type not in BINARY_OP_TYPES | UNARY_OP_TYPES:
-                raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-            op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
-            op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
-            unary_symbol = unary_op_symbol(node.op_type, dtype=op_dtype)
-            if op_spec is None and unary_symbol is None:
-                raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-            if op_spec is not None:
-                if len(node.inputs) != 2 or len(node.outputs) != 1:
-                    raise UnsupportedOpError(
-                        f"{node.op_type} must have 2 inputs and 1 output"
-                    )
-                output_shape = value_shape(graph, node.outputs[0], node)
-                ops.append(
-                    BinaryOp(
-                        input0=node.inputs[0],
-                        input1=node.inputs[1],
-                        output=node.outputs[0],
-                        operator=op_spec.operator,
-                        operator_kind=op_spec.kind,
-                        shape=output_shape,
-                        dtype=op_dtype,
-                    )
-                )
-                continue
-            if len(node.inputs) != 1 or len(node.outputs) != 1:
-                raise UnsupportedOpError(
-                    f"{node.op_type} must have 1 input and 1 output"
-                )
-            output_shape = value_shape(graph, node.outputs[0], node)
-            ops.append(
-                UnaryOp(
-                    input0=node.inputs[0],
-                    output=node.outputs[0],
-                    operator=unary_symbol,
-                    shape=output_shape,
-                    dtype=op_dtype,
-                )
+            lowering = resolve_dispatch(
+                node.op_type,
+                get_lowering_registry(),
+                binary_types=BINARY_OP_TYPES,
+                unary_types=UNARY_OP_TYPES,
+                binary_fallback=lambda: _lower_binary_unary,
+                unary_fallback=lambda: _lower_binary_unary,
             )
+            ops.append(lowering(graph, node))
         return LoweredModel(
             name=self._options.model_name,
             input_names=input_names,
@@ -221,3 +187,36 @@ def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
             )
         )
     return tuple(constants)
+
+
+def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
+    op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
+    unary_symbol = unary_op_symbol(node.op_type, dtype=op_dtype)
+    if op_spec is None and unary_symbol is None:
+        raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+    if op_spec is not None:
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node.op_type} must have 2 inputs and 1 output"
+            )
+        output_shape = value_shape(graph, node.outputs[0], node)
+        return BinaryOp(
+            input0=node.inputs[0],
+            input1=node.inputs[1],
+            output=node.outputs[0],
+            operator=op_spec.operator,
+            operator_kind=op_spec.kind,
+            shape=output_shape,
+            dtype=op_dtype,
+        )
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError(f"{node.op_type} must have 1 input and 1 output")
+    output_shape = value_shape(graph, node.outputs[0], node)
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        operator=unary_symbol,
+        shape=output_shape,
+        dtype=op_dtype,
+    )
