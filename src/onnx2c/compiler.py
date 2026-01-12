@@ -37,13 +37,21 @@ from .dtypes import ONNX_TO_DTYPE, dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Initializer, Node
 from .lowering import get_lowering
+from .lowering.attention import AttentionSpec, resolve_attention_spec
 from .lowering.average_pool import (
     lower_average_pool,
     lower_global_average_pool,
 )
 from .lowering.batch_normalization import lower_batch_normalization
+from .lowering.concat import lower_concat
+from .lowering.conv import ConvSpec, resolve_conv_spec
 from .lowering.constant_of_shape import lower_constant_of_shape
+from .lowering.dropout import lower_dropout
+from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
+from .lowering.logsoftmax import lower_logsoftmax
+from .lowering.matmul import lower_matmul
+from .lowering.maxpool import MaxPoolSpec, resolve_maxpool_spec
 from .lowering.reduce import (
     REDUCE_KIND_BY_OP,
     REDUCE_OUTPUTS_FLOAT_ONLY,
@@ -52,6 +60,8 @@ from .lowering.reduce import (
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.shape import lower_shape
+from .lowering.softmax import lower_softmax
+from .lowering.transpose import lower_transpose
 from .lowering.unsqueeze import lower_unsqueeze
 from .onnx_import import import_onnx
 
@@ -123,36 +133,6 @@ class Compiler:
             if lowering is not None:
                 ops.append(lowering(graph, node))
                 continue
-            if node.op_type in {"MatMul", "Gemm"}:
-                if node.op_type == "Gemm":
-                    ops.append(self._lower_gemm_op(graph, node))
-                else:
-                    ops.append(self._lower_matmul_op(graph, node))
-                continue
-            if node.op_type == "Concat":
-                ops.append(self._lower_concat_op(graph, node))
-                continue
-            if node.op_type == "Attention":
-                ops.append(self._lower_attention_op(graph, node))
-                continue
-            if node.op_type == "Conv":
-                ops.append(self._lower_conv_op(graph, node))
-                continue
-            if node.op_type == "MaxPool":
-                ops.append(self._lower_maxpool_op(graph, node))
-                continue
-            if node.op_type == "Transpose":
-                ops.append(self._lower_transpose_op(graph, node))
-                continue
-            if node.op_type == "Softmax":
-                ops.append(self._lower_softmax_op(graph, node))
-                continue
-            if node.op_type == "LogSoftmax":
-                ops.append(self._lower_logsoftmax_op(graph, node))
-                continue
-            if node.op_type == "Dropout":
-                ops.append(self._lower_dropout_op(graph, node))
-                continue
             if node.op_type not in _BINARY_OP_TYPES | _UNARY_OP_TYPES:
                 raise UnsupportedOpError(f"Unsupported op {node.op_type}")
             op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -219,7 +199,7 @@ class Compiler:
             if node.op_type in {"MatMul", "Gemm"}:
                 if node.op_type == "Gemm":
                     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-                    spec = _resolve_gemm_spec(graph, node, op_dtype)
+                    spec = resolve_gemm_spec(graph, node, op_dtype)
                     left = values[node.inputs[0]]
                     right = values[node.inputs[1]]
                     if spec.trans_a:
@@ -237,7 +217,7 @@ class Compiler:
                         result = result * alpha
                     if len(node.inputs) == 3:
                         bias = values[node.inputs[2]]
-                        _validate_gemm_bias_shape(
+                        validate_gemm_bias_shape(
                             (spec.m, spec.n), bias.shape, node
                         )
                         if beta != 1:
@@ -258,7 +238,7 @@ class Compiler:
                 op_dtype = _node_dtype(
                     graph, node, input_q, input_k, input_v, output_y
                 )
-                spec = _resolve_attention_spec(graph, node, op_dtype)
+                spec = resolve_attention_spec(graph, node, op_dtype)
                 attn_mask_name = _optional_name(node.inputs, 3)
                 past_key_name = _optional_name(node.inputs, 4)
                 past_value_name = _optional_name(node.inputs, 5)
@@ -290,7 +270,7 @@ class Compiler:
                     raise UnsupportedOpError(
                         "Conv supports float and double inputs only"
                     )
-                spec = _resolve_conv_spec(graph, node)
+                spec = resolve_conv_spec(graph, node)
                 data = values[node.inputs[0]]
                 weights = values[node.inputs[1]]
                 bias = values[node.inputs[2]] if len(node.inputs) > 2 else None
@@ -376,7 +356,7 @@ class Compiler:
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
                 if op_dtype == "bool":
                     raise UnsupportedOpError("MaxPool supports numeric inputs only")
-                spec = _resolve_maxpool_spec(graph, node)
+                spec = resolve_maxpool_spec(graph, node)
                 data = values[node.inputs[0]]
                 values[node.outputs[0]] = _apply_maxpool(spec, data)
                 continue
@@ -593,352 +573,6 @@ class Compiler:
             value = values[node.inputs[0]]
             values[node.outputs[0]] = _apply_unary_op(unary_symbol, value)
         return {output.name: values[output.name] for output in graph.outputs}
-
-    def _lower_matmul_op(self, graph: Graph, node: Node) -> MatMulOp:
-        if len(node.inputs) != 2 or len(node.outputs) != 1:
-            raise UnsupportedOpError("MatMul must have 2 inputs and 1 output")
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        input0_shape = _value_shape(graph, node.inputs[0], node)
-        input1_shape = _value_shape(graph, node.inputs[1], node)
-        if len(input0_shape) != 2 or len(input1_shape) != 2:
-            raise UnsupportedOpError(
-                f"MatMul supports 2D inputs only, got {input0_shape} x {input1_shape}"
-            )
-        m, k_left = input0_shape
-        k_right, n = input1_shape
-        if k_left != k_right:
-            raise ShapeInferenceError(
-                f"MatMul inner dimensions must match, got {k_left} and {k_right}"
-            )
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        if output_shape != (m, n):
-            raise ShapeInferenceError(
-                f"MatMul output shape must be {(m, n)}, got {output_shape}"
-            )
-        return MatMulOp(
-            input0=node.inputs[0],
-            input1=node.inputs[1],
-            output=node.outputs[0],
-            m=m,
-            n=n,
-            k=k_left,
-            dtype=op_dtype,
-        )
-
-    def _lower_gemm_op(self, graph: Graph, node: Node) -> GemmOp:
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        spec = _resolve_gemm_spec(graph, node, op_dtype)
-        return GemmOp(
-            input_a=node.inputs[0],
-            input_b=node.inputs[1],
-            input_c=node.inputs[2] if len(node.inputs) == 3 else None,
-            output=node.outputs[0],
-            m=spec.m,
-            n=spec.n,
-            k=spec.k,
-            trans_a=spec.trans_a,
-            trans_b=spec.trans_b,
-            alpha=spec.alpha,
-            beta=spec.beta,
-            c_shape=spec.c_shape,
-            dtype=op_dtype,
-        )
-
-    def _lower_transpose_op(self, graph: Graph, node: Node) -> TransposeOp:
-        if len(node.inputs) != 1 or len(node.outputs) != 1:
-            raise UnsupportedOpError("Transpose must have 1 input and 1 output")
-        input_shape = _value_shape(graph, node.inputs[0], node)
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        perm = node.attrs.get("perm")
-        if perm is None:
-            perm = tuple(reversed(range(len(input_shape))))
-        else:
-            perm = tuple(int(axis) for axis in perm)
-        if len(perm) != len(input_shape):
-            raise ShapeInferenceError(
-                "Transpose perm must match input rank, "
-                f"got perm {perm} for shape {input_shape}"
-            )
-        if set(perm) != set(range(len(input_shape))):
-            raise UnsupportedOpError(
-                f"Transpose perm must be a permutation, got {perm}"
-            )
-        expected_shape = tuple(input_shape[axis] for axis in perm)
-        if output_shape != expected_shape:
-            raise ShapeInferenceError(
-                "Transpose output shape must match permuted input shape, "
-                f"expected {expected_shape}, got {output_shape}"
-            )
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        return TransposeOp(
-            input0=node.inputs[0],
-            output=node.outputs[0],
-            perm=perm,
-            input_shape=input_shape,
-            output_shape=output_shape,
-            dtype=op_dtype,
-        )
-
-    def _lower_softmax_op(self, graph: Graph, node: Node) -> SoftmaxOp:
-        if len(node.inputs) != 1 or len(node.outputs) != 1:
-            raise UnsupportedOpError("Softmax must have 1 input and 1 output")
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        if op_dtype not in {"float", "double"}:
-            raise UnsupportedOpError("Softmax supports float and double inputs only")
-        input_shape = _value_shape(graph, node.inputs[0], node)
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        if input_shape != output_shape:
-            raise ShapeInferenceError(
-                f"Softmax output shape must be {input_shape}, got {output_shape}"
-            )
-        axis = _normalize_axis(
-            int(node.attrs.get("axis", -1)),
-            input_shape,
-            node,
-        )
-        outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-        axis_size = input_shape[axis]
-        inner = (
-            _shape_product(input_shape[axis + 1 :])
-            if axis + 1 < len(input_shape)
-            else 1
-        )
-        return SoftmaxOp(
-            input0=node.inputs[0],
-            output=node.outputs[0],
-            outer=outer,
-            axis_size=axis_size,
-            inner=inner,
-            axis=axis,
-            shape=input_shape,
-            dtype=op_dtype,
-        )
-
-    def _lower_logsoftmax_op(self, graph: Graph, node: Node) -> LogSoftmaxOp:
-        if len(node.inputs) != 1 or len(node.outputs) != 1:
-            raise UnsupportedOpError("LogSoftmax must have 1 input and 1 output")
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        if op_dtype not in {"float", "double"}:
-            raise UnsupportedOpError(
-                "LogSoftmax supports float and double inputs only"
-            )
-        input_shape = _value_shape(graph, node.inputs[0], node)
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        if input_shape != output_shape:
-            raise ShapeInferenceError(
-                f"LogSoftmax output shape must be {input_shape}, got {output_shape}"
-            )
-        axis = _normalize_axis(
-            int(node.attrs.get("axis", -1)),
-            input_shape,
-            node,
-        )
-        outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-        axis_size = input_shape[axis]
-        inner = (
-            _shape_product(input_shape[axis + 1 :])
-            if axis + 1 < len(input_shape)
-            else 1
-        )
-        return LogSoftmaxOp(
-            input0=node.inputs[0],
-            output=node.outputs[0],
-            outer=outer,
-            axis_size=axis_size,
-            inner=inner,
-            axis=axis,
-            shape=input_shape,
-            dtype=op_dtype,
-        )
-
-    def _lower_dropout_op(self, graph: Graph, node: Node) -> ReshapeOp:
-        if len(node.outputs) not in {1, 2} or len(node.inputs) != 1:
-            raise UnsupportedOpError(
-                "Dropout supports only the data input and 1 or 2 outputs"
-            )
-        if len(node.outputs) == 2 and _is_value_used(graph, node.outputs[1]):
-            raise UnsupportedOpError("Dropout mask output is not supported")
-        input_shape = _value_shape(graph, node.inputs[0], node)
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        if input_shape != output_shape:
-            raise ShapeInferenceError(
-                "Dropout output shape must match input shape, "
-                f"got {output_shape} for input {input_shape}"
-            )
-        input_dtype = _value_dtype(graph, node.inputs[0], node)
-        output_dtype = _value_dtype(graph, node.outputs[0], node)
-        if input_dtype != output_dtype:
-            raise UnsupportedOpError(
-                "Dropout expects matching input/output dtypes, "
-                f"got {input_dtype} and {output_dtype}"
-            )
-        return ReshapeOp(
-            input0=node.inputs[0],
-            output=node.outputs[0],
-            input_shape=input_shape,
-            output_shape=output_shape,
-            dtype=input_dtype,
-        )
-
-    def _lower_attention_op(self, graph: Graph, node: Node) -> AttentionOp:
-        input_q = node.inputs[0]
-        input_k = node.inputs[1]
-        input_v = node.inputs[2]
-        output_y = node.outputs[0]
-        op_dtype = _node_dtype(graph, node, input_q, input_k, input_v, output_y)
-        spec = _resolve_attention_spec(graph, node, op_dtype)
-        input_mask = _optional_name(node.inputs, 3)
-        input_past_key = _optional_name(node.inputs, 4)
-        input_past_value = _optional_name(node.inputs, 5)
-        input_nonpad = _optional_name(node.inputs, 6)
-        output_present_key = _optional_name(node.outputs, 1)
-        output_present_value = _optional_name(node.outputs, 2)
-        output_qk_matmul = _optional_name(node.outputs, 3)
-        return AttentionOp(
-            input_q=input_q,
-            input_k=input_k,
-            input_v=input_v,
-            input_attn_mask=input_mask,
-            input_past_key=input_past_key,
-            input_past_value=input_past_value,
-            input_nonpad_kv_seqlen=input_nonpad,
-            output=output_y,
-            output_present_key=output_present_key,
-            output_present_value=output_present_value,
-            output_qk_matmul=output_qk_matmul,
-            batch=spec.batch,
-            q_heads=spec.q_heads,
-            kv_heads=spec.kv_heads,
-            q_seq=spec.q_seq,
-            kv_seq=spec.kv_seq,
-            total_seq=spec.total_seq,
-            past_seq=spec.past_seq,
-            qk_head_size=spec.qk_head_size,
-            v_head_size=spec.v_head_size,
-            q_hidden_size=spec.q_hidden_size,
-            k_hidden_size=spec.k_hidden_size,
-            v_hidden_size=spec.v_hidden_size,
-            scale=spec.scale,
-            is_causal=spec.is_causal,
-            softcap=spec.softcap,
-            qk_matmul_output_mode=spec.qk_matmul_output_mode,
-            q_rank=spec.q_rank,
-            k_rank=spec.k_rank,
-            v_rank=spec.v_rank,
-            output_rank=spec.output_rank,
-            mask_shape=spec.mask_shape,
-            mask_is_bool=spec.mask_is_bool,
-            mask_rank=spec.mask_rank,
-            mask_broadcast_batch=spec.mask_broadcast_batch,
-            mask_broadcast_heads=spec.mask_broadcast_heads,
-            mask_broadcast_q_seq=spec.mask_broadcast_q_seq,
-            mask_q_seq=spec.mask_q_seq,
-            mask_kv_seq=spec.mask_kv_seq,
-            head_group_size=spec.head_group_size,
-            dtype=op_dtype,
-        )
-
-    def _lower_conv_op(self, graph: Graph, node: Node) -> ConvOp:
-        if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-            raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        if op_dtype not in {"float", "double"}:
-            raise UnsupportedOpError("Conv supports float and double inputs only")
-        spec = _resolve_conv_spec(graph, node)
-        return ConvOp(
-            input0=node.inputs[0],
-            weights=node.inputs[1],
-            bias=node.inputs[2] if len(node.inputs) == 3 else None,
-            output=node.outputs[0],
-            batch=spec.batch,
-            in_channels=spec.in_channels,
-            out_channels=spec.out_channels,
-            spatial_rank=spec.spatial_rank,
-            in_spatial=spec.in_spatial,
-            out_spatial=spec.out_spatial,
-            kernel_shape=spec.kernel_shape,
-            strides=spec.strides,
-            pads=spec.pads,
-            dilations=spec.dilations,
-            group=spec.group,
-            dtype=op_dtype,
-        )
-
-    def _lower_maxpool_op(self, graph: Graph, node: Node) -> MaxPoolOp:
-        if len(node.inputs) != 1 or len(node.outputs) != 1:
-            raise UnsupportedOpError("MaxPool must have 1 input and 1 output")
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        if op_dtype == "bool":
-            raise UnsupportedOpError("MaxPool supports numeric inputs only")
-        spec = _resolve_maxpool_spec(graph, node)
-        return MaxPoolOp(
-            input0=node.inputs[0],
-            output=node.outputs[0],
-            batch=spec.batch,
-            channels=spec.channels,
-            spatial_rank=spec.spatial_rank,
-            in_spatial=spec.in_spatial,
-            out_spatial=spec.out_spatial,
-            kernel_shape=spec.kernel_shape,
-            strides=spec.strides,
-            pads=spec.pads,
-            dilations=spec.dilations,
-            ceil_mode=spec.ceil_mode,
-            dtype=op_dtype,
-        )
-
-    def _lower_concat_op(self, graph: Graph, node: Node) -> ConcatOp:
-        if len(node.inputs) < 1 or len(node.outputs) != 1:
-            raise UnsupportedOpError("Concat must have at least 1 input and 1 output")
-        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        input_shapes = tuple(
-            _value_shape(graph, name, node) for name in node.inputs
-        )
-        ranks = {len(shape) for shape in input_shapes}
-        if len(ranks) != 1:
-            raise ShapeInferenceError(
-                f"Concat inputs must have matching ranks, got {input_shapes}"
-            )
-        rank = ranks.pop()
-        axis = int(node.attrs.get("axis", 0))
-        if axis < 0:
-            axis += rank
-        if axis < 0 or axis >= rank:
-            raise ShapeInferenceError(
-                f"Concat axis out of range for rank {rank}: {axis}"
-            )
-        base_shape = list(input_shapes[0])
-        axis_dim = 0
-        for shape in input_shapes:
-            if len(shape) != rank:
-                raise ShapeInferenceError(
-                    f"Concat inputs must have matching ranks, got {input_shapes}"
-                )
-            for dim_index, dim in enumerate(shape):
-                if dim_index == axis:
-                    continue
-                if dim != base_shape[dim_index]:
-                    raise ShapeInferenceError(
-                        "Concat inputs must match on non-axis dimensions, "
-                        f"got {input_shapes}"
-                    )
-            axis_dim += shape[axis]
-        base_shape[axis] = axis_dim
-        expected_output_shape = tuple(base_shape)
-        if output_shape != expected_output_shape:
-            raise ShapeInferenceError(
-                "Concat output shape must be "
-                f"{expected_output_shape}, got {output_shape}"
-            )
-        return ConcatOp(
-            inputs=node.inputs,
-            output=node.outputs[0],
-            axis=axis,
-            input_shapes=input_shapes,
-            output_shape=output_shape,
-            dtype=op_dtype,
-        )
 
 
 @dataclass(frozen=True)
@@ -1273,109 +907,6 @@ def _binary_op_symbol(
     return None
 
 
-@dataclass(frozen=True)
-class _GemmSpec:
-    m: int
-    n: int
-    k: int
-    alpha: float | int
-    beta: float | int
-    trans_a: bool
-    trans_b: bool
-    c_shape: tuple[int, ...] | None
-
-
-def _resolve_gemm_spec(graph: Graph, node: Node, dtype: str) -> _GemmSpec:
-    if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-        raise UnsupportedOpError("Gemm must have 2 or 3 inputs and 1 output")
-    alpha, beta, trans_a, trans_b = _resolve_gemm_attrs(node, dtype)
-    input0_shape = _value_shape(graph, node.inputs[0], node)
-    input1_shape = _value_shape(graph, node.inputs[1], node)
-    if len(input0_shape) != 2 or len(input1_shape) != 2:
-        raise UnsupportedOpError(
-            f"Gemm supports 2D inputs only, got {input0_shape} x {input1_shape}"
-        )
-    if trans_a:
-        m, k_left = input0_shape[1], input0_shape[0]
-    else:
-        m, k_left = input0_shape
-    if trans_b:
-        n, k_right = input1_shape[0], input1_shape[1]
-    else:
-        k_right, n = input1_shape
-    if k_left != k_right:
-        raise ShapeInferenceError(
-            f"Gemm inner dimensions must match, got {k_left} and {k_right}"
-        )
-    output_shape = _value_shape(graph, node.outputs[0], node)
-    if output_shape != (m, n):
-        raise ShapeInferenceError(
-            f"Gemm output shape must be {(m, n)}, got {output_shape}"
-        )
-    c_shape = None
-    if len(node.inputs) == 3:
-        bias_shape = _value_shape(graph, node.inputs[2], node)
-        c_shape = _validate_gemm_bias_shape((m, n), bias_shape, node)
-    return _GemmSpec(
-        m=m,
-        n=n,
-        k=k_left,
-        alpha=alpha,
-        beta=beta,
-        trans_a=trans_a,
-        trans_b=trans_b,
-        c_shape=c_shape,
-    )
-
-
-def _resolve_gemm_attrs(
-    node: Node, dtype: str
-) -> tuple[float | int, float | int, bool, bool]:
-    alpha = float(node.attrs.get("alpha", 1.0))
-    beta = float(node.attrs.get("beta", 1.0))
-    trans_a = int(node.attrs.get("transA", 0))
-    trans_b = int(node.attrs.get("transB", 0))
-    if trans_a not in {0, 1} or trans_b not in {0, 1}:
-        raise UnsupportedOpError(
-            "Gemm only supports transA/transB values of 0 or 1"
-        )
-    if dtype == "bool":
-        raise UnsupportedOpError("Gemm supports numeric inputs only")
-    if dtype not in {"float", "double"}:
-        alpha_int = int(alpha)
-        beta_int = int(beta)
-        if alpha != alpha_int or beta != beta_int:
-            raise UnsupportedOpError(
-                "Gemm alpha and beta must be integers for non-float inputs"
-            )
-        alpha = alpha_int
-        beta = beta_int
-    return alpha, beta, bool(trans_a), bool(trans_b)
-
-
-def _validate_gemm_bias_shape(
-    output_shape: tuple[int, int], bias_shape: tuple[int, ...], node: Node
-) -> tuple[int, ...]:
-    if len(bias_shape) == 1:
-        if bias_shape[0] != output_shape[1]:
-            raise ShapeInferenceError(
-                "Gemm bias input must be broadcastable to output shape, "
-                f"got {bias_shape} vs {output_shape}"
-            )
-        return bias_shape
-    if len(bias_shape) == 2:
-        m, n = output_shape
-        if bias_shape[0] not in {1, m} or bias_shape[1] not in {1, n}:
-            raise ShapeInferenceError(
-                "Gemm bias input must be broadcastable to output shape, "
-                f"got {bias_shape} vs {output_shape}"
-            )
-        return bias_shape
-    raise ShapeInferenceError(
-        f"Gemm bias input must be rank 1 or 2, got {bias_shape}"
-    )
-
-
 def _unique_value_name(graph: Graph, base: str) -> str:
     existing = {value.name for value in graph.inputs + graph.outputs + graph.values}
     existing.update(initializer.name for initializer in graph.initializers)
@@ -1529,43 +1060,6 @@ def _apply_logsoftmax(values: np.ndarray, axis: int) -> np.ndarray:
     return shifted - logsum
 
 
-@dataclass(frozen=True)
-class _AttentionSpec:
-    batch: int
-    q_heads: int
-    kv_heads: int
-    q_seq: int
-    kv_seq: int
-    total_seq: int
-    past_seq: int
-    qk_head_size: int
-    v_head_size: int
-    q_hidden_size: int | None
-    k_hidden_size: int | None
-    v_hidden_size: int | None
-    scale: float
-    is_causal: bool
-    softcap: float
-    qk_matmul_output_mode: int
-    q_rank: int
-    k_rank: int
-    v_rank: int
-    output_rank: int
-    mask_shape: tuple[int, ...] | None
-    mask_is_bool: bool
-    mask_rank: int | None
-    mask_broadcast_batch: bool
-    mask_broadcast_heads: bool
-    mask_broadcast_q_seq: bool
-    mask_q_seq: int | None
-    mask_kv_seq: int | None
-    head_group_size: int
-    has_attn_mask: bool
-    has_past: bool
-    has_present: bool
-    has_nonpad: bool
-
-
 def _optional_name(names: Sequence[str], index: int) -> str | None:
     if index >= len(names):
         return None
@@ -1573,317 +1067,8 @@ def _optional_name(names: Sequence[str], index: int) -> str | None:
     return name or None
 
 
-def _resolve_attention_spec(
-    graph: Graph, node: Node, dtype: str
-) -> _AttentionSpec:
-    if dtype not in {"float", "double"}:
-        raise UnsupportedOpError("Unsupported op Attention")
-    if len(node.inputs) < 3 or len(node.outputs) < 1:
-        raise UnsupportedOpError("Unsupported op Attention")
-    supported_attrs = {
-        "scale",
-        "is_causal",
-        "q_num_heads",
-        "kv_num_heads",
-        "softmax_precision",
-        "softcap",
-        "qk_matmul_output_mode",
-    }
-    if set(node.attrs) - supported_attrs:
-        raise UnsupportedOpError("Unsupported op Attention")
-    q_shape = _value_shape(graph, node.inputs[0], node)
-    k_shape = _value_shape(graph, node.inputs[1], node)
-    v_shape = _value_shape(graph, node.inputs[2], node)
-    q_rank = len(q_shape)
-    k_rank = len(k_shape)
-    v_rank = len(v_shape)
-    if q_rank not in {3, 4} or k_rank not in {3, 4} or v_rank not in {3, 4}:
-        raise UnsupportedOpError("Unsupported op Attention")
-    if q_rank != k_rank or q_rank != v_rank:
-        raise UnsupportedOpError("Unsupported op Attention")
-    batch = q_shape[0]
-    if batch != k_shape[0] or batch != v_shape[0]:
-        raise ShapeInferenceError("Attention batch sizes must match")
-    q_hidden_size = None
-    k_hidden_size = None
-    v_hidden_size = None
-    if q_rank == 3:
-        q_heads = node.attrs.get("q_num_heads")
-        kv_heads = node.attrs.get("kv_num_heads")
-        if q_heads is None or kv_heads is None:
-            raise UnsupportedOpError("Unsupported op Attention")
-        q_heads = int(q_heads)
-        kv_heads = int(kv_heads)
-        q_seq = q_shape[1]
-        kv_seq = k_shape[1]
-        if kv_seq != v_shape[1]:
-            raise ShapeInferenceError(
-                "Attention key/value sequence lengths must match"
-            )
-        q_hidden_size = q_shape[2]
-        k_hidden_size = k_shape[2]
-        v_hidden_size = v_shape[2]
-        if q_hidden_size % q_heads != 0:
-            raise ShapeInferenceError(
-                "Attention query hidden size must be divisible by q_num_heads"
-            )
-        if k_hidden_size % kv_heads != 0:
-            raise ShapeInferenceError(
-                "Attention key hidden size must be divisible by kv_num_heads"
-            )
-        if v_hidden_size % kv_heads != 0:
-            raise ShapeInferenceError(
-                "Attention value hidden size must be divisible by kv_num_heads"
-            )
-        qk_head_size = q_hidden_size // q_heads
-        k_head_size = k_hidden_size // kv_heads
-        v_head_size = v_hidden_size // kv_heads
-        if qk_head_size != k_head_size:
-            raise ShapeInferenceError("Attention Q/K head sizes must match")
-    else:
-        q_heads = q_shape[1]
-        kv_heads = k_shape[1]
-        if kv_heads != v_shape[1]:
-            raise ShapeInferenceError("Attention key/value head counts must match")
-        q_seq = q_shape[2]
-        kv_seq = k_shape[2]
-        if kv_seq != v_shape[2]:
-            raise ShapeInferenceError(
-                "Attention key/value sequence lengths must match"
-            )
-        qk_head_size = q_shape[3]
-        k_head_size = k_shape[3]
-        v_head_size = v_shape[3]
-        if qk_head_size != k_head_size:
-            raise ShapeInferenceError("Attention Q/K head sizes must match")
-        attr_q_heads = node.attrs.get("q_num_heads")
-        attr_kv_heads = node.attrs.get("kv_num_heads")
-        if attr_q_heads is not None and int(attr_q_heads) != q_heads:
-            raise ShapeInferenceError(
-                "Attention q_num_heads must match query head dimension"
-            )
-        if attr_kv_heads is not None and int(attr_kv_heads) != kv_heads:
-            raise ShapeInferenceError(
-                "Attention kv_num_heads must match key/value head dimension"
-            )
-    if q_heads < kv_heads or q_heads % kv_heads != 0:
-        raise ShapeInferenceError(
-            "Attention requires q_num_heads to be a multiple of kv_num_heads"
-        )
-    head_group_size = q_heads // kv_heads
-    past_key_name = _optional_name(node.inputs, 4)
-    past_value_name = _optional_name(node.inputs, 5)
-    has_past = past_key_name is not None or past_value_name is not None
-    if has_past and (past_key_name is None or past_value_name is None):
-        raise UnsupportedOpError(
-            "Attention expects both past_key and past_value if either is provided"
-        )
-    past_seq = 0
-    if has_past:
-        past_key_shape = _value_shape(graph, past_key_name, node)
-        past_value_shape = _value_shape(graph, past_value_name, node)
-        if len(past_key_shape) != 4 or len(past_value_shape) != 4:
-            raise ShapeInferenceError("Attention past key/value must be 4D")
-        if (
-            past_key_shape[0] != batch
-            or past_value_shape[0] != batch
-            or past_key_shape[1] != kv_heads
-            or past_value_shape[1] != kv_heads
-        ):
-            raise ShapeInferenceError(
-                "Attention past key/value batch/head sizes must match"
-            )
-        if past_key_shape[3] != qk_head_size:
-            raise ShapeInferenceError(
-                "Attention past key head size must match key head size"
-            )
-        if past_value_shape[3] != v_head_size:
-            raise ShapeInferenceError(
-                "Attention past value head size must match value head size"
-            )
-        past_seq = past_key_shape[2]
-    total_seq = kv_seq + past_seq
-    output_shape = _value_shape(graph, node.outputs[0], node)
-    output_rank = len(output_shape)
-    if q_rank == 3:
-        expected_output_shape = (
-            batch,
-            q_seq,
-            q_heads * v_head_size,
-        )
-    else:
-        expected_output_shape = (batch, q_heads, q_seq, v_head_size)
-    if output_shape != expected_output_shape:
-        raise ShapeInferenceError(
-            "Attention output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
-        )
-    present_key_name = _optional_name(node.outputs, 1)
-    present_value_name = _optional_name(node.outputs, 2)
-    has_present = present_key_name is not None or present_value_name is not None
-    if has_present and (present_key_name is None or present_value_name is None):
-        raise UnsupportedOpError(
-            "Attention expects both present_key and present_value if either is provided"
-        )
-    if has_present and not has_past:
-        raise UnsupportedOpError(
-            "Attention present outputs require past key/value inputs"
-        )
-    if has_present:
-        present_key_shape = _value_shape(graph, present_key_name, node)
-        present_value_shape = _value_shape(graph, present_value_name, node)
-        expected_present_key = (batch, kv_heads, total_seq, qk_head_size)
-        expected_present_value = (batch, kv_heads, total_seq, v_head_size)
-        if present_key_shape != expected_present_key:
-            raise ShapeInferenceError(
-                "Attention present key shape must be "
-                f"{expected_present_key}, got {present_key_shape}"
-            )
-        if present_value_shape != expected_present_value:
-            raise ShapeInferenceError(
-                "Attention present value shape must be "
-                f"{expected_present_value}, got {present_value_shape}"
-            )
-    qk_matmul_output_name = _optional_name(node.outputs, 3)
-    if qk_matmul_output_name is not None:
-        qk_shape = _value_shape(graph, qk_matmul_output_name, node)
-        expected_qk_shape = (batch, q_heads, q_seq, total_seq)
-        if qk_shape != expected_qk_shape:
-            raise ShapeInferenceError(
-                "Attention qk_matmul_output shape must be "
-                f"{expected_qk_shape}, got {qk_shape}"
-            )
-    attn_mask_name = _optional_name(node.inputs, 3)
-    mask_shape = None
-    mask_rank = None
-    mask_is_bool = False
-    mask_broadcast_batch = False
-    mask_broadcast_heads = True
-    mask_broadcast_q_seq = False
-    mask_q_seq = None
-    mask_kv_seq = None
-    has_attn_mask = attn_mask_name is not None
-    if has_attn_mask:
-        mask_shape = _value_shape(graph, attn_mask_name, node)
-        mask_rank = len(mask_shape)
-        if mask_rank not in {2, 3, 4}:
-            raise ShapeInferenceError("Attention mask must be 2D/3D/4D")
-        mask_dtype = _value_dtype(graph, attn_mask_name, node)
-        if mask_dtype == "bool":
-            mask_is_bool = True
-        elif mask_dtype != dtype:
-            raise UnsupportedOpError(
-                "Attention mask must be bool or match attention dtype"
-            )
-        if mask_rank == 2:
-            mask_q_seq, mask_kv_seq = mask_shape
-            mask_broadcast_batch = True
-            mask_broadcast_heads = True
-            mask_broadcast_q_seq = mask_q_seq == 1
-            if mask_q_seq not in {1, q_seq}:
-                raise ShapeInferenceError(
-                    "Attention mask sequence length must match query length"
-                )
-        elif mask_rank == 3:
-            mask_batch, mask_q_seq, mask_kv_seq = mask_shape
-            mask_broadcast_batch = mask_batch == 1
-            mask_broadcast_heads = True
-            mask_broadcast_q_seq = mask_q_seq == 1
-            if mask_batch not in {1, batch}:
-                raise ShapeInferenceError(
-                    "Attention mask batch dimension must match batch size"
-                )
-            if mask_q_seq not in {1, q_seq}:
-                raise ShapeInferenceError(
-                    "Attention mask sequence length must match query length"
-                )
-        else:
-            mask_batch, mask_heads, mask_q_seq, mask_kv_seq = mask_shape
-            mask_broadcast_batch = mask_batch == 1
-            mask_broadcast_heads = mask_heads == 1
-            mask_broadcast_q_seq = mask_q_seq == 1
-            if mask_batch not in {1, batch}:
-                raise ShapeInferenceError(
-                    "Attention mask batch dimension must match batch size"
-                )
-            if mask_heads not in {1, q_heads}:
-                raise ShapeInferenceError(
-                    "Attention mask head dimension must match q_num_heads"
-                )
-            if mask_q_seq not in {1, q_seq}:
-                raise ShapeInferenceError(
-                    "Attention mask sequence length must match query length"
-                )
-        if mask_kv_seq is None:
-            raise ShapeInferenceError("Attention mask must include kv sequence")
-        if mask_kv_seq > total_seq:
-            raise ShapeInferenceError(
-                "Attention mask kv sequence length exceeds total sequence length"
-            )
-    nonpad_name = _optional_name(node.inputs, 6)
-    has_nonpad = nonpad_name is not None
-    if has_nonpad:
-        if has_past or has_present:
-            raise UnsupportedOpError(
-                "Attention nonpad_kv_seqlen is not supported with KV cache"
-            )
-        nonpad_shape = _value_shape(graph, nonpad_name, node)
-        if nonpad_shape != (batch,):
-            raise ShapeInferenceError(
-                "Attention nonpad_kv_seqlen must have shape (batch,)"
-            )
-        nonpad_dtype = _value_dtype(graph, nonpad_name, node)
-        if nonpad_dtype != "int64":
-            raise UnsupportedOpError(
-                "Attention nonpad_kv_seqlen must be int64"
-            )
-    scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
-    softcap = float(node.attrs.get("softcap", 0.0))
-    is_causal = int(node.attrs.get("is_causal", 0))
-    if is_causal not in (0, 1):
-        raise UnsupportedOpError("Unsupported op Attention")
-    qk_matmul_output_mode = int(node.attrs.get("qk_matmul_output_mode", 0))
-    if qk_matmul_output_mode not in {0, 1, 2, 3}:
-        raise UnsupportedOpError("Unsupported op Attention")
-    return _AttentionSpec(
-        batch=batch,
-        q_heads=q_heads,
-        kv_heads=kv_heads,
-        q_seq=q_seq,
-        kv_seq=kv_seq,
-        total_seq=total_seq,
-        past_seq=past_seq,
-        qk_head_size=qk_head_size,
-        v_head_size=v_head_size,
-        q_hidden_size=q_hidden_size,
-        k_hidden_size=k_hidden_size,
-        v_hidden_size=v_hidden_size,
-        scale=scale,
-        is_causal=bool(is_causal),
-        softcap=softcap,
-        qk_matmul_output_mode=qk_matmul_output_mode,
-        q_rank=q_rank,
-        k_rank=k_rank,
-        v_rank=v_rank,
-        output_rank=output_rank,
-        mask_shape=mask_shape,
-        mask_is_bool=mask_is_bool,
-        mask_rank=mask_rank,
-        mask_broadcast_batch=mask_broadcast_batch,
-        mask_broadcast_heads=mask_broadcast_heads,
-        mask_broadcast_q_seq=mask_broadcast_q_seq,
-        mask_q_seq=mask_q_seq,
-        mask_kv_seq=mask_kv_seq,
-        head_group_size=head_group_size,
-        has_attn_mask=has_attn_mask,
-        has_past=has_past,
-        has_present=has_present,
-        has_nonpad=has_nonpad,
-    )
-
-
 def _apply_attention(
-    spec: _AttentionSpec,
+    spec: AttentionSpec,
     query: np.ndarray,
     key: np.ndarray,
     value: np.ndarray,
@@ -1984,159 +1169,8 @@ def _apply_attention(
     return output, key_total, value_total, qk_output
 
 
-@dataclass(frozen=True)
-class _ConvSpec:
-    batch: int
-    in_channels: int
-    out_channels: int
-    spatial_rank: int
-    in_spatial: tuple[int, ...]
-    out_spatial: tuple[int, ...]
-    kernel_shape: tuple[int, ...]
-    strides: tuple[int, ...]
-    pads: tuple[int, ...]
-    dilations: tuple[int, ...]
-    group: int
-
-
-def _resolve_conv_spec(graph: Graph, node: Node) -> _ConvSpec:
-    if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-        raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
-    supported_attrs = {
-        "auto_pad",
-        "dilations",
-        "group",
-        "kernel_shape",
-        "pads",
-        "strides",
-    }
-    if set(node.attrs) - supported_attrs:
-        raise UnsupportedOpError("Conv has unsupported attributes")
-    input_shape = _value_shape(graph, node.inputs[0], node)
-    weight_shape = _value_shape(graph, node.inputs[1], node)
-    if len(input_shape) < 3:
-        raise UnsupportedOpError("Conv expects NCHW inputs with spatial dims")
-    spatial_rank = len(input_shape) - 2
-    if spatial_rank not in {1, 2, 3}:
-        raise UnsupportedOpError("Conv supports 1D/2D/3D inputs only")
-    if len(weight_shape) != spatial_rank + 2:
-        raise UnsupportedOpError("Conv weight rank must match spatial rank")
-    batch, in_channels = input_shape[0], input_shape[1]
-    in_spatial = input_shape[2:]
-    out_channels, weight_in_channels, *kernel_shape = weight_shape
-    kernel_shape = node.attrs.get("kernel_shape")
-    if kernel_shape is not None:
-        kernel_shape = tuple(int(value) for value in kernel_shape)
-        if len(kernel_shape) != spatial_rank:
-            raise UnsupportedOpError(
-                "Conv kernel_shape rank must match input spatial rank"
-            )
-        if kernel_shape != tuple(weight_shape[2:]):
-            raise ShapeInferenceError(
-                "Conv kernel_shape must match weights, "
-                f"got {kernel_shape} and {tuple(weight_shape[2:])}"
-            )
-    else:
-        kernel_shape = tuple(weight_shape[2:])
-    group = int(node.attrs.get("group", 1))
-    if group <= 0:
-        raise UnsupportedOpError("Conv expects group >= 1")
-    if in_channels % group != 0 or out_channels % group != 0:
-        raise ShapeInferenceError(
-            "Conv expects group to evenly divide in/out channels, "
-            f"got group={group}, in_channels={in_channels}, "
-            f"out_channels={out_channels}"
-        )
-    if weight_in_channels != in_channels // group:
-        raise ShapeInferenceError(
-            "Conv input channels must match weight channels, "
-            f"got {in_channels} and {weight_in_channels * group}"
-        )
-    if len(node.inputs) == 3:
-        bias_shape = _value_shape(graph, node.inputs[2], node)
-        if bias_shape != (out_channels,):
-            raise ShapeInferenceError(
-                f"Conv bias shape must be {(out_channels,)}, got {bias_shape}"
-            )
-    strides = tuple(
-        int(value) for value in node.attrs.get("strides", (1,) * spatial_rank)
-    )
-    if len(strides) != spatial_rank:
-        raise UnsupportedOpError("Conv stride rank mismatch")
-    dilations = tuple(
-        int(value) for value in node.attrs.get("dilations", (1,) * spatial_rank)
-    )
-    if len(dilations) != spatial_rank:
-        raise UnsupportedOpError("Conv dilation rank mismatch")
-    pads = tuple(
-        int(value)
-        for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
-    )
-    if len(pads) != 2 * spatial_rank:
-        raise UnsupportedOpError("Conv pads rank mismatch")
-    auto_pad = node.attrs.get("auto_pad", b"NOTSET")
-    if isinstance(auto_pad, bytes):
-        auto_pad = auto_pad.decode("utf-8", errors="ignore")
-    if auto_pad in ("", "NOTSET"):
-        pad_begin = pads[:spatial_rank]
-        pad_end = pads[spatial_rank:]
-    elif auto_pad == "VALID":
-        pad_begin = (0,) * spatial_rank
-        pad_end = (0,) * spatial_rank
-    elif auto_pad in {"SAME_UPPER", "SAME_LOWER"}:
-        pad_begin = []
-        pad_end = []
-        for dim, stride, dilation, kernel in zip(
-            in_spatial, strides, dilations, kernel_shape
-        ):
-            effective_kernel = dilation * (kernel - 1) + 1
-            out_dim = math.ceil(dim / stride)
-            pad_needed = max(
-                0, (out_dim - 1) * stride + effective_kernel - dim
-            )
-            if auto_pad == "SAME_UPPER":
-                pad_start = pad_needed // 2
-            else:
-                pad_start = (pad_needed + 1) // 2
-            pad_begin.append(pad_start)
-            pad_end.append(pad_needed - pad_start)
-        pad_begin = tuple(pad_begin)
-        pad_end = tuple(pad_end)
-    else:
-        raise UnsupportedOpError("Conv has unsupported auto_pad mode")
-    out_spatial = []
-    for dim, stride, dilation, kernel, pad_start, pad_finish in zip(
-        in_spatial, strides, dilations, kernel_shape, pad_begin, pad_end
-    ):
-        effective_kernel = dilation * (kernel - 1) + 1
-        out_dim = (dim + pad_start + pad_finish - effective_kernel) // stride + 1
-        if out_dim <= 0:
-            raise ShapeInferenceError("Conv output shape must be positive")
-        out_spatial.append(out_dim)
-    output_shape = _value_shape(graph, node.outputs[0], node)
-    expected_output_shape = (batch, out_channels, *out_spatial)
-    if output_shape != expected_output_shape:
-        raise ShapeInferenceError(
-            "Conv output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
-        )
-    return _ConvSpec(
-        batch=batch,
-        in_channels=in_channels,
-        out_channels=out_channels,
-        spatial_rank=spatial_rank,
-        in_spatial=in_spatial,
-        out_spatial=tuple(out_spatial),
-        kernel_shape=kernel_shape,
-        strides=strides,
-        pads=(*pad_begin, *pad_end),
-        dilations=dilations,
-        group=group,
-    )
-
-
 def _apply_conv(
-    spec: _ConvSpec,
+    spec: ConvSpec,
     data: np.ndarray,
     weights: np.ndarray,
     bias: np.ndarray | None,
@@ -2241,139 +1275,6 @@ def _apply_average_pool(op: AveragePoolOp, data: np.ndarray) -> np.ndarray:
     return output
 
 
-@dataclass(frozen=True)
-class _MaxPoolSpec:
-    batch: int
-    channels: int
-    spatial_rank: int
-    in_spatial: tuple[int, ...]
-    out_spatial: tuple[int, ...]
-    kernel_shape: tuple[int, ...]
-    strides: tuple[int, ...]
-    pads: tuple[int, ...]
-    dilations: tuple[int, ...]
-    ceil_mode: bool
-
-
-def _resolve_maxpool_spec(graph: Graph, node: Node) -> _MaxPoolSpec:
-    if len(node.inputs) != 1 or len(node.outputs) != 1:
-        raise UnsupportedOpError("MaxPool must have 1 input and 1 output")
-    supported_attrs = {
-        "auto_pad",
-        "ceil_mode",
-        "dilations",
-        "kernel_shape",
-        "pads",
-        "storage_order",
-        "strides",
-    }
-    if set(node.attrs) - supported_attrs:
-        raise UnsupportedOpError("MaxPool has unsupported attributes")
-    storage_order = int(node.attrs.get("storage_order", 0))
-    if storage_order != 0:
-        raise UnsupportedOpError("MaxPool supports storage_order=0 only")
-    kernel_shape = node.attrs.get("kernel_shape")
-    if kernel_shape is None:
-        raise UnsupportedOpError("MaxPool requires kernel_shape")
-    kernel_shape = tuple(int(value) for value in kernel_shape)
-    input_shape = _value_shape(graph, node.inputs[0], node)
-    if len(input_shape) < 3:
-        raise UnsupportedOpError("MaxPool expects NCHW inputs with spatial dims")
-    spatial_rank = len(input_shape) - 2
-    if spatial_rank not in {1, 2, 3}:
-        raise UnsupportedOpError("MaxPool supports 1D/2D/3D inputs only")
-    if len(kernel_shape) != spatial_rank:
-        raise ShapeInferenceError(
-            f"MaxPool kernel_shape must have {spatial_rank} dims, got {kernel_shape}"
-        )
-    strides = tuple(
-        int(value) for value in node.attrs.get("strides", (1,) * spatial_rank)
-    )
-    if len(strides) != spatial_rank:
-        raise UnsupportedOpError("MaxPool stride rank mismatch")
-    dilations = tuple(
-        int(value) for value in node.attrs.get("dilations", (1,) * spatial_rank)
-    )
-    if len(dilations) != spatial_rank:
-        raise UnsupportedOpError("MaxPool dilation rank mismatch")
-    pads = tuple(
-        int(value)
-        for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
-    )
-    if len(pads) != 2 * spatial_rank:
-        raise UnsupportedOpError("MaxPool pads rank mismatch")
-    auto_pad = node.attrs.get("auto_pad", b"NOTSET")
-    if isinstance(auto_pad, bytes):
-        auto_pad = auto_pad.decode("utf-8", errors="ignore")
-    if auto_pad in ("", "NOTSET"):
-        pad_begin = pads[:spatial_rank]
-        pad_end = pads[spatial_rank:]
-    elif auto_pad == "VALID":
-        pad_begin = (0,) * spatial_rank
-        pad_end = (0,) * spatial_rank
-    elif auto_pad in {"SAME_UPPER", "SAME_LOWER"}:
-        pad_begin = []
-        pad_end = []
-        for dim, stride, dilation, kernel in zip(
-            input_shape[2:], strides, dilations, kernel_shape
-        ):
-            effective_kernel = dilation * (kernel - 1) + 1
-            out_dim = math.ceil(dim / stride)
-            pad_needed = max(
-                0, (out_dim - 1) * stride + effective_kernel - dim
-            )
-            if auto_pad == "SAME_UPPER":
-                pad_start = pad_needed // 2
-            else:
-                pad_start = (pad_needed + 1) // 2
-            pad_begin.append(pad_start)
-            pad_end.append(pad_needed - pad_start)
-        pad_begin = tuple(pad_begin)
-        pad_end = tuple(pad_end)
-    else:
-        raise UnsupportedOpError("MaxPool has unsupported auto_pad mode")
-    ceil_mode = int(node.attrs.get("ceil_mode", 0))
-    if ceil_mode not in (0, 1):
-        raise UnsupportedOpError("MaxPool supports ceil_mode=0 or 1 only")
-    batch, channels = input_shape[0], input_shape[1]
-    in_spatial = input_shape[2:]
-    out_spatial = []
-    for dim, stride, dilation, kernel, pad_start, pad_finish in zip(
-        in_spatial, strides, dilations, kernel_shape, pad_begin, pad_end
-    ):
-        effective_kernel = dilation * (kernel - 1) + 1
-        numerator = dim + pad_start + pad_finish - effective_kernel
-        if ceil_mode:
-            out_dim = (numerator + stride - 1) // stride + 1
-            if (out_dim - 1) * stride >= dim + pad_start:
-                out_dim -= 1
-        else:
-            out_dim = numerator // stride + 1
-        if out_dim <= 0:
-            raise ShapeInferenceError("MaxPool output shape must be positive")
-        out_spatial.append(out_dim)
-    expected_output_shape = (batch, channels, *out_spatial)
-    output_shape = _value_shape(graph, node.outputs[0], node)
-    if output_shape != expected_output_shape:
-        raise ShapeInferenceError(
-            "MaxPool output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
-        )
-    pads = (*pad_begin, *pad_end)
-    return _MaxPoolSpec(
-        batch=batch,
-        channels=channels,
-        spatial_rank=spatial_rank,
-        in_spatial=in_spatial,
-        out_spatial=tuple(out_spatial),
-        kernel_shape=kernel_shape,
-        strides=strides,
-        pads=pads,
-        dilations=dilations,
-        ceil_mode=bool(ceil_mode),
-    )
-
-
 def _maxpool_min_value(dtype: np.dtype) -> float | int:
     if np.issubdtype(dtype, np.floating):
         return -np.inf
@@ -2382,7 +1283,7 @@ def _maxpool_min_value(dtype: np.dtype) -> float | int:
     raise UnsupportedOpError("MaxPool supports numeric inputs only")
 
 
-def _apply_maxpool(spec: _MaxPoolSpec, data: np.ndarray) -> np.ndarray:
+def _apply_maxpool(spec: MaxPoolSpec, data: np.ndarray) -> np.ndarray:
     min_value = _maxpool_min_value(data.dtype)
     output = np.full(
         (spec.batch, spec.channels, *spec.out_spatial),
