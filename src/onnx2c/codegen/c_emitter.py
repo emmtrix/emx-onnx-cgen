@@ -255,6 +255,21 @@ class ReshapeOp:
 
 
 @dataclass(frozen=True)
+class ResizeOp:
+    input0: str
+    output: str
+    batch: int
+    channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    scale_h: float
+    scale_w: float
+    dtype: str
+
+
+@dataclass(frozen=True)
 class ReduceOp:
     input0: str
     output: str
@@ -319,6 +334,7 @@ class LoweredModel:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
         ...,
@@ -351,6 +367,7 @@ class CEmitter:
             concat_template = self._env.get_template("concat_op.c.j2")
             transpose_template = self._env.get_template("transpose_op.c.j2")
             reshape_template = self._env.get_template("reshape_op.c.j2")
+            resize_template = self._env.get_template("resize_op.c.j2")
             reduce_template = self._env.get_template("reduce_op.c.j2")
             constant_of_shape_template = self._env.get_template(
                 "constant_of_shape_op.c.j2"
@@ -393,6 +410,7 @@ class CEmitter:
                 concat_template=concat_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
+                resize_template=resize_template,
                 reduce_template=reduce_template,
                 constant_of_shape_template=constant_of_shape_template,
             )
@@ -680,6 +698,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
         temp_map: dict[str, str],
@@ -699,6 +718,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
     ):
@@ -956,6 +976,20 @@ class CEmitter:
                 output_shape=op.output_shape,
                 dtype=op.dtype,
             )
+        if isinstance(op, ResizeOp):
+            return ResizeOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                scale_h=op.scale_h,
+                scale_w=op.scale_w,
+                dtype=op.dtype,
+            )
         if isinstance(op, ReduceOp):
             return ReduceOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -994,6 +1028,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
         index: int,
@@ -1021,6 +1056,7 @@ class CEmitter:
         concat_template,
         transpose_template,
         reshape_template,
+        resize_template,
         reduce_template,
         constant_of_shape_template,
     ) -> str:
@@ -1496,6 +1532,28 @@ class CEmitter:
                 output_suffix=CEmitter._array_suffix(op.output_shape),
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
+        if isinstance(op, ResizeOp):
+            return resize_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                input_suffix=CEmitter._array_suffix(
+                    (op.batch, op.channels, op.in_h, op.in_w)
+                ),
+                output_suffix=CEmitter._array_suffix(
+                    (op.batch, op.channels, op.out_h, op.out_w)
+                ),
+                batch=op.batch,
+                channels=op.channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                scale_h_literal=CEmitter._format_double(op.scale_h),
+                scale_w_literal=CEmitter._format_double(op.scale_w),
+            ).rstrip()
         if isinstance(op, ReduceOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             output_loop_vars = CEmitter._loop_vars(output_shape)
@@ -1673,6 +1731,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
     ) -> str:
@@ -1695,6 +1754,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
     ) -> tuple[tuple[str, tuple[int, ...], str], ...]:
@@ -1746,6 +1806,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
     ) -> tuple[int, ...]:
@@ -1777,6 +1838,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, ReshapeOp):
             return op.output_shape
+        if isinstance(op, ResizeOp):
+            return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, ReduceOp):
             return op.output_shape
         if isinstance(op, ConstantOfShapeOp):
@@ -1801,6 +1864,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
     ) -> str:

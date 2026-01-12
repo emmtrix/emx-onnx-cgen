@@ -209,6 +209,47 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _make_resize_model() -> onnx.ModelProto:
+    input_shape = [1, 1, 2, 2]
+    output_shape = [1, 1, 4, 4]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    sizes_values = np.array(output_shape, dtype=np.int64)
+    sizes_tensor = helper.make_tensor(
+        "sizes",
+        TensorProto.INT64,
+        dims=sizes_values.shape,
+        vals=sizes_values.tolist(),
+    )
+    node = helper.make_node(
+        "Resize",
+        inputs=["in0", "", "", "sizes"],
+        outputs=[output.name],
+        mode="nearest",
+        coordinate_transformation_mode="asymmetric",
+        nearest_mode="floor",
+    )
+    graph = helper.make_graph(
+        [node],
+        "resize_graph",
+        [input_info],
+        [output],
+        initializer=[sizes_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_dropout_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     input_info = helper.make_tensor_value_info(
@@ -1133,6 +1174,11 @@ def test_constant_of_shape_matches_onnxruntime() -> None:
 
 def test_reshape_op_matches_onnxruntime() -> None:
     model = _make_reshape_model()
+    _run_cli_verify(model)
+
+
+def test_resize_op_matches_onnxruntime() -> None:
+    model = _make_resize_model()
     _run_cli_verify(model)
 
 
