@@ -108,26 +108,30 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
         )
     shape_initializer = _find_initializer(graph, node.inputs[1])
     if shape_initializer is None:
-        raise UnsupportedOpError("Reshape requires a constant shape input")
-    if shape_initializer.type.dtype not in {"int64", "int32"}:
-        raise UnsupportedOpError(
-            "Reshape expects int64 or int32 shape input, "
-            f"got {shape_initializer.type.dtype}"
+        if _shape_product(output_shape) != _shape_product(input_shape):
+            raise ShapeInferenceError(
+                "Reshape input and output element counts must match"
+            )
+    else:
+        if shape_initializer.type.dtype not in {"int64", "int32"}:
+            raise UnsupportedOpError(
+                "Reshape expects int64 or int32 shape input, "
+                f"got {shape_initializer.type.dtype}"
+            )
+        if len(shape_initializer.type.shape) != 1:
+            raise UnsupportedOpError("Reshape expects a 1D shape input")
+        shape_values = [int(value) for value in shape_initializer.data.reshape(-1)]
+        resolved_shape = _resolve_target_shape(
+            input_shape,
+            shape_values,
+            allowzero=int(node.attrs.get("allowzero", 0)),
+            node=node,
         )
-    if len(shape_initializer.type.shape) != 1:
-        raise UnsupportedOpError("Reshape expects a 1D shape input")
-    shape_values = [int(value) for value in shape_initializer.data.reshape(-1)]
-    resolved_shape = _resolve_target_shape(
-        input_shape,
-        shape_values,
-        allowzero=int(node.attrs.get("allowzero", 0)),
-        node=node,
-    )
-    if resolved_shape != output_shape:
-        raise ShapeInferenceError(
-            "Reshape output shape must be "
-            f"{resolved_shape}, got {output_shape}"
-        )
+        if resolved_shape != output_shape:
+            raise ShapeInferenceError(
+                "Reshape output shape must be "
+                f"{resolved_shape}, got {output_shape}"
+            )
     return ReshapeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
