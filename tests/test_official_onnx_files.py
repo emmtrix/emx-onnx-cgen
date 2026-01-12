@@ -1853,7 +1853,7 @@ def _render_official_onnx_file_support_markdown(
     for path, error in expectations:
         supported = "✅" if not error else "❌"
         message = error.replace("\n", " ").strip()
-        lines.append(f"| `{path}` | {supported} | {message} |")
+        lines.append(f"| {path} | {supported} | {message} |")
     return "\n".join(lines)
 
 
