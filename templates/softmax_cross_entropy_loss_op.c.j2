@@ -1,0 +1,84 @@
+void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }},
+                   const {{ target_c_type }} {{ target }}{{ target_suffix }}{% if weight %},
+                   const {{ c_type }} {{ weight }}[{{ c }}]{% endif %},
+                   {{ c_type }} {{ output }}{{ output_suffix }}{% if log_prob %},
+                   {{ c_type }} {{ log_prob }}{{ log_prob_suffix }}{% endif %}) {
+    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
+    const {{ target_c_type }} *target_flat = (const {{ target_c_type }} *){{ target }};
+    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
+{% if log_prob %}
+    {{ c_type }} *log_prob_flat = ({{ c_type }} *){{ log_prob }};
+{% endif %}
+    const size_t n = {{ n }};
+    const size_t c = {{ c }};
+    const size_t d = {{ d }};
+    {{ c_type }} loss_sum = {{ zero_literal }};
+    {{ c_type }} weight_sum = {{ zero_literal }};
+    for (size_t n_idx = 0; n_idx < n; ++n_idx) {
+        for (size_t d_idx = 0; d_idx < d; ++d_idx) {
+            size_t target_index = n_idx * d + d_idx;
+            {{ target_c_type }} target_value = target_flat[target_index];
+{% if use_ignore_index %}
+            if ((int64_t)target_value == {{ ignore_index }}) {
+{% if reduction == "none" %}
+                output_flat[target_index] = {{ zero_literal }};
+{% endif %}
+                continue;
+            }
+{% endif %}
+            size_t class_index = (size_t)target_value;
+            size_t base = (n_idx * c * d) + d_idx;
+            {{ c_type }} max_value = input_flat[base];
+            for (size_t c_idx = 1; c_idx < c; ++c_idx) {
+                {{ c_type }} value = input_flat[base + c_idx * d];
+                if (value > max_value) {
+                    max_value = value;
+                }
+            }
+            {{ c_type }} sum = {{ zero_literal }};
+            for (size_t c_idx = 0; c_idx < c; ++c_idx) {
+                {{ c_type }} value = input_flat[base + c_idx * d] - max_value;
+                sum += {{ exp_fn }}(value);
+            }
+            {{ c_type }} logsum = {{ log_fn }}(sum);
+{% if log_prob %}
+            {{ c_type }} loss_value = {{ zero_literal }};
+            for (size_t c_idx = 0; c_idx < c; ++c_idx) {
+                {{ c_type }} log_prob_value = input_flat[base + c_idx * d] - max_value - logsum;
+                log_prob_flat[base + c_idx * d] = log_prob_value;
+                if (c_idx == class_index) {
+                    loss_value = -log_prob_value;
+                }
+            }
+{% else %}
+            {{ c_type }} log_prob_value = input_flat[base + class_index * d] - max_value - logsum;
+            {{ c_type }} loss_value = -log_prob_value;
+{% endif %}
+{% if weight %}
+            {{ c_type }} sample_weight = {{ weight }}[class_index];
+            loss_value *= sample_weight;
+{% else %}
+            {{ c_type }} sample_weight = {{ one_literal }};
+{% endif %}
+{% if reduction == "none" %}
+            output_flat[target_index] = loss_value;
+{% else %}
+            loss_sum += loss_value;
+{% if reduction == "mean" %}
+{% if weight or use_ignore_index %}
+            weight_sum += sample_weight;
+{% endif %}
+{% endif %}
+{% endif %}
+        }
+    }
+{% if reduction == "mean" %}
+{% if weight or use_ignore_index %}
+    output_flat[0] = loss_sum / weight_sum;
+{% else %}
+    output_flat[0] = loss_sum / ({{ n }} * {{ d }});
+{% endif %}
+{% elif reduction == "sum" %}
+    output_flat[0] = loss_sum;
+{% endif %}
+}
