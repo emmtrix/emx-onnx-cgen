@@ -1891,8 +1891,25 @@ def _collect_onnx_files(data_root: Path) -> list[str]:
     return sorted(p.relative_to(data_root).as_posix() for p in data_root.rglob("*.onnx"))
 
 
+def _ensure_official_onnx_files_present(data_root: Path) -> None:
+    if not data_root.exists():
+        raise AssertionError(
+            "onnx-org test data is unavailable. Initialize the onnx-org submodule "
+            "and fetch its data files."
+        )
+    missing = [path for path in OFFICIAL_ONNX_FILES if not (data_root / path).exists()]
+    if missing:
+        preview = ", ".join(missing[:5])
+        suffix = "..." if len(missing) > 5 else ""
+        raise AssertionError(
+            "onnx-org test data is incomplete; missing files include: "
+            f"{preview}{suffix}. Initialize the submodule and fetch any LFS data."
+        )
+
+
 def test_official_onnx_files() -> None:
     data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
+    _ensure_official_onnx_files_present(data_root)
     actual_files = _collect_onnx_files(data_root)
     expected_files = sorted(OFFICIAL_ONNX_FILES)
     actual_set = set(actual_files)
@@ -1908,6 +1925,7 @@ def test_official_onnx_files() -> None:
 @pytest.mark.order(1)
 def test_official_onnx_expected_errors() -> None:
     data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
+    _ensure_official_onnx_files_present(data_root)
     expectations = _load_official_onnx_file_expectations()
     expected_paths = [path for path, _ in expectations]
     assert expected_paths == OFFICIAL_ONNX_FILES
