@@ -35,9 +35,17 @@ class MatMulOp:
     input0: str
     input1: str
     output: str
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    batch_shape: tuple[int, ...]
+    input0_batch_shape: tuple[int, ...]
+    input1_batch_shape: tuple[int, ...]
     m: int
     n: int
     k: int
+    left_vector: bool
+    right_vector: bool
     dtype: str
 
 
@@ -1123,9 +1131,17 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 input1=temp_map.get(op.input1, op.input1),
                 output=temp_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
                 m=op.m,
                 n=op.n,
                 k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
                 dtype=op.dtype,
             )
         if isinstance(op, GemmOp):
@@ -1638,6 +1654,32 @@ class CEmitter:
                 operator_expr=operator_expr,
             ).rstrip()
         if isinstance(op, MatMulOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            output_index_expr = f"{op.output}" + "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            batch_rank = len(op.batch_shape)
+            batch_vars = output_loop_vars[:batch_rank]
+            if op.left_vector and op.right_vector:
+                row_var = None
+                col_var = None
+            elif op.left_vector:
+                row_var = None
+                col_var = output_loop_vars[-1]
+            elif op.right_vector:
+                row_var = output_loop_vars[-1]
+                col_var = None
+            else:
+                row_var = output_loop_vars[-2]
+                col_var = output_loop_vars[-1]
+            input0_index_expr, input1_index_expr = CEmitter._matmul_index_exprs(
+                op,
+                batch_vars,
+                row_var,
+                col_var,
+                batch_rank,
+            )
             return matmul_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -1647,9 +1689,14 @@ class CEmitter:
                 c_type=c_type,
                 acc_type=c_type,
                 zero_literal=zero_literal,
-                input0_suffix=CEmitter._array_suffix((op.m, op.k)),
-                input1_suffix=CEmitter._array_suffix((op.k, op.n)),
-                output_suffix=CEmitter._array_suffix((op.m, op.n)),
+                input0_suffix=CEmitter._array_suffix(op.input0_shape),
+                input1_suffix=CEmitter._array_suffix(op.input1_shape),
+                output_suffix=CEmitter._array_suffix(op.output_shape),
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
                 m=op.m,
                 n=op.n,
                 k=op.k,
@@ -2740,6 +2787,53 @@ class CEmitter:
                 raise CodegenError("Dynamic or zero dims are not supported")
             count *= dim
         return count
+
+    @staticmethod
+    def _matmul_index_exprs(
+        op: MatMulOp,
+        batch_vars: tuple[str, ...],
+        row_var: str | None,
+        col_var: str | None,
+        batch_rank: int,
+    ) -> tuple[str, str]:
+        def batch_indices(
+            batch_shape: tuple[int, ...], actual_rank: int
+        ) -> list[str]:
+            if actual_rank == 0:
+                return []
+            offset = batch_rank - actual_rank
+            indices: list[str] = []
+            for idx in range(actual_rank):
+                dim = batch_shape[offset + idx]
+                var = batch_vars[offset + idx]
+                indices.append("0" if dim == 1 else var)
+            return indices
+
+        if op.left_vector:
+            input0_indices = ["k"]
+        else:
+            input0_batch_rank = len(op.input0_shape) - 2
+            input0_indices = batch_indices(
+                op.input0_batch_shape, input0_batch_rank
+            )
+            input0_indices.append(row_var if row_var is not None else "0")
+            input0_indices.append("k")
+        if op.right_vector:
+            input1_indices = ["k"]
+        else:
+            input1_batch_rank = len(op.input1_shape) - 2
+            input1_indices = batch_indices(
+                op.input1_batch_shape, input1_batch_rank
+            )
+            input1_indices.append("k")
+            input1_indices.append(col_var if col_var is not None else "0")
+        input0_index_expr = f"{op.input0}" + "".join(
+            f"[{index}]" for index in input0_indices
+        )
+        input1_index_expr = f"{op.input1}" + "".join(
+            f"[{index}]" for index in input1_indices
+        )
+        return input0_index_expr, input1_index_expr
 
     def _emit_testbench(self, model: LoweredModel, testbench_template) -> str:
         input_counts = tuple(

@@ -513,16 +513,39 @@ def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
 
 
 def _apply_matmul(left: np.ndarray, right: np.ndarray) -> np.ndarray:
-    if left.ndim != 2 or right.ndim != 2:
+    if left.ndim < 1 or right.ndim < 1:
         raise UnsupportedOpError(
-            f"MatMul supports 2D inputs only, got {left.shape} x {right.shape}"
+            "MatMul inputs must be at least 1D, "
+            f"got {left.shape} x {right.shape}"
         )
-    if left.shape[1] != right.shape[0]:
+    left_dim = left.shape[-1]
+    right_dim = right.shape[0] if right.ndim == 1 else right.shape[-2]
+    if left_dim != right_dim:
         raise ShapeInferenceError(
             "MatMul inner dimensions must match, "
-            f"got {left.shape[1]} and {right.shape[0]}"
+            f"got {left_dim} and {right_dim}"
+        )
+    left_batch = left.shape[:-2] if left.ndim > 1 else ()
+    right_batch = right.shape[:-2] if right.ndim > 1 else ()
+    if not _matmul_batch_broadcastable(left_batch, right_batch):
+        raise ShapeInferenceError(
+            "MatMul batch dimensions must be broadcastable, "
+            f"got {left_batch} x {right_batch}"
         )
     return np.matmul(left, right)
+
+
+def _matmul_batch_broadcastable(
+    left: tuple[int, ...], right: tuple[int, ...]
+) -> bool:
+    max_rank = max(len(left), len(right))
+    left_padded = (1,) * (max_rank - len(left)) + left
+    right_padded = (1,) * (max_rank - len(right)) + right
+    for left_dim, right_dim in zip(left_padded, right_padded):
+        if left_dim == right_dim or left_dim == 1 or right_dim == 1:
+            continue
+        return False
+    return True
 
 
 def _apply_softmax(values: np.ndarray, axis: int) -> np.ndarray:
