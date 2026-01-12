@@ -4,13 +4,12 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Only single-output graphs are supported | 129 | ███████████████████████████ |
-| Scalar outputs are not supported | 62 | █████████████ |
+| Scalar outputs are not supported | 64 | █████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 60 | ████████████ |
 | Unsupported elem_type 11 (DOUBLE) for tensor '*'. | 53 | ███████████ |
 | Unsupported elem_type 2 (UINT8) for tensor '*'. | 50 | ██████████ |
-| Unsupported op ReduceSum | 45 | █████████ |
+| ReduceSum axes input must be constant | 43 | █████████ |
 | Unsupported op Resize | 39 | ████████ |
-| Unsupported op ReduceMax | 38 | ████████ |
 | Missing elem_type for tensor '*' | 33 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported op Attention | 29 | ██████ |
@@ -35,25 +34,27 @@
 | Unsupported op Clip | 13 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
-| Unsupported op ReduceMean | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
-| Unsupported op ReduceMin | 10 | ██ |
 | Unsupported op Shape | 10 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
-| Unsupported op ReduceL1 | 9 | ██ |
-| Unsupported op ReduceL2 | 9 | ██ |
-| Unsupported op ReduceProd | 9 | ██ |
-| Unsupported op ReduceSumSquare | 9 | ██ |
+| ReduceL1 axes input must be constant | 9 | ██ |
+| ReduceL2 axes input must be constant | 9 | ██ |
+| ReduceSumSquare axes input must be constant | 9 | ██ |
 | Reshape requires a constant shape input | 9 | ██ |
 | Unsupported op Greater | 8 | ██ |
 | Unsupported op LpPool | 8 | ██ |
+| ReduceMean axes input must be constant | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Slice | 8 | ██ |
+| '*' object has no attribute '*' | 7 | █ |
 | Dynamic or zero dims are not supported | 7 | █ |
 | Unsupported op GatherElements | 7 | █ |
 | Unsupported op Hardmax | 7 | █ |
+| ReduceMax axes input must be constant | 7 | █ |
+| ReduceMin axes input must be constant | 7 | █ |
+| ReduceProd axes input must be constant | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
 | AveragePool has unsupported attributes | 6 | █ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █ |
@@ -69,7 +70,7 @@
 | Unsupported op Col2Im | 5 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
 | Unsupported op NegativeLogLikelihoodLoss | 5 | █ |
-| Unsupported op ReduceLogSum | 5 | █ |
+| ReduceLogSum axes input must be constant | 5 | █ |
 | Unsupported op ScatterND | 5 | █ |
 | Unsupported op Selu | 5 | █ |
 | Unsupported op Sigmoid | 5 | █ |
@@ -104,7 +105,6 @@
 | Unsupported op Shrink | 3 | █ |
 | Unsupported op TensorScatter | 3 | █ |
 | Unsupported op ThresholdedRelu | 3 | █ |
-| Conv supports group=1 only | 2 | █ |
 | Unsupported op Acos | 2 | █ |
 | Unsupported op Acosh | 2 | █ |
 | Unsupported op Asin | 2 | █ |
@@ -155,7 +155,6 @@
 | Unsupported op BitwiseNot | 1 | █ |
 | Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
-| Conv supports auto_pad=NOTSET only | 1 | █ |
 | Unsupported op DequantizeLinear | 1 | █ |
 | Unsupported op Det | 1 | █ |
 | Unsupported op Erf | 1 | █ |
@@ -174,7 +173,9 @@
 | Unsupported op MeanVarianceNormalization | 1 | █ |
 | Unsupported op NonZero | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
-| Unsupported op ReduceLogSumExp | 1 | █ |
+| ReduceLogSumExp axes input must be constant | 1 | █ |
+| ReduceMax does not support dtype bool | 1 | █ |
+| ReduceMin does not support dtype bool | 1 | █ |
 | Unsupported op Round | 1 | █ |
 | Unsupported op Swish | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
