@@ -1065,6 +1065,17 @@ def test_average_pool_matches_onnxruntime(case: dict[str, object]) -> None:
     _run_cli_verify(model)
 
 
+def test_global_average_pool_matches_onnxruntime() -> None:
+    input_shape = [1, 2, 4, 3]
+    model = _make_operator_model(
+        op_type="GlobalAveragePool",
+        input_shapes=[input_shape],
+        output_shape=[input_shape[0], input_shape[1], 1, 1],
+        dtype=TensorProto.FLOAT,
+    )
+    _run_cli_verify(model)
+
+
 def test_constant_op_matches_onnxruntime() -> None:
     model = _make_constant_add_model()
     _run_cli_verify(model)
