@@ -27,6 +27,22 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="onnx2c", description="ONNX to C compiler")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    def add_restrict_flags(subparser: argparse.ArgumentParser) -> None:
+        restrict_group = subparser.add_mutually_exclusive_group()
+        restrict_group.add_argument(
+            "--restrict-arrays",
+            dest="restrict_arrays",
+            action="store_true",
+            help="Enable restrict qualifiers on generated array parameters",
+        )
+        restrict_group.add_argument(
+            "--no-restrict-arrays",
+            dest="restrict_arrays",
+            action="store_false",
+            help="Disable restrict qualifiers on generated array parameters",
+        )
+        subparser.set_defaults(restrict_arrays=True)
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -57,6 +73,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "named like the output with a _data suffix"
         ),
     )
+    add_restrict_flags(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -81,6 +98,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help="C compiler command to build the testbench binary",
     )
+    add_restrict_flags(verify_parser)
     return parser
 
 
@@ -111,6 +129,7 @@ def _handle_compile(args: argparse.Namespace) -> int:
             emit_testbench=args.emit_testbench,
             command_line=args.command_line,
             model_checksum=model_checksum,
+            restrict_arrays=args.restrict_arrays,
         )
         compiler = Compiler(options)
         if args.emit_data_file:
@@ -162,6 +181,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
             emit_testbench=True,
             command_line=args.command_line,
             model_checksum=model_checksum,
+            restrict_arrays=args.restrict_arrays,
         )
         compiler = Compiler(options)
         generated = compiler.compile(model)

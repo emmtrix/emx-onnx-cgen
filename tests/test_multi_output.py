@@ -36,8 +36,8 @@ def test_multi_output_graph_compile_and_run() -> None:
     )
     generated = compiler.compile(model)
     assert "void multi(" in generated
-    assert "out_add[2][2]" in generated
-    assert "out_mul[2][2]" in generated
+    assert "out_add[restrict 2][2]" in generated
+    assert "out_mul[restrict 2][2]" in generated
     inputs = {"in0": np.ones((2, 2), dtype=np.float32)}
     outputs = compiler.run(model, inputs)
     np.testing.assert_allclose(outputs["out_add"], 2.0, rtol=1e-6, atol=1e-6)

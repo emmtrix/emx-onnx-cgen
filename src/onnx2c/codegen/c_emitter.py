@@ -481,13 +481,14 @@ class LoweredModel:
 
 
 class CEmitter:
-    def __init__(self, template_dir: Path) -> None:
+    def __init__(self, template_dir: Path, *, restrict_arrays: bool = True) -> None:
         self._env = Environment(
             loader=FileSystemLoader(str(template_dir)),
             autoescape=select_autoescape(enabled_extensions=()),
             trim_blocks=True,
             lstrip_blocks=True,
         )
+        self._restrict_arrays = restrict_arrays
 
     def emit_model(self, model: LoweredModel, *, emit_testbench: bool = False) -> str:
         try:
@@ -1047,7 +1048,8 @@ class CEmitter:
         temp_buffers: tuple[TempBuffer, ...],
     ) -> str:
         params = [
-            f"const {dtype_info(dtype).c_type} {name}{self._array_suffix(shape)}"
+            f"const {dtype_info(dtype).c_type} {name}"
+            f"{self._param_array_suffix(shape)}"
             for name, shape, dtype in zip(
                 model.input_names, model.input_shapes, model.input_dtypes
             )
@@ -1056,7 +1058,9 @@ class CEmitter:
             model.output_names, model.output_shapes, model.output_dtypes
         ):
             output_type = dtype_info(dtype).c_type
-            params.append(f"{output_type} {name}{self._array_suffix(shape)}")
+            params.append(
+                f"{output_type} {name}{self._param_array_suffix(shape)}"
+            )
         signature = ", ".join(params)
         lines = [f"void {model.name}({signature}) {{"]
         for temp in temp_buffers:
@@ -1667,8 +1671,8 @@ class CEmitter:
             dtype=op.dtype,
         )
 
-    @staticmethod
     def _render_op(
+        self,
         model: LoweredModel,
         op: BinaryOp
         | UnaryOp
@@ -1735,7 +1739,7 @@ class CEmitter:
             loop_vars = CEmitter._loop_vars(shape)
             loop_indents = CEmitter._loop_indents(shape)
             inner_indent = CEmitter._inner_indent(shape)
-            array_suffix = CEmitter._array_suffix(shape)
+            array_suffix = self._param_array_suffix(shape)
             input_c_type = dtype_info(op.input_dtype).c_type
             output_c_type = dtype_info(op.dtype).c_type
             common = {
@@ -1810,9 +1814,9 @@ class CEmitter:
                 c_type=c_type,
                 acc_type=c_type,
                 zero_literal=zero_literal,
-                input0_suffix=CEmitter._array_suffix(op.input0_shape),
-                input1_suffix=CEmitter._array_suffix(op.input1_shape),
-                output_suffix=CEmitter._array_suffix(op.output_shape),
+                input0_suffix=self._param_array_suffix(op.input0_shape),
+                input1_suffix=self._param_array_suffix(op.input1_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
                 output_loop_vars=output_loop_vars,
                 output_loop_bounds=output_shape,
                 output_index_expr=output_index_expr,
@@ -1857,11 +1861,11 @@ class CEmitter:
                 m=op.m,
                 n=op.n,
                 k=op.k,
-                input_a_suffix=CEmitter._array_suffix(input_a_shape),
-                input_b_suffix=CEmitter._array_suffix(input_b_shape),
-                output_suffix=CEmitter._array_suffix((op.m, op.n)),
+                input_a_suffix=self._param_array_suffix(input_a_shape),
+                input_b_suffix=self._param_array_suffix(input_b_shape),
+                output_suffix=self._param_array_suffix((op.m, op.n)),
                 c_suffix=(
-                    CEmitter._array_suffix(op.c_shape)
+                    self._param_array_suffix(op.c_shape)
                     if op.c_shape is not None
                     else None
                 ),
@@ -1956,46 +1960,46 @@ class CEmitter:
                 mask_broadcast_q_seq=int(op.mask_broadcast_q_seq),
                 mask_q_seq=op.mask_q_seq or 0,
                 mask_kv_seq=op.mask_kv_seq or 0,
-                input_q_suffix=CEmitter._array_suffix(input_q_shape),
-                input_k_suffix=CEmitter._array_suffix(input_k_shape),
-                input_v_suffix=CEmitter._array_suffix(input_v_shape),
+                input_q_suffix=self._param_array_suffix(input_q_shape),
+                input_k_suffix=self._param_array_suffix(input_k_shape),
+                input_v_suffix=self._param_array_suffix(input_v_shape),
                 input_mask_suffix=(
-                    CEmitter._array_suffix(op.mask_shape)
+                    self._param_array_suffix(op.mask_shape)
                     if op.input_attn_mask is not None
                     else ""
                 ),
                 input_past_key_suffix=(
-                    CEmitter._array_suffix(
+                    self._param_array_suffix(
                         (op.batch, op.kv_heads, op.past_seq, op.qk_head_size)
                     )
                     if op.input_past_key is not None
                     else ""
                 ),
                 input_past_value_suffix=(
-                    CEmitter._array_suffix(
+                    self._param_array_suffix(
                         (op.batch, op.kv_heads, op.past_seq, op.v_head_size)
                     )
                     if op.input_past_value is not None
                     else ""
                 ),
                 input_nonpad_suffix=(
-                    CEmitter._array_suffix((op.batch,))
+                    self._param_array_suffix((op.batch,))
                     if op.input_nonpad_kv_seqlen is not None
                     else ""
                 ),
-                output_suffix=CEmitter._array_suffix(output_shape),
+                output_suffix=self._param_array_suffix(output_shape),
                 output_present_key_suffix=(
-                    CEmitter._array_suffix(present_key_shape)
+                    self._param_array_suffix(present_key_shape)
                     if present_key_shape is not None
                     else ""
                 ),
                 output_present_value_suffix=(
-                    CEmitter._array_suffix(present_value_shape)
+                    self._param_array_suffix(present_value_shape)
                     if present_value_shape is not None
                     else ""
                 ),
                 output_qk_matmul_suffix=(
-                    CEmitter._array_suffix(qk_matmul_shape)
+                    self._param_array_suffix(qk_matmul_shape)
                     if qk_matmul_shape is not None
                     else ""
                 ),
@@ -2026,10 +2030,10 @@ class CEmitter:
                 output=op.output,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=CEmitter._array_suffix(input_shape),
-                weight_suffix=CEmitter._array_suffix(weight_shape),
-                bias_suffix=CEmitter._array_suffix((op.out_channels,)),
-                output_suffix=CEmitter._array_suffix(output_shape),
+                input_suffix=self._param_array_suffix(input_shape),
+                weight_suffix=self._param_array_suffix(weight_shape),
+                bias_suffix=self._param_array_suffix((op.out_channels,)),
+                output_suffix=self._param_array_suffix(output_shape),
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
@@ -2058,8 +2062,8 @@ class CEmitter:
                 output=op.output,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=CEmitter._array_suffix(input_shape),
-                output_suffix=CEmitter._array_suffix(output_shape),
+                input_suffix=self._param_array_suffix(input_shape),
+                output_suffix=self._param_array_suffix(output_shape),
                 batch=op.batch,
                 channels=op.channels,
                 in_h=op.in_h,
@@ -2092,12 +2096,12 @@ class CEmitter:
                 variance=op.variance,
                 output=op.output,
                 c_type=c_type,
-                input_suffix=CEmitter._array_suffix(shape),
-                output_suffix=CEmitter._array_suffix(shape),
-                scale_suffix=CEmitter._array_suffix((op.channels,)),
-                bias_suffix=CEmitter._array_suffix((op.channels,)),
-                mean_suffix=CEmitter._array_suffix((op.channels,)),
-                variance_suffix=CEmitter._array_suffix((op.channels,)),
+                input_suffix=self._param_array_suffix(shape),
+                output_suffix=self._param_array_suffix(shape),
+                scale_suffix=self._param_array_suffix((op.channels,)),
+                bias_suffix=self._param_array_suffix((op.channels,)),
+                mean_suffix=self._param_array_suffix((op.channels,)),
+                variance_suffix=self._param_array_suffix((op.channels,)),
                 shape=shape,
                 loop_vars=loop_vars,
                 loop_indents=loop_indents,
@@ -2117,8 +2121,8 @@ class CEmitter:
                 input0=op.input0,
                 output=op.output,
                 c_type=c_type,
-                input_suffix=CEmitter._array_suffix(shape),
-                output_suffix=CEmitter._array_suffix(shape),
+                input_suffix=self._param_array_suffix(shape),
+                output_suffix=self._param_array_suffix(shape),
                 shape=shape,
                 channels=op.channels,
                 half=op.half,
@@ -2192,22 +2196,22 @@ class CEmitter:
                     else CEmitter._format_literal(op.dtype, 0)
                 ),
                 use_clip=int(op.clip is not None and op.clip > 0),
-                input_suffix=CEmitter._array_suffix(input_x_shape),
-                w_suffix=CEmitter._array_suffix(w_shape),
-                r_suffix=CEmitter._array_suffix(r_shape),
-                b_suffix=CEmitter._array_suffix(b_shape) if b_shape else None,
-                seq_suffix=CEmitter._array_suffix(seq_shape) if seq_shape else None,
-                h_suffix=CEmitter._array_suffix(h_shape) if h_shape else None,
-                c_suffix=CEmitter._array_suffix(c_shape) if c_shape else None,
-                p_suffix=CEmitter._array_suffix(p_shape) if p_shape else None,
-                y_suffix=CEmitter._array_suffix(y_shape) if op.output_y else None,
+                input_suffix=self._param_array_suffix(input_x_shape),
+                w_suffix=self._param_array_suffix(w_shape),
+                r_suffix=self._param_array_suffix(r_shape),
+                b_suffix=self._param_array_suffix(b_shape) if b_shape else None,
+                seq_suffix=self._param_array_suffix(seq_shape) if seq_shape else None,
+                h_suffix=self._param_array_suffix(h_shape) if h_shape else None,
+                c_suffix=self._param_array_suffix(c_shape) if c_shape else None,
+                p_suffix=self._param_array_suffix(p_shape) if p_shape else None,
+                y_suffix=self._param_array_suffix(y_shape) if op.output_y else None,
                 y_h_suffix=(
-                    CEmitter._array_suffix((op.num_directions, op.batch_size, op.hidden_size))
+                    self._param_array_suffix((op.num_directions, op.batch_size, op.hidden_size))
                     if op.output_y_h
                     else None
                 ),
                 y_c_suffix=(
-                    CEmitter._array_suffix((op.num_directions, op.batch_size, op.hidden_size))
+                    self._param_array_suffix((op.num_directions, op.batch_size, op.hidden_size))
                     if op.output_y_c
                     else None
                 ),
@@ -2241,7 +2245,7 @@ class CEmitter:
                 input0=op.input0,
                 output=op.output,
                 c_type=c_type,
-                array_suffix=CEmitter._array_suffix(op.shape),
+                array_suffix=self._param_array_suffix(op.shape),
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
@@ -2255,7 +2259,7 @@ class CEmitter:
                 input0=op.input0,
                 output=op.output,
                 c_type=c_type,
-                array_suffix=CEmitter._array_suffix(op.shape),
+                array_suffix=self._param_array_suffix(op.shape),
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
@@ -2273,9 +2277,9 @@ class CEmitter:
                 output=op.output,
                 c_type=c_type,
                 target_c_type=dtype_info(op.target_dtype).c_type,
-                input_suffix=CEmitter._array_suffix(op.input_shape),
-                target_suffix=CEmitter._array_suffix(op.target_shape),
-                output_suffix=CEmitter._array_suffix(op.output_shape),
+                input_suffix=self._param_array_suffix(op.input_shape),
+                target_suffix=self._param_array_suffix(op.target_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
                 n=op.n,
                 c=op.c,
                 d=op.d,
@@ -2298,11 +2302,11 @@ class CEmitter:
                 log_prob=op.log_prob,
                 c_type=c_type,
                 target_c_type=dtype_info(op.target_dtype).c_type,
-                input_suffix=CEmitter._array_suffix(op.input_shape),
-                target_suffix=CEmitter._array_suffix(op.target_shape),
-                output_suffix=CEmitter._array_suffix(op.output_shape),
+                input_suffix=self._param_array_suffix(op.input_shape),
+                target_suffix=self._param_array_suffix(op.target_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
                 log_prob_suffix=(
-                    CEmitter._array_suffix(op.log_prob_shape)
+                    self._param_array_suffix(op.log_prob_shape)
                     if op.log_prob_shape is not None
                     else None
                 ),
@@ -2328,8 +2332,8 @@ class CEmitter:
                 output=op.output,
                 c_type=c_type,
                 min_literal=min_literal,
-                input_suffix=CEmitter._array_suffix(input_shape),
-                output_suffix=CEmitter._array_suffix(output_shape),
+                input_suffix=self._param_array_suffix(input_shape),
+                output_suffix=self._param_array_suffix(output_shape),
                 batch=op.batch,
                 channels=op.channels,
                 spatial_rank=op.spatial_rank,
@@ -2356,9 +2360,9 @@ class CEmitter:
                 output=op.output,
                 c_type=c_type,
                 input_suffixes=tuple(
-                    CEmitter._array_suffix(shape) for shape in op.input_shapes
+                    self._param_array_suffix(shape) for shape in op.input_shapes
                 ),
-                output_suffix=CEmitter._array_suffix(op.output_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
                 axis_sizes=axis_sizes,
                 input_count=len(op.inputs),
                 outer=outer,
@@ -2370,8 +2374,8 @@ class CEmitter:
             loop_vars = CEmitter._loop_vars(output_shape)
             loop_indents = CEmitter._loop_indents(output_shape)
             inner_indent = CEmitter._inner_indent(output_shape)
-            output_suffix = CEmitter._array_suffix(output_shape)
-            input_suffix = CEmitter._array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            input_suffix = self._param_array_suffix(op.input_shape)
             if not op.input_shape:
                 input_indices = [loop_vars[0]]
             else:
@@ -2400,14 +2404,14 @@ class CEmitter:
                 input0=op.input0,
                 output=op.output,
                 c_type=c_type,
-                input_suffix=CEmitter._array_suffix(op.input_shape),
-                output_suffix=CEmitter._array_suffix(op.output_shape),
+                input_suffix=self._param_array_suffix(op.input_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
-            input_suffix = CEmitter._array_suffix(op.input_shape)
-            output_suffix = CEmitter._array_suffix(op.output_shape)
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
             params = [f"const {c_type} {op.input0}{input_suffix}"]
             roi_suffix = None
             scales_suffix = None
@@ -2416,19 +2420,19 @@ class CEmitter:
             scales_c_type = None
             sizes_c_type = None
             if op.roi_input and op.roi_shape and op.roi_dtype:
-                roi_suffix = CEmitter._array_suffix(op.roi_shape)
+                roi_suffix = self._param_array_suffix(op.roi_shape)
                 roi_c_type = dtype_info(op.roi_dtype).c_type
                 params.append(
                     f"const {roi_c_type} {op.roi_input}{roi_suffix}"
                 )
             if op.scales_input and op.scales_shape and op.scales_dtype:
-                scales_suffix = CEmitter._array_suffix(op.scales_shape)
+                scales_suffix = self._param_array_suffix(op.scales_shape)
                 scales_c_type = dtype_info(op.scales_dtype).c_type
                 params.append(
                     f"const {scales_c_type} {op.scales_input}{scales_suffix}"
                 )
             if op.sizes_input and op.sizes_shape and op.sizes_dtype:
-                sizes_suffix = CEmitter._array_suffix(op.sizes_shape)
+                sizes_suffix = self._param_array_suffix(op.sizes_shape)
                 sizes_c_type = dtype_info(op.sizes_dtype).c_type
                 params.append(
                     f"const {sizes_c_type} {op.sizes_input}{sizes_suffix}"
@@ -2599,8 +2603,8 @@ class CEmitter:
                 input0=op.input0,
                 output=op.output,
                 c_type=c_type,
-                input_suffix=CEmitter._array_suffix(op.input_shape),
-                output_suffix=CEmitter._array_suffix(op.output_shape),
+                input_suffix=self._param_array_suffix(op.input_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
                 output_shape=output_shape,
                 output_loop_vars=output_loop_vars,
                 output_loop_indents=output_loop_indents,
@@ -2620,7 +2624,7 @@ class CEmitter:
             loop_vars = CEmitter._loop_vars(shape)
             loop_indents = CEmitter._loop_indents(shape)
             inner_indent = CEmitter._inner_indent(shape)
-            array_suffix = CEmitter._array_suffix(shape)
+            array_suffix = self._param_array_suffix(shape)
             rendered = constant_of_shape_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -2628,7 +2632,7 @@ class CEmitter:
                 output=op.output,
                 input_c_type=dtype_info(op.input_dtype).c_type,
                 c_type=c_type,
-                input_suffix=CEmitter._array_suffix(op.input_shape),
+                input_suffix=self._param_array_suffix(op.input_shape),
                 array_suffix=array_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
@@ -2645,8 +2649,8 @@ class CEmitter:
                 output=op.output,
                 input_c_type=dtype_info(op.input_dtype).c_type,
                 c_type=c_type,
-                input_suffix=CEmitter._array_suffix(op.input_shape),
-                output_suffix=CEmitter._array_suffix(op.output_shape),
+                input_suffix=self._param_array_suffix(op.input_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
                 values=[
                     CEmitter._format_literal(op.dtype, value)
                     for value in op.values
@@ -2657,7 +2661,7 @@ class CEmitter:
         loop_vars = CEmitter._loop_vars(shape)
         loop_indents = CEmitter._loop_indents(shape)
         inner_indent = CEmitter._inner_indent(shape)
-        array_suffix = CEmitter._array_suffix(shape)
+        array_suffix = self._param_array_suffix(shape)
         common = {
             "model_name": model.name,
             "op_name": f"{model.name}_op{index}",
@@ -2904,6 +2908,13 @@ class CEmitter:
     def _array_suffix(shape: tuple[int, ...]) -> str:
         shape = CEmitter._codegen_shape(shape)
         return "".join(f"[{dim}]" for dim in shape)
+
+    def _param_array_suffix(self, shape: tuple[int, ...]) -> str:
+        shape = CEmitter._codegen_shape(shape)
+        if not self._restrict_arrays:
+            return "".join(f"[{dim}]" for dim in shape)
+        first, *rest = shape
+        return f"[restrict {first}]" + "".join(f"[{dim}]" for dim in rest)
 
     @staticmethod
     def _loop_vars(shape: tuple[int, ...]) -> tuple[str, ...]:

@@ -28,7 +28,7 @@
  * Outputs: mul_out
  * Attrs: n/a
  */
-static inline void model_op0(const float a[2][3], const float b[2][3], float tmp0[2][3]) {
+static inline void model_op0(const float a[restrict 2][3], const float b[restrict 2][3], float tmp0[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             tmp0[i0][i1] = a[i0][i1] * b[i0][i1];
@@ -43,7 +43,7 @@ static inline void model_op0(const float a[2][3], const float b[2][3], float tmp
  * Outputs: add_out
  * Attrs: n/a
  */
-static inline void model_op1(const float tmp0[2][3], const float c[2][3], float tmp1[2][3]) {
+static inline void model_op1(const float tmp0[restrict 2][3], const float c[restrict 2][3], float tmp1[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             tmp1[i0][i1] = tmp0[i0][i1] + c[i0][i1];
@@ -58,7 +58,7 @@ static inline void model_op1(const float tmp0[2][3], const float c[2][3], float 
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op2(const float tmp1[2][3], float out[2][3]) {
+static inline void model_op2(const float tmp1[restrict 2][3], float out[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             out[i0][i1] = tmp1[i0][i1] > 0.0f ? tmp1[i0][i1] : 0.0f;
@@ -66,7 +66,7 @@ static inline void model_op2(const float tmp1[2][3], float out[2][3]) {
     }
 }
 
-void model(const float a[2][3], const float b[2][3], const float c[2][3], float out[2][3]) {
+void model(const float a[restrict 2][3], const float b[restrict 2][3], const float c[restrict 2][3], float out[restrict 2][3]) {
     float tmp0[2][3];
     float tmp1[2][3];
     model_op0(a, b, tmp0);

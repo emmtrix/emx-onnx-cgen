@@ -73,6 +73,8 @@ Options:
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
+- `--restrict-arrays`: Enable `restrict` qualifiers on generated array parameters (default).
+- `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 
 ### `verify`
 
@@ -85,6 +87,8 @@ Options:
 - `--template-dir`: Directory containing the C templates (default: `templates`).
 - `--model-name`: Override the generated model name (default: model file stem).
 - `--cc`: Explicit C compiler command for building the testbench binary.
+- `--restrict-arrays`: Enable `restrict` qualifiers on generated array parameters (default).
+- `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 
 ## Output
 
