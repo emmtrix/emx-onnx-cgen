@@ -98,6 +98,7 @@ class CompilerOptions:
     emit_testbench: bool = False
     command_line: str | None = None
     model_checksum: str | None = None
+    restrict_arrays: bool = True
 
 
 class Compiler:
@@ -105,7 +106,9 @@ class Compiler:
         if options is None:
             options = CompilerOptions(template_dir=Path("templates"))
         self._options = options
-        self._emitter = CEmitter(options.template_dir)
+        self._emitter = CEmitter(
+            options.template_dir, restrict_arrays=options.restrict_arrays
+        )
 
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)

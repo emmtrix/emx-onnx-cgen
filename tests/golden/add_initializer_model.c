@@ -32,7 +32,7 @@ static const float weight[2][3] = {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float in0[2][3], const float weight[2][3], float out[2][3]) {
+static inline void model_op0(const float in0[restrict 2][3], const float weight[restrict 2][3], float out[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             out[i0][i1] = in0[i0][i1] + weight[i0][i1];
@@ -40,6 +40,6 @@ static inline void model_op0(const float in0[2][3], const float weight[2][3], fl
     }
 }
 
-void model(const float in0[2][3], float out[2][3]) {
+void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
     model_op0(in0, weight, out);
 }

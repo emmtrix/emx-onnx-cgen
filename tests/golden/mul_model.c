@@ -28,7 +28,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float a[2][3], const float b[2][3], float out[2][3]) {
+static inline void model_op0(const float a[restrict 2][3], const float b[restrict 2][3], float out[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             out[i0][i1] = a[i0][i1] * b[i0][i1];
@@ -36,6 +36,6 @@ static inline void model_op0(const float a[2][3], const float b[2][3], float out
     }
 }
 
-void model(const float a[2][3], const float b[2][3], float out[2][3]) {
+void model(const float a[restrict 2][3], const float b[restrict 2][3], float out[restrict 2][3]) {
     model_op0(a, b, out);
 }

@@ -32,9 +32,9 @@ def test_compile_supports_mixed_dtypes() -> None:
     model = _make_mixed_dtype_model()
     compiler = Compiler()
     generated = compiler.compile(model)
-    assert "const float float_in[2][2]" in generated
-    assert "const int32_t int_in[2][2]" in generated
-    assert "int32_t out[2][2]" in generated
+    assert "const float float_in[restrict 2][2]" in generated
+    assert "const int32_t int_in[restrict 2][2]" in generated
+    assert "int32_t out[restrict 2][2]" in generated
 
 
 def test_mixed_dtype_model_matches_onnxruntime() -> None:
