@@ -1084,103 +1084,125 @@ class CEmitter:
                 f"    {c_type} {temp.name}{self._array_suffix(temp.shape)};"
             )
         for index, op in enumerate(resolved_ops):
-            if isinstance(op, (BinaryOp, MatMulOp)):
-                call = f"{op.input0}, {op.input1}, {op.output}"
-            elif isinstance(op, GemmOp):
-                if op.input_c is None:
-                    call = f"{op.input_a}, {op.input_b}, {op.output}"
-                else:
-                    call = (
-                        f"{op.input_a}, {op.input_b}, {op.input_c}, {op.output}"
-                    )
-            elif isinstance(op, AttentionOp):
-                call_parts = [op.input_q, op.input_k, op.input_v]
-                if op.input_attn_mask is not None:
-                    call_parts.append(op.input_attn_mask)
-                if op.input_past_key is not None:
-                    call_parts.append(op.input_past_key)
-                if op.input_past_value is not None:
-                    call_parts.append(op.input_past_value)
-                if op.input_nonpad_kv_seqlen is not None:
-                    call_parts.append(op.input_nonpad_kv_seqlen)
-                call_parts.append(op.output)
-                if op.output_present_key is not None:
-                    call_parts.append(op.output_present_key)
-                if op.output_present_value is not None:
-                    call_parts.append(op.output_present_value)
-                if op.output_qk_matmul is not None:
-                    call_parts.append(op.output_qk_matmul)
-                call = ", ".join(call_parts)
-            elif isinstance(op, ConvOp):
-                if op.bias is None:
-                    call = f"{op.input0}, {op.weights}, {op.output}"
-                else:
-                    call = f"{op.input0}, {op.weights}, {op.bias}, {op.output}"
-            elif isinstance(op, AveragePoolOp):
-                call = f"{op.input0}, {op.output}"
-            elif isinstance(op, BatchNormOp):
-                call = (
-                    f"{op.input0}, {op.scale}, {op.bias}, "
-                    f"{op.mean}, {op.variance}, {op.output}"
-                )
-            elif isinstance(op, LstmOp):
-                call_parts = [op.input_x, op.input_w, op.input_r]
-                if op.input_b is not None:
-                    call_parts.append(op.input_b)
-                if op.input_sequence_lens is not None:
-                    call_parts.append(op.input_sequence_lens)
-                if op.input_initial_h is not None:
-                    call_parts.append(op.input_initial_h)
-                if op.input_initial_c is not None:
-                    call_parts.append(op.input_initial_c)
-                if op.input_p is not None:
-                    call_parts.append(op.input_p)
-                if op.output_y is not None:
-                    call_parts.append(op.output_y)
-                if op.output_y_h is not None:
-                    call_parts.append(op.output_y_h)
-                if op.output_y_c is not None:
-                    call_parts.append(op.output_y_c)
-                call = ", ".join(call_parts)
-            elif isinstance(op, (SoftmaxOp, LogSoftmaxOp)):
-                call = f"{op.input0}, {op.output}"
-            elif isinstance(op, NegativeLogLikelihoodLossOp):
-                call_parts = [op.input0, op.target]
-                if op.weight is not None:
-                    call_parts.append(op.weight)
-                call_parts.append(op.output)
-                call = ", ".join(call_parts)
-            elif isinstance(op, SoftmaxCrossEntropyLossOp):
-                call_parts = [op.input0, op.target]
-                if op.weight is not None:
-                    call_parts.append(op.weight)
-                call_parts.append(op.output)
-                if op.log_prob is not None:
-                    call_parts.append(op.log_prob)
-                call = ", ".join(call_parts)
-            elif isinstance(op, ConcatOp):
-                call = ", ".join((*op.inputs, op.output))
-            elif isinstance(op, ConstantOfShapeOp):
-                call = f"{op.input0}, {op.output}"
-            elif isinstance(op, ShapeOp):
-                call = f"{op.input0}, {op.output}"
-            elif isinstance(op, ReshapeOp):
-                call = f"{op.input0}, {op.output}"
-            elif isinstance(op, ResizeOp):
-                call_parts = [op.input0]
-                if op.roi_input is not None:
-                    call_parts.append(op.roi_input)
-                if op.scales_input is not None:
-                    call_parts.append(op.scales_input)
-                if op.sizes_input is not None:
-                    call_parts.append(op.sizes_input)
-                call_parts.append(op.output)
-                call = ", ".join(call_parts)
-            else:
-                call = f"{op.input0}, {op.output}"
+            call = self._build_op_call(op)
             lines.append(f"    {model.name}_op{index}({call});")
         lines.append("}")
         return "\n".join(lines)
+
+    @staticmethod
+    def _build_op_call(
+        op: BinaryOp
+        | UnaryOp
+        | MatMulOp
+        | GemmOp
+        | AttentionOp
+        | ConvOp
+        | AveragePoolOp
+        | BatchNormOp
+        | LrnOp
+        | LstmOp
+        | SoftmaxOp
+        | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
+        | SoftmaxCrossEntropyLossOp
+        | MaxPoolOp
+        | ConcatOp
+        | TransposeOp
+        | ReshapeOp
+        | ResizeOp
+        | ReduceOp
+        | ConstantOfShapeOp
+        | ShapeOp,
+    ) -> str:
+        if isinstance(op, (BinaryOp, MatMulOp)):
+            return f"{op.input0}, {op.input1}, {op.output}"
+        if isinstance(op, GemmOp):
+            if op.input_c is None:
+                return f"{op.input_a}, {op.input_b}, {op.output}"
+            return f"{op.input_a}, {op.input_b}, {op.input_c}, {op.output}"
+        if isinstance(op, AttentionOp):
+            call_parts = [op.input_q, op.input_k, op.input_v]
+            if op.input_attn_mask is not None:
+                call_parts.append(op.input_attn_mask)
+            if op.input_past_key is not None:
+                call_parts.append(op.input_past_key)
+            if op.input_past_value is not None:
+                call_parts.append(op.input_past_value)
+            if op.input_nonpad_kv_seqlen is not None:
+                call_parts.append(op.input_nonpad_kv_seqlen)
+            call_parts.append(op.output)
+            if op.output_present_key is not None:
+                call_parts.append(op.output_present_key)
+            if op.output_present_value is not None:
+                call_parts.append(op.output_present_value)
+            if op.output_qk_matmul is not None:
+                call_parts.append(op.output_qk_matmul)
+            return ", ".join(call_parts)
+        if isinstance(op, ConvOp):
+            if op.bias is None:
+                return f"{op.input0}, {op.weights}, {op.output}"
+            return f"{op.input0}, {op.weights}, {op.bias}, {op.output}"
+        if isinstance(op, AveragePoolOp):
+            return f"{op.input0}, {op.output}"
+        if isinstance(op, BatchNormOp):
+            return (
+                f"{op.input0}, {op.scale}, {op.bias}, "
+                f"{op.mean}, {op.variance}, {op.output}"
+            )
+        if isinstance(op, LstmOp):
+            call_parts = [op.input_x, op.input_w, op.input_r]
+            if op.input_b is not None:
+                call_parts.append(op.input_b)
+            if op.input_sequence_lens is not None:
+                call_parts.append(op.input_sequence_lens)
+            if op.input_initial_h is not None:
+                call_parts.append(op.input_initial_h)
+            if op.input_initial_c is not None:
+                call_parts.append(op.input_initial_c)
+            if op.input_p is not None:
+                call_parts.append(op.input_p)
+            if op.output_y is not None:
+                call_parts.append(op.output_y)
+            if op.output_y_h is not None:
+                call_parts.append(op.output_y_h)
+            if op.output_y_c is not None:
+                call_parts.append(op.output_y_c)
+            return ", ".join(call_parts)
+        if isinstance(op, (SoftmaxOp, LogSoftmaxOp)):
+            return f"{op.input0}, {op.output}"
+        if isinstance(op, NegativeLogLikelihoodLossOp):
+            call_parts = [op.input0, op.target]
+            if op.weight is not None:
+                call_parts.append(op.weight)
+            call_parts.append(op.output)
+            return ", ".join(call_parts)
+        if isinstance(op, SoftmaxCrossEntropyLossOp):
+            call_parts = [op.input0, op.target]
+            if op.weight is not None:
+                call_parts.append(op.weight)
+            call_parts.append(op.output)
+            if op.log_prob is not None:
+                call_parts.append(op.log_prob)
+            return ", ".join(call_parts)
+        if isinstance(op, ConcatOp):
+            return ", ".join((*op.inputs, op.output))
+        if isinstance(op, ConstantOfShapeOp):
+            return f"{op.input0}, {op.output}"
+        if isinstance(op, ShapeOp):
+            return f"{op.input0}, {op.output}"
+        if isinstance(op, ReshapeOp):
+            return f"{op.input0}, {op.output}"
+        if isinstance(op, ResizeOp):
+            call_parts = [op.input0]
+            if op.roi_input is not None:
+                call_parts.append(op.roi_input)
+            if op.scales_input is not None:
+                call_parts.append(op.scales_input)
+            if op.sizes_input is not None:
+                call_parts.append(op.sizes_input)
+            call_parts.append(op.output)
+            return ", ".join(call_parts)
+        return f"{op.input0}, {op.output}"
 
     def _temp_buffers(self, model: LoweredModel) -> dict[str, TempBuffer]:
         output_names = set(model.output_names)
