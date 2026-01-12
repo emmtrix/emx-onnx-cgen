@@ -6,7 +6,7 @@ import onnx
 import numpy as np
 from onnx import helper, numpy_helper, shape_inference
 
-from .dtypes import ONNX_TO_DTYPE
+from .dtypes import DTYPE_INFO, ONNX_TO_DTYPE
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Initializer, Node, TensorType, Value
 
@@ -18,29 +18,10 @@ def _normalize_initializer_data(dtype: str, data: object) -> np.ndarray:
         array = data
     else:
         array = np.array(data)
-    if dtype == "float" and array.dtype != "float32":
-        array = array.astype("float32", copy=False)
-    if dtype == "double" and array.dtype != "float64":
-        array = array.astype("float64", copy=False)
-    if dtype == "bool" and array.dtype != "bool":
-        array = array.astype("bool", copy=False)
-    if dtype == "uint64" and array.dtype != "uint64":
-        array = array.astype("uint64", copy=False)
-    if dtype == "uint32" and array.dtype != "uint32":
-        array = array.astype("uint32", copy=False)
-    if dtype == "uint16" and array.dtype != "uint16":
-        array = array.astype("uint16", copy=False)
-    if dtype == "uint8" and array.dtype != "uint8":
-        array = array.astype("uint8", copy=False)
-    if dtype == "int64" and array.dtype != "int64":
-        array = array.astype("int64", copy=False)
-    if dtype == "int32" and array.dtype != "int32":
-        array = array.astype("int32", copy=False)
-    if dtype == "int16" and array.dtype != "int16":
-        array = array.astype("int16", copy=False)
-    if dtype == "int8" and array.dtype != "int8":
-        array = array.astype("int8", copy=False)
-    return array
+    target_info = DTYPE_INFO.get(dtype)
+    if target_info is None:
+        return array
+    return array.astype(target_info.np_dtype, copy=False)
 
 
 def _format_elem_type(elem_type: int) -> str:
