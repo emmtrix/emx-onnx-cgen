@@ -10,7 +10,6 @@
 | Reshape input and output element counts must match | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported op CastLike | 31 | ██████ |
-| Unsupported op Less | 26 | █████ |
 | Unsupported op Cast | 22 | █████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
@@ -21,7 +20,6 @@
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
 | Unsupported op Clip | 16 | ███ |
-| Unsupported op Greater | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 14 | ███ |
@@ -32,6 +30,7 @@
 | Unsupported op GatherElements | 14 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
+| Unsupported op Where | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
@@ -46,9 +45,6 @@
 | ReduceSumSquare axes input must be constant | 9 | ██ |
 | Unsupported op BitShift | 8 | ██ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██ |
-| Unsupported op Equal | 8 | ██ |
-| Unsupported op GreaterOrEqual | 8 | ██ |
-| Unsupported op LessOrEqual | 8 | ██ |
 | Unsupported op LpPool | 8 | ██ |
 | Unsupported op Max | 8 | ██ |
 | Unsupported op Min | 8 | ██ |
@@ -154,7 +150,6 @@
 | Unsupported op Softsign | 2 | █ |
 | Unsupported op SpaceToDepth | 2 | █ |
 | Unsupported op STFT | 2 | █ |
-| Unsupported op Where | 2 | █ |
 | Unsupported op Gradient | 2 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |

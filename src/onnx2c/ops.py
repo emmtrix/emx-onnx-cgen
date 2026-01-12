@@ -19,6 +19,11 @@ BINARY_OP_TYPES = {
     "Add",
     "And",
     "Div",
+    "Equal",
+    "Greater",
+    "GreaterOrEqual",
+    "Less",
+    "LessOrEqual",
     "Max",
     "Mean",
     "Min",
@@ -30,6 +35,14 @@ BINARY_OP_TYPES = {
     "Sub",
     "Sum",
     "Xor",
+}
+
+COMPARE_OP_TYPES = {
+    "Equal",
+    "Greater",
+    "GreaterOrEqual",
+    "Less",
+    "LessOrEqual",
 }
 
 UNARY_OP_TYPES = {
@@ -119,6 +132,14 @@ BINARY_SPECS_BOOL = {
     "And": BinaryOpSpec("&&", "infix", lambda left, right: np.logical_and(left, right)),
     "Or": BinaryOpSpec("||", "infix", lambda left, right: np.logical_or(left, right)),
     "Xor": BinaryOpSpec("!=", "infix", lambda left, right: np.logical_xor(left, right)),
+}
+
+COMPARE_SPECS = {
+    "Equal": BinaryOpSpec("==", "infix", np.equal),
+    "Greater": BinaryOpSpec(">", "infix", np.greater),
+    "GreaterOrEqual": BinaryOpSpec(">=", "infix", np.greater_equal),
+    "Less": BinaryOpSpec("<", "infix", np.less),
+    "LessOrEqual": BinaryOpSpec("<=", "infix", np.less_equal),
 }
 
 BINARY_SPECS_INT = {
@@ -217,6 +238,9 @@ UNARY_APPLY_FUNCS = {
 def binary_op_symbol(
     op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: str
 ) -> BinaryOpSpec | None:
+    compare_spec = COMPARE_SPECS.get(op_type)
+    if compare_spec is not None:
+        return compare_spec
     specs = BINARY_SPECS_BY_DTYPE.get(dtype)
     if specs is not None:
         op_spec = specs.get(op_type)

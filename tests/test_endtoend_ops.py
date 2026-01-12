@@ -50,6 +50,38 @@ def _make_operator_model(
     return model
 
 
+def _make_compare_model(
+    *,
+    op_type: str,
+    input_shapes: list[list[int]],
+    output_shape: list[int],
+    input_dtype: int,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_names = [f"in{idx}" for idx in range(len(input_shapes))]
+    inputs = [
+        helper.make_tensor_value_info(name, input_dtype, shape)
+        for name, shape in zip(input_names, input_shapes)
+    ]
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.BOOL, output_shape
+    )
+    node = helper.make_node(
+        op_type,
+        inputs=input_names,
+        outputs=[output.name],
+    )
+    graph = helper.make_graph([node], f"{op_type.lower()}_graph", inputs, [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_reduce_model(
     *,
     op_type: str,
@@ -1009,6 +1041,49 @@ OPERATOR_CASES = [
     },
 ]
 
+COMPARE_CASES = [
+    {
+        "name": "EqualFloat",
+        "op_type": "Equal",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "input_dtype": TensorProto.FLOAT,
+        "opset": 13,
+    },
+    {
+        "name": "GreaterFloat",
+        "op_type": "Greater",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "input_dtype": TensorProto.FLOAT,
+        "opset": 13,
+    },
+    {
+        "name": "GreaterOrEqualFloat",
+        "op_type": "GreaterOrEqual",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "input_dtype": TensorProto.FLOAT,
+        "opset": 13,
+    },
+    {
+        "name": "LessFloat",
+        "op_type": "Less",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "input_dtype": TensorProto.FLOAT,
+        "opset": 13,
+    },
+    {
+        "name": "LessOrEqualFloat",
+        "op_type": "LessOrEqual",
+        "input_shapes": [[2, 3], [2, 3]],
+        "output_shape": [2, 3],
+        "input_dtype": TensorProto.FLOAT,
+        "opset": 13,
+    },
+]
+
 REDUCE_CASES = [
     {
         "name": "ReduceSumAxis1KeepDims",
@@ -1144,6 +1219,18 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         output_shape=case["output_shape"],
         dtype=case["dtype"],
         attrs=case["attrs"],
+        opset=case.get("opset", 13),
+    )
+    _run_cli_verify(model)
+
+
+@pytest.mark.parametrize("case", COMPARE_CASES, ids=lambda case: case["name"])
+def test_compare_ops_match_onnxruntime(case: dict[str, object]) -> None:
+    model = _make_compare_model(
+        op_type=case["op_type"],
+        input_shapes=case["input_shapes"],
+        output_shape=case["output_shape"],
+        input_dtype=case["input_dtype"],
         opset=case.get("opset", 13),
     )
     _run_cli_verify(model)

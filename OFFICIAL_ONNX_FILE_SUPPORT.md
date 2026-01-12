@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 432 / 1802 official ONNX files.
+Support 488 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -477,24 +477,24 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_clip_default_int8_inbounds/model.onnx | ❌ | Unsupported op Clip |
 | node/test_clip_default_int8_inbounds_expanded/model.onnx | ❌ | Unsupported op Identity |
 | node/test_clip_default_int8_max/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_int8_max_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_default_int8_max_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_default_int8_min/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_int8_min_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_default_int8_min_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_default_max/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_max_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_default_max_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_default_min/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_min_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_default_min_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_example/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_example_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_clip_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_example_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_inbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_inbounds_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_inbounds_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_min_greater_than_max/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_min_greater_than_max_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_min_greater_than_max_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_outbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_outbounds_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_outbounds_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_clip_splitbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_splitbounds_expanded/model.onnx | ❌ | Unsupported op Less |
+| node/test_clip_splitbounds_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_col2im/model.onnx | ❌ | Unsupported op Col2Im |
 | node/test_col2im_5d/model.onnx | ❌ | Unsupported op Col2Im |
 | node/test_col2im_dilations/model.onnx | ❌ | Unsupported op Col2Im |
@@ -613,16 +613,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_elu_example/model.onnx | ❌ | Unsupported op Elu |
 | node/test_elu_example_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
 | node/test_elu_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
-| node/test_equal/model.onnx | ❌ | Unsupported op Equal |
-| node/test_equal_bcast/model.onnx | ❌ | Unsupported op Equal |
-| node/test_equal_int16/model.onnx | ❌ | Unsupported op Equal |
-| node/test_equal_int8/model.onnx | ❌ | Unsupported op Equal |
+| node/test_equal/model.onnx | ✅ |  |
+| node/test_equal_bcast/model.onnx | ✅ |  |
+| node/test_equal_int16/model.onnx | ✅ |  |
+| node/test_equal_int8/model.onnx | ✅ |  |
 | node/test_equal_string/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | node/test_equal_string_broadcast/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| node/test_equal_uint16/model.onnx | ❌ | Unsupported op Equal |
-| node/test_equal_uint32/model.onnx | ❌ | Unsupported op Equal |
-| node/test_equal_uint64/model.onnx | ❌ | Unsupported op Equal |
-| node/test_equal_uint8/model.onnx | ❌ | Unsupported op Equal |
+| node/test_equal_uint16/model.onnx | ✅ |  |
+| node/test_equal_uint32/model.onnx | ✅ |  |
+| node/test_equal_uint64/model.onnx | ✅ |  |
+| node/test_equal_uint8/model.onnx | ✅ |  |
 | node/test_erf/model.onnx | ❌ | Unsupported op Erf |
 | node/test_exp/model.onnx | ✅ |  |
 | node/test_exp_example/model.onnx | ✅ |  |
@@ -675,30 +675,30 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_globalaveragepool_precomputed/model.onnx | ✅ |  |
 | node/test_globalmaxpool/model.onnx | ❌ | Unsupported op GlobalMaxPool |
 | node/test_globalmaxpool_precomputed/model.onnx | ❌ | Unsupported op GlobalMaxPool |
-| node/test_greater/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_bcast/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_bcast/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_bcast_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_int16/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_int16_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_int8/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_int8_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_uint16/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_uint16_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_uint32/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_uint32_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_uint64/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_uint64_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_equal_uint8/model.onnx | ❌ | Unsupported op GreaterOrEqual |
-| node/test_greater_equal_uint8_expanded/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_int16/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_int8/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_uint16/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_uint32/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_uint64/model.onnx | ❌ | Unsupported op Greater |
-| node/test_greater_uint8/model.onnx | ❌ | Unsupported op Greater |
+| node/test_greater/model.onnx | ✅ |  |
+| node/test_greater_bcast/model.onnx | ✅ |  |
+| node/test_greater_equal/model.onnx | ✅ |  |
+| node/test_greater_equal_bcast/model.onnx | ✅ |  |
+| node/test_greater_equal_bcast_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_int16/model.onnx | ✅ |  |
+| node/test_greater_equal_int16_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_int8/model.onnx | ✅ |  |
+| node/test_greater_equal_int8_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint16/model.onnx | ✅ |  |
+| node/test_greater_equal_uint16_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint32/model.onnx | ✅ |  |
+| node/test_greater_equal_uint32_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint64/model.onnx | ✅ |  |
+| node/test_greater_equal_uint64_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint8/model.onnx | ✅ |  |
+| node/test_greater_equal_uint8_expanded/model.onnx | ✅ |  |
+| node/test_greater_int16/model.onnx | ✅ |  |
+| node/test_greater_int8/model.onnx | ✅ |  |
+| node/test_greater_uint16/model.onnx | ✅ |  |
+| node/test_greater_uint32/model.onnx | ✅ |  |
+| node/test_greater_uint64/model.onnx | ✅ |  |
+| node/test_greater_uint8/model.onnx | ✅ |  |
 | node/test_gridsample/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_gridsample_aligncorners_true/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_gridsample_bicubic/model.onnx | ❌ | Unsupported op GridSample |
@@ -839,30 +839,30 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_leakyrelu_example/model.onnx | ❌ | Unsupported op LeakyRelu |
 | node/test_leakyrelu_example_expanded/model.onnx | ❌ | Unsupported op CastLike |
 | node/test_leakyrelu_expanded/model.onnx | ❌ | Unsupported op CastLike |
-| node/test_less/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_bcast/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_bcast/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_bcast_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_int16/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_int16_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_int8/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_int8_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_uint16/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_uint16_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_uint32/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_uint32_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_uint64/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_uint64_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_equal_uint8/model.onnx | ❌ | Unsupported op LessOrEqual |
-| node/test_less_equal_uint8_expanded/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_int16/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_int8/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_uint16/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_uint32/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_uint64/model.onnx | ❌ | Unsupported op Less |
-| node/test_less_uint8/model.onnx | ❌ | Unsupported op Less |
+| node/test_less/model.onnx | ✅ |  |
+| node/test_less_bcast/model.onnx | ✅ |  |
+| node/test_less_equal/model.onnx | ✅ |  |
+| node/test_less_equal_bcast/model.onnx | ✅ |  |
+| node/test_less_equal_bcast_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_int16/model.onnx | ✅ |  |
+| node/test_less_equal_int16_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_int8/model.onnx | ✅ |  |
+| node/test_less_equal_int8_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint16/model.onnx | ✅ |  |
+| node/test_less_equal_uint16_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint32/model.onnx | ✅ |  |
+| node/test_less_equal_uint32_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint64/model.onnx | ✅ |  |
+| node/test_less_equal_uint64_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint8/model.onnx | ✅ |  |
+| node/test_less_equal_uint8_expanded/model.onnx | ✅ |  |
+| node/test_less_int16/model.onnx | ✅ |  |
+| node/test_less_int8/model.onnx | ✅ |  |
+| node/test_less_uint16/model.onnx | ✅ |  |
+| node/test_less_uint32/model.onnx | ✅ |  |
+| node/test_less_uint64/model.onnx | ✅ |  |
+| node/test_less_uint8/model.onnx | ✅ |  |
 | node/test_log/model.onnx | ✅ |  |
 | node/test_log_example/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_0/model.onnx | ✅ |  |
