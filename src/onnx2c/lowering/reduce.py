@@ -78,8 +78,22 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
 def _axes_from_initializer(graph: Graph, node: Node) -> tuple[int, ...] | None:
     if len(node.inputs) < 2:
         return None
+    if node.inputs[1] == "":
+        return None
     initializer = _find_initializer(graph, node.inputs[1])
     if initializer is None:
+        try:
+            value = graph.find_value(node.inputs[1])
+        except KeyError as exc:
+            raise UnsupportedOpError(
+                f"{node.op_type} axes input must be constant"
+            ) from exc
+        if value.type.dtype not in {"int64", "int32"}:
+            raise UnsupportedOpError(
+                f"{node.op_type} axes input must be int64 or int32"
+            )
+        if any(dim == 0 for dim in value.type.shape):
+            return ()
         raise UnsupportedOpError(
             f"{node.op_type} axes input must be constant"
         )
