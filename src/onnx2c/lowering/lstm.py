@@ -230,17 +230,22 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
             raise UnsupportedOpError(
                 "LSTM sequence_lens must match batch size"
             )
+    state_shape = (
+        (num_directions, batch_size, hidden_size)
+        if layout == 0
+        else (batch_size, num_directions, hidden_size)
+    )
     if input_initial_h is not None:
         _expect_shape(
             input_initial_h,
             value_shape(graph, input_initial_h, node),
-            (num_directions, batch_size, hidden_size),
+            state_shape,
         )
     if input_initial_c is not None:
         _expect_shape(
             input_initial_c,
             value_shape(graph, input_initial_c, node),
-            (num_directions, batch_size, hidden_size),
+            state_shape,
         )
     if input_p is not None:
         _expect_shape(
@@ -259,13 +264,13 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
         _expect_shape(
             output_y_h,
             value_shape(graph, output_y_h, node),
-            (num_directions, batch_size, hidden_size),
+            state_shape,
         )
     if output_y_c is not None:
         _expect_shape(
             output_y_c,
             value_shape(graph, output_y_c, node),
-            (num_directions, batch_size, hidden_size),
+            state_shape,
         )
     input_forget = int(node.attrs.get("input_forget", 0))
     if input_forget not in {0, 1}:
