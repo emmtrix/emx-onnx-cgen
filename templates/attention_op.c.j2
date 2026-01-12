@@ -1,45 +1,199 @@
 void {{ op_name }}(const {{ c_type }} {{ input_q }}{{ input_q_suffix }},
                    const {{ c_type }} {{ input_k }}{{ input_k_suffix }},
-                   const {{ c_type }} {{ input_v }}{{ input_v_suffix }},
-                   {{ c_type }} {{ output }}{{ output_suffix }}) {
+                   const {{ c_type }} {{ input_v }}{{ input_v_suffix }}{% if input_attn_mask %},
+                   const {% if mask_is_bool %}bool{% else %}{{ c_type }}{% endif %} {{ input_attn_mask }}{{ input_mask_suffix }}{% endif %}{% if input_past_key %},
+                   const {{ c_type }} {{ input_past_key }}{{ input_past_key_suffix }}{% endif %}{% if input_past_value %},
+                   const {{ c_type }} {{ input_past_value }}{{ input_past_value_suffix }}{% endif %}{% if input_nonpad_kv_seqlen %},
+                   const {{ nonpad_c_type }} {{ input_nonpad_kv_seqlen }}{{ input_nonpad_suffix }}{% endif %},
+                   {{ c_type }} {{ output }}{{ output_suffix }}{% if output_present_key %},
+                   {{ c_type }} {{ output_present_key }}{{ output_present_key_suffix }}{% endif %}{% if output_present_value %},
+                   {{ c_type }} {{ output_present_value }}{{ output_present_value_suffix }}{% endif %}{% if output_qk_matmul %},
+                   {{ c_type }} {{ output_qk_matmul }}{{ output_qk_matmul_suffix }}{% endif %}) {
     const {{ c_type }} scale = {{ scale_literal }};
+    const {{ c_type }} softcap = {{ softcap_literal }};
+    {% if output_present_key %}
     for (int b = 0; b < {{ batch }}; ++b) {
-        for (int h = 0; h < {{ heads }}; ++h) {
-            for (int qi = 0; qi < {{ q_seq }}; ++qi) {
-                {{ c_type }} scores[{{ kv_seq }}];
-                {{ c_type }} max_score = -INFINITY;
-                for (int ki = 0; ki < {{ kv_seq }}; ++ki) {
-                    {{ c_type }} score = {{ zero_literal }};
-                    if ({{ is_causal }} && ki > qi) {
-                        score = -INFINITY;
-                    } else {
-                        for (int d = 0; d < {{ qk_head_size }}; ++d) {
-                            score += {{ input_q }}[b][h][qi][d] * {{ input_k }}[b][h][ki][d];
-                        }
-                        score *= scale;
+        for (int h = 0; h < {{ kv_heads }}; ++h) {
+            for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                if (ki < {{ past_seq }}) {
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ output_present_key }}[b][h][ki][d] = {{ input_past_key }}[b][h][ki][d];
                     }
-                    scores[ki] = score;
-                    if (score > max_score) {
-                        max_score = score;
+                } else {
+                    int k_index = ki - {{ past_seq }};
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {% if k_rank == 4 %}
+                        {{ output_present_key }}[b][h][ki][d] = {{ input_k }}[b][h][k_index][d];
+                        {% else %}
+                        {{ output_present_key }}[b][h][ki][d] = {{ input_k }}[b][k_index][h * {{ qk_head_size }} + d];
+                        {% endif %}
                     }
                 }
-                {{ c_type }} weights[{{ kv_seq }}];
+            }
+        }
+    }
+    {% endif %}
+    {% if output_present_value %}
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int h = 0; h < {{ kv_heads }}; ++h) {
+            for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                if (ki < {{ past_seq }}) {
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
+                        {{ output_present_value }}[b][h][ki][d] = {{ input_past_value }}[b][h][ki][d];
+                    }
+                } else {
+                    int v_index = ki - {{ past_seq }};
+                    for (int d = 0; d < {{ v_head_size }}; ++d) {
+                        {% if v_rank == 4 %}
+                        {{ output_present_value }}[b][h][ki][d] = {{ input_v }}[b][h][v_index][d];
+                        {% else %}
+                        {{ output_present_value }}[b][h][ki][d] = {{ input_v }}[b][v_index][h * {{ v_head_size }} + d];
+                        {% endif %}
+                    }
+                }
+            }
+        }
+    }
+    {% endif %}
+    for (int b = 0; b < {{ batch }}; ++b) {
+        for (int h = 0; h < {{ q_heads }}; ++h) {
+            int kv_head = h / {{ head_group_size }};
+            for (int qi = 0; qi < {{ q_seq }}; ++qi) {
+                {{ c_type }} scores[{{ total_seq }}];
+                {{ c_type }} max_score = {{ min_literal }};
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                    {{ c_type }} score = {{ zero_literal }};
+                    int k_index = ki - {{ past_seq }};
+                    for (int d = 0; d < {{ qk_head_size }}; ++d) {
+                        {{ c_type }} q_val;
+                        {{ c_type }} k_val;
+                        {% if q_rank == 4 %}
+                        q_val = {{ input_q }}[b][h][qi][d];
+                        {% else %}
+                        q_val = {{ input_q }}[b][qi][h * {{ qk_head_size }} + d];
+                        {% endif %}
+                        {% if input_past_key %}
+                        if (ki < {{ past_seq }}) {
+                            k_val = {{ input_past_key }}[b][kv_head][ki][d];
+                        } else {
+                            {% if k_rank == 4 %}
+                            k_val = {{ input_k }}[b][kv_head][k_index][d];
+                            {% else %}
+                            k_val = {{ input_k }}[b][k_index][kv_head * {{ qk_head_size }} + d];
+                            {% endif %}
+                        }
+                        {% else %}
+                        {% if k_rank == 4 %}
+                        k_val = {{ input_k }}[b][kv_head][k_index][d];
+                        {% else %}
+                        k_val = {{ input_k }}[b][k_index][kv_head * {{ qk_head_size }} + d];
+                        {% endif %}
+                        {% endif %}
+                        score += q_val * k_val;
+                    }
+                    score *= scale;
+                    {{ c_type }} bias = {{ zero_literal }};
+                    {% if input_attn_mask %}
+                    if (ki >= {{ mask_kv_seq }}) {
+                        bias = {{ min_literal }};
+                    } else {
+                        int mask_q = {{ '0' if mask_broadcast_q_seq else 'qi' }};
+                        {% if mask_rank == 2 %}
+                        {% if mask_is_bool %}
+                        bias = {{ input_attn_mask }}[mask_q][ki] ? {{ zero_literal }} : {{ min_literal }};
+                        {% else %}
+                        bias = {{ input_attn_mask }}[mask_q][ki];
+                        {% endif %}
+                        {% elif mask_rank == 3 %}
+                        int mask_b = {{ '0' if mask_broadcast_batch else 'b' }};
+                        {% if mask_is_bool %}
+                        bias = {{ input_attn_mask }}[mask_b][mask_q][ki] ? {{ zero_literal }} : {{ min_literal }};
+                        {% else %}
+                        bias = {{ input_attn_mask }}[mask_b][mask_q][ki];
+                        {% endif %}
+                        {% else %}
+                        int mask_b = {{ '0' if mask_broadcast_batch else 'b' }};
+                        int mask_h = {{ '0' if mask_broadcast_heads else 'h' }};
+                        {% if mask_is_bool %}
+                        bias = {{ input_attn_mask }}[mask_b][mask_h][mask_q][ki] ? {{ zero_literal }} : {{ min_literal }};
+                        {% else %}
+                        bias = {{ input_attn_mask }}[mask_b][mask_h][mask_q][ki];
+                        {% endif %}
+                        {% endif %}
+                    }
+                    {% endif %}
+                    {% if input_nonpad_kv_seqlen %}
+                    if (ki >= {{ input_nonpad_kv_seqlen }}[b]) {
+                        bias = {{ min_literal }};
+                    }
+                    {% endif %}
+                    if ({{ is_causal }} && ki > qi + {{ past_seq }}) {
+                        bias = {{ min_literal }};
+                    }
+                    {{ c_type }} score_bias = score + bias;
+                    {{ c_type }} score_softcap = score_bias;
+                    if (softcap != {{ zero_literal }}) {
+                        score_softcap = softcap * {{ tanh_fn }}(score_bias / softcap);
+                    }
+                    {% if output_qk_matmul %}
+                    if ({{ qk_matmul_output_mode }} == 0) {
+                        {{ output_qk_matmul }}[b][h][qi][ki] = score;
+                    } else if ({{ qk_matmul_output_mode }} == 1) {
+                        {{ output_qk_matmul }}[b][h][qi][ki] = score_bias;
+                    } else if ({{ qk_matmul_output_mode }} == 2) {
+                        {{ output_qk_matmul }}[b][h][qi][ki] = score_softcap;
+                    }
+                    {% endif %}
+                    scores[ki] = score_softcap;
+                    if (score_softcap > max_score) {
+                        max_score = score_softcap;
+                    }
+                }
+                {{ c_type }} weights[{{ total_seq }}];
                 {{ c_type }} sum = {{ zero_literal }};
-                for (int ki = 0; ki < {{ kv_seq }}; ++ki) {
+                for (int ki = 0; ki < {{ total_seq }}; ++ki) {
                     {{ c_type }} weight = {{ zero_literal }};
-                    if (!({{ is_causal }} && ki > qi)) {
+                    if (max_score != {{ min_literal }}) {
                         weight = {{ exp_fn }}(scores[ki] - max_score);
                     }
                     weights[ki] = weight;
                     sum += weight;
                 }
                 {{ c_type }} inv_sum = sum == {{ zero_literal }} ? {{ zero_literal }} : ({{ c_type }}){{ one_literal }} / sum;
+                {% if output_qk_matmul %}
+                if ({{ qk_matmul_output_mode }} == 3) {
+                    for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                        {{ output_qk_matmul }}[b][h][qi][ki] = weights[ki] * inv_sum;
+                    }
+                }
+                {% endif %}
                 for (int vd = 0; vd < {{ v_head_size }}; ++vd) {
                     {{ c_type }} acc = {{ zero_literal }};
-                    for (int ki = 0; ki < {{ kv_seq }}; ++ki) {
-                        acc += weights[ki] * inv_sum * {{ input_v }}[b][h][ki][vd];
+                    for (int ki = 0; ki < {{ total_seq }}; ++ki) {
+                        {{ c_type }} weight = weights[ki] * inv_sum;
+                        {% if input_past_value %}
+                        if (ki < {{ past_seq }}) {
+                            acc += weight * {{ input_past_value }}[b][kv_head][ki][vd];
+                        } else {
+                            {% if v_rank == 4 %}
+                            acc += weight * {{ input_v }}[b][kv_head][ki - {{ past_seq }}][vd];
+                            {% else %}
+                            acc += weight * {{ input_v }}[b][ki - {{ past_seq }}][kv_head * {{ v_head_size }} + vd];
+                            {% endif %}
+                        }
+                        {% else %}
+                        {% if v_rank == 4 %}
+                        acc += weight * {{ input_v }}[b][kv_head][ki][vd];
+                        {% else %}
+                        acc += weight * {{ input_v }}[b][ki][kv_head * {{ v_head_size }} + vd];
+                        {% endif %}
+                        {% endif %}
                     }
+                    {% if output_rank == 4 %}
                     {{ output }}[b][h][qi][vd] = acc;
+                    {% else %}
+                    {{ output }}[b][qi][h * {{ v_head_size }} + vd] = acc;
+                    {% endif %}
                 }
             }
         }

@@ -4,7 +4,6 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
-| Unsupported op Attention | 47 | ██████████ |
 | Unsupported op LogSoftmax | 44 | █████████ |
 | ReduceSum axes input must be constant | 43 | █████████ |
 | Unsupported op Resize | 39 | ████████ |
@@ -77,7 +76,6 @@
 | Unsupported op QuantizeLinear | 6 | █ |
 | Unsupported op ScatterElements | 6 | █ |
 | Unsupported op Unique | 6 | █ |
-| Missing dtype for value '*' in op Attention. Hint: run ONNX shape inference or export with static shapes. | 5 | █ |
 | AveragePool expects 2D kernel_shape | 5 | █ |
 | Unsupported op Elu | 5 | █ |
 | Unsupported op Col2Im | 5 | █ |
@@ -129,7 +127,6 @@
 | Unsupported op Asin | 2 | █ |
 | Unsupported op Asinh | 2 | █ |
 | Unsupported op Atan | 2 | █ |
-| Attention expects matching dtypes, got bool, float | 2 | █ |
 | AveragePool supports ceil_mode=0 only | 2 | █ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | █ |
 | Unsupported op BlackmanWindow | 2 | █ |
