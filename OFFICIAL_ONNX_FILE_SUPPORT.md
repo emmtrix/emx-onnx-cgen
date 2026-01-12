@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 274 / 1802 official ONNX files.
+Support 281 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -8,15 +8,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 | File | Supported | Error |
 | --- | --- | --- |
-| `light/light_bvlc_alexnet.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
+| `light/light_bvlc_alexnet.onnx` | ✅ |  |
 | `light/light_densenet121.onnx` | ❌ | Unsupported op GlobalAveragePool |
-| `light/light_inception_v1.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
-| `light/light_inception_v2.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
-| `light/light_resnet50.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
-| `light/light_shufflenet.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
+| `light/light_inception_v1.onnx` | ✅ |  |
+| `light/light_inception_v2.onnx` | ✅ |  |
+| `light/light_resnet50.onnx` | ✅ |  |
+| `light/light_shufflenet.onnx` | ✅ |  |
 | `light/light_squeezenet.onnx` | ❌ | Unsupported op GlobalAveragePool |
-| `light/light_vgg19.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
-| `light/light_zfnet512.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
+| `light/light_vgg19.onnx` | ✅ |  |
+| `light/light_zfnet512.onnx` | ✅ |  |
 | `node/test_abs/model.onnx` | ✅ |  |
 | `node/test_acos/model.onnx` | ❌ | Unsupported op Acos |
 | `node/test_acos_example/model.onnx` | ❌ | Unsupported op Acos |
