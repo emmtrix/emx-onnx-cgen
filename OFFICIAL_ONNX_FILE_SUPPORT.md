@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 374 / 1802 official ONNX files.
+Support 413 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1260,45 +1260,45 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reshape_reordered_last_dims/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_reshape_zero_and_negative_dim/model.onnx | ❌ | Reshape requires a constant shape input |
 | node/test_reshape_zero_dim/model.onnx | ❌ | Reshape requires a constant shape input |
-| node/test_resize_downsample_scales_cubic/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_cubic_A_n0p5_exclude_outside/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_cubic_align_corners/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_cubic_antialias/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_linear/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_linear_align_corners/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_linear_antialias/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_linear_half_pixel_symmetric/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_scales_nearest/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_sizes_cubic/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_sizes_cubic_antialias/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_sizes_linear_antialias/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_sizes_linear_pytorch_half_pixel/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_sizes_nearest/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_sizes_nearest_not_larger/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_downsample_sizes_nearest_not_smaller/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_tf_crop_and_resize/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_tf_crop_and_resize_axes_2_3/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_tf_crop_and_resize_axes_3_2/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_tf_crop_and_resize_extrapolation_value/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_cubic/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_cubic_A_n0p5_exclude_outside/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_cubic_align_corners/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_cubic_asymmetric/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_linear/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_linear_align_corners/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_linear_half_pixel_symmetric/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_nearest/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_nearest_axes_2_3/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_scales_nearest_axes_3_2/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_cubic/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest_axes_2_3/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest_axes_3_2/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest_ceil_half_pixel/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest_floor_align_corners/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest_not_larger/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest_not_smaller/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
-| node/test_resize_upsample_sizes_nearest_round_prefer_ceil_asymmetric/model.onnx | ❌ | Resize supports nearest mode with asymmetric coordinates and floor rounding using constant scales or sizes for 4D NCHW inputs |
+| node/test_resize_downsample_scales_cubic/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_cubic_A_n0p5_exclude_outside/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_cubic_align_corners/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_cubic_antialias/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_linear/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_linear_align_corners/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_linear_antialias/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_linear_half_pixel_symmetric/model.onnx | ✅ |  |
+| node/test_resize_downsample_scales_nearest/model.onnx | ✅ |  |
+| node/test_resize_downsample_sizes_cubic/model.onnx | ✅ |  |
+| node/test_resize_downsample_sizes_cubic_antialias/model.onnx | ✅ |  |
+| node/test_resize_downsample_sizes_linear_antialias/model.onnx | ✅ |  |
+| node/test_resize_downsample_sizes_linear_pytorch_half_pixel/model.onnx | ✅ |  |
+| node/test_resize_downsample_sizes_nearest/model.onnx | ✅ |  |
+| node/test_resize_downsample_sizes_nearest_not_larger/model.onnx | ✅ |  |
+| node/test_resize_downsample_sizes_nearest_not_smaller/model.onnx | ✅ |  |
+| node/test_resize_tf_crop_and_resize/model.onnx | ✅ |  |
+| node/test_resize_tf_crop_and_resize_axes_2_3/model.onnx | ✅ |  |
+| node/test_resize_tf_crop_and_resize_axes_3_2/model.onnx | ✅ |  |
+| node/test_resize_tf_crop_and_resize_extrapolation_value/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_cubic/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_cubic_A_n0p5_exclude_outside/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_cubic_align_corners/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_cubic_asymmetric/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_linear/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_linear_align_corners/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_linear_half_pixel_symmetric/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_nearest/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_nearest_axes_2_3/model.onnx | ✅ |  |
+| node/test_resize_upsample_scales_nearest_axes_3_2/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_cubic/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest_axes_2_3/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest_axes_3_2/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest_ceil_half_pixel/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest_floor_align_corners/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest_not_larger/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest_not_smaller/model.onnx | ✅ |  |
+| node/test_resize_upsample_sizes_nearest_round_prefer_ceil_asymmetric/model.onnx | ✅ |  |
 | node/test_reversesequence_batch/model.onnx | ❌ | Unsupported op ReverseSequence |
 | node/test_reversesequence_time/model.onnx | ❌ | Unsupported op ReverseSequence |
 | node/test_rms_normalization_2d_axis0/model.onnx | ❌ | Unsupported op RMSNormalization |

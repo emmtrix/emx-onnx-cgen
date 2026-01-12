@@ -1,25 +1,277 @@
-void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
-    const double scale_h = {{ scale_h_literal }};
-    const double scale_w = {{ scale_w_literal }};
-    for (size_t n = 0; n < {{ batch }}; ++n) {
-        for (size_t c = 0; c < {{ channels }}; ++c) {
-            for (size_t oh = 0; oh < {{ out_h }}; ++oh) {
-                int ih = (int)((double)oh / scale_h);
-                if (ih < 0) {
-                    ih = 0;
-                } else if (ih >= {{ in_h }}) {
-                    ih = {{ in_h }} - 1;
-                }
-                for (size_t ow = 0; ow < {{ out_w }}; ++ow) {
-                    int iw = (int)((double)ow / scale_w);
-                    if (iw < 0) {
-                        iw = 0;
-                    } else if (iw >= {{ in_w }}) {
-                        iw = {{ in_w }} - 1;
-                    }
-                    {{ output }}[n][c][oh][ow] = {{ input0 }}[n][c][ih][iw];
-                }
-            }
-        }
+void {{ op_name }}({{ params | join(', ') }}) {
+    const int64_t input_shape[{{ rank }}] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const int64_t output_shape[{{ rank }}] = { {% for dim in output_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    double scales[{{ rank }}];
+{% if roi_input %}
+    double roi[{{ rank * 2 }}];
+{% if roi_axes %}
+    for (size_t r = 0; r < {{ rank }}; ++r) {
+        roi[r] = 0.0;
+        roi[r + {{ rank }}] = 1.0;
     }
+{% for axis in axes %}
+    roi[{{ axis }}] = (double){{ roi_input }}[{{ roi_axis_map[loop.index0] }}];
+    roi[{{ axis + rank }}] = (double){{ roi_input }}[{{ roi_axis_map[loop.index0] + (axes | length) }}];
+{% endfor %}
+{% else %}
+    for (size_t r = 0; r < {{ rank * 2 }}; ++r) {
+        roi[r] = (double){{ roi_input }}[r];
+    }
+{% endif %}
+{% else %}
+    const double roi[{{ rank * 2 }}] = {
+{% for _ in range(rank) %}        0.0{% if not loop.last %},{% endif %}
+{% endfor %}{% if rank > 0 %},{% endif %}
+{% for _ in range(rank) %}        1.0{% if not loop.last %},{% endif %}
+{% endfor %}
+    };
+{% endif %}
+{% if scales_input %}
+{% if scales_axes %}
+    for (size_t r = 0; r < {{ rank }}; ++r) {
+        scales[r] = 1.0;
+    }
+{% for axis in axes %}
+    scales[{{ axis }}] = (double){{ scales_input }}[{{ scales_axis_map[loop.index0] }}];
+{% endfor %}
+{% else %}
+{% for axis in range(rank) %}
+    scales[{{ axis }}] = (double){{ scales_input }}[{{ axis }}];
+{% endfor %}
+{% endif %}
+{% elif sizes_input %}
+{% if keep_aspect_ratio_policy != "stretch" %}
+{% if keep_aspect_ratio_policy == "not_larger" %}
+    double scale_value = INFINITY;
+{% else %}
+    double scale_value = 0.0;
+{% endif %}
+{% for axis in axes %}
+    {
+        const double size_axis = (double){{ sizes_input }}[{{ sizes_axis_map[loop.index0] }}];
+        const double axis_scale = size_axis / (double)input_shape[{{ axis }}];
+{% if keep_aspect_ratio_policy == "not_larger" %}
+        if (axis_scale < scale_value) {
+            scale_value = axis_scale;
+        }
+{% else %}
+        if (axis_scale > scale_value) {
+            scale_value = axis_scale;
+        }
+{% endif %}
+    }
+{% endfor %}
+    for (size_t r = 0; r < {{ rank }}; ++r) {
+        scales[r] = 1.0;
+    }
+{% for axis in axes %}
+    scales[{{ axis }}] = scale_value;
+{% endfor %}
+{% else %}
+    for (size_t r = 0; r < {{ rank }}; ++r) {
+        scales[r] = 1.0;
+    }
+{% for axis in axes %}
+    scales[{{ axis }}] = (double){{ sizes_input }}[{{ sizes_axis_map[loop.index0] }}] / (double)input_shape[{{ axis }}];
+{% endfor %}
+{% endif %}
+{% else %}
+{% for axis in range(rank) %}
+    scales[{{ axis }}] = {{ scales[axis] }};
+{% endfor %}
+{% endif %}
+{% for dim in output_shape %}
+{{ loop_indents[loop.index0] }}for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ inner_indent }}int use_extrapolation = 0;
+{% for dim in range(rank) %}
+{{ inner_indent }}double x_orig{{ dim }};
+{% if coordinate_transformation_mode == "align_corners" %}
+{{ inner_indent }}if (output_shape[{{ dim }}] == 1) {
+{{ inner_indent }}    x_orig{{ dim }} = 0.0;
+{{ inner_indent }}} else {
+{{ inner_indent }}    x_orig{{ dim }} = (double){{ loop_vars[dim] }} * (input_shape[{{ dim }}] - 1) / (double)(output_shape[{{ dim }}] - 1);
+{{ inner_indent }}}
+{% elif coordinate_transformation_mode == "asymmetric" %}
+{{ inner_indent }}x_orig{{ dim }} = (double){{ loop_vars[dim] }} / scales[{{ dim }}];
+{% elif coordinate_transformation_mode == "tf_crop_and_resize" %}
+{{ inner_indent }}{
+{{ inner_indent }}    const double roi_start = roi[{{ dim }}];
+{{ inner_indent }}    const double roi_end = roi[{{ dim + rank }}];
+{{ inner_indent }}    if (output_shape[{{ dim }}] == 1) {
+{{ inner_indent }}        x_orig{{ dim }} = (roi_end - roi_start) * (input_shape[{{ dim }}] - 1) / 2.0;
+{{ inner_indent }}    } else {
+{{ inner_indent }}        x_orig{{ dim }} = (double){{ loop_vars[dim] }} * (roi_end - roi_start) * (input_shape[{{ dim }}] - 1)
+{{ inner_indent }}            / (double)(output_shape[{{ dim }}] - 1);
+{{ inner_indent }}    }
+{{ inner_indent }}    x_orig{{ dim }} += roi_start * (input_shape[{{ dim }}] - 1);
+{{ inner_indent }}    if (x_orig{{ dim }} < 0.0 || x_orig{{ dim }} > (double)(input_shape[{{ dim }}] - 1)) {
+{{ inner_indent }}        use_extrapolation = 1;
+{{ inner_indent }}    }
+{{ inner_indent }}}
+{% elif coordinate_transformation_mode == "pytorch_half_pixel" %}
+{{ inner_indent }}if (output_shape[{{ dim }}] == 1) {
+{{ inner_indent }}    x_orig{{ dim }} = -0.5;
+{{ inner_indent }}} else {
+{{ inner_indent }}    x_orig{{ dim }} = ((double){{ loop_vars[dim] }} + 0.5) / scales[{{ dim }}] - 0.5;
+{{ inner_indent }}}
+{% elif coordinate_transformation_mode == "half_pixel_symmetric" %}
+{{ inner_indent }}{
+{{ inner_indent }}    const double output_width = scales[{{ dim }}] * (double)input_shape[{{ dim }}];
+{{ inner_indent }}    const double adjustment = (double)output_shape[{{ dim }}] / output_width;
+{{ inner_indent }}    const double center = (double)input_shape[{{ dim }}] / 2.0;
+{{ inner_indent }}    const double offset = center * (1.0 - adjustment);
+{{ inner_indent }}    x_orig{{ dim }} = offset + ((double){{ loop_vars[dim] }} + 0.5) / scales[{{ dim }}] - 0.5;
+{{ inner_indent }}}
+{% else %}
+{{ inner_indent }}x_orig{{ dim }} = ((double){{ loop_vars[dim] }} + 0.5) / scales[{{ dim }}] - 0.5;
+{% endif %}
+{% endfor %}
+{{ inner_indent }}if (use_extrapolation) {
+{{ inner_indent }}    {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ c_type }}){{ extrapolation_value }};
+{{ inner_indent }}} else {
+{% if mode == "nearest" %}
+{% for dim in range(rank) %}
+{{ inner_indent }}    const double x_val{{ dim }} = x_orig{{ dim }};
+{{ inner_indent }}    const double x_floor{{ dim }} = floor(x_val{{ dim }});
+{{ inner_indent }}    const double x_ceil{{ dim }} = ceil(x_val{{ dim }});
+{{ inner_indent }}    int idx{{ dim }};
+{% if nearest_mode == "round_prefer_floor" %}
+{{ inner_indent }}    idx{{ dim }} = (x_val{{ dim }} - x_floor{{ dim }} <= 0.5) ? (int)x_floor{{ dim }} : (int)x_ceil{{ dim }};
+{% elif nearest_mode == "round_prefer_ceil" %}
+{{ inner_indent }}    idx{{ dim }} = (x_val{{ dim }} - x_floor{{ dim }} < 0.5) ? (int)x_floor{{ dim }} : (int)x_ceil{{ dim }};
+{% elif nearest_mode == "floor" %}
+{{ inner_indent }}    idx{{ dim }} = (int)x_floor{{ dim }};
+{% else %}
+{{ inner_indent }}    idx{{ dim }} = (int)x_ceil{{ dim }};
+{% endif %}
+{{ inner_indent }}    if (idx{{ dim }} < 0) {
+{{ inner_indent }}        idx{{ dim }} = 0;
+{{ inner_indent }}    } else if (idx{{ dim }} >= input_shape[{{ dim }}]) {
+{{ inner_indent }}        idx{{ dim }} = (int)input_shape[{{ dim }}] - 1;
+{{ inner_indent }}    }
+{% endfor %}
+{{ inner_indent }}    {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for dim in range(rank) %}[idx{{ dim }}]{% endfor %};
+{% else %}
+{{ inner_indent }}    double acc = 0.0;
+{% for dim in range(rank) %}
+{{ inner_indent }}    double x_floor{{ dim }} = floor(x_orig{{ dim }});
+{{ inner_indent }}    double ratio{{ dim }} = x_orig{{ dim }} - x_floor{{ dim }};
+{{ inner_indent }}    const int is_integer{{ dim }} = ratio{{ dim }} == 0.0;
+{{ inner_indent }}    if (is_integer{{ dim }}) {
+{{ inner_indent }}        ratio{{ dim }} = 1.0;
+{{ inner_indent }}    }
+{{ inner_indent }}    int count{{ dim }};
+{% if antialias %}
+{{ inner_indent }}    double scale_clamped{{ dim }} = scales[{{ dim }}] < 1.0 ? scales[{{ dim }}] : 1.0;
+{% if mode == "linear" %}
+{{ inner_indent }}    int coeff_start{{ dim }} = (int)floor(-1.0 / scale_clamped{{ dim }}) + 1;
+{{ inner_indent }}    count{{ dim }} = 2 - 2 * coeff_start{{ dim }};
+{% else %}
+{{ inner_indent }}    int coeff_start{{ dim }} = (int)floor(-2.0 / scale_clamped{{ dim }}) + 1;
+{{ inner_indent }}    int coeff_end{{ dim }} = 2 - coeff_start{{ dim }};
+{{ inner_indent }}    count{{ dim }} = coeff_end{{ dim }} - coeff_start{{ dim }};
+{% endif %}
+{% else %}
+{% if mode == "linear" %}
+{{ inner_indent }}    count{{ dim }} = 2;
+{% else %}
+{{ inner_indent }}    count{{ dim }} = 4;
+{% endif %}
+{% endif %}
+{{ inner_indent }}    int start_index{{ dim }} = (int)x_floor{{ dim }} - (count{{ dim }} / 2);
+{{ inner_indent }}    if (!is_integer{{ dim }}) {
+{{ inner_indent }}        start_index{{ dim }} += 1;
+{{ inner_indent }}    }
+{{ inner_indent }}    int idx{{ dim }}_values[count{{ dim }}];
+{{ inner_indent }}    double coeff{{ dim }}[count{{ dim }}];
+{% if antialias %}
+{{ inner_indent }}    double coeff_sum{{ dim }} = 0.0;
+{{ inner_indent }}    for (int c = 0; c < count{{ dim }}; ++c) {
+{{ inner_indent }}        idx{{ dim }}_values[c] = start_index{{ dim }} + c;
+{% if mode == "linear" %}
+{{ inner_indent }}        double arg = (coeff_start{{ dim }} + c - ratio{{ dim }}) * scale_clamped{{ dim }};
+{{ inner_indent }}        double coeff = 1.0 - fabs(arg);
+{{ inner_indent }}        if (coeff < 0.0) {
+{{ inner_indent }}            coeff = 0.0;
+{{ inner_indent }}        }
+{% else %}
+{{ inner_indent }}        double x = scale_clamped{{ dim }} * (coeff_start{{ dim }} + c - ratio{{ dim }});
+{{ inner_indent }}        double ax = fabs(x);
+{{ inner_indent }}        double coeff;
+{{ inner_indent }}        if (ax <= 1.0) {
+{{ inner_indent }}            coeff = ({{ cubic_coeff_a }} + 2.0) * ax * ax * ax - ({{ cubic_coeff_a }} + 3.0) * ax * ax + 1.0;
+{{ inner_indent }}        } else if (ax < 2.0) {
+{{ inner_indent }}            coeff = {{ cubic_coeff_a }} * ax * ax * ax - 5.0 * {{ cubic_coeff_a }} * ax * ax + 8.0 * {{ cubic_coeff_a }} * ax - 4.0 * {{ cubic_coeff_a }};
+{{ inner_indent }}        } else {
+{{ inner_indent }}            coeff = 0.0;
+{{ inner_indent }}        }
+{% endif %}
+{{ inner_indent }}        coeff{{ dim }}[c] = coeff;
+{{ inner_indent }}        coeff_sum{{ dim }} += coeff;
+{{ inner_indent }}    }
+{{ inner_indent }}    if (coeff_sum{{ dim }} > 0.0) {
+{{ inner_indent }}        for (int c = 0; c < count{{ dim }}; ++c) {
+{{ inner_indent }}            coeff{{ dim }}[c] /= coeff_sum{{ dim }};
+{{ inner_indent }}        }
+{{ inner_indent }}    }
+{% else %}
+{{ inner_indent }}    for (int c = 0; c < count{{ dim }}; ++c) {
+{{ inner_indent }}        idx{{ dim }}_values[c] = start_index{{ dim }} + c;
+{{ inner_indent }}    }
+{% if mode == "linear" %}
+{{ inner_indent }}    coeff{{ dim }}[0] = 1.0 - ratio{{ dim }};
+{{ inner_indent }}    coeff{{ dim }}[1] = ratio{{ dim }};
+{% else %}
+{{ inner_indent }}    {
+{{ inner_indent }}        const double t = 1.0 - ratio{{ dim }};
+{{ inner_indent }}        coeff{{ dim }}[0] = (({{ cubic_coeff_a }} * (ratio{{ dim }} + 1.0) - 5.0 * {{ cubic_coeff_a }}) * (ratio{{ dim }} + 1.0) + 8.0 * {{ cubic_coeff_a }}) * (ratio{{ dim }} + 1.0) - 4.0 * {{ cubic_coeff_a }};
+{{ inner_indent }}        coeff{{ dim }}[1] = (({{ cubic_coeff_a }} + 2.0) * ratio{{ dim }} - ({{ cubic_coeff_a }} + 3.0)) * ratio{{ dim }} * ratio{{ dim }} + 1.0;
+{{ inner_indent }}        coeff{{ dim }}[2] = (({{ cubic_coeff_a }} + 2.0) * t - ({{ cubic_coeff_a }} + 3.0)) * t * t + 1.0;
+{{ inner_indent }}        coeff{{ dim }}[3] = (({{ cubic_coeff_a }} * (t + 1.0) - 5.0 * {{ cubic_coeff_a }}) * (t + 1.0) + 8.0 * {{ cubic_coeff_a }}) * (t + 1.0) - 4.0 * {{ cubic_coeff_a }};
+{{ inner_indent }}    }
+{% endif %}
+{% endif %}
+{% if exclude_outside %}
+{{ inner_indent }}    {
+{{ inner_indent }}        double coeff_sum{{ dim }} = 0.0;
+{{ inner_indent }}        for (int c = 0; c < count{{ dim }}; ++c) {
+{{ inner_indent }}            if (idx{{ dim }}_values[c] < 0 || idx{{ dim }}_values[c] >= input_shape[{{ dim }}]) {
+{{ inner_indent }}                coeff{{ dim }}[c] = 0.0;
+{{ inner_indent }}            }
+{{ inner_indent }}            coeff_sum{{ dim }} += coeff{{ dim }}[c];
+{{ inner_indent }}        }
+{{ inner_indent }}        if (coeff_sum{{ dim }} > 0.0) {
+{{ inner_indent }}            for (int c = 0; c < count{{ dim }}; ++c) {
+{{ inner_indent }}                coeff{{ dim }}[c] /= coeff_sum{{ dim }};
+{{ inner_indent }}            }
+{{ inner_indent }}        }
+{{ inner_indent }}    }
+{% endif %}
+{% endfor %}
+{% for dim in range(rank) %}
+{{ inner_indent }}    for (int n{{ dim }} = 0; n{{ dim }} < count{{ dim }}; ++n{{ dim }}) {
+{% endfor %}
+{{ inner_indent }}        double weight = 1.0;
+{% for dim in range(rank) %}
+{{ inner_indent }}        weight *= coeff{{ dim }}[n{{ dim }}];
+{% endfor %}
+{% for dim in range(rank) %}
+{{ inner_indent }}        int idx{{ dim }} = idx{{ dim }}_values[n{{ dim }}];
+{{ inner_indent }}        if (idx{{ dim }} < 0) {
+{{ inner_indent }}            idx{{ dim }} = 0;
+{{ inner_indent }}        } else if (idx{{ dim }} >= input_shape[{{ dim }}]) {
+{{ inner_indent }}            idx{{ dim }} = (int)input_shape[{{ dim }}] - 1;
+{{ inner_indent }}        }
+{% endfor %}
+{{ inner_indent }}        acc += weight * (double){{ input0 }}{% for dim in range(rank) %}[idx{{ dim }}]{% endfor %};
+{% for dim in range(rank) %}
+{{ inner_indent }}    }
+{% endfor %}
+{{ inner_indent }}    {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ c_type }})acc;
+{% endif %}
+{{ inner_indent }}}
+{% for _ in output_shape %}
+{{ loop_indents[loop.revindex0] }}}
+{% endfor %}
 }
