@@ -161,12 +161,6 @@
 | Unsupported op If | 1 | █ |
 | Unsupported op IsNaN | 1 | █ |
 | Unsupported op Loop | 1 | █ |
-| MatMul supports 2D inputs only, got (3,) x (3,) | 1 | █ |
-| MatMul supports 2D inputs only, got (4,) x (2, 4, 1) | 1 | █ |
-| MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) | 1 | █ |
-| MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) | 1 | █ |
-| MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,) | 1 | █ |
-| MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2) | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
 | Unsupported op Mish | 1 | █ |

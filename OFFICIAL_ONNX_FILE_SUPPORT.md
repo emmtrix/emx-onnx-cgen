@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 563 / 1802 official ONNX files.
+Support 569 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -904,13 +904,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_lstm_defaults/model.onnx | ✅ |  |
 | node/test_lstm_with_initial_bias/model.onnx | ✅ |  |
 | node/test_lstm_with_peepholes/model.onnx | ✅ |  |
-| node/test_matmul_1d_1d/model.onnx | ❌ | MatMul supports 2D inputs only, got (3,) x (3,) |
-| node/test_matmul_1d_3d/model.onnx | ❌ | MatMul supports 2D inputs only, got (4,) x (2, 4, 1) |
+| node/test_matmul_1d_1d/model.onnx | ✅ |  |
+| node/test_matmul_1d_3d/model.onnx | ✅ |  |
 | node/test_matmul_2d/model.onnx | ✅ |  |
-| node/test_matmul_3d/model.onnx | ❌ | MatMul supports 2D inputs only, got (2, 3, 4) x (2, 4, 3) |
-| node/test_matmul_4d/model.onnx | ❌ | MatMul supports 2D inputs only, got (1, 2, 3, 4) x (1, 2, 4, 3) |
-| node/test_matmul_4d_1d/model.onnx | ❌ | MatMul supports 2D inputs only, got (1, 2, 4, 3) x (3,) |
-| node/test_matmul_bcast/model.onnx | ❌ | MatMul supports 2D inputs only, got (3, 1, 3, 4) x (1, 2, 4, 2) |
+| node/test_matmul_3d/model.onnx | ✅ |  |
+| node/test_matmul_4d/model.onnx | ✅ |  |
+| node/test_matmul_4d_1d/model.onnx | ✅ |  |
+| node/test_matmul_bcast/model.onnx | ✅ |  |
 | node/test_matmulinteger/model.onnx | ❌ | Unsupported op MatMulInteger |
 | node/test_max_example/model.onnx | ❌ | Max must have 2 inputs and 1 output |
 | node/test_max_float16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'. |
