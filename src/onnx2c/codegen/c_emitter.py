@@ -169,6 +169,18 @@ class SoftmaxOp:
 
 
 @dataclass(frozen=True)
+class LogSoftmaxOp:
+    input0: str
+    output: str
+    outer: int
+    axis_size: int
+    inner: int
+    axis: int
+    shape: tuple[int, ...]
+    dtype: str
+
+
+@dataclass(frozen=True)
 class BatchNormOp:
     input0: str
     scale: str
@@ -302,6 +314,7 @@ class LoweredModel:
         | BatchNormOp
         | LrnOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -333,6 +346,7 @@ class CEmitter:
             batch_norm_template = self._env.get_template("batch_norm_op.c.j2")
             lrn_template = self._env.get_template("lrn_op.c.j2")
             softmax_template = self._env.get_template("softmax_op.c.j2")
+            logsoftmax_template = self._env.get_template("logsoftmax_op.c.j2")
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
             concat_template = self._env.get_template("concat_op.c.j2")
             transpose_template = self._env.get_template("transpose_op.c.j2")
@@ -374,6 +388,7 @@ class CEmitter:
                 batch_norm_template=batch_norm_template,
                 lrn_template=lrn_template,
                 softmax_template=softmax_template,
+                logsoftmax_template=logsoftmax_template,
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
                 transpose_template=transpose_template,
@@ -465,6 +480,9 @@ class CEmitter:
         if any(isinstance(op, SoftmaxOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
+        if any(isinstance(op, LogSoftmaxOp) for op in resolved_ops):
+            if "#include <math.h>" not in includes:
+                includes.append("#include <math.h>")
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind
@@ -546,6 +564,7 @@ class CEmitter:
             | BatchNormOp
             | LrnOp
             | SoftmaxOp
+            | LogSoftmaxOp
             | MaxPoolOp
             | ConcatOp
             | ReshapeOp
@@ -612,7 +631,7 @@ class CEmitter:
                     f"{op.input0}, {op.scale}, {op.bias}, "
                     f"{op.mean}, {op.variance}, {op.output}"
                 )
-            elif isinstance(op, SoftmaxOp):
+            elif isinstance(op, (SoftmaxOp, LogSoftmaxOp)):
                 call = f"{op.input0}, {op.output}"
             elif isinstance(op, ConcatOp):
                 call = ", ".join((*op.inputs, op.output))
@@ -656,6 +675,7 @@ class CEmitter:
         | BatchNormOp
         | LrnOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -674,6 +694,7 @@ class CEmitter:
         | BatchNormOp
         | LrnOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -872,6 +893,17 @@ class CEmitter:
                 shape=op.shape,
                 dtype=op.dtype,
             )
+        if isinstance(op, LogSoftmaxOp):
+            return LogSoftmaxOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                axis=op.axis,
+                shape=op.shape,
+                dtype=op.dtype,
+            )
         if isinstance(op, MaxPoolOp):
             return MaxPoolOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -957,6 +989,7 @@ class CEmitter:
         | BatchNormOp
         | LrnOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -983,6 +1016,7 @@ class CEmitter:
         batch_norm_template,
         lrn_template,
         softmax_template,
+        logsoftmax_template,
         maxpool_template,
         concat_template,
         transpose_template,
@@ -1365,6 +1399,20 @@ class CEmitter:
                 inner=op.inner,
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
             ).rstrip()
+        if isinstance(op, LogSoftmaxOp):
+            return logsoftmax_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                array_suffix=CEmitter._array_suffix(op.shape),
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
+                log_fn=CEmitter._math_fn(op.dtype, "logf", "log"),
+            ).rstrip()
         if isinstance(op, MaxPoolOp):
             input_shape = (op.batch, op.channels, *op.in_spatial)
             output_shape = (op.batch, op.channels, *op.out_spatial)
@@ -1620,6 +1668,7 @@ class CEmitter:
         | BatchNormOp
         | LrnOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -1641,6 +1690,7 @@ class CEmitter:
         | BatchNormOp
         | LrnOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -1691,6 +1741,7 @@ class CEmitter:
         | BatchNormOp
         | LrnOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -1715,6 +1766,8 @@ class CEmitter:
         if isinstance(op, LrnOp):
             return op.shape
         if isinstance(op, SoftmaxOp):
+            return op.shape
+        if isinstance(op, LogSoftmaxOp):
             return op.shape
         if isinstance(op, MaxPoolOp):
             return (op.batch, op.channels, *op.out_spatial)
@@ -1743,6 +1796,7 @@ class CEmitter:
         | AveragePoolOp
         | BatchNormOp
         | SoftmaxOp
+        | LogSoftmaxOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp

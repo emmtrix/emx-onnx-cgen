@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
-| Unsupported op LogSoftmax | 44 | █████████ |
+| Unsupported op Shape | 44 | █████████ |
 | ReduceSum axes input must be constant | 43 | █████████ |
 | Unsupported op Resize | 39 | ████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
@@ -37,7 +37,6 @@
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
 | Unsupported op Mod | 10 | ██ |
-| Unsupported op Shape | 10 | ██ |
 | Dynamic or zero dims are not supported | 9 | ██ |
 | Unsupported op CumSum | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |

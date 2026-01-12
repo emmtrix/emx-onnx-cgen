@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 364 / 1802 official ONNX files.
+Support 374 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -865,25 +865,25 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_less_uint8/model.onnx | ❌ | Unsupported op Less |
 | node/test_log/model.onnx | ✅ |  |
 | node/test_log_example/model.onnx | ✅ |  |
-| node/test_logsoftmax_axis_0/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_logsoftmax_axis_0/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_0_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_0_expanded_ver18/model.onnx | ✅ |  |
-| node/test_logsoftmax_axis_1/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_logsoftmax_axis_1/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_1_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_1_expanded_ver18/model.onnx | ✅ |  |
-| node/test_logsoftmax_axis_2/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_logsoftmax_axis_2/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_2_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_axis_2_expanded_ver18/model.onnx | ✅ |  |
-| node/test_logsoftmax_default_axis/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_logsoftmax_default_axis/model.onnx | ✅ |  |
 | node/test_logsoftmax_default_axis_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_default_axis_expanded_ver18/model.onnx | ✅ |  |
-| node/test_logsoftmax_example_1/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_logsoftmax_example_1/model.onnx | ✅ |  |
 | node/test_logsoftmax_example_1_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_example_1_expanded_ver18/model.onnx | ✅ |  |
-| node/test_logsoftmax_large_number/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_logsoftmax_large_number/model.onnx | ✅ |  |
 | node/test_logsoftmax_large_number_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_large_number_expanded_ver18/model.onnx | ✅ |  |
-| node/test_logsoftmax_negative_axis/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_logsoftmax_negative_axis/model.onnx | ✅ |  |
 | node/test_logsoftmax_negative_axis_expanded/model.onnx | ✅ |  |
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | ✅ |  |
 | node/test_loop11/model.onnx | ❌ | Unsupported op Loop |
@@ -1376,73 +1376,73 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_scatternd_min/model.onnx | ❌ | Unsupported op ScatterND |
 | node/test_scatternd_multiply/model.onnx | ❌ | Unsupported op ScatterND |
 | node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_mean_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_3d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_3d_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_mean_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_no_weight_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_mean_no_weight_ii_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_no_weight_ii_4d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_weight/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_weight_ii/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
 | node/test_sce_mean_weight_ii_3d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_weight_ii_4d/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
-| node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
+| node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_weight_ii_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_mean_weight_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_none/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_none_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_none_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_none_weights/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_weights_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_none_weights_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_none_weights_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_sum/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_sum_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_sum_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_sce_sum_log_prob/model.onnx | ❌ | Unsupported op SoftmaxCrossEntropyLoss |
-| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Unsupported op LogSoftmax |
+| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Unsupported op Shape |
 | node/test_selu/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default_expanded_ver18/model.onnx | ❌ | Unsupported op CastLike |
@@ -1720,7 +1720,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_LeakyReLU_with_negval/model.onnx | ❌ | Unsupported op LeakyRelu |
 | pytorch-converted/test_Linear/model.onnx | ✅ |  |
 | pytorch-converted/test_Linear_no_bias/model.onnx | ✅ |  |
-| pytorch-converted/test_LogSoftmax/model.onnx | ❌ | Unsupported op LogSoftmax |
+| pytorch-converted/test_LogSoftmax/model.onnx | ✅ |  |
 | pytorch-converted/test_MaxPool1d/model.onnx | ✅ |  |
 | pytorch-converted/test_MaxPool1d_stride/model.onnx | ✅ |  |
 | pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx | ✅ |  |
@@ -1748,8 +1748,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_Softsign/model.onnx | ✅ |  |
 | pytorch-converted/test_Tanh/model.onnx | ✅ |  |
 | pytorch-converted/test_ZeroPad2d/model.onnx | ❌ | Unsupported op Pad |
-| pytorch-converted/test_log_softmax_dim3/model.onnx | ❌ | Unsupported op LogSoftmax |
-| pytorch-converted/test_log_softmax_lastdim/model.onnx | ❌ | Unsupported op LogSoftmax |
+| pytorch-converted/test_log_softmax_dim3/model.onnx | ✅ |  |
+| pytorch-converted/test_log_softmax_lastdim/model.onnx | ✅ |  |
 | pytorch-converted/test_softmax_functional_dim3/model.onnx | ✅ |  |
 | pytorch-converted/test_softmax_lastdim/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_add_broadcast/model.onnx | ✅ |  |

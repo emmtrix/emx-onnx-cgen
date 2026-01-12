@@ -21,6 +21,7 @@ from .codegen.c_emitter import (
     ConstantOfShapeOp,
     GemmOp,
     LrnOp,
+    LogSoftmaxOp,
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
@@ -103,6 +104,7 @@ class Compiler:
             | BatchNormOp
             | LrnOp
             | SoftmaxOp
+            | LogSoftmaxOp
             | MaxPoolOp
             | ConcatOp
             | TransposeOp
@@ -138,6 +140,9 @@ class Compiler:
                 continue
             if node.op_type == "Softmax":
                 ops.append(self._lower_softmax_op(graph, node))
+                continue
+            if node.op_type == "LogSoftmax":
+                ops.append(self._lower_logsoftmax_op(graph, node))
                 continue
             if node.op_type == "Dropout":
                 ops.append(self._lower_dropout_op(graph, node))
@@ -382,6 +387,20 @@ class Compiler:
                 )
                 value = values[node.inputs[0]]
                 values[node.outputs[0]] = _apply_softmax(value, axis)
+                continue
+            if node.op_type == "LogSoftmax":
+                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                if op_dtype not in {"float", "double"}:
+                    raise UnsupportedOpError(
+                        "LogSoftmax supports float and double inputs only"
+                    )
+                axis = _normalize_axis(
+                    int(node.attrs.get("axis", -1)),
+                    _value_shape(graph, node.inputs[0], node),
+                    node,
+                )
+                value = values[node.inputs[0]]
+                values[node.outputs[0]] = _apply_logsoftmax(value, axis)
                 continue
             if node.op_type in REDUCE_KIND_BY_OP:
                 if len(node.inputs) not in {1, 2} or len(node.outputs) != 1:
@@ -657,6 +676,43 @@ class Compiler:
             else 1
         )
         return SoftmaxOp(
+            input0=node.inputs[0],
+            output=node.outputs[0],
+            outer=outer,
+            axis_size=axis_size,
+            inner=inner,
+            axis=axis,
+            shape=input_shape,
+            dtype=op_dtype,
+        )
+
+    def _lower_logsoftmax_op(self, graph: Graph, node: Node) -> LogSoftmaxOp:
+        if len(node.inputs) != 1 or len(node.outputs) != 1:
+            raise UnsupportedOpError("LogSoftmax must have 1 input and 1 output")
+        op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+        if op_dtype not in {"float", "double"}:
+            raise UnsupportedOpError(
+                "LogSoftmax supports float and double inputs only"
+            )
+        input_shape = _value_shape(graph, node.inputs[0], node)
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        if input_shape != output_shape:
+            raise ShapeInferenceError(
+                f"LogSoftmax output shape must be {input_shape}, got {output_shape}"
+            )
+        axis = _normalize_axis(
+            int(node.attrs.get("axis", -1)),
+            input_shape,
+            node,
+        )
+        outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
+        axis_size = input_shape[axis]
+        inner = (
+            _shape_product(input_shape[axis + 1 :])
+            if axis + 1 < len(input_shape)
+            else 1
+        )
+        return LogSoftmaxOp(
             input0=node.inputs[0],
             output=node.outputs[0],
             outer=outer,
@@ -993,7 +1049,9 @@ def _shape_product(shape: tuple[int, ...]) -> int:
 
 def _normalize_axis(axis: int, shape: tuple[int, ...], node: Node) -> int:
     if not shape:
-        raise ShapeInferenceError("Softmax does not support scalar inputs")
+        raise ShapeInferenceError(
+            f"{node.op_type} does not support scalar inputs"
+        )
     rank = len(shape)
     if axis < 0:
         axis += rank
@@ -1420,6 +1478,13 @@ def _apply_softmax(values: np.ndarray, axis: int) -> np.ndarray:
     exp_values = np.exp(values - max_values)
     sum_values = np.sum(exp_values, axis=axis, keepdims=True)
     return exp_values / sum_values
+
+
+def _apply_logsoftmax(values: np.ndarray, axis: int) -> np.ndarray:
+    max_values = np.max(values, axis=axis, keepdims=True)
+    shifted = values - max_values
+    logsum = np.log(np.sum(np.exp(shifted), axis=axis, keepdims=True))
+    return shifted - logsum
 
 
 @dataclass(frozen=True)
