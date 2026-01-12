@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
+import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Sequence
@@ -85,6 +88,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO)
     parser = _build_parser()
     args = parser.parse_args(argv)
+    args.command_line = _format_command_line(argv)
 
     if args.command == "compile":
         return _handle_compile(args)
@@ -99,11 +103,14 @@ def _handle_compile(args: argparse.Namespace) -> int:
     output_path: Path = args.output
     model_name = args.model_name or output_path.stem
     try:
+        model_checksum = _model_checksum(model_path)
         model = onnx.load_model(model_path)
         options = CompilerOptions(
             template_dir=args.template_dir,
             model_name=model_name,
             emit_testbench=args.emit_testbench,
+            command_line=args.command_line,
+            model_checksum=model_checksum,
         )
         compiler = Compiler(options)
         if args.emit_data_file:
@@ -142,6 +149,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
 
     model_path: Path = args.model
     model_name = args.model_name or model_path.stem
+    model_checksum = _model_checksum(model_path)
     compiler_cmd = _resolve_compiler(args.cc)
     if compiler_cmd is None:
         LOGGER.error("No C compiler found (set --cc or CC environment variable).")
@@ -152,6 +160,8 @@ def _handle_verify(args: argparse.Namespace) -> int:
             template_dir=args.template_dir,
             model_name=model_name,
             emit_testbench=True,
+            command_line=args.command_line,
+            model_checksum=model_checksum,
         )
         compiler = Compiler(options)
         generated = compiler.compile(model)
@@ -250,3 +260,15 @@ def _handle_verify(args: argparse.Namespace) -> int:
         return 1
     LOGGER.info("Verification succeeded for %s", model_path)
     return 0
+
+
+def _format_command_line(argv: Sequence[str] | None) -> str:
+    if argv is None:
+        argv = sys.argv
+    return shlex.join([str(arg) for arg in argv])
+
+
+def _model_checksum(model_path: Path) -> str:
+    digest = hashlib.sha256()
+    digest.update(model_path.read_bytes())
+    return digest.hexdigest()
