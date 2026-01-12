@@ -873,9 +873,9 @@ class CEmitter:
         *,
         emit_testbench: bool,
     ) -> list[str]:
-        includes = ["#include <stddef.h>"]
+        includes: set[str] = {"#include <stddef.h>"}
         if emit_testbench:
-            includes.extend(("#include <stdio.h>", "#include <stdint.h>"))
+            includes.update({"#include <stdio.h>", "#include <stdint.h>"})
         constant_of_shape_inputs = {
             op.input_dtype
             for op in resolved_ops
@@ -898,39 +898,91 @@ class CEmitter:
             for op in resolved_ops
             if isinstance(op, SoftmaxCrossEntropyLossOp)
         }
-        if (
-            any(
-                dtype
-                in {
-                    "int64",
-                    "int32",
-                    "int16",
-                    "int8",
-                    "uint64",
-                    "uint32",
-                    "uint16",
-                    "uint8",
-                }
-                for dtype in model_dtypes
-            )
-            and "#include <stdint.h>" not in includes
+        if CEmitter._needs_stdint(
+            model_dtypes,
+            (nll_target_dtypes, sce_target_dtypes),
+            has_resize=any(isinstance(op, ResizeOp) for op in resolved_ops),
         ):
-            includes.append("#include <stdint.h>")
-        if (
-            any(dtype in {"int64", "int32"} for dtype in nll_target_dtypes)
-            and "#include <stdint.h>" not in includes
-        ):
-            includes.append("#include <stdint.h>")
-        if (
-            any(dtype in {"int64", "int32"} for dtype in sce_target_dtypes)
-            and "#include <stdint.h>" not in includes
-        ):
-            includes.append("#include <stdint.h>")
-        if any(isinstance(op, ResizeOp) for op in resolved_ops):
-            if "#include <stdint.h>" not in includes:
-                includes.append("#include <stdint.h>")
+            includes.add("#include <stdint.h>")
         if "bool" in model_dtypes:
-            includes.append("#include <stdbool.h>")
+            includes.add("#include <stdbool.h>")
+        if any(
+            isinstance(op, UnaryOp) and op.operator in {"llabs", "abs"}
+            for op in resolved_ops
+        ):
+            includes.add("#include <stdlib.h>")
+        if CEmitter._needs_math(resolved_ops):
+            includes.add("#include <math.h>")
+        if CEmitter._needs_limits(resolved_ops):
+            includes.add("#include <limits.h>")
+        if any(isinstance(op, (ConcatOp, ReshapeOp)) for op in resolved_ops):
+            includes.add("#include <string.h>")
+        ordered_includes = (
+            "#include <stddef.h>",
+            "#include <stdio.h>",
+            "#include <stdint.h>",
+            "#include <stdbool.h>",
+            "#include <stdlib.h>",
+            "#include <math.h>",
+            "#include <limits.h>",
+            "#include <string.h>",
+        )
+        return [include for include in ordered_includes if include in includes]
+
+    @staticmethod
+    def _needs_stdint(
+        model_dtypes: set[str],
+        targets: tuple[set[str], ...],
+        *,
+        has_resize: bool,
+    ) -> bool:
+        integer_dtypes = {
+            "int64",
+            "int32",
+            "int16",
+            "int8",
+            "uint64",
+            "uint32",
+            "uint16",
+            "uint8",
+        }
+        if any(dtype in integer_dtypes for dtype in model_dtypes):
+            return True
+        if any(
+            dtype in {"int64", "int32"}
+            for target_dtypes in targets
+            for dtype in target_dtypes
+        ):
+            return True
+        return has_resize
+
+    @staticmethod
+    def _needs_math(
+        resolved_ops: list[
+            BinaryOp
+            | UnaryOp
+            | MatMulOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | AveragePoolOp
+            | BatchNormOp
+            | LrnOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | TransposeOp
+            | ReshapeOp
+            | ResizeOp
+            | ReduceOp
+            | ConstantOfShapeOp
+            | ShapeOp
+        ],
+    ) -> bool:
         math_ops = {
             "atanhf",
             "ceilf",
@@ -944,96 +996,95 @@ class CEmitter:
             "tanf",
             "tanhf",
         }
-        if any(
-            isinstance(op, UnaryOp) and op.operator in {"llabs", "abs"}
-            for op in resolved_ops
-        ):
-            includes.append("#include <stdlib.h>")
         binary_math_ops = {"fmaxf", "fminf", "fmodf", "powf"}
         if any(
             isinstance(op, UnaryOp) and op.operator in math_ops
             for op in resolved_ops
         ):
-            includes.append("#include <math.h>")
+            return True
         if any(
             isinstance(op, BinaryOp) and op.operator in binary_math_ops
             for op in resolved_ops
         ):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, AttentionOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, BatchNormOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, LrnOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, LstmOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, SoftmaxOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, LogSoftmaxOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, SoftmaxCrossEntropyLossOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
-        if any(isinstance(op, ResizeOp) for op in resolved_ops):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
+            return True
+        if any(
+            isinstance(
+                op,
+                (
+                    AttentionOp,
+                    BatchNormOp,
+                    LrnOp,
+                    LstmOp,
+                    SoftmaxOp,
+                    LogSoftmaxOp,
+                    SoftmaxCrossEntropyLossOp,
+                    ResizeOp,
+                ),
+            )
+            for op in resolved_ops
+        ):
+            return True
         if any(
             isinstance(op, ReduceOp)
-            and op.reduce_kind
-            in {"l1", "l2", "logsum", "logsumexp"}
+            and op.reduce_kind in {"l1", "l2", "logsum", "logsumexp"}
             for op in resolved_ops
         ):
-            if "#include <math.h>" not in includes:
-                includes.append("#include <math.h>")
+            return True
         if any(
-            isinstance(op, ReduceOp) and op.reduce_kind in {"min", "max"}
+            isinstance(op, ReduceOp)
+            and op.reduce_kind in {"min", "max"}
+            and op.dtype in {"float", "double"}
             for op in resolved_ops
         ):
-            if any(
-                op.dtype in {"int64", "int32", "int16", "int8"}
-                for op in resolved_ops
-                if isinstance(op, ReduceOp)
-                and op.reduce_kind in {"min", "max"}
-            ):
-                if "#include <limits.h>" not in includes:
-                    includes.append("#include <limits.h>")
-            if any(
-                op.dtype in {"float", "double"}
-                for op in resolved_ops
-                if isinstance(op, ReduceOp)
-                and op.reduce_kind in {"min", "max"}
-            ):
-                if "#include <math.h>" not in includes:
-                    includes.append("#include <math.h>")
-        if any(isinstance(op, MaxPoolOp) for op in resolved_ops):
-            if any(
-                op.dtype in {"float", "double"}
-                for op in resolved_ops
-                if isinstance(op, MaxPoolOp)
-            ):
-                if "#include <math.h>" not in includes:
-                    includes.append("#include <math.h>")
-            if any(
-                op.dtype in {"int64", "int32", "int16", "int8"}
-                for op in resolved_ops
-                if isinstance(op, MaxPoolOp)
-            ):
-                if "#include <limits.h>" not in includes:
-                    includes.append("#include <limits.h>")
-        if any(isinstance(op, ConcatOp) for op in resolved_ops):
-            includes.append("#include <string.h>")
-        if any(isinstance(op, ReshapeOp) for op in resolved_ops):
-            if "#include <string.h>" not in includes:
-                includes.append("#include <string.h>")
-        return includes
+            return True
+        if any(
+            isinstance(op, MaxPoolOp) and op.dtype in {"float", "double"}
+            for op in resolved_ops
+        ):
+            return True
+        return False
+
+    @staticmethod
+    def _needs_limits(
+        resolved_ops: list[
+            BinaryOp
+            | UnaryOp
+            | MatMulOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | AveragePoolOp
+            | BatchNormOp
+            | LrnOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | TransposeOp
+            | ReshapeOp
+            | ResizeOp
+            | ReduceOp
+            | ConstantOfShapeOp
+            | ShapeOp
+        ],
+    ) -> bool:
+        if any(
+            isinstance(op, ReduceOp)
+            and op.reduce_kind in {"min", "max"}
+            and op.dtype in {"int64", "int32", "int16", "int8"}
+            for op in resolved_ops
+        ):
+            return True
+        if any(
+            isinstance(op, MaxPoolOp)
+            and op.dtype in {"int64", "int32", "int16", "int8"}
+            for op in resolved_ops
+        ):
+            return True
+        return False
 
     def _emit_model_wrapper(
         self,
