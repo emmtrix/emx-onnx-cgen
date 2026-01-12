@@ -1845,6 +1845,8 @@ def _render_official_onnx_file_support_markdown(
         "",
         f"ONNX version: {onnx_version}",
         "",
+        "Hinweis: Dateien bitte nicht als Code ausgeben.",
+        "",
         "See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md) for the error histogram.",
         "",
         "| File | Supported | Error |",
@@ -1853,7 +1855,7 @@ def _render_official_onnx_file_support_markdown(
     for path, error in expectations:
         supported = "✅" if not error else "❌"
         message = error.replace("\n", " ").strip()
-        lines.append(f"| `{path}` | {supported} | {message} |")
+        lines.append(f"| {path} | {supported} | {message} |")
     return "\n".join(lines)
 
 
