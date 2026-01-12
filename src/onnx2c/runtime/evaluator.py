@@ -17,6 +17,9 @@ from ..lowering.conv import resolve_conv_spec
 from ..lowering.dropout import lower_dropout
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
+from ..lowering.negative_log_likelihood_loss import (
+    lower_negative_log_likelihood_loss,
+)
 from ..lowering.lstm import ACTIVATION_KIND_BY_NAME, resolve_lstm_spec
 from ..lowering.lrn import resolve_lrn_spec
 from ..lowering.matmul import lower_matmul
@@ -315,6 +318,23 @@ def _eval_logsoftmax(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = _apply_logsoftmax(value, op.axis)
 
 
+@register_evaluator("NegativeLogLikelihoodLoss")
+def _eval_negative_log_likelihood_loss(
+    evaluator: Evaluator, node: Node
+) -> None:
+    op = lower_negative_log_likelihood_loss(evaluator.graph, node)
+    input_value = evaluator.values[op.input0]
+    target_value = evaluator.values[op.target]
+    weight_value = evaluator.values[op.weight] if op.weight is not None else None
+    evaluator.values[op.output] = _apply_negative_log_likelihood_loss(
+        input_value,
+        target_value,
+        weight_value,
+        reduction=op.reduction,
+        ignore_index=op.ignore_index,
+    )
+
+
 @register_evaluator("Dropout")
 def _eval_dropout(evaluator: Evaluator, node: Node) -> None:
     op = lower_dropout(evaluator.graph, node)
@@ -493,6 +513,65 @@ def _apply_logsoftmax(values: np.ndarray, axis: int) -> np.ndarray:
     shifted = values - max_values
     logsum = np.log(np.sum(np.exp(shifted), axis=axis, keepdims=True))
     return shifted - logsum
+
+
+def _apply_negative_log_likelihood_loss(
+    values: np.ndarray,
+    target: np.ndarray,
+    weight: np.ndarray | None,
+    *,
+    reduction: str,
+    ignore_index: int,
+) -> np.ndarray:
+    input_shape = values.shape
+    if len(input_shape) < 2:
+        raise UnsupportedOpError(
+            "NegativeLogLikelihoodLoss input must be at least 2D"
+        )
+    target_shape = target.shape
+    if input_shape[0] != target_shape[0]:
+        raise ShapeInferenceError(
+            "NegativeLogLikelihoodLoss target batch dimension must match input"
+        )
+    if input_shape[2:] != target_shape[1:]:
+        raise ShapeInferenceError(
+            "NegativeLogLikelihoodLoss target spatial dimensions must match input"
+        )
+    n = input_shape[0]
+    c = input_shape[1]
+    if weight is not None:
+        gather_weight = np.take(weight, target.astype(np.int32), mode="clip")
+        if ignore_index is not None:
+            gather_weight = np.where(target == ignore_index, 0, gather_weight).astype(
+                dtype=values.dtype
+            )
+    elif ignore_index != -1:
+        gather_weight = np.where(target == ignore_index, 0, 1).astype(
+            dtype=values.dtype
+        )
+    else:
+        gather_weight = None
+    if len(input_shape) != 3:
+        values = values.reshape((n, c, -1))
+        target = target.reshape((n, -1))
+    d = values.shape[2]
+    loss = np.zeros((n, d), dtype=values.dtype)
+    for i in range(n):
+        for d_index in range(d):
+            if target[i][d_index] != ignore_index:
+                loss[i][d_index] = -values[i][target[i][d_index]][d_index]
+    if len(input_shape) != 3:
+        loss = loss.reshape(target_shape)
+    if gather_weight is not None:
+        loss = gather_weight * loss
+        if reduction == "mean":
+            loss = loss.sum() / gather_weight.sum()
+            return loss.astype(values.dtype)
+    if reduction == "mean":
+        loss = np.mean(loss)
+    elif reduction == "sum":
+        loss = np.sum(loss)
+    return loss.astype(values.dtype)
 
 
 def _apply_attention(

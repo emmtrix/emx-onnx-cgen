@@ -182,6 +182,24 @@ class LogSoftmaxOp:
 
 
 @dataclass(frozen=True)
+class NegativeLogLikelihoodLossOp:
+    input0: str
+    target: str
+    weight: str | None
+    output: str
+    input_shape: tuple[int, ...]
+    target_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    n: int
+    c: int
+    d: int
+    reduction: str
+    ignore_index: int
+    dtype: str
+    target_dtype: str
+
+
+@dataclass(frozen=True)
 class BatchNormOp:
     input0: str
     scale: str
@@ -388,6 +406,7 @@ class LoweredModel:
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -423,6 +442,9 @@ class CEmitter:
             lstm_template = self._env.get_template("lstm_op.c.j2")
             softmax_template = self._env.get_template("softmax_op.c.j2")
             logsoftmax_template = self._env.get_template("logsoftmax_op.c.j2")
+            nllloss_template = self._env.get_template(
+                "negative_log_likelihood_loss_op.c.j2"
+            )
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
             concat_template = self._env.get_template("concat_op.c.j2")
             transpose_template = self._env.get_template("transpose_op.c.j2")
@@ -468,6 +490,7 @@ class CEmitter:
                 lstm_template=lstm_template,
                 softmax_template=softmax_template,
                 logsoftmax_template=logsoftmax_template,
+                nllloss_template=nllloss_template,
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
                 transpose_template=transpose_template,
@@ -522,6 +545,9 @@ class CEmitter:
             lstm_template = self._env.get_template("lstm_op.c.j2")
             softmax_template = self._env.get_template("softmax_op.c.j2")
             logsoftmax_template = self._env.get_template("logsoftmax_op.c.j2")
+            nllloss_template = self._env.get_template(
+                "negative_log_likelihood_loss_op.c.j2"
+            )
             maxpool_template = self._env.get_template("maxpool_op.c.j2")
             concat_template = self._env.get_template("concat_op.c.j2")
             transpose_template = self._env.get_template("transpose_op.c.j2")
@@ -567,6 +593,7 @@ class CEmitter:
                 lstm_template=lstm_template,
                 softmax_template=softmax_template,
                 logsoftmax_template=logsoftmax_template,
+                nllloss_template=nllloss_template,
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
                 transpose_template=transpose_template,
@@ -661,6 +688,7 @@ class CEmitter:
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
+            | NegativeLogLikelihoodLossOp
             | MaxPoolOp
             | ConcatOp
             | TransposeOp
@@ -688,6 +716,11 @@ class CEmitter:
             *(op.dtype for op in resolved_ops),
             *constant_of_shape_inputs,
         }
+        nll_target_dtypes = {
+            op.target_dtype
+            for op in resolved_ops
+            if isinstance(op, NegativeLogLikelihoodLossOp)
+        }
         if (
             any(
                 dtype
@@ -703,6 +736,11 @@ class CEmitter:
                 }
                 for dtype in model_dtypes
             )
+            and "#include <stdint.h>" not in includes
+        ):
+            includes.append("#include <stdint.h>")
+        if (
+            any(dtype in {"int64", "int32"} for dtype in nll_target_dtypes)
             and "#include <stdint.h>" not in includes
         ):
             includes.append("#include <stdint.h>")
@@ -828,6 +866,7 @@ class CEmitter:
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
+            | NegativeLogLikelihoodLossOp
             | MaxPoolOp
             | ConcatOp
             | ReshapeOp
@@ -916,6 +955,12 @@ class CEmitter:
                 call = ", ".join(call_parts)
             elif isinstance(op, (SoftmaxOp, LogSoftmaxOp)):
                 call = f"{op.input0}, {op.output}"
+            elif isinstance(op, NegativeLogLikelihoodLossOp):
+                call_parts = [op.input0, op.target]
+                if op.weight is not None:
+                    call_parts.append(op.weight)
+                call_parts.append(op.output)
+                call = ", ".join(call_parts)
             elif isinstance(op, ConcatOp):
                 call = ", ".join((*op.inputs, op.output))
             elif isinstance(op, ConstantOfShapeOp):
@@ -972,6 +1017,7 @@ class CEmitter:
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -994,6 +1040,7 @@ class CEmitter:
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -1266,6 +1313,27 @@ class CEmitter:
                 shape=op.shape,
                 dtype=op.dtype,
             )
+        if isinstance(op, NegativeLogLikelihoodLossOp):
+            return NegativeLogLikelihoodLossOp(
+                input0=temp_map.get(op.input0, op.input0),
+                target=temp_map.get(op.target, op.target),
+                weight=(
+                    temp_map.get(op.weight, op.weight)
+                    if op.weight is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                target_shape=op.target_shape,
+                output_shape=op.output_shape,
+                n=op.n,
+                c=op.c,
+                d=op.d,
+                reduction=op.reduction,
+                ignore_index=op.ignore_index,
+                dtype=op.dtype,
+                target_dtype=op.target_dtype,
+            )
         if isinstance(op, MaxPoolOp):
             return MaxPoolOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -1399,6 +1467,7 @@ class CEmitter:
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -1429,6 +1498,7 @@ class CEmitter:
         lstm_template,
         softmax_template,
         logsoftmax_template,
+        nllloss_template,
         maxpool_template,
         concat_template,
         transpose_template,
@@ -1929,6 +1999,27 @@ class CEmitter:
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
                 log_fn=CEmitter._math_fn(op.dtype, "logf", "log"),
             ).rstrip()
+        if isinstance(op, NegativeLogLikelihoodLossOp):
+            return nllloss_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                target=op.target,
+                weight=op.weight,
+                output=op.output,
+                c_type=c_type,
+                target_c_type=dtype_info(op.target_dtype).c_type,
+                input_suffix=CEmitter._array_suffix(op.input_shape),
+                target_suffix=CEmitter._array_suffix(op.target_shape),
+                output_suffix=CEmitter._array_suffix(op.output_shape),
+                n=op.n,
+                c=op.c,
+                d=op.d,
+                reduction=op.reduction,
+                ignore_index=op.ignore_index,
+                zero_literal=zero_literal,
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+            ).rstrip()
         if isinstance(op, MaxPoolOp):
             input_shape = (op.batch, op.channels, *op.in_spatial)
             output_shape = (op.batch, op.channels, *op.out_spatial)
@@ -2294,6 +2385,7 @@ class CEmitter:
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -2319,6 +2411,7 @@ class CEmitter:
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -2408,6 +2501,7 @@ class CEmitter:
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp
@@ -2436,6 +2530,8 @@ class CEmitter:
             return op.shape
         if isinstance(op, LogSoftmaxOp):
             return op.shape
+        if isinstance(op, NegativeLogLikelihoodLossOp):
+            return op.output_shape
         if isinstance(op, MaxPoolOp):
             return (op.batch, op.channels, *op.out_spatial)
         if isinstance(op, ConcatOp):
@@ -2468,6 +2564,7 @@ class CEmitter:
         | BatchNormOp
         | SoftmaxOp
         | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
         | MaxPoolOp
         | ConcatOp
         | TransposeOp

@@ -21,6 +21,7 @@ from .codegen.c_emitter import (
     LrnOp,
     LstmOp,
     LogSoftmaxOp,
+    NegativeLogLikelihoodLossOp,
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
@@ -55,6 +56,9 @@ from .lowering.dropout import lower_dropout
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
+from .lowering.negative_log_likelihood_loss import (
+    lower_negative_log_likelihood_loss,
+)
 from .lowering.matmul import lower_matmul
 from .lowering.maxpool import MaxPoolSpec, resolve_maxpool_spec
 from .lowering.reduce import (
@@ -141,6 +145,7 @@ class Compiler:
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
+            | NegativeLogLikelihoodLossOp
             | MaxPoolOp
             | ConcatOp
             | TransposeOp

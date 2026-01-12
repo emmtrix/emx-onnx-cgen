@@ -4,7 +4,6 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
-| Unsupported op NegativeLogLikelihoodLoss | 35 | ███████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported op SoftmaxCrossEntropyLoss | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
@@ -15,6 +14,7 @@
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
+| NegativeLogLikelihoodLoss input must be at least 2D | 17 | ███ |
 | Unsupported op Split | 17 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
