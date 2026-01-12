@@ -203,6 +203,19 @@ class ReshapeOp:
 
 
 @dataclass(frozen=True)
+class ReduceOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    axes: tuple[int, ...]
+    keepdims: bool
+    reduce_kind: str
+    reduce_count: int
+    dtype: str
+
+
+@dataclass(frozen=True)
 class ConstantOfShapeOp:
     input0: str
     output: str
@@ -254,6 +267,7 @@ class LoweredModel:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ReduceOp
         | ConstantOfShapeOp,
         ...,
     ]
@@ -284,6 +298,7 @@ class CEmitter:
             concat_template = self._env.get_template("concat_op.c.j2")
             transpose_template = self._env.get_template("transpose_op.c.j2")
             reshape_template = self._env.get_template("reshape_op.c.j2")
+            reduce_template = self._env.get_template("reduce_op.c.j2")
             constant_of_shape_template = self._env.get_template(
                 "constant_of_shape_op.c.j2"
             )
@@ -313,6 +328,7 @@ class CEmitter:
                 c_type=dtype_info(op.dtype).c_type,
                 zero_literal=dtype_info(op.dtype).zero_literal,
                 min_literal=dtype_info(op.dtype).min_literal,
+                max_literal=dtype_info(op.dtype).max_literal,
                 binary_template=binary_template,
                 unary_template=unary_template,
                 matmul_template=matmul_template,
@@ -327,6 +343,7 @@ class CEmitter:
                 concat_template=concat_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
+                reduce_template=reduce_template,
                 constant_of_shape_template=constant_of_shape_template,
             )
             for index, op in enumerate(resolved_ops)
@@ -401,6 +418,34 @@ class CEmitter:
         if any(isinstance(op, SoftmaxOp) for op in resolved_ops):
             if "#include <math.h>" not in includes:
                 includes.append("#include <math.h>")
+        if any(
+            isinstance(op, ReduceOp)
+            and op.reduce_kind
+            in {"l1", "l2", "logsum", "logsumexp"}
+            for op in resolved_ops
+        ):
+            if "#include <math.h>" not in includes:
+                includes.append("#include <math.h>")
+        if any(
+            isinstance(op, ReduceOp) and op.reduce_kind in {"min", "max"}
+            for op in resolved_ops
+        ):
+            if any(
+                op.dtype in {"int64", "int32", "int16", "int8"}
+                for op in resolved_ops
+                if isinstance(op, ReduceOp)
+                and op.reduce_kind in {"min", "max"}
+            ):
+                if "#include <limits.h>" not in includes:
+                    includes.append("#include <limits.h>")
+            if any(
+                op.dtype == "float"
+                for op in resolved_ops
+                if isinstance(op, ReduceOp)
+                and op.reduce_kind in {"min", "max"}
+            ):
+                if "#include <math.h>" not in includes:
+                    includes.append("#include <math.h>")
         if any(isinstance(op, MaxPoolOp) for op in resolved_ops):
             if any(
                 op.dtype == "float"
@@ -457,6 +502,7 @@ class CEmitter:
             | MaxPoolOp
             | ConcatOp
             | ReshapeOp
+            | ReduceOp
             | ConstantOfShapeOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
@@ -555,6 +601,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ReduceOp
         | ConstantOfShapeOp,
         temp_map: dict[str, str],
     ) -> (
@@ -572,6 +619,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ReduceOp
         | ConstantOfShapeOp
     ):
         if isinstance(op, BinaryOp):
@@ -759,6 +807,18 @@ class CEmitter:
                 output_shape=op.output_shape,
                 dtype=op.dtype,
             )
+        if isinstance(op, ReduceOp):
+            return ReduceOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                axes=op.axes,
+                keepdims=op.keepdims,
+                reduce_kind=op.reduce_kind,
+                reduce_count=op.reduce_count,
+                dtype=op.dtype,
+            )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
@@ -784,6 +844,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ReduceOp
         | ConstantOfShapeOp,
         index: int,
         *,
@@ -794,6 +855,7 @@ class CEmitter:
         c_type: str,
         zero_literal: str,
         min_literal: str,
+        max_literal: str,
         binary_template,
         unary_template,
         matmul_template,
@@ -808,6 +870,7 @@ class CEmitter:
         concat_template,
         transpose_template,
         reshape_template,
+        reduce_template,
         constant_of_shape_template,
     ) -> str:
         if isinstance(op, BinaryOp):
@@ -1161,6 +1224,109 @@ class CEmitter:
                 output_suffix=CEmitter._array_suffix(op.output_shape),
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
+        if isinstance(op, ReduceOp):
+            output_shape = op.output_shape
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            output_loop_indents = CEmitter._loop_indents(output_shape)
+            output_inner_indent = CEmitter._inner_indent(output_shape)
+            reduce_loop_vars = tuple(f"r{idx}" for idx in range(len(op.axes)))
+            reduce_dims = tuple(op.input_shape[axis] for axis in op.axes)
+            reduce_loop_indents = tuple(
+                output_inner_indent + "    " * idx
+                for idx in range(len(reduce_loop_vars))
+            )
+            reduce_inner_indent = output_inner_indent + "    " * len(
+                reduce_loop_vars
+            )
+            if op.keepdims:
+                input_indices = [
+                    reduce_loop_vars[op.axes.index(axis)]
+                    if axis in op.axes
+                    else output_loop_vars[axis]
+                    for axis in range(len(op.input_shape))
+                ]
+            else:
+                kept_axes = [
+                    axis
+                    for axis in range(len(op.input_shape))
+                    if axis not in op.axes
+                ]
+                input_indices = [
+                    reduce_loop_vars[op.axes.index(axis)]
+                    if axis in op.axes
+                    else output_loop_vars[kept_axes.index(axis)]
+                    for axis in range(len(op.input_shape))
+                ]
+            input_index_expr = "".join(f"[{var}]" for var in input_indices)
+            output_index_expr = "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            value_expr = f"{op.input0}{input_index_expr}"
+            update_expr = None
+            init_literal = None
+            final_expr = "acc"
+            count_literal = CEmitter._format_literal(
+                op.dtype, op.reduce_count
+            )
+            if op.reduce_kind == "sum":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr};"
+            elif op.reduce_kind == "mean":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr};"
+                final_expr = f"acc / {count_literal}"
+            elif op.reduce_kind == "max":
+                init_literal = min_literal
+                update_expr = f"if ({value_expr} > acc) acc = {value_expr};"
+            elif op.reduce_kind == "min":
+                init_literal = max_literal
+                update_expr = f"if ({value_expr} < acc) acc = {value_expr};"
+            elif op.reduce_kind == "prod":
+                init_literal = CEmitter._format_literal(op.dtype, 1)
+                update_expr = f"acc *= {value_expr};"
+            elif op.reduce_kind == "l1":
+                init_literal = zero_literal
+                update_expr = f"acc += fabsf({value_expr});"
+            elif op.reduce_kind == "l2":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr} * {value_expr};"
+                final_expr = "sqrtf(acc)"
+            elif op.reduce_kind == "logsum":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr};"
+                final_expr = "logf(acc)"
+            elif op.reduce_kind == "logsumexp":
+                init_literal = zero_literal
+                update_expr = f"acc += expf({value_expr});"
+                final_expr = "logf(acc)"
+            elif op.reduce_kind == "sumsquare":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr} * {value_expr};"
+            else:
+                raise CodegenError(
+                    f"Unsupported reduce kind {op.reduce_kind}"
+                )
+            return reduce_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                input_suffix=CEmitter._array_suffix(op.input_shape),
+                output_suffix=CEmitter._array_suffix(op.output_shape),
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                output_loop_indents=output_loop_indents,
+                output_inner_indent=output_inner_indent,
+                reduce_loop_vars=reduce_loop_vars,
+                reduce_dims=reduce_dims,
+                reduce_loop_indents=reduce_loop_indents,
+                reduce_inner_indent=reduce_inner_indent,
+                output_index_expr=output_index_expr,
+                init_literal=init_literal,
+                update_expr=update_expr,
+                final_expr=final_expr,
+            ).rstrip()
         if isinstance(op, ConstantOfShapeOp):
             shape = op.shape
             loop_vars = CEmitter._loop_vars(shape)
@@ -1222,6 +1388,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ReduceOp
         | ConstantOfShapeOp,
     ) -> str:
         return op.output
@@ -1242,6 +1409,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ReduceOp
         | ConstantOfShapeOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
@@ -1270,6 +1438,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, ReshapeOp):
             return op.output_shape
+        if isinstance(op, ReduceOp):
+            return op.output_shape
         if isinstance(op, ConstantOfShapeOp):
             return op.shape
         return (op.batch, op.heads, op.q_seq, op.v_head_size)
@@ -1289,6 +1459,7 @@ class CEmitter:
         | ConcatOp
         | TransposeOp
         | ReshapeOp
+        | ReduceOp
         | ConstantOfShapeOp,
     ) -> str:
         return op.dtype

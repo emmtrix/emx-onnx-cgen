@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 240 / 1802 official ONNX files.
+Support 274 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -8,15 +8,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 | File | Supported | Error |
 | --- | --- | --- |
-| `light/light_bvlc_alexnet.onnx` | ❌ | Conv supports group=1 only |
+| `light/light_bvlc_alexnet.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
 | `light/light_densenet121.onnx` | ❌ | Unsupported op GlobalAveragePool |
-| `light/light_inception_v1.onnx` | ✅ |  |
-| `light/light_inception_v2.onnx` | ✅ |  |
-| `light/light_resnet50.onnx` | ✅ |  |
-| `light/light_shufflenet.onnx` | ❌ | Conv supports group=1 only |
+| `light/light_inception_v1.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
+| `light/light_inception_v2.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
+| `light/light_resnet50.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
+| `light/light_shufflenet.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
 | `light/light_squeezenet.onnx` | ❌ | Unsupported op GlobalAveragePool |
-| `light/light_vgg19.onnx` | ✅ |  |
-| `light/light_zfnet512.onnx` | ✅ |  |
+| `light/light_vgg19.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
+| `light/light_zfnet512.onnx` | ❌ | 'ConvOp' object has no attribute 'out_h' |
 | `node/test_abs/model.onnx` | ✅ |  |
 | `node/test_acos/model.onnx` | ❌ | Unsupported op Acos |
 | `node/test_acos_example/model.onnx` | ❌ | Unsupported op Acos |
@@ -523,7 +523,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_constantofshape_float_ones/model.onnx` | ✅ |  |
 | `node/test_constantofshape_int_shape_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
 | `node/test_constantofshape_int_zeros/model.onnx` | ✅ |  |
-| `node/test_conv_with_autopad_same/model.onnx` | ❌ | Conv supports auto_pad=NOTSET only |
+| `node/test_conv_with_autopad_same/model.onnx` | ✅ |  |
 | `node/test_conv_with_strides_and_asymmetric_padding/model.onnx` | ✅ |  |
 | `node/test_conv_with_strides_no_padding/model.onnx` | ✅ |  |
 | `node/test_conv_with_strides_padding/model.onnx` | ✅ |  |
@@ -866,26 +866,26 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_log/model.onnx` | ✅ |  |
 | `node/test_log_example/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_axis_0/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_axis_0_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_logsoftmax_axis_0_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_logsoftmax_axis_0_expanded/model.onnx` | ✅ |  |
+| `node/test_logsoftmax_axis_0_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_axis_1/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_axis_1_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_logsoftmax_axis_1_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_logsoftmax_axis_1_expanded/model.onnx` | ✅ |  |
+| `node/test_logsoftmax_axis_1_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_axis_2/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_axis_2_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_logsoftmax_axis_2_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_logsoftmax_axis_2_expanded/model.onnx` | ✅ |  |
+| `node/test_logsoftmax_axis_2_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_default_axis/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_default_axis_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_logsoftmax_default_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_logsoftmax_default_axis_expanded/model.onnx` | ✅ |  |
+| `node/test_logsoftmax_default_axis_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_example_1/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_example_1_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_logsoftmax_example_1_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_logsoftmax_example_1_expanded/model.onnx` | ✅ |  |
+| `node/test_logsoftmax_example_1_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_large_number/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_large_number_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_logsoftmax_large_number_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_logsoftmax_large_number_expanded/model.onnx` | ✅ |  |
+| `node/test_logsoftmax_large_number_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_logsoftmax_negative_axis/model.onnx` | ❌ | Unsupported op LogSoftmax |
-| `node/test_logsoftmax_negative_axis_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_logsoftmax_negative_axis_expanded/model.onnx` | ✅ |  |
+| `node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_loop11/model.onnx` | ❌ | Only single-output graphs are supported |
 | `node/test_loop13_seq/model.onnx` | ❌ | Missing elem_type for tensor 'seq_empty' |
 | `node/test_loop16_seq_none/model.onnx` | ❌ | Missing elem_type for tensor 'opt_seq' |
@@ -992,8 +992,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_mul_uint64/model.onnx` | ❌ | Unsupported elem_type 13 (UINT64) for tensor 'x'. |
 | `node/test_mul_uint8/model.onnx` | ❌ | Unsupported elem_type 2 (UINT8) for tensor 'x'. |
 | `node/test_mvn/model.onnx` | ❌ | Unsupported op MeanVarianceNormalization |
-| `node/test_mvn_expanded/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_mvn_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMean |
+| `node/test_mvn_expanded/model.onnx` | ❌ | Scalar outputs are not supported |
+| `node/test_mvn_expanded_ver18/model.onnx` | ❌ | Scalar outputs are not supported |
 | `node/test_neg/model.onnx` | ✅ |  |
 | `node/test_neg_example/model.onnx` | ✅ |  |
 | `node/test_nesterov_momentum/model.onnx` | ❌ | Only single-output graphs are supported |
@@ -1113,50 +1113,50 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_range_int32_type_negative_delta_expanded/model.onnx` | ❌ | Unsupported op Cast |
 | `node/test_reciprocal/model.onnx` | ❌ | Unsupported op Reciprocal |
 | `node/test_reciprocal_example/model.onnx` | ❌ | Unsupported op Reciprocal |
-| `node/test_reduce_l1_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_empty_set/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_empty_set_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_keep_dims_example/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_keep_dims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_keep_dims_random/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_keep_dims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_negative_axes_keep_dims_example/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l1_negative_axes_keep_dims_random/model.onnx` | ❌ | Unsupported op ReduceL1 |
-| `node/test_reduce_l1_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_empty_set/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_empty_set_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_keep_dims_example/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_keep_dims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_keep_dims_random/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_keep_dims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx` | ❌ | Unsupported op ReduceL2 |
-| `node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_log_sum_asc_axes/model.onnx` | ❌ | Unsupported op ReduceLogSum |
-| `node/test_reduce_log_sum_asc_axes_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_log_sum_default/model.onnx` | ❌ | Unsupported op ReduceLogSum |
-| `node/test_reduce_log_sum_default_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_log_sum_desc_axes/model.onnx` | ❌ | Unsupported op ReduceLogSum |
-| `node/test_reduce_log_sum_desc_axes_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_log_sum_empty_set/model.onnx` | ❌ | Unsupported op ReduceLogSum |
-| `node/test_reduce_log_sum_empty_set_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
+| `node/test_reduce_l1_default_axes_keepdims_example/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_default_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_default_axes_keepdims_random/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_default_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_do_not_keepdims_example/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_do_not_keepdims_random/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_empty_set/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_empty_set_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_keep_dims_example/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_keep_dims_random/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_negative_axes_keep_dims_example/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l1_negative_axes_keep_dims_random/model.onnx` | ❌ | ReduceL1 axes input must be constant |
+| `node/test_reduce_l1_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_default_axes_keepdims_example/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_default_axes_keepdims_random/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_do_not_keepdims_example/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_do_not_keepdims_random/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_empty_set/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_empty_set_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_keep_dims_example/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_keep_dims_random/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx` | ❌ | ReduceL2 axes input must be constant |
+| `node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_log_sum_asc_axes/model.onnx` | ❌ | ReduceLogSum axes input must be constant |
+| `node/test_reduce_log_sum_asc_axes_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_log_sum_default/model.onnx` | ❌ | ReduceLogSum axes input must be constant |
+| `node/test_reduce_log_sum_default_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_log_sum_desc_axes/model.onnx` | ❌ | ReduceLogSum axes input must be constant |
+| `node/test_reduce_log_sum_desc_axes_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_log_sum_empty_set/model.onnx` | ❌ | ReduceLogSum axes input must be constant |
+| `node/test_reduce_log_sum_empty_set_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
 | `node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
@@ -1165,7 +1165,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| `node/test_reduce_log_sum_exp_empty_set/model.onnx` | ❌ | Unsupported op ReduceLogSumExp |
+| `node/test_reduce_log_sum_exp_empty_set/model.onnx` | ❌ | ReduceLogSumExp axes input must be constant |
 | `node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'ReduceLogSumExp_test_reduce_log_sum_exp_empty_set_expanded_function_data_double'. |
 | `node/test_reduce_log_sum_exp_keepdims_example/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
@@ -1175,75 +1175,75 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
 | `node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported elem_type 11 (DOUBLE) for tensor 'data'. |
-| `node/test_reduce_log_sum_negative_axes/model.onnx` | ❌ | Unsupported op ReduceLogSum |
-| `node/test_reduce_log_sum_negative_axes_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_max_bool_inputs/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_default_axes_keepdim_example/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_empty_set/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_max_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_reduce_mean_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_mean_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_mean_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_mean_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_mean_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_mean_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_mean_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_mean_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `node/test_reduce_min_bool_inputs/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_empty_set/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_min_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceMin |
-| `node/test_reduce_prod_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_empty_set/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_prod_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceProd |
-| `node/test_reduce_sum_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_empty_axes_input_noop/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_empty_axes_input_noop_example/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_empty_set/model.onnx` | ❌ | Unsupported op ReduceSum |
+| `node/test_reduce_log_sum_negative_axes/model.onnx` | ❌ | ReduceLogSum axes input must be constant |
+| `node/test_reduce_log_sum_negative_axes_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_max_bool_inputs/model.onnx` | ❌ | ReduceMax does not support dtype bool |
+| `node/test_reduce_max_default_axes_keepdim_example/model.onnx` | ✅ |  |
+| `node/test_reduce_max_default_axes_keepdims_random/model.onnx` | ✅ |  |
+| `node/test_reduce_max_do_not_keepdims_example/model.onnx` | ❌ | ReduceMax axes input must be constant |
+| `node/test_reduce_max_do_not_keepdims_random/model.onnx` | ❌ | ReduceMax axes input must be constant |
+| `node/test_reduce_max_empty_set/model.onnx` | ❌ | ReduceMax axes input must be constant |
+| `node/test_reduce_max_keepdims_example/model.onnx` | ❌ | ReduceMax axes input must be constant |
+| `node/test_reduce_max_keepdims_random/model.onnx` | ❌ | ReduceMax axes input must be constant |
+| `node/test_reduce_max_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceMax axes input must be constant |
+| `node/test_reduce_max_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceMax axes input must be constant |
+| `node/test_reduce_mean_default_axes_keepdims_example/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_mean_default_axes_keepdims_random/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_mean_do_not_keepdims_example/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_mean_do_not_keepdims_random/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_mean_keepdims_example/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_mean_keepdims_random/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_mean_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_mean_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceMean axes input must be constant |
+| `node/test_reduce_min_bool_inputs/model.onnx` | ❌ | ReduceMin does not support dtype bool |
+| `node/test_reduce_min_default_axes_keepdims_example/model.onnx` | ✅ |  |
+| `node/test_reduce_min_default_axes_keepdims_random/model.onnx` | ✅ |  |
+| `node/test_reduce_min_do_not_keepdims_example/model.onnx` | ❌ | ReduceMin axes input must be constant |
+| `node/test_reduce_min_do_not_keepdims_random/model.onnx` | ❌ | ReduceMin axes input must be constant |
+| `node/test_reduce_min_empty_set/model.onnx` | ❌ | ReduceMin axes input must be constant |
+| `node/test_reduce_min_keepdims_example/model.onnx` | ❌ | ReduceMin axes input must be constant |
+| `node/test_reduce_min_keepdims_random/model.onnx` | ❌ | ReduceMin axes input must be constant |
+| `node/test_reduce_min_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceMin axes input must be constant |
+| `node/test_reduce_min_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceMin axes input must be constant |
+| `node/test_reduce_prod_default_axes_keepdims_example/model.onnx` | ✅ |  |
+| `node/test_reduce_prod_default_axes_keepdims_random/model.onnx` | ✅ |  |
+| `node/test_reduce_prod_do_not_keepdims_example/model.onnx` | ❌ | ReduceProd axes input must be constant |
+| `node/test_reduce_prod_do_not_keepdims_random/model.onnx` | ❌ | ReduceProd axes input must be constant |
+| `node/test_reduce_prod_empty_set/model.onnx` | ❌ | ReduceProd axes input must be constant |
+| `node/test_reduce_prod_keepdims_example/model.onnx` | ❌ | ReduceProd axes input must be constant |
+| `node/test_reduce_prod_keepdims_random/model.onnx` | ❌ | ReduceProd axes input must be constant |
+| `node/test_reduce_prod_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceProd axes input must be constant |
+| `node/test_reduce_prod_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceProd axes input must be constant |
+| `node/test_reduce_sum_default_axes_keepdims_example/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_default_axes_keepdims_random/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_do_not_keepdims_example/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_do_not_keepdims_random/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_empty_axes_input_noop/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_empty_axes_input_noop_example/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_empty_set/model.onnx` | ❌ | ReduceSum axes input must be constant |
 | `node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx` | ❌ | Dynamic or zero dims are not supported |
-| `node/test_reduce_sum_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_default_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_default_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_do_not_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_do_not_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_empty_set/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_empty_set_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_negative_axes_keepdims_example/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx` | ❌ | Unsupported op ReduceSumSquare |
-| `node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | Unsupported op ReduceSum |
+| `node/test_reduce_sum_keepdims_example/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_keepdims_random/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_default_axes_keepdims_example/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_default_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_do_not_keepdims_example/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_do_not_keepdims_random/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_empty_set/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_empty_set_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_keepdims_example/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_keepdims_random/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_negative_axes_keepdims_example/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
+| `node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx` | ❌ | ReduceSumSquare axes input must be constant |
+| `node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx` | ❌ | ReduceSum axes input must be constant |
 | `node/test_reflect_pad/model.onnx` | ❌ | Unsupported op Pad |
 | `node/test_regex_full_match_basic/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | `node/test_regex_full_match_email_domain/model.onnx` | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
@@ -1499,26 +1499,26 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `node/test_slice_negative_axes/model.onnx` | ❌ | Unsupported op Slice |
 | `node/test_slice_start_out_of_bounds/model.onnx` | ❌ | Dynamic or zero dims are not supported |
 | `node/test_softmax_axis_0/model.onnx` | ✅ |  |
-| `node/test_softmax_axis_0_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_softmax_axis_0_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_softmax_axis_0_expanded/model.onnx` | ✅ |  |
+| `node/test_softmax_axis_0_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_softmax_axis_1/model.onnx` | ✅ |  |
-| `node/test_softmax_axis_1_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_softmax_axis_1_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_softmax_axis_1_expanded/model.onnx` | ✅ |  |
+| `node/test_softmax_axis_1_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_softmax_axis_2/model.onnx` | ✅ |  |
-| `node/test_softmax_axis_2_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_softmax_axis_2_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_softmax_axis_2_expanded/model.onnx` | ✅ |  |
+| `node/test_softmax_axis_2_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_softmax_default_axis/model.onnx` | ✅ |  |
-| `node/test_softmax_default_axis_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_softmax_default_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_softmax_default_axis_expanded/model.onnx` | ✅ |  |
+| `node/test_softmax_default_axis_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_softmax_example/model.onnx` | ✅ |  |
-| `node/test_softmax_example_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_softmax_example_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_softmax_example_expanded/model.onnx` | ✅ |  |
+| `node/test_softmax_example_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_softmax_large_number/model.onnx` | ✅ |  |
-| `node/test_softmax_large_number_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_softmax_large_number_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_softmax_large_number_expanded/model.onnx` | ✅ |  |
+| `node/test_softmax_large_number_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_softmax_negative_axis/model.onnx` | ✅ |  |
-| `node/test_softmax_negative_axis_expanded/model.onnx` | ❌ | Unsupported op ReduceMax |
-| `node/test_softmax_negative_axis_expanded_ver18/model.onnx` | ❌ | Unsupported op ReduceMax |
+| `node/test_softmax_negative_axis_expanded/model.onnx` | ✅ |  |
+| `node/test_softmax_negative_axis_expanded_ver18/model.onnx` | ✅ |  |
 | `node/test_softplus/model.onnx` | ❌ | Unsupported op Softplus |
 | `node/test_softplus_example/model.onnx` | ❌ | Unsupported op Softplus |
 | `node/test_softplus_example_expanded_ver18/model.onnx` | ❌ | Unsupported op CastLike |
@@ -1776,10 +1776,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | `pytorch-operator/test_operator_params/model.onnx` | ❌ | Unsupported op Sigmoid |
 | `pytorch-operator/test_operator_permute2/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_pow/model.onnx` | ✅ |  |
-| `pytorch-operator/test_operator_reduced_mean/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `pytorch-operator/test_operator_reduced_mean_keepdim/model.onnx` | ❌ | Unsupported op ReduceMean |
-| `pytorch-operator/test_operator_reduced_sum/model.onnx` | ❌ | Unsupported op ReduceSum |
-| `pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx` | ❌ | Unsupported op ReduceSum |
+| `pytorch-operator/test_operator_reduced_mean/model.onnx` | ✅ |  |
+| `pytorch-operator/test_operator_reduced_mean_keepdim/model.onnx` | ✅ |  |
+| `pytorch-operator/test_operator_reduced_sum/model.onnx` | ✅ |  |
+| `pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx` | ✅ |  |
 | `pytorch-operator/test_operator_repeat/model.onnx` | ❌ | Unsupported op Tile |
 | `pytorch-operator/test_operator_repeat_dim_overflow/model.onnx` | ❌ | Unsupported op Tile |
 | `pytorch-operator/test_operator_selu/model.onnx` | ❌ | Unsupported op Selu |

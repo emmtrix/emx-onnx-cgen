@@ -24,6 +24,7 @@ from .codegen.c_emitter import (
     LoweredModel,
     MatMulOp,
     MaxPoolOp,
+    ReduceOp,
     ReshapeOp,
     SoftmaxOp,
     TransposeOp,
@@ -37,6 +38,11 @@ from .lowering.average_pool import lower_average_pool
 from .lowering.batch_normalization import lower_batch_normalization
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
+from .lowering.reduce import (
+    REDUCE_KIND_BY_OP,
+    REDUCE_OUTPUTS_FLOAT_ONLY,
+    resolve_reduce_axes,
+)
 from .lowering.reshape import lower_reshape
 from .lowering.unsqueeze import lower_unsqueeze
 from .onnx_import import import_onnx
@@ -95,6 +101,7 @@ class Compiler:
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
+            | ReduceOp
         ] = []
         for node in graph.nodes:
             lowering = get_lowering(node.op_type)
@@ -338,6 +345,63 @@ class Compiler:
                 )
                 value = values[node.inputs[0]]
                 values[node.outputs[0]] = _apply_softmax(value, axis)
+                continue
+            if node.op_type in REDUCE_KIND_BY_OP:
+                if len(node.inputs) not in {1, 2} or len(node.outputs) != 1:
+                    raise UnsupportedOpError(
+                        f"{node.op_type} must have 1 or 2 inputs and 1 output"
+                    )
+                op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
+                if (
+                    node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY
+                    and op_dtype != "float"
+                ):
+                    raise UnsupportedOpError(
+                        f"{node.op_type} supports float inputs only"
+                    )
+                value = values[node.inputs[0]]
+                input_shape = _value_shape(graph, node.inputs[0], node)
+                axes, noop = resolve_reduce_axes(graph, node, input_shape)
+                if noop:
+                    values[node.outputs[0]] = value.copy()
+                    continue
+                keepdims = bool(int(node.attrs.get("keepdims", 1)))
+                reduce_kind = REDUCE_KIND_BY_OP[node.op_type]
+                if reduce_kind == "sum":
+                    result = np.sum(value, axis=axes, keepdims=keepdims)
+                elif reduce_kind == "mean":
+                    result = np.mean(value, axis=axes, keepdims=keepdims)
+                elif reduce_kind == "max":
+                    result = np.max(value, axis=axes, keepdims=keepdims)
+                elif reduce_kind == "min":
+                    result = np.min(value, axis=axes, keepdims=keepdims)
+                elif reduce_kind == "prod":
+                    result = np.prod(value, axis=axes, keepdims=keepdims)
+                elif reduce_kind == "l1":
+                    result = np.sum(
+                        np.abs(value), axis=axes, keepdims=keepdims
+                    )
+                elif reduce_kind == "l2":
+                    result = np.sqrt(
+                        np.sum(value * value, axis=axes, keepdims=keepdims)
+                    )
+                elif reduce_kind == "logsum":
+                    result = np.log(
+                        np.sum(value, axis=axes, keepdims=keepdims)
+                    )
+                elif reduce_kind == "logsumexp":
+                    result = np.log(
+                        np.sum(np.exp(value), axis=axes, keepdims=keepdims)
+                    )
+                elif reduce_kind == "sumsquare":
+                    result = np.sum(
+                        value * value, axis=axes, keepdims=keepdims
+                    )
+                else:
+                    raise UnsupportedOpError(
+                        f"Unsupported reduce kind {reduce_kind}"
+                    )
+                values[node.outputs[0]] = result
                 continue
             if node.op_type == "Dropout":
                 if len(node.outputs) not in {1, 2} or len(node.inputs) != 1:
