@@ -62,15 +62,43 @@ class AttentionOp:
     input_q: str
     input_k: str
     input_v: str
+    input_attn_mask: str | None
+    input_past_key: str | None
+    input_past_value: str | None
+    input_nonpad_kv_seqlen: str | None
     output: str
+    output_present_key: str | None
+    output_present_value: str | None
+    output_qk_matmul: str | None
     batch: int
-    heads: int
+    q_heads: int
+    kv_heads: int
     q_seq: int
     kv_seq: int
+    total_seq: int
+    past_seq: int
     qk_head_size: int
     v_head_size: int
+    q_hidden_size: int | None
+    k_hidden_size: int | None
+    v_hidden_size: int | None
     scale: float
     is_causal: bool
+    softcap: float
+    qk_matmul_output_mode: int
+    q_rank: int
+    k_rank: int
+    v_rank: int
+    output_rank: int
+    mask_shape: tuple[int, ...] | None
+    mask_is_bool: bool
+    mask_rank: int | None
+    mask_broadcast_batch: bool
+    mask_broadcast_heads: bool
+    mask_broadcast_q_seq: bool
+    mask_q_seq: int | None
+    mask_kv_seq: int | None
+    head_group_size: int
     dtype: str
 
 
@@ -555,9 +583,23 @@ class CEmitter:
                         f"{op.input_a}, {op.input_b}, {op.input_c}, {op.output}"
                     )
             elif isinstance(op, AttentionOp):
-                call = (
-                    f"{op.input_q}, {op.input_k}, {op.input_v}, {op.output}"
-                )
+                call_parts = [op.input_q, op.input_k, op.input_v]
+                if op.input_attn_mask is not None:
+                    call_parts.append(op.input_attn_mask)
+                if op.input_past_key is not None:
+                    call_parts.append(op.input_past_key)
+                if op.input_past_value is not None:
+                    call_parts.append(op.input_past_value)
+                if op.input_nonpad_kv_seqlen is not None:
+                    call_parts.append(op.input_nonpad_kv_seqlen)
+                call_parts.append(op.output)
+                if op.output_present_key is not None:
+                    call_parts.append(op.output_present_key)
+                if op.output_present_value is not None:
+                    call_parts.append(op.output_present_value)
+                if op.output_qk_matmul is not None:
+                    call_parts.append(op.output_qk_matmul)
+                call = ", ".join(call_parts)
             elif isinstance(op, ConvOp):
                 if op.bias is None:
                     call = f"{op.input0}, {op.weights}, {op.output}"
@@ -587,13 +629,10 @@ class CEmitter:
     def _temp_buffers(self, model: LoweredModel) -> dict[str, TempBuffer]:
         output_names = set(model.output_names)
         intermediates = [
-            (
-                self._op_output(op),
-                self._op_output_shape(op),
-                self._op_output_dtype(op),
-            )
+            (name, shape, dtype)
             for op in model.ops
-            if self._op_output(op) not in output_names
+            for name, shape, dtype in self._op_outputs(op)
+            if name not in output_names
         ]
         if not intermediates:
             return {}
@@ -687,15 +726,73 @@ class CEmitter:
                 input_q=temp_map.get(op.input_q, op.input_q),
                 input_k=temp_map.get(op.input_k, op.input_k),
                 input_v=temp_map.get(op.input_v, op.input_v),
+                input_attn_mask=(
+                    temp_map.get(op.input_attn_mask, op.input_attn_mask)
+                    if op.input_attn_mask is not None
+                    else None
+                ),
+                input_past_key=(
+                    temp_map.get(op.input_past_key, op.input_past_key)
+                    if op.input_past_key is not None
+                    else None
+                ),
+                input_past_value=(
+                    temp_map.get(op.input_past_value, op.input_past_value)
+                    if op.input_past_value is not None
+                    else None
+                ),
+                input_nonpad_kv_seqlen=(
+                    temp_map.get(
+                        op.input_nonpad_kv_seqlen, op.input_nonpad_kv_seqlen
+                    )
+                    if op.input_nonpad_kv_seqlen is not None
+                    else None
+                ),
                 output=temp_map.get(op.output, op.output),
+                output_present_key=(
+                    temp_map.get(op.output_present_key, op.output_present_key)
+                    if op.output_present_key is not None
+                    else None
+                ),
+                output_present_value=(
+                    temp_map.get(op.output_present_value, op.output_present_value)
+                    if op.output_present_value is not None
+                    else None
+                ),
+                output_qk_matmul=(
+                    temp_map.get(op.output_qk_matmul, op.output_qk_matmul)
+                    if op.output_qk_matmul is not None
+                    else None
+                ),
                 batch=op.batch,
-                heads=op.heads,
+                q_heads=op.q_heads,
+                kv_heads=op.kv_heads,
                 q_seq=op.q_seq,
                 kv_seq=op.kv_seq,
+                total_seq=op.total_seq,
+                past_seq=op.past_seq,
                 qk_head_size=op.qk_head_size,
                 v_head_size=op.v_head_size,
+                q_hidden_size=op.q_hidden_size,
+                k_hidden_size=op.k_hidden_size,
+                v_hidden_size=op.v_hidden_size,
                 scale=op.scale,
                 is_causal=op.is_causal,
+                softcap=op.softcap,
+                qk_matmul_output_mode=op.qk_matmul_output_mode,
+                q_rank=op.q_rank,
+                k_rank=op.k_rank,
+                v_rank=op.v_rank,
+                output_rank=op.output_rank,
+                mask_shape=op.mask_shape,
+                mask_is_bool=op.mask_is_bool,
+                mask_rank=op.mask_rank,
+                mask_broadcast_batch=op.mask_broadcast_batch,
+                mask_broadcast_heads=op.mask_broadcast_heads,
+                mask_broadcast_q_seq=op.mask_broadcast_q_seq,
+                mask_q_seq=op.mask_q_seq,
+                mask_kv_seq=op.mask_kv_seq,
+                head_group_size=op.head_group_size,
                 dtype=op.dtype,
             )
         if isinstance(op, ConvOp):
@@ -997,36 +1094,133 @@ class CEmitter:
                 c_dim1=c_dim1,
             ).rstrip()
         if isinstance(op, AttentionOp):
+            if op.q_rank == 4:
+                input_q_shape = (op.batch, op.q_heads, op.q_seq, op.qk_head_size)
+            else:
+                input_q_shape = (op.batch, op.q_seq, op.q_hidden_size)
+            if op.k_rank == 4:
+                input_k_shape = (op.batch, op.kv_heads, op.kv_seq, op.qk_head_size)
+            else:
+                input_k_shape = (op.batch, op.kv_seq, op.k_hidden_size)
+            if op.v_rank == 4:
+                input_v_shape = (op.batch, op.kv_heads, op.kv_seq, op.v_head_size)
+            else:
+                input_v_shape = (op.batch, op.kv_seq, op.v_hidden_size)
+            if op.output_rank == 4:
+                output_shape = (op.batch, op.q_heads, op.q_seq, op.v_head_size)
+            else:
+                output_shape = (
+                    op.batch,
+                    op.q_seq,
+                    op.q_heads * op.v_head_size,
+                )
+            present_key_shape = (
+                (op.batch, op.kv_heads, op.total_seq, op.qk_head_size)
+                if op.output_present_key is not None
+                else None
+            )
+            present_value_shape = (
+                (op.batch, op.kv_heads, op.total_seq, op.v_head_size)
+                if op.output_present_value is not None
+                else None
+            )
+            qk_matmul_shape = (
+                (op.batch, op.q_heads, op.q_seq, op.total_seq)
+                if op.output_qk_matmul is not None
+                else None
+            )
             return attention_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input_q=op.input_q,
                 input_k=op.input_k,
                 input_v=op.input_v,
+                input_attn_mask=op.input_attn_mask,
+                input_past_key=op.input_past_key,
+                input_past_value=op.input_past_value,
+                input_nonpad_kv_seqlen=op.input_nonpad_kv_seqlen,
                 output=op.output,
+                output_present_key=op.output_present_key,
+                output_present_value=op.output_present_value,
+                output_qk_matmul=op.output_qk_matmul,
                 c_type=c_type,
+                nonpad_c_type=dtype_info("int64").c_type,
                 zero_literal=zero_literal,
+                min_literal=min_literal,
                 scale_literal=CEmitter._format_floating(op.scale, op.dtype),
+                softcap_literal=CEmitter._format_floating(op.softcap, op.dtype),
                 one_literal=CEmitter._format_literal(op.dtype, 1),
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
+                tanh_fn=CEmitter._math_fn(op.dtype, "tanhf", "tanh"),
                 is_causal=int(op.is_causal),
+                qk_matmul_output_mode=op.qk_matmul_output_mode,
                 batch=op.batch,
-                heads=op.heads,
+                q_heads=op.q_heads,
+                kv_heads=op.kv_heads,
                 q_seq=op.q_seq,
                 kv_seq=op.kv_seq,
+                total_seq=op.total_seq,
+                past_seq=op.past_seq,
                 qk_head_size=op.qk_head_size,
                 v_head_size=op.v_head_size,
-                input_q_suffix=CEmitter._array_suffix(
-                    (op.batch, op.heads, op.q_seq, op.qk_head_size)
+                head_group_size=op.head_group_size,
+                q_rank=op.q_rank,
+                k_rank=op.k_rank,
+                v_rank=op.v_rank,
+                output_rank=op.output_rank,
+                q_hidden_size=op.q_hidden_size,
+                k_hidden_size=op.k_hidden_size,
+                v_hidden_size=op.v_hidden_size,
+                has_attn_mask=int(op.input_attn_mask is not None),
+                mask_rank=op.mask_rank or 0,
+                mask_is_bool=int(op.mask_is_bool),
+                mask_broadcast_batch=int(op.mask_broadcast_batch),
+                mask_broadcast_heads=int(op.mask_broadcast_heads),
+                mask_broadcast_q_seq=int(op.mask_broadcast_q_seq),
+                mask_q_seq=op.mask_q_seq or 0,
+                mask_kv_seq=op.mask_kv_seq or 0,
+                input_q_suffix=CEmitter._array_suffix(input_q_shape),
+                input_k_suffix=CEmitter._array_suffix(input_k_shape),
+                input_v_suffix=CEmitter._array_suffix(input_v_shape),
+                input_mask_suffix=(
+                    CEmitter._array_suffix(op.mask_shape)
+                    if op.input_attn_mask is not None
+                    else ""
                 ),
-                input_k_suffix=CEmitter._array_suffix(
-                    (op.batch, op.heads, op.kv_seq, op.qk_head_size)
+                input_past_key_suffix=(
+                    CEmitter._array_suffix(
+                        (op.batch, op.kv_heads, op.past_seq, op.qk_head_size)
+                    )
+                    if op.input_past_key is not None
+                    else ""
                 ),
-                input_v_suffix=CEmitter._array_suffix(
-                    (op.batch, op.heads, op.kv_seq, op.v_head_size)
+                input_past_value_suffix=(
+                    CEmitter._array_suffix(
+                        (op.batch, op.kv_heads, op.past_seq, op.v_head_size)
+                    )
+                    if op.input_past_value is not None
+                    else ""
                 ),
-                output_suffix=CEmitter._array_suffix(
-                    (op.batch, op.heads, op.q_seq, op.v_head_size)
+                input_nonpad_suffix=(
+                    CEmitter._array_suffix((op.batch,))
+                    if op.input_nonpad_kv_seqlen is not None
+                    else ""
+                ),
+                output_suffix=CEmitter._array_suffix(output_shape),
+                output_present_key_suffix=(
+                    CEmitter._array_suffix(present_key_shape)
+                    if present_key_shape is not None
+                    else ""
+                ),
+                output_present_value_suffix=(
+                    CEmitter._array_suffix(present_value_shape)
+                    if present_value_shape is not None
+                    else ""
+                ),
+                output_qk_matmul_suffix=(
+                    CEmitter._array_suffix(qk_matmul_shape)
+                    if qk_matmul_shape is not None
+                    else ""
                 ),
             ).rstrip()
         if isinstance(op, ConvOp):
@@ -1436,6 +1630,56 @@ class CEmitter:
         return op.output
 
     @staticmethod
+    def _op_outputs(
+        op: BinaryOp
+        | UnaryOp
+        | MatMulOp
+        | GemmOp
+        | AttentionOp
+        | ConvOp
+        | AveragePoolOp
+        | BatchNormOp
+        | LrnOp
+        | SoftmaxOp
+        | MaxPoolOp
+        | ConcatOp
+        | TransposeOp
+        | ReshapeOp
+        | ReduceOp
+        | ConstantOfShapeOp,
+    ) -> tuple[tuple[str, tuple[int, ...], str], ...]:
+        if isinstance(op, AttentionOp):
+            outputs: list[tuple[str, tuple[int, ...], str]] = [
+                (op.output, CEmitter._op_output_shape(op), op.dtype)
+            ]
+            if op.output_present_key is not None:
+                outputs.append(
+                    (
+                        op.output_present_key,
+                        (op.batch, op.kv_heads, op.total_seq, op.qk_head_size),
+                        op.dtype,
+                    )
+                )
+            if op.output_present_value is not None:
+                outputs.append(
+                    (
+                        op.output_present_value,
+                        (op.batch, op.kv_heads, op.total_seq, op.v_head_size),
+                        op.dtype,
+                    )
+                )
+            if op.output_qk_matmul is not None:
+                outputs.append(
+                    (
+                        op.output_qk_matmul,
+                        (op.batch, op.q_heads, op.q_seq, op.total_seq),
+                        op.dtype,
+                    )
+                )
+            return tuple(outputs)
+        return ((op.output, CEmitter._op_output_shape(op), op.dtype),)
+
+    @staticmethod
     def _op_output_shape(
         op: BinaryOp
         | UnaryOp
@@ -1484,7 +1728,9 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, ConstantOfShapeOp):
             return op.shape
-        return (op.batch, op.heads, op.q_seq, op.v_head_size)
+        if op.output_rank == 3:
+            return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
+        return (op.batch, op.q_heads, op.q_seq, op.v_head_size)
 
     @staticmethod
     def _op_output_dtype(

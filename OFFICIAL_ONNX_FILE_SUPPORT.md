@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 310 / 1802 official ONNX files.
+Support 364 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -98,129 +98,129 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_atan_example/model.onnx | ❌ | Unsupported op Atan |
 | node/test_atanh/model.onnx | ✅ |  |
 | node/test_atanh_example/model.onnx | ✅ |  |
-| node/test_attention_3d/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_3d_attn_mask/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d/model.onnx | ✅ |  |
+| node/test_attention_3d_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_attn_mask_expanded_function_QIntermediate' |
-| node/test_attention_3d_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_causal/model.onnx | ✅ |  |
 | node/test_attention_3d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_causal_expanded_function_QIntermediate' |
-| node/test_attention_3d_diff_heads_sizes/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_QIntermediate' |
-| node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_QIntermediate' |
 | node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_QIntermediate' |
-| node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate' |
-| node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate' |
-| node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate' |
 | node/test_attention_3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_QIntermediate' |
-| node/test_attention_3d_gqa/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_3d_gqa_attn_mask/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_gqa/model.onnx | ✅ |  |
+| node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_QIntermediate' |
-| node/test_attention_3d_gqa_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_gqa_causal/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_QIntermediate' |
 | node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_expanded_function_QIntermediate' |
-| node/test_attention_3d_gqa_scaled/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_gqa_scaled/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate' |
-| node/test_attention_3d_gqa_softcap/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_gqa_softcap/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate' |
-| node/test_attention_3d_gqa_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_gqa_with_past_and_present/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate' |
-| node/test_attention_3d_scaled/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_scaled/model.onnx | ✅ |  |
 | node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_QIntermediate' |
-| node/test_attention_3d_softcap/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_softcap/model.onnx | ✅ |  |
 | node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_QIntermediate' |
-| node/test_attention_3d_transpose_verification/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_transpose_verification/model.onnx | ✅ |  |
 | node/test_attention_3d_transpose_verification_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_with_past_and_present/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate' |
 | node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate' |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate' |
 | node/test_attention_4d/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_attn_mask_3d/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_attn_mask_3d_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_attn_mask/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_3d/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_3d_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow' |
 | node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_3d_expanded_function_KExpanded' |
-| node/test_attention_4d_attn_mask_4d/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_attn_mask_4d_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_attn_mask_4d/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_4d_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow' |
 | node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_expanded_function_KExpanded' |
-| node/test_attention_4d_attn_mask_bool/model.onnx | ❌ | Attention expects matching dtypes, got bool, float |
-| node/test_attention_4d_attn_mask_bool_4d/model.onnx | ❌ | Attention expects matching dtypes, got bool, float |
+| node/test_attention_4d_attn_mask_bool/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_bool_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_bool_4d_expanded_function_KExpanded' |
 | node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_bool_expanded_function_KExpanded' |
 | node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_expanded_function_KExpanded' |
 | node/test_attention_4d_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_AttnBias' |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_KExpanded' |
 | node/test_attention_4d_diff_heads_sizes_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_AttnBias' |
 | node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_AttnBias' |
 | node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias' |
-| node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias' |
-| node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_KExpanded' |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_KExpanded' |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_KExpanded' |
 | node/test_attention_4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_AttnBias' |
 | node/test_attention_4d_fp16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
 | node/test_attention_4d_fp16_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
-| node/test_attention_4d_gqa/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_gqa_attn_mask/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_gqa/model.onnx | ✅ |  |
+| node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_attn_mask_expanded_function_KExpanded' |
-| node/test_attention_4d_gqa_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_gqa_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_AttnBias' |
 | node/test_attention_4d_gqa_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_expanded_function_AttnBias' |
-| node/test_attention_4d_gqa_scaled/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_gqa_scaled/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias' |
-| node/test_attention_4d_gqa_softcap/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_gqa_softcap/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias' |
-| node/test_attention_4d_gqa_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_gqa_with_past_and_present/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_KExpanded' |
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
 | node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'Q'. |
 | node/test_attention_4d_scaled/model.onnx | ✅ |  |
 | node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_AttnBias' |
-| node/test_attention_4d_softcap/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_softcap/model.onnx | ✅ |  |
 | node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_AttnBias' |
-| node/test_attention_4d_with_past_and_present/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_with_past_and_present/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_expanded_function_KExpanded' |
-| node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_KExpanded' |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ❌ | Unsupported op Attention |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ❌ | Unsupported op Attention |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_KExpanded' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_KExpanded' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_KExpanded' |
-| node/test_attention_4d_with_qk_matmul/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
-| node/test_attention_4d_with_qk_matmul_bias/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_attention_4d_with_qk_matmul/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_bias/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_KExpanded' |
 | node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias' |
-| node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_KExpanded' |
-| node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ❌ | Missing dtype for value '' in op Attention. Hint: run ONNX shape inference or export with static shapes. |
+| node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_KExpanded' |
 | node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |

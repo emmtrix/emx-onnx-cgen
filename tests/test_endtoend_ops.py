@@ -856,6 +856,15 @@ OPERATOR_CASES = [
         "opset": 23,
     },
     {
+        "name": "Attention3DGQAWithMask",
+        "op_type": "Attention",
+        "input_shapes": [[1, 4, 16], [1, 6, 8], [1, 6, 10], [4, 6]],
+        "output_shape": [1, 4, 20],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"q_num_heads": 4, "kv_num_heads": 2},
+        "opset": 23,
+    },
+    {
         "name": "SoftmaxAxis0",
         "op_type": "Softmax",
         "input_shapes": [[2, 3, 4]],
