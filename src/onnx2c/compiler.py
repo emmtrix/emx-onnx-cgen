@@ -125,25 +125,100 @@ class Compiler:
         )
 
     def _lower_model(self, model: onnx.ModelProto, graph: Graph) -> LoweredModel:
+        constants = _lowered_constants(graph)
+        self._validate_graph(graph)
+        (
+            input_names,
+            input_shapes,
+            input_dtypes,
+            output_names,
+            output_shapes,
+            output_dtypes,
+        ) = self._collect_io_specs(graph)
+        ops, node_infos = self._lower_nodes(graph)
+        header = self._build_header(model, graph)
+        return LoweredModel(
+            name=self._options.model_name,
+            input_names=input_names,
+            input_shapes=input_shapes,
+            input_dtypes=input_dtypes,
+            output_names=output_names,
+            output_shapes=output_shapes,
+            output_dtypes=output_dtypes,
+            constants=constants,
+            ops=tuple(ops),
+            node_infos=tuple(node_infos),
+            header=header,
+        )
+
+    def _validate_graph(self, graph: Graph) -> None:
         if not graph.outputs:
             raise UnsupportedOpError("Graph must have at least one output")
         if not graph.nodes:
             raise UnsupportedOpError("Graph must contain at least one node")
-        output_names = tuple(value.name for value in graph.outputs)
-        output_shapes = tuple(value.type.shape for value in graph.outputs)
-        output_dtypes = tuple(
-            value_dtype(graph, value.name) for value in graph.outputs
-        )
-        for shape in output_shapes:
-            element_count = shape_product(shape)
+        for value in graph.outputs:
+            element_count = shape_product(value.type.shape)
             if element_count <= 0:
                 raise ShapeInferenceError("Output shape must be fully defined")
-        constants = _lowered_constants(graph)
+
+    def _collect_io_specs(
+        self, graph: Graph
+    ) -> tuple[
+        tuple[str, ...],
+        tuple[tuple[int, ...], ...],
+        tuple[str, ...],
+        tuple[str, ...],
+        tuple[tuple[int, ...], ...],
+        tuple[str, ...],
+    ]:
         input_names = tuple(value.name for value in graph.inputs)
         input_shapes = tuple(value.type.shape for value in graph.inputs)
         input_dtypes = tuple(
             value_dtype(graph, value.name) for value in graph.inputs
         )
+        output_names = tuple(value.name for value in graph.outputs)
+        output_shapes = tuple(value.type.shape for value in graph.outputs)
+        output_dtypes = tuple(
+            value_dtype(graph, value.name) for value in graph.outputs
+        )
+        return (
+            input_names,
+            input_shapes,
+            input_dtypes,
+            output_names,
+            output_shapes,
+            output_dtypes,
+        )
+
+    def _lower_nodes(
+        self, graph: Graph
+    ) -> tuple[
+        list[
+            BinaryOp
+            | UnaryOp
+            | MatMulOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | AveragePoolOp
+            | BatchNormOp
+            | LrnOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | TransposeOp
+            | ConstantOfShapeOp
+            | ReshapeOp
+            | ResizeOp
+            | ReduceOp
+            | ShapeOp
+        ],
+        list[NodeInfo],
+    ]:
         ops: list[
             BinaryOp
             | UnaryOp
@@ -187,20 +262,7 @@ class Compiler:
                     attrs=dict(node.attrs),
                 )
             )
-        header = self._build_header(model, graph)
-        return LoweredModel(
-            name=self._options.model_name,
-            input_names=input_names,
-            input_shapes=input_shapes,
-            input_dtypes=input_dtypes,
-            output_names=output_names,
-            output_shapes=output_shapes,
-            output_dtypes=output_dtypes,
-            constants=constants,
-            ops=tuple(ops),
-            node_infos=tuple(node_infos),
-            header=header,
-        )
+        return ops, node_infos
 
     def _build_header(self, model: onnx.ModelProto, graph: Graph) -> ModelHeader:
         metadata_props = tuple(
