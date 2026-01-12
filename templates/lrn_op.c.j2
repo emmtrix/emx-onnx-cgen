@@ -13,7 +13,7 @@ void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type 
 {{ inner_indent }}    sum += val * val;
 {{ inner_indent }}}
 {{ inner_indent }}{{ c_type }} scale = {{ bias_literal }} + {{ alpha_div_size_literal }} * sum;
-{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} / powf(scale, {{ beta_literal }});
+{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} / {{ pow_fn }}(scale, {{ beta_literal }});
 {% for _ in shape %}
 {{ loop_indents[loop.revindex0] }}}
 {% endfor %}

@@ -216,16 +216,12 @@ class Compiler:
                     if spec.trans_b:
                         right = right.T
                     result = _apply_matmul(left, right)
-                    alpha = (
-                        float(spec.alpha)
-                        if op_dtype == "float"
-                        else int(spec.alpha)
-                    )
-                    beta = (
-                        float(spec.beta)
-                        if op_dtype == "float"
-                        else int(spec.beta)
-                    )
+                    if op_dtype in {"float", "double"}:
+                        alpha = float(spec.alpha)
+                        beta = float(spec.beta)
+                    else:
+                        alpha = int(spec.alpha)
+                        beta = int(spec.beta)
                     if alpha != 1:
                         result = result * alpha
                     if len(node.inputs) == 3:
@@ -253,8 +249,10 @@ class Compiler:
                 continue
             if node.op_type == "Conv":
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-                if op_dtype != "float":
-                    raise UnsupportedOpError("Conv supports float inputs only")
+                if op_dtype not in {"float", "double"}:
+                    raise UnsupportedOpError(
+                        "Conv supports float and double inputs only"
+                    )
                 spec = _resolve_conv_spec(graph, node)
                 data = values[node.inputs[0]]
                 weights = values[node.inputs[1]]
@@ -269,9 +267,9 @@ class Compiler:
                         "BatchNormalization must have 5 inputs and 1 output"
                     )
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-                if op_dtype != "float":
+                if op_dtype not in {"float", "double"}:
                     raise UnsupportedOpError(
-                        "BatchNormalization supports float inputs only"
+                        "BatchNormalization supports float and double inputs only"
                     )
                 is_test = int(node.attrs.get("is_test", 1))
                 if is_test != 1:
@@ -321,8 +319,8 @@ class Compiler:
                 continue
             if node.op_type == "LRN":
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-                if op_dtype != "float":
-                    raise UnsupportedOpError("LRN supports float inputs only")
+                if op_dtype not in {"float", "double"}:
+                    raise UnsupportedOpError("LRN supports float and double inputs only")
                 spec = resolve_lrn_spec(graph, node)
                 data = values[node.inputs[0]]
                 values[node.outputs[0]] = _apply_lrn(spec, data)
@@ -347,8 +345,10 @@ class Compiler:
                 continue
             if node.op_type == "Softmax":
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-                if op_dtype != "float":
-                    raise UnsupportedOpError("Softmax supports float inputs only")
+                if op_dtype not in {"float", "double"}:
+                    raise UnsupportedOpError(
+                        "Softmax supports float and double inputs only"
+                    )
                 axis = _normalize_axis(
                     int(node.attrs.get("axis", -1)),
                     _value_shape(graph, node.inputs[0], node),
@@ -365,10 +365,10 @@ class Compiler:
                 op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
                 if (
                     node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY
-                    and op_dtype != "float"
+                    and op_dtype not in {"float", "double"}
                 ):
                     raise UnsupportedOpError(
-                        f"{node.op_type} supports float inputs only"
+                        f"{node.op_type} supports float and double inputs only"
                     )
                 value = values[node.inputs[0]]
                 input_shape = _value_shape(graph, node.inputs[0], node)
@@ -610,8 +610,8 @@ class Compiler:
         if len(node.inputs) != 1 or len(node.outputs) != 1:
             raise UnsupportedOpError("Softmax must have 1 input and 1 output")
         op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        if op_dtype != "float":
-            raise UnsupportedOpError("Softmax supports float inputs only")
+        if op_dtype not in {"float", "double"}:
+            raise UnsupportedOpError("Softmax supports float and double inputs only")
         input_shape = _value_shape(graph, node.inputs[0], node)
         output_shape = _value_shape(graph, node.outputs[0], node)
         if input_shape != output_shape:
@@ -693,8 +693,8 @@ class Compiler:
         if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
             raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
         op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-        if op_dtype != "float":
-            raise UnsupportedOpError("Conv supports float inputs only")
+        if op_dtype not in {"float", "double"}:
+            raise UnsupportedOpError("Conv supports float and double inputs only")
         spec = _resolve_conv_spec(graph, node)
         return ConvOp(
             input0=node.inputs[0],
@@ -853,9 +853,19 @@ _UNARY_OP_TYPES = {
 }
 
 
+def _format_float_literal(value: float, dtype: str) -> str:
+    formatted = f"{value:.9g}"
+    if "e" not in formatted and "E" not in formatted and "." not in formatted:
+        formatted = f"{formatted}.0"
+    if dtype == "float":
+        return f"{formatted}f"
+    return formatted
+
+
 def _ensure_supported_dtype(dtype: str) -> str:
     if dtype not in {
         "float",
+        "double",
         "bool",
         "int64",
         "int32",
@@ -1052,15 +1062,18 @@ def _binary_op_symbol(
     if op_type == "Div":
         return _BinaryOpSpec("/", "infix", lambda left, right: left / right)
     if op_type == "Max":
-        return _BinaryOpSpec("fmaxf", "func", np.maximum)
+        func = "fmaxf" if dtype == "float" else "fmax"
+        return _BinaryOpSpec(func, "func", np.maximum)
     if op_type == "Mean":
+        mean_literal = _format_float_literal(0.5, dtype)
         return _BinaryOpSpec(
-            "({left} + {right}) * 0.5f",
+            f"({{left}} + {{right}}) * {mean_literal}",
             "expr",
             lambda left, right: (left + right) * 0.5,
         )
     if op_type == "Min":
-        return _BinaryOpSpec("fminf", "func", np.minimum)
+        func = "fminf" if dtype == "float" else "fmin"
+        return _BinaryOpSpec(func, "func", np.minimum)
     if op_type == "Mod":
         fmod = 0
         if attrs is not None:
@@ -1069,14 +1082,17 @@ def _binary_op_symbol(
             raise UnsupportedOpError(
                 "Mod only supports fmod=1 for floating point types"
             )
-        return _BinaryOpSpec("fmodf", "func", np.fmod)
+        func = "fmodf" if dtype == "float" else "fmod"
+        return _BinaryOpSpec(func, "func", np.fmod)
     if op_type == "Mul":
         return _BinaryOpSpec("*", "infix", lambda left, right: left * right)
     if op_type == "Pow":
-        return _BinaryOpSpec("powf", "func", np.power)
+        func = "powf" if dtype == "float" else "pow"
+        return _BinaryOpSpec(func, "func", np.power)
     if op_type == "PRelu":
+        zero_literal = _format_float_literal(0.0, dtype)
         return _BinaryOpSpec(
-            "({left} > 0.0f ? {left} : {right} * {left})",
+            f"({{left}} > {zero_literal} ? {{left}} : {{right}} * {{left}})",
             "expr",
             lambda left, right: np.where(left > 0.0, left, right * left),
         )
@@ -1155,7 +1171,7 @@ def _resolve_gemm_attrs(
         )
     if dtype == "bool":
         raise UnsupportedOpError("Gemm supports numeric inputs only")
-    if dtype != "float":
+    if dtype not in {"float", "double"}:
         alpha_int = int(alpha)
         beta_int = int(beta)
         if alpha != alpha_int or beta != beta_int:
@@ -1218,6 +1234,34 @@ def _unary_op_symbol(op_type: str, *, dtype: str) -> str | None:
         if op_type == "Neg":
             return "neg"
         return None
+    if dtype == "double":
+        if op_type == "Abs":
+            return "fabs"
+        if op_type == "Ceil":
+            return "ceil"
+        if op_type == "Cos":
+            return "cos"
+        if op_type == "Exp":
+            return "exp"
+        if op_type == "Floor":
+            return "floor"
+        if op_type == "Log":
+            return "log"
+        if op_type == "Neg":
+            return "neg"
+        if op_type == "Relu":
+            return "relu"
+        if op_type == "Sin":
+            return "sin"
+        if op_type == "Sqrt":
+            return "sqrt"
+        if op_type == "Tan":
+            return "tan"
+        if op_type == "Tanh":
+            return "tanh"
+        if op_type == "Atanh":
+            return "atanh"
+        return None
     if op_type == "Abs":
         return "fabsf"
     if op_type == "Ceil":
@@ -1254,7 +1298,7 @@ def _apply_binary_op(
 
 
 def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
-    if op_symbol == "fabsf":
+    if op_symbol in {"fabsf", "fabs"}:
         return np.abs(value)
     if op_symbol == "abs":
         return np.abs(value)
@@ -1262,29 +1306,29 @@ def _apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
         return np.abs(value)
     if op_symbol == "!":
         return np.logical_not(value)
-    if op_symbol == "ceilf":
+    if op_symbol in {"ceilf", "ceil"}:
         return np.ceil(value)
-    if op_symbol == "cosf":
+    if op_symbol in {"cosf", "cos"}:
         return np.cos(value)
-    if op_symbol == "expf":
+    if op_symbol in {"expf", "exp"}:
         return np.exp(value)
-    if op_symbol == "floorf":
+    if op_symbol in {"floorf", "floor"}:
         return np.floor(value)
-    if op_symbol == "logf":
+    if op_symbol in {"logf", "log"}:
         return np.log(value)
     if op_symbol == "neg":
         return -value
     if op_symbol == "relu":
         return np.maximum(value, 0)
-    if op_symbol == "sinf":
+    if op_symbol in {"sinf", "sin"}:
         return np.sin(value)
-    if op_symbol == "sqrtf":
+    if op_symbol in {"sqrtf", "sqrt"}:
         return np.sqrt(value)
-    if op_symbol == "tanf":
+    if op_symbol in {"tanf", "tan"}:
         return np.tan(value)
-    if op_symbol == "tanhf":
+    if op_symbol in {"tanhf", "tanh"}:
         return np.tanh(value)
-    if op_symbol == "atanhf":
+    if op_symbol in {"atanhf", "atanh"}:
         return np.arctanh(value)
     raise UnsupportedOpError(f"Unsupported unary op {op_symbol}")
 
@@ -1323,7 +1367,7 @@ class _AttentionSpec:
 def _resolve_attention_spec(
     graph: Graph, node: Node, dtype: str
 ) -> _AttentionSpec:
-    if dtype != "float":
+    if dtype not in {"float", "double"}:
         raise UnsupportedOpError("Unsupported op Attention")
     if len(node.inputs) != 3 or len(node.outputs) != 1:
         raise UnsupportedOpError("Unsupported op Attention")

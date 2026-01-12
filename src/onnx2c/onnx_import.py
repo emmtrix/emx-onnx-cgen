@@ -20,6 +20,8 @@ def _normalize_initializer_data(dtype: str, data: object) -> np.ndarray:
         array = np.array(data)
     if dtype == "float" and array.dtype != "float32":
         array = array.astype("float32", copy=False)
+    if dtype == "double" and array.dtype != "float64":
+        array = array.astype("float64", copy=False)
     if dtype == "bool" and array.dtype != "bool":
         array = array.astype("bool", copy=False)
     if dtype == "uint64" and array.dtype != "uint64":
