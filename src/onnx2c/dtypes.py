@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import onnx
 
-from shared.scalar_types import ScalarType
+from shared.scalar_types import ScalarFunctionError, ScalarType
+
+from .errors import UnsupportedOpError
 
 ONNX_TO_SCALAR_TYPE: dict[int, ScalarType] = {
     onnx.TensorProto.FLOAT16: ScalarType.F16,
@@ -22,3 +24,17 @@ ONNX_TO_SCALAR_TYPE: dict[int, ScalarType] = {
 
 def scalar_type_from_onnx(elem_type: int) -> ScalarType | None:
     return ONNX_TO_SCALAR_TYPE.get(elem_type)
+
+
+def dtype_info(dtype: ScalarType | int | str) -> ScalarType:
+    if isinstance(dtype, ScalarType):
+        return dtype
+    if isinstance(dtype, int):
+        scalar = scalar_type_from_onnx(dtype)
+        if scalar is None:
+            raise UnsupportedOpError(f"Unsupported ONNX dtype enum: {dtype}")
+        return scalar
+    try:
+        return ScalarType.from_onnx_name(dtype)
+    except ScalarFunctionError:
+        raise UnsupportedOpError(f"Unsupported dtype: {dtype}") from None

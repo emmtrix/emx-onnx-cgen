@@ -80,6 +80,7 @@ static int64_t rng_next_i64(void) {
     return (int64_t)rng_next_u64();
 }
 
+
 int main(void) {
     float a[2][3][4];
     float *a_ptr = (float *)a;

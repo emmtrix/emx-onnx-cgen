@@ -4732,7 +4732,7 @@ class CEmitter:
             elif dtype == ScalarType.BOOL:
                 random_expr = "((rng_next_u64() & 1ull) != 0)"
             else:
-                random_expr = f"({info.c_type})rng_next_i64()"
+                random_expr = f"({dtype.c_type})rng_next_i64()"
             constant_values = testbench_inputs.get(name)
             constant_name = None
             constant_lines = None
