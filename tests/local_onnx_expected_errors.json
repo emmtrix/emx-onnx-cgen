@@ -17,15 +17,15 @@
   ],
   [
     "test_gemm_C1/model.onnx",
-    "Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4)"
+    ""
   ],
   [
     "test_gemm_C1_transA/model.onnx",
-    "Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4)"
+    ""
   ],
   [
     "test_gemm_C1_transB/model.onnx",
-    "Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4)"
+    ""
   ],
   [
     "test_gemm_C1x1/model.onnx",

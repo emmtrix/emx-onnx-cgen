@@ -666,7 +666,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gemm_default_matrix_bias/model.onnx | ✅ |  |
 | node/test_gemm_default_no_bias/model.onnx | ✅ |  |
 | node/test_gemm_default_scalar_bias/model.onnx | ✅ |  |
-| node/test_gemm_default_single_elem_vector_bias/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3) |
+| node/test_gemm_default_single_elem_vector_bias/model.onnx | ✅ |  |
 | node/test_gemm_default_vector_bias/model.onnx | ✅ |  |
 | node/test_gemm_default_zero_bias/model.onnx | ✅ |  |
 | node/test_gemm_transposeA/model.onnx | ✅ |  |
@@ -1770,7 +1770,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_max/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_maxpool/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_min/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_mm/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) |
+| pytorch-operator/test_operator_mm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_non_float_params/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_pad/model.onnx | ❌ | Unsupported op Pad |
 | pytorch-operator/test_operator_params/model.onnx | ❌ | Unsupported op Sigmoid |
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 49 / 74 local ONNX files.
+Support 50 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -1823,9 +1823,9 @@ Support 49 / 74 local ONNX files.
 | test_gather_output_scalar/model.onnx | ❌ | Unsupported op Gather |
 | test_gather_scalar_axis0/model.onnx | ❌ | Unsupported op Gather |
 | test_gather_scalar_axis1/model.onnx | ❌ | Unsupported op Gather |
-| test_gemm_C1/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) |
-| test_gemm_C1_transA/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) |
-| test_gemm_C1_transB/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) |
+| test_gemm_C1/model.onnx | ✅ |  |
+| test_gemm_C1_transA/model.onnx | ✅ |  |
+| test_gemm_C1_transB/model.onnx | ✅ |  |
 | test_gemm_C1x1/model.onnx | ✅ |  |
 | test_gemm_C1x1_transA/model.onnx | ✅ |  |
 | test_gemm_C1xN/model.onnx | ✅ |  |

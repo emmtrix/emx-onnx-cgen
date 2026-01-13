@@ -21,7 +21,8 @@ static inline void {{ op_name }}(const {{ c_type }} {{ input_a }}{{ input_a_suff
             size_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
             const {{ c_type }} bias = {{ input_c }}[c_i][c_j];
             {% elif c_rank == 1 %}
-            const {{ c_type }} bias = {{ input_c }}[j];
+            size_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
+            const {{ c_type }} bias = {{ input_c }}[c_j];
             {% else %}
             const {{ c_type }} bias = {{ input_c }}[0];
             {% endif %}

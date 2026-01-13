@@ -138,7 +138,6 @@
 | Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
-| Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3) | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
 | Unsupported op If | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
@@ -155,7 +154,6 @@
 | Unsupported op Round | 1 | █ |
 | Unsupported op Swish | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
-| Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) | 1 | █ |
 
 ## Local ONNX file support histogram
 
@@ -166,7 +164,6 @@
 | Unsupported op Pad | 6 | ██████████████████████████████ |
 | Unsupported op Gather | 4 | ████████████████████ |
 | Unsupported op ScatterND | 4 | ████████████████████ |
-| Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) | 3 | ███████████████ |
 | Unsupported LSTM direction b'*' | 2 | ██████████ |
 | Unsupported op QLinearAdd | 2 | ██████████ |
 | Unsupported op QLinearMul | 2 | ██████████ |
