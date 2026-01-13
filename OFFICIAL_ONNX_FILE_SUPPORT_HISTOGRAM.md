@@ -117,7 +117,6 @@
 | Unsupported op HannWindow | 2 | █ |
 | Unsupported op IsNaN | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
-| MaxPool must have 1 input and 1 output | 2 | █ |
 | Unsupported op MaxUnpool | 2 | █ |
 | Mean must have 2 inputs and 1 output | 2 | █ |
 | Min must have 2 inputs and 1 output | 2 | █ |
@@ -169,7 +168,6 @@
 | Unsupported op ScatterND | 4 | ████████████████████ |
 | Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) | 3 | ███████████████ |
 | Unsupported LSTM direction b'*' | 2 | ██████████ |
-| MaxPool must have 1 input and 1 output | 2 | ██████████ |
 | Unsupported op QLinearAdd | 2 | ██████████ |
 | Unsupported op QLinearMul | 2 | ██████████ |
 | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | █████ |
