@@ -5,13 +5,17 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 from collections import Counter
 from pathlib import Path
 
 import onnx
+import numpy as np
 import pytest
 
-from onnx2c.compiler import Compiler
+from onnx import numpy_helper
+
+from onnx2c.compiler import Compiler, CompilerOptions
 
 OFFICIAL_ONNX_FILES = [
     "light/light_bvlc_alexnet.onnx",
@@ -2016,6 +2020,117 @@ def _ensure_local_onnx_files_present(data_root: Path) -> None:
         )
 
 
+def _resolve_compiler() -> list[str] | None:
+    compiler = os.environ.get("CC")
+    if compiler:
+        return [compiler]
+    for candidate in ("cc", "gcc", "clang"):
+        resolved = shutil.which(candidate)
+        if resolved:
+            return [resolved]
+    return None
+
+
+def _load_test_data_set(
+    model: onnx.ModelProto, data_dir: Path
+) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
+    if not data_dir.exists():
+        pytest.skip(
+            f"Missing test data directory {data_dir}. Ensure LFS data is available."
+        )
+    input_files = sorted(
+        data_dir.glob("input_*.pb"),
+        key=lambda path: int(path.stem.split("_")[-1]),
+    )
+    output_files = sorted(
+        data_dir.glob("output_*.pb"),
+        key=lambda path: int(path.stem.split("_")[-1]),
+    )
+    if not input_files or not output_files:
+        pytest.skip(
+            f"Missing test data files in {data_dir}. Ensure LFS data is available."
+        )
+    if len(input_files) != len(model.graph.input):
+        raise AssertionError(
+            "Test data input count does not match model inputs: "
+            f"{len(input_files)} vs {len(model.graph.input)}."
+        )
+    if len(output_files) != len(model.graph.output):
+        raise AssertionError(
+            "Test data output count does not match model outputs: "
+            f"{len(output_files)} vs {len(model.graph.output)}."
+        )
+    inputs: dict[str, np.ndarray] = {}
+    for index, path in enumerate(input_files):
+        tensor = onnx.TensorProto()
+        tensor.ParseFromString(path.read_bytes())
+        inputs[model.graph.input[index].name] = numpy_helper.to_array(tensor)
+    outputs: dict[str, np.ndarray] = {}
+    for index, path in enumerate(output_files):
+        tensor = onnx.TensorProto()
+        tensor.ParseFromString(path.read_bytes())
+        outputs[model.graph.output[index].name] = numpy_helper.to_array(tensor)
+    return inputs, outputs
+
+
+def _compile_and_run_testbench(
+    model: onnx.ModelProto,
+    testbench_inputs: dict[str, np.ndarray],
+) -> dict[str, object]:
+    compiler_cmd = _resolve_compiler()
+    if compiler_cmd is None:
+        pytest.skip("C compiler not available (set CC or install gcc/clang)")
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        c_path = temp_path / "model.c"
+        exe_path = temp_path / "model"
+        options = CompilerOptions(
+            template_dir=Path(__file__).resolve().parents[1] / "templates",
+            emit_testbench=True,
+            testbench_inputs=testbench_inputs,
+        )
+        compiler = Compiler(options)
+        generated = compiler.compile(model)
+        c_path.write_text(generated, encoding="utf-8")
+        subprocess.run(
+            [
+                *compiler_cmd,
+                "-std=c99",
+                "-O2",
+                str(c_path),
+                "-o",
+                str(exe_path),
+                "-lm",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        result = subprocess.run(
+            [str(exe_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    return json.loads(result.stdout)
+
+
+def _assert_outputs_match(
+    payload: dict[str, object], expected_outputs: dict[str, np.ndarray]
+) -> None:
+    outputs = payload.get("outputs", {})
+    for name, expected in expected_outputs.items():
+        output_payload = outputs.get(name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {name} in testbench data")
+        output_data = np.array(output_payload["data"], dtype=expected.dtype)
+        output_data = output_data.reshape(expected.shape)
+        if np.issubdtype(expected.dtype, np.floating):
+            np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)
+        else:
+            np.testing.assert_array_equal(output_data, expected)
+
+
 def test_official_onnx_files() -> None:
     data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
     _ensure_official_onnx_files_present(data_root)
@@ -2112,6 +2227,38 @@ def test_local_onnx_expected_errors() -> None:
             encoding="utf-8",
         )
         return
+
+
+@pytest.mark.order(after="test_local_onnx_expected_errors")
+def test_official_onnx_test_data_matches_testbench() -> None:
+    data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
+    _ensure_official_onnx_files_present(data_root)
+    expectations = _load_official_onnx_file_expectations()
+    for rel_path, expected_error in expectations:
+        if expected_error:
+            continue
+        model_path = data_root / rel_path
+        model = onnx.load_model(model_path)
+        test_data_dir = model_path.parent / "test_data_set_0"
+        inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
+        payload = _compile_and_run_testbench(model, inputs)
+        _assert_outputs_match(payload, expected_outputs)
+
+
+@pytest.mark.order(after="test_official_onnx_test_data_matches_testbench")
+def test_local_onnx_test_data_matches_testbench() -> None:
+    data_root = LOCAL_ONNX_DATA_ROOT
+    _ensure_local_onnx_files_present(data_root)
+    expectations = _load_local_onnx_file_expectations()
+    for rel_path, expected_error in expectations:
+        if expected_error:
+            continue
+        model_path = data_root / rel_path
+        model = onnx.load_model(model_path)
+        test_data_dir = model_path.parent / "test_data_set_0"
+        inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
+        payload = _compile_and_run_testbench(model, inputs)
+        _assert_outputs_match(payload, expected_outputs)
 
 
 @pytest.mark.order(after="test_official_onnx_expected_errors")
