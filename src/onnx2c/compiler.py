@@ -37,6 +37,7 @@ from .codegen.c_emitter import (
     ShapeOp,
     TransposeOp,
     UnaryOp,
+    WhereOp,
 )
 from .dtypes import dtype_info
 from .errors import ShapeInferenceError, UnsupportedOpError
@@ -81,6 +82,7 @@ from .lowering.shape import lower_shape
 from .lowering.softmax import lower_softmax
 from .lowering.transpose import lower_transpose
 from .lowering.unsqueeze import lower_unsqueeze
+from .lowering.where import lower_where
 from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
 from .ops import (
@@ -246,6 +248,7 @@ class Compiler:
             | ResizeOp
             | ReduceOp
             | ShapeOp
+            | WhereOp
         ] = []
         node_infos: list[NodeInfo] = []
         for node in graph.nodes:
