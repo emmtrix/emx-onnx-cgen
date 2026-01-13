@@ -20,6 +20,19 @@
  */
 
 #include <stddef.h>
+#include <math.h>
+#include <float.h>
+
+#ifndef REF_PI_F
+#define REF_PI_F 3.14159265358979323846f
+#endif
+#ifndef REF_PI_D
+#define REF_PI_D 3.14159265358979323846
+#endif
+
+static inline float ref_scalar_f32_add(float a, float b) {
+    return a + b;
+}
 
 /*
  * Node 0:
@@ -32,7 +45,7 @@ static inline void model_op0(const float a[2][3][4], const float b[2][3][4], flo
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                out[i0][i1][i2] = a[i0][i1][i2] + b[i0][i1][i2];
+                out[i0][i1][i2] = ref_scalar_f32_add(a[i0][i1][i2], b[i0][i1][i2]);
             }
         }
     }
