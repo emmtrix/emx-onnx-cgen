@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 770 / 1802 official ONNX files.
+Support 773 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 50 / 74 local ONNX files.
+Support 52 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
