@@ -4,10 +4,10 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 130 | ██████████████████████████████ |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 34 | ████████ |
+| NegativeLogLikelihoodLoss input must be at least 2D | 34 | ████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████ |
-| Unsupported op Identity | 20 | █████ |
 | Dynamic or zero dims are not supported | 20 | █████ |
 | Unsupported op Size | 20 | █████ |
 | Unsupported op LayerNormalization | 19 | ████ |
@@ -19,7 +19,6 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ████ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ████ |
-| NegativeLogLikelihoodLoss input must be at least 2D | 17 | ████ |
 | Unsupported op Split | 17 | ████ |
 | Unsupported op ArgMax | 16 | ████ |
 | Unsupported op ArgMin | 16 | ████ |

@@ -52,6 +52,7 @@ UNARY_OP_TYPES = {
     "Cos",
     "Exp",
     "Floor",
+    "Identity",
     "Log",
     "Neg",
     "Not",
@@ -73,26 +74,31 @@ def _format_float_literal(value: float, dtype: str) -> str:
 
 
 UNARY_SYMBOLS_BOOL = {
+    "Identity": "identity",
     "Not": "!",
 }
 
 UNARY_SYMBOLS_INT64 = {
     "Abs": "llabs",
+    "Identity": "identity",
     "Neg": "neg",
 }
 
 UNARY_SYMBOLS_INT32 = {
     "Abs": "abs",
+    "Identity": "identity",
     "Neg": "neg",
 }
 
 UNARY_SYMBOLS_INT16 = {
     "Abs": "abs",
+    "Identity": "identity",
     "Neg": "neg",
 }
 
 UNARY_SYMBOLS_INT8 = {
     "Abs": "abs",
+    "Identity": "identity",
     "Neg": "neg",
 }
 
@@ -102,6 +108,7 @@ UNARY_SYMBOLS_DOUBLE = {
     "Cos": "cos",
     "Exp": "exp",
     "Floor": "floor",
+    "Identity": "identity",
     "Log": "log",
     "Neg": "neg",
     "Relu": "relu",
@@ -118,6 +125,7 @@ UNARY_SYMBOLS_FLOAT = {
     "Cos": "cosf",
     "Exp": "expf",
     "Floor": "floorf",
+    "Identity": "identity",
     "Log": "logf",
     "Neg": "neg",
     "Relu": "relu",
@@ -213,6 +221,7 @@ UNARY_APPLY_FUNCS = {
     "abs": np.abs,
     "llabs": np.abs,
     "!": np.logical_not,
+    "identity": lambda value: value,
     "ceilf": np.ceil,
     "ceil": np.ceil,
     "cosf": np.cos,
