@@ -21,12 +21,26 @@ static int64_t rng_next_i64(void) {
     return (int64_t)rng_next_u64();
 }
 
+{% for input in inputs %}
+{% if input.constant_lines %}
+static const {{ input.c_type }} {{ input.constant_name }}[] = {
+{% for line in input.constant_lines %}
+    {{ line }}{% if not loop.last %},{% endif %}
+{% endfor %}
+};
+{% endif %}
+{% endfor %}
+
 int main(void) {
 {% for input in inputs %}
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
     {{ input.c_type }} *{{ input.name }}_ptr = ({{ input.c_type }} *){{ input.name }};
     for (size_t i = 0; i < {{ input.count }}; ++i) {
+{% if input.constant_name %}
+        {{ input.name }}_ptr[i] = {{ input.constant_name }}[i];
+{% else %}
         {{ input.name }}_ptr[i] = {{ input.random_expr }};
+{% endif %}
     }
 {% endfor %}
 {% for output in outputs %}
