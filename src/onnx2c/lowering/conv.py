@@ -167,8 +167,10 @@ def lower_conv(graph: Graph, node: Node) -> ConvOp:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
         raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-    if op_dtype not in {"float", "double"}:
-        raise UnsupportedOpError("Conv supports float and double inputs only")
+    if op_dtype not in {"float", "double", "float16"}:
+        raise UnsupportedOpError(
+            "Conv supports float16, float, and double inputs only"
+        )
     spec = resolve_conv_spec(graph, node)
     return ConvOp(
         input0=node.inputs[0],

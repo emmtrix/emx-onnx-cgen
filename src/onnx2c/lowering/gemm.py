@@ -79,7 +79,7 @@ def _resolve_gemm_attrs(
         )
     if dtype == "bool":
         raise UnsupportedOpError("Gemm supports numeric inputs only")
-    if dtype not in {"float", "double"}:
+    if dtype not in {"float", "double", "float16"}:
         alpha_int = int(alpha)
         beta_int = int(beta)
         if alpha != alpha_int or beta != beta_int:

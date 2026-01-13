@@ -8,6 +8,7 @@ from ..ir.model import Graph, Node
 
 def ensure_supported_dtype(dtype: str) -> str:
     if dtype not in {
+        "float16",
         "float",
         "double",
         "bool",

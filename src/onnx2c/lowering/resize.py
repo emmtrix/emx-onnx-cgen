@@ -240,7 +240,7 @@ def _resolve_scales(
     rank = len(config.input_shape)
     if inputs.scales:
         scale_len, _ = _validate_tensor_1d(
-            graph, inputs.scales, node, {"float", "double"}
+            graph, inputs.scales, node, {"float", "double", "float16"}
         )
         if scale_len not in {len(axes), rank}:
             raise UnsupportedOpError("Resize scales length mismatch")
@@ -369,7 +369,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
     roi_dtype = None
     if inputs.roi:
         roi_len, roi_dtype = _validate_tensor_1d(
-            graph, inputs.roi, node, {"float", "double"}
+            graph, inputs.roi, node, {"float", "double", "float16"}
         )
         if roi_len == 2 * rank:
             roi_shape = (roi_len,)
@@ -390,7 +390,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
     sizes_axes = None
     if inputs.scales:
         scale_len, scales_dtype = _validate_tensor_1d(
-            graph, inputs.scales, node, {"float", "double"}
+            graph, inputs.scales, node, {"float", "double", "float16"}
         )
         scales_shape = (scale_len,)
         if scale_len == len(axes) and len(axes) != rank:

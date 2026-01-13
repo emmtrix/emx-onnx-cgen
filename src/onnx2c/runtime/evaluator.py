@@ -128,7 +128,7 @@ def _eval_gemm(evaluator: Evaluator, node: Node) -> None:
     if spec.trans_b:
         right = right.T
     result = _apply_matmul(left, right)
-    if op_dtype in {"float", "double"}:
+    if op_dtype in {"float", "double", "float16"}:
         alpha = float(spec.alpha)
         beta = float(spec.beta)
     else:
@@ -313,8 +313,10 @@ def _eval_conv(evaluator: Evaluator, node: Node) -> None:
             f"{node.op_type} expects matching input/output dtypes, "
             f"got {op_dtype} and {output_dtype}"
         )
-    if op_dtype not in {"float", "double"}:
-        raise UnsupportedOpError("Conv supports float and double inputs only")
+    if op_dtype not in {"float", "double", "float16"}:
+        raise UnsupportedOpError(
+            "Conv supports float16, float, and double inputs only"
+        )
     spec = resolve_conv_spec(evaluator.graph, node)
     data = evaluator.values[node.inputs[0]]
     weights = evaluator.values[node.inputs[1]]
@@ -352,8 +354,10 @@ def _eval_lrn(evaluator: Evaluator, node: Node) -> None:
             f"{node.op_type} expects matching input/output dtypes, "
             f"got {op_dtype} and {output_dtype}"
         )
-    if op_dtype not in {"float", "double"}:
-        raise UnsupportedOpError("LRN supports float and double inputs only")
+    if op_dtype not in {"float", "double", "float16"}:
+        raise UnsupportedOpError(
+            "LRN supports float16, float, and double inputs only"
+        )
     spec = resolve_lrn_spec(evaluator.graph, node)
     data = evaluator.values[node.inputs[0]]
     evaluator.values[node.outputs[0]] = _apply_lrn(spec, data)
@@ -517,10 +521,10 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
         )
     if (
         node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY
-        and op_dtype not in {"float", "double"}
+        and op_dtype not in {"float", "double", "float16"}
     ):
         raise UnsupportedOpError(
-            f"{node.op_type} supports float and double inputs only"
+            f"{node.op_type} supports float16, float, and double inputs only"
         )
     value = evaluator.values[node.inputs[0]]
     input_shape = value.shape

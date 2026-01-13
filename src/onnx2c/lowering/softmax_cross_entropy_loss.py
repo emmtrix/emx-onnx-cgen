@@ -21,9 +21,9 @@ def lower_softmax_cross_entropy_loss(
     target_name = node.inputs[1]
     weight_name = node.inputs[2] if len(node.inputs) > 2 else None
     input_dtype = _value_dtype(graph, input_name, node)
-    if input_dtype not in {"float", "double"}:
+    if input_dtype not in {"float", "double", "float16"}:
         raise UnsupportedOpError(
-            "SoftmaxCrossEntropyLoss supports float and double inputs only"
+            "SoftmaxCrossEntropyLoss supports float16, float, and double inputs only"
         )
     output_name = node.outputs[0]
     output_dtype = _value_dtype(graph, output_name, node)

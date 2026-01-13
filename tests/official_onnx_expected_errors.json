@@ -689,11 +689,11 @@
   ],
   [
     "node/test_attention_4d_fp16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'Q'."
+    ""
   ],
   [
     "node/test_attention_4d_fp16_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'Q'."
+    "Dynamic dim for tensor 'Attention_test_attention_4d_fp16_expanded_function_AttnBias'"
   ],
   [
     "node/test_attention_4d_gqa/model.onnx",
@@ -745,11 +745,11 @@
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'Q'."
+    ""
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'Q'."
+    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_fp16_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_scaled/model.onnx",
@@ -1109,51 +1109,51 @@
   ],
   [
     "node/test_cast_DOUBLE_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'output'."
+    ""
   ],
   [
     "node/test_cast_FLOAT16_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    ""
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    ""
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_INT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 26 (INT2) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_INT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 22 (INT4) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_UINT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 25 (UINT2) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT16_to_UINT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 21 (UINT4) for tensor 'output'."
   ],
   [
     "node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx",
@@ -1205,7 +1205,7 @@
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'output'."
+    ""
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx",
@@ -1293,7 +1293,7 @@
   ],
   [
     "node/test_cast_e8m0_FLOAT16_to_FLOAT8E8M0/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'."
   ],
   [
     "node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT/model.onnx",
@@ -1309,19 +1309,19 @@
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'."
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'."
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'."
   ],
   [
     "node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'."
   ],
   [
     "node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx",
@@ -1353,11 +1353,11 @@
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'like'."
+    ""
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'like'."
+    ""
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx",
@@ -1365,91 +1365,91 @@
   ],
   [
     "node/test_castlike_FLOAT16_to_DOUBLE/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    ""
   ],
   [
     "node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    ""
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    ""
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_FLOAT_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    ""
   ],
   [
     "node/test_castlike_FLOAT16_to_INT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 26 (INT2) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_INT2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 26 (INT2) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_INT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 22 (INT4) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_INT4_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 22 (INT4) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 25 (UINT2) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 25 (UINT2) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT4/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 21 (UINT4) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT16_to_UINT4_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 21 (UINT4) for tensor 'like'."
   ],
   [
     "node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx",
@@ -1549,11 +1549,11 @@
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'like'."
+    ""
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'like'."
+    ""
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx",
@@ -1725,35 +1725,35 @@
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'input'."
+    "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'."
   ],
   [
     "node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx",
@@ -3033,7 +3033,7 @@
   ],
   [
     "node/test_isinf_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'x'."
+    "Unsupported op IsInf"
   ],
   [
     "node/test_isinf_negative/model.onnx",
@@ -3049,7 +3049,7 @@
   ],
   [
     "node/test_isnan_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'x'."
+    "Unsupported op IsNaN"
   ],
   [
     "node/test_l1normalization_axis_0/model.onnx",
@@ -3621,7 +3621,7 @@
   ],
   [
     "node/test_max_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'."
+    ""
   ],
   [
     "node/test_max_float32/model.onnx",
@@ -3777,7 +3777,7 @@
   ],
   [
     "node/test_min_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'data_0'."
+    ""
   ],
   [
     "node/test_min_float32/model.onnx",
@@ -3845,7 +3845,7 @@
   ],
   [
     "node/test_mod_mixed_sign_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'x'."
+    ""
   ],
   [
     "node/test_mod_mixed_sign_float32/model.onnx",
@@ -4313,7 +4313,7 @@
   ],
   [
     "node/test_qlinearmatmul_2D_int8_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'."
+    "Unsupported op QLinearMatMul"
   ],
   [
     "node/test_qlinearmatmul_2D_int8_float32/model.onnx",
@@ -4321,7 +4321,7 @@
   ],
   [
     "node/test_qlinearmatmul_2D_uint8_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'."
+    "Unsupported op QLinearMatMul"
   ],
   [
     "node/test_qlinearmatmul_2D_uint8_float32/model.onnx",
@@ -4329,7 +4329,7 @@
   ],
   [
     "node/test_qlinearmatmul_3D_int8_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'."
+    "Unsupported op QLinearMatMul"
   ],
   [
     "node/test_qlinearmatmul_3D_int8_float32/model.onnx",
@@ -4337,7 +4337,7 @@
   ],
   [
     "node/test_qlinearmatmul_3D_uint8_float16/model.onnx",
-    "Unsupported elem_type 10 (FLOAT16) for tensor 'a_scale'."
+    "Unsupported op QLinearMatMul"
   ],
   [
     "node/test_qlinearmatmul_3D_uint8_float32/model.onnx",

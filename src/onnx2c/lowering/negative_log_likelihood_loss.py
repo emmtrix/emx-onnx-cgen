@@ -21,9 +21,9 @@ def lower_negative_log_likelihood_loss(
     target_name = node.inputs[1]
     weight_name = node.inputs[2] if len(node.inputs) > 2 else None
     input_dtype = _value_dtype(graph, input_name, node)
-    if input_dtype not in {"float", "double"}:
+    if input_dtype not in {"float", "double", "float16"}:
         raise UnsupportedOpError(
-            "NegativeLogLikelihoodLoss supports float and double inputs only"
+            "NegativeLogLikelihoodLoss supports float16, float, and double inputs only"
         )
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     if output_dtype != input_dtype:
