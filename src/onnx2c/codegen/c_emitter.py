@@ -22,6 +22,19 @@ class BinaryOp:
 
 
 @dataclass(frozen=True)
+class WhereOp:
+    condition: str
+    input_x: str
+    input_y: str
+    output: str
+    condition_shape: tuple[int, ...]
+    x_shape: tuple[int, ...]
+    y_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    dtype: str
+
+
+@dataclass(frozen=True)
 class NodeInfo:
     op_type: str
     inputs: tuple[str, ...]
@@ -462,6 +475,7 @@ class LoweredModel:
     constants: tuple[ConstTensor, ...]
     ops: tuple[
         BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -504,6 +518,7 @@ class CEmitter:
         try:
             templates = {
                 "binary": self._env.get_template("binary_op.c.j2"),
+                "where": self._env.get_template("where_op.c.j2"),
                 "unary": self._env.get_template("unary_op.c.j2"),
                 "cast": self._env.get_template("cast_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
@@ -542,6 +557,7 @@ class CEmitter:
     def emit_model(self, model: LoweredModel, *, emit_testbench: bool = False) -> str:
         templates = self._load_templates(emit_testbench)
         binary_template = templates["binary"]
+        where_template = templates["where"]
         unary_template = templates["unary"]
         cast_template = templates["cast"]
         matmul_template = templates["matmul"]
@@ -584,6 +600,7 @@ class CEmitter:
                 min_literal=dtype_info(op.dtype).min_literal,
                 max_literal=dtype_info(op.dtype).max_literal,
                 binary_template=binary_template,
+                where_template=where_template,
                 unary_template=unary_template,
                 cast_template=cast_template,
                 matmul_template=matmul_template,
@@ -641,6 +658,7 @@ class CEmitter:
     ) -> tuple[str, str]:
         templates = self._load_templates(emit_testbench)
         binary_template = templates["binary"]
+        where_template = templates["where"]
         unary_template = templates["unary"]
         cast_template = templates["cast"]
         matmul_template = templates["matmul"]
@@ -683,6 +701,7 @@ class CEmitter:
                 min_literal=dtype_info(op.dtype).min_literal,
                 max_literal=dtype_info(op.dtype).max_literal,
                 binary_template=binary_template,
+                where_template=where_template,
                 unary_template=unary_template,
                 cast_template=cast_template,
                 matmul_template=matmul_template,
@@ -863,6 +882,7 @@ class CEmitter:
         model: LoweredModel,
         resolved_ops: list[
             BinaryOp
+            | WhereOp
             | UnaryOp
             | CastOp
             | MatMulOp
@@ -1109,6 +1129,7 @@ class CEmitter:
         model: LoweredModel,
         resolved_ops: list[
             BinaryOp
+            | WhereOp
             | UnaryOp
             | CastOp
             | MatMulOp
@@ -1162,6 +1183,7 @@ class CEmitter:
     @staticmethod
     def _build_op_call(
         op: BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -1185,7 +1207,13 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp,
     ) -> str:
-        if isinstance(op, (BinaryOp, MatMulOp)):
+        if isinstance(op, BinaryOp):
+            return f"{op.input0}, {op.input1}, {op.output}"
+        if isinstance(op, WhereOp):
+            return (
+                f"{op.condition}, {op.input_x}, {op.input_y}, {op.output}"
+            )
+        if isinstance(op, MatMulOp):
             return f"{op.input0}, {op.input1}, {op.output}"
         if isinstance(op, GemmOp):
             if op.input_c is None:
@@ -1296,6 +1324,7 @@ class CEmitter:
     @staticmethod
     def _resolve_op(
         op: BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -1321,6 +1350,7 @@ class CEmitter:
         temp_map: dict[str, str],
     ) -> (
         BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -1354,6 +1384,18 @@ class CEmitter:
                 shape=op.shape,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
+            )
+        if isinstance(op, WhereOp):
+            return WhereOp(
+                condition=temp_map.get(op.condition, op.condition),
+                input_x=temp_map.get(op.input_x, op.input_x),
+                input_y=temp_map.get(op.input_y, op.input_y),
+                output=temp_map.get(op.output, op.output),
+                condition_shape=op.condition_shape,
+                x_shape=op.x_shape,
+                y_shape=op.y_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -1793,6 +1835,7 @@ class CEmitter:
         self,
         model: LoweredModel,
         op: BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -1826,6 +1869,7 @@ class CEmitter:
         min_literal: str,
         max_literal: str,
         binary_template,
+        where_template,
         unary_template,
         cast_template,
         matmul_template,
@@ -1896,6 +1940,51 @@ class CEmitter:
                 left_expr=left_expr,
                 right_expr=right_expr,
                 operator_expr=operator_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, WhereOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            loop_indents = CEmitter._loop_indents(output_shape)
+            inner_indent = CEmitter._inner_indent(output_shape)
+            output_array_suffix = self._param_array_suffix(output_shape)
+            condition_array_suffix = self._param_array_suffix(op.condition_shape)
+            x_array_suffix = self._param_array_suffix(op.x_shape)
+            y_array_suffix = self._param_array_suffix(op.y_shape)
+            condition_expr = CEmitter._broadcast_index_expr(
+                op.condition, op.condition_shape, op.output_shape, loop_vars
+            )
+            x_expr = CEmitter._broadcast_index_expr(
+                op.input_x, op.x_shape, op.output_shape, loop_vars
+            )
+            y_expr = CEmitter._broadcast_index_expr(
+                op.input_y, op.y_shape, op.output_shape, loop_vars
+            )
+            output_expr = f"{op.output}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            rendered = where_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                loop_indents=loop_indents,
+                inner_indent=inner_indent,
+                condition=op.condition,
+                input_x=op.input_x,
+                input_y=op.input_y,
+                output=op.output,
+                condition_array_suffix=condition_array_suffix,
+                x_array_suffix=x_array_suffix,
+                y_array_suffix=y_array_suffix,
+                output_array_suffix=output_array_suffix,
+                condition_expr=condition_expr,
+                x_expr=x_expr,
+                y_expr=y_expr,
+                output_expr=output_expr,
+                input_c_type=dtype_info(op.dtype).c_type,
+                output_c_type=dtype_info(op.dtype).c_type,
+                condition_c_type=dtype_info("bool").c_type,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MatMulOp):
@@ -2827,6 +2916,7 @@ class CEmitter:
     @staticmethod
     def _op_output(
         op: BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -2855,6 +2945,7 @@ class CEmitter:
     @staticmethod
     def _op_outputs(
         op: BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -2952,6 +3043,7 @@ class CEmitter:
     @staticmethod
     def _op_output_shape(
         op: BinaryOp
+        | WhereOp
         | UnaryOp
         | CastOp
         | MatMulOp
@@ -2976,6 +3068,8 @@ class CEmitter:
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return op.shape
+        if isinstance(op, WhereOp):
+            return op.output_shape
         if isinstance(op, UnaryOp):
             return op.shape
         if isinstance(op, CastOp):
@@ -3023,6 +3117,7 @@ class CEmitter:
     @staticmethod
     def _op_output_dtype(
         op: BinaryOp
+        | WhereOp
         | UnaryOp
         | MatMulOp
         | GemmOp
@@ -3077,6 +3172,21 @@ class CEmitter:
     def _inner_indent(shape: tuple[int, ...]) -> str:
         shape = CEmitter._codegen_shape(shape)
         return "    " * (len(shape) + 1)
+
+    @staticmethod
+    def _broadcast_index_expr(
+        name: str,
+        input_shape: tuple[int, ...],
+        output_shape: tuple[int, ...],
+        loop_vars: tuple[str, ...],
+    ) -> str:
+        output_rank = len(CEmitter._codegen_shape(output_shape))
+        input_rank = len(input_shape)
+        padded_shape = (1,) * max(output_rank - input_rank, 0) + input_shape
+        indices: list[str] = []
+        for dim, var in zip(padded_shape, loop_vars):
+            indices.append("0" if dim == 1 else var)
+        return f"{name}" + "".join(f"[{index}]" for index in indices)
 
     @staticmethod
     def _element_count(shape: tuple[int, ...]) -> int:

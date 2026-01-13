@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 573 / 1802 official ONNX files.
+Support 585 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -477,24 +477,24 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_clip_default_int8_inbounds/model.onnx | ❌ | Unsupported op Clip |
 | node/test_clip_default_int8_inbounds_expanded/model.onnx | ❌ | Unsupported op Identity |
 | node/test_clip_default_int8_max/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_int8_max_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_default_int8_max_expanded/model.onnx | ✅ |  |
 | node/test_clip_default_int8_min/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_int8_min_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_default_int8_min_expanded/model.onnx | ✅ |  |
 | node/test_clip_default_max/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_max_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_default_max_expanded/model.onnx | ✅ |  |
 | node/test_clip_default_min/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_min_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_default_min_expanded/model.onnx | ✅ |  |
 | node/test_clip_example/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_example_expanded/model.onnx | ❌ | Unsupported op Where |
-| node/test_clip_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_example_expanded/model.onnx | ✅ |  |
+| node/test_clip_expanded/model.onnx | ✅ |  |
 | node/test_clip_inbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_inbounds_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_inbounds_expanded/model.onnx | ✅ |  |
 | node/test_clip_min_greater_than_max/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_min_greater_than_max_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_min_greater_than_max_expanded/model.onnx | ✅ |  |
 | node/test_clip_outbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_outbounds_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_outbounds_expanded/model.onnx | ✅ |  |
 | node/test_clip_splitbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_splitbounds_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_clip_splitbounds_expanded/model.onnx | ✅ |  |
 | node/test_col2im/model.onnx | ❌ | Unsupported op Col2Im |
 | node/test_col2im_5d/model.onnx | ❌ | Unsupported op Col2Im |
 | node/test_col2im_dilations/model.onnx | ❌ | Unsupported op Col2Im |
@@ -1002,17 +1002,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_nllloss_NCd1/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1_weight/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1_weight_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_reduction_mean/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_reduction_sum/model.onnx | ✅ |  |
@@ -1024,11 +1024,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Where |
+| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ |  |
@@ -1659,8 +1659,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_unsqueeze_two_axes/model.onnx | ✅ |  |
 | node/test_unsqueeze_unsorted_axes/model.onnx | ✅ |  |
 | node/test_upsample_nearest/model.onnx | ❌ | Unsupported op Upsample |
-| node/test_where_example/model.onnx | ❌ | Unsupported op Where |
-| node/test_where_long_example/model.onnx | ❌ | Unsupported op Where |
+| node/test_where_example/model.onnx | ✅ |  |
+| node/test_where_long_example/model.onnx | ✅ |  |
 | node/test_wrap_pad/model.onnx | ❌ | Unsupported op Pad |
 | node/test_xor2d/model.onnx | ✅ |  |
 | node/test_xor3d/model.onnx | ✅ |  |

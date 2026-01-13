@@ -8,8 +8,8 @@
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported op CastLike | 31 | ██████ |
+| Unsupported op GatherElements | 21 | ████ |
 | Unsupported op Identity | 20 | ████ |
-| Unsupported op Where | 19 | ████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
@@ -26,7 +26,6 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 14 | ███ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
-| Unsupported op GatherElements | 14 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |

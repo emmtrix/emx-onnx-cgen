@@ -37,6 +37,7 @@ from ..lowering.shape import lower_shape
 from ..lowering.softmax import lower_softmax
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
+from ..lowering.where import lower_where
 from ..lowering.registry import resolve_dispatch
 from ..lowering.common import node_dtype, optional_name, value_dtype
 from ..ops import (
@@ -145,6 +146,15 @@ def _eval_cast(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = input_value.astype(
         target_info.np_dtype, copy=False
     )
+
+
+@register_evaluator("Where")
+def _eval_where(evaluator: Evaluator, node: Node) -> None:
+    lower_where(evaluator.graph, node)
+    condition = evaluator.values[node.inputs[0]]
+    x_value = evaluator.values[node.inputs[1]]
+    y_value = evaluator.values[node.inputs[2]]
+    evaluator.values[node.outputs[0]] = np.where(condition, x_value, y_value)
 
 
 @register_evaluator("Attention")
