@@ -12,7 +12,6 @@
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
-| ReduceSum axes input must be constant or inferable from shapes | 18 | ████ |
 | NegativeLogLikelihoodLoss input must be at least 2D | 17 | ███ |
 | Unsupported op Split | 17 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
@@ -28,6 +27,7 @@
 | Unsupported op ConvTranspose | 14 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
+| ReduceSum output shape rank must match input rank | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
@@ -129,14 +129,6 @@
 | Unsupported op Pow | 2 | █ |
 | Unsupported op Range | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
-| ReduceL1 axes input must be constant or inferable from shapes | 2 | █ |
-| ReduceL2 axes input must be constant or inferable from shapes | 2 | █ |
-| ReduceLogSumExp axes input must be constant or inferable from shapes | 2 | █ |
-| ReduceMax axes input must be constant or inferable from shapes | 2 | █ |
-| ReduceMean axes input must be constant or inferable from shapes | 2 | █ |
-| ReduceMin axes input must be constant or inferable from shapes | 2 | █ |
-| ReduceProd axes input must be constant or inferable from shapes | 2 | █ |
-| ReduceSumSquare axes input must be constant or inferable from shapes | 2 | █ |
 | Unsupported op ReverseSequence | 2 | █ |
 | Unsupported op Scan | 2 | █ |
 | Unsupported op Scatter | 2 | █ |

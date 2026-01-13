@@ -124,6 +124,42 @@ def _make_reduce_model(
     return model
 
 
+def _make_reduce_model_with_axes_input(
+    *,
+    op_type: str,
+    input_shape: list[int],
+    output_shape: list[int],
+    axes_shape: list[int],
+    keepdims: int,
+    dtype: int,
+    opset: int = 18,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
+    axes_info = helper.make_tensor_value_info(
+        "axes", TensorProto.INT64, axes_shape
+    )
+    output = helper.make_tensor_value_info("out", dtype, output_shape)
+    node = helper.make_node(
+        op_type,
+        inputs=["in0", "axes"],
+        outputs=[output.name],
+        keepdims=keepdims,
+    )
+    graph = helper.make_graph(
+        [node],
+        f"{op_type.lower()}_graph",
+        [input_info, axes_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
 def _make_constant_add_model() -> onnx.ModelProto:
     input_shape = [2, 3]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -1555,6 +1591,29 @@ def test_reduce_op_matches_onnxruntime(case: dict[str, object]) -> None:
         dtype=TensorProto.FLOAT,
     )
     _run_cli_verify(model)
+
+
+def test_reduce_op_axes_input_matches_numpy() -> None:
+    input_shape = [2, 3, 4]
+    axes = [1]
+    keepdims = 0
+    output_shape = _reduce_output_shape(input_shape, axes, keepdims)
+    model = _make_reduce_model_with_axes_input(
+        op_type="ReduceSum",
+        input_shape=input_shape,
+        output_shape=output_shape,
+        axes_shape=[len(axes)],
+        keepdims=keepdims,
+        dtype=TensorProto.FLOAT,
+    )
+    compiler = Compiler()
+    rng = np.random.default_rng(0)
+    data = rng.standard_normal(input_shape).astype(np.float32)
+    outputs = compiler.run(
+        model, {"in0": data, "axes": np.array(axes, dtype=np.int64)}
+    )
+    expected = np.sum(data, axis=tuple(axes), keepdims=bool(keepdims))
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
 def test_castlike_matches_onnxruntime() -> None:

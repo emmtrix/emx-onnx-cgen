@@ -76,7 +76,6 @@ from .lowering.maxpool import MaxPoolSpec, resolve_maxpool_spec
 from .lowering.reduce import (
     REDUCE_KIND_BY_OP,
     REDUCE_OUTPUTS_FLOAT_ONLY,
-    resolve_reduce_axes,
 )
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
