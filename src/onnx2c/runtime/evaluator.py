@@ -148,6 +148,24 @@ def _eval_cast(evaluator: Evaluator, node: Node) -> None:
     )
 
 
+@register_evaluator("CastLike")
+def _eval_castlike(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("CastLike must have 2 inputs and 1 output")
+    like_dtype = value_dtype(evaluator.graph, node.inputs[1], node)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if output_dtype != like_dtype:
+        raise UnsupportedOpError(
+            "CastLike output dtype must match like input dtype, "
+            f"got {output_dtype} and {like_dtype}"
+        )
+    target_info = dtype_info(output_dtype)
+    input_value = evaluator.values[node.inputs[0]]
+    evaluator.values[node.outputs[0]] = input_value.astype(
+        target_info.np_dtype, copy=False
+    )
+
+
 @register_evaluator("Where")
 def _eval_where(evaluator: Evaluator, node: Node) -> None:
     lower_where(evaluator.graph, node)

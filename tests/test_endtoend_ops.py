@@ -271,6 +271,38 @@ def _make_cast_model() -> onnx.ModelProto:
     return model
 
 
+def _make_castlike_model() -> onnx.ModelProto:
+    input_shape = [2, 3]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    like_info = helper.make_tensor_value_info(
+        "in1", TensorProto.INT32, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.INT32, input_shape
+    )
+    node = helper.make_node(
+        "CastLike",
+        inputs=["in0", "in1"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "castlike_graph",
+        [input_info, like_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 19)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_lstm_model(
     *,
     seq_length: int,
@@ -1465,6 +1497,11 @@ def test_reduce_op_matches_onnxruntime(case: dict[str, object]) -> None:
         keepdims=case["keepdims"],
         dtype=TensorProto.FLOAT,
     )
+    _run_cli_verify(model)
+
+
+def test_castlike_matches_onnxruntime() -> None:
+    model = _make_castlike_model()
     _run_cli_verify(model)
 
 

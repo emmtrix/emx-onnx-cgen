@@ -1349,7 +1349,7 @@
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT16/model.onnx",
@@ -1541,7 +1541,7 @@
   ],
   [
     "node/test_castlike_FLOAT_to_DOUBLE/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx",
@@ -2405,7 +2405,7 @@
   ],
   [
     "node/test_elu_default_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_elu_example/model.onnx",
@@ -2413,11 +2413,11 @@
   ],
   [
     "node/test_elu_example_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_elu_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_equal/model.onnx",
@@ -2581,7 +2581,7 @@
   ],
   [
     "node/test_gelu_default_1_expanded/model.onnx",
-    "Unsupported op CastLike"
+    "Unsupported op Erf"
   ],
   [
     "node/test_gelu_default_2/model.onnx",
@@ -2589,7 +2589,7 @@
   ],
   [
     "node/test_gelu_default_2_expanded/model.onnx",
-    "Unsupported op CastLike"
+    "Unsupported op Erf"
   ],
   [
     "node/test_gelu_tanh_1/model.onnx",
@@ -2597,7 +2597,7 @@
   ],
   [
     "node/test_gelu_tanh_1_expanded/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_gelu_tanh_2/model.onnx",
@@ -2605,7 +2605,7 @@
   ],
   [
     "node/test_gelu_tanh_2_expanded/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_gemm_all_attributes/model.onnx",
@@ -2937,7 +2937,7 @@
   ],
   [
     "node/test_hardsigmoid_default_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_hardsigmoid_example/model.onnx",
@@ -2945,11 +2945,11 @@
   ],
   [
     "node/test_hardsigmoid_example_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_hardsigmoid_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_hardswish/model.onnx",
@@ -3309,7 +3309,7 @@
   ],
   [
     "node/test_leakyrelu_default_expanded/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_leakyrelu_example/model.onnx",
@@ -3317,11 +3317,11 @@
   ],
   [
     "node/test_leakyrelu_example_expanded/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_leakyrelu_expanded/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_less/model.onnx",
@@ -4297,7 +4297,7 @@
   ],
   [
     "node/test_prelu_broadcast_expanded/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_prelu_example/model.onnx",
@@ -4305,7 +4305,7 @@
   ],
   [
     "node/test_prelu_example_expanded/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_qlinearconv/model.onnx",
@@ -4965,7 +4965,7 @@
   ],
   [
     "node/test_relu_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_reshape_allowzero_reordered/model.onnx",
@@ -5749,7 +5749,7 @@
   ],
   [
     "node/test_selu_default_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_selu_example/model.onnx",
@@ -5757,11 +5757,11 @@
   ],
   [
     "node/test_selu_example_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_selu_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_sequence_insert_at_back/model.onnx",
@@ -5869,7 +5869,7 @@
   ],
   [
     "node/test_shrink_hard_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_shrink_soft/model.onnx",
@@ -5877,7 +5877,7 @@
   ],
   [
     "node/test_shrink_soft_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_sigmoid/model.onnx",
@@ -6053,11 +6053,11 @@
   ],
   [
     "node/test_softplus_example_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_softplus_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_softsign/model.onnx",
@@ -6069,11 +6069,11 @@
   ],
   [
     "node/test_softsign_example_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_softsign_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_spacetodepth/model.onnx",
@@ -6305,7 +6305,7 @@
   ],
   [
     "node/test_swish_expanded/model.onnx",
-    "Unsupported op CastLike"
+    "Unsupported op Sigmoid"
   ],
   [
     "node/test_tan/model.onnx",
@@ -6373,7 +6373,7 @@
   ],
   [
     "node/test_thresholdedrelu_default_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_thresholdedrelu_example/model.onnx",
@@ -6381,11 +6381,11 @@
   ],
   [
     "node/test_thresholdedrelu_example_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_thresholdedrelu_expanded_ver18/model.onnx",
-    "Unsupported op CastLike"
+    ""
   ],
   [
     "node/test_tile/model.onnx",

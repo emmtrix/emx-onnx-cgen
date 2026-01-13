@@ -42,3 +42,29 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
         input_dtype=input_dtype,
         dtype=output_dtype,
     )
+
+
+@register_lowering("CastLike")
+def lower_castlike(graph: Graph, node: Node) -> CastOp:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("CastLike must have 2 inputs and 1 output")
+    input_dtype = value_dtype(graph, node.inputs[0], node)
+    like_dtype = value_dtype(graph, node.inputs[1], node)
+    target_dtype = ensure_supported_dtype(like_dtype)
+    output_dtype = value_dtype(graph, node.outputs[0], node)
+    if output_dtype != target_dtype:
+        raise UnsupportedOpError(
+            "CastLike output dtype must match like input dtype, "
+            f"got {output_dtype} and {target_dtype}"
+        )
+    input_shape = value_shape(graph, node.inputs[0], node)
+    output_shape = value_shape(graph, node.outputs[0], node)
+    if input_shape != output_shape:
+        raise ShapeInferenceError("CastLike input and output shapes must match")
+    return CastOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        shape=output_shape,
+        input_dtype=input_dtype,
+        dtype=output_dtype,
+    )
