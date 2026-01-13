@@ -828,6 +828,63 @@ def _make_maxpool_model(
     return model
 
 
+def _make_gather_elements_model(
+    *,
+    data_shape: list[int],
+    indices_shape: list[int],
+    axis: int,
+    data_dtype: int = TensorProto.FLOAT,
+    indices_dtype: int = TensorProto.INT64,
+    indices_values: np.ndarray | None = None,
+    indices_as_initializer: bool = False,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    data_input = helper.make_tensor_value_info("data", data_dtype, data_shape)
+    inputs = [data_input]
+    initializers = []
+    value_infos = []
+    if indices_as_initializer:
+        if indices_values is None:
+            raise ValueError("indices_values is required for initializer inputs")
+        indices_tensor = helper.make_tensor(
+            "indices",
+            indices_dtype,
+            dims=indices_shape,
+            vals=indices_values.flatten().tolist(),
+        )
+        initializers.append(indices_tensor)
+        value_infos.append(
+            helper.make_tensor_value_info("indices", indices_dtype, indices_shape)
+        )
+    else:
+        inputs.append(
+            helper.make_tensor_value_info("indices", indices_dtype, indices_shape)
+        )
+    output = helper.make_tensor_value_info("out", data_dtype, indices_shape)
+    node = helper.make_node(
+        "GatherElements",
+        inputs=["data", "indices"],
+        outputs=[output.name],
+        axis=axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "gather_elements_graph",
+        inputs,
+        [output],
+        initializer=initializers,
+        value_info=value_infos,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _average_pool_output_shape(
     input_shape: list[int],
     kernel_shape: list[int],
@@ -1564,6 +1621,32 @@ def test_constant_op_matches_onnxruntime() -> None:
 def test_constant_of_shape_matches_onnxruntime() -> None:
     model = _make_constant_of_shape_model()
     _run_cli_verify(model)
+
+
+def test_gather_elements_matches_onnxruntime() -> None:
+    indices_values = np.array([[2, 0, 1], [1, 2, 0]], dtype=np.int64)
+    model = _make_gather_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        indices_values=indices_values,
+        indices_as_initializer=True,
+    )
+    _run_cli_verify(model)
+
+
+def test_gather_elements_run_matches_numpy() -> None:
+    model = _make_gather_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+    )
+    compiler = Compiler()
+    data = np.arange(6, dtype=np.float32).reshape(2, 3)
+    indices = np.array([[2, 0, 1], [-1, 1, 0]], dtype=np.int64)
+    outputs = compiler.run(model, {"data": data, "indices": indices})
+    expected = np.take_along_axis(data, indices, axis=1)
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
 def test_reshape_op_matches_onnxruntime() -> None:

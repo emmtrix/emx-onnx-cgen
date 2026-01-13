@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 613 / 1802 official ONNX files.
+Support 616 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -645,9 +645,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gather_0/model.onnx | ❌ | Unsupported op Gather |
 | node/test_gather_1/model.onnx | ❌ | Unsupported op Gather |
 | node/test_gather_2d_indices/model.onnx | ❌ | Unsupported op Gather |
-| node/test_gather_elements_0/model.onnx | ❌ | Unsupported op GatherElements |
-| node/test_gather_elements_1/model.onnx | ❌ | Unsupported op GatherElements |
-| node/test_gather_elements_negative_indices/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_gather_elements_0/model.onnx | ✅ |  |
+| node/test_gather_elements_1/model.onnx | ✅ |  |
+| node/test_gather_elements_negative_indices/model.onnx | ✅ |  |
 | node/test_gather_negative_indices/model.onnx | ❌ | Unsupported op Gather |
 | node/test_gathernd_example_float32/model.onnx | ❌ | Unsupported op GatherND |
 | node/test_gathernd_example_int32/model.onnx | ❌ | Unsupported op GatherND |
@@ -998,41 +998,41 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_neg_example/model.onnx | ✅ |  |
 | node/test_nesterov_momentum/model.onnx | ❌ | Unsupported op Momentum |
 | node/test_nllloss_NC/model.onnx | ✅ |  |
-| node/test_nllloss_NC_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NC_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1_weight_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2_reduction_mean/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2_reduction_sum/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2_with_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
+| node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
 | node/test_nonmaxsuppression_center_point_box_format/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | node/test_nonmaxsuppression_flipped_coordinates/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | node/test_nonmaxsuppression_identical_boxes/model.onnx | ❌ | Unsupported op NonMaxSuppression |

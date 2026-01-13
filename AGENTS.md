@@ -302,6 +302,16 @@ When acting as an agent in this repo:
 * options
 * recommendation
 
+## Adding an operator (checklist)
+
+When adding support for a new operator:
+
+1. **Lowering:** add a `register_lowering()` handler in `src/onnx2c/lowering/` that validates shapes/dtypes and returns a new op dataclass.
+2. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`.
+3. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
+4. **Tests:** add at least one unit test and one ORT comparison test.
+5. **Reference updates:** refresh `tests/official_onnx_expected_errors.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -n auto -q`.
+
 ## Maintaining this document (AGENTS.md)
 
 This file is part of the project’s contract.

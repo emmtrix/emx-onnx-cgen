@@ -49,6 +49,7 @@ from ..ops import (
     binary_op_symbol,
     unary_op_symbol,
 )
+from ..validation import normalize_axis
 
 Handler = Callable[["Evaluator", Node], None]
 _EVAL_REGISTRY: dict[str, Handler] = {}
@@ -173,6 +174,22 @@ def _eval_where(evaluator: Evaluator, node: Node) -> None:
     x_value = evaluator.values[node.inputs[1]]
     y_value = evaluator.values[node.inputs[2]]
     evaluator.values[node.outputs[0]] = np.where(condition, x_value, y_value)
+
+
+@register_evaluator("GatherElements")
+def _eval_gather_elements(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("GatherElements must have 2 inputs and 1 output")
+    data = evaluator.values[node.inputs[0]]
+    indices = evaluator.values[node.inputs[1]]
+    if indices.dtype.type not in {np.int32, np.int64}:
+        raise UnsupportedOpError(
+            f"GatherElements indices must be int32 or int64, got {indices.dtype}"
+        )
+    axis = normalize_axis(int(node.attrs.get("axis", 0)), data.shape, node)
+    evaluator.values[node.outputs[0]] = np.take_along_axis(
+        data, indices, axis=axis
+    )
 
 
 @register_evaluator("Attention")

@@ -362,6 +362,19 @@ class ConcatOp:
 
 
 @dataclass(frozen=True)
+class GatherElementsOp:
+    data: str
+    indices: str
+    output: str
+    axis: int
+    data_shape: tuple[int, ...]
+    indices_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    dtype: str
+    indices_dtype: str
+
+
+@dataclass(frozen=True)
 class TransposeOp:
     input0: str
     output: str
@@ -512,6 +525,7 @@ class LoweredModel:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -559,6 +573,7 @@ class CEmitter:
                 ),
                 "maxpool": self._env.get_template("maxpool_op.c.j2"),
                 "concat": self._env.get_template("concat_op.c.j2"),
+                "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "resize": self._env.get_template("resize_op.c.j2"),
@@ -594,6 +609,7 @@ class CEmitter:
         softmax_cross_entropy_loss_template = templates["softmax_cross_entropy_loss"]
         maxpool_template = templates["maxpool"]
         concat_template = templates["concat"]
+        gather_elements_template = templates["gather_elements"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         resize_template = templates["resize"]
@@ -635,6 +651,7 @@ class CEmitter:
                 softmax_cross_entropy_loss_template=softmax_cross_entropy_loss_template,
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
+                gather_elements_template=gather_elements_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
                 resize_template=resize_template,
@@ -693,6 +710,7 @@ class CEmitter:
         softmax_cross_entropy_loss_template = templates["softmax_cross_entropy_loss"]
         maxpool_template = templates["maxpool"]
         concat_template = templates["concat"]
+        gather_elements_template = templates["gather_elements"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         resize_template = templates["resize"]
@@ -734,6 +752,7 @@ class CEmitter:
                 softmax_cross_entropy_loss_template=softmax_cross_entropy_loss_template,
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
+                gather_elements_template=gather_elements_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
                 resize_template=resize_template,
@@ -915,6 +934,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | GatherElementsOp
             | TransposeOp
             | ReshapeOp
             | ResizeOp
@@ -1028,6 +1048,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | GatherElementsOp
             | TransposeOp
             | ReshapeOp
             | ResizeOp
@@ -1117,6 +1138,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | GatherElementsOp
             | TransposeOp
             | ReshapeOp
             | ResizeOp
@@ -1162,6 +1184,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | GatherElementsOp
             | ReshapeOp
             | ResizeOp
             | ReduceOp
@@ -1216,6 +1239,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -1299,6 +1323,8 @@ class CEmitter:
             if op.log_prob is not None:
                 call_parts.append(op.log_prob)
             return ", ".join(call_parts)
+        if isinstance(op, GatherElementsOp):
+            return f"{op.data}, {op.indices}, {op.output}"
         if isinstance(op, ConcatOp):
             return ", ".join((*op.inputs, op.output))
         if isinstance(op, ConstantOfShapeOp):
@@ -1357,6 +1383,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -1383,6 +1410,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -1745,6 +1773,18 @@ class CEmitter:
                 ceil_mode=op.ceil_mode,
                 dtype=op.dtype,
             )
+        if isinstance(op, GatherElementsOp):
+            return GatherElementsOp(
+                data=temp_map.get(op.data, op.data),
+                indices=temp_map.get(op.indices, op.indices),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+                data_shape=op.data_shape,
+                indices_shape=op.indices_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                indices_dtype=op.indices_dtype,
+            )
         if isinstance(op, ConcatOp):
             return ConcatOp(
                 inputs=tuple(temp_map.get(name, name) for name in op.inputs),
@@ -1868,6 +1908,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -1900,6 +1941,7 @@ class CEmitter:
         softmax_cross_entropy_loss_template,
         maxpool_template,
         concat_template,
+        gather_elements_template,
         transpose_template,
         reshape_template,
         resize_template,
@@ -2580,6 +2622,32 @@ class CEmitter:
                 inner=inner,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, GatherElementsOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            loop_indents = CEmitter._loop_indents(output_shape)
+            inner_indent = CEmitter._inner_indent(output_shape)
+            data_indices = list(loop_vars)
+            data_indices[op.axis] = "gather_index"
+            rendered = gather_elements_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                data=op.data,
+                indices=op.indices,
+                output=op.output,
+                c_type=c_type,
+                indices_c_type=dtype_info(op.indices_dtype).c_type,
+                data_suffix=self._param_array_suffix(op.data_shape),
+                indices_suffix=self._param_array_suffix(op.indices_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                loop_indents=loop_indents,
+                inner_indent=inner_indent,
+                data_indices=data_indices,
+                axis_dim=op.data_shape[op.axis],
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, TransposeOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
@@ -2904,6 +2972,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -2933,6 +3002,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -3031,6 +3101,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -3069,6 +3140,8 @@ class CEmitter:
             return (op.batch, op.channels, *op.out_spatial)
         if isinstance(op, ConcatOp):
             return op.output_shape
+        if isinstance(op, GatherElementsOp):
+            return op.output_shape
         if isinstance(op, TransposeOp):
             return op.output_shape
         if isinstance(op, ReshapeOp):
@@ -3102,6 +3175,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | GatherElementsOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
