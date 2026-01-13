@@ -292,14 +292,11 @@ When acting as an agent in this repo:
    * avoid hardcoding operator names and special cases
    * prefer registries / dispatch tables for op lowering and kernels
 9. When adding a new operator, clarify the operator semantics first.
-10. When clarifying operator semantics, consult the ONNX operator specs at
-    https://onnx.ai/onnx/operators/index.html and cite the specific operator page
-    in PR descriptions when applicable.
-11. If the architecture starts drifting, propose a short design note in `docs/` with:
+10. If the architecture starts drifting, propose a short design note in `docs/` with:
 * problem
 * options
 * recommendation
-12. To find operator specifications within this repository, prefer:
+11. To find operator specifications within this repository, prefer:
     * `onnx-org/docs/Operators.md` for the current consolidated operator docs.
     * `onnx-org/docs/Changelog.md` for versioned operator specs (e.g., Slice-13).
     * `onnx-org/onnx/defs/**/defs.cc` or `onnx-org/onnx/defs/**/old.cc` for the
@@ -310,7 +307,8 @@ When acting as an agent in this repo:
 
 When adding support for a new operator:
 
-1. **Semantics:** clarify operator semantics via ONNX spec.
+1. **Specification:** read and understand the ONNX operator spec at
+   `onnx-org/docs/Operators.md`.
 2. **Lowering:** add a `register_lowering()` handler in `src/onnx2c/lowering/` that validates shapes/dtypes and returns a new op dataclass.
 3. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`.
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
