@@ -343,6 +343,9 @@ class NegativeLogLikelihoodLossOp:
     d: int
     reduction: str
     ignore_index: int
+    input_dtype: ScalarType
+    weight_dtype: ScalarType | None
+    weight_shape: tuple[int, ...] | None
     dtype: ScalarType
     target_dtype: ScalarType
 
@@ -363,6 +366,9 @@ class SoftmaxCrossEntropyLossOp:
     d: int
     reduction: str
     ignore_index: int | None
+    input_dtype: ScalarType
+    weight_dtype: ScalarType | None
+    weight_shape: tuple[int, ...] | None
     dtype: ScalarType
     target_dtype: ScalarType
 
@@ -1204,13 +1210,16 @@ class CEmitter:
                 input_shape=op.input_shape,
                 target_shape=op.target_shape,
                 output_shape=op.output_shape,
+                n=op.n,
+                c=op.c,
+                d=op.d,
                 ignore_index=op.ignore_index,
                 reduction=op.reduction,
-                dtype=op.dtype,
                 input_dtype=op.input_dtype,
-                target_dtype=op.target_dtype,
                 weight_dtype=op.weight_dtype,
                 weight_shape=op.weight_shape,
+                dtype=op.dtype,
+                target_dtype=op.target_dtype,
             )
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             return SoftmaxCrossEntropyLossOp(
@@ -1223,13 +1232,16 @@ class CEmitter:
                 target_shape=op.target_shape,
                 output_shape=op.output_shape,
                 log_prob_shape=op.log_prob_shape,
+                n=op.n,
+                c=op.c,
+                d=op.d,
                 ignore_index=op.ignore_index,
                 reduction=op.reduction,
-                dtype=op.dtype,
                 input_dtype=op.input_dtype,
-                target_dtype=op.target_dtype,
                 weight_dtype=op.weight_dtype,
                 weight_shape=op.weight_shape,
+                dtype=op.dtype,
+                target_dtype=op.target_dtype,
             )
         if isinstance(op, MaxPoolOp):
             return MaxPoolOp(
@@ -2790,6 +2802,9 @@ class CEmitter:
                 d=op.d,
                 reduction=op.reduction,
                 ignore_index=op.ignore_index,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                weight_shape=op.weight_shape,
                 dtype=op.dtype,
                 target_dtype=op.target_dtype,
             )
@@ -2817,6 +2832,9 @@ class CEmitter:
                 d=op.d,
                 reduction=op.reduction,
                 ignore_index=op.ignore_index,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                weight_shape=op.weight_shape,
                 dtype=op.dtype,
                 target_dtype=op.target_dtype,
             )
