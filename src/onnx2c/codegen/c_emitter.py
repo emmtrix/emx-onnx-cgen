@@ -394,6 +394,17 @@ class ReshapeOp:
 
 
 @dataclass(frozen=True)
+class SliceOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    starts: tuple[int, ...]
+    steps: tuple[int, ...]
+    dtype: str
+
+
+@dataclass(frozen=True)
 class ResizeOp:
     input0: str
     output: str
@@ -532,6 +543,7 @@ class LoweredModel:
         | GatherElementsOp
         | TransposeOp
         | ReshapeOp
+        | SliceOp
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
@@ -580,6 +592,7 @@ class CEmitter:
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
+                "slice": self._env.get_template("slice_op.c.j2"),
                 "resize": self._env.get_template("resize_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
                 "reduce_dynamic": self._env.get_template(
@@ -619,6 +632,7 @@ class CEmitter:
         gather_elements_template = templates["gather_elements"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
+        slice_template = templates["slice"]
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
@@ -662,6 +676,7 @@ class CEmitter:
                 gather_elements_template=gather_elements_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
+                slice_template=slice_template,
                 resize_template=resize_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
@@ -722,6 +737,7 @@ class CEmitter:
         gather_elements_template = templates["gather_elements"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
+        slice_template = templates["slice"]
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
@@ -765,6 +781,7 @@ class CEmitter:
                 gather_elements_template=gather_elements_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
+                slice_template=slice_template,
                 resize_template=resize_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
@@ -948,6 +965,7 @@ class CEmitter:
             | GatherElementsOp
             | TransposeOp
             | ReshapeOp
+            | SliceOp
             | ResizeOp
             | ReduceOp
             | ConstantOfShapeOp
@@ -1067,6 +1085,7 @@ class CEmitter:
             | GatherElementsOp
             | TransposeOp
             | ReshapeOp
+            | SliceOp
             | ResizeOp
             | ReduceOp
             | ConstantOfShapeOp
@@ -1157,6 +1176,7 @@ class CEmitter:
             | GatherElementsOp
             | TransposeOp
             | ReshapeOp
+            | SliceOp
             | ResizeOp
             | ReduceOp
             | ConstantOfShapeOp
@@ -1202,6 +1222,7 @@ class CEmitter:
             | ConcatOp
             | GatherElementsOp
             | ReshapeOp
+            | SliceOp
             | ResizeOp
             | ReduceOp
             | ConstantOfShapeOp
@@ -1258,6 +1279,7 @@ class CEmitter:
         | GatherElementsOp
         | TransposeOp
         | ReshapeOp
+        | SliceOp
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
@@ -1349,6 +1371,8 @@ class CEmitter:
             return f"{op.input0}, {op.output}"
         if isinstance(op, ReshapeOp):
             return f"{op.input0}, {op.output}"
+        if isinstance(op, SliceOp):
+            return f"{op.input0}, {op.output}"
         if isinstance(op, ResizeOp):
             call_parts = [op.input0]
             if op.roi_input is not None:
@@ -1406,6 +1430,7 @@ class CEmitter:
         | GatherElementsOp
         | TransposeOp
         | ReshapeOp
+        | SliceOp
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
@@ -1433,6 +1458,7 @@ class CEmitter:
         | GatherElementsOp
         | TransposeOp
         | ReshapeOp
+        | SliceOp
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
@@ -1851,6 +1877,16 @@ class CEmitter:
                 output_shape=op.output_shape,
                 dtype=op.dtype,
             )
+        if isinstance(op, SliceOp):
+            return SliceOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                starts=op.starts,
+                steps=op.steps,
+                dtype=op.dtype,
+            )
         if isinstance(op, ResizeOp):
             return ResizeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -1937,6 +1973,7 @@ class CEmitter:
         | GatherElementsOp
         | TransposeOp
         | ReshapeOp
+        | SliceOp
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
@@ -1970,6 +2007,7 @@ class CEmitter:
         gather_elements_template,
         transpose_template,
         reshape_template,
+        slice_template,
         resize_template,
         reduce_template,
         reduce_dynamic_template,
@@ -2703,6 +2741,31 @@ class CEmitter:
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SliceOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            input_indices: list[str] = []
+            for start, step, loop_var in zip(op.starts, op.steps, loop_vars):
+                if step == 1:
+                    if start == 0:
+                        input_indices.append(loop_var)
+                    else:
+                        input_indices.append(f"{start} + {loop_var}")
+                else:
+                    input_indices.append(f"{start} + {step} * {loop_var}")
+            rendered = slice_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                input_suffix=self._param_array_suffix(op.input_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                input_indices=input_indices,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
             input_suffix = self._param_array_suffix(op.input_shape)
             output_suffix = self._param_array_suffix(op.output_shape)
@@ -3235,6 +3298,7 @@ class CEmitter:
         | GatherElementsOp
         | TransposeOp
         | ReshapeOp
+        | SliceOp
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp,
@@ -3276,6 +3340,8 @@ class CEmitter:
         if isinstance(op, TransposeOp):
             return op.output_shape
         if isinstance(op, ReshapeOp):
+            return op.output_shape
+        if isinstance(op, SliceOp):
             return op.output_shape
         if isinstance(op, ResizeOp):
             return op.output_shape

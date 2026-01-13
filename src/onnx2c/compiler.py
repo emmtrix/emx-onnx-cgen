@@ -36,6 +36,7 @@ from .codegen.c_emitter import (
     ResizeOp,
     SoftmaxOp,
     ShapeOp,
+    SliceOp,
     TransposeOp,
     UnaryOp,
     WhereOp,
@@ -79,6 +80,7 @@ from .lowering.reduce import (
 )
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
+from .lowering.slice import lower_slice
 from .lowering.shape import lower_shape
 from .lowering.softmax import lower_softmax
 from .lowering.transpose import lower_transpose
@@ -220,6 +222,7 @@ class Compiler:
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
+            | SliceOp
             | ResizeOp
             | ReduceOp
             | ShapeOp
@@ -248,6 +251,7 @@ class Compiler:
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
+            | SliceOp
             | ResizeOp
             | ReduceOp
             | ShapeOp

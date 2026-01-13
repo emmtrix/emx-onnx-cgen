@@ -998,41 +998,41 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_neg_example/model.onnx | ✅ |  |
 | node/test_nesterov_momentum/model.onnx | ❌ | Unsupported op Momentum |
 | node/test_nllloss_NC/model.onnx | ✅ |  |
-| node/test_nllloss_NC_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NC_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1_weight_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1d2/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1d2_reduction_mean/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1d2_reduction_sum/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1d2_with_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op Gather |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op Slice |
+| node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | Unsupported op Squeeze |
 | node/test_nonmaxsuppression_center_point_box_format/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | node/test_nonmaxsuppression_flipped_coordinates/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | node/test_nonmaxsuppression_identical_boxes/model.onnx | ❌ | Unsupported op NonMaxSuppression |
@@ -1490,13 +1490,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sinh_example/model.onnx | ❌ | Unsupported op Sinh |
 | node/test_size/model.onnx | ❌ | Unsupported op Size |
 | node/test_size_example/model.onnx | ❌ | Unsupported op Size |
-| node/test_slice/model.onnx | ❌ | Unsupported op Slice |
-| node/test_slice_default_axes/model.onnx | ❌ | Unsupported op Slice |
-| node/test_slice_default_steps/model.onnx | ❌ | Unsupported op Slice |
-| node/test_slice_end_out_of_bounds/model.onnx | ❌ | Unsupported op Slice |
-| node/test_slice_neg/model.onnx | ❌ | Unsupported op Slice |
-| node/test_slice_neg_steps/model.onnx | ❌ | Unsupported op Slice |
-| node/test_slice_negative_axes/model.onnx | ❌ | Unsupported op Slice |
+| node/test_slice/model.onnx | ❌ | Slice starts input must be a constant initializer |
+| node/test_slice_default_axes/model.onnx | ❌ | Slice starts input must be a constant initializer |
+| node/test_slice_default_steps/model.onnx | ❌ | Slice starts input must be a constant initializer |
+| node/test_slice_end_out_of_bounds/model.onnx | ❌ | Slice starts input must be a constant initializer |
+| node/test_slice_neg/model.onnx | ❌ | Slice starts input must be a constant initializer |
+| node/test_slice_neg_steps/model.onnx | ❌ | Slice starts input must be a constant initializer |
+| node/test_slice_negative_axes/model.onnx | ❌ | Slice starts input must be a constant initializer |
 | node/test_slice_start_out_of_bounds/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_softmax_axis_0/model.onnx | ✅ |  |
 | node/test_softmax_axis_0_expanded/model.onnx | ✅ |  |
@@ -1766,7 +1766,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_convtranspose/model.onnx | ❌ | Unsupported op ConvTranspose |
 | pytorch-operator/test_operator_exp/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_flatten/model.onnx | ❌ | Unsupported op Flatten |
-| pytorch-operator/test_operator_index/model.onnx | ❌ | Unsupported op Slice |
+| pytorch-operator/test_operator_index/model.onnx | ❌ | Unsupported op Squeeze |
 | pytorch-operator/test_operator_max/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_maxpool/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_min/model.onnx | ✅ |  |
