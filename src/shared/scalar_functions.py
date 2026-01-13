@@ -9,6 +9,7 @@ from shared.scalar_types import ScalarFunctionError, ScalarType
 
 @dataclass(frozen=True)
 class _ScalarTypeInfo:
+    scalar_type: ScalarType
     c_type: str
     prefix: str
     suffix: str
@@ -22,7 +23,7 @@ class _ScalarTypeInfo:
 @dataclass(frozen=True)
 class _GeneratedScalar:
     lines: List[str]
-    deps: Set[str]
+    deps: Set[ScalarFunctionKey]
     includes: Set[str]
 
 
@@ -274,6 +275,34 @@ class ScalarFunctionKey:
         cls, function: ScalarFunction, dtype: object
     ) -> "ScalarFunctionKey":
         return cls(function=function, return_type=ScalarType.from_torch_dtype(dtype))
+
+
+def _conversion_key_from_alias(
+    dtype_info: _ScalarTypeInfo, alias: str
+) -> ScalarFunctionKey:
+    if alias == "from_f32":
+        return ScalarFunctionKey(
+            function=ScalarFunction.CONVERT_FROM_F32,
+            return_type=dtype_info.scalar_type,
+        )
+    if alias == "to_f32":
+        return ScalarFunctionKey(
+            function=ScalarFunction.CONVERT_FROM_BOOL,
+            return_type=ScalarType.F32,
+        )
+    raise ScalarFunctionError(f"unknown conversion alias: {alias}")
+
+
+def _scalar_key_from_op(
+    dtype_info: _ScalarTypeInfo, op_name: str
+) -> ScalarFunctionKey:
+    canonical_name = _normalize_op_name(op_name)
+    if canonical_name in {"from_f32", "to_f32"}:
+        return _conversion_key_from_alias(dtype_info, canonical_name)
+    return ScalarFunctionKey(
+        function=ScalarFunction.from_op_name(canonical_name),
+        return_type=dtype_info.scalar_type,
+    )
 
 
 _OP_ALIASES = {
@@ -774,7 +803,7 @@ def _float_digamma(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         "    return (float)ref_scalar_f64_digamma((double)x);",
         "}",
     ]
-    deps = {"ref_scalar_f64_digamma"}
+    deps = {_scalar_key_from_op(_SCALAR_TYPES[ScalarType.F64], "digamma")}
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
@@ -1097,7 +1126,7 @@ def _float_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
             f"    return {dtype_info.prefix}{canonical_name}(a);",
             "}",
         ]
-        deps = {f"{dtype_info.prefix}{canonical_name}"}
+        deps = {_scalar_key_from_op(dtype_info, canonical_name)}
         return _GeneratedScalar(lines=lines, deps=deps, includes=set())
     name = canonical_name
     handler = _FLOAT_OP_DISPATCH.get(name)
@@ -1168,7 +1197,10 @@ def _int_unary_from_f32(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedSca
         f"    return {dtype_info.prefix}from_f32(ref_scalar_f32_{name}((float)a));",
         "}",
     ]
-    deps = {f"{dtype_info.prefix}from_f32", f"ref_scalar_f32_{name}"}
+    deps = {
+        _conversion_key_from_alias(dtype_info, "from_f32"),
+        _scalar_key_from_op(_SCALAR_TYPES[ScalarType.F32], name),
+    }
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
@@ -1178,7 +1210,10 @@ def _int_binary_from_f32(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedSc
         f"    return {dtype_info.prefix}from_f32(ref_scalar_f32_{name}((float)a, (float)b));",
         "}",
     ]
-    deps = {f"{dtype_info.prefix}from_f32", f"ref_scalar_f32_{name}"}
+    deps = {
+        _conversion_key_from_alias(dtype_info, "from_f32"),
+        _scalar_key_from_op(_SCALAR_TYPES[ScalarType.F32], name),
+    }
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
@@ -1237,7 +1272,7 @@ def _int_absolute(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         f"    return {dtype_info.prefix}abs(a);",
         "}",
     ]
-    deps = {f"{dtype_info.prefix}abs"}
+    deps = {_scalar_key_from_op(dtype_info, "abs")}
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
@@ -1324,7 +1359,7 @@ def _int_copysign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         "    return b < 0 ? -magnitude : magnitude;",
         "}",
     ]
-    deps = {f"{dtype_info.prefix}abs"}
+    deps = {_scalar_key_from_op(dtype_info, "abs")}
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
@@ -1518,7 +1553,7 @@ def _int_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
             f"    return {dtype_info.prefix}{canonical_name}(a);",
             "}",
         ]
-        deps = {f"{dtype_info.prefix}{canonical_name}"}
+        deps = {_scalar_key_from_op(dtype_info, canonical_name)}
         return _GeneratedScalar(lines=lines, deps=deps, includes=set())
     name = canonical_name
     if name == "from_f32":
@@ -1578,7 +1613,12 @@ def _bool_unary_from_f32(name: str) -> _GeneratedScalar:
         f"    return ref_scalar_bool_from_f32(ref_scalar_f32_{name}(ref_scalar_bool_to_f32(a)));",
         "}",
     ]
-    deps = {"ref_scalar_bool_from_f32", "ref_scalar_bool_to_f32", f"ref_scalar_f32_{name}"}
+    bool_info = _SCALAR_TYPES[ScalarType.BOOL]
+    deps = {
+        _conversion_key_from_alias(bool_info, "from_f32"),
+        _conversion_key_from_alias(bool_info, "to_f32"),
+        _scalar_key_from_op(_SCALAR_TYPES[ScalarType.F32], name),
+    }
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
@@ -1590,7 +1630,12 @@ def _bool_binary_from_f32(name: str) -> _GeneratedScalar:
         "    );",
         "}",
     ]
-    deps = {"ref_scalar_bool_from_f32", "ref_scalar_bool_to_f32", f"ref_scalar_f32_{name}"}
+    bool_info = _SCALAR_TYPES[ScalarType.BOOL]
+    deps = {
+        _conversion_key_from_alias(bool_info, "from_f32"),
+        _conversion_key_from_alias(bool_info, "to_f32"),
+        _scalar_key_from_op(_SCALAR_TYPES[ScalarType.F32], name),
+    }
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
@@ -1623,7 +1668,7 @@ def _bool_from_ops(name: str) -> _GeneratedScalar:
             f"    return {dtype_info.prefix}{canonical_name}(a);",
             "}",
         ]
-        deps = {f"{dtype_info.prefix}{canonical_name}"}
+        deps = {_scalar_key_from_op(dtype_info, canonical_name)}
         return _GeneratedScalar(lines=lines, deps=deps, includes=set())
     name = canonical_name
     handler = _BOOL_OP_DISPATCH.get(name)
@@ -1639,6 +1684,7 @@ def _bool_from_ops(name: str) -> _GeneratedScalar:
 
 _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
     ScalarType.F32: _ScalarTypeInfo(
+        scalar_type=ScalarType.F32,
         c_type="float",
         prefix="ref_scalar_f32_",
         suffix="f32",
@@ -1649,6 +1695,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=None,
     ),
     ScalarType.F64: _ScalarTypeInfo(
+        scalar_type=ScalarType.F64,
         c_type="double",
         prefix="ref_scalar_f64_",
         suffix="f64",
@@ -1659,6 +1706,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=None,
     ),
     ScalarType.I8: _ScalarTypeInfo(
+        scalar_type=ScalarType.I8,
         c_type="int8_t",
         prefix="ref_scalar_i8_",
         suffix="i8",
@@ -1669,6 +1717,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=8,
     ),
     ScalarType.I16: _ScalarTypeInfo(
+        scalar_type=ScalarType.I16,
         c_type="int16_t",
         prefix="ref_scalar_i16_",
         suffix="i16",
@@ -1679,6 +1728,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=16,
     ),
     ScalarType.I32: _ScalarTypeInfo(
+        scalar_type=ScalarType.I32,
         c_type="int32_t",
         prefix="ref_scalar_i32_",
         suffix="i32",
@@ -1689,6 +1739,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=32,
     ),
     ScalarType.I64: _ScalarTypeInfo(
+        scalar_type=ScalarType.I64,
         c_type="int64_t",
         prefix="ref_scalar_i64_",
         suffix="i64",
@@ -1699,6 +1750,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=64,
     ),
     ScalarType.U8: _ScalarTypeInfo(
+        scalar_type=ScalarType.U8,
         c_type="uint8_t",
         prefix="ref_scalar_u8_",
         suffix="u8",
@@ -1709,6 +1761,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=8,
     ),
     ScalarType.U16: _ScalarTypeInfo(
+        scalar_type=ScalarType.U16,
         c_type="uint16_t",
         prefix="ref_scalar_u16_",
         suffix="u16",
@@ -1719,6 +1772,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=16,
     ),
     ScalarType.U32: _ScalarTypeInfo(
+        scalar_type=ScalarType.U32,
         c_type="uint32_t",
         prefix="ref_scalar_u32_",
         suffix="u32",
@@ -1729,6 +1783,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=32,
     ),
     ScalarType.U64: _ScalarTypeInfo(
+        scalar_type=ScalarType.U64,
         c_type="uint64_t",
         prefix="ref_scalar_u64_",
         suffix="u64",
@@ -1739,6 +1794,7 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         bits=64,
     ),
     ScalarType.BOOL: _ScalarTypeInfo(
+        scalar_type=ScalarType.BOOL,
         c_type="bool",
         prefix="ref_scalar_bool_",
         suffix="bool",
@@ -1816,15 +1872,25 @@ def validate_scalar_function_supported_ops() -> None:
         )
 
 
-def _parse_scalar_name(function_name: str) -> tuple[_ScalarTypeInfo, str]:
-    for info in _SCALAR_TYPES.values():
-        if function_name.startswith(info.prefix):
-            return info, function_name[len(info.prefix) :]
-    raise ScalarFunctionError(f"unknown scalar function requested: {function_name}")
+def _scalar_info_for_key(key: ScalarFunctionKey) -> tuple[_ScalarTypeInfo, str]:
+    if key.function in _CONVERSION_SOURCE_BY_FUNCTION:
+        source_type = _CONVERSION_SOURCE_BY_FUNCTION[key.function]
+        if source_type == ScalarType.F32:
+            return _SCALAR_TYPE_BY_ENUM[key.return_type], "from_f32"
+        if source_type == ScalarType.BOOL:
+            if key.return_type != ScalarType.F32:
+                raise ScalarFunctionError(
+                    f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
+                )
+            return _SCALAR_TYPE_BY_ENUM[source_type], "to_f32"
+        raise ScalarFunctionError(
+            f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
+        )
+    return _SCALAR_TYPE_BY_ENUM[key.return_type], key.function.value
 
 
-def _generate_scalar(function_name: str) -> _GeneratedScalar:
-    dtype_info, op_name = _parse_scalar_name(function_name)
+def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
+    dtype_info, op_name = _scalar_info_for_key(key)
     if _normalize_op_name(op_name) not in _supported_ops(dtype_info):
         raise ScalarFunctionError(
             f"unsupported scalar op {op_name} for {dtype_info.suffix}"
@@ -1888,42 +1954,41 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
 
 class ScalarFunctionRegistry:
     def __init__(self) -> None:
-        self._requested: List[str] = []
-        self._requested_set: Set[str] = set()
+        self._requested: List[ScalarFunctionKey] = []
+        self._requested_set: Set[ScalarFunctionKey] = set()
         self._key_to_name: Dict[ScalarFunctionKey, str] = {}
-        self._generated: Dict[str, _GeneratedScalar] = {}
+        self._generated: Dict[ScalarFunctionKey, _GeneratedScalar] = {}
 
     def request(self, key: ScalarFunctionKey) -> str:
         name = self._key_to_name.get(key)
         if name is None:
             name = _function_name_for_key(key)
             self._key_to_name[key] = name
-        self._register_name(name)
+        self._register_key(key)
         return name
 
-    def _register_name(self, function_name: str) -> None:
-        if function_name in self._requested_set:
+    def _register_key(self, key: ScalarFunctionKey) -> None:
+        if key in self._requested_set:
             return
-        _parse_scalar_name(function_name)
-        self._requested.append(function_name)
-        self._requested_set.add(function_name)
+        self._requested.append(key)
+        self._requested_set.add(key)
 
     def include_lines(self) -> List[str]:
         includes: Set[str] = set()
-        visited: Set[str] = set()
+        visited: Set[ScalarFunctionKey] = set()
 
-        def collect(name: str) -> None:
-            if name in visited:
+        def collect(key: ScalarFunctionKey) -> None:
+            if key in visited:
                 return
-            self._ensure_generated(name)
-            entry = self._generated[name]
-            visited.add(name)
+            self._ensure_generated(key)
+            entry = self._generated[key]
+            visited.add(key)
             for dep in entry.deps:
                 collect(dep)
             includes.update(entry.includes)
 
-        for name in self._requested:
-            collect(name)
+        for key in self._requested:
+            collect(key)
         ordered = sorted(includes)
         preamble = [
             "#ifndef REF_PI_F",
@@ -1939,26 +2004,26 @@ class ScalarFunctionRegistry:
         if not self._requested:
             return []
         lines: List[str] = []
-        emitted: Set[str] = set()
+        emitted: Set[ScalarFunctionKey] = set()
 
-        def emit(name: str) -> None:
-            if name in emitted:
+        def emit(key: ScalarFunctionKey) -> None:
+            if key in emitted:
                 return
-            self._ensure_generated(name)
-            entry = self._generated[name]
-            for dep in sorted(entry.deps):
+            self._ensure_generated(key)
+            entry = self._generated[key]
+            for dep in sorted(entry.deps, key=_function_name_for_key):
                 emit(dep)
             lines.extend(entry.lines)
             lines.append("")
-            emitted.add(name)
+            emitted.add(key)
 
-        for name in self._requested:
-            emit(name)
+        for key in self._requested:
+            emit(key)
         while lines and lines[-1] == "":
             lines.pop()
         return lines
 
-    def _ensure_generated(self, name: str) -> None:
-        if name in self._generated:
+    def _ensure_generated(self, key: ScalarFunctionKey) -> None:
+        if key in self._generated:
             return
-        self._generated[name] = _generate_scalar(name)
+        self._generated[key] = _generate_scalar(key)
