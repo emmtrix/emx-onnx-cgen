@@ -42,20 +42,20 @@ int main(void) {
     printf("\"{{ input.name }}\":{\"shape\":[{{ input.shape_literal }}],\"data\":");
     printf("[");
 {% for depth in range(input.rank) %}
-{{ input.loop_indents[depth] }}for (size_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
-{{ input.loop_indents[depth] }}    if ({{ input.loop_vars[depth] }}) {
-{{ input.loop_indents[depth] }}        printf(",");
-{{ input.loop_indents[depth] }}    }
+for (size_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+    if ({{ input.loop_vars[depth] }}) {
+        printf(",");
+    }
 {% if depth < input.rank - 1 %}
-{{ input.loop_indents[depth] }}    printf("[");
+    printf("[");
 {% endif %}
 {% endfor %}
-{{ input.inner_indent }}printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}_ptr[{{ input.index_expr }}]);
+printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}_ptr[{{ input.index_expr }}]);
 {% for depth in range(input.rank - 1, -1, -1) %}
 {% if depth < input.rank - 1 %}
-{{ input.loop_indents[depth] }}    printf("]");
+    printf("]");
 {% endif %}
-{{ input.loop_indents[depth] }}}
+}
 {% endfor %}
     printf("]}");
 {% endfor %}
@@ -67,20 +67,20 @@ int main(void) {
     printf("\"{{ output.name }}\":{\"shape\":[{{ output.shape_literal }}],\"data\":");
     printf("[");
 {% for depth in range(output.rank) %}
-{{ output.loop_indents[depth] }}for (size_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
-{{ output.loop_indents[depth] }}    if ({{ output.loop_vars[depth] }}) {
-{{ output.loop_indents[depth] }}        printf(",");
-{{ output.loop_indents[depth] }}    }
+for (size_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+    if ({{ output.loop_vars[depth] }}) {
+        printf(",");
+    }
 {% if depth < output.rank - 1 %}
-{{ output.loop_indents[depth] }}    printf("[");
+    printf("[");
 {% endif %}
 {% endfor %}
-{{ output.inner_indent }}printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}_ptr[{{ output.index_expr }}]);
+printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}_ptr[{{ output.index_expr }}]);
 {% for depth in range(output.rank - 1, -1, -1) %}
 {% if depth < output.rank - 1 %}
-{{ output.loop_indents[depth] }}    printf("]");
+    printf("]");
 {% endif %}
-{{ output.loop_indents[depth] }}}
+}
 {% endfor %}
     printf("]}");
 {% endfor %}

@@ -9,6 +9,26 @@ from ..errors import CodegenError
 from ..dtypes import dtype_info
 
 
+def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
+    formatted_lines: list[str] = []
+    indent_level = 0
+    for line in source.splitlines():
+        stripped = line.lstrip()
+        if not stripped:
+            formatted_lines.append("")
+            continue
+        if stripped.startswith("}"):
+            indent_level = max(indent_level - 1, 0)
+        formatted_lines.append(f"{indent * indent_level}{stripped}")
+        open_count = stripped.count("{")
+        close_count = stripped.count("}")
+        if stripped.startswith("}"):
+            close_count = max(close_count - 1, 0)
+        indent_level += open_count - close_count
+        indent_level = max(indent_level, 0)
+    return "\n".join(formatted_lines)
+
+
 @dataclass(frozen=True)
 class BinaryOp:
     input0: str
@@ -593,8 +613,6 @@ class CEmitter:
                 index,
                 array_suffix="",
                 loop_vars=(),
-                loop_indents=(),
-                inner_indent="",
                 c_type=dtype_info(op.dtype).c_type,
                 zero_literal=dtype_info(op.dtype).zero_literal,
                 min_literal=dtype_info(op.dtype).min_literal,
@@ -694,8 +712,6 @@ class CEmitter:
                 index,
                 array_suffix="",
                 loop_vars=(),
-                loop_indents=(),
-                inner_indent="",
                 c_type=dtype_info(op.dtype).c_type,
                 zero_literal=dtype_info(op.dtype).zero_literal,
                 min_literal=dtype_info(op.dtype).min_literal,
@@ -1862,8 +1878,6 @@ class CEmitter:
         *,
         array_suffix: str,
         loop_vars: tuple[str, ...],
-        loop_indents: tuple[str, ...],
-        inner_indent: str,
         c_type: str,
         zero_literal: str,
         min_literal: str,
@@ -1896,13 +1910,11 @@ class CEmitter:
         node_comment = CEmitter._emit_node_comment(model.node_infos[index], index)
 
         def with_node_comment(rendered: str) -> str:
-            return f"{node_comment}\n{rendered}"
+            return f"{node_comment}\n{_format_c_indentation(rendered)}"
 
         if isinstance(op, BinaryOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
-            loop_indents = CEmitter._loop_indents(shape)
-            inner_indent = CEmitter._inner_indent(shape)
             array_suffix = self._param_array_suffix(shape)
             input_c_type = dtype_info(op.input_dtype).c_type
             output_c_type = dtype_info(op.dtype).c_type
@@ -1913,8 +1925,6 @@ class CEmitter:
                 "array_suffix": array_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
-                "loop_indents": loop_indents,
-                "inner_indent": inner_indent,
                 "input_c_type": input_c_type,
                 "output_c_type": output_c_type,
                 "zero_literal": zero_literal,
@@ -2293,8 +2303,6 @@ class CEmitter:
         if isinstance(op, BatchNormOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
-            loop_indents = CEmitter._loop_indents(shape)
-            inner_indent = CEmitter._inner_indent(shape)
             rendered = batch_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -2313,8 +2321,6 @@ class CEmitter:
                 variance_suffix=self._param_array_suffix((op.channels,)),
                 shape=shape,
                 loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
                 sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
             ).rstrip()
@@ -2322,8 +2328,6 @@ class CEmitter:
         if isinstance(op, LrnOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
-            loop_indents = CEmitter._loop_indents(shape)
-            inner_indent = CEmitter._inner_indent(shape)
             rendered = lrn_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -2336,8 +2340,6 @@ class CEmitter:
                 channels=op.channels,
                 half=op.half,
                 loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
                 zero_literal=zero_literal,
                 alpha_div_size_literal=CEmitter._format_floating(
                     op.alpha / op.size, op.dtype
@@ -2581,8 +2583,6 @@ class CEmitter:
         if isinstance(op, TransposeOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
-            loop_indents = CEmitter._loop_indents(output_shape)
-            inner_indent = CEmitter._inner_indent(output_shape)
             output_suffix = self._param_array_suffix(output_shape)
             input_suffix = self._param_array_suffix(op.input_shape)
             if not op.input_shape:
@@ -2601,8 +2601,6 @@ class CEmitter:
                 output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
                 input_indices=input_indices,
             ).rstrip()
             return with_node_comment(rendered)
@@ -2681,8 +2679,6 @@ class CEmitter:
                 output_shape=op.output_shape,
                 rank=len(op.input_shape),
                 loop_vars=CEmitter._loop_vars(op.output_shape),
-                loop_indents=CEmitter._loop_indents(op.output_shape),
-                inner_indent=CEmitter._inner_indent(op.output_shape),
                 scales=op.scales,
                 scales_input=op.scales_input,
                 sizes_input=op.sizes_input,
@@ -2715,8 +2711,6 @@ class CEmitter:
         if isinstance(op, ReduceOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             output_loop_vars = CEmitter._loop_vars(output_shape)
-            output_loop_indents = CEmitter._loop_indents(output_shape)
-            output_inner_indent = CEmitter._inner_indent(output_shape)
             if not op.input_shape:
                 reduce_loop_vars = ("r0",)
                 reduce_dims = (1,)
@@ -2725,13 +2719,6 @@ class CEmitter:
                     f"r{idx}" for idx in range(len(op.axes))
                 )
                 reduce_dims = tuple(op.input_shape[axis] for axis in op.axes)
-            reduce_loop_indents = tuple(
-                output_inner_indent + "    " * idx
-                for idx in range(len(reduce_loop_vars))
-            )
-            reduce_inner_indent = output_inner_indent + "    " * len(
-                reduce_loop_vars
-            )
             if not op.input_shape:
                 input_indices = [reduce_loop_vars[0]]
             elif op.keepdims:
@@ -2816,12 +2803,8 @@ class CEmitter:
                 output_suffix=self._param_array_suffix(op.output_shape),
                 output_shape=output_shape,
                 output_loop_vars=output_loop_vars,
-                output_loop_indents=output_loop_indents,
-                output_inner_indent=output_inner_indent,
                 reduce_loop_vars=reduce_loop_vars,
                 reduce_dims=reduce_dims,
-                reduce_loop_indents=reduce_loop_indents,
-                reduce_inner_indent=reduce_inner_indent,
                 output_index_expr=output_index_expr,
                 init_literal=init_literal,
                 update_expr=update_expr,
@@ -2831,8 +2814,6 @@ class CEmitter:
         if isinstance(op, ConstantOfShapeOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
-            loop_indents = CEmitter._loop_indents(shape)
-            inner_indent = CEmitter._inner_indent(shape)
             array_suffix = self._param_array_suffix(shape)
             rendered = constant_of_shape_template.render(
                 model_name=model.name,
@@ -2845,8 +2826,6 @@ class CEmitter:
                 array_suffix=array_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
                 value_literal=CEmitter._format_literal(op.dtype, op.value),
             ).rstrip()
             return with_node_comment(rendered)
@@ -2869,8 +2848,6 @@ class CEmitter:
         if isinstance(op, CastOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
-            loop_indents = CEmitter._loop_indents(shape)
-            inner_indent = CEmitter._inner_indent(shape)
             array_suffix = self._param_array_suffix(shape)
             rendered = cast_template.render(
                 model_name=model.name,
@@ -2882,15 +2859,11 @@ class CEmitter:
                 array_suffix=array_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, UnaryOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
-            loop_indents = CEmitter._loop_indents(shape)
-            inner_indent = CEmitter._inner_indent(shape)
             array_suffix = self._param_array_suffix(shape)
             common = {
                 "model_name": model.name,
@@ -2899,8 +2872,6 @@ class CEmitter:
                 "array_suffix": array_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
-                "loop_indents": loop_indents,
-                "inner_indent": inner_indent,
                 "c_type": c_type,
                 "zero_literal": zero_literal,
             }
@@ -3164,31 +3135,6 @@ class CEmitter:
         return tuple(f"i{index}" for index in range(len(shape)))
 
     @staticmethod
-    def _loop_indents(shape: tuple[int, ...]) -> tuple[str, ...]:
-        shape = CEmitter._codegen_shape(shape)
-        return tuple("    " * (index + 1) for index in range(len(shape)))
-
-    @staticmethod
-    def _inner_indent(shape: tuple[int, ...]) -> str:
-        shape = CEmitter._codegen_shape(shape)
-        return "    " * (len(shape) + 1)
-
-    @staticmethod
-    def _broadcast_index_expr(
-        name: str,
-        input_shape: tuple[int, ...],
-        output_shape: tuple[int, ...],
-        loop_vars: tuple[str, ...],
-    ) -> str:
-        output_rank = len(CEmitter._codegen_shape(output_shape))
-        input_rank = len(input_shape)
-        padded_shape = (1,) * max(output_rank - input_rank, 0) + input_shape
-        indices: list[str] = []
-        for dim, var in zip(padded_shape, loop_vars):
-            indices.append("0" if dim == 1 else var)
-        return f"{name}" + "".join(f"[{index}]" for index in indices)
-
-    @staticmethod
     def _element_count(shape: tuple[int, ...]) -> int:
         shape = CEmitter._codegen_shape(shape)
         count = 1
@@ -3272,8 +3218,6 @@ class CEmitter:
                     "count": count,
                     "array_suffix": self._array_suffix(codegen_shape),
                     "loop_vars": loop_vars,
-                    "loop_indents": self._loop_indents(codegen_shape),
-                    "inner_indent": self._inner_indent(codegen_shape),
                     "rank": len(codegen_shape),
                     "index_expr": self._index_expr(codegen_shape, loop_vars),
                     "dtype": dtype,
@@ -3298,8 +3242,6 @@ class CEmitter:
                     "count": self._element_count(codegen_shape),
                     "array_suffix": self._array_suffix(codegen_shape),
                     "loop_vars": output_loop_vars,
-                    "loop_indents": self._loop_indents(codegen_shape),
-                    "inner_indent": self._inner_indent(codegen_shape),
                     "rank": len(codegen_shape),
                     "index_expr": self._index_expr(codegen_shape, output_loop_vars),
                     "dtype": dtype,
@@ -3308,11 +3250,12 @@ class CEmitter:
                     "print_cast": self._print_cast(dtype),
                 }
             )
-        return testbench_template.render(
+        rendered = testbench_template.render(
             model_name=model.name,
             inputs=inputs,
             outputs=outputs,
         ).rstrip()
+        return _format_c_indentation(rendered)
 
     def _emit_constant_definitions(
         self,

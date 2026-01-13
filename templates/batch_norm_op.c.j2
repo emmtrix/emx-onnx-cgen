@@ -1,11 +1,11 @@
 static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, const {{ c_type }} {{ scale }}{{ scale_suffix }}, const {{ c_type }} {{ bias }}{{ bias_suffix }}, const {{ c_type }} {{ mean }}{{ mean_suffix }}, const {{ c_type }} {{ variance }}{{ variance_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
 {% for dim in shape %}
-{{ loop_indents[loop.index0] }}for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-{{ inner_indent }}size_t c = {{ loop_vars[1] }};
-{{ inner_indent }}{{ c_type }} denom = {{ sqrt_fn }}({{ variance }}[c] + {{ epsilon_literal }});
-{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - {{ mean }}[c]) / denom * {{ scale }}[c] + {{ bias }}[c];
+size_t c = {{ loop_vars[1] }};
+{{ c_type }} denom = {{ sqrt_fn }}({{ variance }}[c] + {{ epsilon_literal }});
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - {{ mean }}[c]) / denom * {{ scale }}[c] + {{ bias }}[c];
 {% for _ in shape %}
-{{ loop_indents[loop.revindex0] }}}
+}
 {% endfor %}
 }
