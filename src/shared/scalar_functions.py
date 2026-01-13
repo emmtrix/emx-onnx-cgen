@@ -201,6 +201,12 @@ class ScalarFunction(str, Enum):
     LOGIT = _common_unary_from_f32_spec("logit")
     LT = _scalar_function_spec("lt")
     MAXIMUM = _bool_binary_from_f32_spec("maximum")
+    MEAN = _scalar_function_spec(
+        "mean",
+        supports_signed_int=False,
+        supports_unsigned_int=False,
+        supports_bool=False,
+    )
     MINIMUM = _bool_binary_from_f32_spec("minimum")
     MISH = _common_unary_from_f32_spec("mish")
     MUL = _bool_binary_from_f32_spec("mul")
@@ -210,6 +216,12 @@ class ScalarFunction(str, Enum):
     NEXTAFTER = _common_binary_from_f32_spec("nextafter")
     POSITIVE = _bool_unary_from_f32_spec("positive", supports_unsigned_int=False)
     POW = _common_binary_from_f32_spec("pow")
+    PRELU = _scalar_function_spec(
+        "prelu",
+        supports_signed_int=False,
+        supports_unsigned_int=False,
+        supports_bool=False,
+    )
     RAD2DEG = _common_unary_from_f32_spec("rad2deg")
     REAL = _bool_unary_from_f32_spec("real", supports_unsigned_int=False)
     RECIPROCAL = _bool_unary_from_f32_spec("reciprocal")
@@ -264,6 +276,18 @@ class ScalarFunction(str, Enum):
                 f"unknown scalar function op name: {op_name}"
             ) from exc
 
+    @classmethod
+    def from_onnx_op(cls, op_type: str) -> "ScalarFunction":
+        canonical = _normalize_op_name(op_type)
+        if canonical != op_type:
+            op_type = canonical
+        try:
+            return _ONNX_OP_TO_SCALAR_FUNCTION[op_type]
+        except KeyError as exc:
+            raise ScalarFunctionError(
+                f"unsupported ONNX scalar op: {op_type}"
+            ) from exc
+
 
 @dataclass(frozen=True)
 class ScalarFunctionKey:
@@ -311,6 +335,43 @@ _OP_ALIASES = {
     "arcsin": "asin",
     "arcsinh": "asinh",
     "arctan": "atan",
+}
+
+_ONNX_OP_TO_SCALAR_FUNCTION = {
+    "Abs": ScalarFunction.ABS,
+    "Add": ScalarFunction.ADD,
+    "And": ScalarFunction.LOGICAL_AND,
+    "Atanh": ScalarFunction.ATANH,
+    "Ceil": ScalarFunction.CEIL,
+    "Cos": ScalarFunction.COS,
+    "Div": ScalarFunction.DIV,
+    "Equal": ScalarFunction.EQ,
+    "Exp": ScalarFunction.EXP,
+    "Floor": ScalarFunction.FLOOR,
+    "Greater": ScalarFunction.GT,
+    "GreaterOrEqual": ScalarFunction.GE,
+    "Identity": ScalarFunction.POSITIVE,
+    "Less": ScalarFunction.LT,
+    "LessOrEqual": ScalarFunction.LE,
+    "Log": ScalarFunction.LOG,
+    "Max": ScalarFunction.MAXIMUM,
+    "Mean": ScalarFunction.MEAN,
+    "Min": ScalarFunction.MINIMUM,
+    "Mod": ScalarFunction.FMOD,
+    "Mul": ScalarFunction.MUL,
+    "Neg": ScalarFunction.NEG,
+    "Not": ScalarFunction.LOGICAL_NOT,
+    "Or": ScalarFunction.LOGICAL_OR,
+    "PRelu": ScalarFunction.PRELU,
+    "Pow": ScalarFunction.POW,
+    "Relu": ScalarFunction.RELU,
+    "Sin": ScalarFunction.SIN,
+    "Sqrt": ScalarFunction.SQRT,
+    "Sub": ScalarFunction.SUB,
+    "Sum": ScalarFunction.ADD,
+    "Tan": ScalarFunction.TAN,
+    "Tanh": ScalarFunction.TANH,
+    "Xor": ScalarFunction.LOGICAL_XOR,
 }
 
 

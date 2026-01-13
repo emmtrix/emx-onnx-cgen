@@ -8,7 +8,12 @@ from typing import Mapping
 from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
 from ..errors import CodegenError
-from ..ops import COMPARE_OP_TYPES
+from ..ops import (
+    COMPARE_FUNCTIONS,
+    OperatorKind,
+    binary_op_symbol,
+    unary_op_symbol,
+)
 from shared.scalar_functions import (
     ScalarFunction,
     ScalarFunctionKey,
@@ -92,41 +97,13 @@ _C_KEYWORDS = {
     "while",
 }
 
-_SCALAR_FUNCTION_BY_ONNX_OP: dict[str, ScalarFunction] = {
-    "Abs": ScalarFunction.ABS,
-    "Add": ScalarFunction.ADD,
-    "And": ScalarFunction.LOGICAL_AND,
-    "Atanh": ScalarFunction.ATANH,
-    "Ceil": ScalarFunction.CEIL,
-    "Cos": ScalarFunction.COS,
-    "Div": ScalarFunction.DIV,
-    "Exp": ScalarFunction.EXP,
-    "Floor": ScalarFunction.FLOOR,
-    "Log": ScalarFunction.LOG,
-    "Mod": ScalarFunction.FMOD,
-    "Mul": ScalarFunction.MUL,
-    "Neg": ScalarFunction.NEG,
-    "Not": ScalarFunction.LOGICAL_NOT,
-    "Or": ScalarFunction.LOGICAL_OR,
-    "Pow": ScalarFunction.POW,
-    "Relu": ScalarFunction.RELU,
-    "Sin": ScalarFunction.SIN,
-    "Sqrt": ScalarFunction.SQRT,
-    "Sub": ScalarFunction.SUB,
-    "Sum": ScalarFunction.ADD,
-    "Tan": ScalarFunction.TAN,
-    "Tanh": ScalarFunction.TANH,
-    "Xor": ScalarFunction.LOGICAL_XOR,
-}
-
-
 @dataclass(frozen=True)
 class BinaryOp:
     input0: str
     input1: str
     output: str
-    operator: str
-    operator_kind: str
+    function: ScalarFunction
+    operator_kind: OperatorKind
     shape: tuple[int, ...]
     dtype: ScalarType
     input_dtype: ScalarType
@@ -157,7 +134,7 @@ class NodeInfo:
 class UnaryOp:
     input0: str
     output: str
-    operator: str
+    function: ScalarFunction
     shape: tuple[int, ...]
     dtype: ScalarType
 
@@ -954,7 +931,7 @@ class CEmitter:
                 input0=name_map.get(op.input0, op.input0),
                 input1=name_map.get(op.input1, op.input1),
                 output=name_map.get(op.output, op.output),
-                operator=op.operator,
+                function=op.function,
                 operator_kind=op.operator_kind,
                 shape=op.shape,
                 dtype=op.dtype,
@@ -976,7 +953,7 @@ class CEmitter:
             return UnaryOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                operator=op.operator,
+                function=op.function,
                 shape=op.shape,
                 dtype=op.dtype,
             )
@@ -1407,7 +1384,7 @@ class CEmitter:
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
-            operator=op.operator,
+            function=op.function,
             shape=op.shape,
             dtype=op.dtype,
         )
@@ -1936,26 +1913,47 @@ class CEmitter:
 
     @staticmethod
     def _scalar_function_name(
-        op_type: str,
+        function: ScalarFunction,
         dtype: ScalarType,
         registry: ScalarFunctionRegistry,
     ) -> str | None:
-        if op_type in {"Max", "Min"}:
+        registry_functions = {
+            ScalarFunction.ABS,
+            ScalarFunction.ADD,
+            ScalarFunction.LOGICAL_AND,
+            ScalarFunction.ATANH,
+            ScalarFunction.CEIL,
+            ScalarFunction.COS,
+            ScalarFunction.DIV,
+            ScalarFunction.EXP,
+            ScalarFunction.FLOOR,
+            ScalarFunction.LOG,
+            ScalarFunction.FMOD,
+            ScalarFunction.MUL,
+            ScalarFunction.NEG,
+            ScalarFunction.LOGICAL_NOT,
+            ScalarFunction.LOGICAL_OR,
+            ScalarFunction.POW,
+            ScalarFunction.RELU,
+            ScalarFunction.SIN,
+            ScalarFunction.SQRT,
+            ScalarFunction.SUB,
+            ScalarFunction.TAN,
+            ScalarFunction.TANH,
+            ScalarFunction.LOGICAL_XOR,
+        }
+        if function in {ScalarFunction.MAXIMUM, ScalarFunction.MINIMUM}:
             if dtype in {ScalarType.F32, ScalarType.F64}:
                 scalar_function = (
                     ScalarFunction.FMAX
-                    if op_type == "Max"
+                    if function == ScalarFunction.MAXIMUM
                     else ScalarFunction.FMIN
                 )
             else:
-                scalar_function = (
-                    ScalarFunction.MAXIMUM
-                    if op_type == "Max"
-                    else ScalarFunction.MINIMUM
-                )
+                scalar_function = function
+        elif function in registry_functions:
+            scalar_function = function
         else:
-            scalar_function = _SCALAR_FUNCTION_BY_ONNX_OP.get(op_type)
-        if scalar_function is None:
             return None
         try:
             return registry.request(
@@ -2048,7 +2046,8 @@ class CEmitter:
         ):
             includes.add("#include <stdbool.h>")
         if any(
-            isinstance(op, UnaryOp) and op.operator in {"llabs", "abs"}
+            isinstance(op, UnaryOp)
+            and unary_op_symbol(op.function, dtype=op.dtype) in {"llabs", "abs"}
             for op in resolved_ops
         ):
             includes.add("#include <stdlib.h>")
@@ -2144,13 +2143,21 @@ class CEmitter:
             "tanhf",
         }
         binary_math_ops = {"fmaxf", "fminf", "fmodf", "powf"}
+
+        def is_binary_math_op(op: BinaryOp) -> bool:
+            op_spec = binary_op_symbol(
+                op.function, dtype=op.input_dtype, validate_attrs=False
+            )
+            return op_spec is not None and op_spec.operator in binary_math_ops
+
         if any(
-            isinstance(op, UnaryOp) and op.operator in math_ops
+            isinstance(op, UnaryOp)
+            and unary_op_symbol(op.function, dtype=op.dtype) in math_ops
             for op in resolved_ops
         ):
             return True
         if any(
-            isinstance(op, BinaryOp) and op.operator in binary_math_ops
+            isinstance(op, BinaryOp) and is_binary_math_op(op)
             for op in resolved_ops
         ):
             return True
@@ -2551,7 +2558,7 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 input1=temp_map.get(op.input1, op.input1),
                 output=temp_map.get(op.output, op.output),
-                operator=op.operator,
+                function=op.function,
                 operator_kind=op.operator_kind,
                 shape=op.shape,
                 dtype=op.dtype,
@@ -3064,7 +3071,7 @@ class CEmitter:
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
-            operator=op.operator,
+            function=op.function,
             shape=op.shape,
             dtype=op.dtype,
         )
@@ -3149,10 +3156,19 @@ class CEmitter:
             scalar_operator = None
             if (
                 scalar_registry is not None
-                and node_info.op_type not in COMPARE_OP_TYPES
+                and op.function not in COMPARE_FUNCTIONS
             ):
                 scalar_operator = self._scalar_function_name(
-                    node_info.op_type, op.input_dtype, scalar_registry
+                    op.function, op.input_dtype, scalar_registry
+                )
+            op_spec = binary_op_symbol(
+                op.function,
+                dtype=op.input_dtype,
+                validate_attrs=False,
+            )
+            if op_spec is None:
+                raise CodegenError(
+                    f"Unsupported binary operator for rendering: {op.function.value}"
                 )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
@@ -3177,13 +3193,13 @@ class CEmitter:
                 f"[{var}]" for var in loop_vars
             )
             operator_expr = None
-            operator = op.operator
+            operator = op_spec.operator
             operator_kind = op.operator_kind
             if scalar_operator is not None:
                 operator = scalar_operator
-                operator_kind = "func"
-            if operator_kind == "expr":
-                operator_expr = op.operator.format(
+                operator_kind = OperatorKind.FUNC
+            if operator_kind == OperatorKind.EXPR:
+                operator_expr = op_spec.operator.format(
                     left=left_expr, right=right_expr
                 )
             rendered = binary_template.render(
@@ -3192,7 +3208,7 @@ class CEmitter:
                 input1=op.input1,
                 output=op.output,
                 operator=operator,
-                operator_kind=operator_kind,
+                operator_kind=operator_kind.value,
                 left_expr=left_expr,
                 right_expr=right_expr,
                 operator_expr=operator_expr,
@@ -4326,11 +4342,16 @@ class CEmitter:
             scalar_operator = None
             if scalar_registry is not None:
                 scalar_operator = self._scalar_function_name(
-                    node_info.op_type, op.dtype, scalar_registry
+                    op.function, op.dtype, scalar_registry
                 )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             array_suffix = self._param_array_suffix(shape)
+            operator_symbol = unary_op_symbol(op.function, dtype=op.dtype)
+            if operator_symbol is None:
+                raise CodegenError(
+                    f"Unsupported unary operator for rendering: {op.function.value}"
+                )
             common = {
                 "model_name": model.name,
                 "op_name": f"{model.name}_op{index}",
@@ -4345,7 +4366,7 @@ class CEmitter:
                 **common,
                 input0=op.input0,
                 output=op.output,
-                operator=scalar_operator or op.operator,
+                operator=scalar_operator or operator_symbol,
             ).rstrip()
             return with_node_comment(rendered)
         raise CodegenError(f"Unsupported op for rendering: {type(op).__name__}")

@@ -2,18 +2,26 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from enum import Enum
 
 import numpy as np
 
+from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from .errors import UnsupportedOpError
 
 
+class OperatorKind(str, Enum):
+    INFIX = "infix"
+    FUNC = "func"
+    EXPR = "expr"
+
+
 @dataclass(frozen=True)
 class BinaryOpSpec:
     operator: str
-    kind: str
+    kind: OperatorKind
     apply: Callable[[np.ndarray, np.ndarray], np.ndarray]
 
 
@@ -76,119 +84,156 @@ def _format_float_literal(value: float, dtype: ScalarType) -> str:
 
 
 UNARY_SYMBOLS_BOOL = {
-    "Identity": "identity",
-    "Not": "!",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.LOGICAL_NOT: "!",
 }
 
 UNARY_SYMBOLS_INT64 = {
-    "Abs": "llabs",
-    "Identity": "identity",
-    "Neg": "neg",
+    ScalarFunction.ABS: "llabs",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.NEG: "neg",
 }
 
 UNARY_SYMBOLS_INT32 = {
-    "Abs": "abs",
-    "Identity": "identity",
-    "Neg": "neg",
+    ScalarFunction.ABS: "abs",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.NEG: "neg",
 }
 
 UNARY_SYMBOLS_INT16 = {
-    "Abs": "abs",
-    "Identity": "identity",
-    "Neg": "neg",
+    ScalarFunction.ABS: "abs",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.NEG: "neg",
 }
 
 UNARY_SYMBOLS_INT8 = {
-    "Abs": "abs",
-    "Identity": "identity",
-    "Neg": "neg",
+    ScalarFunction.ABS: "abs",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.NEG: "neg",
 }
 
 UNARY_SYMBOLS_DOUBLE = {
-    "Abs": "fabs",
-    "Ceil": "ceil",
-    "Cos": "cos",
-    "Exp": "exp",
-    "Floor": "floor",
-    "Identity": "identity",
-    "Log": "log",
-    "Neg": "neg",
-    "Relu": "relu",
-    "Sin": "sin",
-    "Sqrt": "sqrt",
-    "Tan": "tan",
-    "Tanh": "tanh",
-    "Atanh": "atanh",
+    ScalarFunction.ABS: "fabs",
+    ScalarFunction.CEIL: "ceil",
+    ScalarFunction.COS: "cos",
+    ScalarFunction.EXP: "exp",
+    ScalarFunction.FLOOR: "floor",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.LOG: "log",
+    ScalarFunction.NEG: "neg",
+    ScalarFunction.RELU: "relu",
+    ScalarFunction.SIN: "sin",
+    ScalarFunction.SQRT: "sqrt",
+    ScalarFunction.TAN: "tan",
+    ScalarFunction.TANH: "tanh",
+    ScalarFunction.ATANH: "atanh",
 }
 
 UNARY_SYMBOLS_FLOAT = {
-    "Abs": "fabsf",
-    "Ceil": "ceilf",
-    "Cos": "cosf",
-    "Exp": "expf",
-    "Floor": "floorf",
-    "Identity": "identity",
-    "Log": "logf",
-    "Neg": "neg",
-    "Relu": "relu",
-    "Sin": "sinf",
-    "Sqrt": "sqrtf",
-    "Tan": "tanf",
-    "Tanh": "tanhf",
-    "Atanh": "atanhf",
+    ScalarFunction.ABS: "fabsf",
+    ScalarFunction.CEIL: "ceilf",
+    ScalarFunction.COS: "cosf",
+    ScalarFunction.EXP: "expf",
+    ScalarFunction.FLOOR: "floorf",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.LOG: "logf",
+    ScalarFunction.NEG: "neg",
+    ScalarFunction.RELU: "relu",
+    ScalarFunction.SIN: "sinf",
+    ScalarFunction.SQRT: "sqrtf",
+    ScalarFunction.TAN: "tanf",
+    ScalarFunction.TANH: "tanhf",
+    ScalarFunction.ATANH: "atanhf",
 }
 
 BINARY_SPECS_BOOL = {
-    "And": BinaryOpSpec("&&", "infix", lambda left, right: np.logical_and(left, right)),
-    "Or": BinaryOpSpec("||", "infix", lambda left, right: np.logical_or(left, right)),
-    "Xor": BinaryOpSpec("!=", "infix", lambda left, right: np.logical_xor(left, right)),
+    ScalarFunction.LOGICAL_AND: BinaryOpSpec(
+        "&&", OperatorKind.INFIX, lambda left, right: np.logical_and(left, right)
+    ),
+    ScalarFunction.LOGICAL_OR: BinaryOpSpec(
+        "||", OperatorKind.INFIX, lambda left, right: np.logical_or(left, right)
+    ),
+    ScalarFunction.LOGICAL_XOR: BinaryOpSpec(
+        "!=", OperatorKind.INFIX, lambda left, right: np.logical_xor(left, right)
+    ),
 }
 
 COMPARE_SPECS = {
-    "Equal": BinaryOpSpec("==", "infix", np.equal),
-    "Greater": BinaryOpSpec(">", "infix", np.greater),
-    "GreaterOrEqual": BinaryOpSpec(">=", "infix", np.greater_equal),
-    "Less": BinaryOpSpec("<", "infix", np.less),
-    "LessOrEqual": BinaryOpSpec("<=", "infix", np.less_equal),
+    ScalarFunction.EQ: BinaryOpSpec("==", OperatorKind.INFIX, np.equal),
+    ScalarFunction.GT: BinaryOpSpec(">", OperatorKind.INFIX, np.greater),
+    ScalarFunction.GE: BinaryOpSpec(">=", OperatorKind.INFIX, np.greater_equal),
+    ScalarFunction.LT: BinaryOpSpec("<", OperatorKind.INFIX, np.less),
+    ScalarFunction.LE: BinaryOpSpec("<=", OperatorKind.INFIX, np.less_equal),
 }
 
 BINARY_SPECS_INT = {
-    "Add": BinaryOpSpec("+", "infix", lambda left, right: left + right),
-    "Sub": BinaryOpSpec("-", "infix", lambda left, right: left - right),
-    "Mul": BinaryOpSpec("*", "infix", lambda left, right: left * right),
-    "Sum": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+    ScalarFunction.ADD: BinaryOpSpec(
+        "+", OperatorKind.INFIX, lambda left, right: left + right
+    ),
+    ScalarFunction.SUB: BinaryOpSpec(
+        "-", OperatorKind.INFIX, lambda left, right: left - right
+    ),
+    ScalarFunction.MUL: BinaryOpSpec(
+        "*", OperatorKind.INFIX, lambda left, right: left * right
+    ),
 }
 
-BINARY_SPECS_DOUBLE = {
-    "Add": BinaryOpSpec("+", "infix", lambda left, right: left + right),
-    "Div": BinaryOpSpec("/", "infix", lambda left, right: left / right),
-    "Max": BinaryOpSpec("fmax", "func", np.maximum),
-    "Mean": BinaryOpSpec(
-        f"({{left}} + {{right}}) * {_format_float_literal(0.5, ScalarType.F64)}",
-        "expr",
+
+def _mean_binary_spec(dtype: ScalarType) -> BinaryOpSpec:
+    return BinaryOpSpec(
+        f"({{left}} + {{right}}) * {_format_float_literal(0.5, dtype)}",
+        OperatorKind.EXPR,
         lambda left, right: (left + right) * 0.5,
+    )
+
+
+def _prelu_binary_spec(dtype: ScalarType) -> BinaryOpSpec:
+    zero_literal = _format_float_literal(0.0, dtype)
+    return BinaryOpSpec(
+        f"({{left}} > {zero_literal} ? {{left}} : {{right}} * {{left}})",
+        OperatorKind.EXPR,
+        lambda left, right: np.where(left > 0.0, left, right * left),
+    )
+
+
+BINARY_SPECS_DOUBLE = {
+    ScalarFunction.ADD: BinaryOpSpec(
+        "+", OperatorKind.INFIX, lambda left, right: left + right
     ),
-    "Min": BinaryOpSpec("fmin", "func", np.minimum),
-    "Mul": BinaryOpSpec("*", "infix", lambda left, right: left * right),
-    "Pow": BinaryOpSpec("pow", "func", np.power),
-    "Sub": BinaryOpSpec("-", "infix", lambda left, right: left - right),
-    "Sum": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+    ScalarFunction.DIV: BinaryOpSpec(
+        "/", OperatorKind.INFIX, lambda left, right: left / right
+    ),
+    ScalarFunction.MAXIMUM: BinaryOpSpec("fmax", OperatorKind.FUNC, np.maximum),
+    ScalarFunction.MEAN: _mean_binary_spec(ScalarType.F64),
+    ScalarFunction.MINIMUM: BinaryOpSpec("fmin", OperatorKind.FUNC, np.minimum),
+    ScalarFunction.MUL: BinaryOpSpec(
+        "*", OperatorKind.INFIX, lambda left, right: left * right
+    ),
+    ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
+    ScalarFunction.PRELU: _prelu_binary_spec(ScalarType.F64),
+    ScalarFunction.SUB: BinaryOpSpec(
+        "-", OperatorKind.INFIX, lambda left, right: left - right
+    ),
 }
 
 BINARY_SPECS_FLOAT = {
-    "Add": BinaryOpSpec("+", "infix", lambda left, right: left + right),
-    "Div": BinaryOpSpec("/", "infix", lambda left, right: left / right),
-    "Max": BinaryOpSpec("fmaxf", "func", np.maximum),
-    "Mean": BinaryOpSpec(
-        f"({{left}} + {{right}}) * {_format_float_literal(0.5, ScalarType.F32)}",
-        "expr",
-        lambda left, right: (left + right) * 0.5,
+    ScalarFunction.ADD: BinaryOpSpec(
+        "+", OperatorKind.INFIX, lambda left, right: left + right
     ),
-    "Min": BinaryOpSpec("fminf", "func", np.minimum),
-    "Mul": BinaryOpSpec("*", "infix", lambda left, right: left * right),
-    "Pow": BinaryOpSpec("powf", "func", np.power),
-    "Sub": BinaryOpSpec("-", "infix", lambda left, right: left - right),
-    "Sum": BinaryOpSpec("+", "infix", lambda left, right: left + right),
+    ScalarFunction.DIV: BinaryOpSpec(
+        "/", OperatorKind.INFIX, lambda left, right: left / right
+    ),
+    ScalarFunction.MAXIMUM: BinaryOpSpec("fmaxf", OperatorKind.FUNC, np.maximum),
+    ScalarFunction.MEAN: _mean_binary_spec(ScalarType.F32),
+    ScalarFunction.MINIMUM: BinaryOpSpec("fminf", OperatorKind.FUNC, np.minimum),
+    ScalarFunction.MUL: BinaryOpSpec(
+        "*", OperatorKind.INFIX, lambda left, right: left * right
+    ),
+    ScalarFunction.POW: BinaryOpSpec("powf", OperatorKind.FUNC, np.power),
+    ScalarFunction.PRELU: _prelu_binary_spec(ScalarType.F32),
+    ScalarFunction.SUB: BinaryOpSpec(
+        "-", OperatorKind.INFIX, lambda left, right: left - right
+    ),
 }
 
 UNARY_SYMBOLS_BY_DTYPE = {
@@ -248,43 +293,49 @@ UNARY_APPLY_FUNCS = {
     "atanh": np.arctanh,
 }
 
+COMPARE_FUNCTIONS = {
+    ScalarFunction.EQ,
+    ScalarFunction.GT,
+    ScalarFunction.GE,
+    ScalarFunction.LT,
+    ScalarFunction.LE,
+}
+
+
 def binary_op_symbol(
-    op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: ScalarType
+    function: ScalarFunction,
+    attrs: Mapping[str, object] | None = None,
+    *,
+    dtype: ScalarType,
+    validate_attrs: bool = True,
 ) -> BinaryOpSpec | None:
-    compare_spec = COMPARE_SPECS.get(op_type)
+    compare_spec = COMPARE_SPECS.get(function)
     if compare_spec is not None:
         return compare_spec
     specs = BINARY_SPECS_BY_DTYPE.get(dtype)
     if specs is not None:
-        op_spec = specs.get(op_type)
+        op_spec = specs.get(function)
         if op_spec is not None:
             return op_spec
     if not dtype.is_float:
         return None
-    if op_type == "Mod":
+    if function == ScalarFunction.FMOD:
         fmod = 0
         if attrs is not None:
             fmod = int(attrs.get("fmod", 0))
-        if fmod != 1:
+        if validate_attrs and fmod != 1:
             raise UnsupportedOpError(
                 "Mod only supports fmod=1 for floating point types"
             )
         func = (
             "fmodf" if dtype in {ScalarType.F16, ScalarType.F32} else "fmod"
         )
-        return BinaryOpSpec(func, "func", np.fmod)
-    if op_type == "PRelu":
-        zero_literal = _format_float_literal(0.0, dtype)
-        return BinaryOpSpec(
-            f"({{left}} > {zero_literal} ? {{left}} : {{right}} * {{left}})",
-            "expr",
-            lambda left, right: np.where(left > 0.0, left, right * left),
-        )
+        return BinaryOpSpec(func, OperatorKind.FUNC, np.fmod)
     return None
 
 
-def unary_op_symbol(op_type: str, *, dtype: ScalarType) -> str | None:
-    return UNARY_SYMBOLS_BY_DTYPE.get(dtype, {}).get(op_type)
+def unary_op_symbol(function: ScalarFunction, *, dtype: ScalarType) -> str | None:
+    return UNARY_SYMBOLS_BY_DTYPE.get(dtype, {}).get(function)
 
 
 def apply_binary_op(
@@ -293,7 +344,12 @@ def apply_binary_op(
     return op_spec.apply(left, right)
 
 
-def apply_unary_op(op_symbol: str, value: np.ndarray) -> np.ndarray:
+def apply_unary_op(
+    function: ScalarFunction, value: np.ndarray, *, dtype: ScalarType
+) -> np.ndarray:
+    op_symbol = unary_op_symbol(function, dtype=dtype)
+    if op_symbol is None:
+        raise UnsupportedOpError(f"Unsupported unary op {function.value}")
     func = UNARY_APPLY_FUNCS.get(op_symbol)
     if func is not None:
         return func(value)

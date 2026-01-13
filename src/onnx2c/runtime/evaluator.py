@@ -47,13 +47,14 @@ from ..lowering.registry import resolve_dispatch
 from ..lowering.common import node_dtype, optional_name, value_dtype
 from ..ops import (
     BINARY_OP_TYPES,
-    COMPARE_OP_TYPES,
+    COMPARE_FUNCTIONS,
     UNARY_OP_TYPES,
     apply_binary_op,
     apply_unary_op,
     binary_op_symbol,
     unary_op_symbol,
 )
+from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from ..validation import normalize_axis
 
 Handler = Callable[["Evaluator", Node], None]
@@ -638,14 +639,18 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
 
 
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
-    if node.op_type in COMPARE_OP_TYPES:
+    try:
+        function = ScalarFunction.from_onnx_op(node.op_type)
+    except ScalarFunctionError as exc:
+        raise UnsupportedOpError(f"Unsupported op {node.op_type}") from exc
+    if function in COMPARE_FUNCTIONS:
         input_dtype = node_dtype(evaluator.graph, node, *node.inputs)
         output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
         if output_dtype != ScalarType.BOOL:
             raise UnsupportedOpError(
                 f"{node.op_type} expects bool output, got {output_dtype.onnx_name}"
             )
-        op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=input_dtype)
+        op_spec = binary_op_symbol(function, node.attrs, dtype=input_dtype)
         if op_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
         if len(node.inputs) != 2 or len(node.outputs) != 1:
@@ -659,8 +664,8 @@ def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
         )
         return
     op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
-    op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
-    unary_symbol = unary_op_symbol(node.op_type, dtype=op_dtype)
+    op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
+    unary_symbol = unary_op_symbol(function, dtype=op_dtype)
     if op_spec is None and unary_symbol is None:
         raise UnsupportedOpError(f"Unsupported op {node.op_type}")
     if op_spec is not None:
@@ -679,7 +684,9 @@ def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
             f"{node.op_type} must have 1 input and 1 output"
         )
     value = evaluator.values[node.inputs[0]]
-    evaluator.values[node.outputs[0]] = apply_unary_op(unary_symbol, value)
+    evaluator.values[node.outputs[0]] = apply_unary_op(
+        function, value, dtype=op_dtype
+    )
 
 
 def _apply_matmul(left: np.ndarray, right: np.ndarray) -> np.ndarray:

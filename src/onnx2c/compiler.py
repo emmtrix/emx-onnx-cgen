@@ -97,11 +97,12 @@ from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
 from .ops import (
     BINARY_OP_TYPES,
-    COMPARE_OP_TYPES,
+    COMPARE_FUNCTIONS,
     UNARY_OP_TYPES,
     binary_op_symbol,
     unary_op_symbol,
 )
+from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from .runtime.evaluator import Evaluator
 
 
@@ -389,10 +390,14 @@ def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
 
 
 def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
-    if node.op_type in COMPARE_OP_TYPES:
+    try:
+        function = ScalarFunction.from_onnx_op(node.op_type)
+    except ScalarFunctionError as exc:
+        raise UnsupportedOpError(f"Unsupported op {node.op_type}") from exc
+    if function in COMPARE_FUNCTIONS:
         input_dtype = node_dtype(graph, node, *node.inputs)
         output_dtype = value_dtype(graph, node.outputs[0], node)
-        op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=input_dtype)
+        op_spec = binary_op_symbol(function, node.attrs, dtype=input_dtype)
         if op_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
         if len(node.inputs) != 2 or len(node.outputs) != 1:
@@ -408,15 +413,15 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             input0=node.inputs[0],
             input1=node.inputs[1],
             output=node.outputs[0],
-            operator=op_spec.operator,
+            function=function,
             operator_kind=op_spec.kind,
             shape=output_shape,
             dtype=output_dtype,
             input_dtype=input_dtype,
         )
     op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
-    op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=op_dtype)
-    unary_symbol = unary_op_symbol(node.op_type, dtype=op_dtype)
+    op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
+    unary_symbol = unary_op_symbol(function, dtype=op_dtype)
     if op_spec is None and unary_symbol is None:
         raise UnsupportedOpError(f"Unsupported op {node.op_type}")
     if op_spec is not None:
@@ -429,7 +434,7 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             input0=node.inputs[0],
             input1=node.inputs[1],
             output=node.outputs[0],
-            operator=op_spec.operator,
+            function=function,
             operator_kind=op_spec.kind,
             shape=output_shape,
             dtype=op_dtype,
@@ -441,7 +446,7 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        operator=unary_symbol,
+        function=function,
         shape=output_shape,
         dtype=op_dtype,
     )
