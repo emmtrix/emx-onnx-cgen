@@ -101,6 +101,7 @@ from .ops import (
     UNARY_OP_TYPES,
     binary_op_symbol,
     unary_op_symbol,
+    validate_unary_attrs,
 )
 from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from .runtime.evaluator import Evaluator
@@ -394,6 +395,7 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
         function = ScalarFunction.from_onnx_op(node.op_type)
     except ScalarFunctionError as exc:
         raise UnsupportedOpError(f"Unsupported op {node.op_type}") from exc
+    validate_unary_attrs(node.op_type, node.attrs)
     if function in COMPARE_FUNCTIONS:
         input_dtype = node_dtype(graph, node, *node.inputs)
         output_dtype = value_dtype(graph, node.outputs[0], node)

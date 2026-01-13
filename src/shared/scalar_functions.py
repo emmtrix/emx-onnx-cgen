@@ -239,11 +239,23 @@ class ScalarFunction(str, Enum):
     SINC = _common_unary_from_f32_spec("sinc")
     SINH = _common_unary_from_f32_spec("sinh")
     SOFTPLUS = _common_unary_from_f32_spec("softplus")
+    SOFTSIGN = _scalar_function_spec(
+        "softsign",
+        supports_signed_int=False,
+        supports_unsigned_int=False,
+        supports_bool=False,
+    )
     SQRT = _common_unary_from_f32_spec("sqrt")
     SQUARE = _bool_unary_from_f32_spec("square", supports_unsigned_int=False)
     SUB = _bool_binary_from_f32_spec("sub")
     TAN = _common_unary_from_f32_spec("tan")
     TANH = _common_unary_from_f32_spec("tanh")
+    THRESHOLDED_RELU = _scalar_function_spec(
+        "thresholded_relu",
+        supports_signed_int=False,
+        supports_unsigned_int=False,
+        supports_bool=False,
+    )
     TRUNC = _bool_unary_from_f32_spec("trunc", supports_unsigned_int=False)
     XLOGY = _common_binary_from_f32_spec("xlogy")
     CONVERT_FROM_F32 = _conversion_spec("convert_from_f32")
@@ -339,18 +351,34 @@ _OP_ALIASES = {
 
 _ONNX_OP_TO_SCALAR_FUNCTION = {
     "Abs": ScalarFunction.ABS,
+    "Acos": ScalarFunction.ACOS,
+    "Acosh": ScalarFunction.ACOSH,
     "Add": ScalarFunction.ADD,
     "And": ScalarFunction.LOGICAL_AND,
+    "Asin": ScalarFunction.ASIN,
+    "Asinh": ScalarFunction.ASINH,
+    "Atan": ScalarFunction.ATAN,
     "Atanh": ScalarFunction.ATANH,
+    "BitwiseAnd": ScalarFunction.BITWISE_AND,
+    "BitwiseNot": ScalarFunction.BITWISE_NOT,
+    "BitwiseOr": ScalarFunction.BITWISE_OR,
+    "BitwiseXor": ScalarFunction.BITWISE_XOR,
     "Ceil": ScalarFunction.CEIL,
     "Cos": ScalarFunction.COS,
+    "Cosh": ScalarFunction.COSH,
     "Div": ScalarFunction.DIV,
+    "Elu": ScalarFunction.ELU,
     "Equal": ScalarFunction.EQ,
+    "Erf": ScalarFunction.ERF,
     "Exp": ScalarFunction.EXP,
     "Floor": ScalarFunction.FLOOR,
+    "Gelu": ScalarFunction.GELU,
     "Greater": ScalarFunction.GT,
     "GreaterOrEqual": ScalarFunction.GE,
+    "HardSigmoid": ScalarFunction.HARDSIGMOID,
+    "HardSwish": ScalarFunction.HARDSWISH,
     "Identity": ScalarFunction.POSITIVE,
+    "LeakyRelu": ScalarFunction.LEAKY_RELU,
     "Less": ScalarFunction.LT,
     "LessOrEqual": ScalarFunction.LE,
     "Log": ScalarFunction.LOG,
@@ -364,13 +392,22 @@ _ONNX_OP_TO_SCALAR_FUNCTION = {
     "Or": ScalarFunction.LOGICAL_OR,
     "PRelu": ScalarFunction.PRELU,
     "Pow": ScalarFunction.POW,
+    "Reciprocal": ScalarFunction.RECIPROCAL,
     "Relu": ScalarFunction.RELU,
+    "Round": ScalarFunction.ROUND,
+    "Selu": ScalarFunction.SELU,
+    "Sigmoid": ScalarFunction.SIGMOID,
+    "Sign": ScalarFunction.SIGN,
     "Sin": ScalarFunction.SIN,
+    "Sinh": ScalarFunction.SINH,
+    "Softplus": ScalarFunction.SOFTPLUS,
+    "Softsign": ScalarFunction.SOFTSIGN,
     "Sqrt": ScalarFunction.SQRT,
     "Sub": ScalarFunction.SUB,
     "Sum": ScalarFunction.ADD,
     "Tan": ScalarFunction.TAN,
     "Tanh": ScalarFunction.TANH,
+    "ThresholdedRelu": ScalarFunction.THRESHOLDED_RELU,
     "Xor": ScalarFunction.LOGICAL_XOR,
 }
 
@@ -686,6 +723,15 @@ def _float_softplus(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _float_softsign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    one = _float_literal(1.0, dtype_info)
+    return _simple_unary(
+        dtype_info,
+        "softsign",
+        f"a / ({one} + {_math_fn('fabs', dtype_info)}(a))",
+    )
+
+
 def _float_silu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     one = _float_literal(1.0, dtype_info)
     return _simple_unary(dtype_info, "silu", f"a / ({one} + {_math_fn('exp', dtype_info)}(-a))")
@@ -729,6 +775,16 @@ def _float_selu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _float_thresholded_relu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    zero = _float_literal(0.0, dtype_info)
+    alpha = _float_literal(1.0, dtype_info)
+    return _simple_unary(
+        dtype_info,
+        "thresholded_relu",
+        f"a > {alpha} ? a : {zero}",
+    )
+
+
 def _float_relu6(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     zero = _float_literal(0.0, dtype_info)
     six = _float_literal(6.0, dtype_info)
@@ -740,14 +796,15 @@ def _float_relu6(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _float_hardsigmoid(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    three = _float_literal(3.0, dtype_info)
-    six = _float_literal(6.0, dtype_info)
+    alpha = _float_literal(0.2, dtype_info)
+    beta = _float_literal(0.5, dtype_info)
     zero = _float_literal(0.0, dtype_info)
+    one = _float_literal(1.0, dtype_info)
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}hardsigmoid({dtype_info.c_type} a) {{",
-        f"    {dtype_info.c_type} shifted = a + {three};",
-        f"    {dtype_info.c_type} clamped = {_math_fn('fmin', dtype_info)}({six}, {_math_fn('fmax', dtype_info)}({zero}, shifted));",
-        f"    return clamped / {six};",
+        f"    {dtype_info.c_type} value = a * {alpha} + {beta};",
+        f"    {dtype_info.c_type} clamped = {_math_fn('fmin', dtype_info)}({one}, {_math_fn('fmax', dtype_info)}({zero}, value));",
+        "    return clamped;",
         "}",
     ]
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
@@ -1147,12 +1204,14 @@ _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] 
     "elu": _float_elu,
     "leaky_relu": _float_leaky_relu,
     "softplus": _float_softplus,
+    "softsign": _float_softsign,
     "silu": _float_silu,
     "mish": _float_mish,
     "selu": _float_selu,
     "relu6": _float_relu6,
     "hardsigmoid": _float_hardsigmoid,
     "hardswish": _float_hardswish,
+    "thresholded_relu": _float_thresholded_relu,
     "sign": _float_sign,
     "round": _float_round,
     "trunc": _float_trunc,
