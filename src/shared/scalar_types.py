@@ -33,7 +33,6 @@ class ScalarType(str, Enum):
         obj.zero_literal = zero_literal
         obj.min_literal = min_literal
         obj.max_literal = max_literal
-        obj.isfloat = is_float
         obj.is_float = is_float
         obj.is_signed = is_signed
         obj.is_bool = is_bool
