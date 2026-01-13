@@ -139,7 +139,6 @@
 | Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
-| Gemm bias input must be rank 1 or 2, got () | 1 | █ |
 | Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3) | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
 | Unsupported op If | 1 | █ |

@@ -2197,6 +2197,10 @@ class CEmitter:
                 c_rank = 0
                 c_dim0 = 0
                 c_dim1 = 0
+            elif len(op.c_shape) == 0:
+                c_rank = 0
+                c_dim0 = 0
+                c_dim1 = 0
             elif len(op.c_shape) == 1:
                 c_rank = 1
                 c_dim0 = 1
