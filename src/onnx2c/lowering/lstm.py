@@ -188,8 +188,10 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
         *(name for name in (input_b, input_initial_h, input_initial_c, input_p) if name),
         *(name for name in (output_y, output_y_h, output_y_c) if name),
     )
-    if op_dtype not in {"float", "double"}:
-        raise UnsupportedOpError("LSTM supports float and double inputs only")
+    if op_dtype not in {"float", "double", "float16"}:
+        raise UnsupportedOpError(
+            "LSTM supports float16, float, and double inputs only"
+        )
     x_shape = value_shape(graph, input_x, node)
     if len(x_shape) != 3:
         raise UnsupportedOpError("LSTM input X must be rank 3")

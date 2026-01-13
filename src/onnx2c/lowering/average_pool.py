@@ -164,9 +164,9 @@ def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
             "AveragePool expects matching input/output dtypes, "
             f"got {op_dtype} and {output_dtype}"
         )
-    if op_dtype not in {"float", "double"}:
+    if op_dtype not in {"float", "double", "float16"}:
         raise UnsupportedOpError(
-            "AveragePool supports float and double inputs only"
+            "AveragePool supports float16, float, and double inputs only"
         )
     spec = _resolve_average_pool_spec(graph, node)
     return AveragePoolOp(
@@ -200,9 +200,9 @@ def lower_global_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
             "GlobalAveragePool expects matching input/output dtypes, "
             f"got {op_dtype} and {output_dtype}"
         )
-    if op_dtype not in {"float", "double"}:
+    if op_dtype not in {"float", "double", "float16"}:
         raise UnsupportedOpError(
-            "GlobalAveragePool supports float and double inputs only"
+            "GlobalAveragePool supports float16, float, and double inputs only"
         )
     spec = _resolve_global_average_pool_spec(graph, node)
     return AveragePoolOp(

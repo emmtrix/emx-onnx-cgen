@@ -2,33 +2,32 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
-| Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
+| Dynamic dim for tensor '*' | 148 | ██████████████████████████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ██████ |
 | Unsupported op Slice | 26 | █████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████ |
 | Unsupported op Identity | 20 | ████ |
 | Dynamic or zero dims are not supported | 20 | ████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ████ |
 | Unsupported op GridSample | 18 | ████ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ███ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ███ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ███ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ███ |
 | NegativeLogLikelihoodLoss input must be at least 2D | 17 | ███ |
 | Unsupported op Split | 17 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
 | Unsupported op ArgMin | 16 | ███ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 16 | ███ |
 | Unsupported op Clip | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 14 | ███ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 14 | ███ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 14 | ███ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 14 | ███ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 14 | ███ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
 | ReduceSum output shape rank must match input rank | 12 | ██ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
 | Unsupported op Mod | 10 | ██ |
@@ -40,6 +39,7 @@
 | Unsupported op LpPool | 8 | ██ |
 | Unsupported op Max | 8 | ██ |
 | Unsupported op Min | 8 | ██ |
+| Unsupported op QLinearMatMul | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Hardmax | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
@@ -70,14 +70,15 @@
 | Unsupported op BitwiseAnd | 4 | █ |
 | Unsupported op BitwiseOr | 4 | █ |
 | Unsupported op BitwiseXor | 4 | █ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | █ |
 | Unsupported op Compress | 4 | █ |
 | Unsupported op Gelu | 4 | █ |
 | Unsupported op GRU | 4 | █ |
 | Unsupported op HardSigmoid | 4 | █ |
+| Unsupported op IsInf | 4 | █ |
 | Unsupported op Softplus | 4 | █ |
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |
-| Unsupported op QLinearMatMul | 4 | █ |
 | CastLike input and output shapes must match | 4 | █ |
 | Unsupported op RNN | 4 | █ |
 | Unsupported op Squeeze | 4 | █ |
@@ -86,13 +87,11 @@
 | Unsupported op Bernoulli | 3 | █ |
 | Unsupported op RandomUniformLike | 3 | █ |
 | Unsupported op BitwiseNot | 3 | █ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 3 | █ |
 | Unsupported op DynamicQuantizeLinear | 3 | █ |
 | Unsupported op Erf | 3 | █ |
 | Unsupported op EyeLike | 3 | █ |
 | Unsupported op GatherND | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
-| Unsupported op IsInf | 3 | █ |
 | Unsupported op Loop | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
@@ -119,6 +118,7 @@
 | Unsupported op GroupNormalization | 2 | █ |
 | Unsupported op HammingWindow | 2 | █ |
 | Unsupported op HannWindow | 2 | █ |
+| Unsupported op IsNaN | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
 | MaxPool must have 1 input and 1 output | 2 | █ |
 | Unsupported op MaxUnpool | 2 | █ |
@@ -148,7 +148,6 @@
 | Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3) | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
 | Unsupported op If | 1 | █ |
-| Unsupported op IsNaN | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
 | Unsupported op Mish | 1 | █ |

@@ -67,7 +67,7 @@ def _format_float_literal(value: float, dtype: str) -> str:
     formatted = f"{value:.9g}"
     if "e" not in formatted and "E" not in formatted and "." not in formatted:
         formatted = f"{formatted}.0"
-    if dtype == "float":
+    if dtype in {"float", "float16"}:
         return f"{formatted}f"
     return formatted
 
@@ -189,6 +189,7 @@ UNARY_SYMBOLS_BY_DTYPE = {
     "int8": UNARY_SYMBOLS_INT8,
     "double": UNARY_SYMBOLS_DOUBLE,
     "float": UNARY_SYMBOLS_FLOAT,
+    "float16": UNARY_SYMBOLS_FLOAT,
 }
 
 BINARY_SPECS_BY_DTYPE = {
@@ -203,6 +204,7 @@ BINARY_SPECS_BY_DTYPE = {
     "uint8": BINARY_SPECS_INT,
     "double": BINARY_SPECS_DOUBLE,
     "float": BINARY_SPECS_FLOAT,
+    "float16": BINARY_SPECS_FLOAT,
 }
 
 UNARY_APPLY_FUNCS = {
@@ -246,7 +248,7 @@ def binary_op_symbol(
         op_spec = specs.get(op_type)
         if op_spec is not None:
             return op_spec
-    if dtype not in {"float", "double"}:
+    if dtype not in {"float", "double", "float16"}:
         return None
     if op_type == "Mod":
         fmod = 0
@@ -256,7 +258,7 @@ def binary_op_symbol(
             raise UnsupportedOpError(
                 "Mod only supports fmod=1 for floating point types"
             )
-        func = "fmodf" if dtype == "float" else "fmod"
+        func = "fmodf" if dtype in {"float", "float16"} else "fmod"
         return BinaryOpSpec(func, "func", np.fmod)
     if op_type == "PRelu":
         zero_literal = _format_float_literal(0.0, dtype)

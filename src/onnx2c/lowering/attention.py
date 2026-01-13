@@ -53,7 +53,7 @@ class AttentionSpec:
 def resolve_attention_spec(
     graph: Graph, node: Node, dtype: str
 ) -> AttentionSpec:
-    if dtype not in {"float", "double"}:
+    if dtype not in {"float", "double", "float16"}:
         raise UnsupportedOpError("Unsupported op Attention")
     if len(node.inputs) < 3 or len(node.outputs) < 1:
         raise UnsupportedOpError("Unsupported op Attention")

@@ -1123,12 +1123,12 @@ class CEmitter:
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind in {"min", "max"}
-            and op.dtype in {"float", "double"}
+            and op.dtype in {"float", "double", "float16"}
             for op in resolved_ops
         ):
             return True
         if any(
-            isinstance(op, MaxPoolOp) and op.dtype in {"float", "double"}
+            isinstance(op, MaxPoolOp) and op.dtype in {"float", "double", "float16"}
             for op in resolved_ops
         ):
             return True
@@ -3551,6 +3551,10 @@ class CEmitter:
         return f"{formatted}f"
 
     @staticmethod
+    def _format_float16(value: float) -> str:
+        return f"(_Float16){CEmitter._format_float(value)}"
+
+    @staticmethod
     def _format_double(value: float) -> str:
         formatted = f"{value:.17g}"
         if "e" not in formatted and "E" not in formatted and "." not in formatted:
@@ -3561,6 +3565,8 @@ class CEmitter:
     def _format_floating(value: float, dtype: str) -> str:
         if dtype == "double":
             return CEmitter._format_double(value)
+        if dtype == "float16":
+            return CEmitter._format_float16(value)
         return CEmitter._format_float(value)
 
     @staticmethod
@@ -3592,6 +3598,8 @@ class CEmitter:
 
     @staticmethod
     def _format_literal(dtype: str, value: float | int | bool) -> str:
+        if dtype == "float16":
+            return CEmitter._format_float16(float(value))
         if dtype == "float":
             return CEmitter._format_float(float(value))
         if dtype == "double":
@@ -3617,6 +3625,8 @@ class CEmitter:
         raise CodegenError(f"Unsupported dtype {dtype}")
 
     def _format_value(self, value: float | int | bool, dtype: str) -> str:
+        if dtype == "float16":
+            return self._format_float16(float(value))
         if dtype == "float":
             return self._format_float(float(value))
         if dtype == "double":
@@ -3643,6 +3653,8 @@ class CEmitter:
 
     @staticmethod
     def _print_format(dtype: str) -> str:
+        if dtype == "float16":
+            return "%.8g"
         if dtype == "float":
             return "%.8g"
         if dtype == "double":
@@ -3669,7 +3681,7 @@ class CEmitter:
 
     @staticmethod
     def _print_cast(dtype: str) -> str:
-        if dtype in {"float", "double"}:
+        if dtype in {"float", "double", "float16"}:
             return "(double)"
         if dtype == "bool":
             return "(int)"

@@ -16,9 +16,9 @@ def lower_logsoftmax(graph: Graph, node: Node) -> LogSoftmaxOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("LogSoftmax must have 1 input and 1 output")
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-    if op_dtype not in {"float", "double"}:
+    if op_dtype not in {"float", "double", "float16"}:
         raise UnsupportedOpError(
-            "LogSoftmax supports float and double inputs only"
+            "LogSoftmax supports float16, float, and double inputs only"
         )
     input_shape = _value_shape(graph, node.inputs[0], node)
     output_shape = _value_shape(graph, node.outputs[0], node)
