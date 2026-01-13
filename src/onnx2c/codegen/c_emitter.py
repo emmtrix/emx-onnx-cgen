@@ -9,6 +9,26 @@ from ..errors import CodegenError
 from ..dtypes import dtype_info
 
 
+def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
+    formatted_lines: list[str] = []
+    indent_level = 0
+    for line in source.splitlines():
+        stripped = line.lstrip()
+        if not stripped:
+            formatted_lines.append("")
+            continue
+        if stripped.startswith("}"):
+            indent_level = max(indent_level - 1, 0)
+        formatted_lines.append(f"{indent * indent_level}{stripped}")
+        open_count = stripped.count("{")
+        close_count = stripped.count("}")
+        if stripped.startswith("}"):
+            close_count = max(close_count - 1, 0)
+        indent_level += open_count - close_count
+        indent_level = max(indent_level, 0)
+    return "\n".join(formatted_lines)
+
+
 @dataclass(frozen=True)
 class BinaryOp:
     input0: str
@@ -1852,7 +1872,7 @@ class CEmitter:
         node_comment = CEmitter._emit_node_comment(model.node_infos[index], index)
 
         def with_node_comment(rendered: str) -> str:
-            return f"{node_comment}\n{rendered}"
+            return f"{node_comment}\n{_format_c_indentation(rendered)}"
 
         if isinstance(op, BinaryOp):
             shape = CEmitter._codegen_shape(op.shape)
