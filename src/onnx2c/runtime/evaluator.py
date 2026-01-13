@@ -36,6 +36,7 @@ from ..lowering.reduce import (
 from ..lowering.reshape import lower_reshape
 from ..lowering.slice import resolve_slice_spec
 from ..lowering.shape import lower_shape
+from ..lowering.size import lower_size
 from ..lowering.softmax import lower_softmax
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
@@ -507,6 +508,12 @@ def _eval_constant_of_shape(evaluator: Evaluator, node: Node) -> None:
 def _eval_shape(evaluator: Evaluator, node: Node) -> None:
     op = lower_shape(evaluator.graph, node)
     evaluator.values[op.output] = np.array(op.values, dtype=np.int64)
+
+
+@register_evaluator("Size")
+def _eval_size(evaluator: Evaluator, node: Node) -> None:
+    op = lower_size(evaluator.graph, node)
+    evaluator.values[op.output] = np.array(op.value, dtype=np.int64)
 
 
 @register_evaluator("ReduceMean")

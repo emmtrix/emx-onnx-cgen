@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 707 / 1802 official ONNX files.
+Support 709 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -777,11 +777,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_l2normalization_axis_0/model.onnx | ❌ | Unsupported op LpNormalization |
 | node/test_l2normalization_axis_1/model.onnx | ❌ | Unsupported op LpNormalization |
 | node/test_layer_normalization_2d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis0_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_2d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_2d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis1_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_2d_axis1_expanded/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
 | node/test_layer_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
@@ -789,14 +789,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
 | node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
@@ -807,17 +807,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis0_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_4d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_4d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis1_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_4d_axis1_expanded/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
 | node/test_layer_normalization_4d_axis2/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis2_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_4d_axis2_expanded/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
 | node/test_layer_normalization_4d_axis3/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis3_expanded/model.onnx | ❌ | Unsupported op Size |
-| node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ❌ | Unsupported op Size |
+| node/test_layer_normalization_4d_axis3_expanded/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
 | node/test_layer_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
@@ -1488,8 +1488,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sin_example/model.onnx | ✅ |  |
 | node/test_sinh/model.onnx | ❌ | Unsupported op Sinh |
 | node/test_sinh_example/model.onnx | ❌ | Unsupported op Sinh |
-| node/test_size/model.onnx | ❌ | Unsupported op Size |
-| node/test_size_example/model.onnx | ❌ | Unsupported op Size |
+| node/test_size/model.onnx | ✅ |  |
+| node/test_size_example/model.onnx | ✅ |  |
 | node/test_slice/model.onnx | ❌ | Slice starts input must be a constant initializer |
 | node/test_slice_default_axes/model.onnx | ❌ | Slice starts input must be a constant initializer |
 | node/test_slice_default_steps/model.onnx | ❌ | Slice starts input must be a constant initializer |

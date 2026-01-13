@@ -6,10 +6,10 @@
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 34 | ████████ |
 | NegativeLogLikelihoodLoss input must be at least 2D | 34 | ████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
+| Dynamic or zero dims are not supported | 26 | ██████ |
+| Unsupported op Flatten | 23 | █████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████ |
-| Dynamic or zero dims are not supported | 20 | █████ |
-| Unsupported op Size | 20 | █████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ████ |
@@ -30,7 +30,6 @@
 | Unsupported op Squeeze | 14 | ███ |
 | ReduceSum output shape rank must match input rank | 12 | ███ |
 | Unsupported op Pad | 11 | ███ |
-| Unsupported op Flatten | 11 | ███ |
 | Unsupported op Mod | 10 | ██ |
 | Unsupported op CumSum | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |
