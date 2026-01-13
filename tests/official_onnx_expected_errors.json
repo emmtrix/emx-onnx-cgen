@@ -3961,7 +3961,7 @@
   ],
   [
     "node/test_nllloss_NC_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1/model.onnx",
@@ -3969,7 +3969,7 @@
   ],
   [
     "node/test_nllloss_NCd1_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1_ii/model.onnx",
@@ -3977,7 +3977,7 @@
   ],
   [
     "node/test_nllloss_NCd1_ii_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx",
@@ -4009,7 +4009,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx",
@@ -4017,7 +4017,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1d2_reduction_mean/model.onnx",
@@ -4025,7 +4025,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1d2_reduction_sum/model.onnx",
@@ -4033,7 +4033,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1d2_with_weight/model.onnx",
@@ -4073,7 +4073,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx",
@@ -4097,7 +4097,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_nonmaxsuppression_center_point_box_format/model.onnx",
@@ -6169,11 +6169,11 @@
   ],
   [
     "node/test_squeeze/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_squeeze_negative_axes/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "node/test_stft/model.onnx",
@@ -6649,11 +6649,11 @@
   ],
   [
     "pytorch-converted/test_AvgPool1d/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "pytorch-converted/test_AvgPool1d_stride/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "pytorch-converted/test_AvgPool2d/model.onnx",
@@ -7033,7 +7033,7 @@
   ],
   [
     "pytorch-operator/test_operator_index/model.onnx",
-    "Unsupported op Squeeze"
+    ""
   ],
   [
     "pytorch-operator/test_operator_max/model.onnx",

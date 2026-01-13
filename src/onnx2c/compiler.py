@@ -82,6 +82,7 @@ from .lowering.reduce import (
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.slice import lower_slice
+from .lowering.squeeze import lower_squeeze
 from .lowering.shape import lower_shape
 from .lowering.size import lower_size
 from .lowering.softmax import lower_softmax

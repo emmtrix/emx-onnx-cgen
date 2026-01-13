@@ -27,7 +27,6 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
 | Unsupported op Reciprocal | 14 | ███ |
-| Unsupported op Squeeze | 14 | ███ |
 | ReduceSum output shape rank must match input rank | 12 | ███ |
 | Unsupported op Pad | 11 | ███ |
 | Unsupported op Mod | 10 | ██ |

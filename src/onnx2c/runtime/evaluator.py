@@ -39,6 +39,7 @@ from ..lowering.slice import resolve_slice_spec
 from ..lowering.shape import lower_shape
 from ..lowering.size import lower_size
 from ..lowering.softmax import lower_softmax
+from ..lowering.squeeze import lower_squeeze
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
 from ..lowering.where import lower_where
@@ -483,6 +484,14 @@ def _eval_transpose(evaluator: Evaluator, node: Node) -> None:
 @register_evaluator("Unsqueeze")
 def _eval_unsqueeze(evaluator: Evaluator, node: Node) -> None:
     op = lower_unsqueeze(evaluator.graph, node)
+    evaluator.values[op.output] = evaluator.values[op.input0].reshape(
+        op.output_shape
+    )
+
+
+@register_evaluator("Squeeze")
+def _eval_squeeze(evaluator: Evaluator, node: Node) -> None:
+    op = lower_squeeze(evaluator.graph, node)
     evaluator.values[op.output] = evaluator.values[op.input0].reshape(
         op.output_shape
     )

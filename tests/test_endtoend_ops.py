@@ -277,6 +277,44 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _make_squeeze_model() -> onnx.ModelProto:
+    input_shape = [1, 3, 1, 5]
+    output_shape = [3, 5]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    axes_values = np.array([0, 2], dtype=np.int64)
+    axes_tensor = helper.make_tensor(
+        "axes",
+        TensorProto.INT64,
+        dims=axes_values.shape,
+        vals=axes_values.tolist(),
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    node = helper.make_node(
+        "Squeeze",
+        inputs=["in0", "axes"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "squeeze_graph",
+        [input_info],
+        [output],
+        initializer=[axes_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_cast_model() -> onnx.ModelProto:
     input_shape = [2, 3]
     input_info = helper.make_tensor_value_info(
@@ -1807,6 +1845,11 @@ def test_gather_elements_run_matches_numpy() -> None:
 
 def test_reshape_op_matches_onnxruntime() -> None:
     model = _make_reshape_model()
+    _run_cli_verify(model)
+
+
+def test_squeeze_op_matches_onnxruntime() -> None:
+    model = _make_squeeze_model()
     _run_cli_verify(model)
 
 
