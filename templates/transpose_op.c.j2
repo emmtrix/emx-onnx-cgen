@@ -1,9 +1,9 @@
 static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
 {% for dim in output_shape %}
-{{ loop_indents[loop.index0] }}for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in input_indices %}[{{ var }}]{% endfor %};
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in input_indices %}[{{ var }}]{% endfor %};
 {% for _ in output_shape %}
-{{ loop_indents[loop.revindex0] }}}
+}
 {% endfor %}
 }

@@ -1,20 +1,20 @@
 static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
 {% for dim in shape %}
-{{ loop_indents[loop.index0] }}for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-{{ inner_indent }}size_t channel_start = {{ loop_vars[1] }} > {{ half }} ? {{ loop_vars[1] }} - {{ half }} : 0;
-{{ inner_indent }}size_t channel_end = {{ loop_vars[1] }} + {{ half }};
-{{ inner_indent }}if (channel_end >= {{ channels }}) {
-{{ inner_indent }}    channel_end = {{ channels }} - 1;
-{{ inner_indent }}}
-{{ inner_indent }}{{ c_type }} sum = {{ zero_literal }};
-{{ inner_indent }}for (size_t c = channel_start; c <= channel_end; ++c) {
-{{ inner_indent }}    {{ c_type }} val = {{ input0 }}[{{ loop_vars[0] }}][c]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %};
-{{ inner_indent }}    sum += val * val;
-{{ inner_indent }}}
-{{ inner_indent }}{{ c_type }} scale = {{ bias_literal }} + {{ alpha_div_size_literal }} * sum;
-{{ inner_indent }}{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} / {{ pow_fn }}(scale, {{ beta_literal }});
+size_t channel_start = {{ loop_vars[1] }} > {{ half }} ? {{ loop_vars[1] }} - {{ half }} : 0;
+size_t channel_end = {{ loop_vars[1] }} + {{ half }};
+if (channel_end >= {{ channels }}) {
+    channel_end = {{ channels }} - 1;
+}
+{{ c_type }} sum = {{ zero_literal }};
+for (size_t c = channel_start; c <= channel_end; ++c) {
+    {{ c_type }} val = {{ input0 }}[{{ loop_vars[0] }}][c]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %};
+    sum += val * val;
+}
+{{ c_type }} scale = {{ bias_literal }} + {{ alpha_div_size_literal }} * sum;
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} / {{ pow_fn }}(scale, {{ beta_literal }});
 {% for _ in shape %}
-{{ loop_indents[loop.revindex0] }}}
+}
 {% endfor %}
 }
