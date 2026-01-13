@@ -488,6 +488,7 @@ class TransposeOp:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -497,6 +498,7 @@ class ReshapeOp:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -508,6 +510,7 @@ class SliceOp:
     starts: tuple[int, ...]
     steps: tuple[int, ...]
     dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
