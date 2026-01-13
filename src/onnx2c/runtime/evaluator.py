@@ -30,6 +30,7 @@ from ..lowering.maxpool import resolve_maxpool_spec
 from ..lowering.reduce import (
     REDUCE_KIND_BY_OP,
     REDUCE_OUTPUTS_FLOAT_ONLY,
+    normalize_reduce_axes,
     resolve_reduce_axes,
 )
 from ..lowering.reshape import lower_reshape
@@ -112,7 +113,13 @@ def _eval_matmul(evaluator: Evaluator, node: Node) -> None:
 
 @register_evaluator("Gemm")
 def _eval_gemm(evaluator: Evaluator, node: Node) -> None:
-    op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
+    op_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching input/output dtypes, "
+            f"got {op_dtype} and {output_dtype}"
+        )
     spec = resolve_gemm_spec(evaluator.graph, node, op_dtype)
     left = evaluator.values[node.inputs[0]]
     right = evaluator.values[node.inputs[1]]
@@ -299,7 +306,13 @@ def _eval_lstm(evaluator: Evaluator, node: Node) -> None:
 
 @register_evaluator("Conv")
 def _eval_conv(evaluator: Evaluator, node: Node) -> None:
-    op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
+    op_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching input/output dtypes, "
+            f"got {op_dtype} and {output_dtype}"
+        )
     if op_dtype not in {"float", "double"}:
         raise UnsupportedOpError("Conv supports float and double inputs only")
     spec = resolve_conv_spec(evaluator.graph, node)
@@ -332,7 +345,13 @@ def _eval_batch_norm(evaluator: Evaluator, node: Node) -> None:
 
 @register_evaluator("LRN")
 def _eval_lrn(evaluator: Evaluator, node: Node) -> None:
-    op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
+    op_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching input/output dtypes, "
+            f"got {op_dtype} and {output_dtype}"
+        )
     if op_dtype not in {"float", "double"}:
         raise UnsupportedOpError("LRN supports float and double inputs only")
     spec = resolve_lrn_spec(evaluator.graph, node)
@@ -356,7 +375,13 @@ def _eval_global_average_pool(evaluator: Evaluator, node: Node) -> None:
 
 @register_evaluator("MaxPool")
 def _eval_maxpool(evaluator: Evaluator, node: Node) -> None:
-    op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
+    op_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching input/output dtypes, "
+            f"got {op_dtype} and {output_dtype}"
+        )
     if op_dtype == "bool":
         raise UnsupportedOpError("MaxPool supports numeric inputs only")
     spec = resolve_maxpool_spec(evaluator.graph, node)
@@ -483,7 +508,13 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
         raise UnsupportedOpError(
             f"{node.op_type} must have 1 or 2 inputs and 1 output"
         )
-    op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
+    op_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching input/output dtypes, "
+            f"got {op_dtype} and {output_dtype}"
+        )
     if (
         node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY
         and op_dtype not in {"float", "double"}
@@ -493,10 +524,30 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
         )
     value = evaluator.values[node.inputs[0]]
     input_shape = value.shape
-    axes, noop = resolve_reduce_axes(evaluator.graph, node, input_shape)
-    if noop:
-        evaluator.values[node.outputs[0]] = value.copy()
-        return
+    if len(node.inputs) > 1 and node.inputs[1]:
+        axes_value = evaluator.values[node.inputs[1]]
+        if axes_value.dtype.type not in {np.int32, np.int64}:
+            raise UnsupportedOpError(
+                f"{node.op_type} axes input must be int64 or int32"
+            )
+        axes = tuple(int(axis) for axis in axes_value.ravel())
+        noop_with_empty_axes = bool(int(node.attrs.get("noop_with_empty_axes", 0)))
+        if not axes:
+            if noop_with_empty_axes:
+                evaluator.values[node.outputs[0]] = value.copy()
+                return
+            axes = tuple(range(len(input_shape)))
+        axes = normalize_reduce_axes(axes, input_shape, node)
+    else:
+        axes_spec, noop = resolve_reduce_axes(evaluator.graph, node, input_shape)
+        if noop:
+            evaluator.values[node.outputs[0]] = value.copy()
+            return
+        if axes_spec is None or axes_spec.axes is None:
+            raise UnsupportedOpError(
+                f"{node.op_type} axes input must be constant for evaluator"
+            )
+        axes = axes_spec.axes
     keepdims = bool(int(node.attrs.get("keepdims", 1)))
     reduce_kind = REDUCE_KIND_BY_OP[node.op_type]
     if reduce_kind == "sum":

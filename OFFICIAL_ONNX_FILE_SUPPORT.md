@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 665 / 1802 official ONNX files.
+Support 687 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1117,10 +1117,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_l1_default_axes_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_l1_default_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_l1_default_axes_keepdims_random_expanded/model.onnx | ✅ |  |
-| node/test_reduce_l1_do_not_keepdims_example/model.onnx | ❌ | ReduceL1 axes input must be constant or inferable from shapes |
-| node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
-| node/test_reduce_l1_do_not_keepdims_random/model.onnx | ❌ | ReduceL1 axes input must be constant or inferable from shapes |
-| node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_l1_do_not_keepdims_example/model.onnx | ✅ |  |
+| node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx | ✅ |  |
+| node/test_reduce_l1_do_not_keepdims_random/model.onnx | ✅ |  |
+| node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx | ✅ |  |
 | node/test_reduce_l1_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_reduce_l1_empty_set_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_reduce_l1_keep_dims_example/model.onnx | ✅ |  |
@@ -1135,20 +1135,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
 | node/test_reduce_l2_default_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_l2_default_axes_keepdims_random_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
-| node/test_reduce_l2_do_not_keepdims_example/model.onnx | ❌ | ReduceL2 axes input must be constant or inferable from shapes |
+| node/test_reduce_l2_do_not_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
-| node/test_reduce_l2_do_not_keepdims_random/model.onnx | ❌ | ReduceL2 axes input must be constant or inferable from shapes |
+| node/test_reduce_l2_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_l2_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_reduce_l2_empty_set_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_l2_empty_set_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_keep_dims_example/model.onnx | ✅ |  |
-| node/test_reduce_l2_keep_dims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_l2_keep_dims_example_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_keep_dims_random/model.onnx | ✅ |  |
-| node/test_reduce_l2_keep_dims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_l2_keep_dims_random_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_negative_axes_keep_dims_example/model.onnx | ✅ |  |
-| node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_l2_negative_axes_keep_dims_example_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_negative_axes_keep_dims_random/model.onnx | ✅ |  |
-| node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_l2_negative_axes_keep_dims_random_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_asc_axes/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_asc_axes_expanded/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_default/model.onnx | ✅ |  |
@@ -1156,32 +1156,32 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_log_sum_desc_axes/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_desc_axes_expanded/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_reduce_log_sum_empty_set_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_empty_set_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
-| node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
-| node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_log_sum_exp_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_keepdims_example/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_negative_axes/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_negative_axes_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_log_sum_negative_axes_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_max_bool_inputs/model.onnx | ❌ | ReduceMax does not support dtype bool |
 | node/test_reduce_max_default_axes_keepdim_example/model.onnx | ✅ |  |
 | node/test_reduce_max_default_axes_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_max_do_not_keepdims_example/model.onnx | ❌ | ReduceMax axes input must be constant or inferable from shapes |
-| node/test_reduce_max_do_not_keepdims_random/model.onnx | ❌ | ReduceMax axes input must be constant or inferable from shapes |
+| node/test_reduce_max_do_not_keepdims_example/model.onnx | ✅ |  |
+| node/test_reduce_max_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_max_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_reduce_max_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_max_keepdims_random/model.onnx | ✅ |  |
@@ -1189,8 +1189,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_max_negative_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_mean_default_axes_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_mean_default_axes_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_mean_do_not_keepdims_example/model.onnx | ❌ | ReduceMean axes input must be constant or inferable from shapes |
-| node/test_reduce_mean_do_not_keepdims_random/model.onnx | ❌ | ReduceMean axes input must be constant or inferable from shapes |
+| node/test_reduce_mean_do_not_keepdims_example/model.onnx | ✅ |  |
+| node/test_reduce_mean_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_mean_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_mean_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_mean_negative_axes_keepdims_example/model.onnx | ✅ |  |
@@ -1198,8 +1198,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_min_bool_inputs/model.onnx | ❌ | ReduceMin does not support dtype bool |
 | node/test_reduce_min_default_axes_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_min_default_axes_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_min_do_not_keepdims_example/model.onnx | ❌ | ReduceMin axes input must be constant or inferable from shapes |
-| node/test_reduce_min_do_not_keepdims_random/model.onnx | ❌ | ReduceMin axes input must be constant or inferable from shapes |
+| node/test_reduce_min_do_not_keepdims_example/model.onnx | ✅ |  |
+| node/test_reduce_min_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_min_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_reduce_min_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_min_keepdims_random/model.onnx | ✅ |  |
@@ -1207,8 +1207,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_min_negative_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_prod_default_axes_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_prod_default_axes_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_prod_do_not_keepdims_example/model.onnx | ❌ | ReduceProd axes input must be constant or inferable from shapes |
-| node/test_reduce_prod_do_not_keepdims_random/model.onnx | ❌ | ReduceProd axes input must be constant or inferable from shapes |
+| node/test_reduce_prod_do_not_keepdims_example/model.onnx | ✅ |  |
+| node/test_reduce_prod_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_prod_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_reduce_prod_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_prod_keepdims_random/model.onnx | ✅ |  |
@@ -1216,8 +1216,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_prod_negative_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_default_axes_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_sum_default_axes_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_sum_do_not_keepdims_example/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
-| node/test_reduce_sum_do_not_keepdims_random/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_sum_do_not_keepdims_example/model.onnx | ✅ |  |
+| node/test_reduce_sum_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_empty_axes_input_noop/model.onnx | ✅ |  |
 | node/test_reduce_sum_empty_axes_input_noop_example/model.onnx | ✅ |  |
 | node/test_reduce_sum_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
@@ -1230,10 +1230,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_sum_square_default_axes_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx | ✅ |  |
-| node/test_reduce_sum_square_do_not_keepdims_example/model.onnx | ❌ | ReduceSumSquare axes input must be constant or inferable from shapes |
-| node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
-| node/test_reduce_sum_square_do_not_keepdims_random/model.onnx | ❌ | ReduceSumSquare axes input must be constant or inferable from shapes |
-| node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant or inferable from shapes |
+| node/test_reduce_sum_square_do_not_keepdims_example/model.onnx | ✅ |  |
+| node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx | ✅ |  |
+| node/test_reduce_sum_square_do_not_keepdims_random/model.onnx | ✅ |  |
+| node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_reduce_sum_square_empty_set_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_reduce_sum_square_keepdims_example/model.onnx | ✅ |  |

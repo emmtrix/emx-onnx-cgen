@@ -431,9 +431,13 @@ class ReduceOp:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     axes: tuple[int, ...]
+    axes_input: str | None
+    axes_input_shape: tuple[int, ...] | None
+    axes_input_dtype: str | None
     keepdims: bool
+    noop_with_empty_axes: bool
     reduce_kind: str
-    reduce_count: int
+    reduce_count: int | None
     dtype: str
 
 
@@ -578,6 +582,9 @@ class CEmitter:
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "resize": self._env.get_template("resize_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
+                "reduce_dynamic": self._env.get_template(
+                    "reduce_op_dynamic.c.j2"
+                ),
                 "constant_of_shape": self._env.get_template(
                     "constant_of_shape_op.c.j2"
                 ),
@@ -614,6 +621,7 @@ class CEmitter:
         reshape_template = templates["reshape"]
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
+        reduce_dynamic_template = templates["reduce_dynamic"]
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         testbench_template = templates.get("testbench")
@@ -656,6 +664,7 @@ class CEmitter:
                 reshape_template=reshape_template,
                 resize_template=resize_template,
                 reduce_template=reduce_template,
+                reduce_dynamic_template=reduce_dynamic_template,
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
             )
@@ -715,6 +724,7 @@ class CEmitter:
         reshape_template = templates["reshape"]
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
+        reduce_dynamic_template = templates["reduce_dynamic"]
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         testbench_template = templates.get("testbench")
@@ -757,6 +767,7 @@ class CEmitter:
                 reshape_template=reshape_template,
                 resize_template=resize_template,
                 reduce_template=reduce_template,
+                reduce_dynamic_template=reduce_dynamic_template,
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
             )
@@ -977,6 +988,11 @@ class CEmitter:
         ):
             includes.add("#include <stdint.h>")
         if "bool" in model_dtypes:
+            includes.add("#include <stdbool.h>")
+        if any(
+            isinstance(op, ReduceOp) and op.axes_input is not None
+            for op in resolved_ops
+        ):
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, UnaryOp) and op.operator in {"llabs", "abs"}
@@ -1343,6 +1359,10 @@ class CEmitter:
                 call_parts.append(op.sizes_input)
             call_parts.append(op.output)
             return ", ".join(call_parts)
+        if isinstance(op, ReduceOp):
+            if op.axes_input is not None:
+                return f"{op.input0}, {op.axes_input}, {op.output}"
+            return f"{op.input0}, {op.output}"
         return f"{op.input0}, {op.output}"
 
     def _temp_buffers(self, model: LoweredModel) -> dict[str, TempBuffer]:
@@ -1874,7 +1894,13 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 axes=op.axes,
+                axes_input=temp_map.get(op.axes_input, op.axes_input)
+                if op.axes_input
+                else None,
+                axes_input_shape=op.axes_input_shape,
+                axes_input_dtype=op.axes_input_dtype,
                 keepdims=op.keepdims,
+                noop_with_empty_axes=op.noop_with_empty_axes,
                 reduce_kind=op.reduce_kind,
                 reduce_count=op.reduce_count,
                 dtype=op.dtype,
@@ -1946,6 +1972,7 @@ class CEmitter:
         reshape_template,
         resize_template,
         reduce_template,
+        reduce_dynamic_template,
         constant_of_shape_template,
         shape_template,
     ) -> str:
@@ -2768,7 +2795,7 @@ class CEmitter:
                 keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
             ).rstrip()
             return with_node_comment(rendered)
-        if isinstance(op, ReduceOp):
+        if isinstance(op, ReduceOp) and op.axes_input is None:
             output_shape = CEmitter._codegen_shape(op.output_shape)
             output_loop_vars = CEmitter._loop_vars(output_shape)
             if not op.input_shape:
@@ -2869,6 +2896,118 @@ class CEmitter:
                 init_literal=init_literal,
                 update_expr=update_expr,
                 final_expr=final_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, ReduceOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            input_shape = CEmitter._codegen_shape(op.input_shape)
+            input_loop_vars = CEmitter._loop_vars(input_shape)
+            axes_shape = op.axes_input_shape or ()
+            axes_count = 1
+            for dim in axes_shape:
+                if dim == 0:
+                    axes_count = 0
+                    break
+                axes_count *= dim
+            axes_c_type = (
+                dtype_info(op.axes_input_dtype).c_type
+                if op.axes_input_dtype
+                else "int64_t"
+            )
+            input_indices = "".join(f"[{var}]" for var in input_loop_vars)
+            output_indices = "".join(
+                f"[out_indices[{idx}]]" for idx in range(len(output_shape))
+            )
+            output_loop_index_expr = "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            value_expr = f"{op.input0}{input_indices}"
+            update_expr = None
+            init_literal = None
+            post_expr = None
+            fabs_fn = CEmitter._math_fn(op.dtype, "fabsf", "fabs")
+            exp_fn = CEmitter._math_fn(op.dtype, "expf", "exp")
+            log_fn = CEmitter._math_fn(op.dtype, "logf", "log")
+            sqrt_fn = CEmitter._math_fn(op.dtype, "sqrtf", "sqrt")
+            if op.reduce_kind == "sum":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr};"
+            elif op.reduce_kind == "mean":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr};"
+                post_expr = "*out_ptr = *out_ptr / reduce_count;"
+            elif op.reduce_kind == "max":
+                init_literal = min_literal
+                update_expr = f"if ({value_expr} > *out_ptr) *out_ptr = {value_expr};"
+            elif op.reduce_kind == "min":
+                init_literal = max_literal
+                update_expr = f"if ({value_expr} < *out_ptr) *out_ptr = {value_expr};"
+            elif op.reduce_kind == "prod":
+                init_literal = CEmitter._format_literal(op.dtype, 1)
+                update_expr = f"*out_ptr *= {value_expr};"
+            elif op.reduce_kind == "l1":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {fabs_fn}({value_expr});"
+            elif op.reduce_kind == "l2":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr} * {value_expr};"
+                post_expr = f"*out_ptr = {sqrt_fn}(*out_ptr);"
+            elif op.reduce_kind == "logsum":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr};"
+                post_expr = f"*out_ptr = {log_fn}(*out_ptr);"
+            elif op.reduce_kind == "logsumexp":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {exp_fn}({value_expr});"
+                post_expr = f"*out_ptr = {log_fn}(*out_ptr);"
+            elif op.reduce_kind == "sumsquare":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr} * {value_expr};"
+            else:
+                raise CodegenError(
+                    f"Unsupported reduce kind {op.reduce_kind}"
+                )
+            params = [
+                f"const {c_type} {op.input0}"
+                f"{self._param_array_suffix(op.input_shape)}"
+            ]
+            if op.axes_input and op.axes_input_shape and op.axes_input_dtype:
+                axes_suffix = self._param_array_suffix(op.axes_input_shape)
+                params.append(
+                    f"const {axes_c_type} {op.axes_input}{axes_suffix}"
+                )
+            params.append(
+                f"{c_type} {op.output}"
+                f"{self._param_array_suffix(op.output_shape)}"
+            )
+            rendered = reduce_dynamic_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                params=params,
+                input0=op.input0,
+                axes_input=op.axes_input,
+                output=op.output,
+                c_type=c_type,
+                axes_c_type=axes_c_type,
+                input_shape=input_shape,
+                output_shape=output_shape,
+                input_loop_vars=input_loop_vars,
+                output_loop_vars=output_loop_vars,
+                output_index_expr=output_indices,
+                output_loop_index_expr=output_loop_index_expr,
+                input_index_expr=input_indices,
+                init_literal=init_literal,
+                update_expr=update_expr,
+                post_expr=post_expr,
+                keepdims=op.keepdims,
+                noop_with_empty_axes=op.noop_with_empty_axes,
+                axes_count=axes_count,
+                reduce_mask_vars=tuple(
+                    f"reduce_mask_{idx}"
+                    for idx in range(len(input_shape))
+                ),
+                output_rank=len(output_shape),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):

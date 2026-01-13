@@ -33,10 +33,22 @@ REDUCE_OUTPUTS_FLOAT_ONLY = {
 
 @dataclass(frozen=True)
 class _ReduceSpec:
-    axes: tuple[int, ...]
+    axes: tuple[int, ...] | None
+    axes_input: str | None
+    axes_input_shape: tuple[int, ...] | None
+    axes_input_dtype: str | None
     keepdims: bool
     output_shape: tuple[int, ...]
-    reduce_count: int
+    reduce_count: int | None
+
+
+@dataclass(frozen=True)
+class _AxesInputSpec:
+    axes: tuple[int, ...] | None
+    input_name: str | None
+    input_shape: tuple[int, ...] | None
+    input_dtype: str | None
+    present: bool
 
 
 def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
@@ -75,13 +87,11 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _axes_input_info(
-    graph: Graph, node: Node
-) -> tuple[tuple[int, ...] | None, bool]:
+def _axes_input_info(graph: Graph, node: Node) -> _AxesInputSpec:
     if len(node.inputs) < 2:
-        return None, False
+        return _AxesInputSpec(None, None, None, None, False)
     if node.inputs[1] == "":
-        return None, False
+        return _AxesInputSpec(None, None, None, None, False)
     initializer = _find_initializer(graph, node.inputs[1])
     if initializer is None:
         try:
@@ -95,14 +105,26 @@ def _axes_input_info(
                 f"{node.op_type} axes input must be int64 or int32"
             )
         if any(dim == 0 for dim in value.type.shape):
-            return (), True
-        return None, True
+            return _AxesInputSpec((), None, None, None, True)
+        return _AxesInputSpec(
+            None,
+            node.inputs[1],
+            value.type.shape,
+            value.type.dtype,
+            True,
+        )
     if initializer.type.dtype not in {"int64", "int32"}:
         raise UnsupportedOpError(
             f"{node.op_type} axes input must be int64 or int32"
         )
     data = np.array(initializer.data, dtype=np.int64).ravel()
-    return tuple(int(value) for value in data), True
+    return _AxesInputSpec(
+        tuple(int(value) for value in data),
+        None,
+        None,
+        None,
+        True,
+    )
 
 
 def _infer_axes_from_shapes(
@@ -161,7 +183,7 @@ def _infer_axes_from_shapes(
     return None
 
 
-def _normalize_axes(
+def normalize_reduce_axes(
     axes: tuple[int, ...], input_shape: tuple[int, ...], node: Node
 ) -> tuple[int, ...]:
     rank = len(input_shape)
@@ -182,34 +204,74 @@ def _normalize_axes(
 
 def resolve_reduce_axes(
     graph: Graph, node: Node, input_shape: tuple[int, ...]
-) -> tuple[tuple[int, ...], bool]:
+) -> tuple[_ReduceSpec | None, bool]:
     axes_attr = node.attrs.get("axes")
-    axes_input, axes_input_present = _axes_input_info(graph, node)
-    if axes_attr is not None and axes_input_present:
+    axes_input = _axes_input_info(graph, node)
+    if axes_attr is not None and axes_input.present:
         raise UnsupportedOpError(
             f"{node.op_type} cannot set both axes attribute and axes input"
         )
     keepdims = bool(int(node.attrs.get("keepdims", 1)))
     if axes_attr is not None:
         axes = tuple(int(value) for value in axes_attr)
-    elif axes_input is not None:
-        axes = axes_input
-    elif axes_input_present:
+        axes_input_name = None
+        axes_input_shape = None
+        axes_input_dtype = None
+    elif axes_input.axes is not None:
+        axes = axes_input.axes
+        axes_input_name = None
+        axes_input_shape = None
+        axes_input_dtype = None
+    elif axes_input.present:
         output_shape = _value_shape(graph, node.outputs[0], node)
         axes = _infer_axes_from_shapes(input_shape, output_shape, keepdims, node)
         if axes is None:
-            raise UnsupportedOpError(
-                f"{node.op_type} axes input must be constant or inferable from shapes"
-            )
+            axes_input_name = axes_input.input_name
+            axes_input_shape = axes_input.input_shape
+            axes_input_dtype = axes_input.input_dtype
+        else:
+            axes_input_name = None
+            axes_input_shape = None
+            axes_input_dtype = None
     else:
         axes = ()
+        axes_input_name = None
+        axes_input_shape = None
+        axes_input_dtype = None
     noop_with_empty_axes = bool(int(node.attrs.get("noop_with_empty_axes", 0)))
-    if not axes:
+    if axes is not None and not axes:
         if noop_with_empty_axes:
-            return (), True
+            return None, True
         axes = tuple(range(len(input_shape)))
-    axes = _normalize_axes(axes, input_shape, node)
-    return axes, False
+    if axes is None:
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        if keepdims and len(output_shape) != len(input_shape):
+            raise ShapeInferenceError(
+                f"{node.op_type} output shape rank must match input rank"
+            )
+        if len(output_shape) > len(input_shape):
+            raise ShapeInferenceError(
+                f"{node.op_type} output shape rank must not exceed input rank"
+            )
+        return _ReduceSpec(
+            axes=None,
+            axes_input=axes_input_name,
+            axes_input_shape=axes_input_shape,
+            axes_input_dtype=axes_input_dtype,
+            keepdims=keepdims,
+            output_shape=output_shape,
+            reduce_count=None,
+        ), False
+    axes = normalize_reduce_axes(axes, input_shape, node)
+    return _ReduceSpec(
+        axes=axes,
+        axes_input=None,
+        axes_input_shape=None,
+        axes_input_dtype=None,
+        keepdims=keepdims,
+        output_shape=(),
+        reduce_count=None,
+    ), False
 
 
 def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
@@ -218,7 +280,7 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
             f"{node.op_type} must have 1 or 2 inputs and 1 output"
         )
     input_shape = _value_shape(graph, node.inputs[0], node)
-    axes, noop = resolve_reduce_axes(graph, node, input_shape)
+    axes_spec, noop = resolve_reduce_axes(graph, node, input_shape)
     if noop:
         output_shape = _value_shape(graph, node.outputs[0], node)
         if output_shape != input_shape:
@@ -226,7 +288,20 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
                 f"{node.op_type} output shape must be {input_shape}, got {output_shape}"
             )
         return None
-    keepdims = bool(int(node.attrs.get("keepdims", 1)))
+    if axes_spec is None:
+        raise ShapeInferenceError(f"{node.op_type} axes spec missing")
+    if axes_spec.axes is None:
+        return _ReduceSpec(
+            axes=None,
+            axes_input=axes_spec.axes_input,
+            axes_input_shape=axes_spec.axes_input_shape,
+            axes_input_dtype=axes_spec.axes_input_dtype,
+            keepdims=axes_spec.keepdims,
+            output_shape=axes_spec.output_shape,
+            reduce_count=None,
+        )
+    axes = axes_spec.axes
+    keepdims = axes_spec.keepdims
     if keepdims:
         output_shape = tuple(
             1 if axis in axes else dim
@@ -246,6 +321,9 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
     reduce_count = _shape_product(tuple(input_shape[axis] for axis in axes))
     return _ReduceSpec(
         axes=axes,
+        axes_input=None,
+        axes_input_shape=None,
+        axes_input_dtype=None,
         keepdims=keepdims,
         output_shape=output_shape,
         reduce_count=reduce_count,
@@ -300,13 +378,23 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
             dtype=op_dtype,
         )
     input_shape = _value_shape(graph, node.inputs[0], node)
+    if spec.axes_input and (
+        spec.axes_input_shape is None or spec.axes_input_dtype is None
+    ):
+        raise ShapeInferenceError(
+            f"{node.op_type} axes input must have a static shape and dtype"
+        )
     return ReduceOp(
         input0=node.inputs[0],
         output=node.outputs[0],
         input_shape=input_shape,
         output_shape=spec.output_shape,
-        axes=spec.axes,
+        axes=spec.axes or (),
+        axes_input=spec.axes_input,
+        axes_input_shape=spec.axes_input_shape,
+        axes_input_dtype=spec.axes_input_dtype,
         keepdims=spec.keepdims,
+        noop_with_empty_axes=bool(int(node.attrs.get("noop_with_empty_axes", 0))),
         reduce_kind=REDUCE_KIND_BY_OP[node.op_type],
         reduce_count=spec.reduce_count,
         dtype=op_dtype,
