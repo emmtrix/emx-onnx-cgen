@@ -14,6 +14,8 @@ import pytest
 
 from onnx import TensorProto, helper
 
+from onnx2c.compiler import Compiler, CompilerOptions
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PROJECT_ROOT / "src"
 
@@ -50,7 +52,11 @@ def _make_add_initializer_model() -> tuple[onnx.ModelProto, np.ndarray]:
     return model, weight_values
 
 
-def _compile_and_run_testbench(model: onnx.ModelProto) -> tuple[dict[str, object], str]:
+def _compile_and_run_testbench(
+    model: onnx.ModelProto,
+    *,
+    compiler_options: CompilerOptions | None = None,
+) -> tuple[dict[str, object], str]:
     compiler_cmd = os.environ.get("CC") or shutil.which("cc") or shutil.which("gcc")
     if compiler_cmd is None:
         pytest.skip("C compiler not available (set CC or install gcc/clang)")
@@ -58,31 +64,14 @@ def _compile_and_run_testbench(model: onnx.ModelProto) -> tuple[dict[str, object
         temp_path = Path(temp_dir)
         c_path = temp_path / "model.c"
         exe_path = temp_path / "model"
-        model_path = temp_path / "model.onnx"
-        onnx.save_model(model, model_path)
-        env = os.environ.copy()
-        python_path = str(SRC_ROOT)
-        if env.get("PYTHONPATH"):
-            python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
-        env["PYTHONPATH"] = python_path
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "onnx2c",
-                "compile",
-                str(model_path),
-                str(c_path),
-                "--template-dir",
-                str(PROJECT_ROOT / "templates"),
-                "--emit-testbench",
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-            cwd=PROJECT_ROOT,
-            env=env,
-        )
+        if compiler_options is None:
+            compiler_options = CompilerOptions(
+                template_dir=PROJECT_ROOT / "templates",
+                emit_testbench=True,
+            )
+        compiler = Compiler(compiler_options)
+        generated = compiler.compile(model)
+        c_path.write_text(generated, encoding="utf-8")
         subprocess.run(
             [compiler_cmd, "-std=c99", "-O2", str(c_path), "-o", str(exe_path), "-lm"],
             check=True,
@@ -133,3 +122,21 @@ def test_initializer_weights_emitted_as_static_arrays() -> None:
         model_path = Path(temp_dir) / "add_init.onnx"
         onnx.save_model(model, model_path)
         _run_cli_verify(model_path)
+
+
+def test_testbench_accepts_constant_inputs() -> None:
+    model, weights = _make_add_initializer_model()
+    input_values = np.linspace(1.0, 6.0, num=6, dtype=np.float32).reshape(
+        weights.shape
+    )
+    options = CompilerOptions(
+        template_dir=PROJECT_ROOT / "templates",
+        emit_testbench=True,
+        testbench_inputs={"in0": input_values},
+    )
+    payload, generated = _compile_and_run_testbench(
+        model, compiler_options=options
+    )
+    assert "static const float in0_testbench_data" in generated
+    output_data = np.array(payload["outputs"]["out"]["data"], dtype=np.float32)
+    np.testing.assert_allclose(output_data, input_values + weights)
