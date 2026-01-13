@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import GatherOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -28,10 +30,10 @@ def lower_gather(graph: Graph, node: Node) -> GatherOp:
         )
     op_dtype = _value_dtype(graph, data_name, node)
     indices_dtype = _value_dtype(graph, indices_name, node)
-    if indices_dtype not in {"int64", "int32"}:
+    if indices_dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
             "Gather indices must be int32 or int64, "
-            f"got {indices_dtype}"
+            f"got {indices_dtype.onnx_name}"
         )
     return GatherOp(
         data=data_name,

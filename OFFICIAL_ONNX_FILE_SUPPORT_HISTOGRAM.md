@@ -89,6 +89,7 @@
 | Unsupported op GatherND | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
 | Unsupported op Loop | 3 | █ |
+| <ScalarType.F16: '*'> | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
@@ -161,7 +162,6 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Unsupported op Pad | 6 | ██████████████████████████████ |
-| Unsupported op Gather | 4 | ████████████████████ |
 | Unsupported op ScatterND | 4 | ████████████████████ |
 | Unsupported LSTM direction b'*' | 2 | ██████████ |
 | Unsupported op QLinearAdd | 2 | ██████████ |

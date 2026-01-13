@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 783 / 1802 official ONNX files.
+Support 785 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -913,7 +913,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_matmul_bcast/model.onnx | ✅ |  |
 | node/test_matmulinteger/model.onnx | ❌ | Unsupported op MatMulInteger |
 | node/test_max_example/model.onnx | ❌ | Max must have 2 inputs and 1 output |
-| node/test_max_float16/model.onnx | ✅ |  |
+| node/test_max_float16/model.onnx | ❌ | <ScalarType.F16: 'f16'> |
 | node/test_max_float32/model.onnx | ✅ |  |
 | node/test_max_float64/model.onnx | ✅ |  |
 | node/test_max_int16/model.onnx | ❌ | Unsupported op Max |
@@ -952,7 +952,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mean_two_inputs/model.onnx | ✅ |  |
 | node/test_melweightmatrix/model.onnx | ❌ | Unsupported op MelWeightMatrix |
 | node/test_min_example/model.onnx | ❌ | Min must have 2 inputs and 1 output |
-| node/test_min_float16/model.onnx | ✅ |  |
+| node/test_min_float16/model.onnx | ❌ | <ScalarType.F16: 'f16'> |
 | node/test_min_float32/model.onnx | ✅ |  |
 | node/test_min_float64/model.onnx | ✅ |  |
 | node/test_min_int16/model.onnx | ❌ | Unsupported op Min |
@@ -969,7 +969,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mish_expanded/model.onnx | ❌ | Unsupported op Softplus |
 | node/test_mod_broadcast/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_int64_fmod/model.onnx | ❌ | Unsupported op Mod |
-| node/test_mod_mixed_sign_float16/model.onnx | ✅ |  |
+| node/test_mod_mixed_sign_float16/model.onnx | ❌ | <ScalarType.F16: 'f16'> |
 | node/test_mod_mixed_sign_float32/model.onnx | ✅ |  |
 | node/test_mod_mixed_sign_float64/model.onnx | ✅ |  |
 | node/test_mod_mixed_sign_int16/model.onnx | ❌ | Unsupported op Mod |
@@ -1815,14 +1815,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 52 / 74 local ONNX files.
+Support 56 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
-| test_gather_basic/model.onnx | ❌ | Unsupported op Gather |
-| test_gather_output_scalar/model.onnx | ❌ | Unsupported op Gather |
-| test_gather_scalar_axis0/model.onnx | ❌ | Unsupported op Gather |
-| test_gather_scalar_axis1/model.onnx | ❌ | Unsupported op Gather |
+| test_gather_basic/model.onnx | ✅ |  |
+| test_gather_output_scalar/model.onnx | ✅ |  |
+| test_gather_scalar_axis0/model.onnx | ✅ |  |
+| test_gather_scalar_axis1/model.onnx | ✅ |  |
 | test_gemm_C1/model.onnx | ✅ |  |
 | test_gemm_C1_transA/model.onnx | ✅ |  |
 | test_gemm_C1_transB/model.onnx | ✅ |  |

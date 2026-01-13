@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import GemmOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -22,7 +24,7 @@ class GemmSpec:
     c_shape: tuple[int, ...] | None
 
 
-def resolve_gemm_spec(graph: Graph, node: Node, dtype: str) -> GemmSpec:
+def resolve_gemm_spec(graph: Graph, node: Node, dtype: ScalarType) -> GemmSpec:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
         raise UnsupportedOpError("Gemm must have 2 or 3 inputs and 1 output")
     alpha, beta, trans_a, trans_b = _resolve_gemm_attrs(node, dtype)
@@ -67,7 +69,7 @@ def resolve_gemm_spec(graph: Graph, node: Node, dtype: str) -> GemmSpec:
 
 
 def _resolve_gemm_attrs(
-    node: Node, dtype: str
+    node: Node, dtype: ScalarType
 ) -> tuple[float | int, float | int, bool, bool]:
     alpha = float(node.attrs.get("alpha", 1.0))
     beta = float(node.attrs.get("beta", 1.0))
@@ -77,9 +79,9 @@ def _resolve_gemm_attrs(
         raise UnsupportedOpError(
             "Gemm only supports transA/transB values of 0 or 1"
         )
-    if dtype == "bool":
+    if dtype == ScalarType.BOOL:
         raise UnsupportedOpError("Gemm supports numeric inputs only")
-    if dtype not in {"float", "double", "float16"}:
+    if not dtype.is_float:
         alpha_int = int(alpha)
         beta_int = int(beta)
         if alpha != alpha_int or beta != beta_int:

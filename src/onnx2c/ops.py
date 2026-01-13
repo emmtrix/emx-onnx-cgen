@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from shared.scalar_types import ScalarType
+
 from .errors import UnsupportedOpError
 
 
@@ -64,11 +66,11 @@ UNARY_OP_TYPES = {
 }
 
 
-def _format_float_literal(value: float, dtype: str) -> str:
+def _format_float_literal(value: float, dtype: ScalarType) -> str:
     formatted = f"{value:.9g}"
     if "e" not in formatted and "E" not in formatted and "." not in formatted:
         formatted = f"{formatted}.0"
-    if dtype in {"float", "float16"}:
+    if dtype in {ScalarType.F16, ScalarType.F32}:
         return f"{formatted}f"
     return formatted
 
@@ -162,7 +164,7 @@ BINARY_SPECS_DOUBLE = {
     "Div": BinaryOpSpec("/", "infix", lambda left, right: left / right),
     "Max": BinaryOpSpec("fmax", "func", np.maximum),
     "Mean": BinaryOpSpec(
-        f"({{left}} + {{right}}) * {_format_float_literal(0.5, 'double')}",
+        f"({{left}} + {{right}}) * {_format_float_literal(0.5, ScalarType.F64)}",
         "expr",
         lambda left, right: (left + right) * 0.5,
     ),
@@ -178,7 +180,7 @@ BINARY_SPECS_FLOAT = {
     "Div": BinaryOpSpec("/", "infix", lambda left, right: left / right),
     "Max": BinaryOpSpec("fmaxf", "func", np.maximum),
     "Mean": BinaryOpSpec(
-        f"({{left}} + {{right}}) * {_format_float_literal(0.5, 'float')}",
+        f"({{left}} + {{right}}) * {_format_float_literal(0.5, ScalarType.F32)}",
         "expr",
         lambda left, right: (left + right) * 0.5,
     ),
@@ -190,29 +192,29 @@ BINARY_SPECS_FLOAT = {
 }
 
 UNARY_SYMBOLS_BY_DTYPE = {
-    "bool": UNARY_SYMBOLS_BOOL,
-    "int64": UNARY_SYMBOLS_INT64,
-    "int32": UNARY_SYMBOLS_INT32,
-    "int16": UNARY_SYMBOLS_INT16,
-    "int8": UNARY_SYMBOLS_INT8,
-    "double": UNARY_SYMBOLS_DOUBLE,
-    "float": UNARY_SYMBOLS_FLOAT,
-    "float16": UNARY_SYMBOLS_FLOAT,
+    ScalarType.BOOL: UNARY_SYMBOLS_BOOL,
+    ScalarType.I64: UNARY_SYMBOLS_INT64,
+    ScalarType.I32: UNARY_SYMBOLS_INT32,
+    ScalarType.I16: UNARY_SYMBOLS_INT16,
+    ScalarType.I8: UNARY_SYMBOLS_INT8,
+    ScalarType.F64: UNARY_SYMBOLS_DOUBLE,
+    ScalarType.F32: UNARY_SYMBOLS_FLOAT,
+    ScalarType.F16: UNARY_SYMBOLS_FLOAT,
 }
 
 BINARY_SPECS_BY_DTYPE = {
-    "bool": BINARY_SPECS_BOOL,
-    "int64": BINARY_SPECS_INT,
-    "int32": BINARY_SPECS_INT,
-    "int16": BINARY_SPECS_INT,
-    "int8": BINARY_SPECS_INT,
-    "uint64": BINARY_SPECS_INT,
-    "uint32": BINARY_SPECS_INT,
-    "uint16": BINARY_SPECS_INT,
-    "uint8": BINARY_SPECS_INT,
-    "double": BINARY_SPECS_DOUBLE,
-    "float": BINARY_SPECS_FLOAT,
-    "float16": BINARY_SPECS_FLOAT,
+    ScalarType.BOOL: BINARY_SPECS_BOOL,
+    ScalarType.I64: BINARY_SPECS_INT,
+    ScalarType.I32: BINARY_SPECS_INT,
+    ScalarType.I16: BINARY_SPECS_INT,
+    ScalarType.I8: BINARY_SPECS_INT,
+    ScalarType.U64: BINARY_SPECS_INT,
+    ScalarType.U32: BINARY_SPECS_INT,
+    ScalarType.U16: BINARY_SPECS_INT,
+    ScalarType.U8: BINARY_SPECS_INT,
+    ScalarType.F64: BINARY_SPECS_DOUBLE,
+    ScalarType.F32: BINARY_SPECS_FLOAT,
+    ScalarType.F16: BINARY_SPECS_FLOAT,
 }
 
 UNARY_APPLY_FUNCS = {
@@ -247,7 +249,7 @@ UNARY_APPLY_FUNCS = {
 }
 
 def binary_op_symbol(
-    op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: str
+    op_type: str, attrs: Mapping[str, object] | None = None, *, dtype: ScalarType
 ) -> BinaryOpSpec | None:
     compare_spec = COMPARE_SPECS.get(op_type)
     if compare_spec is not None:
@@ -257,7 +259,7 @@ def binary_op_symbol(
         op_spec = specs.get(op_type)
         if op_spec is not None:
             return op_spec
-    if dtype not in {"float", "double", "float16"}:
+    if not dtype.is_float:
         return None
     if op_type == "Mod":
         fmod = 0
@@ -267,7 +269,9 @@ def binary_op_symbol(
             raise UnsupportedOpError(
                 "Mod only supports fmod=1 for floating point types"
             )
-        func = "fmodf" if dtype in {"float", "float16"} else "fmod"
+        func = (
+            "fmodf" if dtype in {ScalarType.F16, ScalarType.F32} else "fmod"
+        )
         return BinaryOpSpec(func, "func", np.fmod)
     if op_type == "PRelu":
         zero_literal = _format_float_literal(0.0, dtype)
@@ -279,7 +283,7 @@ def binary_op_symbol(
     return None
 
 
-def unary_op_symbol(op_type: str, *, dtype: str) -> str | None:
+def unary_op_symbol(op_type: str, *, dtype: ScalarType) -> str | None:
     return UNARY_SYMBOLS_BY_DTYPE.get(dtype, {}).get(op_type)
 
 

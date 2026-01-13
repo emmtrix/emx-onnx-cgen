@@ -97,7 +97,7 @@ def _resolve_batch_norm_spec(graph: Graph, node: Node) -> _BatchNormSpec:
 @register_lowering("BatchNormalization")
 def lower_batch_normalization(graph: Graph, node: Node) -> BatchNormOp:
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-    if op_dtype not in {"float", "double", "float16"}:
+    if not op_dtype.is_float:
         raise UnsupportedOpError(
             "BatchNormalization supports float16, float, and double inputs only"
         )

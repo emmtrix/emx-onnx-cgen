@@ -5,6 +5,8 @@ import onnx
 
 from onnx import TensorProto, helper
 
+from shared.scalar_types import ScalarType
+
 from onnx2c.lowering.flatten import lower_flatten
 from onnx2c.onnx_import import import_onnx
 
@@ -58,7 +60,7 @@ def test_lower_flatten_axis_default() -> None:
     op = lower_flatten(graph, graph.nodes[0])
     assert op.input_shape == (2, 3, 4)
     assert op.output_shape == (2, 12)
-    assert op.dtype == "float"
+    assert op.dtype == ScalarType.F32
 
 
 def test_lower_flatten_negative_axis() -> None:

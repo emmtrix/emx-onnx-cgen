@@ -5,6 +5,8 @@ import onnx
 
 from onnx import TensorProto, helper
 
+from shared.scalar_types import ScalarType
+
 from onnx2c.lowering.squeeze import lower_squeeze
 from onnx2c.onnx_import import import_onnx
 
@@ -74,7 +76,7 @@ def test_lower_squeeze_axes_input() -> None:
     op = lower_squeeze(graph, graph.nodes[0])
     assert op.input_shape == (1, 3, 1, 5)
     assert op.output_shape == (3, 5)
-    assert op.dtype == "float"
+    assert op.dtype == ScalarType.F32
 
 
 def test_lower_squeeze_default_axes() -> None:

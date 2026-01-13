@@ -5,7 +5,7 @@ import math
 
 import numpy as np
 
-from ..dtypes import dtype_info
+from shared.scalar_types import ScalarType
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..lowering.attention import resolve_attention_spec
@@ -122,7 +122,7 @@ def _eval_gemm(evaluator: Evaluator, node: Node) -> None:
     if op_dtype != output_dtype:
         raise UnsupportedOpError(
             f"{node.op_type} expects matching input/output dtypes, "
-            f"got {op_dtype} and {output_dtype}"
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     spec = resolve_gemm_spec(evaluator.graph, node, op_dtype)
     left = evaluator.values[node.inputs[0]]
@@ -132,7 +132,7 @@ def _eval_gemm(evaluator: Evaluator, node: Node) -> None:
     if spec.trans_b:
         right = right.T
     result = _apply_matmul(left, right)
-    if op_dtype in {"float", "double", "float16"}:
+    if op_dtype.is_float:
         alpha = float(spec.alpha)
         beta = float(spec.beta)
     else:
@@ -153,10 +153,9 @@ def _eval_cast(evaluator: Evaluator, node: Node) -> None:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Cast must have 1 input and 1 output")
     output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
-    target_info = dtype_info(output_dtype)
     input_value = evaluator.values[node.inputs[0]]
     evaluator.values[node.outputs[0]] = input_value.astype(
-        target_info.np_dtype, copy=False
+        output_dtype.np_dtype, copy=False
     )
 
 
@@ -169,12 +168,11 @@ def _eval_castlike(evaluator: Evaluator, node: Node) -> None:
     if output_dtype != like_dtype:
         raise UnsupportedOpError(
             "CastLike output dtype must match like input dtype, "
-            f"got {output_dtype} and {like_dtype}"
+            f"got {output_dtype.onnx_name} and {like_dtype.onnx_name}"
         )
-    target_info = dtype_info(output_dtype)
     input_value = evaluator.values[node.inputs[0]]
     evaluator.values[node.outputs[0]] = input_value.astype(
-        target_info.np_dtype, copy=False
+        output_dtype.np_dtype, copy=False
     )
 
 
@@ -340,9 +338,9 @@ def _eval_conv(evaluator: Evaluator, node: Node) -> None:
     if op_dtype != output_dtype:
         raise UnsupportedOpError(
             f"{node.op_type} expects matching input/output dtypes, "
-            f"got {op_dtype} and {output_dtype}"
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
-    if op_dtype not in {"float", "double", "float16"}:
+    if not op_dtype.is_float:
         raise UnsupportedOpError(
             "Conv supports float16, float, and double inputs only"
         )
@@ -381,9 +379,9 @@ def _eval_lrn(evaluator: Evaluator, node: Node) -> None:
     if op_dtype != output_dtype:
         raise UnsupportedOpError(
             f"{node.op_type} expects matching input/output dtypes, "
-            f"got {op_dtype} and {output_dtype}"
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
-    if op_dtype not in {"float", "double", "float16"}:
+    if not op_dtype.is_float:
         raise UnsupportedOpError(
             "LRN supports float16, float, and double inputs only"
         )
@@ -413,14 +411,14 @@ def _eval_maxpool(evaluator: Evaluator, node: Node) -> None:
     if op_dtype != output_dtype:
         raise UnsupportedOpError(
             f"{node.op_type} expects matching input/output dtypes, "
-            f"got {op_dtype} and {output_dtype}"
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     indices_output = node.outputs[1] if len(node.outputs) > 1 else None
     if indices_output is not None:
         indices_dtype = value_dtype(evaluator.graph, indices_output, node)
-        if indices_dtype != "int64":
+        if indices_dtype != ScalarType.I64:
             raise UnsupportedOpError("MaxPool indices output must be int64")
-    if op_dtype == "bool":
+    if op_dtype == ScalarType.BOOL:
         raise UnsupportedOpError("MaxPool supports numeric inputs only")
     spec = resolve_maxpool_spec(evaluator.graph, node)
     data = evaluator.values[node.inputs[0]]
@@ -540,9 +538,8 @@ def _eval_flatten(evaluator: Evaluator, node: Node) -> None:
 @register_evaluator("ConstantOfShape")
 def _eval_constant_of_shape(evaluator: Evaluator, node: Node) -> None:
     op = lower_constant_of_shape(evaluator.graph, node)
-    info = dtype_info(op.dtype)
     evaluator.values[op.output] = np.full(
-        op.shape, op.value, dtype=info.np_dtype
+        op.shape, op.value, dtype=op.dtype.np_dtype
     )
 
 
@@ -578,11 +575,11 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
     if op_dtype != output_dtype:
         raise UnsupportedOpError(
             f"{node.op_type} expects matching input/output dtypes, "
-            f"got {op_dtype} and {output_dtype}"
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     if (
         node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY
-        and op_dtype not in {"float", "double", "float16"}
+        and not op_dtype.is_float
     ):
         raise UnsupportedOpError(
             f"{node.op_type} supports float16, float, and double inputs only"
@@ -644,9 +641,9 @@ def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
     if node.op_type in COMPARE_OP_TYPES:
         input_dtype = node_dtype(evaluator.graph, node, *node.inputs)
         output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
-        if output_dtype != "bool":
+        if output_dtype != ScalarType.BOOL:
             raise UnsupportedOpError(
-                f"{node.op_type} expects bool output, got {output_dtype}"
+                f"{node.op_type} expects bool output, got {output_dtype.onnx_name}"
             )
         op_spec = binary_op_symbol(node.op_type, node.attrs, dtype=input_dtype)
         if op_spec is None:

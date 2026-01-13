@@ -8,7 +8,6 @@ from typing import Mapping
 from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
 from ..errors import CodegenError
-from ..dtypes import dtype_info
 from ..ops import COMPARE_OP_TYPES
 from shared.scalar_functions import (
     ScalarFunction,
@@ -129,8 +128,8 @@ class BinaryOp:
     operator: str
     operator_kind: str
     shape: tuple[int, ...]
-    dtype: str
-    input_dtype: str
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -143,7 +142,7 @@ class WhereOp:
     x_shape: tuple[int, ...]
     y_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -160,7 +159,7 @@ class UnaryOp:
     output: str
     operator: str
     shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -168,8 +167,8 @@ class CastOp:
     input0: str
     output: str
     shape: tuple[int, ...]
-    input_dtype: str
-    dtype: str
+    input_dtype: ScalarType
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -188,7 +187,7 @@ class MatMulOp:
     k: int
     left_vector: bool
     right_vector: bool
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -205,7 +204,7 @@ class GemmOp:
     alpha: float | int
     beta: float | int
     c_shape: tuple[int, ...] | None
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -250,7 +249,7 @@ class AttentionOp:
     mask_q_seq: int | None
     mask_kv_seq: int | None
     head_group_size: int
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -270,7 +269,7 @@ class ConvOp:
     pads: tuple[int, ...]
     dilations: tuple[int, ...]
     group: int
-    dtype: str
+    dtype: ScalarType
 
     @property
     def out_h(self) -> int:
@@ -304,7 +303,7 @@ class AveragePoolOp:
     pad_bottom: int
     pad_right: int
     count_include_pad: bool
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -316,7 +315,7 @@ class SoftmaxOp:
     inner: int
     axis: int
     shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -328,7 +327,7 @@ class LogSoftmaxOp:
     inner: int
     axis: int
     shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -345,8 +344,11 @@ class NegativeLogLikelihoodLossOp:
     d: int
     reduction: str
     ignore_index: int
-    dtype: str
-    target_dtype: str
+    input_dtype: ScalarType
+    weight_dtype: ScalarType | None
+    weight_shape: tuple[int, ...] | None
+    dtype: ScalarType
+    target_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -365,8 +367,11 @@ class SoftmaxCrossEntropyLossOp:
     d: int
     reduction: str
     ignore_index: int | None
-    dtype: str
-    target_dtype: str
+    input_dtype: ScalarType
+    weight_dtype: ScalarType | None
+    weight_shape: tuple[int, ...] | None
+    dtype: ScalarType
+    target_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -380,7 +385,7 @@ class BatchNormOp:
     shape: tuple[int, ...]
     channels: int
     epsilon: float
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -394,7 +399,7 @@ class LrnOp:
     alpha: float
     beta: float
     bias: float
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -422,8 +427,8 @@ class LstmOp:
     activation_kinds: tuple[int, ...]
     activation_alphas: tuple[float, ...]
     activation_betas: tuple[float, ...]
-    dtype: str
-    sequence_lens_dtype: str | None
+    dtype: ScalarType
+    sequence_lens_dtype: ScalarType | None
 
 
 @dataclass(frozen=True)
@@ -442,8 +447,8 @@ class MaxPoolOp:
     dilations: tuple[int, ...]
     ceil_mode: bool
     storage_order: int
-    dtype: str
-    indices_dtype: str | None
+    dtype: ScalarType
+    indices_dtype: ScalarType | None
 
 
 @dataclass(frozen=True)
@@ -453,7 +458,7 @@ class ConcatOp:
     axis: int
     input_shapes: tuple[tuple[int, ...], ...]
     output_shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -465,8 +470,8 @@ class GatherElementsOp:
     data_shape: tuple[int, ...]
     indices_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    dtype: str
-    indices_dtype: str
+    dtype: ScalarType
+    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -478,8 +483,8 @@ class GatherOp:
     data_shape: tuple[int, ...]
     indices_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    dtype: str
-    indices_dtype: str
+    dtype: ScalarType
+    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -489,7 +494,8 @@ class TransposeOp:
     perm: tuple[int, ...]
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -498,7 +504,8 @@ class ReshapeOp:
     output: str
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -509,7 +516,8 @@ class SliceOp:
     output_shape: tuple[int, ...]
     starts: tuple[int, ...]
     steps: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -526,9 +534,9 @@ class ResizeOp:
     scales_shape: tuple[int, ...] | None
     sizes_shape: tuple[int, ...] | None
     roi_shape: tuple[int, ...] | None
-    scales_dtype: str | None
-    sizes_dtype: str | None
-    roi_dtype: str | None
+    scales_dtype: ScalarType | None
+    sizes_dtype: ScalarType | None
+    roi_dtype: ScalarType | None
     scales_axes: tuple[int, ...] | None
     sizes_axes: tuple[int, ...] | None
     roi_axes: tuple[int, ...] | None
@@ -540,7 +548,7 @@ class ResizeOp:
     extrapolation_value: float
     antialias: bool
     keep_aspect_ratio_policy: str
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -552,12 +560,12 @@ class ReduceOp:
     axes: tuple[int, ...]
     axes_input: str | None
     axes_input_shape: tuple[int, ...] | None
-    axes_input_dtype: str | None
+    axes_input_dtype: ScalarType | None
     keepdims: bool
     noop_with_empty_axes: bool
     reduce_kind: str
     reduce_count: int | None
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -567,8 +575,8 @@ class ConstantOfShapeOp:
     input_shape: tuple[int, ...]
     shape: tuple[int, ...]
     value: float | int | bool
-    dtype: str
-    input_dtype: str
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -578,8 +586,8 @@ class ShapeOp:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     values: tuple[int, ...]
-    dtype: str
-    input_dtype: str
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -589,8 +597,8 @@ class SizeOp:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     value: int
-    dtype: str
-    input_dtype: str
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -598,14 +606,14 @@ class ConstTensor:
     name: str
     shape: tuple[int, ...]
     data: tuple[float | int | bool, ...]
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
 class TempBuffer:
     name: str
     shape: tuple[int, ...]
-    dtype: str
+    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -635,10 +643,10 @@ class LoweredModel:
     name: str
     input_names: tuple[str, ...]
     input_shapes: tuple[tuple[int, ...], ...]
-    input_dtypes: tuple[str, ...]
+    input_dtypes: tuple[ScalarType, ...]
     output_names: tuple[str, ...]
     output_shapes: tuple[tuple[int, ...], ...]
-    output_dtypes: tuple[str, ...]
+    output_dtypes: tuple[ScalarType, ...]
     constants: tuple[ConstTensor, ...]
     ops: tuple[
         BinaryOp
@@ -1004,22 +1012,21 @@ class CEmitter:
                 input_b=name_map.get(op.input_b, op.input_b),
                 input_c=self._map_optional_name(name_map, op.input_c),
                 output=name_map.get(op.output, op.output),
-                input_a_shape=op.input_a_shape,
-                input_b_shape=op.input_b_shape,
-                output_shape=op.output_shape,
-                alpha=op.alpha,
-                beta=op.beta,
+                m=op.m,
+                n=op.n,
+                k=op.k,
                 trans_a=op.trans_a,
                 trans_b=op.trans_b,
+                alpha=op.alpha,
+                beta=op.beta,
+                c_shape=op.c_shape,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, AttentionOp):
             return AttentionOp(
                 input_q=name_map.get(op.input_q, op.input_q),
                 input_k=name_map.get(op.input_k, op.input_k),
                 input_v=name_map.get(op.input_v, op.input_v),
-                output=name_map.get(op.output, op.output),
                 input_attn_mask=self._map_optional_name(
                     name_map, op.input_attn_mask
                 ),
@@ -1041,20 +1048,37 @@ class CEmitter:
                 output_qk_matmul=self._map_optional_name(
                     name_map, op.output_qk_matmul
                 ),
-                input_shapes=op.input_shapes,
-                output_shape=op.output_shape,
-                qk_shape=op.qk_shape,
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                q_heads=op.q_heads,
+                kv_heads=op.kv_heads,
+                q_seq=op.q_seq,
+                kv_seq=op.kv_seq,
+                total_seq=op.total_seq,
+                past_seq=op.past_seq,
+                qk_head_size=op.qk_head_size,
+                v_head_size=op.v_head_size,
+                q_hidden_size=op.q_hidden_size,
+                k_hidden_size=op.k_hidden_size,
+                v_hidden_size=op.v_hidden_size,
+                scale=op.scale,
+                is_causal=op.is_causal,
+                softcap=op.softcap,
+                qk_matmul_output_mode=op.qk_matmul_output_mode,
+                q_rank=op.q_rank,
+                k_rank=op.k_rank,
+                v_rank=op.v_rank,
+                output_rank=op.output_rank,
                 mask_shape=op.mask_shape,
-                past_shapes=op.past_shapes,
-                present_shapes=op.present_shapes,
+                mask_is_bool=op.mask_is_bool,
+                mask_rank=op.mask_rank,
+                mask_broadcast_batch=op.mask_broadcast_batch,
+                mask_broadcast_heads=op.mask_broadcast_heads,
+                mask_broadcast_q_seq=op.mask_broadcast_q_seq,
+                mask_q_seq=op.mask_q_seq,
+                mask_kv_seq=op.mask_kv_seq,
+                head_group_size=op.head_group_size,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                mask_dtype=op.mask_dtype,
-                nonpad_dtype=op.nonpad_dtype,
-                has_qk=op.has_qk,
-                has_past=op.has_past,
-                has_mask=op.has_mask,
-                has_nonpad=op.has_nonpad,
             )
         if isinstance(op, ConvOp):
             return ConvOp(
@@ -1062,29 +1086,39 @@ class CEmitter:
                 weights=name_map.get(op.weights, op.weights),
                 bias=self._map_optional_name(name_map, op.bias),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                weight_shape=op.weight_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
                 kernel_shape=op.kernel_shape,
                 strides=op.strides,
                 pads=op.pads,
                 dilations=op.dilations,
                 group=op.group,
+                dtype=op.dtype,
             )
         if isinstance(op, AveragePoolOp):
             return AveragePoolOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                kernel_shape=op.kernel_shape,
-                strides=op.strides,
-                pads=op.pads,
+                batch=op.batch,
+                channels=op.channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                pad_bottom=op.pad_bottom,
+                pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, BatchNormOp):
             return BatchNormOp(
@@ -1094,25 +1128,23 @@ class CEmitter:
                 mean=name_map.get(op.mean, op.mean),
                 variance=name_map.get(op.variance, op.variance),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                shape=op.shape,
+                channels=op.channels,
                 epsilon=op.epsilon,
-                momentum=op.momentum,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, LrnOp):
             return LrnOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                shape=op.shape,
+                channels=op.channels,
+                size=op.size,
+                half=op.half,
                 alpha=op.alpha,
                 beta=op.beta,
                 bias=op.bias,
-                size=op.size,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, LstmOp):
             return LstmOp(
@@ -1133,35 +1165,42 @@ class CEmitter:
                 output_y=self._map_optional_name(name_map, op.output_y),
                 output_y_h=self._map_optional_name(name_map, op.output_y_h),
                 output_y_c=self._map_optional_name(name_map, op.output_y_c),
-                input_shapes=op.input_shapes,
-                output_shapes=op.output_shapes,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                direction=op.direction,
+                seq_length=op.seq_length,
+                batch_size=op.batch_size,
+                input_size=op.input_size,
                 hidden_size=op.hidden_size,
-                activation_spec=op.activation_spec,
-                clip=op.clip,
+                num_directions=op.num_directions,
+                direction=op.direction,
+                layout=op.layout,
                 input_forget=op.input_forget,
+                clip=op.clip,
+                activation_kinds=op.activation_kinds,
+                activation_alphas=op.activation_alphas,
+                activation_betas=op.activation_betas,
+                dtype=op.dtype,
+                sequence_lens_dtype=op.sequence_lens_dtype,
             )
         if isinstance(op, SoftmaxOp):
             return SoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
                 axis=op.axis,
+                shape=op.shape,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, LogSoftmaxOp):
             return LogSoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
                 axis=op.axis,
+                shape=op.shape,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, NegativeLogLikelihoodLossOp):
             return NegativeLogLikelihoodLossOp(
@@ -1172,13 +1211,16 @@ class CEmitter:
                 input_shape=op.input_shape,
                 target_shape=op.target_shape,
                 output_shape=op.output_shape,
+                n=op.n,
+                c=op.c,
+                d=op.d,
                 ignore_index=op.ignore_index,
                 reduction=op.reduction,
-                dtype=op.dtype,
                 input_dtype=op.input_dtype,
-                target_dtype=op.target_dtype,
                 weight_dtype=op.weight_dtype,
                 weight_shape=op.weight_shape,
+                dtype=op.dtype,
+                target_dtype=op.target_dtype,
             )
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             return SoftmaxCrossEntropyLossOp(
@@ -1191,27 +1233,35 @@ class CEmitter:
                 target_shape=op.target_shape,
                 output_shape=op.output_shape,
                 log_prob_shape=op.log_prob_shape,
+                n=op.n,
+                c=op.c,
+                d=op.d,
                 ignore_index=op.ignore_index,
                 reduction=op.reduction,
-                dtype=op.dtype,
                 input_dtype=op.input_dtype,
-                target_dtype=op.target_dtype,
                 weight_dtype=op.weight_dtype,
                 weight_shape=op.weight_shape,
+                dtype=op.dtype,
+                target_dtype=op.target_dtype,
             )
         if isinstance(op, MaxPoolOp):
             return MaxPoolOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
                 indices=self._map_optional_name(name_map, op.indices),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
                 kernel_shape=op.kernel_shape,
                 strides=op.strides,
                 pads=op.pads,
+                dilations=op.dilations,
                 ceil_mode=op.ceil_mode,
+                storage_order=op.storage_order,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                indices_dtype=op.indices_dtype,
             )
         if isinstance(op, ConcatOp):
             return ConcatOp(
@@ -1223,7 +1273,6 @@ class CEmitter:
                 output_shape=op.output_shape,
                 axis=op.axis,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, GatherElementsOp):
             return GatherElementsOp(
@@ -1235,7 +1284,6 @@ class CEmitter:
                 output_shape=op.output_shape,
                 axis=op.axis,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 indices_dtype=op.indices_dtype,
             )
         if isinstance(op, GatherOp):
@@ -1248,7 +1296,6 @@ class CEmitter:
                 output_shape=op.output_shape,
                 axis=op.axis,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 indices_dtype=op.indices_dtype,
             )
         if isinstance(op, TransposeOp):
@@ -1277,8 +1324,6 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 starts=op.starts,
-                ends=op.ends,
-                axes=op.axes,
                 steps=op.steps,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
@@ -1292,30 +1337,42 @@ class CEmitter:
                 sizes_input=self._map_optional_name(name_map, op.sizes_input),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                scales=op.scales,
+                axes=op.axes,
+                scales_shape=op.scales_shape,
+                sizes_shape=op.sizes_shape,
+                roi_shape=op.roi_shape,
+                scales_dtype=op.scales_dtype,
+                sizes_dtype=op.sizes_dtype,
+                roi_dtype=op.roi_dtype,
+                scales_axes=op.scales_axes,
+                sizes_axes=op.sizes_axes,
+                roi_axes=op.roi_axes,
                 mode=op.mode,
                 nearest_mode=op.nearest_mode,
                 coordinate_transformation_mode=op.coordinate_transformation_mode,
                 cubic_coeff_a=op.cubic_coeff_a,
                 extrapolation_value=op.extrapolation_value,
                 exclude_outside=op.exclude_outside,
-                scales=op.scales,
-                sizes=op.sizes,
+                antialias=op.antialias,
+                keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
+                dtype=op.dtype,
             )
         if isinstance(op, ReduceOp):
             return ReduceOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                axes_input=self._map_optional_name(name_map, op.axes_input),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 axes=op.axes,
+                axes_input=self._map_optional_name(name_map, op.axes_input),
+                axes_input_shape=op.axes_input_shape,
+                axes_input_dtype=op.axes_input_dtype,
                 keepdims=op.keepdims,
+                noop_with_empty_axes=op.noop_with_empty_axes,
+                reduce_kind=op.reduce_kind,
+                reduce_count=op.reduce_count,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                op_kind=op.op_kind,
-                output_dtype=op.output_dtype,
             )
         if isinstance(op, ConstantOfShapeOp):
             return ConstantOfShapeOp(
@@ -1511,10 +1568,10 @@ class CEmitter:
                 index,
                 array_suffix="",
                 loop_vars=(),
-                c_type=dtype_info(op.dtype).c_type,
-                zero_literal=dtype_info(op.dtype).zero_literal,
-                min_literal=dtype_info(op.dtype).min_literal,
-                max_literal=dtype_info(op.dtype).max_literal,
+                c_type=op.dtype.c_type,
+                zero_literal=op.dtype.zero_literal,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
                 binary_template=binary_template,
                 where_template=where_template,
                 unary_template=unary_template,
@@ -1663,10 +1720,10 @@ class CEmitter:
                 index,
                 array_suffix="",
                 loop_vars=(),
-                c_type=dtype_info(op.dtype).c_type,
-                zero_literal=dtype_info(op.dtype).zero_literal,
-                min_literal=dtype_info(op.dtype).min_literal,
-                max_literal=dtype_info(op.dtype).max_literal,
+                c_type=op.dtype.c_type,
+                zero_literal=op.dtype.zero_literal,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
                 binary_template=binary_template,
                 where_template=where_template,
                 unary_template=unary_template,
@@ -1861,33 +1918,30 @@ class CEmitter:
         if any(
             dtype
             in {
-                "int64",
-                "int32",
-                "int16",
-                "int8",
-                "uint64",
-                "uint32",
-                "uint16",
-                "uint8",
+                ScalarType.I64,
+                ScalarType.I32,
+                ScalarType.I16,
+                ScalarType.I8,
+                ScalarType.U64,
+                ScalarType.U32,
+                ScalarType.U16,
+                ScalarType.U8,
             }
             for dtype in dtypes
         ):
             includes.append("#include <stdint.h>")
-        if "bool" in dtypes:
+        if ScalarType.BOOL in dtypes:
             includes.append("#include <stdbool.h>")
         return includes
 
     @staticmethod
     def _scalar_function_name(
         op_type: str,
-        dtype: str,
+        dtype: ScalarType,
         registry: ScalarFunctionRegistry,
     ) -> str | None:
-        scalar_type = _SCALAR_TYPE_BY_DTYPE.get(dtype)
-        if scalar_type is None:
-            return None
         if op_type in {"Max", "Min"}:
-            if scalar_type in {ScalarType.F32, ScalarType.F64}:
+            if dtype in {ScalarType.F32, ScalarType.F64}:
                 scalar_function = (
                     ScalarFunction.FMAX
                     if op_type == "Max"
@@ -1905,7 +1959,7 @@ class CEmitter:
             return None
         try:
             return registry.request(
-                ScalarFunctionKey(function=scalar_function, return_type=scalar_type)
+                ScalarFunctionKey(function=scalar_function, return_type=dtype)
             )
         except ScalarFunctionError:
             return None
@@ -1986,7 +2040,7 @@ class CEmitter:
             has_resize=any(isinstance(op, ResizeOp) for op in resolved_ops),
         ):
             includes.add("#include <stdint.h>")
-        if "bool" in model_dtypes:
+        if ScalarType.BOOL in model_dtypes:
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, ReduceOp) and op.axes_input is not None
@@ -2019,25 +2073,25 @@ class CEmitter:
 
     @staticmethod
     def _needs_stdint(
-        model_dtypes: set[str],
-        targets: tuple[set[str], ...],
+        model_dtypes: set[ScalarType],
+        targets: tuple[set[ScalarType], ...],
         *,
         has_resize: bool,
     ) -> bool:
         integer_dtypes = {
-            "int64",
-            "int32",
-            "int16",
-            "int8",
-            "uint64",
-            "uint32",
-            "uint16",
-            "uint8",
+            ScalarType.I64,
+            ScalarType.I32,
+            ScalarType.I16,
+            ScalarType.I8,
+            ScalarType.U64,
+            ScalarType.U32,
+            ScalarType.U16,
+            ScalarType.U8,
         }
         if any(dtype in integer_dtypes for dtype in model_dtypes):
             return True
         if any(
-            dtype in {"int64", "int32"}
+            dtype in {ScalarType.I64, ScalarType.I32}
             for target_dtypes in targets
             for dtype in target_dtypes
         ):
@@ -2126,12 +2180,12 @@ class CEmitter:
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind in {"min", "max"}
-            and op.dtype in {"float", "double", "float16"}
+            and op.dtype.is_float
             for op in resolved_ops
         ):
             return True
         if any(
-            isinstance(op, MaxPoolOp) and op.dtype in {"float", "double", "float16"}
+            isinstance(op, MaxPoolOp) and op.dtype.is_float
             for op in resolved_ops
         ):
             return True
@@ -2172,13 +2226,19 @@ class CEmitter:
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind in {"min", "max"}
-            and op.dtype in {"int64", "int32", "int16", "int8"}
+            and op.dtype in {
+                ScalarType.I64,
+                ScalarType.I32,
+                ScalarType.I16,
+                ScalarType.I8,
+            }
             for op in resolved_ops
         ):
             return True
         if any(
             isinstance(op, MaxPoolOp)
-            and op.dtype in {"int64", "int32", "int16", "int8"}
+            and op.dtype
+            in {ScalarType.I64, ScalarType.I32, ScalarType.I16, ScalarType.I8}
             for op in resolved_ops
         ):
             return True
@@ -2219,8 +2279,7 @@ class CEmitter:
         temp_buffers: tuple[TempBuffer, ...],
     ) -> str:
         params = [
-            f"const {dtype_info(dtype).c_type} {name}"
-            f"{self._param_array_suffix(shape)}"
+            f"const {dtype.c_type} {name}{self._param_array_suffix(shape)}"
             for name, shape, dtype in zip(
                 model.input_names, model.input_shapes, model.input_dtypes
             )
@@ -2228,14 +2287,13 @@ class CEmitter:
         for name, shape, dtype in zip(
             model.output_names, model.output_shapes, model.output_dtypes
         ):
-            output_type = dtype_info(dtype).c_type
             params.append(
-                f"{output_type} {name}{self._param_array_suffix(shape)}"
+                f"{dtype.c_type} {name}{self._param_array_suffix(shape)}"
             )
         signature = ", ".join(params)
         lines = [f"void {model.name}({signature}) {{"]
         for temp in temp_buffers:
-            c_type = dtype_info(temp.dtype).c_type
+            c_type = temp.dtype.c_type
             lines.append(
                 f"    {c_type} {temp.name}{self._array_suffix(temp.shape)};"
             )
@@ -2797,6 +2855,9 @@ class CEmitter:
                 d=op.d,
                 reduction=op.reduction,
                 ignore_index=op.ignore_index,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                weight_shape=op.weight_shape,
                 dtype=op.dtype,
                 target_dtype=op.target_dtype,
             )
@@ -2824,6 +2885,9 @@ class CEmitter:
                 d=op.d,
                 reduction=op.reduction,
                 ignore_index=op.ignore_index,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                weight_shape=op.weight_shape,
                 dtype=op.dtype,
                 target_dtype=op.target_dtype,
             )
@@ -2921,6 +2985,7 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, ReshapeOp):
             return ReshapeOp(
@@ -2929,6 +2994,7 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, SliceOp):
             return SliceOp(
@@ -2939,6 +3005,7 @@ class CEmitter:
                 starts=op.starts,
                 steps=op.steps,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, ResizeOp):
             return ResizeOp(
@@ -3090,8 +3157,8 @@ class CEmitter:
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             array_suffix = self._param_array_suffix(shape)
-            input_c_type = dtype_info(op.input_dtype).c_type
-            output_c_type = dtype_info(op.dtype).c_type
+            input_c_type = op.input_dtype.c_type
+            output_c_type = op.dtype.c_type
             common = {
                 "model_name": model.name,
                 "op_name": f"{model.name}_op{index}",
@@ -3167,9 +3234,9 @@ class CEmitter:
                 x_expr=x_expr,
                 y_expr=y_expr,
                 output_expr=output_expr,
-                input_c_type=dtype_info(op.dtype).c_type,
-                output_c_type=dtype_info(op.dtype).c_type,
-                condition_c_type=dtype_info("bool").c_type,
+                input_c_type=op.dtype.c_type,
+                output_c_type=op.dtype.c_type,
+                condition_c_type=ScalarType.BOOL.c_type,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MatMulOp):
@@ -3323,7 +3390,7 @@ class CEmitter:
                 output_present_value=op.output_present_value,
                 output_qk_matmul=op.output_qk_matmul,
                 c_type=c_type,
-                nonpad_c_type=dtype_info("int64").c_type,
+                nonpad_c_type=ScalarType.I64.c_type,
                 zero_literal=zero_literal,
                 min_literal=min_literal,
                 scale_literal=CEmitter._format_floating(op.scale, op.dtype),
@@ -3577,7 +3644,7 @@ class CEmitter:
                 output_y_h=op.output_y_h,
                 output_y_c=op.output_y_c,
                 c_type=c_type,
-                seq_c_type=dtype_info(op.sequence_lens_dtype or "int64").c_type,
+                seq_c_type=(op.sequence_lens_dtype or ScalarType.I64).c_type,
                 zero_literal=zero_literal,
                 one_literal=CEmitter._format_literal(op.dtype, 1),
                 clip_literal=(
@@ -3666,7 +3733,7 @@ class CEmitter:
                 weight=op.weight,
                 output=op.output,
                 c_type=c_type,
-                target_c_type=dtype_info(op.target_dtype).c_type,
+                target_c_type=op.target_dtype.c_type,
                 input_suffix=self._param_array_suffix(op.input_shape),
                 target_suffix=self._param_array_suffix(op.target_shape),
                 output_suffix=self._param_array_suffix(op.output_shape),
@@ -3691,7 +3758,7 @@ class CEmitter:
                 output=op.output,
                 log_prob=op.log_prob,
                 c_type=c_type,
-                target_c_type=dtype_info(op.target_dtype).c_type,
+                target_c_type=op.target_dtype.c_type,
                 input_suffix=self._param_array_suffix(op.input_shape),
                 target_suffix=self._param_array_suffix(op.target_shape),
                 output_suffix=self._param_array_suffix(op.output_shape),
@@ -3716,7 +3783,7 @@ class CEmitter:
             input_shape = (op.batch, op.channels, *op.in_spatial)
             output_shape = (op.batch, op.channels, *op.out_spatial)
             indices_c_type = (
-                dtype_info(op.indices_dtype).c_type
+                op.indices_dtype.c_type
                 if op.indices is not None and op.indices_dtype is not None
                 else None
             )
@@ -3780,7 +3847,7 @@ class CEmitter:
                 indices=op.indices,
                 output=op.output,
                 c_type=c_type,
-                indices_c_type=dtype_info(op.indices_dtype).c_type,
+                indices_c_type=op.indices_dtype.c_type,
                 data_suffix=self._param_array_suffix(op.data_shape),
                 indices_suffix=self._param_array_suffix(op.indices_shape),
                 output_suffix=self._param_array_suffix(op.output_shape),
@@ -3813,7 +3880,7 @@ class CEmitter:
                 indices=op.indices,
                 output=op.output,
                 c_type=c_type,
-                indices_c_type=dtype_info(op.indices_dtype).c_type,
+                indices_c_type=op.indices_dtype.c_type,
                 data_suffix=self._param_array_suffix(op.data_shape),
                 indices_suffix=self._param_array_suffix(op.indices_shape),
                 output_suffix=self._param_array_suffix(op.output_shape),
@@ -3897,19 +3964,19 @@ class CEmitter:
             sizes_c_type = None
             if op.roi_input and op.roi_shape and op.roi_dtype:
                 roi_suffix = self._param_array_suffix(op.roi_shape)
-                roi_c_type = dtype_info(op.roi_dtype).c_type
+                roi_c_type = op.roi_dtype.c_type
                 params.append(
                     f"const {roi_c_type} {op.roi_input}{roi_suffix}"
                 )
             if op.scales_input and op.scales_shape and op.scales_dtype:
                 scales_suffix = self._param_array_suffix(op.scales_shape)
-                scales_c_type = dtype_info(op.scales_dtype).c_type
+                scales_c_type = op.scales_dtype.c_type
                 params.append(
                     f"const {scales_c_type} {op.scales_input}{scales_suffix}"
                 )
             if op.sizes_input and op.sizes_shape and op.sizes_dtype:
                 sizes_suffix = self._param_array_suffix(op.sizes_shape)
-                sizes_c_type = dtype_info(op.sizes_dtype).c_type
+                sizes_c_type = op.sizes_dtype.c_type
                 params.append(
                     f"const {sizes_c_type} {op.sizes_input}{sizes_suffix}"
                 )
@@ -4093,9 +4160,9 @@ class CEmitter:
                     break
                 axes_count *= dim
             axes_c_type = (
-                dtype_info(op.axes_input_dtype).c_type
+                op.axes_input_dtype.c_type
                 if op.axes_input_dtype
-                else "int64_t"
+                else ScalarType.I64.c_type
             )
             input_indices = "".join(f"[{var}]" for var in input_loop_vars)
             output_indices = "".join(
@@ -4201,7 +4268,7 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=op.input0,
                 output=op.output,
-                input_c_type=dtype_info(op.input_dtype).c_type,
+                input_c_type=op.input_dtype.c_type,
                 c_type=c_type,
                 input_suffix=self._param_array_suffix(op.input_shape),
                 array_suffix=array_suffix,
@@ -4216,7 +4283,7 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=op.input0,
                 output=op.output,
-                input_c_type=dtype_info(op.input_dtype).c_type,
+                input_c_type=op.input_dtype.c_type,
                 c_type=c_type,
                 input_suffix=self._param_array_suffix(op.input_shape),
                 output_suffix=self._param_array_suffix(op.output_shape),
@@ -4232,7 +4299,7 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=op.input0,
                 output=op.output,
-                input_c_type=dtype_info(op.input_dtype).c_type,
+                input_c_type=op.input_dtype.c_type,
                 c_type=c_type,
                 input_suffix=self._param_array_suffix(op.input_shape),
                 output_suffix=self._param_array_suffix(op.output_shape),
@@ -4248,8 +4315,8 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=op.input0,
                 output=op.output,
-                input_c_type=dtype_info(op.input_dtype).c_type,
-                output_c_type=dtype_info(op.dtype).c_type,
+                input_c_type=op.input_dtype.c_type,
+                output_c_type=op.dtype.c_type,
                 array_suffix=array_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
@@ -4656,14 +4723,13 @@ class CEmitter:
         for name, shape, count, dtype in zip(
             model.input_names, model.input_shapes, input_counts, model.input_dtypes
         ):
-            info = dtype_info(dtype)
             codegen_shape = self._codegen_shape(shape)
             loop_vars = self._loop_vars(codegen_shape)
-            if dtype == "float":
+            if dtype in {ScalarType.F16, ScalarType.F32}:
                 random_expr = "rng_next_float()"
-            elif dtype == "double":
+            elif dtype == ScalarType.F64:
                 random_expr = "rng_next_double()"
-            elif dtype == "bool":
+            elif dtype == ScalarType.BOOL:
                 random_expr = "((rng_next_u64() & 1ull) != 0)"
             else:
                 random_expr = f"({info.c_type})rng_next_i64()"
@@ -4687,7 +4753,7 @@ class CEmitter:
                     "rank": len(codegen_shape),
                     "index_expr": self._index_expr(codegen_shape, loop_vars),
                     "dtype": dtype,
-                    "c_type": info.c_type,
+                    "c_type": dtype.c_type,
                     "random_expr": random_expr,
                     "print_format": self._print_format(dtype),
                     "print_cast": self._print_cast(dtype),
@@ -4699,7 +4765,6 @@ class CEmitter:
         for name, shape, dtype in zip(
             model.output_names, model.output_shapes, model.output_dtypes
         ):
-            output_info = dtype_info(dtype)
             codegen_shape = self._codegen_shape(shape)
             output_loop_vars = self._loop_vars(codegen_shape)
             outputs.append(
@@ -4713,7 +4778,7 @@ class CEmitter:
                     "rank": len(codegen_shape),
                     "index_expr": self._index_expr(codegen_shape, output_loop_vars),
                     "dtype": dtype,
-                    "c_type": output_info.c_type,
+                    "c_type": dtype.c_type,
                     "print_format": self._print_format(dtype),
                     "print_cast": self._print_cast(dtype),
                 }
@@ -4735,7 +4800,7 @@ class CEmitter:
             return ""
         lines: list[str] = []
         for const in constants:
-            c_type = dtype_info(const.dtype).c_type
+            c_type = const.dtype.c_type
             array_suffix = self._array_suffix(const.shape)
             values = [
                 self._format_value(value, const.dtype) for value in const.data
@@ -4767,7 +4832,7 @@ class CEmitter:
             return ""
         lines = []
         for const in constants:
-            c_type = dtype_info(const.dtype).c_type
+            c_type = const.dtype.c_type
             array_suffix = self._array_suffix(const.shape)
             lines.append(f"extern const {c_type} {const.name}{array_suffix};")
         return "\n".join(lines)
@@ -4803,16 +4868,16 @@ class CEmitter:
         return formatted
 
     @staticmethod
-    def _format_floating(value: float, dtype: str) -> str:
-        if dtype == "double":
+    def _format_floating(value: float, dtype: ScalarType) -> str:
+        if dtype == ScalarType.F64:
             return CEmitter._format_double(value)
-        if dtype == "float16":
+        if dtype == ScalarType.F16:
             return CEmitter._format_float16(value)
         return CEmitter._format_float(value)
 
     @staticmethod
-    def _math_fn(dtype: str, float_name: str, double_name: str) -> str:
-        if dtype == "double":
+    def _math_fn(dtype: ScalarType, float_name: str, double_name: str) -> str:
+        if dtype == ScalarType.F64:
             return double_name
         return float_name
 
@@ -4838,103 +4903,103 @@ class CEmitter:
         return str(int(value))
 
     @staticmethod
-    def _format_literal(dtype: str, value: float | int | bool) -> str:
-        if dtype == "float16":
+    def _format_literal(dtype: ScalarType, value: float | int | bool) -> str:
+        if dtype == ScalarType.F16:
             return CEmitter._format_float16(float(value))
-        if dtype == "float":
+        if dtype == ScalarType.F32:
             return CEmitter._format_float(float(value))
-        if dtype == "double":
+        if dtype == ScalarType.F64:
             return CEmitter._format_double(float(value))
-        if dtype == "bool":
+        if dtype == ScalarType.BOOL:
             return "true" if bool(value) else "false"
-        if dtype == "uint64":
+        if dtype == ScalarType.U64:
             return CEmitter._format_uint(int(value), 64, "UINT64_MAX")
-        if dtype == "uint32":
+        if dtype == ScalarType.U32:
             return CEmitter._format_uint(int(value), 32, "UINT32_MAX")
-        if dtype == "uint16":
+        if dtype == ScalarType.U16:
             return CEmitter._format_uint(int(value), 16, "UINT16_MAX")
-        if dtype == "uint8":
+        if dtype == ScalarType.U8:
             return CEmitter._format_uint(int(value), 8, "UINT8_MAX")
-        if dtype == "int64":
+        if dtype == ScalarType.I64:
             return CEmitter._format_int64(int(value))
-        if dtype == "int32":
+        if dtype == ScalarType.I32:
             return CEmitter._format_int(int(value), 32, "INT32_MIN")
-        if dtype == "int16":
+        if dtype == ScalarType.I16:
             return CEmitter._format_int(int(value), 16, "INT16_MIN")
-        if dtype == "int8":
+        if dtype == ScalarType.I8:
             return CEmitter._format_int(int(value), 8, "INT8_MIN")
-        raise CodegenError(f"Unsupported dtype {dtype}")
+        raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
-    def _format_value(self, value: float | int | bool, dtype: str) -> str:
-        if dtype == "float16":
+    def _format_value(self, value: float | int | bool, dtype: ScalarType) -> str:
+        if dtype == ScalarType.F16:
             return self._format_float16(float(value))
-        if dtype == "float":
+        if dtype == ScalarType.F32:
             return self._format_float(float(value))
-        if dtype == "double":
+        if dtype == ScalarType.F64:
             return self._format_double(float(value))
-        if dtype == "bool":
+        if dtype == ScalarType.BOOL:
             return "true" if bool(value) else "false"
-        if dtype == "uint64":
+        if dtype == ScalarType.U64:
             return self._format_uint(int(value), 64, "UINT64_MAX")
-        if dtype == "uint32":
+        if dtype == ScalarType.U32:
             return self._format_uint(int(value), 32, "UINT32_MAX")
-        if dtype == "uint16":
+        if dtype == ScalarType.U16:
             return self._format_uint(int(value), 16, "UINT16_MAX")
-        if dtype == "uint8":
+        if dtype == ScalarType.U8:
             return self._format_uint(int(value), 8, "UINT8_MAX")
-        if dtype == "int64":
+        if dtype == ScalarType.I64:
             return self._format_int64(int(value))
-        if dtype == "int32":
+        if dtype == ScalarType.I32:
             return self._format_int(int(value), 32, "INT32_MIN")
-        if dtype == "int16":
+        if dtype == ScalarType.I16:
             return self._format_int(int(value), 16, "INT16_MIN")
-        if dtype == "int8":
+        if dtype == ScalarType.I8:
             return self._format_int(int(value), 8, "INT8_MIN")
-        raise CodegenError(f"Unsupported dtype {dtype}")
+        raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
     @staticmethod
-    def _print_format(dtype: str) -> str:
-        if dtype == "float16":
+    def _print_format(dtype: ScalarType) -> str:
+        if dtype == ScalarType.F16:
             return "%.8g"
-        if dtype == "float":
+        if dtype == ScalarType.F32:
             return "%.8g"
-        if dtype == "double":
+        if dtype == ScalarType.F64:
             return "%.17g"
-        if dtype == "bool":
+        if dtype == ScalarType.BOOL:
             return "%d"
-        if dtype == "uint64":
+        if dtype == ScalarType.U64:
             return "%llu"
-        if dtype == "uint32":
+        if dtype == ScalarType.U32:
             return "%u"
-        if dtype == "uint16":
+        if dtype == ScalarType.U16:
             return "%hu"
-        if dtype == "uint8":
+        if dtype == ScalarType.U8:
             return "%hhu"
-        if dtype == "int64":
+        if dtype == ScalarType.I64:
             return "%lld"
-        if dtype == "int32":
+        if dtype == ScalarType.I32:
             return "%d"
-        if dtype == "int16":
+        if dtype == ScalarType.I16:
             return "%hd"
-        if dtype == "int8":
+        if dtype == ScalarType.I8:
             return "%hhd"
-        raise CodegenError(f"Unsupported dtype {dtype}")
+        raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
     @staticmethod
-    def _print_cast(dtype: str) -> str:
-        if dtype in {"float", "double", "float16"}:
+    def _print_cast(dtype: ScalarType) -> str:
+        if dtype.is_float:
             return "(double)"
-        if dtype == "bool":
+        if dtype == ScalarType.BOOL:
             return "(int)"
-        if dtype == "uint64":
+        if dtype == ScalarType.U64:
             return "(unsigned long long)"
-        if dtype in {"uint32", "uint16", "uint8"}:
+        if dtype in {ScalarType.U32, ScalarType.U16, ScalarType.U8}:
             return "(unsigned int)"
-        if dtype == "int64":
+        if dtype == ScalarType.I64:
             return "(long long)"
-        if dtype in {"int32", "int16", "int8"}:
+        if dtype in {ScalarType.I32, ScalarType.I16, ScalarType.I8}:
             return "(int)"
-        raise CodegenError(f"Unsupported dtype {dtype}")
+        raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
 
 def _format_multiline_value(value: str | None) -> list[str]:

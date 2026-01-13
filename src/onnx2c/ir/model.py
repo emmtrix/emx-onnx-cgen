@@ -5,10 +5,12 @@ from typing import Mapping, Sequence
 
 import numpy as np
 
+from shared.scalar_types import ScalarType
+
 
 @dataclass(frozen=True)
 class TensorType:
-    dtype: str
+    dtype: ScalarType
     shape: tuple[int, ...]
 
 
