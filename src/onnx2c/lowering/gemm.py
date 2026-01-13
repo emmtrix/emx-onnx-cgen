@@ -94,8 +94,10 @@ def _resolve_gemm_attrs(
 def validate_gemm_bias_shape(
     output_shape: tuple[int, int], bias_shape: tuple[int, ...], node: Node
 ) -> tuple[int, ...]:
+    if len(bias_shape) == 0:
+        return bias_shape
     if len(bias_shape) == 1:
-        if bias_shape[0] != output_shape[1]:
+        if bias_shape[0] not in {1, output_shape[1]}:
             raise ShapeInferenceError(
                 "Gemm bias input must be broadcastable to output shape, "
                 f"got {bias_shape} vs {output_shape}"

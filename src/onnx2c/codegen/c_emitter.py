@@ -338,6 +338,7 @@ class LstmOp:
 class MaxPoolOp:
     input0: str
     output: str
+    indices: str | None
     batch: int
     channels: int
     spatial_rank: int
@@ -348,7 +349,9 @@ class MaxPoolOp:
     pads: tuple[int, ...]
     dilations: tuple[int, ...]
     ceil_mode: bool
+    storage_order: int
     dtype: str
+    indices_dtype: str | None
 
 
 @dataclass(frozen=True)
@@ -1027,6 +1030,12 @@ class CEmitter:
             *(op.dtype for op in resolved_ops),
             *constant_of_shape_inputs,
         }
+        maxpool_indices_dtypes = {
+            op.indices_dtype
+            for op in resolved_ops
+            if isinstance(op, MaxPoolOp) and op.indices_dtype is not None
+        }
+        model_dtypes.update(maxpool_indices_dtypes)
         nll_target_dtypes = {
             op.target_dtype
             for op in resolved_ops
@@ -1408,6 +1417,10 @@ class CEmitter:
             if op.log_prob is not None:
                 call_parts.append(op.log_prob)
             return ", ".join(call_parts)
+        if isinstance(op, MaxPoolOp):
+            if op.indices is not None:
+                return f"{op.input0}, {op.output}, {op.indices}"
+            return f"{op.input0}, {op.output}"
         if isinstance(op, GatherElementsOp):
             return f"{op.data}, {op.indices}, {op.output}"
         if isinstance(op, GatherOp):
@@ -1862,6 +1875,11 @@ class CEmitter:
             return MaxPoolOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
+                indices=(
+                    temp_map.get(op.indices, op.indices)
+                    if op.indices is not None
+                    else None
+                ),
                 batch=op.batch,
                 channels=op.channels,
                 spatial_rank=op.spatial_rank,
@@ -1872,7 +1890,9 @@ class CEmitter:
                 pads=op.pads,
                 dilations=op.dilations,
                 ceil_mode=op.ceil_mode,
+                storage_order=op.storage_order,
                 dtype=op.dtype,
+                indices_dtype=op.indices_dtype,
             )
         if isinstance(op, GatherElementsOp):
             return GatherElementsOp(
@@ -2236,6 +2256,10 @@ class CEmitter:
             alpha_literal = CEmitter._format_literal(op.dtype, op.alpha)
             beta_literal = CEmitter._format_literal(op.dtype, op.beta)
             if op.c_shape is None:
+                c_rank = 0
+                c_dim0 = 0
+                c_dim1 = 0
+            elif len(op.c_shape) == 0:
                 c_rank = 0
                 c_dim0 = 0
                 c_dim1 = 0
@@ -2720,15 +2744,23 @@ class CEmitter:
         if isinstance(op, MaxPoolOp):
             input_shape = (op.batch, op.channels, *op.in_spatial)
             output_shape = (op.batch, op.channels, *op.out_spatial)
+            indices_c_type = (
+                dtype_info(op.indices_dtype).c_type
+                if op.indices is not None and op.indices_dtype is not None
+                else None
+            )
             rendered = maxpool_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=op.input0,
                 output=op.output,
+                indices=op.indices,
                 c_type=c_type,
                 min_literal=min_literal,
                 input_suffix=self._param_array_suffix(input_shape),
                 output_suffix=self._param_array_suffix(output_shape),
+                indices_suffix=self._param_array_suffix(output_shape),
+                indices_c_type=indices_c_type,
                 batch=op.batch,
                 channels=op.channels,
                 spatial_rank=op.spatial_rank,
@@ -2739,6 +2771,7 @@ class CEmitter:
                 pads=op.pads,
                 dilations=op.dilations,
                 ceil_mode=int(op.ceil_mode),
+                storage_order=op.storage_order,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConcatOp):
@@ -3404,6 +3437,13 @@ class CEmitter:
             outputs = [(op.output, op.output_shape, op.dtype)]
             if op.log_prob is not None and op.log_prob_shape is not None:
                 outputs.append((op.log_prob, op.log_prob_shape, op.dtype))
+            return tuple(outputs)
+        if isinstance(op, MaxPoolOp):
+            outputs = [(op.output, CEmitter._op_output_shape(op), op.dtype)]
+            if op.indices is not None and op.indices_dtype is not None:
+                outputs.append(
+                    (op.indices, CEmitter._op_output_shape(op), op.indices_dtype)
+                )
             return tuple(outputs)
         return ((op.output, CEmitter._op_output_shape(op), op.dtype),)
 

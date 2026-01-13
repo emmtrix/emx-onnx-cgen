@@ -116,7 +116,6 @@
 | Unsupported op HannWindow | 2 | █ |
 | Unsupported op IsNaN | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
-| MaxPool must have 1 input and 1 output | 2 | █ |
 | Unsupported op MaxUnpool | 2 | █ |
 | Mean must have 2 inputs and 1 output | 2 | █ |
 | Min must have 2 inputs and 1 output | 2 | █ |
@@ -138,8 +137,6 @@
 | Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
-| Gemm bias input must be rank 1 or 2, got () | 1 | █ |
-| Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3) | 1 | █ |
 | Unsupported op HardSwish | 1 | █ |
 | Unsupported op If | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
@@ -156,4 +153,18 @@
 | Unsupported op Round | 1 | █ |
 | Unsupported op Swish | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
-| Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) | 1 | █ |
+
+## Local ONNX file support histogram
+
+### Error frequency
+
+| Error message | Count | Histogram |
+| --- | --- | --- |
+| Unsupported op Pad | 6 | ██████████████████████████████ |
+| Unsupported op Gather | 4 | ████████████████████ |
+| Unsupported op ScatterND | 4 | ████████████████████ |
+| Unsupported LSTM direction b'*' | 2 | ██████████ |
+| Unsupported op QLinearAdd | 2 | ██████████ |
+| Unsupported op QLinearMul | 2 | ██████████ |
+| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | █████ |
+| Unsupported op Expand | 1 | █████ |

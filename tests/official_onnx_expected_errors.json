@@ -2629,11 +2629,11 @@
   ],
   [
     "node/test_gemm_default_scalar_bias/model.onnx",
-    "Gemm bias input must be rank 1 or 2, got ()"
+    ""
   ],
   [
     "node/test_gemm_default_single_elem_vector_bias/model.onnx",
-    "Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3)"
+    ""
   ],
   [
     "node/test_gemm_default_vector_bias/model.onnx",
@@ -3741,11 +3741,11 @@
   ],
   [
     "node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx",
-    "MaxPool must have 1 input and 1 output"
+    ""
   ],
   [
     "node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx",
-    "MaxPool must have 1 input and 1 output"
+    ""
   ],
   [
     "node/test_maxunpool_export_with_output_shape/model.onnx",
@@ -7049,7 +7049,7 @@
   ],
   [
     "pytorch-operator/test_operator_mm/model.onnx",
-    "Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4)"
+    ""
   ],
   [
     "pytorch-operator/test_operator_non_float_params/model.onnx",

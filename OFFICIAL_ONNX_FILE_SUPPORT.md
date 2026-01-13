@@ -665,8 +665,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gemm_beta/model.onnx | ✅ |  |
 | node/test_gemm_default_matrix_bias/model.onnx | ✅ |  |
 | node/test_gemm_default_no_bias/model.onnx | ✅ |  |
-| node/test_gemm_default_scalar_bias/model.onnx | ❌ | Gemm bias input must be rank 1 or 2, got () |
-| node/test_gemm_default_single_elem_vector_bias/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (1,) vs (3, 3) |
+| node/test_gemm_default_scalar_bias/model.onnx | ✅ |  |
+| node/test_gemm_default_single_elem_vector_bias/model.onnx | ✅ |  |
 | node/test_gemm_default_vector_bias/model.onnx | ✅ |  |
 | node/test_gemm_default_zero_bias/model.onnx | ✅ |  |
 | node/test_gemm_transposeA/model.onnx | ✅ |  |
@@ -943,8 +943,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_maxpool_3d_dilations/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations_use_ref_impl/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx | ✅ |  |
-| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
-| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
+| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | ✅ |  |
+| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | ✅ |  |
 | node/test_maxunpool_export_with_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | node/test_maxunpool_export_without_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | node/test_mean_example/model.onnx | ❌ | Mean must have 2 inputs and 1 output |
@@ -1770,7 +1770,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_max/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_maxpool/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_min/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_mm/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (1,) vs (2, 4) |
+| pytorch-operator/test_operator_mm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_non_float_params/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_pad/model.onnx | ❌ | Unsupported op Pad |
 | pytorch-operator/test_operator_params/model.onnx | ❌ | Unsupported op Sigmoid |
@@ -1810,3 +1810,86 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | simple/test_strnorm_model_monday_empty_output/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+
+## Local ONNX file support
+
+Local tests: `onnx2c-org/test/local_ops`.
+
+Support 52 / 74 local ONNX files.
+
+| File | Supported | Error |
+| --- | --- | --- |
+| test_gather_basic/model.onnx | ❌ | Unsupported op Gather |
+| test_gather_output_scalar/model.onnx | ❌ | Unsupported op Gather |
+| test_gather_scalar_axis0/model.onnx | ❌ | Unsupported op Gather |
+| test_gather_scalar_axis1/model.onnx | ❌ | Unsupported op Gather |
+| test_gemm_C1/model.onnx | ✅ |  |
+| test_gemm_C1_transA/model.onnx | ✅ |  |
+| test_gemm_C1_transB/model.onnx | ✅ |  |
+| test_gemm_C1x1/model.onnx | ✅ |  |
+| test_gemm_C1x1_transA/model.onnx | ✅ |  |
+| test_gemm_C1xN/model.onnx | ✅ |  |
+| test_gemm_C1xN_transA/model.onnx | ✅ |  |
+| test_gemm_C1xN_transA_transB/model.onnx | ✅ |  |
+| test_gemm_CM_transA/model.onnx | ❌ | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) |
+| test_gemm_CMx1/model.onnx | ✅ |  |
+| test_gemm_CMx1_transA/model.onnx | ✅ |  |
+| test_gemm_CMx1_transA_transB/model.onnx | ✅ |  |
+| test_gemm_CMxN/model.onnx | ✅ |  |
+| test_gemm_CMxN_transA/model.onnx | ✅ |  |
+| test_gemm_CMxN_transA_transB/model.onnx | ✅ |  |
+| test_gemm_CMxN_transB/model.onnx | ✅ |  |
+| test_gemm_CN/model.onnx | ✅ |  |
+| test_gemm_CN_transA/model.onnx | ✅ |  |
+| test_gemm_CN_transA_transB/model.onnx | ✅ |  |
+| test_gemm_CN_transB/model.onnx | ✅ |  |
+| test_lstm_activations/model.onnx | ✅ |  |
+| test_lstm_all_outputs/model.onnx | ✅ |  |
+| test_lstm_bidirectional/model.onnx | ❌ | Unsupported LSTM direction b'bidirectional' |
+| test_lstm_clip/model.onnx | ✅ |  |
+| test_lstm_intermediate_h/model.onnx | ✅ |  |
+| test_lstm_missing_inputs/model.onnx | ✅ |  |
+| test_lstm_reverse/model.onnx | ❌ | Unsupported LSTM direction b'reverse' |
+| test_lstm_seq_length/model.onnx | ✅ |  |
+| test_lstm_simple/model.onnx | ✅ |  |
+| test_lstm_with_initial_state/model.onnx | ✅ |  |
+| test_lstm_y_c/model.onnx | ✅ |  |
+| test_matmul_1x1x3x4_2x3x4x5/model.onnx | ✅ |  |
+| test_matmul_1x3x4_2x3x4x5/model.onnx | ✅ |  |
+| test_matmul_1x3x4_3x4x5/model.onnx | ✅ |  |
+| test_matmul_2x1x3x4_2x3x4x5/model.onnx | ✅ |  |
+| test_matmul_2x3_3x4/model.onnx | ✅ |  |
+| test_matmul_2x3x3x4_1x4x5/model.onnx | ✅ |  |
+| test_matmul_2x3x4_4/model.onnx | ✅ |  |
+| test_matmul_2x3x4_4x5/model.onnx | ✅ |  |
+| test_matmul_2x3x4x5_5/model.onnx | ✅ |  |
+| test_matmul_3_2x3x4/model.onnx | ✅ |  |
+| test_matmul_3_3/model.onnx | ✅ |  |
+| test_matmul_3_3x4/model.onnx | ✅ |  |
+| test_matmul_3x4_2x4x5/model.onnx | ✅ |  |
+| test_matmul_3x4_4/model.onnx | ✅ |  |
+| test_matmul_4x5x2x3_4x5x3x4/model.onnx | ✅ |  |
+| test_matmul_5x2x3_5x3x4/model.onnx | ✅ |  |
+| test_matmul_precision/model.onnx | ✅ |  |
+| test_maxpool_stride_1/model.onnx | ✅ |  |
+| test_maxpool_stride_2/model.onnx | ✅ |  |
+| test_nodes_out_of_order/model.onnx | ✅ |  |
+| test_pad_constant_default/model.onnx | ❌ | Unsupported op Pad |
+| test_pad_constant_input/model.onnx | ❌ | Unsupported op Pad |
+| test_pad_edge/model.onnx | ❌ | Unsupported op Pad |
+| test_pad_edge_allaxes/model.onnx | ❌ | Unsupported op Pad |
+| test_pad_reflect_allaxes/model.onnx | ❌ | Unsupported op Pad |
+| test_pad_reflect_nopadding/model.onnx | ❌ | Unsupported op Pad |
+| test_qlinearadd_int8/model.onnx | ❌ | Unsupported op QLinearAdd |
+| test_qlinearadd_uint8/model.onnx | ❌ | Unsupported op QLinearAdd |
+| test_qlinearmul_int8/model.onnx | ❌ | Unsupported op QLinearMul |
+| test_qlinearmul_uint8/model.onnx | ❌ | Unsupported op QLinearMul |
+| test_resize_downsample_sizes_linear_1D/model.onnx | ✅ |  |
+| test_resize_downsample_sizes_linear_1D_align/model.onnx | ✅ |  |
+| test_scalar_input_to_node/model.onnx | ✅ |  |
+| test_scatternd_indices_1x1x2/model.onnx | ❌ | Unsupported op ScatterND |
+| test_scatternd_indices_1x2x2/model.onnx | ❌ | Unsupported op ScatterND |
+| test_scatternd_indices_2x2x2/model.onnx | ❌ | Unsupported op ScatterND |
+| test_scatternd_indices_3x2/model.onnx | ❌ | Unsupported op ScatterND |
+| test_shape_const_out/model.onnx | ❌ | Unsupported op Expand |
+| test_slice_end_INT64_MAX/model.onnx | ✅ |  |
