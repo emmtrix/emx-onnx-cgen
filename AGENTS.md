@@ -296,7 +296,11 @@ When acting as an agent in this repo:
 
    * avoid hardcoding operator names and special cases
    * prefer registries / dispatch tables for op lowering and kernels
-10. If the architecture starts drifting, propose a short design note in `docs/` with:
+10. When adding a new operator, clarify the operator semantics first.
+11. When clarifying operator semantics, consult the ONNX operator specs at
+    https://onnx.ai/onnx/operators/index.html and cite the specific operator page
+    in PR descriptions when applicable.
+12. If the architecture starts drifting, propose a short design note in `docs/` with:
 
 * problem
 * options
