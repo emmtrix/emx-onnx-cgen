@@ -1821,6 +1821,9 @@ OFFICIAL_ONNX_FILES = [
 OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
     Path(__file__).resolve().parent / "official_onnx_expected_errors.json"
 )
+LOCAL_ONNX_FILE_EXPECTATIONS_PATH = (
+    Path(__file__).resolve().parent / "local_onnx_expected_errors.json"
+)
 OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
     Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT.md"
 )
@@ -1828,6 +1831,9 @@ OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
     Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md"
 )
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
+LOCAL_ONNX_DATA_ROOT = (
+    Path(__file__).resolve().parents[1] / "onnx2c-org" / "test" / "local_ops"
+)
 
 
 def _load_official_onnx_file_expectations() -> list[tuple[str, str]]:
@@ -1835,12 +1841,32 @@ def _load_official_onnx_file_expectations() -> list[tuple[str, str]]:
     return [(path, error) for path, error in data]
 
 
-def _render_official_onnx_file_support_markdown(
-    expectations: list[tuple[str, str]],
+def _load_local_onnx_file_expectations() -> list[tuple[str, str]]:
+    data = json.loads(LOCAL_ONNX_FILE_EXPECTATIONS_PATH.read_text(encoding="utf-8"))
+    return [(path, error) for path, error in data]
+
+
+def _render_onnx_file_support_table(expectations: list[tuple[str, str]]) -> list[str]:
+    lines = [
+        "| File | Supported | Error |",
+        "| --- | --- | --- |",
+    ]
+    for path, error in expectations:
+        supported = "✅" if not error else "❌"
+        message = error.replace("\n", " ").strip()
+        lines.append(f"| {path} | {supported} | {message} |")
+    return lines
+
+
+def _render_onnx_file_support_markdown(
+    official_expectations: list[tuple[str, str]],
+    local_expectations: list[tuple[str, str]],
 ) -> str:
-    supported_count = sum(1 for _, error in expectations if not error)
-    total_count = len(expectations)
+    supported_count = sum(1 for _, error in official_expectations if not error)
+    total_count = len(official_expectations)
     onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
+    local_supported = sum(1 for _, error in local_expectations if not error)
+    local_total = len(local_expectations)
     lines = [
         "# Official ONNX file support",
         "",
@@ -1850,17 +1876,23 @@ def _render_official_onnx_file_support_markdown(
         "",
         "See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md) for the error histogram.",
         "",
-        "| File | Supported | Error |",
-        "| --- | --- | --- |",
+        *_render_onnx_file_support_table(official_expectations),
+        "",
+        "## Local ONNX file support",
+        "",
+        "Local tests: `onnx2c-org/test/local_ops`.",
+        "",
+        f"Support {local_supported} / {local_total} local ONNX files.",
+        "",
+        *_render_onnx_file_support_table(local_expectations),
     ]
-    for path, error in expectations:
-        supported = "✅" if not error else "❌"
-        message = error.replace("\n", " ").strip()
-        lines.append(f"| {path} | {supported} | {message} |")
     return "\n".join(lines)
 
 
-def _render_error_histogram_markdown(expectations: list[tuple[str, str]]) -> str:
+def _render_error_histogram_markdown(
+    expectations: list[tuple[str, str]],
+    title: str = "# Error frequency",
+) -> str:
     def _sanitize_error(error: str) -> str:
         return re.sub(r"'[^']*'", "'*'", error)
 
@@ -1878,7 +1910,7 @@ def _render_error_histogram_markdown(expectations: list[tuple[str, str]]) -> str
         return "█" * length
 
     lines = [
-        "# Error frequency",
+        title,
         "",
         "| Error message | Count | Histogram |",
         "| --- | --- | --- |",
@@ -1887,6 +1919,25 @@ def _render_error_histogram_markdown(expectations: list[tuple[str, str]]) -> str
         lines.append(f"| {error} | {count} | {bar(count)} |")
     lines.append("")
     return "\n".join(lines)
+
+
+def _render_support_histogram_markdown(
+    official_expectations: list[tuple[str, str]],
+    local_expectations: list[tuple[str, str]],
+) -> str:
+    official_histogram = _render_error_histogram_markdown(official_expectations)
+    local_histogram = _render_error_histogram_markdown(
+        local_expectations,
+        title="### Error frequency",
+    )
+    return "\n".join(
+        [
+            official_histogram,
+            "## Local ONNX file support histogram",
+            "",
+            local_histogram,
+        ]
+    ).strip() + "\n"
 
 
 def _collect_onnx_files(data_root: Path) -> list[str]:
@@ -1921,6 +1972,17 @@ def _maybe_init_onnx_org() -> None:
     )
 
 
+def _maybe_init_onnx2c_org() -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    if shutil.which("git") is None:
+        return
+    subprocess.run(
+        ["git", "submodule", "update", "--init", "--recursive", "onnx2c-org"],
+        cwd=repo_root,
+        check=False,
+    )
+
+
 def _ensure_official_onnx_files_present(data_root: Path) -> None:
     if not data_root.exists():
         _maybe_init_onnx_org()
@@ -1944,6 +2006,16 @@ def _ensure_official_onnx_files_present(data_root: Path) -> None:
         )
 
 
+def _ensure_local_onnx_files_present(data_root: Path) -> None:
+    if not data_root.exists():
+        _maybe_init_onnx2c_org()
+    if not data_root.exists():
+        pytest.skip(
+            "onnx2c-org local test data is unavailable. Initialize the onnx2c-org "
+            "submodule to run local operator tests."
+        )
+
+
 def test_official_onnx_files() -> None:
     data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
     _ensure_official_onnx_files_present(data_root)
@@ -1955,6 +2027,22 @@ def test_official_onnx_files() -> None:
     extra = sorted(actual_set - expected_set)
     assert not missing and not extra, (
         "Official ONNX file list mismatch. "
+        f"Missing: {missing}. Extra: {extra}."
+    )
+
+
+def test_local_onnx_files() -> None:
+    data_root = LOCAL_ONNX_DATA_ROOT
+    _ensure_local_onnx_files_present(data_root)
+    actual_files = _collect_onnx_files(data_root)
+    expectations = _load_local_onnx_file_expectations()
+    expected_files = sorted(path for path, _ in expectations)
+    actual_set = set(actual_files)
+    expected_set = set(expected_files)
+    missing = sorted(expected_set - actual_set)
+    extra = sorted(actual_set - expected_set)
+    assert not missing and not extra, (
+        "Local ONNX file list mismatch. "
         f"Missing: {missing}. Extra: {extra}."
     )
 
@@ -1992,6 +2080,40 @@ def test_official_onnx_expected_errors() -> None:
         return
 
 
+@pytest.mark.order(2)
+def test_local_onnx_expected_errors() -> None:
+    data_root = LOCAL_ONNX_DATA_ROOT
+    _ensure_local_onnx_files_present(data_root)
+    expectations = _load_local_onnx_file_expectations()
+    expected_paths = [path for path, _ in expectations]
+    actual_paths = _collect_onnx_files(data_root)
+    assert expected_paths == actual_paths
+    compiler = Compiler()
+    actual_expectations: list[tuple[str, str]] = []
+    for rel_path, expected_error in expectations:
+        model_path = data_root / rel_path
+        model = onnx.load_model(model_path)
+        try:
+            compiler.compile(model)
+        except Exception as exc:
+            actual_error = str(exc)
+        else:
+            actual_error = ""
+        actual_expectations.append((rel_path, actual_error))
+        if os.getenv("UPDATE_REFS"):
+            continue
+        assert actual_error == expected_error, (
+            f"Unexpected result for {rel_path}. Expected: {expected_error!r}. "
+            f"Got: {actual_error!r}."
+        )
+    if os.getenv("UPDATE_REFS"):
+        LOCAL_ONNX_FILE_EXPECTATIONS_PATH.write_text(
+            json.dumps(actual_expectations, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        return
+
+
 @pytest.mark.order(after="test_official_onnx_expected_errors")
 def test_official_onnx_file_support_doc() -> None:
     if not ONNX_VERSION_PATH.exists():
@@ -2001,9 +2123,16 @@ def test_official_onnx_file_support_doc() -> None:
             "onnx-org version metadata is unavailable. Initialize the onnx-org "
             "submodule and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
         )
-    expectations = _load_official_onnx_file_expectations()
-    expected_markdown = _render_official_onnx_file_support_markdown(expectations)
-    expected_histogram = _render_error_histogram_markdown(expectations)
+    official_expectations = _load_official_onnx_file_expectations()
+    local_expectations = _load_local_onnx_file_expectations()
+    expected_markdown = _render_onnx_file_support_markdown(
+        official_expectations,
+        local_expectations,
+    )
+    expected_histogram = _render_support_histogram_markdown(
+        official_expectations,
+        local_expectations,
+    )
     if os.getenv("UPDATE_REFS"):
         OFFICIAL_ONNX_FILE_SUPPORT_PATH.write_text(
             expected_markdown,
