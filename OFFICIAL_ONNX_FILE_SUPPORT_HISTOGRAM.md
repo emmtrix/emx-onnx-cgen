@@ -4,14 +4,15 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
-| ReduceSum axes input must be constant | 39 | ████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Unsupported op Slice | 26 | █████ |
 | Unsupported op Identity | 20 | ████ |
+| Dynamic or zero dims are not supported | 20 | ████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
+| ReduceSum axes input must be constant or inferable from shapes | 18 | ████ |
 | NegativeLogLikelihoodLoss input must be at least 2D | 17 | ███ |
 | Unsupported op Split | 17 | ███ |
 | Unsupported op ArgMax | 16 | ███ |
@@ -31,7 +32,6 @@
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
 | Unsupported op Mod | 10 | ██ |
-| Dynamic or zero dims are not supported | 9 | ██ |
 | Unsupported op CumSum | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
@@ -42,13 +42,6 @@
 | Unsupported op Min | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Hardmax | 7 | █ |
-| ReduceL1 axes input must be constant | 7 | █ |
-| ReduceL2 axes input must be constant | 7 | █ |
-| ReduceLogSumExp axes input must be constant | 7 | █ |
-| ReduceMax axes input must be constant | 7 | █ |
-| ReduceMin axes input must be constant | 7 | █ |
-| ReduceProd axes input must be constant | 7 | █ |
-| ReduceSumSquare axes input must be constant | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
 | Unsupported op TopK | 7 | █ |
 | AveragePool has unsupported attributes | 6 | █ |
@@ -61,7 +54,6 @@
 | Unsupported op Gather | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op QuantizeLinear | 6 | █ |
-| ReduceMean axes input must be constant | 6 | █ |
 | Unsupported op ScatterElements | 6 | █ |
 | Unsupported op Sigmoid | 6 | █ |
 | Unsupported op Unique | 6 | █ |
@@ -86,7 +78,7 @@
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |
 | Unsupported op QLinearMatMul | 4 | █ |
-| ReduceLogSum axes input must be constant | 4 | █ |
+| CastLike input and output shapes must match | 4 | █ |
 | Unsupported op RNN | 4 | █ |
 | Unsupported op Squeeze | 4 | █ |
 | Unsupported op Tile | 4 | █ |
@@ -137,6 +129,14 @@
 | Unsupported op Pow | 2 | █ |
 | Unsupported op Range | 2 | █ |
 | Unsupported op Reciprocal | 2 | █ |
+| ReduceL1 axes input must be constant or inferable from shapes | 2 | █ |
+| ReduceL2 axes input must be constant or inferable from shapes | 2 | █ |
+| ReduceLogSumExp axes input must be constant or inferable from shapes | 2 | █ |
+| ReduceMax axes input must be constant or inferable from shapes | 2 | █ |
+| ReduceMean axes input must be constant or inferable from shapes | 2 | █ |
+| ReduceMin axes input must be constant or inferable from shapes | 2 | █ |
+| ReduceProd axes input must be constant or inferable from shapes | 2 | █ |
+| ReduceSumSquare axes input must be constant or inferable from shapes | 2 | █ |
 | Unsupported op ReverseSequence | 2 | █ |
 | Unsupported op Scan | 2 | █ |
 | Unsupported op Scatter | 2 | █ |

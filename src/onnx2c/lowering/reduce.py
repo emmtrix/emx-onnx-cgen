@@ -75,34 +75,90 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _axes_from_initializer(graph: Graph, node: Node) -> tuple[int, ...] | None:
+def _axes_input_info(
+    graph: Graph, node: Node
+) -> tuple[tuple[int, ...] | None, bool]:
     if len(node.inputs) < 2:
-        return None
+        return None, False
     if node.inputs[1] == "":
-        return None
+        return None, False
     initializer = _find_initializer(graph, node.inputs[1])
     if initializer is None:
         try:
             value = graph.find_value(node.inputs[1])
         except KeyError as exc:
             raise UnsupportedOpError(
-                f"{node.op_type} axes input must be constant"
+                f"{node.op_type} axes input must be constant or inferable from shapes"
             ) from exc
         if value.type.dtype not in {"int64", "int32"}:
             raise UnsupportedOpError(
                 f"{node.op_type} axes input must be int64 or int32"
             )
         if any(dim == 0 for dim in value.type.shape):
-            return ()
-        raise UnsupportedOpError(
-            f"{node.op_type} axes input must be constant"
-        )
+            return (), True
+        return None, True
     if initializer.type.dtype not in {"int64", "int32"}:
         raise UnsupportedOpError(
             f"{node.op_type} axes input must be int64 or int32"
         )
     data = np.array(initializer.data, dtype=np.int64).ravel()
-    return tuple(int(value) for value in data)
+    return tuple(int(value) for value in data), True
+
+
+def _infer_axes_from_shapes(
+    input_shape: tuple[int, ...],
+    output_shape: tuple[int, ...],
+    keepdims: bool,
+    node: Node,
+) -> tuple[int, ...] | None:
+    if keepdims:
+        if len(input_shape) != len(output_shape):
+            return None
+        axes: list[int] = []
+        for axis, (in_dim, out_dim) in enumerate(
+            zip(input_shape, output_shape)
+        ):
+            if out_dim == in_dim:
+                if in_dim == 1:
+                    return None
+                continue
+            if out_dim == 1 and in_dim != 1:
+                axes.append(axis)
+                continue
+            raise ShapeInferenceError(
+                f"{node.op_type} output shape does not match input shape"
+            )
+        return tuple(axes)
+    if len(output_shape) > len(input_shape):
+        return None
+
+    results: list[tuple[int, ...]] = []
+
+    def backtrack(
+        input_index: int, output_index: int, reduced_axes: list[int]
+    ) -> None:
+        if output_index == len(output_shape):
+            results.append(
+                tuple(reduced_axes + list(range(input_index, len(input_shape))))
+            )
+            return
+        if input_index == len(input_shape):
+            return
+        if input_shape[input_index] == output_shape[output_index]:
+            backtrack(input_index + 1, output_index + 1, reduced_axes)
+        backtrack(
+            input_index + 1, output_index, reduced_axes + [input_index]
+        )
+
+    backtrack(0, 0, [])
+    unique = {axes for axes in results}
+    if len(unique) == 1:
+        return tuple(sorted(next(iter(unique))))
+    if not unique:
+        raise ShapeInferenceError(
+            f"{node.op_type} output shape does not match input shape"
+        )
+    return None
 
 
 def _normalize_axes(
@@ -128,15 +184,23 @@ def resolve_reduce_axes(
     graph: Graph, node: Node, input_shape: tuple[int, ...]
 ) -> tuple[tuple[int, ...], bool]:
     axes_attr = node.attrs.get("axes")
-    axes_input = _axes_from_initializer(graph, node)
-    if axes_attr is not None and axes_input is not None:
+    axes_input, axes_input_present = _axes_input_info(graph, node)
+    if axes_attr is not None and axes_input_present:
         raise UnsupportedOpError(
             f"{node.op_type} cannot set both axes attribute and axes input"
         )
+    keepdims = bool(int(node.attrs.get("keepdims", 1)))
     if axes_attr is not None:
         axes = tuple(int(value) for value in axes_attr)
     elif axes_input is not None:
         axes = axes_input
+    elif axes_input_present:
+        output_shape = _value_shape(graph, node.outputs[0], node)
+        axes = _infer_axes_from_shapes(input_shape, output_shape, keepdims, node)
+        if axes is None:
+            raise UnsupportedOpError(
+                f"{node.op_type} axes input must be constant or inferable from shapes"
+            )
     else:
         axes = ()
     noop_with_empty_axes = bool(int(node.attrs.get("noop_with_empty_axes", 0)))
