@@ -241,6 +241,36 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _make_cast_model() -> onnx.ModelProto:
+    input_shape = [2, 3]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.INT32, input_shape
+    )
+    node = helper.make_node(
+        "Cast",
+        inputs=["in0"],
+        outputs=[output.name],
+        to=TensorProto.INT32,
+    )
+    graph = helper.make_graph(
+        [node],
+        "cast_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_lstm_model(
     *,
     seq_length: int,
@@ -1501,6 +1531,11 @@ def test_constant_of_shape_matches_onnxruntime() -> None:
 
 def test_reshape_op_matches_onnxruntime() -> None:
     model = _make_reshape_model()
+    _run_cli_verify(model)
+
+
+def test_cast_op_matches_onnxruntime() -> None:
+    model = _make_cast_model()
     _run_cli_verify(model)
 
 

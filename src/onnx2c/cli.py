@@ -153,13 +153,27 @@ def _handle_compile(args: argparse.Namespace) -> int:
     return 0
 
 
-def _resolve_compiler(cc: str | None) -> str | None:
+def _resolve_compiler(cc: str | None) -> list[str] | None:
+    def resolve_tokens(tokens: list[str]) -> list[str] | None:
+        if not tokens:
+            return None
+        if shutil.which(tokens[0]):
+            return tokens
+        for token in reversed(tokens):
+            if shutil.which(token):
+                return [token]
+        return None
+
     if cc:
-        return cc
+        return resolve_tokens(shlex.split(cc))
     env_cc = os.environ.get("CC")
     if env_cc:
-        return env_cc
-    return shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
+        return resolve_tokens(shlex.split(env_cc))
+    for candidate in ("cc", "gcc", "clang"):
+        resolved = shutil.which(candidate)
+        if resolved:
+            return [resolved]
+    return None
 
 
 def _handle_verify(args: argparse.Namespace) -> int:
@@ -209,7 +223,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
         try:
             subprocess.run(
                 [
-                    compiler_cmd,
+                    *compiler_cmd,
                     "-std=c99",
                     "-O2",
                     str(c_path),

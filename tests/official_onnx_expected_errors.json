@@ -1105,7 +1105,7 @@
   ],
   [
     "node/test_cast_DOUBLE_to_FLOAT/model.onnx",
-    "Unsupported op Cast"
+    ""
   ],
   [
     "node/test_cast_DOUBLE_to_FLOAT16/model.onnx",
@@ -1201,7 +1201,7 @@
   ],
   [
     "node/test_cast_FLOAT_to_DOUBLE/model.onnx",
-    "Unsupported op Cast"
+    ""
   ],
   [
     "node/test_cast_FLOAT_to_FLOAT16/model.onnx",
@@ -1361,7 +1361,7 @@
   ],
   [
     "node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx",
-    "Unsupported op Cast"
+    ""
   ],
   [
     "node/test_castlike_FLOAT16_to_DOUBLE/model.onnx",
@@ -1545,7 +1545,7 @@
   ],
   [
     "node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx",
-    "Unsupported op Cast"
+    ""
   ],
   [
     "node/test_castlike_FLOAT_to_FLOAT16/model.onnx",
@@ -3977,7 +3977,7 @@
   ],
   [
     "node/test_nllloss_NCd1_ii_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Where"
   ],
   [
     "node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx",
@@ -3985,7 +3985,7 @@
   ],
   [
     "node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Where"
   ],
   [
     "node/test_nllloss_NCd1_weight/model.onnx",
@@ -4001,7 +4001,7 @@
   ],
   [
     "node/test_nllloss_NCd1_weight_ii_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Where"
   ],
   [
     "node/test_nllloss_NCd1d2/model.onnx",
@@ -4017,7 +4017,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Where"
   ],
   [
     "node/test_nllloss_NCd1d2_reduction_mean/model.onnx",
@@ -4065,7 +4065,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Where"
   ],
   [
     "node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx",
@@ -4073,7 +4073,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Where"
   ],
   [
     "node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx",
@@ -4081,7 +4081,7 @@
   ],
   [
     "node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Where"
   ],
   [
     "node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx",
@@ -4401,7 +4401,7 @@
   ],
   [
     "node/test_range_float_type_positive_delta_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Loop"
   ],
   [
     "node/test_range_int32_type_negative_delta/model.onnx",
@@ -4409,7 +4409,7 @@
   ],
   [
     "node/test_range_int32_type_negative_delta_expanded/model.onnx",
-    "Unsupported op Cast"
+    "Unsupported op Loop"
   ],
   [
     "node/test_reciprocal/model.onnx",
@@ -4601,7 +4601,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum output shape must be (1, 1, 1), got ()"
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx",
@@ -4609,7 +4609,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum output shape must be (1, 1, 1), got ()"
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx",
@@ -4617,7 +4617,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx",
@@ -4625,7 +4625,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set/model.onnx",
@@ -4633,7 +4633,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_example/model.onnx",
@@ -4641,7 +4641,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_random/model.onnx",
@@ -4649,7 +4649,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx",
@@ -4657,7 +4657,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx",
@@ -4665,7 +4665,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx",
-    "Unsupported op Cast"
+    "ReduceSum axes input must be constant"
   ],
   [
     "node/test_reduce_log_sum_negative_axes/model.onnx",

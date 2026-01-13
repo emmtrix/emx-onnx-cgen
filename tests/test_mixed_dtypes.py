@@ -28,6 +28,32 @@ def _make_mixed_dtype_model() -> onnx.ModelProto:
     )
 
 
+def _make_cast_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT, [2, 2]
+    )
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.INT32, [2, 2]
+    )
+    node = helper.make_node(
+        "Cast",
+        ["input"],
+        ["output"],
+        to=TensorProto.INT32,
+    )
+    graph = helper.make_graph(
+        [node],
+        "cast_graph",
+        [input_info],
+        [output],
+    )
+    return helper.make_model(
+        graph,
+        opset_imports=[helper.make_opsetid("", 13)],
+        ir_version=11,
+    )
+
+
 def test_compile_supports_mixed_dtypes() -> None:
     model = _make_mixed_dtype_model()
     compiler = Compiler()
@@ -52,3 +78,12 @@ def test_mixed_dtype_model_matches_onnxruntime() -> None:
         model, {"float_in": float_input, "int_in": int_input}
     )
     np.testing.assert_array_equal(compiled["out"], ort_out)
+
+
+def test_cast_matches_numpy() -> None:
+    model = _make_cast_model()
+    compiler = Compiler()
+    input_data = np.array([[1.25, -2.5], [3.0, 4.75]], dtype=np.float32)
+    compiled = compiler.run(model, {"input": input_data})
+    expected = input_data.astype(np.int32)
+    np.testing.assert_array_equal(compiled["output"], expected)
