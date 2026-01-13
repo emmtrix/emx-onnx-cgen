@@ -20,6 +20,7 @@ from .codegen.c_emitter import (
     ConcatOp,
     ConstantOfShapeOp,
     GemmOp,
+    GatherElementsOp,
     LrnOp,
     LstmOp,
     LogSoftmaxOp,
@@ -60,6 +61,7 @@ from .lowering.common import (
 from .lowering.conv import ConvSpec, resolve_conv_spec
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .lowering.dropout import lower_dropout
+from .lowering.gather_elements import lower_gather_elements
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
@@ -215,6 +217,7 @@ class Compiler:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | GatherElementsOp
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
@@ -242,6 +245,7 @@ class Compiler:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | GatherElementsOp
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp

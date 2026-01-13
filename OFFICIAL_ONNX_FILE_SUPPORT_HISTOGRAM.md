@@ -7,7 +7,7 @@
 | ReduceSum axes input must be constant | 39 | ████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
-| Unsupported op GatherElements | 21 | ████ |
+| Unsupported op Slice | 26 | █████ |
 | Unsupported op Identity | 20 | ████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
@@ -41,7 +41,6 @@
 | Unsupported op Max | 8 | ██ |
 | Unsupported op Min | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
-| Unsupported op Slice | 8 | ██ |
 | Unsupported op Hardmax | 7 | █ |
 | ReduceL1 axes input must be constant | 7 | █ |
 | ReduceL2 axes input must be constant | 7 | █ |
