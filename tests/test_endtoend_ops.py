@@ -539,6 +539,65 @@ def _make_shape_model(
     return model
 
 
+def _make_slice_model() -> onnx.ModelProto:
+    input_shape = [2, 3, 4]
+    output_shape = [2, 3, 1]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    starts_values = np.array([0, 1], dtype=np.int64)
+    ends_values = np.array([2, 3], dtype=np.int64)
+    axes_values = np.array([0, 2], dtype=np.int64)
+    steps_values = np.array([1, 2], dtype=np.int64)
+    starts = helper.make_tensor(
+        "starts",
+        TensorProto.INT64,
+        dims=starts_values.shape,
+        vals=starts_values.tolist(),
+    )
+    ends = helper.make_tensor(
+        "ends",
+        TensorProto.INT64,
+        dims=ends_values.shape,
+        vals=ends_values.tolist(),
+    )
+    axes = helper.make_tensor(
+        "axes",
+        TensorProto.INT64,
+        dims=axes_values.shape,
+        vals=axes_values.tolist(),
+    )
+    steps = helper.make_tensor(
+        "steps",
+        TensorProto.INT64,
+        dims=steps_values.shape,
+        vals=steps_values.tolist(),
+    )
+    node = helper.make_node(
+        "Slice",
+        inputs=["in0", "starts", "ends", "axes", "steps"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "slice_graph",
+        [input_info],
+        [output],
+        initializer=[starts, ends, axes, steps],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_resize_model() -> onnx.ModelProto:
     input_shape = [1, 1, 2, 2]
     output_shape = [1, 1, 4, 4]
@@ -1735,6 +1794,11 @@ def test_shape_slice_op_matches_onnxruntime() -> None:
         end=3,
         opset=15,
     )
+    _run_cli_verify(model)
+
+
+def test_slice_op_matches_onnxruntime() -> None:
+    model = _make_slice_model()
     _run_cli_verify(model)
 
 

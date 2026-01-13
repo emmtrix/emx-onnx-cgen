@@ -34,6 +34,7 @@ from ..lowering.reduce import (
     resolve_reduce_axes,
 )
 from ..lowering.reshape import lower_reshape
+from ..lowering.slice import resolve_slice_spec
 from ..lowering.shape import lower_shape
 from ..lowering.softmax import lower_softmax
 from ..lowering.transpose import lower_transpose
@@ -197,6 +198,17 @@ def _eval_gather_elements(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = np.take_along_axis(
         data, indices, axis=axis
     )
+
+
+@register_evaluator("Slice")
+def _eval_slice(evaluator: Evaluator, node: Node) -> None:
+    spec = resolve_slice_spec(evaluator.graph, node)
+    input_value = evaluator.values[node.inputs[0]]
+    slices = tuple(
+        slice(start, start + step * size, step)
+        for start, step, size in zip(spec.starts, spec.steps, spec.output_shape)
+    )
+    evaluator.values[node.outputs[0]] = input_value[slices]
 
 
 @register_evaluator("Attention")
