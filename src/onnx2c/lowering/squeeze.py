@@ -155,4 +155,5 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
         input_shape=input_shape,
         output_shape=output_shape,
         dtype=input_dtype,
+        input_dtype=input_dtype,
     )

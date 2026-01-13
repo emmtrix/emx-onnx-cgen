@@ -42,4 +42,5 @@ def lower_transpose(graph: Graph, node: Node) -> TransposeOp:
         input_shape=input_shape,
         output_shape=output_shape,
         dtype=op_dtype,
+        input_dtype=op_dtype,
     )

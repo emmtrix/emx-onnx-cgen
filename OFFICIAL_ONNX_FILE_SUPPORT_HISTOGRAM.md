@@ -3,6 +3,7 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 130 | ██████████████████████████████ |
+| '*' object has no attribute '*' | 86 | ████████████████████ |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 34 | ████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Dynamic or zero dims are not supported | 26 | ██████ |
@@ -161,7 +162,6 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Unsupported op Pad | 6 | ██████████████████████████████ |
-| Unsupported op Gather | 4 | ████████████████████ |
 | Unsupported op ScatterND | 4 | ████████████████████ |
 | Unsupported LSTM direction b'*' | 2 | ██████████ |
 | Unsupported op QLinearAdd | 2 | ██████████ |

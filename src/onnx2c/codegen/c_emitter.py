@@ -489,6 +489,7 @@ class TransposeOp:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     dtype: str
+    input_dtype: str
 
 
 @dataclass(frozen=True)
@@ -498,6 +499,7 @@ class ReshapeOp:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
     dtype: str
+    input_dtype: str
 
 
 @dataclass(frozen=True)
@@ -509,6 +511,7 @@ class SliceOp:
     starts: tuple[int, ...]
     steps: tuple[int, ...]
     dtype: str
+    input_dtype: str
 
 
 @dataclass(frozen=True)
@@ -1003,22 +1006,21 @@ class CEmitter:
                 input_b=name_map.get(op.input_b, op.input_b),
                 input_c=self._map_optional_name(name_map, op.input_c),
                 output=name_map.get(op.output, op.output),
-                input_a_shape=op.input_a_shape,
-                input_b_shape=op.input_b_shape,
-                output_shape=op.output_shape,
-                alpha=op.alpha,
-                beta=op.beta,
+                m=op.m,
+                n=op.n,
+                k=op.k,
                 trans_a=op.trans_a,
                 trans_b=op.trans_b,
+                alpha=op.alpha,
+                beta=op.beta,
+                c_shape=op.c_shape,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, AttentionOp):
             return AttentionOp(
                 input_q=name_map.get(op.input_q, op.input_q),
                 input_k=name_map.get(op.input_k, op.input_k),
                 input_v=name_map.get(op.input_v, op.input_v),
-                output=name_map.get(op.output, op.output),
                 input_attn_mask=self._map_optional_name(
                     name_map, op.input_attn_mask
                 ),
@@ -1040,20 +1042,37 @@ class CEmitter:
                 output_qk_matmul=self._map_optional_name(
                     name_map, op.output_qk_matmul
                 ),
-                input_shapes=op.input_shapes,
-                output_shape=op.output_shape,
-                qk_shape=op.qk_shape,
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                q_heads=op.q_heads,
+                kv_heads=op.kv_heads,
+                q_seq=op.q_seq,
+                kv_seq=op.kv_seq,
+                total_seq=op.total_seq,
+                past_seq=op.past_seq,
+                qk_head_size=op.qk_head_size,
+                v_head_size=op.v_head_size,
+                q_hidden_size=op.q_hidden_size,
+                k_hidden_size=op.k_hidden_size,
+                v_hidden_size=op.v_hidden_size,
+                scale=op.scale,
+                is_causal=op.is_causal,
+                softcap=op.softcap,
+                qk_matmul_output_mode=op.qk_matmul_output_mode,
+                q_rank=op.q_rank,
+                k_rank=op.k_rank,
+                v_rank=op.v_rank,
+                output_rank=op.output_rank,
                 mask_shape=op.mask_shape,
-                past_shapes=op.past_shapes,
-                present_shapes=op.present_shapes,
+                mask_is_bool=op.mask_is_bool,
+                mask_rank=op.mask_rank,
+                mask_broadcast_batch=op.mask_broadcast_batch,
+                mask_broadcast_heads=op.mask_broadcast_heads,
+                mask_broadcast_q_seq=op.mask_broadcast_q_seq,
+                mask_q_seq=op.mask_q_seq,
+                mask_kv_seq=op.mask_kv_seq,
+                head_group_size=op.head_group_size,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                mask_dtype=op.mask_dtype,
-                nonpad_dtype=op.nonpad_dtype,
-                has_qk=op.has_qk,
-                has_past=op.has_past,
-                has_mask=op.has_mask,
-                has_nonpad=op.has_nonpad,
             )
         if isinstance(op, ConvOp):
             return ConvOp(
@@ -1061,29 +1080,39 @@ class CEmitter:
                 weights=name_map.get(op.weights, op.weights),
                 bias=self._map_optional_name(name_map, op.bias),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                weight_shape=op.weight_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
                 kernel_shape=op.kernel_shape,
                 strides=op.strides,
                 pads=op.pads,
                 dilations=op.dilations,
                 group=op.group,
+                dtype=op.dtype,
             )
         if isinstance(op, AveragePoolOp):
             return AveragePoolOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                kernel_shape=op.kernel_shape,
-                strides=op.strides,
-                pads=op.pads,
+                batch=op.batch,
+                channels=op.channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                pad_bottom=op.pad_bottom,
+                pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, BatchNormOp):
             return BatchNormOp(
@@ -1093,25 +1122,23 @@ class CEmitter:
                 mean=name_map.get(op.mean, op.mean),
                 variance=name_map.get(op.variance, op.variance),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                shape=op.shape,
+                channels=op.channels,
                 epsilon=op.epsilon,
-                momentum=op.momentum,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, LrnOp):
             return LrnOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                shape=op.shape,
+                channels=op.channels,
+                size=op.size,
+                half=op.half,
                 alpha=op.alpha,
                 beta=op.beta,
                 bias=op.bias,
-                size=op.size,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, LstmOp):
             return LstmOp(
@@ -1132,35 +1159,42 @@ class CEmitter:
                 output_y=self._map_optional_name(name_map, op.output_y),
                 output_y_h=self._map_optional_name(name_map, op.output_y_h),
                 output_y_c=self._map_optional_name(name_map, op.output_y_c),
-                input_shapes=op.input_shapes,
-                output_shapes=op.output_shapes,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                direction=op.direction,
+                seq_length=op.seq_length,
+                batch_size=op.batch_size,
+                input_size=op.input_size,
                 hidden_size=op.hidden_size,
-                activation_spec=op.activation_spec,
-                clip=op.clip,
+                num_directions=op.num_directions,
+                direction=op.direction,
+                layout=op.layout,
                 input_forget=op.input_forget,
+                clip=op.clip,
+                activation_kinds=op.activation_kinds,
+                activation_alphas=op.activation_alphas,
+                activation_betas=op.activation_betas,
+                dtype=op.dtype,
+                sequence_lens_dtype=op.sequence_lens_dtype,
             )
         if isinstance(op, SoftmaxOp):
             return SoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
                 axis=op.axis,
+                shape=op.shape,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, LogSoftmaxOp):
             return LogSoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
                 axis=op.axis,
+                shape=op.shape,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, NegativeLogLikelihoodLossOp):
             return NegativeLogLikelihoodLossOp(
@@ -1203,14 +1237,19 @@ class CEmitter:
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
                 indices=self._map_optional_name(name_map, op.indices),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
                 kernel_shape=op.kernel_shape,
                 strides=op.strides,
                 pads=op.pads,
+                dilations=op.dilations,
                 ceil_mode=op.ceil_mode,
+                storage_order=op.storage_order,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                indices_dtype=op.indices_dtype,
             )
         if isinstance(op, ConcatOp):
             return ConcatOp(
@@ -1222,7 +1261,6 @@ class CEmitter:
                 output_shape=op.output_shape,
                 axis=op.axis,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, GatherElementsOp):
             return GatherElementsOp(
@@ -1234,7 +1272,6 @@ class CEmitter:
                 output_shape=op.output_shape,
                 axis=op.axis,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 indices_dtype=op.indices_dtype,
             )
         if isinstance(op, GatherOp):
@@ -1247,7 +1284,6 @@ class CEmitter:
                 output_shape=op.output_shape,
                 axis=op.axis,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 indices_dtype=op.indices_dtype,
             )
         if isinstance(op, TransposeOp):
@@ -1276,8 +1312,6 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 starts=op.starts,
-                ends=op.ends,
-                axes=op.axes,
                 steps=op.steps,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
@@ -1291,30 +1325,42 @@ class CEmitter:
                 sizes_input=self._map_optional_name(name_map, op.sizes_input),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                scales=op.scales,
+                axes=op.axes,
+                scales_shape=op.scales_shape,
+                sizes_shape=op.sizes_shape,
+                roi_shape=op.roi_shape,
+                scales_dtype=op.scales_dtype,
+                sizes_dtype=op.sizes_dtype,
+                roi_dtype=op.roi_dtype,
+                scales_axes=op.scales_axes,
+                sizes_axes=op.sizes_axes,
+                roi_axes=op.roi_axes,
                 mode=op.mode,
                 nearest_mode=op.nearest_mode,
                 coordinate_transformation_mode=op.coordinate_transformation_mode,
                 cubic_coeff_a=op.cubic_coeff_a,
                 extrapolation_value=op.extrapolation_value,
                 exclude_outside=op.exclude_outside,
-                scales=op.scales,
-                sizes=op.sizes,
+                antialias=op.antialias,
+                keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
+                dtype=op.dtype,
             )
         if isinstance(op, ReduceOp):
             return ReduceOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                axes_input=self._map_optional_name(name_map, op.axes_input),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 axes=op.axes,
+                axes_input=self._map_optional_name(name_map, op.axes_input),
+                axes_input_shape=op.axes_input_shape,
+                axes_input_dtype=op.axes_input_dtype,
                 keepdims=op.keepdims,
+                noop_with_empty_axes=op.noop_with_empty_axes,
+                reduce_kind=op.reduce_kind,
+                reduce_count=op.reduce_count,
                 dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                op_kind=op.op_kind,
-                output_dtype=op.output_dtype,
             )
         if isinstance(op, ConstantOfShapeOp):
             return ConstantOfShapeOp(
@@ -2868,6 +2914,7 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, ReshapeOp):
             return ReshapeOp(
@@ -2876,6 +2923,7 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, SliceOp):
             return SliceOp(
@@ -2886,6 +2934,7 @@ class CEmitter:
                 starts=op.starts,
                 steps=op.steps,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, ResizeOp):
             return ResizeOp(
