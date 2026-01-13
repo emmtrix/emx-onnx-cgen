@@ -209,11 +209,11 @@
   ],
   [
     "test_maxpool_stride_1/model.onnx",
-    "MaxPool must have 1 input and 1 output"
+    ""
   ],
   [
     "test_maxpool_stride_2/model.onnx",
-    "MaxPool must have 1 input and 1 output"
+    ""
   ],
   [
     "test_nodes_out_of_order/model.onnx",

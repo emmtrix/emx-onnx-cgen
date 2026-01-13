@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 769 / 1802 official ONNX files.
+Support 770 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -943,8 +943,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_maxpool_3d_dilations/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations_use_ref_impl/model.onnx | ✅ |  |
 | node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx | ✅ |  |
-| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
-| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
+| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | ✅ |  |
+| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | ✅ |  |
 | node/test_maxunpool_export_with_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | node/test_maxunpool_export_without_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | node/test_mean_example/model.onnx | ❌ | Mean must have 2 inputs and 1 output |
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 47 / 74 local ONNX files.
+Support 49 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -1871,8 +1871,8 @@ Support 47 / 74 local ONNX files.
 | test_matmul_4x5x2x3_4x5x3x4/model.onnx | ✅ |  |
 | test_matmul_5x2x3_5x3x4/model.onnx | ✅ |  |
 | test_matmul_precision/model.onnx | ✅ |  |
-| test_maxpool_stride_1/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
-| test_maxpool_stride_2/model.onnx | ❌ | MaxPool must have 1 input and 1 output |
+| test_maxpool_stride_1/model.onnx | ✅ |  |
+| test_maxpool_stride_2/model.onnx | ✅ |  |
 | test_nodes_out_of_order/model.onnx | ✅ |  |
 | test_pad_constant_default/model.onnx | ❌ | Unsupported op Pad |
 | test_pad_constant_input/model.onnx | ❌ | Unsupported op Pad |

@@ -3741,11 +3741,11 @@
   ],
   [
     "node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx",
-    "MaxPool must have 1 input and 1 output"
+    ""
   ],
   [
     "node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx",
-    "MaxPool must have 1 input and 1 output"
+    ""
   ],
   [
     "node/test_maxunpool_export_with_output_shape/model.onnx",

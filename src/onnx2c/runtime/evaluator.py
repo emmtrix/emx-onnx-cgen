@@ -401,11 +401,21 @@ def _eval_maxpool(evaluator: Evaluator, node: Node) -> None:
             f"{node.op_type} expects matching input/output dtypes, "
             f"got {op_dtype} and {output_dtype}"
         )
+    indices_output = node.outputs[1] if len(node.outputs) > 1 else None
+    if indices_output is not None:
+        indices_dtype = value_dtype(evaluator.graph, indices_output, node)
+        if indices_dtype != "int64":
+            raise UnsupportedOpError("MaxPool indices output must be int64")
     if op_dtype == "bool":
         raise UnsupportedOpError("MaxPool supports numeric inputs only")
     spec = resolve_maxpool_spec(evaluator.graph, node)
     data = evaluator.values[node.inputs[0]]
-    evaluator.values[node.outputs[0]] = _apply_maxpool(spec, data)
+    if indices_output is None:
+        evaluator.values[node.outputs[0]] = _apply_maxpool(spec, data)
+    else:
+        values, indices = _apply_maxpool(spec, data, return_indices=True)
+        evaluator.values[node.outputs[0]] = values
+        evaluator.values[indices_output] = indices
 
 
 @register_evaluator("Softmax")
@@ -1043,18 +1053,27 @@ def _maxpool_min_value(dtype: np.dtype) -> float | int:
     raise UnsupportedOpError("MaxPool supports numeric inputs only")
 
 
-def _apply_maxpool(spec, data: np.ndarray) -> np.ndarray:
+def _apply_maxpool(
+    spec, data: np.ndarray, *, return_indices: bool = False
+) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
     min_value = _maxpool_min_value(data.dtype)
     output = np.full(
         (spec.batch, spec.channels, *spec.out_spatial),
         min_value,
         dtype=data.dtype,
     )
+    indices = (
+        np.zeros((spec.batch, spec.channels, *spec.out_spatial), dtype=np.int64)
+        if return_indices
+        else None
+    )
     pad_begin = spec.pads[: spec.spatial_rank]
     for n in range(spec.batch):
         for c in range(spec.channels):
             for out_index in np.ndindex(*spec.out_spatial):
                 max_value = min_value
+                max_index = 0
+                has_value = False
                 for kernel_index in np.ndindex(*spec.kernel_shape):
                     in_index = []
                     valid = True
@@ -1073,9 +1092,29 @@ def _apply_maxpool(spec, data: np.ndarray) -> np.ndarray:
                     if not valid:
                         continue
                     value = data[(n, c, *in_index)]
-                    if value > max_value:
+                    if value > max_value or not has_value:
                         max_value = value
+                        has_value = True
+                        if return_indices:
+                            linear_index = n * spec.channels + c
+                            if spec.storage_order == 0:
+                                for idx, size in zip(in_index, spec.in_spatial):
+                                    linear_index = linear_index * size + idx
+                            else:
+                                spatial_index = 0
+                                spatial_stride = 1
+                                for idx, size in zip(in_index, spec.in_spatial):
+                                    spatial_index += idx * spatial_stride
+                                    spatial_stride *= size
+                                linear_index = linear_index * spatial_stride + spatial_index
+                            max_index = linear_index
                 output[(n, c, *out_index)] = max_value
+                if return_indices and indices is not None:
+                    indices[(n, c, *out_index)] = max_index
+    if return_indices:
+        if indices is None:
+            raise RuntimeError("MaxPool indices were not computed")
+        return output, indices
     return output
 
 
