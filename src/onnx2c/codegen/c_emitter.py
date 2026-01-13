@@ -3209,6 +3209,38 @@ class CEmitter:
         return tuple(f"i{index}" for index in range(len(shape)))
 
     @staticmethod
+    def _loop_indents(shape: tuple[int, ...]) -> tuple[str, ...]:
+        shape = CEmitter._codegen_shape(shape)
+        return tuple("" for _ in shape)
+
+    @staticmethod
+    def _inner_indent(shape: tuple[int, ...]) -> str:
+        CEmitter._codegen_shape(shape)
+        return ""
+
+    @staticmethod
+    def _broadcast_index_expr(
+        name: str,
+        input_shape: tuple[int, ...],
+        output_shape: tuple[int, ...],
+        loop_vars: tuple[str, ...],
+    ) -> str:
+        if not input_shape:
+            return f"{name}[0]"
+        output_shape = CEmitter._codegen_shape(output_shape)
+        if len(output_shape) != len(loop_vars):
+            raise CodegenError("Loop variables must match output shape rank")
+        offset = len(output_shape) - len(input_shape)
+        indices: list[str] = []
+        for input_dim, dim_size in enumerate(input_shape):
+            output_dim = input_dim + offset
+            if dim_size == 1:
+                indices.append("[0]")
+            else:
+                indices.append(f"[{loop_vars[output_dim]}]")
+        return f"{name}{''.join(indices)}"
+
+    @staticmethod
     def _element_count(shape: tuple[int, ...]) -> int:
         shape = CEmitter._codegen_shape(shape)
         count = 1
