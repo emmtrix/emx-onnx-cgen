@@ -475,6 +475,17 @@ class ShapeOp:
 
 
 @dataclass(frozen=True)
+class SizeOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    value: int
+    dtype: str
+    input_dtype: str
+
+
+@dataclass(frozen=True)
 class ConstTensor:
     name: str
     shape: tuple[int, ...]
@@ -547,7 +558,8 @@ class LoweredModel:
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
-        | ShapeOp,
+        | ShapeOp
+        | SizeOp,
         ...,
     ]
     node_infos: tuple[NodeInfo, ...]
@@ -602,6 +614,7 @@ class CEmitter:
                     "constant_of_shape_op.c.j2"
                 ),
                 "shape": self._env.get_template("shape_op.c.j2"),
+                "size": self._env.get_template("size_op.c.j2"),
             }
             if emit_testbench:
                 templates["testbench"] = self._env.get_template("testbench.c.j2")
@@ -638,6 +651,7 @@ class CEmitter:
         reduce_dynamic_template = templates["reduce_dynamic"]
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
+        size_template = templates["size"]
         testbench_template = templates.get("testbench")
         temp_buffers = self._temp_buffers(model)
         temp_name_map = {
@@ -682,6 +696,7 @@ class CEmitter:
                 reduce_dynamic_template=reduce_dynamic_template,
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
+                size_template=size_template,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -743,6 +758,7 @@ class CEmitter:
         reduce_dynamic_template = templates["reduce_dynamic"]
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
+        size_template = templates["size"]
         testbench_template = templates.get("testbench")
         temp_buffers = self._temp_buffers(model)
         temp_name_map = {
@@ -787,6 +803,7 @@ class CEmitter:
                 reduce_dynamic_template=reduce_dynamic_template,
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
+                size_template=size_template,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -970,6 +987,7 @@ class CEmitter:
             | ReduceOp
             | ConstantOfShapeOp
             | ShapeOp
+            | SizeOp
         ],
         *,
         emit_testbench: bool,
@@ -1090,6 +1108,7 @@ class CEmitter:
             | ReduceOp
             | ConstantOfShapeOp
             | ShapeOp
+            | SizeOp
         ],
     ) -> bool:
         math_ops = {
@@ -1181,6 +1200,7 @@ class CEmitter:
             | ReduceOp
             | ConstantOfShapeOp
             | ShapeOp
+            | SizeOp
         ],
     ) -> bool:
         if any(
@@ -1226,6 +1246,8 @@ class CEmitter:
             | ResizeOp
             | ReduceOp
             | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
     ) -> str:
@@ -1283,7 +1305,8 @@ class CEmitter:
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
-        | ShapeOp,
+        | ShapeOp
+        | SizeOp,
     ) -> str:
         if isinstance(op, BinaryOp):
             return f"{op.input0}, {op.input1}, {op.output}"
@@ -1369,6 +1392,8 @@ class CEmitter:
             return f"{op.input0}, {op.output}"
         if isinstance(op, ShapeOp):
             return f"{op.input0}, {op.output}"
+        if isinstance(op, SizeOp):
+            return f"{op.input0}, {op.output}"
         if isinstance(op, ReshapeOp):
             return f"{op.input0}, {op.output}"
         if isinstance(op, SliceOp):
@@ -1434,7 +1459,8 @@ class CEmitter:
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
-        | ShapeOp,
+        | ShapeOp
+        | SizeOp,
         temp_map: dict[str, str],
     ) -> (
         BinaryOp
@@ -1463,6 +1489,7 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
+        | SizeOp
     ):
         if isinstance(op, BinaryOp):
             return BinaryOp(
@@ -1860,6 +1887,16 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, SizeOp):
+            return SizeOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                value=op.value,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -1977,7 +2014,8 @@ class CEmitter:
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
-        | ShapeOp,
+        | ShapeOp
+        | SizeOp,
         index: int,
         *,
         array_suffix: str,
@@ -2013,6 +2051,7 @@ class CEmitter:
         reduce_dynamic_template,
         constant_of_shape_template,
         shape_template,
+        size_template,
     ) -> str:
         node_comment = CEmitter._emit_node_comment(model.node_infos[index], index)
 
@@ -3107,6 +3146,19 @@ class CEmitter:
                 ],
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SizeOp):
+            rendered = size_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                input_c_type=dtype_info(op.input_dtype).c_type,
+                c_type=c_type,
+                input_suffix=self._param_array_suffix(op.input_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
+                value=CEmitter._format_literal(op.dtype, op.value),
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, CastOp):
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
@@ -3172,7 +3224,8 @@ class CEmitter:
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
-        | ShapeOp,
+        | ShapeOp
+        | SizeOp,
     ) -> str:
         return op.output
 
@@ -3202,7 +3255,8 @@ class CEmitter:
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
-        | ShapeOp,
+        | ShapeOp
+        | SizeOp,
     ) -> tuple[tuple[str, tuple[int, ...], str], ...]:
         if isinstance(op, AttentionOp):
             outputs: list[tuple[str, tuple[int, ...], str]] = [
@@ -3301,7 +3355,9 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
-        | ConstantOfShapeOp,
+        | ConstantOfShapeOp
+        | ShapeOp
+        | SizeOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return op.shape
@@ -3351,6 +3407,8 @@ class CEmitter:
             return op.shape
         if isinstance(op, ShapeOp):
             return op.output_shape
+        if isinstance(op, SizeOp):
+            return op.output_shape
         if op.output_rank == 3:
             return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
         return (op.batch, op.q_heads, op.q_seq, op.v_head_size)
@@ -3378,7 +3436,8 @@ class CEmitter:
         | ResizeOp
         | ReduceOp
         | ConstantOfShapeOp
-        | ShapeOp,
+        | ShapeOp
+        | SizeOp,
     ) -> str:
         return op.dtype
 

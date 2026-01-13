@@ -539,6 +539,23 @@ def _make_shape_model(
     return model
 
 
+def _make_size_model(*, input_shape: list[int], opset: int = 13) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info("out", TensorProto.INT64, [])
+    node = helper.make_node("Size", inputs=["in0"], outputs=[output.name])
+    graph = helper.make_graph([node], "size_graph", [input_info], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_slice_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     output_shape = [2, 3, 1]
@@ -1685,6 +1702,11 @@ def test_reduce_op_axes_input_matches_numpy() -> None:
 
 def test_castlike_matches_onnxruntime() -> None:
     model = _make_castlike_model()
+    _run_cli_verify(model)
+
+
+def test_size_matches_onnxruntime() -> None:
+    model = _make_size_model(input_shape=[2, 3, 4])
     _run_cli_verify(model)
 
 

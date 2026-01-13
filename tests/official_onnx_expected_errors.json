@@ -3077,11 +3077,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded/model.onnx",
-    "Unsupported op Size"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_layer_normalization_2d_axis1/model.onnx",
@@ -3089,11 +3089,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1/model.onnx",
@@ -3125,11 +3125,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx",
-    "Unsupported op Size"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon/model.onnx",
@@ -3137,11 +3137,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon/model.onnx",
@@ -3149,11 +3149,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx",
@@ -3197,11 +3197,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded/model.onnx",
-    "Unsupported op Size"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Dynamic or zero dims are not supported"
   ],
   [
     "node/test_layer_normalization_4d_axis1/model.onnx",
@@ -3209,11 +3209,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_4d_axis2/model.onnx",
@@ -3221,11 +3221,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_4d_axis3/model.onnx",
@@ -3233,11 +3233,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx",
-    "Unsupported op Size"
+    "Unsupported op Flatten"
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1/model.onnx",
@@ -5921,11 +5921,11 @@
   ],
   [
     "node/test_size/model.onnx",
-    "Unsupported op Size"
+    ""
   ],
   [
     "node/test_size_example/model.onnx",
-    "Unsupported op Size"
+    ""
   ],
   [
     "node/test_slice/model.onnx",
