@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 785 / 1802 official ONNX files.
+Support 856 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -18,10 +18,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | light/light_vgg19.onnx | ✅ |  |
 | light/light_zfnet512.onnx | ✅ |  |
 | node/test_abs/model.onnx | ✅ |  |
-| node/test_acos/model.onnx | ❌ | Unsupported op Acos |
-| node/test_acos_example/model.onnx | ❌ | Unsupported op Acos |
-| node/test_acosh/model.onnx | ❌ | Unsupported op Acosh |
-| node/test_acosh_example/model.onnx | ❌ | Unsupported op Acosh |
+| node/test_acos/model.onnx | ✅ |  |
+| node/test_acos_example/model.onnx | ✅ |  |
+| node/test_acosh/model.onnx | ✅ |  |
+| node/test_acosh_example/model.onnx | ✅ |  |
 | node/test_adagrad/model.onnx | ❌ | Unsupported op Adagrad |
 | node/test_adagrad_multiple/model.onnx | ❌ | Unsupported op Adagrad |
 | node/test_adam/model.onnx | ❌ | Unsupported op Adam |
@@ -90,12 +90,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_argmin_no_keepdims_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
 | node/test_argmin_no_keepdims_random/model.onnx | ❌ | Unsupported op ArgMin |
 | node/test_argmin_no_keepdims_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_asin/model.onnx | ❌ | Unsupported op Asin |
-| node/test_asin_example/model.onnx | ❌ | Unsupported op Asin |
-| node/test_asinh/model.onnx | ❌ | Unsupported op Asinh |
-| node/test_asinh_example/model.onnx | ❌ | Unsupported op Asinh |
-| node/test_atan/model.onnx | ❌ | Unsupported op Atan |
-| node/test_atan_example/model.onnx | ❌ | Unsupported op Atan |
+| node/test_asin/model.onnx | ✅ |  |
+| node/test_asin_example/model.onnx | ✅ |  |
+| node/test_asinh/model.onnx | ✅ |  |
+| node/test_asinh_example/model.onnx | ✅ |  |
+| node/test_atan/model.onnx | ✅ |  |
+| node/test_atan_example/model.onnx | ✅ |  |
 | node/test_atanh/model.onnx | ✅ |  |
 | node/test_atanh_example/model.onnx | ✅ |  |
 | node/test_attention_3d/model.onnx | ✅ |  |
@@ -264,21 +264,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_bitshift_right_uint32/model.onnx | ❌ | Unsupported op BitShift |
 | node/test_bitshift_right_uint64/model.onnx | ❌ | Unsupported op BitShift |
 | node/test_bitshift_right_uint8/model.onnx | ❌ | Unsupported op BitShift |
-| node/test_bitwise_and_i16_3d/model.onnx | ❌ | Unsupported op BitwiseAnd |
-| node/test_bitwise_and_i32_2d/model.onnx | ❌ | Unsupported op BitwiseAnd |
-| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported op BitwiseAnd |
-| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported op BitwiseAnd |
-| node/test_bitwise_not_2d/model.onnx | ❌ | Unsupported op BitwiseNot |
+| node/test_bitwise_and_i16_3d/model.onnx | ✅ |  |
+| node/test_bitwise_and_i32_2d/model.onnx | ✅ |  |
+| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ✅ |  |
+| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ✅ |  |
+| node/test_bitwise_not_2d/model.onnx | ✅ |  |
 | node/test_bitwise_not_3d/model.onnx | ❌ | Unsupported op BitwiseNot |
 | node/test_bitwise_not_4d/model.onnx | ❌ | Unsupported op BitwiseNot |
-| node/test_bitwise_or_i16_4d/model.onnx | ❌ | Unsupported op BitwiseOr |
-| node/test_bitwise_or_i32_2d/model.onnx | ❌ | Unsupported op BitwiseOr |
-| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported op BitwiseOr |
-| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported op BitwiseOr |
-| node/test_bitwise_xor_i16_3d/model.onnx | ❌ | Unsupported op BitwiseXor |
-| node/test_bitwise_xor_i32_2d/model.onnx | ❌ | Unsupported op BitwiseXor |
-| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ❌ | Unsupported op BitwiseXor |
-| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ❌ | Unsupported op BitwiseXor |
+| node/test_bitwise_or_i16_4d/model.onnx | ✅ |  |
+| node/test_bitwise_or_i32_2d/model.onnx | ✅ |  |
+| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ✅ |  |
+| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ✅ |  |
+| node/test_bitwise_xor_i16_3d/model.onnx | ✅ |  |
+| node/test_bitwise_xor_i32_2d/model.onnx | ✅ |  |
+| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ✅ |  |
+| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ✅ |  |
 | node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
 | node/test_blackmanwindow_expanded/model.onnx | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_expanded_function_Range' |
 | node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
@@ -458,7 +458,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_ceil/model.onnx | ✅ |  |
 | node/test_ceil_example/model.onnx | ✅ |  |
 | node/test_celu/model.onnx | ❌ | Unsupported op Celu |
-| node/test_celu_expanded/model.onnx | ❌ | Unsupported op Elu |
+| node/test_celu_expanded/model.onnx | ✅ |  |
 | node/test_center_crop_pad_crop/model.onnx | ❌ | Unsupported op CenterCropPad |
 | node/test_center_crop_pad_crop_and_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
 | node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input' |
@@ -542,8 +542,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_convtranspose_pads/model.onnx | ❌ | Unsupported op ConvTranspose |
 | node/test_cos/model.onnx | ✅ |  |
 | node/test_cos_example/model.onnx | ✅ |  |
-| node/test_cosh/model.onnx | ❌ | Unsupported op Cosh |
-| node/test_cosh_example/model.onnx | ❌ | Unsupported op Cosh |
+| node/test_cosh/model.onnx | ✅ |  |
+| node/test_cosh_example/model.onnx | ✅ |  |
 | node/test_cumsum_1d/model.onnx | ❌ | Unsupported op CumSum |
 | node/test_cumsum_1d_exclusive/model.onnx | ❌ | Unsupported op CumSum |
 | node/test_cumsum_1d_int32_exclusive/model.onnx | ❌ | Unsupported op CumSum |
@@ -607,10 +607,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_einsum_scalar/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_sum/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_transpose/model.onnx | ❌ | Unsupported op Einsum |
-| node/test_elu/model.onnx | ❌ | Unsupported op Elu |
-| node/test_elu_default/model.onnx | ❌ | Unsupported op Elu |
+| node/test_elu/model.onnx | ❌ | Elu only supports alpha=1.0 |
+| node/test_elu_default/model.onnx | ✅ |  |
 | node/test_elu_default_expanded_ver18/model.onnx | ✅ |  |
-| node/test_elu_example/model.onnx | ❌ | Unsupported op Elu |
+| node/test_elu_example/model.onnx | ❌ | Elu only supports alpha=1.0 |
 | node/test_elu_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_elu_expanded_ver18/model.onnx | ✅ |  |
 | node/test_equal/model.onnx | ✅ |  |
@@ -623,7 +623,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_equal_uint32/model.onnx | ✅ |  |
 | node/test_equal_uint64/model.onnx | ✅ |  |
 | node/test_equal_uint8/model.onnx | ✅ |  |
-| node/test_erf/model.onnx | ❌ | Unsupported op Erf |
+| node/test_erf/model.onnx | ✅ |  |
 | node/test_exp/model.onnx | ✅ |  |
 | node/test_exp_example/model.onnx | ✅ |  |
 | node/test_expand_dim_changed/model.onnx | ❌ | Unsupported op Expand |
@@ -652,13 +652,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gathernd_example_float32/model.onnx | ❌ | Unsupported op GatherND |
 | node/test_gathernd_example_int32/model.onnx | ❌ | Unsupported op GatherND |
 | node/test_gathernd_example_int32_batch_dim1/model.onnx | ❌ | Unsupported op GatherND |
-| node/test_gelu_default_1/model.onnx | ❌ | Unsupported op Gelu |
-| node/test_gelu_default_1_expanded/model.onnx | ❌ | Unsupported op Erf |
-| node/test_gelu_default_2/model.onnx | ❌ | Unsupported op Gelu |
-| node/test_gelu_default_2_expanded/model.onnx | ❌ | Unsupported op Erf |
-| node/test_gelu_tanh_1/model.onnx | ❌ | Unsupported op Gelu |
+| node/test_gelu_default_1/model.onnx | ✅ |  |
+| node/test_gelu_default_1_expanded/model.onnx | ✅ |  |
+| node/test_gelu_default_2/model.onnx | ✅ |  |
+| node/test_gelu_default_2_expanded/model.onnx | ✅ |  |
+| node/test_gelu_tanh_1/model.onnx | ❌ | Gelu only supports approximate=none |
 | node/test_gelu_tanh_1_expanded/model.onnx | ✅ |  |
-| node/test_gelu_tanh_2/model.onnx | ❌ | Unsupported op Gelu |
+| node/test_gelu_tanh_2/model.onnx | ❌ | Gelu only supports approximate=none |
 | node/test_gelu_tanh_2_expanded/model.onnx | ✅ |  |
 | node/test_gemm_all_attributes/model.onnx | ✅ |  |
 | node/test_gemm_alpha/model.onnx | ✅ |  |
@@ -740,14 +740,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_hardmax_example/model.onnx | ❌ | Unsupported op Hardmax |
 | node/test_hardmax_negative_axis/model.onnx | ❌ | Unsupported op Hardmax |
 | node/test_hardmax_one_hot/model.onnx | ❌ | Unsupported op Hardmax |
-| node/test_hardsigmoid/model.onnx | ❌ | Unsupported op HardSigmoid |
-| node/test_hardsigmoid_default/model.onnx | ❌ | Unsupported op HardSigmoid |
+| node/test_hardsigmoid/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
+| node/test_hardsigmoid_default/model.onnx | ✅ |  |
 | node/test_hardsigmoid_default_expanded_ver18/model.onnx | ✅ |  |
-| node/test_hardsigmoid_example/model.onnx | ❌ | Unsupported op HardSigmoid |
+| node/test_hardsigmoid_example/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_hardsigmoid_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_hardsigmoid_expanded_ver18/model.onnx | ✅ |  |
-| node/test_hardswish/model.onnx | ❌ | Unsupported op HardSwish |
-| node/test_hardswish_expanded/model.onnx | ❌ | Unsupported op HardSigmoid |
+| node/test_hardswish/model.onnx | ✅ |  |
+| node/test_hardswish_expanded/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_identity/model.onnx | ✅ |  |
 | node/test_identity_opt/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_in'. Hint: export the model with tensor inputs/outputs. |
 | node/test_identity_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs. |
@@ -780,8 +780,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_2d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_2d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis1_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
-| node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_2d_axis1_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
@@ -792,11 +792,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
-| node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
-| node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
@@ -810,14 +810,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_4d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_4d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis1_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
-| node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_4d_axis1_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis2/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis2_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
-| node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_4d_axis2_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis3/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis3_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
-| node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_4d_axis3_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
@@ -833,10 +833,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_default_axis/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_default_axis_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
 | node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
-| node/test_leakyrelu/model.onnx | ❌ | Unsupported op LeakyRelu |
-| node/test_leakyrelu_default/model.onnx | ❌ | Unsupported op LeakyRelu |
+| node/test_leakyrelu/model.onnx | ❌ | LeakyRelu only supports alpha=0.01 |
+| node/test_leakyrelu_default/model.onnx | ✅ |  |
 | node/test_leakyrelu_default_expanded/model.onnx | ✅ |  |
-| node/test_leakyrelu_example/model.onnx | ❌ | Unsupported op LeakyRelu |
+| node/test_leakyrelu_example/model.onnx | ❌ | LeakyRelu only supports alpha=0.01 |
 | node/test_leakyrelu_example_expanded/model.onnx | ✅ |  |
 | node/test_leakyrelu_expanded/model.onnx | ✅ |  |
 | node/test_less/model.onnx | ✅ |  |
@@ -966,7 +966,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_min_uint64/model.onnx | ❌ | Unsupported op Min |
 | node/test_min_uint8/model.onnx | ❌ | Unsupported op Min |
 | node/test_mish/model.onnx | ❌ | Unsupported op Mish |
-| node/test_mish_expanded/model.onnx | ❌ | Unsupported op Softplus |
+| node/test_mish_expanded/model.onnx | ✅ |  |
 | node/test_mod_broadcast/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_int64_fmod/model.onnx | ❌ | Unsupported op Mod |
 | node/test_mod_mixed_sign_float16/model.onnx | ❌ | <ScalarType.F16: 'f16'> |
@@ -1111,8 +1111,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_range_float_type_positive_delta_expanded/model.onnx | ❌ | Unsupported op Loop |
 | node/test_range_int32_type_negative_delta/model.onnx | ❌ | Unsupported op Range |
 | node/test_range_int32_type_negative_delta_expanded/model.onnx | ❌ | Unsupported op Loop |
-| node/test_reciprocal/model.onnx | ❌ | Unsupported op Reciprocal |
-| node/test_reciprocal_example/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_reciprocal/model.onnx | ✅ |  |
+| node/test_reciprocal_example/model.onnx | ✅ |  |
 | node/test_reduce_l1_default_axes_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_l1_default_axes_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_l1_default_axes_keepdims_random/model.onnx | ✅ |  |
@@ -1359,7 +1359,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced' |
 | node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
 | node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced' |
-| node/test_round/model.onnx | ❌ | Unsupported op Round |
+| node/test_round/model.onnx | ✅ |  |
 | node/test_scan9_sum/model.onnx | ❌ | Unsupported op Scan |
 | node/test_scan_sum/model.onnx | ❌ | Unsupported op Scan |
 | node/test_scatter_elements_with_axis/model.onnx | ❌ | Unsupported op ScatterElements |
@@ -1443,10 +1443,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sce_sum_expanded/model.onnx | ✅ |  |
 | node/test_sce_sum_log_prob/model.onnx | ✅ |  |
 | node/test_sce_sum_log_prob_expanded/model.onnx | ✅ |  |
-| node/test_selu/model.onnx | ❌ | Unsupported op Selu |
-| node/test_selu_default/model.onnx | ❌ | Unsupported op Selu |
+| node/test_selu/model.onnx | ❌ | Selu only supports alpha=1.6732632423543772 |
+| node/test_selu_default/model.onnx | ✅ |  |
 | node/test_selu_default_expanded_ver18/model.onnx | ✅ |  |
-| node/test_selu_example/model.onnx | ❌ | Unsupported op Selu |
+| node/test_selu_example/model.onnx | ❌ | Selu only supports alpha=1.6732632423543772 |
 | node/test_selu_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_selu_expanded_ver18/model.onnx | ✅ |  |
 | node/test_sequence_insert_at_back/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'sequence'. Hint: export the model with tensor inputs/outputs. |
@@ -1478,16 +1478,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_shrink_hard_expanded_ver18/model.onnx | ✅ |  |
 | node/test_shrink_soft/model.onnx | ❌ | Unsupported op Shrink |
 | node/test_shrink_soft_expanded_ver18/model.onnx | ✅ |  |
-| node/test_sigmoid/model.onnx | ❌ | Unsupported op Sigmoid |
-| node/test_sigmoid_example/model.onnx | ❌ | Unsupported op Sigmoid |
-| node/test_sign/model.onnx | ❌ | Unsupported op Sign |
+| node/test_sigmoid/model.onnx | ✅ |  |
+| node/test_sigmoid_example/model.onnx | ✅ |  |
+| node/test_sign/model.onnx | ✅ |  |
 | node/test_simple_rnn_batchwise/model.onnx | ❌ | Unsupported op RNN |
 | node/test_simple_rnn_defaults/model.onnx | ❌ | Unsupported op RNN |
 | node/test_simple_rnn_with_initial_bias/model.onnx | ❌ | Unsupported op RNN |
 | node/test_sin/model.onnx | ✅ |  |
 | node/test_sin_example/model.onnx | ✅ |  |
-| node/test_sinh/model.onnx | ❌ | Unsupported op Sinh |
-| node/test_sinh_example/model.onnx | ❌ | Unsupported op Sinh |
+| node/test_sinh/model.onnx | ✅ |  |
+| node/test_sinh_example/model.onnx | ✅ |  |
 | node/test_size/model.onnx | ✅ |  |
 | node/test_size_example/model.onnx | ✅ |  |
 | node/test_slice/model.onnx | ❌ | Slice starts input must be a constant initializer |
@@ -1519,12 +1519,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_softmax_negative_axis/model.onnx | ✅ |  |
 | node/test_softmax_negative_axis_expanded/model.onnx | ✅ |  |
 | node/test_softmax_negative_axis_expanded_ver18/model.onnx | ✅ |  |
-| node/test_softplus/model.onnx | ❌ | Unsupported op Softplus |
-| node/test_softplus_example/model.onnx | ❌ | Unsupported op Softplus |
+| node/test_softplus/model.onnx | ✅ |  |
+| node/test_softplus_example/model.onnx | ✅ |  |
 | node/test_softplus_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_softplus_expanded_ver18/model.onnx | ✅ |  |
-| node/test_softsign/model.onnx | ❌ | Unsupported op Softsign |
-| node/test_softsign_example/model.onnx | ❌ | Unsupported op Softsign |
+| node/test_softsign/model.onnx | ✅ |  |
+| node/test_softsign_example/model.onnx | ✅ |  |
 | node/test_softsign_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_softsign_expanded_ver18/model.onnx | ✅ |  |
 | node/test_spacetodepth/model.onnx | ❌ | Unsupported op SpaceToDepth |
@@ -1584,7 +1584,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sum_one_input/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
 | node/test_sum_two_inputs/model.onnx | ✅ |  |
 | node/test_swish/model.onnx | ❌ | Unsupported op Swish |
-| node/test_swish_expanded/model.onnx | ❌ | Unsupported op Sigmoid |
+| node/test_swish_expanded/model.onnx | ✅ |  |
 | node/test_tan/model.onnx | ✅ |  |
 | node/test_tan_example/model.onnx | ✅ |  |
 | node/test_tanh/model.onnx | ✅ |  |
@@ -1599,10 +1599,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_tfidfvectorizer_tf_onlybigrams_levelempty/model.onnx | ❌ | Unsupported op TfIdfVectorizer |
 | node/test_tfidfvectorizer_tf_onlybigrams_skip5/model.onnx | ❌ | Unsupported op TfIdfVectorizer |
 | node/test_tfidfvectorizer_tf_uniandbigrams_skip5/model.onnx | ❌ | Unsupported op TfIdfVectorizer |
-| node/test_thresholdedrelu/model.onnx | ❌ | Unsupported op ThresholdedRelu |
-| node/test_thresholdedrelu_default/model.onnx | ❌ | Unsupported op ThresholdedRelu |
+| node/test_thresholdedrelu/model.onnx | ❌ | ThresholdedRelu only supports alpha=1.0 |
+| node/test_thresholdedrelu_default/model.onnx | ✅ |  |
 | node/test_thresholdedrelu_default_expanded_ver18/model.onnx | ✅ |  |
-| node/test_thresholdedrelu_example/model.onnx | ❌ | Unsupported op ThresholdedRelu |
+| node/test_thresholdedrelu_example/model.onnx | ❌ | ThresholdedRelu only supports alpha=1.0 |
 | node/test_thresholdedrelu_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_thresholdedrelu_expanded_ver18/model.onnx | ✅ |  |
 | node/test_tile/model.onnx | ❌ | Unsupported op Tile |
@@ -1711,13 +1711,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_Conv3d_stride_padding/model.onnx | ✅ |  |
 | pytorch-converted/test_ConvTranspose2d/model.onnx | ❌ | Unsupported op ConvTranspose |
 | pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ❌ | Unsupported op ConvTranspose |
-| pytorch-converted/test_ELU/model.onnx | ❌ | Unsupported op Elu |
+| pytorch-converted/test_ELU/model.onnx | ❌ | Elu only supports alpha=1.0 |
 | pytorch-converted/test_Embedding/model.onnx | ✅ |  |
 | pytorch-converted/test_Embedding_sparse/model.onnx | ✅ |  |
 | pytorch-converted/test_GLU/model.onnx | ❌ | Unsupported op Split |
 | pytorch-converted/test_GLU_dim/model.onnx | ❌ | Unsupported op Split |
-| pytorch-converted/test_LeakyReLU/model.onnx | ❌ | Unsupported op LeakyRelu |
-| pytorch-converted/test_LeakyReLU_with_negval/model.onnx | ❌ | Unsupported op LeakyRelu |
+| pytorch-converted/test_LeakyReLU/model.onnx | ✅ |  |
+| pytorch-converted/test_LeakyReLU_with_negval/model.onnx | ❌ | LeakyRelu only supports alpha=0.01 |
 | pytorch-converted/test_Linear/model.onnx | ✅ |  |
 | pytorch-converted/test_Linear_no_bias/model.onnx | ✅ |  |
 | pytorch-converted/test_LogSoftmax/model.onnx | ✅ |  |
@@ -1740,11 +1740,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_ReLU/model.onnx | ✅ |  |
 | pytorch-converted/test_ReflectionPad2d/model.onnx | ❌ | Unsupported op Pad |
 | pytorch-converted/test_ReplicationPad2d/model.onnx | ❌ | Unsupported op Pad |
-| pytorch-converted/test_SELU/model.onnx | ❌ | Unsupported op Selu |
-| pytorch-converted/test_Sigmoid/model.onnx | ❌ | Unsupported op Sigmoid |
+| pytorch-converted/test_SELU/model.onnx | ✅ |  |
+| pytorch-converted/test_Sigmoid/model.onnx | ✅ |  |
 | pytorch-converted/test_Softmax/model.onnx | ✅ |  |
 | pytorch-converted/test_Softmin/model.onnx | ✅ |  |
-| pytorch-converted/test_Softplus/model.onnx | ❌ | Unsupported op Softplus |
+| pytorch-converted/test_Softplus/model.onnx | ✅ |  |
 | pytorch-converted/test_Softsign/model.onnx | ✅ |  |
 | pytorch-converted/test_Tanh/model.onnx | ✅ |  |
 | pytorch-converted/test_ZeroPad2d/model.onnx | ❌ | Unsupported op Pad |
@@ -1758,7 +1758,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_addconstant/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_addmm/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_basic/model.onnx | ❌ | Unsupported op Sigmoid |
+| pytorch-operator/test_operator_basic/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_chunk/model.onnx | ❌ | Unsupported op Split |
 | pytorch-operator/test_operator_clip/model.onnx | ❌ | Unsupported op Clip |
 | pytorch-operator/test_operator_concat2/model.onnx | ✅ |  |
@@ -1773,7 +1773,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_mm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_non_float_params/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_pad/model.onnx | ❌ | Unsupported op Pad |
-| pytorch-operator/test_operator_params/model.onnx | ❌ | Unsupported op Sigmoid |
+| pytorch-operator/test_operator_params/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_permute2/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_pow/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_reduced_mean/model.onnx | ✅ |  |
@@ -1782,7 +1782,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_repeat/model.onnx | ❌ | Unsupported op Tile |
 | pytorch-operator/test_operator_repeat_dim_overflow/model.onnx | ❌ | Unsupported op Tile |
-| pytorch-operator/test_operator_selu/model.onnx | ❌ | Unsupported op Selu |
+| pytorch-operator/test_operator_selu/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_sqrt/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Unsupported op InstanceNormalization |
 | pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
@@ -1802,7 +1802,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | simple/test_sequence_model7/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
 | simple/test_sequence_model8/model.onnx | ❌ | Dynamic dim for tensor 'X' |
 | simple/test_shrink/model.onnx | ❌ | Unsupported op Shrink |
-| simple/test_sign_model/model.onnx | ❌ | Unsupported op Sign |
+| simple/test_sign_model/model.onnx | ✅ |  |
 | simple/test_single_relu_model/model.onnx | ✅ |  |
 | simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
 | simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |

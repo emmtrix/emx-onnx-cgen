@@ -41,19 +41,19 @@
   ],
   [
     "node/test_acos/model.onnx",
-    "Unsupported op Acos"
+    ""
   ],
   [
     "node/test_acos_example/model.onnx",
-    "Unsupported op Acos"
+    ""
   ],
   [
     "node/test_acosh/model.onnx",
-    "Unsupported op Acosh"
+    ""
   ],
   [
     "node/test_acosh_example/model.onnx",
-    "Unsupported op Acosh"
+    ""
   ],
   [
     "node/test_adagrad/model.onnx",
@@ -329,27 +329,27 @@
   ],
   [
     "node/test_asin/model.onnx",
-    "Unsupported op Asin"
+    ""
   ],
   [
     "node/test_asin_example/model.onnx",
-    "Unsupported op Asin"
+    ""
   ],
   [
     "node/test_asinh/model.onnx",
-    "Unsupported op Asinh"
+    ""
   ],
   [
     "node/test_asinh_example/model.onnx",
-    "Unsupported op Asinh"
+    ""
   ],
   [
     "node/test_atan/model.onnx",
-    "Unsupported op Atan"
+    ""
   ],
   [
     "node/test_atan_example/model.onnx",
-    "Unsupported op Atan"
+    ""
   ],
   [
     "node/test_atanh/model.onnx",
@@ -1025,23 +1025,23 @@
   ],
   [
     "node/test_bitwise_and_i16_3d/model.onnx",
-    "Unsupported op BitwiseAnd"
+    ""
   ],
   [
     "node/test_bitwise_and_i32_2d/model.onnx",
-    "Unsupported op BitwiseAnd"
+    ""
   ],
   [
     "node/test_bitwise_and_ui64_bcast_3v1d/model.onnx",
-    "Unsupported op BitwiseAnd"
+    ""
   ],
   [
     "node/test_bitwise_and_ui8_bcast_4v3d/model.onnx",
-    "Unsupported op BitwiseAnd"
+    ""
   ],
   [
     "node/test_bitwise_not_2d/model.onnx",
-    "Unsupported op BitwiseNot"
+    ""
   ],
   [
     "node/test_bitwise_not_3d/model.onnx",
@@ -1053,35 +1053,35 @@
   ],
   [
     "node/test_bitwise_or_i16_4d/model.onnx",
-    "Unsupported op BitwiseOr"
+    ""
   ],
   [
     "node/test_bitwise_or_i32_2d/model.onnx",
-    "Unsupported op BitwiseOr"
+    ""
   ],
   [
     "node/test_bitwise_or_ui64_bcast_3v1d/model.onnx",
-    "Unsupported op BitwiseOr"
+    ""
   ],
   [
     "node/test_bitwise_or_ui8_bcast_4v3d/model.onnx",
-    "Unsupported op BitwiseOr"
+    ""
   ],
   [
     "node/test_bitwise_xor_i16_3d/model.onnx",
-    "Unsupported op BitwiseXor"
+    ""
   ],
   [
     "node/test_bitwise_xor_i32_2d/model.onnx",
-    "Unsupported op BitwiseXor"
+    ""
   ],
   [
     "node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx",
-    "Unsupported op BitwiseXor"
+    ""
   ],
   [
     "node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx",
-    "Unsupported op BitwiseXor"
+    ""
   ],
   [
     "node/test_blackmanwindow/model.onnx",
@@ -1801,7 +1801,7 @@
   ],
   [
     "node/test_celu_expanded/model.onnx",
-    "Unsupported op Elu"
+    ""
   ],
   [
     "node/test_center_crop_pad_crop/model.onnx",
@@ -2137,11 +2137,11 @@
   ],
   [
     "node/test_cosh/model.onnx",
-    "Unsupported op Cosh"
+    ""
   ],
   [
     "node/test_cosh_example/model.onnx",
-    "Unsupported op Cosh"
+    ""
   ],
   [
     "node/test_cumsum_1d/model.onnx",
@@ -2397,11 +2397,11 @@
   ],
   [
     "node/test_elu/model.onnx",
-    "Unsupported op Elu"
+    "Elu only supports alpha=1.0"
   ],
   [
     "node/test_elu_default/model.onnx",
-    "Unsupported op Elu"
+    ""
   ],
   [
     "node/test_elu_default_expanded_ver18/model.onnx",
@@ -2409,7 +2409,7 @@
   ],
   [
     "node/test_elu_example/model.onnx",
-    "Unsupported op Elu"
+    "Elu only supports alpha=1.0"
   ],
   [
     "node/test_elu_example_expanded_ver18/model.onnx",
@@ -2461,7 +2461,7 @@
   ],
   [
     "node/test_erf/model.onnx",
-    "Unsupported op Erf"
+    ""
   ],
   [
     "node/test_exp/model.onnx",
@@ -2577,23 +2577,23 @@
   ],
   [
     "node/test_gelu_default_1/model.onnx",
-    "Unsupported op Gelu"
+    ""
   ],
   [
     "node/test_gelu_default_1_expanded/model.onnx",
-    "Unsupported op Erf"
+    ""
   ],
   [
     "node/test_gelu_default_2/model.onnx",
-    "Unsupported op Gelu"
+    ""
   ],
   [
     "node/test_gelu_default_2_expanded/model.onnx",
-    "Unsupported op Erf"
+    ""
   ],
   [
     "node/test_gelu_tanh_1/model.onnx",
-    "Unsupported op Gelu"
+    "Gelu only supports approximate=none"
   ],
   [
     "node/test_gelu_tanh_1_expanded/model.onnx",
@@ -2601,7 +2601,7 @@
   ],
   [
     "node/test_gelu_tanh_2/model.onnx",
-    "Unsupported op Gelu"
+    "Gelu only supports approximate=none"
   ],
   [
     "node/test_gelu_tanh_2_expanded/model.onnx",
@@ -2929,11 +2929,11 @@
   ],
   [
     "node/test_hardsigmoid/model.onnx",
-    "Unsupported op HardSigmoid"
+    "HardSigmoid only supports alpha=0.2"
   ],
   [
     "node/test_hardsigmoid_default/model.onnx",
-    "Unsupported op HardSigmoid"
+    ""
   ],
   [
     "node/test_hardsigmoid_default_expanded_ver18/model.onnx",
@@ -2941,7 +2941,7 @@
   ],
   [
     "node/test_hardsigmoid_example/model.onnx",
-    "Unsupported op HardSigmoid"
+    "HardSigmoid only supports alpha=0.2"
   ],
   [
     "node/test_hardsigmoid_example_expanded_ver18/model.onnx",
@@ -2953,11 +2953,11 @@
   ],
   [
     "node/test_hardswish/model.onnx",
-    "Unsupported op HardSwish"
+    ""
   ],
   [
     "node/test_hardswish_expanded/model.onnx",
-    "Unsupported op HardSigmoid"
+    "HardSigmoid only supports alpha=0.2"
   ],
   [
     "node/test_identity/model.onnx",
@@ -3089,11 +3089,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1/model.onnx",
@@ -3137,11 +3137,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon/model.onnx",
@@ -3149,11 +3149,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx",
@@ -3209,11 +3209,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis2/model.onnx",
@@ -3221,11 +3221,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis3/model.onnx",
@@ -3233,11 +3233,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1/model.onnx",
@@ -3301,11 +3301,11 @@
   ],
   [
     "node/test_leakyrelu/model.onnx",
-    "Unsupported op LeakyRelu"
+    "LeakyRelu only supports alpha=0.01"
   ],
   [
     "node/test_leakyrelu_default/model.onnx",
-    "Unsupported op LeakyRelu"
+    ""
   ],
   [
     "node/test_leakyrelu_default_expanded/model.onnx",
@@ -3313,7 +3313,7 @@
   ],
   [
     "node/test_leakyrelu_example/model.onnx",
-    "Unsupported op LeakyRelu"
+    "LeakyRelu only supports alpha=0.01"
   ],
   [
     "node/test_leakyrelu_example_expanded/model.onnx",
@@ -3833,7 +3833,7 @@
   ],
   [
     "node/test_mish_expanded/model.onnx",
-    "Unsupported op Softplus"
+    ""
   ],
   [
     "node/test_mod_broadcast/model.onnx",
@@ -4413,11 +4413,11 @@
   ],
   [
     "node/test_reciprocal/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_reciprocal_example/model.onnx",
-    "Unsupported op Reciprocal"
+    ""
   ],
   [
     "node/test_reduce_l1_default_axes_keepdims_example/model.onnx",
@@ -5405,7 +5405,7 @@
   ],
   [
     "node/test_round/model.onnx",
-    "Unsupported op Round"
+    ""
   ],
   [
     "node/test_scan9_sum/model.onnx",
@@ -5741,11 +5741,11 @@
   ],
   [
     "node/test_selu/model.onnx",
-    "Unsupported op Selu"
+    "Selu only supports alpha=1.6732632423543772"
   ],
   [
     "node/test_selu_default/model.onnx",
-    "Unsupported op Selu"
+    ""
   ],
   [
     "node/test_selu_default_expanded_ver18/model.onnx",
@@ -5753,7 +5753,7 @@
   ],
   [
     "node/test_selu_example/model.onnx",
-    "Unsupported op Selu"
+    "Selu only supports alpha=1.6732632423543772"
   ],
   [
     "node/test_selu_example_expanded_ver18/model.onnx",
@@ -5881,15 +5881,15 @@
   ],
   [
     "node/test_sigmoid/model.onnx",
-    "Unsupported op Sigmoid"
+    ""
   ],
   [
     "node/test_sigmoid_example/model.onnx",
-    "Unsupported op Sigmoid"
+    ""
   ],
   [
     "node/test_sign/model.onnx",
-    "Unsupported op Sign"
+    ""
   ],
   [
     "node/test_simple_rnn_batchwise/model.onnx",
@@ -5913,11 +5913,11 @@
   ],
   [
     "node/test_sinh/model.onnx",
-    "Unsupported op Sinh"
+    ""
   ],
   [
     "node/test_sinh_example/model.onnx",
-    "Unsupported op Sinh"
+    ""
   ],
   [
     "node/test_size/model.onnx",
@@ -6045,11 +6045,11 @@
   ],
   [
     "node/test_softplus/model.onnx",
-    "Unsupported op Softplus"
+    ""
   ],
   [
     "node/test_softplus_example/model.onnx",
-    "Unsupported op Softplus"
+    ""
   ],
   [
     "node/test_softplus_example_expanded_ver18/model.onnx",
@@ -6061,11 +6061,11 @@
   ],
   [
     "node/test_softsign/model.onnx",
-    "Unsupported op Softsign"
+    ""
   ],
   [
     "node/test_softsign_example/model.onnx",
-    "Unsupported op Softsign"
+    ""
   ],
   [
     "node/test_softsign_example_expanded_ver18/model.onnx",
@@ -6305,7 +6305,7 @@
   ],
   [
     "node/test_swish_expanded/model.onnx",
-    "Unsupported op Sigmoid"
+    ""
   ],
   [
     "node/test_tan/model.onnx",
@@ -6365,11 +6365,11 @@
   ],
   [
     "node/test_thresholdedrelu/model.onnx",
-    "Unsupported op ThresholdedRelu"
+    "ThresholdedRelu only supports alpha=1.0"
   ],
   [
     "node/test_thresholdedrelu_default/model.onnx",
-    "Unsupported op ThresholdedRelu"
+    ""
   ],
   [
     "node/test_thresholdedrelu_default_expanded_ver18/model.onnx",
@@ -6377,7 +6377,7 @@
   ],
   [
     "node/test_thresholdedrelu_example/model.onnx",
-    "Unsupported op ThresholdedRelu"
+    "ThresholdedRelu only supports alpha=1.0"
   ],
   [
     "node/test_thresholdedrelu_example_expanded_ver18/model.onnx",
@@ -6813,7 +6813,7 @@
   ],
   [
     "pytorch-converted/test_ELU/model.onnx",
-    "Unsupported op Elu"
+    "Elu only supports alpha=1.0"
   ],
   [
     "pytorch-converted/test_Embedding/model.onnx",
@@ -6833,11 +6833,11 @@
   ],
   [
     "pytorch-converted/test_LeakyReLU/model.onnx",
-    "Unsupported op LeakyRelu"
+    ""
   ],
   [
     "pytorch-converted/test_LeakyReLU_with_negval/model.onnx",
-    "Unsupported op LeakyRelu"
+    "LeakyRelu only supports alpha=0.01"
   ],
   [
     "pytorch-converted/test_Linear/model.onnx",
@@ -6929,11 +6929,11 @@
   ],
   [
     "pytorch-converted/test_SELU/model.onnx",
-    "Unsupported op Selu"
+    ""
   ],
   [
     "pytorch-converted/test_Sigmoid/model.onnx",
-    "Unsupported op Sigmoid"
+    ""
   ],
   [
     "pytorch-converted/test_Softmax/model.onnx",
@@ -6945,7 +6945,7 @@
   ],
   [
     "pytorch-converted/test_Softplus/model.onnx",
-    "Unsupported op Softplus"
+    ""
   ],
   [
     "pytorch-converted/test_Softsign/model.onnx",
@@ -7001,7 +7001,7 @@
   ],
   [
     "pytorch-operator/test_operator_basic/model.onnx",
-    "Unsupported op Sigmoid"
+    ""
   ],
   [
     "pytorch-operator/test_operator_chunk/model.onnx",
@@ -7061,7 +7061,7 @@
   ],
   [
     "pytorch-operator/test_operator_params/model.onnx",
-    "Unsupported op Sigmoid"
+    ""
   ],
   [
     "pytorch-operator/test_operator_permute2/model.onnx",
@@ -7097,7 +7097,7 @@
   ],
   [
     "pytorch-operator/test_operator_selu/model.onnx",
-    "Unsupported op Selu"
+    ""
   ],
   [
     "pytorch-operator/test_operator_sqrt/model.onnx",
@@ -7177,7 +7177,7 @@
   ],
   [
     "simple/test_sign_model/model.onnx",
-    "Unsupported op Sign"
+    ""
   ],
   [
     "simple/test_single_relu_model/model.onnx",

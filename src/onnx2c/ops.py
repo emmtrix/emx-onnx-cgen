@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import Enum
+import math
 
 import numpy as np
 
@@ -10,6 +11,11 @@ from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from .errors import UnsupportedOpError
+
+
+_NP_ERF = getattr(np, "erf", None)
+if _NP_ERF is None:
+    _NP_ERF = np.vectorize(math.erf, otypes=[float])
 
 
 class OperatorKind(str, Enum):
@@ -28,6 +34,9 @@ class BinaryOpSpec:
 BINARY_OP_TYPES = {
     "Add",
     "And",
+    "BitwiseAnd",
+    "BitwiseOr",
+    "BitwiseXor",
     "Div",
     "Equal",
     "Greater",
@@ -57,20 +66,42 @@ COMPARE_OP_TYPES = {
 
 UNARY_OP_TYPES = {
     "Abs",
+    "Acos",
+    "Acosh",
+    "Asin",
+    "Asinh",
+    "Atan",
     "Atanh",
+    "BitwiseNot",
     "Ceil",
     "Cos",
+    "Cosh",
+    "Elu",
+    "Erf",
     "Exp",
     "Floor",
+    "Gelu",
+    "HardSigmoid",
+    "HardSwish",
     "Identity",
+    "LeakyRelu",
     "Log",
     "Neg",
     "Not",
+    "Reciprocal",
     "Relu",
+    "Round",
+    "Selu",
+    "Sigmoid",
+    "Sign",
     "Sin",
+    "Sinh",
+    "Softplus",
+    "Softsign",
     "Sqrt",
     "Tan",
     "Tanh",
+    "ThresholdedRelu",
 }
 
 
@@ -90,59 +121,113 @@ UNARY_SYMBOLS_BOOL = {
 
 UNARY_SYMBOLS_INT64 = {
     ScalarFunction.ABS: "llabs",
+    ScalarFunction.BITWISE_NOT: "bitwise_not",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.NEG: "neg",
+    ScalarFunction.ROUND: "round",
+    ScalarFunction.SIGN: "sign",
 }
 
 UNARY_SYMBOLS_INT32 = {
     ScalarFunction.ABS: "abs",
+    ScalarFunction.BITWISE_NOT: "bitwise_not",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.NEG: "neg",
+    ScalarFunction.ROUND: "round",
+    ScalarFunction.SIGN: "sign",
 }
 
 UNARY_SYMBOLS_INT16 = {
     ScalarFunction.ABS: "abs",
+    ScalarFunction.BITWISE_NOT: "bitwise_not",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.NEG: "neg",
+    ScalarFunction.ROUND: "round",
+    ScalarFunction.SIGN: "sign",
 }
 
 UNARY_SYMBOLS_INT8 = {
     ScalarFunction.ABS: "abs",
+    ScalarFunction.BITWISE_NOT: "bitwise_not",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.NEG: "neg",
+    ScalarFunction.ROUND: "round",
+    ScalarFunction.SIGN: "sign",
 }
 
 UNARY_SYMBOLS_DOUBLE = {
     ScalarFunction.ABS: "fabs",
+    ScalarFunction.ACOS: "acos",
+    ScalarFunction.ACOSH: "acosh",
+    ScalarFunction.ASIN: "asin",
+    ScalarFunction.ASINH: "asinh",
+    ScalarFunction.ATAN: "atan",
     ScalarFunction.CEIL: "ceil",
     ScalarFunction.COS: "cos",
+    ScalarFunction.COSH: "cosh",
+    ScalarFunction.ELU: "elu",
+    ScalarFunction.ERF: "erf",
     ScalarFunction.EXP: "exp",
     ScalarFunction.FLOOR: "floor",
+    ScalarFunction.GELU: "gelu",
+    ScalarFunction.HARDSIGMOID: "hardsigmoid",
+    ScalarFunction.HARDSWISH: "hardswish",
+    ScalarFunction.LEAKY_RELU: "leaky_relu",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.LOG: "log",
     ScalarFunction.NEG: "neg",
+    ScalarFunction.RECIPROCAL: "reciprocal",
     ScalarFunction.RELU: "relu",
+    ScalarFunction.ROUND: "round",
+    ScalarFunction.SELU: "selu",
+    ScalarFunction.SIGMOID: "sigmoid",
+    ScalarFunction.SIGN: "sign",
     ScalarFunction.SIN: "sin",
+    ScalarFunction.SINH: "sinh",
+    ScalarFunction.SOFTPLUS: "softplus",
+    ScalarFunction.SOFTSIGN: "softsign",
     ScalarFunction.SQRT: "sqrt",
     ScalarFunction.TAN: "tan",
     ScalarFunction.TANH: "tanh",
+    ScalarFunction.THRESHOLDED_RELU: "thresholded_relu",
     ScalarFunction.ATANH: "atanh",
 }
 
 UNARY_SYMBOLS_FLOAT = {
     ScalarFunction.ABS: "fabsf",
+    ScalarFunction.ACOS: "acosf",
+    ScalarFunction.ACOSH: "acoshf",
+    ScalarFunction.ASIN: "asinf",
+    ScalarFunction.ASINH: "asinhf",
+    ScalarFunction.ATAN: "atanf",
     ScalarFunction.CEIL: "ceilf",
     ScalarFunction.COS: "cosf",
+    ScalarFunction.COSH: "coshf",
+    ScalarFunction.ELU: "elu",
+    ScalarFunction.ERF: "erff",
     ScalarFunction.EXP: "expf",
     ScalarFunction.FLOOR: "floorf",
+    ScalarFunction.GELU: "gelu",
+    ScalarFunction.HARDSIGMOID: "hardsigmoid",
+    ScalarFunction.HARDSWISH: "hardswish",
+    ScalarFunction.LEAKY_RELU: "leaky_relu",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.LOG: "logf",
     ScalarFunction.NEG: "neg",
+    ScalarFunction.RECIPROCAL: "reciprocal",
     ScalarFunction.RELU: "relu",
+    ScalarFunction.ROUND: "round",
+    ScalarFunction.SELU: "selu",
+    ScalarFunction.SIGMOID: "sigmoid",
+    ScalarFunction.SIGN: "sign",
     ScalarFunction.SIN: "sinf",
+    ScalarFunction.SINH: "sinhf",
+    ScalarFunction.SOFTPLUS: "softplus",
+    ScalarFunction.SOFTSIGN: "softsign",
     ScalarFunction.SQRT: "sqrtf",
     ScalarFunction.TAN: "tanf",
     ScalarFunction.TANH: "tanhf",
+    ScalarFunction.THRESHOLDED_RELU: "thresholded_relu",
     ScalarFunction.ATANH: "atanhf",
 }
 
@@ -169,6 +254,15 @@ COMPARE_SPECS = {
 BINARY_SPECS_INT = {
     ScalarFunction.ADD: BinaryOpSpec(
         "+", OperatorKind.INFIX, lambda left, right: left + right
+    ),
+    ScalarFunction.BITWISE_AND: BinaryOpSpec(
+        "&", OperatorKind.INFIX, lambda left, right: left & right
+    ),
+    ScalarFunction.BITWISE_OR: BinaryOpSpec(
+        "|", OperatorKind.INFIX, lambda left, right: left | right
+    ),
+    ScalarFunction.BITWISE_XOR: BinaryOpSpec(
+        "^", OperatorKind.INFIX, lambda left, right: left ^ right
     ),
     ScalarFunction.SUB: BinaryOpSpec(
         "-", OperatorKind.INFIX, lambda left, right: left - right
@@ -263,32 +357,76 @@ BINARY_SPECS_BY_DTYPE = {
 }
 
 UNARY_APPLY_FUNCS = {
+    "acosf": np.arccos,
+    "acos": np.arccos,
+    "acoshf": np.arccosh,
+    "acosh": np.arccosh,
     "fabsf": np.abs,
     "fabs": np.abs,
     "abs": np.abs,
     "llabs": np.abs,
+    "asinf": np.arcsin,
+    "asin": np.arcsin,
+    "asinhf": np.arcsinh,
+    "asinh": np.arcsinh,
+    "atanf": np.arctan,
+    "atan": np.arctan,
+    "bitwise_not": np.bitwise_not,
     "!": np.logical_not,
     "identity": lambda value: value,
     "ceilf": np.ceil,
     "ceil": np.ceil,
     "cosf": np.cos,
     "cos": np.cos,
+    "coshf": np.cosh,
+    "cosh": np.cosh,
+    "elu": lambda value: np.where(value > 0.0, value, np.exp(value) - 1.0),
+    "erff": _NP_ERF,
+    "erf": _NP_ERF,
     "expf": np.exp,
     "exp": np.exp,
     "floorf": np.floor,
     "floor": np.floor,
+    "gelu": lambda value: 0.5
+    * value
+    * (1.0 + _NP_ERF(value / np.sqrt(2.0))),
+    "hardsigmoid": lambda value: np.clip(value * 0.2 + 0.5, 0.0, 1.0),
+    "hardswish": lambda value: value
+    * np.clip(value + 3.0, 0.0, 6.0)
+    / 6.0,
+    "leaky_relu": lambda value: np.where(value > 0.0, value, 0.01 * value),
     "logf": np.log,
     "log": np.log,
     "neg": lambda value: -value,
+    "reciprocal": lambda value: 1.0 / value,
     "relu": lambda value: np.maximum(value, 0),
+    "round": np.round,
+    "selu": lambda value: np.where(
+        value > 0.0,
+        1.0507009873554805 * value,
+        1.0507009873554805
+        * 1.6732632423543772
+        * (np.exp(value) - 1.0),
+    ),
+    "sigmoid": lambda value: 1.0 / (1.0 + np.exp(-value)),
+    "sign": np.sign,
     "sinf": np.sin,
     "sin": np.sin,
     "sqrtf": np.sqrt,
     "sqrt": np.sqrt,
+    "softplus": lambda value: np.where(
+        value > 20.0, value, np.log1p(np.exp(value))
+    ),
+    "softsign": lambda value: value / (1.0 + np.abs(value)),
+    "sinhf": np.sinh,
+    "sinh": np.sinh,
     "tanf": np.tan,
     "tan": np.tan,
     "tanhf": np.tanh,
     "tanh": np.tanh,
+    "thresholded_relu": lambda value: np.where(
+        value > 1.0, value, 0.0
+    ),
     "atanhf": np.arctanh,
     "atanh": np.arctanh,
 }
@@ -300,6 +438,47 @@ COMPARE_FUNCTIONS = {
     ScalarFunction.LT,
     ScalarFunction.LE,
 }
+
+UNARY_ATTR_DEFAULTS: Mapping[str, Mapping[str, object]] = {
+    "Elu": {"alpha": 1.0},
+    "Gelu": {"approximate": "none"},
+    "HardSigmoid": {"alpha": 0.2, "beta": 0.5},
+    "LeakyRelu": {"alpha": 0.01},
+    "Selu": {"alpha": 1.6732632423543772, "gamma": 1.0507009873554805},
+    "Softplus": {"beta": 1.0, "threshold": 20.0},
+    "ThresholdedRelu": {"alpha": 1.0},
+}
+
+
+def validate_unary_attrs(op_type: str, attrs: Mapping[str, object]) -> None:
+    defaults = UNARY_ATTR_DEFAULTS.get(op_type)
+    if defaults is None or not attrs:
+        return
+    for key in attrs:
+        if key not in defaults:
+            raise UnsupportedOpError(
+                f"{op_type} does not support attribute {key}"
+            )
+    for key, default in defaults.items():
+        if key not in attrs:
+            continue
+        value = attrs[key]
+        if isinstance(default, str):
+            if str(value) != default:
+                raise UnsupportedOpError(
+                    f"{op_type} only supports {key}={default}"
+                )
+            continue
+        try:
+            numeric_value = float(value)
+        except (TypeError, ValueError) as exc:
+            raise UnsupportedOpError(
+                f"{op_type} only supports {key}={default}"
+            ) from exc
+        if not math.isclose(numeric_value, float(default), abs_tol=1e-6):
+            raise UnsupportedOpError(
+                f"{op_type} only supports {key}={default}"
+            )
 
 
 def binary_op_symbol(
