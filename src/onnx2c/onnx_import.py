@@ -32,7 +32,19 @@ def _format_elem_type(elem_type: int) -> str:
     return f"{elem_type} ({name})"
 
 
+def _unsupported_value_type(value_info: onnx.ValueInfoProto) -> UnsupportedOpError:
+    value_kind = value_info.type.WhichOneof("value")
+    if value_kind is None:
+        value_kind = "unknown"
+    return UnsupportedOpError(
+        f"Unsupported value type '{value_kind}' for '{value_info.name}'. "
+        "Hint: export the model with tensor inputs/outputs."
+    )
+
+
 def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
+    if value_info.type.WhichOneof("value") != "tensor_type":
+        raise _unsupported_value_type(value_info)
     tensor_type = value_info.type.tensor_type
     if not tensor_type.HasField("elem_type"):
         raise ShapeInferenceError(f"Missing elem_type for tensor '{value_info.name}'")
@@ -132,7 +144,7 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
 
 def import_onnx(model: onnx.ModelProto) -> Graph:
     try:
-        model = shape_inference.infer_shapes(model)
+        model = shape_inference.infer_shapes(model, data_prop=True)
     except Exception as exc:  # pragma: no cover - onnx inference errors
         raise ShapeInferenceError("ONNX shape inference failed") from exc
     graph = model.graph

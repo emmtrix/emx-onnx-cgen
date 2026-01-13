@@ -2,35 +2,36 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Dynamic dim for tensor '*' | 148 | ██████████████████████████████ |
-| Missing elem_type for tensor '*' | 34 | ███████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ██████ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████ |
-| Unsupported op Identity | 20 | ████ |
-| Dynamic or zero dims are not supported | 20 | ████ |
+| Dynamic dim for tensor '*' | 130 | ██████████████████████████████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 34 | ████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████ |
+| Unsupported op Identity | 20 | █████ |
+| Dynamic or zero dims are not supported | 20 | █████ |
+| Unsupported op Size | 20 | █████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ████ |
 | Unsupported op GridSample | 18 | ████ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ███ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ███ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ███ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ███ |
-| NegativeLogLikelihoodLoss input must be at least 2D | 17 | ███ |
-| Unsupported op Split | 17 | ███ |
-| Unsupported op ArgMax | 16 | ███ |
-| Unsupported op ArgMin | 16 | ███ |
-| Unsupported op Clip | 16 | ███ |
-| Unsupported op Trilu | 16 | ███ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ████ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ████ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ████ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ████ |
+| NegativeLogLikelihoodLoss input must be at least 2D | 17 | ████ |
+| Unsupported op Split | 17 | ████ |
+| Unsupported op ArgMax | 16 | ████ |
+| Unsupported op ArgMin | 16 | ████ |
+| Unsupported op Clip | 16 | ████ |
+| Unsupported op Trilu | 16 | ████ |
 | Unsupported op Gather | 15 | ███ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
 | Unsupported op Squeeze | 14 | ███ |
-| ReduceSum output shape rank must match input rank | 12 | ██ |
-| Unsupported op Pad | 11 | ██ |
-| Unsupported op Flatten | 11 | ██ |
+| ReduceSum output shape rank must match input rank | 12 | ███ |
+| Unsupported op Pad | 11 | ███ |
+| Unsupported op Flatten | 11 | ███ |
 | Unsupported op Mod | 10 | ██ |
 | Unsupported op CumSum | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |
@@ -42,10 +43,10 @@
 | Unsupported op Min | 8 | ██ |
 | Unsupported op QLinearMatMul | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
-| Unsupported op Hardmax | 7 | █ |
-| Slice starts input must be a constant initializer | 7 | █ |
-| Unsupported op TfIdfVectorizer | 7 | █ |
-| Unsupported op TopK | 7 | █ |
+| Unsupported op Hardmax | 7 | ██ |
+| Slice starts input must be a constant initializer | 7 | ██ |
+| Unsupported op TfIdfVectorizer | 7 | ██ |
+| Unsupported op TopK | 7 | ██ |
 | AveragePool has unsupported attributes | 6 | █ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █ |
 | Unsupported op CenterCropPad | 6 | █ |
@@ -134,7 +135,6 @@
 | Unsupported op Scatter | 2 | █ |
 | Unsupported op Sign | 2 | █ |
 | Unsupported op Sinh | 2 | █ |
-| Unsupported op Size | 2 | █ |
 | Unsupported op Softsign | 2 | █ |
 | Unsupported op SpaceToDepth | 2 | █ |
 | Unsupported op STFT | 2 | █ |
