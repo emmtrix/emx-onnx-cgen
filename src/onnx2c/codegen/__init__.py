@@ -1,6 +1,7 @@
 from .c_emitter import (
     BinaryOp,
     CEmitter,
+    CastOp,
     ConstTensor,
     ConstantOfShapeOp,
     GemmOp,
@@ -13,6 +14,7 @@ from .c_emitter import (
 __all__ = [
     "BinaryOp",
     "CEmitter",
+    "CastOp",
     "ConstTensor",
     "ConstantOfShapeOp",
     "GemmOp",

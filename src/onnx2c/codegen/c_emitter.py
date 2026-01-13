@@ -39,6 +39,15 @@ class UnaryOp:
 
 
 @dataclass(frozen=True)
+class CastOp:
+    input0: str
+    output: str
+    shape: tuple[int, ...]
+    input_dtype: str
+    dtype: str
+
+
+@dataclass(frozen=True)
 class MatMulOp:
     input0: str
     input1: str
@@ -454,6 +463,7 @@ class LoweredModel:
     ops: tuple[
         BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -495,6 +505,7 @@ class CEmitter:
             templates = {
                 "binary": self._env.get_template("binary_op.c.j2"),
                 "unary": self._env.get_template("unary_op.c.j2"),
+                "cast": self._env.get_template("cast_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
@@ -532,6 +543,7 @@ class CEmitter:
         templates = self._load_templates(emit_testbench)
         binary_template = templates["binary"]
         unary_template = templates["unary"]
+        cast_template = templates["cast"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
@@ -573,6 +585,7 @@ class CEmitter:
                 max_literal=dtype_info(op.dtype).max_literal,
                 binary_template=binary_template,
                 unary_template=unary_template,
+                cast_template=cast_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
@@ -629,6 +642,7 @@ class CEmitter:
         templates = self._load_templates(emit_testbench)
         binary_template = templates["binary"]
         unary_template = templates["unary"]
+        cast_template = templates["cast"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
@@ -670,6 +684,7 @@ class CEmitter:
                 max_literal=dtype_info(op.dtype).max_literal,
                 binary_template=binary_template,
                 unary_template=unary_template,
+                cast_template=cast_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
@@ -849,6 +864,7 @@ class CEmitter:
         resolved_ops: list[
             BinaryOp
             | UnaryOp
+            | CastOp
             | MatMulOp
             | GemmOp
             | AttentionOp
@@ -961,6 +977,7 @@ class CEmitter:
         resolved_ops: list[
             BinaryOp
             | UnaryOp
+            | CastOp
             | MatMulOp
             | GemmOp
             | AttentionOp
@@ -1049,6 +1066,7 @@ class CEmitter:
         resolved_ops: list[
             BinaryOp
             | UnaryOp
+            | CastOp
             | MatMulOp
             | GemmOp
             | AttentionOp
@@ -1092,6 +1110,7 @@ class CEmitter:
         resolved_ops: list[
             BinaryOp
             | UnaryOp
+            | CastOp
             | MatMulOp
             | GemmOp
             | AttentionOp
@@ -1144,6 +1163,7 @@ class CEmitter:
     def _build_op_call(
         op: BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -1277,6 +1297,7 @@ class CEmitter:
     def _resolve_op(
         op: BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -1301,6 +1322,7 @@ class CEmitter:
     ) -> (
         BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -1349,6 +1371,14 @@ class CEmitter:
                 k=op.k,
                 left_vector=op.left_vector,
                 right_vector=op.right_vector,
+                dtype=op.dtype,
+            )
+        if isinstance(op, CastOp):
+            return CastOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                shape=op.shape,
+                input_dtype=op.input_dtype,
                 dtype=op.dtype,
             )
         if isinstance(op, GemmOp):
@@ -1764,6 +1794,7 @@ class CEmitter:
         model: LoweredModel,
         op: BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -1796,6 +1827,7 @@ class CEmitter:
         max_literal: str,
         binary_template,
         unary_template,
+        cast_template,
         matmul_template,
         gemm_template,
         attention_template,
@@ -2745,35 +2777,58 @@ class CEmitter:
                 ],
             ).rstrip()
             return with_node_comment(rendered)
-        shape = CEmitter._codegen_shape(op.shape)
-        loop_vars = CEmitter._loop_vars(shape)
-        loop_indents = CEmitter._loop_indents(shape)
-        inner_indent = CEmitter._inner_indent(shape)
-        array_suffix = self._param_array_suffix(shape)
-        common = {
-            "model_name": model.name,
-            "op_name": f"{model.name}_op{index}",
-            "element_count": CEmitter._element_count(shape),
-            "array_suffix": array_suffix,
-            "shape": shape,
-            "loop_vars": loop_vars,
-            "loop_indents": loop_indents,
-            "inner_indent": inner_indent,
-            "c_type": c_type,
-            "zero_literal": zero_literal,
-        }
-        rendered = unary_template.render(
-            **common,
-            input0=op.input0,
-            output=op.output,
-            operator=op.operator,
-        ).rstrip()
-        return with_node_comment(rendered)
+        if isinstance(op, CastOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            loop_vars = CEmitter._loop_vars(shape)
+            loop_indents = CEmitter._loop_indents(shape)
+            inner_indent = CEmitter._inner_indent(shape)
+            array_suffix = self._param_array_suffix(shape)
+            rendered = cast_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                input_c_type=dtype_info(op.input_dtype).c_type,
+                output_c_type=dtype_info(op.dtype).c_type,
+                array_suffix=array_suffix,
+                shape=shape,
+                loop_vars=loop_vars,
+                loop_indents=loop_indents,
+                inner_indent=inner_indent,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, UnaryOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            loop_vars = CEmitter._loop_vars(shape)
+            loop_indents = CEmitter._loop_indents(shape)
+            inner_indent = CEmitter._inner_indent(shape)
+            array_suffix = self._param_array_suffix(shape)
+            common = {
+                "model_name": model.name,
+                "op_name": f"{model.name}_op{index}",
+                "element_count": CEmitter._element_count(shape),
+                "array_suffix": array_suffix,
+                "shape": shape,
+                "loop_vars": loop_vars,
+                "loop_indents": loop_indents,
+                "inner_indent": inner_indent,
+                "c_type": c_type,
+                "zero_literal": zero_literal,
+            }
+            rendered = unary_template.render(
+                **common,
+                input0=op.input0,
+                output=op.output,
+                operator=op.operator,
+            ).rstrip()
+            return with_node_comment(rendered)
+        raise CodegenError(f"Unsupported op for rendering: {type(op).__name__}")
 
     @staticmethod
     def _op_output(
         op: BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -2801,6 +2856,7 @@ class CEmitter:
     def _op_outputs(
         op: BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -2897,6 +2953,7 @@ class CEmitter:
     def _op_output_shape(
         op: BinaryOp
         | UnaryOp
+        | CastOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -2920,6 +2977,8 @@ class CEmitter:
         if isinstance(op, BinaryOp):
             return op.shape
         if isinstance(op, UnaryOp):
+            return op.shape
+        if isinstance(op, CastOp):
             return op.shape
         if isinstance(op, MatMulOp):
             return (op.m, op.n)

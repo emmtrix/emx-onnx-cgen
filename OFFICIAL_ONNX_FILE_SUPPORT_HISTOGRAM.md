@@ -4,12 +4,12 @@
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 146 | ██████████████████████████████ |
 | Unsupported elem_type 10 (FLOAT16) for tensor '*'. | 65 | █████████████ |
+| ReduceSum axes input must be constant | 39 | ████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
-| ReduceSum axes input must be constant | 32 | ███████ |
 | Unsupported op CastLike | 31 | ██████ |
-| Unsupported op Cast | 22 | █████ |
 | Unsupported op Identity | 20 | ████ |
+| Unsupported op Where | 19 | ████ |
 | Unsupported op LayerNormalization | 19 | ████ |
 | Unsupported op RMSNormalization | 19 | ████ |
 | Unsupported op GridSample | 18 | ████ |
@@ -29,7 +29,6 @@
 | Unsupported op GatherElements | 14 | ███ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 12 | ██ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 12 | ██ |
-| Unsupported op Where | 12 | ██ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 11 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
@@ -73,6 +72,7 @@
 | Unsupported op Col2Im | 5 | █ |
 | Unsupported op DequantizeLinear | 5 | █ |
 | Unsupported op LeakyRelu | 5 | █ |
+| ReduceSum output shape must be (1, 1, 1), got () | 5 | █ |
 | Unsupported op ScatterND | 5 | █ |
 | Unsupported op Selu | 5 | █ |
 | Unsupported op Sigmoid | 5 | █ |
@@ -103,8 +103,8 @@
 | Unsupported op GatherND | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
 | Unsupported op IsInf | 3 | █ |
+| Unsupported op Loop | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
-| ReduceSum output shape must be (1, 1, 1), got () | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
 | Sum must have 2 inputs and 1 output | 3 | █ |
@@ -160,7 +160,6 @@
 | Unsupported op HardSwish | 1 | █ |
 | Unsupported op If | 1 | █ |
 | Unsupported op IsNaN | 1 | █ |
-| Unsupported op Loop | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
 | Unsupported op Mish | 1 | █ |

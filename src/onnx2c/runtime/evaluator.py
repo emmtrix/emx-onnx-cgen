@@ -135,6 +135,18 @@ def _eval_gemm(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = result
 
 
+@register_evaluator("Cast")
+def _eval_cast(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Cast must have 1 input and 1 output")
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    target_info = dtype_info(output_dtype)
+    input_value = evaluator.values[node.inputs[0]]
+    evaluator.values[node.outputs[0]] = input_value.astype(
+        target_info.np_dtype, copy=False
+    )
+
+
 @register_evaluator("Attention")
 def _eval_attention(evaluator: Evaluator, node: Node) -> None:
     input_q = node.inputs[0]

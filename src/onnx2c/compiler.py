@@ -13,6 +13,7 @@ from .codegen.c_emitter import (
     AveragePoolOp,
     BatchNormOp,
     BinaryOp,
+    CastOp,
     CEmitter,
     ConstTensor,
     ConvOp,
@@ -46,6 +47,7 @@ from .lowering.average_pool import (
     lower_global_average_pool,
 )
 from .lowering.batch_normalization import lower_batch_normalization
+from .lowering.cast import lower_cast
 from .lowering.concat import lower_concat
 from .lowering.common import (
     ensure_supported_dtype,
@@ -196,6 +198,7 @@ class Compiler:
         list[
             BinaryOp
             | UnaryOp
+            | CastOp
             | MatMulOp
             | GemmOp
             | AttentionOp
@@ -222,6 +225,7 @@ class Compiler:
         ops: list[
             BinaryOp
             | UnaryOp
+            | CastOp
             | MatMulOp
             | GemmOp
             | AttentionOp

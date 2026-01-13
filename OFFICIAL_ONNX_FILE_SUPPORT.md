@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 569 / 1802 official ONNX files.
+Support 573 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -284,7 +284,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
 | node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range' |
 | node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
-| node/test_cast_DOUBLE_to_FLOAT/model.onnx | ❌ | Unsupported op Cast |
+| node/test_cast_DOUBLE_to_FLOAT/model.onnx | ✅ |  |
 | node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'output'. |
 | node/test_cast_FLOAT16_to_DOUBLE/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
 | node/test_cast_FLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
@@ -308,7 +308,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_cast_FLOAT_to_BFLOAT16/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'output'. |
-| node/test_cast_FLOAT_to_DOUBLE/model.onnx | ❌ | Unsupported op Cast |
+| node/test_cast_FLOAT_to_DOUBLE/model.onnx | ✅ |  |
 | node/test_cast_FLOAT_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'output'. |
 | node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
@@ -348,7 +348,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_castlike_DOUBLE_to_FLOAT/model.onnx | ❌ | Unsupported op CastLike |
 | node/test_castlike_DOUBLE_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
 | node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
-| node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx | ✅ |  |
 | node/test_castlike_FLOAT16_to_DOUBLE/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
 | node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
 | node/test_castlike_FLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'input'. |
@@ -394,7 +394,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_castlike_FLOAT_to_BFLOAT16/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
 | node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
 | node/test_castlike_FLOAT_to_DOUBLE/model.onnx | ❌ | Unsupported op CastLike |
-| node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | ✅ |  |
 | node/test_castlike_FLOAT_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
 | node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 10 (FLOAT16) for tensor 'like'. |
 | node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
@@ -1002,17 +1002,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_nllloss_NCd1/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1_ii_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_nllloss_NCd1_mean_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_nllloss_NCd1_weight/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1_weight_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1_weight_ii_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_nllloss_NCd1d2/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1d2_no_weight_reduction_mean_ii_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_nllloss_NCd1d2_reduction_mean/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_reduction_sum/model.onnx | ✅ |  |
@@ -1024,11 +1024,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ |  |
-| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | Unsupported op Where |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ |  |
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | Unsupported op GatherElements |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ |  |
@@ -1108,9 +1108,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_quantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | node/test_range_float_type_positive_delta/model.onnx | ❌ | Unsupported op Range |
-| node/test_range_float_type_positive_delta_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_range_float_type_positive_delta_expanded/model.onnx | ❌ | Unsupported op Loop |
 | node/test_range_int32_type_negative_delta/model.onnx | ❌ | Unsupported op Range |
-| node/test_range_int32_type_negative_delta_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_range_int32_type_negative_delta_expanded/model.onnx | ❌ | Unsupported op Loop |
 | node/test_reciprocal/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_reciprocal_example/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_reduce_l1_default_axes_keepdims_example/model.onnx | ✅ |  |
@@ -1158,23 +1158,23 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_log_sum_empty_set/model.onnx | ❌ | ReduceLogSum axes input must be constant |
 | node/test_reduce_log_sum_empty_set_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
 | node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_exp_empty_set/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_exp_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_exp_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | ❌ | ReduceLogSumExp axes input must be constant |
-| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | ❌ | Unsupported op Cast |
+| node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_log_sum_negative_axes/model.onnx | ❌ | ReduceLogSum axes input must be constant |
 | node/test_reduce_log_sum_negative_axes_expanded/model.onnx | ❌ | ReduceSum axes input must be constant |
 | node/test_reduce_max_bool_inputs/model.onnx | ❌ | ReduceMax does not support dtype bool |
