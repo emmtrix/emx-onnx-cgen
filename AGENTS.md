@@ -271,37 +271,31 @@ When acting as an agent in this repo:
 
 1. **Do not introduce new dependencies** without a clear need.
 2. **Do not change code generation output formatting** unless necessary.
-3. For new ops:
-
-   * implement kernel
-   * update lowering mapping
-   * add unit test + ORT comparison test
-4. Maintain determinism:
+3. Maintain determinism:
 
    * stable ordering, stable naming
-5. If unsure about semantics, prefer correctness and add a TODO + test.
-6. Always propose refactorings when they improve:
+4. If unsure about semantics, prefer correctness and add a TODO + test.
+5. Always propose refactorings when they improve:
 
    * readability
    * testability
    * separation of concerns
    * determinism
-7. Detect and call out common code smells (see above) and suggest concrete improvements.
-8. Prefer incremental refactorings:
+6. Detect and call out common code smells (see above) and suggest concrete improvements.
+7. Prefer incremental refactorings:
 
    * keep PRs small and mechanical
    * preserve behavior and determinism
    * add tests before/with refactoring when needed
-9. When adding new functionality, keep the design extensible:
+8. When adding new functionality, keep the design extensible:
 
    * avoid hardcoding operator names and special cases
    * prefer registries / dispatch tables for op lowering and kernels
-10. When adding a new operator, clarify the operator semantics first.
-11. When clarifying operator semantics, consult the ONNX operator specs at
+9. When adding a new operator, clarify the operator semantics first.
+10. When clarifying operator semantics, consult the ONNX operator specs at
     https://onnx.ai/onnx/operators/index.html and cite the specific operator page
     in PR descriptions when applicable.
-12. If the architecture starts drifting, propose a short design note in `docs/` with:
-
+11. If the architecture starts drifting, propose a short design note in `docs/` with:
 * problem
 * options
 * recommendation
@@ -310,11 +304,12 @@ When acting as an agent in this repo:
 
 When adding support for a new operator:
 
-1. **Lowering:** add a `register_lowering()` handler in `src/onnx2c/lowering/` that validates shapes/dtypes and returns a new op dataclass.
-2. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`.
-3. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
-4. **Tests:** add at least one unit test and one ORT comparison test.
-5. **Reference updates:** refresh `tests/official_onnx_expected_errors.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -n auto -q`.
+1. **Semantics:** clarify operator semantics via ONNX spec.
+2. **Lowering:** add a `register_lowering()` handler in `src/onnx2c/lowering/` that validates shapes/dtypes and returns a new op dataclass.
+3. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`.
+4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
+5. **Tests:** add at least one unit test and one ORT comparison test.
+6. **Reference updates:** refresh `tests/official_onnx_expected_errors.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -n auto -q`.
 
 ## Maintaining this document (AGENTS.md)
 
