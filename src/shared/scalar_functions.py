@@ -1311,20 +1311,12 @@ def _int_floor_divide(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _int_copysign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    if not dtype_info.is_signed:
-        lines = [
-            f"static inline {dtype_info.c_type} {dtype_info.prefix}copysign({dtype_info.c_type} a, {dtype_info.c_type} b) {{",
-            f"    {dtype_info.c_type} magnitude = {dtype_info.prefix}abs(a);",
-            "    return b < 0 ? -magnitude : magnitude;",
-            "}",
-        ]
-    else:
-        lines = [
-            f"static inline {dtype_info.c_type} {dtype_info.prefix}copysign({dtype_info.c_type} a, {dtype_info.c_type} b) {{",
-            f"    {dtype_info.c_type} magnitude = {dtype_info.prefix}abs(a);",
-            "    return b < 0 ? -magnitude : magnitude;",
-            "}",
-        ]
+    lines = [
+        f"static inline {dtype_info.c_type} {dtype_info.prefix}copysign({dtype_info.c_type} a, {dtype_info.c_type} b) {{",
+        f"    {dtype_info.c_type} magnitude = {dtype_info.prefix}abs(a);",
+        "    return b < 0 ? -magnitude : magnitude;",
+        "}",
+    ]
     deps = {f"{dtype_info.prefix}abs"}
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
