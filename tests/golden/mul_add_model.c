@@ -20,6 +20,23 @@
  */
 
 #include <stddef.h>
+#include <math.h>
+#include <float.h>
+
+#ifndef REF_PI_F
+#define REF_PI_F 3.14159265358979323846f
+#endif
+#ifndef REF_PI_D
+#define REF_PI_D 3.14159265358979323846
+#endif
+
+static inline float ref_scalar_f32_mul(float a, float b) {
+    return a * b;
+}
+
+static inline float ref_scalar_f32_add(float a, float b) {
+    return a + b;
+}
 
 /*
  * Node 0:
@@ -31,7 +48,7 @@
 static inline void model_op0(const float a[restrict 2][3], const float b[restrict 2][3], float tmp[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            tmp[i0][i1] = a[i0][i1] * b[i0][i1];
+            tmp[i0][i1] = ref_scalar_f32_mul(a[i0][i1], b[i0][i1]);
         }
     }
 }
@@ -46,7 +63,7 @@ static inline void model_op0(const float a[restrict 2][3], const float b[restric
 static inline void model_op1(const float tmp[restrict 2][3], const float c[restrict 2][3], float out[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            out[i0][i1] = tmp[i0][i1] + c[i0][i1];
+            out[i0][i1] = ref_scalar_f32_add(tmp[i0][i1], c[i0][i1]);
         }
     }
 }

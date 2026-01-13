@@ -7,6 +7,13 @@ from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
 from ..errors import CodegenError
 from ..dtypes import dtype_info
+from ..ops import COMPARE_OP_TYPES
+from shared.scalar_functions import (
+    ScalarFunction,
+    ScalarFunctionKey,
+    ScalarFunctionRegistry,
+)
+from shared.scalar_types import ScalarFunctionError, ScalarType
 
 
 def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
@@ -27,6 +34,48 @@ def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
         indent_level += open_count - close_count
         indent_level = max(indent_level, 0)
     return "\n".join(formatted_lines)
+
+
+_SCALAR_TYPE_BY_DTYPE: dict[str, ScalarType] = {
+    "float": ScalarType.F32,
+    "double": ScalarType.F64,
+    "int8": ScalarType.I8,
+    "int16": ScalarType.I16,
+    "int32": ScalarType.I32,
+    "int64": ScalarType.I64,
+    "uint8": ScalarType.U8,
+    "uint16": ScalarType.U16,
+    "uint32": ScalarType.U32,
+    "uint64": ScalarType.U64,
+    "bool": ScalarType.BOOL,
+}
+
+_SCALAR_FUNCTION_BY_ONNX_OP: dict[str, ScalarFunction] = {
+    "Abs": ScalarFunction.ABS,
+    "Add": ScalarFunction.ADD,
+    "And": ScalarFunction.LOGICAL_AND,
+    "Atanh": ScalarFunction.ATANH,
+    "Ceil": ScalarFunction.CEIL,
+    "Cos": ScalarFunction.COS,
+    "Div": ScalarFunction.DIV,
+    "Exp": ScalarFunction.EXP,
+    "Floor": ScalarFunction.FLOOR,
+    "Log": ScalarFunction.LOG,
+    "Mod": ScalarFunction.FMOD,
+    "Mul": ScalarFunction.MUL,
+    "Neg": ScalarFunction.NEG,
+    "Not": ScalarFunction.LOGICAL_NOT,
+    "Or": ScalarFunction.LOGICAL_OR,
+    "Pow": ScalarFunction.POW,
+    "Relu": ScalarFunction.RELU,
+    "Sin": ScalarFunction.SIN,
+    "Sqrt": ScalarFunction.SQRT,
+    "Sub": ScalarFunction.SUB,
+    "Sum": ScalarFunction.ADD,
+    "Tan": ScalarFunction.TAN,
+    "Tanh": ScalarFunction.TANH,
+    "Xor": ScalarFunction.LOGICAL_XOR,
+}
 
 
 @dataclass(frozen=True)
@@ -642,6 +691,7 @@ class CEmitter:
 
     def emit_model(self, model: LoweredModel, *, emit_testbench: bool = False) -> str:
         templates = self._load_templates(emit_testbench)
+        scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
         where_template = templates["where"]
         unary_template = templates["unary"]
@@ -717,6 +767,7 @@ class CEmitter:
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
+                scalar_registry=scalar_registry,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -725,13 +776,31 @@ class CEmitter:
             resolved_ops,
             tuple(temp_buffers.values()),
         )
-        includes = self._collect_includes(
-            model, resolved_ops, emit_testbench=emit_testbench
+        scalar_functions = scalar_registry.render()
+        scalar_include_lines = (
+            scalar_registry.include_lines() if scalar_functions else []
         )
-        sections = [self._emit_header_comment(model.header), "", *includes, ""]
+        scalar_includes = {
+            line for line in scalar_include_lines if line.startswith("#include ")
+        }
+        scalar_preamble = [
+            line for line in scalar_include_lines if not line.startswith("#include ")
+        ]
+        includes = self._collect_includes(
+            model,
+            resolved_ops,
+            emit_testbench=emit_testbench,
+            extra_includes=scalar_includes,
+        )
+        sections = [self._emit_header_comment(model.header), "", *includes]
+        if scalar_preamble:
+            sections.extend(("", *scalar_preamble))
+        sections.append("")
         constants_section = self._emit_constant_definitions(model.constants)
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
+        if scalar_functions:
+            sections.extend(("\n".join(scalar_functions), ""))
         sections.extend(
             (
                 operator_fns.rstrip(),
@@ -751,6 +820,7 @@ class CEmitter:
         self, model: LoweredModel, *, emit_testbench: bool = False
     ) -> tuple[str, str]:
         templates = self._load_templates(emit_testbench)
+        scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
         where_template = templates["where"]
         unary_template = templates["unary"]
@@ -826,6 +896,7 @@ class CEmitter:
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
+                scalar_registry=scalar_registry,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -834,13 +905,31 @@ class CEmitter:
             resolved_ops,
             tuple(temp_buffers.values()),
         )
-        includes = self._collect_includes(
-            model, resolved_ops, emit_testbench=emit_testbench
+        scalar_functions = scalar_registry.render()
+        scalar_include_lines = (
+            scalar_registry.include_lines() if scalar_functions else []
         )
-        sections = [self._emit_header_comment(model.header), "", *includes, ""]
+        scalar_includes = {
+            line for line in scalar_include_lines if line.startswith("#include ")
+        }
+        scalar_preamble = [
+            line for line in scalar_include_lines if not line.startswith("#include ")
+        ]
+        includes = self._collect_includes(
+            model,
+            resolved_ops,
+            emit_testbench=emit_testbench,
+            extra_includes=scalar_includes,
+        )
+        sections = [self._emit_header_comment(model.header), "", *includes]
+        if scalar_preamble:
+            sections.extend(("", *scalar_preamble))
+        sections.append("")
         constants_section = self._emit_constant_declarations(model.constants)
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
+        if scalar_functions:
+            sections.extend(("\n".join(scalar_functions), ""))
         sections.extend(
             (
                 operator_fns.rstrip(),
@@ -980,6 +1069,39 @@ class CEmitter:
         return includes
 
     @staticmethod
+    def _scalar_function_name(
+        op_type: str,
+        dtype: str,
+        registry: ScalarFunctionRegistry,
+    ) -> str | None:
+        scalar_type = _SCALAR_TYPE_BY_DTYPE.get(dtype)
+        if scalar_type is None:
+            return None
+        if op_type in {"Max", "Min"}:
+            if scalar_type in {ScalarType.F32, ScalarType.F64}:
+                scalar_function = (
+                    ScalarFunction.FMAX
+                    if op_type == "Max"
+                    else ScalarFunction.FMIN
+                )
+            else:
+                scalar_function = (
+                    ScalarFunction.MAXIMUM
+                    if op_type == "Max"
+                    else ScalarFunction.MINIMUM
+                )
+        else:
+            scalar_function = _SCALAR_FUNCTION_BY_ONNX_OP.get(op_type)
+        if scalar_function is None:
+            return None
+        try:
+            return registry.request(
+                ScalarFunctionKey(function=scalar_function, return_type=scalar_type)
+            )
+        except ScalarFunctionError:
+            return None
+
+    @staticmethod
     def _collect_includes(
         model: LoweredModel,
         resolved_ops: list[
@@ -1014,10 +1136,13 @@ class CEmitter:
         ],
         *,
         emit_testbench: bool,
+        extra_includes: set[str] | None = None,
     ) -> list[str]:
         includes: set[str] = {"#include <stddef.h>"}
         if emit_testbench:
             includes.update({"#include <stdio.h>", "#include <stdint.h>"})
+        if extra_includes:
+            includes.update(extra_includes)
         constant_of_shape_inputs = {
             op.input_dtype
             for op in resolved_ops
@@ -1077,6 +1202,7 @@ class CEmitter:
             "#include <stdbool.h>",
             "#include <stdlib.h>",
             "#include <math.h>",
+            "#include <float.h>",
             "#include <limits.h>",
             "#include <string.h>",
         )
@@ -2114,13 +2240,23 @@ class CEmitter:
         constant_of_shape_template,
         shape_template,
         size_template,
+        scalar_registry: ScalarFunctionRegistry | None = None,
     ) -> str:
-        node_comment = CEmitter._emit_node_comment(model.node_infos[index], index)
+        node_info = model.node_infos[index]
+        node_comment = CEmitter._emit_node_comment(node_info, index)
 
         def with_node_comment(rendered: str) -> str:
             return f"{node_comment}\n{_format_c_indentation(rendered)}"
 
         if isinstance(op, BinaryOp):
+            scalar_operator = None
+            if (
+                scalar_registry is not None
+                and node_info.op_type not in COMPARE_OP_TYPES
+            ):
+                scalar_operator = self._scalar_function_name(
+                    node_info.op_type, op.input_dtype, scalar_registry
+                )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             array_suffix = self._param_array_suffix(shape)
@@ -2144,7 +2280,12 @@ class CEmitter:
                 f"[{var}]" for var in loop_vars
             )
             operator_expr = None
-            if op.operator_kind == "expr":
+            operator = op.operator
+            operator_kind = op.operator_kind
+            if scalar_operator is not None:
+                operator = scalar_operator
+                operator_kind = "func"
+            if operator_kind == "expr":
                 operator_expr = op.operator.format(
                     left=left_expr, right=right_expr
                 )
@@ -2153,8 +2294,8 @@ class CEmitter:
                 input0=op.input0,
                 input1=op.input1,
                 output=op.output,
-                operator=op.operator,
-                operator_kind=op.operator_kind,
+                operator=operator,
+                operator_kind=operator_kind,
                 left_expr=left_expr,
                 right_expr=right_expr,
                 operator_expr=operator_expr,
@@ -3285,6 +3426,11 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, UnaryOp):
+            scalar_operator = None
+            if scalar_registry is not None:
+                scalar_operator = self._scalar_function_name(
+                    node_info.op_type, op.dtype, scalar_registry
+                )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             array_suffix = self._param_array_suffix(shape)
@@ -3302,7 +3448,7 @@ class CEmitter:
                 **common,
                 input0=op.input0,
                 output=op.output,
-                operator=op.operator,
+                operator=scalar_operator or op.operator,
             ).rstrip()
             return with_node_comment(rendered)
         raise CodegenError(f"Unsupported op for rendering: {type(op).__name__}")

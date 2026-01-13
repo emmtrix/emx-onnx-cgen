@@ -20,10 +20,23 @@
  */
 
 #include <stddef.h>
+#include <math.h>
+#include <float.h>
+
+#ifndef REF_PI_F
+#define REF_PI_F 3.14159265358979323846f
+#endif
+#ifndef REF_PI_D
+#define REF_PI_D 3.14159265358979323846
+#endif
 
 static const float weight[2][3] = {
     0.100000001f, 0.200000003f, 0.300000012f, 0.400000006f, 0.5f, 0.600000024f
 };
+
+static inline float ref_scalar_f32_add(float a, float b) {
+    return a + b;
+}
 
 /*
  * Node 0:
@@ -35,7 +48,7 @@ static const float weight[2][3] = {
 static inline void model_op0(const float in0[restrict 2][3], const float weight[restrict 2][3], float out[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            out[i0][i1] = in0[i0][i1] + weight[i0][i1];
+            out[i0][i1] = ref_scalar_f32_add(in0[i0][i1], weight[i0][i1]);
         }
     }
 }
