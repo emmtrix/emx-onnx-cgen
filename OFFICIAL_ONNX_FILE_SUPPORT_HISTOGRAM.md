@@ -3,7 +3,6 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Dynamic dim for tensor '*' | 130 | ██████████████████████████████ |
-| '*' object has no attribute '*' | 86 | ████████████████████ |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 34 | ████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Dynamic or zero dims are not supported | 26 | ██████ |

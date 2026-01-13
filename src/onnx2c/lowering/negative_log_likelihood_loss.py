@@ -170,6 +170,8 @@ def lower_negative_log_likelihood_loss(
         raise UnsupportedOpError(
             "NegativeLogLikelihoodLoss target must be int32 or int64"
         )
+    weight_dtype = None
+    weight_shape: tuple[int, ...] | None = None
     if weight_name is not None:
         weight_dtype = _value_dtype(graph, weight_name, node)
         if weight_dtype != input_dtype:
@@ -240,6 +242,9 @@ def lower_negative_log_likelihood_loss(
         d=d,
         reduction=reduction,
         ignore_index=ignore_index,
+        input_dtype=input_dtype,
+        weight_dtype=weight_dtype,
+        weight_shape=weight_shape,
         dtype=input_dtype,
         target_dtype=target_dtype,
     )
