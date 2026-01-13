@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Mapping, Set
+from typing import Callable, Dict, List, Mapping, Set
 
 from shared.scalar_types import ScalarFunctionError, ScalarType
 
@@ -934,6 +934,160 @@ def _float_clamp_min(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 def _float_clamp_max(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _simple_binary(dtype_info, "clamp_max", f"{_math_fn('fmin', dtype_info)}(a, b)")
 
+def _float_binary_op_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _simple_binary(dtype_info, name, f"a {op} b")
+
+    return handler
+
+
+def _float_unary_math_handler(name: str, base: str | None = None) -> Callable[
+    [_ScalarTypeInfo], _GeneratedScalar
+]:
+    base_name = base or name
+
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _float_unary_math(dtype_info, name, base_name)
+
+    return handler
+
+
+def _float_binary_math_handler(name: str, base: str | None = None) -> Callable[
+    [_ScalarTypeInfo], _GeneratedScalar
+]:
+    base_name = base or name
+
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _float_binary_math(dtype_info, name, base_name)
+
+    return handler
+
+
+def _float_comparison_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _float_comparison(dtype_info, name, op)
+
+    return handler
+
+
+def _float_logical_or(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    zero = _float_literal(0.0, dtype_info)
+    return _float_logical_binary(dtype_info, "logical_or", f"(a != {zero} || b != {zero})")
+
+
+def _float_logical_and(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    zero = _float_literal(0.0, dtype_info)
+    return _float_logical_binary(dtype_info, "logical_and", f"(a != {zero} && b != {zero})")
+
+
+def _float_logical_xor(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    zero = _float_literal(0.0, dtype_info)
+    return _float_logical_binary(dtype_info, "logical_xor", f"((a != {zero}) != (b != {zero}))")
+
+
+_FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = {
+    "abs": _float_unary_math_handler("abs", "fabs"),
+    "add": _float_binary_op_handler("add", "+"),
+    "sub": _float_binary_op_handler("sub", "-"),
+    "mul": _float_binary_op_handler("mul", "*"),
+    "div": _float_binary_op_handler("div", "/"),
+    "maximum": _float_binary_math_handler("maximum", "fmax"),
+    "fmax": _float_binary_math_handler("fmax", "fmax"),
+    "minimum": _float_binary_math_handler("minimum", "fmin"),
+    "fmin": _float_binary_math_handler("fmin", "fmin"),
+    "le": _float_comparison_handler("le", "<="),
+    "lt": _float_comparison_handler("lt", "<"),
+    "ge": _float_comparison_handler("ge", ">="),
+    "gt": _float_comparison_handler("gt", ">"),
+    "eq": _float_comparison_handler("eq", "=="),
+    "ne": _float_comparison_handler("ne", "!="),
+    "logical_or": _float_logical_or,
+    "logical_and": _float_logical_and,
+    "logical_xor": _float_logical_xor,
+    "logical_not": _float_logical_not,
+    "copysign": _float_binary_math_handler("copysign"),
+    "hypot": _float_binary_math_handler("hypot"),
+    "atan2": _float_binary_math_handler("atan2"),
+    "pow": _float_binary_math_handler("pow"),
+    "fmod": _float_binary_math_handler("fmod"),
+    "remainder": _float_remainder,
+    "floor_divide": _float_floor_divide,
+    "logaddexp": _float_logaddexp,
+    "logaddexp2": _float_logaddexp2,
+    "nextafter": _float_binary_math_handler("nextafter"),
+    "xlogy": _float_xlogy,
+    "heaviside": _float_heaviside,
+    "ldexp": _float_ldexp,
+    "clamp_min": _float_clamp_min,
+    "clamp_max": _float_clamp_max,
+    "neg": lambda dtype_info: _simple_unary(dtype_info, "neg", "-a"),
+    "reciprocal": _float_reciprocal,
+    "relu": _float_relu,
+    "ceil": _float_unary_math_handler("ceil"),
+    "floor": _float_unary_math_handler("floor"),
+    "sin": _float_unary_math_handler("sin"),
+    "cos": _float_unary_math_handler("cos"),
+    "sqrt": _float_unary_math_handler("sqrt"),
+    "cbrt": _float_unary_math_handler("cbrt"),
+    "exp": _float_unary_math_handler("exp"),
+    "tanh": _float_unary_math_handler("tanh"),
+    "log": _float_unary_math_handler("log"),
+    "acos": _float_unary_math_handler("acos"),
+    "acosh": _float_unary_math_handler("acosh"),
+    "asin": _float_unary_math_handler("asin"),
+    "asinh": _float_unary_math_handler("asinh"),
+    "atan": _float_unary_math_handler("atan"),
+    "atanh": _float_unary_math_handler("atanh"),
+    "cosh": _float_unary_math_handler("cosh"),
+    "sinh": _float_unary_math_handler("sinh"),
+    "tan": _float_unary_math_handler("tan"),
+    "erf": _float_unary_math_handler("erf"),
+    "erfc": _float_unary_math_handler("erfc"),
+    "expm1": _float_unary_math_handler("expm1"),
+    "log1p": _float_unary_math_handler("log1p"),
+    "log2": _float_unary_math_handler("log2"),
+    "log10": _float_unary_math_handler("log10"),
+    "exp2": _float_unary_math_handler("exp2"),
+    "lgamma": _float_unary_math_handler("lgamma"),
+    "isfinite": _float_isfinite,
+    "rsqrt": _float_rsqrt,
+    "sigmoid": _float_sigmoid,
+    "log_sigmoid": _float_log_sigmoid,
+    "gelu": _float_gelu,
+    "elu": _float_elu,
+    "leaky_relu": _float_leaky_relu,
+    "softplus": _float_softplus,
+    "silu": _float_silu,
+    "mish": _float_mish,
+    "selu": _float_selu,
+    "relu6": _float_relu6,
+    "hardsigmoid": _float_hardsigmoid,
+    "hardswish": _float_hardswish,
+    "sign": _float_sign,
+    "round": _float_round,
+    "trunc": _float_trunc,
+    "angle": _float_angle,
+    "conj": lambda dtype_info: _float_conj(dtype_info, "conj"),
+    "conj_physical": lambda dtype_info: _float_conj(dtype_info, "conj_physical"),
+    "deg2rad": _float_deg2rad,
+    "digamma": _float_digamma,
+    "erfinv": _float_erfinv,
+    "frac": _float_frac,
+    "i0": _float_i0,
+    "logit": _float_logit,
+    "isnan": _float_isnan,
+    "isinf": _float_isinf,
+    "isneginf": _float_isneginf,
+    "isposinf": _float_isposinf,
+    "nan_to_num": _float_nan_to_num,
+    "positive": _float_positive,
+    "rad2deg": _float_rad2deg,
+    "real": lambda dtype_info: _simple_unary(dtype_info, "real", "a"),
+    "sgn": _float_sgn,
+    "sinc": _float_sinc,
+    "square": _float_square,
+}
+
 
 def _float_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     canonical_name = _normalize_op_name(name)
@@ -946,157 +1100,10 @@ def _float_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
         deps = {f"{dtype_info.prefix}{canonical_name}"}
         return _GeneratedScalar(lines=lines, deps=deps, includes=set())
     name = canonical_name
-    if name == "abs":
-        return _float_unary_math(dtype_info, "abs", "fabs")
-    if name in {"add", "sub", "mul", "div"}:
-        op = {"add": "+", "sub": "-", "mul": "*", "div": "/"}[name]
-        return _simple_binary(dtype_info, name, f"a {op} b")
-    if name in {"maximum", "fmax"}:
-        return _float_binary_math(dtype_info, name, "fmax")
-    if name in {"minimum", "fmin"}:
-        return _float_binary_math(dtype_info, name, "fmin")
-    if name in {"le", "lt", "ge", "gt", "eq", "ne"}:
-        op = {
-            "le": "<=",
-            "lt": "<",
-            "ge": ">=",
-            "gt": ">",
-            "eq": "==",
-            "ne": "!=",
-        }[name]
-        return _float_comparison(dtype_info, name, op)
-    if name == "logical_or":
-        zero = _float_literal(0.0, dtype_info)
-        return _float_logical_binary(dtype_info, name, f"(a != {zero} || b != {zero})")
-    if name == "logical_and":
-        zero = _float_literal(0.0, dtype_info)
-        return _float_logical_binary(dtype_info, name, f"(a != {zero} && b != {zero})")
-    if name == "logical_xor":
-        zero = _float_literal(0.0, dtype_info)
-        return _float_logical_binary(dtype_info, name, f"((a != {zero}) != (b != {zero}))")
-    if name == "logical_not":
-        return _float_logical_not(dtype_info)
-    if name == "copysign":
-        return _float_binary_math(dtype_info, name, "copysign")
-    if name == "hypot":
-        return _float_binary_math(dtype_info, name, "hypot")
-    if name == "atan2":
-        return _float_binary_math(dtype_info, name, "atan2")
-    if name == "pow":
-        return _float_binary_math(dtype_info, name, "pow")
-    if name == "fmod":
-        return _float_binary_math(dtype_info, name, "fmod")
-    if name == "remainder":
-        return _float_remainder(dtype_info)
-    if name == "floor_divide":
-        return _float_floor_divide(dtype_info)
-    if name == "logaddexp":
-        return _float_logaddexp(dtype_info)
-    if name == "logaddexp2":
-        return _float_logaddexp2(dtype_info)
-    if name == "nextafter":
-        return _float_binary_math(dtype_info, name, "nextafter")
-    if name == "xlogy":
-        return _float_xlogy(dtype_info)
-    if name == "heaviside":
-        return _float_heaviside(dtype_info)
-    if name == "ldexp":
-        return _float_ldexp(dtype_info)
-    if name == "clamp_min":
-        return _float_clamp_min(dtype_info)
-    if name == "clamp_max":
-        return _float_clamp_max(dtype_info)
-    if name == "neg":
-        return _simple_unary(dtype_info, "neg", "-a")
-    if name == "reciprocal":
-        return _float_reciprocal(dtype_info)
-    if name == "relu":
-        return _float_relu(dtype_info)
-    if name == "ceil":
-        return _float_unary_math(dtype_info, "ceil", "ceil")
-    if name == "floor":
-        return _float_unary_math(dtype_info, "floor", "floor")
-    if name in {"sin", "cos", "sqrt", "cbrt", "exp", "tanh", "log"}:
-        return _float_unary_math(dtype_info, name, name)
-    if name in {"acos", "acosh", "asin", "asinh", "atan", "atanh", "cosh", "sinh", "tan"}:
-        return _float_unary_math(dtype_info, name, name)
-    if name in {"erf", "erfc", "expm1", "log1p", "log2", "log10", "exp2", "lgamma"}:
-        return _float_unary_math(dtype_info, name, name)
-    if name == "isfinite":
-        return _float_isfinite(dtype_info)
-    if name == "rsqrt":
-        return _float_rsqrt(dtype_info)
-    if name == "sigmoid":
-        return _float_sigmoid(dtype_info)
-    if name == "log_sigmoid":
-        return _float_log_sigmoid(dtype_info)
-    if name == "gelu":
-        return _float_gelu(dtype_info)
-    if name == "elu":
-        return _float_elu(dtype_info)
-    if name == "leaky_relu":
-        return _float_leaky_relu(dtype_info)
-    if name == "softplus":
-        return _float_softplus(dtype_info)
-    if name == "silu":
-        return _float_silu(dtype_info)
-    if name == "mish":
-        return _float_mish(dtype_info)
-    if name == "selu":
-        return _float_selu(dtype_info)
-    if name == "relu6":
-        return _float_relu6(dtype_info)
-    if name == "hardsigmoid":
-        return _float_hardsigmoid(dtype_info)
-    if name == "hardswish":
-        return _float_hardswish(dtype_info)
-    if name == "sign":
-        return _float_sign(dtype_info)
-    if name == "round":
-        return _float_round(dtype_info)
-    if name == "trunc":
-        return _float_trunc(dtype_info)
-    if name == "angle":
-        return _float_angle(dtype_info)
-    if name == "conj":
-        return _float_conj(dtype_info, "conj")
-    if name == "conj_physical":
-        return _float_conj(dtype_info, "conj_physical")
-    if name == "deg2rad":
-        return _float_deg2rad(dtype_info)
-    if name == "digamma":
-        return _float_digamma(dtype_info)
-    if name == "erfinv":
-        return _float_erfinv(dtype_info)
-    if name == "frac":
-        return _float_frac(dtype_info)
-    if name == "i0":
-        return _float_i0(dtype_info)
-    if name == "logit":
-        return _float_logit(dtype_info)
-    if name == "isnan":
-        return _float_isnan(dtype_info)
-    if name == "isinf":
-        return _float_isinf(dtype_info)
-    if name == "isneginf":
-        return _float_isneginf(dtype_info)
-    if name == "isposinf":
-        return _float_isposinf(dtype_info)
-    if name == "nan_to_num":
-        return _float_nan_to_num(dtype_info)
-    if name == "positive":
-        return _float_positive(dtype_info)
-    if name == "rad2deg":
-        return _float_rad2deg(dtype_info)
-    if name == "real":
-        return _simple_unary(dtype_info, "real", "a")
-    if name == "sgn":
-        return _float_sgn(dtype_info)
-    if name == "sinc":
-        return _float_sinc(dtype_info)
-    if name == "square":
-        return _float_square(dtype_info)
-    raise ScalarFunctionError(f"unsupported float scalar op: {name}")
+    handler = _FLOAT_OP_DISPATCH.get(name)
+    if handler is None:
+        raise ScalarFunctionError(f"unsupported float scalar op: {name}")
+    return handler(dtype_info)
 
 
 def _int_from_f32(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -1424,6 +1431,84 @@ def _int_sgn(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 def _int_square(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _simple_unary(dtype_info, "square", _cast_value("a * a", dtype_info))
 
+def _int_binary_op_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _int_binary_op(dtype_info, name, op)
+
+    return handler
+
+
+def _int_simple_binary_handler(name: str, expr: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _simple_binary(dtype_info, name, expr)
+
+    return handler
+
+
+def _int_comparison_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _int_comparison(dtype_info, name, op)
+
+    return handler
+
+
+def _int_logical_handler(name: str, expr: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+    def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+        return _int_logical(dtype_info, name, expr)
+
+    return handler
+
+
+_INT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = {
+    "abs": _int_abs,
+    "absolute": _int_absolute,
+    "add": _int_binary_op_handler("add", "+"),
+    "sub": _int_binary_op_handler("sub", "-"),
+    "mul": _int_binary_op_handler("mul", "*"),
+    "bitwise_and": _int_binary_op_handler("bitwise_and", "&"),
+    "bitwise_or": _int_binary_op_handler("bitwise_or", "|"),
+    "bitwise_xor": _int_binary_op_handler("bitwise_xor", "^"),
+    "bitwise_left_shift": _int_binary_op_handler("bitwise_left_shift", "<<"),
+    "bitwise_right_shift": _int_binary_op_handler("bitwise_right_shift", ">>"),
+    "bitwise_not": lambda dtype_info: _int_unary_op(dtype_info, "bitwise_not", "~a"),
+    "div": _int_div,
+    "maximum": _int_simple_binary_handler("maximum", "a > b ? a : b"),
+    "minimum": _int_simple_binary_handler("minimum", "a < b ? a : b"),
+    "le": _int_comparison_handler("le", "<="),
+    "lt": _int_comparison_handler("lt", "<"),
+    "ge": _int_comparison_handler("ge", ">="),
+    "gt": _int_comparison_handler("gt", ">"),
+    "eq": _int_comparison_handler("eq", "=="),
+    "ne": _int_comparison_handler("ne", "!="),
+    "logical_or": _int_logical_handler("logical_or", "(a != 0 || b != 0)"),
+    "logical_and": _int_logical_handler("logical_and", "(a != 0 && b != 0)"),
+    "logical_xor": _int_logical_handler("logical_xor", "((a != 0) != (b != 0))"),
+    "logical_not": _int_logical_not,
+    "fmax": _int_simple_binary_handler("fmax", "a > b ? a : b"),
+    "fmin": _int_simple_binary_handler("fmin", "a < b ? a : b"),
+    "copysign": _int_copysign,
+    "fmod": _int_fmod,
+    "remainder": _int_remainder,
+    "floor_divide": _int_floor_divide,
+    "clamp_min": _int_simple_binary_handler("clamp_min", "a > b ? a : b"),
+    "clamp_max": _int_simple_binary_handler("clamp_max", "a < b ? a : b"),
+    "neg": _int_neg,
+    "reciprocal": _int_reciprocal,
+    "relu": _int_relu,
+    "ceil": lambda dtype_info: _int_ceil_floor(dtype_info, "ceil"),
+    "floor": lambda dtype_info: _int_ceil_floor(dtype_info, "floor"),
+    "round": _int_round,
+    "trunc": _int_trunc,
+    "frac": _int_frac,
+    "sign": _int_sign,
+    "conj": lambda dtype_info: _int_conj(dtype_info, "conj"),
+    "conj_physical": lambda dtype_info: _int_conj(dtype_info, "conj_physical"),
+    "positive": _int_positive,
+    "real": lambda dtype_info: _simple_unary(dtype_info, "real", "a"),
+    "sgn": _int_sgn,
+    "square": _int_square,
+}
+
 
 def _int_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     canonical_name = _normalize_op_name(name)
@@ -1438,100 +1523,14 @@ def _int_from_ops(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
     name = canonical_name
     if name == "from_f32":
         return _int_from_f32(dtype_info)
+    handler = _INT_OP_DISPATCH.get(name)
+    if handler is not None:
+        return handler(dtype_info)
     function = ScalarFunction.from_op_name(name)
     if function.int_from_f32_arity == 1:
         return _int_unary_from_f32(dtype_info, name)
     if function.int_from_f32_arity == 2:
         return _int_binary_from_f32(dtype_info, name)
-    if name == "abs":
-        return _int_abs(dtype_info)
-    if name == "absolute":
-        return _int_absolute(dtype_info)
-    if name in {"add", "sub", "mul"}:
-        op = {"add": "+", "sub": "-", "mul": "*"}[name]
-        return _int_binary_op(dtype_info, name, op)
-    if name == "bitwise_and":
-        return _int_binary_op(dtype_info, name, "&")
-    if name == "bitwise_or":
-        return _int_binary_op(dtype_info, name, "|")
-    if name == "bitwise_xor":
-        return _int_binary_op(dtype_info, name, "^")
-    if name == "bitwise_left_shift":
-        return _int_binary_op(dtype_info, name, "<<")
-    if name == "bitwise_right_shift":
-        return _int_binary_op(dtype_info, name, ">>")
-    if name == "bitwise_not":
-        return _int_unary_op(dtype_info, name, "~a")
-    if name == "div":
-        return _int_div(dtype_info)
-    if name == "maximum":
-        return _simple_binary(dtype_info, name, "a > b ? a : b")
-    if name == "minimum":
-        return _simple_binary(dtype_info, name, "a < b ? a : b")
-    if name in {"le", "lt", "ge", "gt", "eq", "ne"}:
-        op = {
-            "le": "<=",
-            "lt": "<",
-            "ge": ">=",
-            "gt": ">",
-            "eq": "==",
-            "ne": "!=",
-        }[name]
-        return _int_comparison(dtype_info, name, op)
-    if name == "logical_or":
-        return _int_logical(dtype_info, name, "(a != 0 || b != 0)")
-    if name == "logical_and":
-        return _int_logical(dtype_info, name, "(a != 0 && b != 0)")
-    if name == "logical_xor":
-        return _int_logical(dtype_info, name, "((a != 0) != (b != 0))")
-    if name == "logical_not":
-        return _int_logical_not(dtype_info)
-    if name == "fmax":
-        return _simple_binary(dtype_info, name, "a > b ? a : b")
-    if name == "fmin":
-        return _simple_binary(dtype_info, name, "a < b ? a : b")
-    if name == "copysign":
-        return _int_copysign(dtype_info)
-    if name == "fmod":
-        return _int_fmod(dtype_info)
-    if name == "remainder":
-        return _int_remainder(dtype_info)
-    if name == "floor_divide":
-        return _int_floor_divide(dtype_info)
-    if name == "clamp_min":
-        return _simple_binary(dtype_info, name, "a > b ? a : b")
-    if name == "clamp_max":
-        return _simple_binary(dtype_info, name, "a < b ? a : b")
-    if name == "neg":
-        return _int_neg(dtype_info)
-    if name == "reciprocal":
-        return _int_reciprocal(dtype_info)
-    if name == "relu":
-        return _int_relu(dtype_info)
-    if name == "ceil":
-        return _int_ceil_floor(dtype_info, "ceil")
-    if name == "floor":
-        return _int_ceil_floor(dtype_info, "floor")
-    if name == "round":
-        return _int_round(dtype_info)
-    if name == "trunc":
-        return _int_trunc(dtype_info)
-    if name == "frac":
-        return _int_frac(dtype_info)
-    if name == "sign":
-        return _int_sign(dtype_info)
-    if name == "conj":
-        return _int_conj(dtype_info, "conj")
-    if name == "conj_physical":
-        return _int_conj(dtype_info, "conj_physical")
-    if name == "positive":
-        return _int_positive(dtype_info)
-    if name == "real":
-        return _simple_unary(dtype_info, "real", "a")
-    if name == "sgn":
-        return _int_sgn(dtype_info)
-    if name == "square":
-        return _int_square(dtype_info)
     raise ScalarFunctionError(f"unsupported int scalar op: {name}")
 
 
@@ -1595,6 +1594,26 @@ def _bool_binary_from_f32(name: str) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=deps, includes=set())
 
 
+_BOOL_OP_DISPATCH: Mapping[str, Callable[[], _GeneratedScalar]] = {
+    "to_f32": _bool_to_f32,
+    "from_f32": _bool_from_f32,
+    "bitwise_and": lambda: _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], "bitwise_and", "a & b"),
+    "bitwise_or": lambda: _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], "bitwise_or", "a | b"),
+    "bitwise_xor": lambda: _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], "bitwise_xor", "a ^ b"),
+    "bitwise_not": lambda: _bool_bitwise_not(_SCALAR_TYPES[ScalarType.BOOL]),
+    "logical_or": lambda: _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], "logical_or", "a || b"),
+    "logical_and": lambda: _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], "logical_and", "a && b"),
+    "logical_xor": lambda: _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], "logical_xor", "a != b"),
+    "logical_not": lambda: _bool_logical_not(_SCALAR_TYPES[ScalarType.BOOL]),
+    "le": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "le", "<="),
+    "lt": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "lt", "<"),
+    "ge": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "ge", ">="),
+    "gt": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "gt", ">"),
+    "eq": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "eq", "=="),
+    "ne": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "ne", "!="),
+}
+
+
 def _bool_from_ops(name: str) -> _GeneratedScalar:
     canonical_name = _normalize_op_name(name)
     if canonical_name != name:
@@ -1607,36 +1626,9 @@ def _bool_from_ops(name: str) -> _GeneratedScalar:
         deps = {f"{dtype_info.prefix}{canonical_name}"}
         return _GeneratedScalar(lines=lines, deps=deps, includes=set())
     name = canonical_name
-    if name == "to_f32":
-        return _bool_to_f32()
-    if name == "from_f32":
-        return _bool_from_f32()
-    if name == "bitwise_and":
-        return _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], name, "a & b")
-    if name == "bitwise_or":
-        return _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], name, "a | b")
-    if name == "bitwise_xor":
-        return _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], name, "a ^ b")
-    if name == "bitwise_not":
-        return _bool_bitwise_not(_SCALAR_TYPES[ScalarType.BOOL])
-    if name == "logical_or":
-        return _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], name, "a || b")
-    if name == "logical_and":
-        return _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], name, "a && b")
-    if name == "logical_xor":
-        return _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], name, "a != b")
-    if name == "logical_not":
-        return _bool_logical_not(_SCALAR_TYPES[ScalarType.BOOL])
-    if name in {"le", "lt", "ge", "gt", "eq", "ne"}:
-        op = {
-            "le": "<=",
-            "lt": "<",
-            "ge": ">=",
-            "gt": ">",
-            "eq": "==",
-            "ne": "!=",
-        }[name]
-        return _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], name, op)
+    handler = _BOOL_OP_DISPATCH.get(name)
+    if handler is not None:
+        return handler()
     function = ScalarFunction.from_op_name(name)
     if function.bool_from_f32_arity == 1:
         return _bool_unary_from_f32(name)
