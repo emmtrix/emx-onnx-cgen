@@ -62,6 +62,7 @@ from .lowering.common import (
 from .lowering.conv import ConvSpec, resolve_conv_spec
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .lowering.dropout import lower_dropout
+from .lowering.flatten import lower_flatten
 from .lowering.gather_elements import lower_gather_elements
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec

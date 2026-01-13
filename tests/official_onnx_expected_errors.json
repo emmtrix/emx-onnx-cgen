@@ -2493,39 +2493,39 @@
   ],
   [
     "node/test_flatten_axis0/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_axis1/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_axis2/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_axis3/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_default_axis/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_negative_axis1/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_negative_axis2/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_negative_axis3/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_flatten_negative_axis4/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "node/test_floor/model.onnx",
@@ -3089,11 +3089,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1/model.onnx",
@@ -3137,11 +3137,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon/model.onnx",
@@ -3149,11 +3149,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx",
@@ -3209,11 +3209,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_4d_axis2/model.onnx",
@@ -3221,11 +3221,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_4d_axis3/model.onnx",
@@ -3233,11 +3233,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx",
-    "Unsupported op Flatten"
+    "Unsupported op Reciprocal"
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1/model.onnx",
@@ -7029,7 +7029,7 @@
   ],
   [
     "pytorch-operator/test_operator_flatten/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "pytorch-operator/test_operator_index/model.onnx",
@@ -7113,7 +7113,7 @@
   ],
   [
     "pytorch-operator/test_operator_view/model.onnx",
-    "Unsupported op Flatten"
+    ""
   ],
   [
     "simple/test_expand_shape_model1/model.onnx",

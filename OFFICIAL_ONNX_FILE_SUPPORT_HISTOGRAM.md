@@ -7,7 +7,6 @@
 | NegativeLogLikelihoodLoss input must be at least 2D | 34 | ████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████ |
 | Dynamic or zero dims are not supported | 26 | ██████ |
-| Unsupported op Flatten | 23 | █████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████ |
 | Unsupported op LayerNormalization | 19 | ████ |
@@ -27,6 +26,7 @@
 | Unsupported op Gather | 15 | ███ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
+| Unsupported op Reciprocal | 14 | ███ |
 | Unsupported op Squeeze | 14 | ███ |
 | ReduceSum output shape rank must match input rank | 12 | ███ |
 | Unsupported op Pad | 11 | ███ |
@@ -127,7 +127,6 @@
 | Pow expects matching dtypes, got float, int64 | 2 | █ |
 | Unsupported op Pow | 2 | █ |
 | Unsupported op Range | 2 | █ |
-| Unsupported op Reciprocal | 2 | █ |
 | Unsupported op ReverseSequence | 2 | █ |
 | Unsupported op Scan | 2 | █ |
 | Unsupported op Scatter | 2 | █ |

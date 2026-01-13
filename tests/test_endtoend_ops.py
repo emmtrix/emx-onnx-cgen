@@ -1071,6 +1071,14 @@ OPERATOR_CASES = [
         "attrs": {},
     },
     {
+        "name": "FlattenAxis1",
+        "op_type": "Flatten",
+        "input_shapes": [[2, 3, 4]],
+        "output_shape": [2, 12],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"axis": 1},
+    },
+    {
         "name": "AddInt64",
         "op_type": "Add",
         "input_shapes": [[2, 3], [2, 3]],

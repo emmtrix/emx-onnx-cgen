@@ -15,6 +15,7 @@ from ..lowering.concat import lower_concat
 from ..lowering.constant_of_shape import lower_constant_of_shape
 from ..lowering.conv import resolve_conv_spec
 from ..lowering.dropout import lower_dropout
+from ..lowering.flatten import lower_flatten
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
 from ..lowering.negative_log_likelihood_loss import (
@@ -490,6 +491,14 @@ def _eval_unsqueeze(evaluator: Evaluator, node: Node) -> None:
 @register_evaluator("Reshape")
 def _eval_reshape(evaluator: Evaluator, node: Node) -> None:
     op = lower_reshape(evaluator.graph, node)
+    evaluator.values[op.output] = evaluator.values[op.input0].reshape(
+        op.output_shape
+    )
+
+
+@register_evaluator("Flatten")
+def _eval_flatten(evaluator: Evaluator, node: Node) -> None:
+    op = lower_flatten(evaluator.graph, node)
     evaluator.values[op.output] = evaluator.values[op.input0].reshape(
         op.output_shape
     )

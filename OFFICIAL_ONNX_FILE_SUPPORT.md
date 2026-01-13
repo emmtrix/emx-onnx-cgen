@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 709 / 1802 official ONNX files.
+Support 720 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -631,15 +631,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_eyelike_populate_off_main_diagonal/model.onnx | ❌ | Unsupported op EyeLike |
 | node/test_eyelike_with_dtype/model.onnx | ❌ | Unsupported op EyeLike |
 | node/test_eyelike_without_dtype/model.onnx | ❌ | Unsupported op EyeLike |
-| node/test_flatten_axis0/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_axis1/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_axis2/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_axis3/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_default_axis/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_negative_axis1/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_negative_axis2/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_negative_axis3/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_flatten_negative_axis4/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_flatten_axis0/model.onnx | ✅ |  |
+| node/test_flatten_axis1/model.onnx | ✅ |  |
+| node/test_flatten_axis2/model.onnx | ✅ |  |
+| node/test_flatten_axis3/model.onnx | ✅ |  |
+| node/test_flatten_default_axis/model.onnx | ✅ |  |
+| node/test_flatten_negative_axis1/model.onnx | ✅ |  |
+| node/test_flatten_negative_axis2/model.onnx | ✅ |  |
+| node/test_flatten_negative_axis3/model.onnx | ✅ |  |
+| node/test_flatten_negative_axis4/model.onnx | ✅ |  |
 | node/test_floor/model.onnx | ✅ |  |
 | node/test_floor_example/model.onnx | ✅ |  |
 | node/test_gather_0/model.onnx | ❌ | Unsupported op Gather |
@@ -780,8 +780,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_2d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_2d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis1_expanded/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_2d_axis1_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_layer_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
@@ -792,11 +792,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
@@ -810,14 +810,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_4d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_4d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis1_expanded/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_4d_axis1_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_layer_normalization_4d_axis2/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis2_expanded/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_4d_axis2_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_layer_normalization_4d_axis3/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis3_expanded/model.onnx | ❌ | Unsupported op Flatten |
-| node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ❌ | Unsupported op Flatten |
+| node/test_layer_normalization_4d_axis3_expanded/model.onnx | ❌ | Unsupported op Reciprocal |
+| node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ❌ | Unsupported op Reciprocal |
 | node/test_layer_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
 | node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
@@ -1765,7 +1765,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_conv/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_convtranspose/model.onnx | ❌ | Unsupported op ConvTranspose |
 | pytorch-operator/test_operator_exp/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_flatten/model.onnx | ❌ | Unsupported op Flatten |
+| pytorch-operator/test_operator_flatten/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_index/model.onnx | ❌ | Unsupported op Squeeze |
 | pytorch-operator/test_operator_max/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_maxpool/model.onnx | ✅ |  |
@@ -1786,7 +1786,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_sqrt/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Unsupported op InstanceNormalization |
 | pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
-| pytorch-operator/test_operator_view/model.onnx | ❌ | Unsupported op Flatten |
+| pytorch-operator/test_operator_view/model.onnx | ✅ |  |
 | simple/test_expand_shape_model1/model.onnx | ❌ | Unsupported op Expand |
 | simple/test_expand_shape_model2/model.onnx | ❌ | Unsupported op Expand |
 | simple/test_expand_shape_model3/model.onnx | ❌ | Unsupported op Expand |
