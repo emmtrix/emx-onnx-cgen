@@ -44,7 +44,8 @@ from .codegen.c_emitter import (
     UnaryOp,
     WhereOp,
 )
-from .errors import ShapeInferenceError, UnsupportedOpError
+from .dtypes import dtype_info
+from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph
 from .lowering.attention import AttentionSpec, resolve_attention_spec
 from .lowering.average_pool import (
@@ -112,6 +113,7 @@ class CompilerOptions:
     command_line: str | None = None
     model_checksum: str | None = None
     restrict_arrays: bool = True
+    testbench_inputs: Mapping[str, np.ndarray] | None = None
 
 
 class Compiler:
@@ -125,16 +127,22 @@ class Compiler:
 
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)
+        testbench_inputs = self._resolve_testbench_inputs(graph)
         lowered = self._lower_model(model, graph)
         return self._emitter.emit_model(
-            lowered, emit_testbench=self._options.emit_testbench
+            lowered,
+            emit_testbench=self._options.emit_testbench,
+            testbench_inputs=testbench_inputs,
         )
 
     def compile_with_data_file(self, model: onnx.ModelProto) -> tuple[str, str]:
         graph = import_onnx(model)
+        testbench_inputs = self._resolve_testbench_inputs(graph)
         lowered = self._lower_model(model, graph)
         return self._emitter.emit_model_with_data_file(
-            lowered, emit_testbench=self._options.emit_testbench
+            lowered,
+            emit_testbench=self._options.emit_testbench,
+            testbench_inputs=testbench_inputs,
         )
 
     def _lower_model(self, model: onnx.ModelProto, graph: Graph) -> LoweredModel:
@@ -163,6 +171,43 @@ class Compiler:
             node_infos=tuple(node_infos),
             header=header,
         )
+
+    def _resolve_testbench_inputs(
+        self, graph: Graph
+    ) -> Mapping[str, tuple[float | int | bool, ...]] | None:
+        if not self._options.testbench_inputs:
+            return None
+        input_specs = {value.name: value for value in graph.inputs}
+        unknown_inputs = sorted(
+            name
+            for name in self._options.testbench_inputs
+            if name not in input_specs
+        )
+        if unknown_inputs:
+            raise CodegenError(
+                "Testbench inputs include unknown inputs: "
+                + ", ".join(unknown_inputs)
+            )
+        resolved: dict[str, tuple[float | int | bool, ...]] = {}
+        for name, values in self._options.testbench_inputs.items():
+            if not isinstance(values, np.ndarray):
+                raise CodegenError(
+                    f"Testbench input {name} must be a numpy array"
+                )
+            input_value = input_specs[name]
+            dtype = value_dtype(graph, name)
+            info = dtype_info(dtype)
+            expected_shape = input_value.type.shape
+            expected_count = shape_product(expected_shape)
+            array = values.astype(info.np_dtype, copy=False)
+            if array.size != expected_count:
+                raise CodegenError(
+                    "Testbench input "
+                    f"{name} has {array.size} elements, expected {expected_count}"
+                )
+            array = array.reshape(expected_shape)
+            resolved[name] = tuple(array.ravel().tolist())
+        return resolved
 
     def _validate_graph(self, graph: Graph) -> None:
         if not graph.outputs:

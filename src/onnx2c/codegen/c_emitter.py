@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import re
+from typing import Mapping
 
 from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
@@ -1411,7 +1412,9 @@ class CEmitter:
             dtype=op.dtype,
         )
 
-    def _sanitize_model_names(self, model: LoweredModel) -> LoweredModel:
+    def _sanitize_model_names_with_map(
+        self, model: LoweredModel
+    ) -> tuple[LoweredModel, dict[str, str]]:
         name_map = self._build_name_map(model)
         constants = tuple(
             ConstTensor(
@@ -1423,7 +1426,7 @@ class CEmitter:
             for const in model.constants
         )
         ops = tuple(self._map_op_names(op, name_map) for op in model.ops)
-        return LoweredModel(
+        sanitized = LoweredModel(
             name=name_map.get(model.name, model.name),
             input_names=tuple(
                 name_map.get(name, name) for name in model.input_names
@@ -1440,6 +1443,22 @@ class CEmitter:
             node_infos=model.node_infos,
             header=model.header,
         )
+        return sanitized, name_map
+
+    def _sanitize_model_names(self, model: LoweredModel) -> LoweredModel:
+        return self._sanitize_model_names_with_map(model)[0]
+
+    @staticmethod
+    def _sanitize_testbench_inputs(
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None,
+        name_map: Mapping[str, str],
+    ) -> Mapping[str, tuple[float | int | bool, ...]] | None:
+        if not testbench_inputs:
+            return None
+        return {
+            name_map.get(name, name): values
+            for name, values in testbench_inputs.items()
+        }
 
     def _load_templates(self, emit_testbench: bool) -> dict[str, Template]:
         try:
@@ -1488,8 +1507,17 @@ class CEmitter:
             raise CodegenError("Failed to load C template") from exc
         return templates
 
-    def emit_model(self, model: LoweredModel, *, emit_testbench: bool = False) -> str:
-        model = self._sanitize_model_names(model)
+    def emit_model(
+        self,
+        model: LoweredModel,
+        *,
+        emit_testbench: bool = False,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+    ) -> str:
+        model, name_map = self._sanitize_model_names_with_map(model)
+        testbench_inputs = self._sanitize_testbench_inputs(
+            testbench_inputs, name_map
+        )
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
@@ -1615,7 +1643,16 @@ class CEmitter:
             )
         )
         if emit_testbench and testbench_template is not None:
-            sections.extend(("", self._emit_testbench(model, testbench_template)))
+            sections.extend(
+                (
+                    "",
+                    self._emit_testbench(
+                        model,
+                        testbench_template,
+                        testbench_inputs=testbench_inputs,
+                    ),
+                )
+            )
         sections.append("")
         rendered = "\n".join(sections)
         if not rendered.endswith("\n"):
@@ -1623,9 +1660,16 @@ class CEmitter:
         return rendered
 
     def emit_model_with_data_file(
-        self, model: LoweredModel, *, emit_testbench: bool = False
+        self,
+        model: LoweredModel,
+        *,
+        emit_testbench: bool = False,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
     ) -> tuple[str, str]:
-        model = self._sanitize_model_names(model)
+        model, name_map = self._sanitize_model_names_with_map(model)
+        testbench_inputs = self._sanitize_testbench_inputs(
+            testbench_inputs, name_map
+        )
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
@@ -1751,7 +1795,16 @@ class CEmitter:
             )
         )
         if emit_testbench and testbench_template is not None:
-            sections.extend(("", self._emit_testbench(model, testbench_template)))
+            sections.extend(
+                (
+                    "",
+                    self._emit_testbench(
+                        model,
+                        testbench_template,
+                        testbench_inputs=testbench_inputs,
+                    ),
+                )
+            )
         sections.append("")
         main_rendered = "\n".join(sections)
         if not main_rendered.endswith("\n"):
@@ -4655,10 +4708,17 @@ class CEmitter:
         )
         return input0_index_expr, input1_index_expr
 
-    def _emit_testbench(self, model: LoweredModel, testbench_template) -> str:
+    def _emit_testbench(
+        self,
+        model: LoweredModel,
+        testbench_template,
+        *,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+    ) -> str:
         input_counts = tuple(
             self._element_count(shape) for shape in model.input_shapes
         )
+        testbench_inputs = testbench_inputs or {}
         inputs = []
         for name, shape, count, dtype in zip(
             model.input_names, model.input_shapes, input_counts, model.input_dtypes
@@ -4673,6 +4733,15 @@ class CEmitter:
                 random_expr = "((rng_next_u64() & 1ull) != 0)"
             else:
                 random_expr = f"({dtype.c_type})rng_next_i64()"
+            constant_values = testbench_inputs.get(name)
+            constant_name = None
+            constant_lines = None
+            if constant_values is not None:
+                constant_name = f"{name}_testbench_data"
+                constant_lines = [
+                    self._format_value(value, dtype)
+                    for value in constant_values
+                ]
             inputs.append(
                 {
                     "name": name,
@@ -4688,6 +4757,8 @@ class CEmitter:
                     "random_expr": random_expr,
                     "print_format": self._print_format(dtype),
                     "print_cast": self._print_cast(dtype),
+                    "constant_name": constant_name,
+                    "constant_lines": constant_lines,
                 }
             )
         outputs = []
