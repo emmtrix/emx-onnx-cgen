@@ -5,7 +5,6 @@
 | Dynamic dim for tensor '*' | 148 | ██████████████████████████████ |
 | Missing elem_type for tensor '*' | 34 | ███████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ██████ |
-| Unsupported op Slice | 26 | █████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████ |
 | Unsupported op Identity | 20 | ████ |
@@ -25,8 +24,10 @@
 | Unsupported op ArgMin | 16 | ███ |
 | Unsupported op Clip | 16 | ███ |
 | Unsupported op Trilu | 16 | ███ |
+| Unsupported op Gather | 15 | ███ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
+| Unsupported op Squeeze | 14 | ███ |
 | ReduceSum output shape rank must match input rank | 12 | ██ |
 | Unsupported op Pad | 11 | ██ |
 | Unsupported op Flatten | 11 | ██ |
@@ -42,6 +43,7 @@
 | Unsupported op QLinearMatMul | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Hardmax | 7 | █ |
+| Slice starts input must be a constant initializer | 7 | █ |
 | Unsupported op TfIdfVectorizer | 7 | █ |
 | Unsupported op TopK | 7 | █ |
 | AveragePool has unsupported attributes | 6 | █ |
@@ -51,7 +53,6 @@
 | Unsupported op Div | 6 | █ |
 | Unsupported op Einsum | 6 | █ |
 | Unsupported op Expand | 6 | █ |
-| Unsupported op Gather | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
 | Unsupported op QuantizeLinear | 6 | █ |
 | Unsupported op ScatterElements | 6 | █ |
@@ -81,7 +82,6 @@
 | Unsupported op OptionalHasElement | 4 | █ |
 | CastLike input and output shapes must match | 4 | █ |
 | Unsupported op RNN | 4 | █ |
-| Unsupported op Squeeze | 4 | █ |
 | Unsupported op Tile | 4 | █ |
 | AveragePool supports auto_pad=NOTSET only | 3 | █ |
 | Unsupported op Bernoulli | 3 | █ |
