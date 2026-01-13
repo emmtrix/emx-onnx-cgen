@@ -1046,6 +1046,14 @@ OPERATOR_CASES = [
         "attrs": {},
     },
     {
+        "name": "Identity",
+        "op_type": "Identity",
+        "input_shapes": [[2, 3]],
+        "output_shape": [2, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {},
+    },
+    {
         "name": "AddInt64",
         "op_type": "Add",
         "input_shapes": [[2, 3], [2, 3]],

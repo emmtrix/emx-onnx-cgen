@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 704 / 1802 official ONNX files.
+Support 707 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -473,9 +473,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_center_crop_pad_pad_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input' |
 | node/test_clip/model.onnx | ❌ | Unsupported op Clip |
 | node/test_clip_default_inbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_inbounds_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_clip_default_inbounds_expanded/model.onnx | ✅ |  |
 | node/test_clip_default_int8_inbounds/model.onnx | ❌ | Unsupported op Clip |
-| node/test_clip_default_int8_inbounds_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_clip_default_int8_inbounds_expanded/model.onnx | ✅ |  |
 | node/test_clip_default_int8_max/model.onnx | ❌ | Unsupported op Clip |
 | node/test_clip_default_int8_max_expanded/model.onnx | ✅ |  |
 | node/test_clip_default_int8_min/model.onnx | ❌ | Unsupported op Clip |
@@ -748,7 +748,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_hardsigmoid_expanded_ver18/model.onnx | ✅ |  |
 | node/test_hardswish/model.onnx | ❌ | Unsupported op HardSwish |
 | node/test_hardswish_expanded/model.onnx | ❌ | Unsupported op HardSigmoid |
-| node/test_identity/model.onnx | ❌ | Unsupported op Identity |
+| node/test_identity/model.onnx | ✅ |  |
 | node/test_identity_opt/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_in'. Hint: export the model with tensor inputs/outputs. |
 | node/test_identity_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs. |
 | node/test_if/model.onnx | ❌ | Unsupported op If |
@@ -1378,71 +1378,71 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean/model.onnx | ✅ |  |
 | node/test_sce_mean_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_3d_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_no_weight_ii/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_no_weight_ii_4d/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_no_weight_ii_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight_ii/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight_ii_4d/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight_ii_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_mean_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_none/model.onnx | ✅ |  |
 | node/test_sce_none_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_none_log_prob/model.onnx | ✅ |  |
-| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_none_weights/model.onnx | ✅ |  |
 | node/test_sce_none_weights_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_none_weights_log_prob/model.onnx | ✅ |  |
-| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_sum/model.onnx | ✅ |  |
 | node/test_sce_sum_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_sce_sum_log_prob/model.onnx | ✅ |  |
-| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | NegativeLogLikelihoodLoss input must be at least 2D |
 | node/test_selu/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default/model.onnx | ❌ | Unsupported op Selu |
 | node/test_selu_default_expanded_ver18/model.onnx | ✅ |  |

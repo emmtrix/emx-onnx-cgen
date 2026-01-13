@@ -6,6 +6,8 @@ for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ 
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} > {{ zero_literal }} ? {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} : {{ zero_literal }};
 {% elif operator == "neg" %}
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = -{{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% elif operator == "identity" %}
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
 {% else %}
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ operator }}({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %});
 {% endif %}
