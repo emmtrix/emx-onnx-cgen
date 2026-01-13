@@ -299,6 +299,12 @@ When acting as an agent in this repo:
 * problem
 * options
 * recommendation
+12. To find operator specifications within this repository, prefer:
+    * `onnx-org/docs/Operators.md` for the current consolidated operator docs.
+    * `onnx-org/docs/Changelog.md` for versioned operator specs (e.g., Slice-13).
+    * `onnx-org/onnx/defs/**/defs.cc` or `onnx-org/onnx/defs/**/old.cc` for the
+      schema source and historical documentation strings.
+    * Use ripgrep (`rg -n "<OpName>" onnx-org`) to locate the relevant sections.
 
 ## Adding an operator (checklist)
 
