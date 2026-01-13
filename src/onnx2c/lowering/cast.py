@@ -3,7 +3,7 @@ from __future__ import annotations
 import onnx
 
 from ..codegen.c_emitter import CastOp
-from ..dtypes import ONNX_TO_DTYPE
+from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import ensure_supported_dtype, value_dtype, value_shape
@@ -17,7 +17,7 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
     if "to" not in node.attrs:
         raise UnsupportedOpError("Cast requires a 'to' attribute")
     target_onnx_dtype = int(node.attrs["to"])
-    target_dtype = ONNX_TO_DTYPE.get(target_onnx_dtype)
+    target_dtype = scalar_type_from_onnx(target_onnx_dtype)
     if target_dtype is None:
         name = onnx.TensorProto.DataType.Name(target_onnx_dtype)
         raise UnsupportedOpError(
@@ -29,7 +29,7 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
     if output_dtype != target_dtype:
         raise UnsupportedOpError(
             "Cast output dtype must match 'to' attribute, "
-            f"got {output_dtype} and {target_dtype}"
+            f"got {output_dtype.onnx_name} and {target_dtype.onnx_name}"
         )
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
@@ -55,7 +55,7 @@ def lower_castlike(graph: Graph, node: Node) -> CastOp:
     if output_dtype != target_dtype:
         raise UnsupportedOpError(
             "CastLike output dtype must match like input dtype, "
-            f"got {output_dtype} and {target_dtype}"
+            f"got {output_dtype.onnx_name} and {target_dtype.onnx_name}"
         )
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)

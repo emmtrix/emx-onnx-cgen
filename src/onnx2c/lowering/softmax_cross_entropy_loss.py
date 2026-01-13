@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import SoftmaxCrossEntropyLossOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -21,7 +23,7 @@ def lower_softmax_cross_entropy_loss(
     target_name = node.inputs[1]
     weight_name = node.inputs[2] if len(node.inputs) > 2 else None
     input_dtype = _value_dtype(graph, input_name, node)
-    if input_dtype not in {"float", "double", "float16"}:
+    if not input_dtype.is_float:
         raise UnsupportedOpError(
             "SoftmaxCrossEntropyLoss supports float16, float, and double inputs only"
         )
@@ -39,7 +41,7 @@ def lower_softmax_cross_entropy_loss(
                 "SoftmaxCrossEntropyLoss log_prob dtype must match input dtype"
             )
     target_dtype = _value_dtype(graph, target_name, node)
-    if target_dtype not in {"int32", "int64"}:
+    if target_dtype not in {ScalarType.I32, ScalarType.I64}:
         raise UnsupportedOpError(
             "SoftmaxCrossEntropyLoss target must be int32 or int64"
         )

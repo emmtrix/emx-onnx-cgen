@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import ResizeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
@@ -43,8 +45,8 @@ class _ResolvedScales:
 class _InputConfig:
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    input_dtype: str
-    output_dtype: str
+    input_dtype: ScalarType
+    output_dtype: ScalarType
 
 
 def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
@@ -57,7 +59,7 @@ def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
         ) from exc
 
 
-def _value_dtype(graph: Graph, name: str, node: Node) -> str:
+def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
     try:
         return graph.find_value(name).type.dtype
     except KeyError as exc:
@@ -216,15 +218,16 @@ def _validate_tensor_1d(
     graph: Graph,
     name: str,
     node: Node,
-    dtype_options: set[str],
-) -> tuple[int, str]:
+    dtype_options: set[ScalarType],
+) -> tuple[int, ScalarType]:
     shape = _value_shape(graph, name, node)
     if len(shape) != 1:
         raise UnsupportedOpError("Resize expects 1D auxiliary inputs")
     dtype = _value_dtype(graph, name, node)
     if dtype not in dtype_options:
         raise UnsupportedOpError(
-            f"Resize expects {name} to have dtype in {sorted(dtype_options)}"
+            "Resize expects "
+            f"{name} to have dtype in {[dtype.onnx_name for dtype in sorted(dtype_options, key=str)]}"
         )
     return shape[0], dtype
 
@@ -240,7 +243,10 @@ def _resolve_scales(
     rank = len(config.input_shape)
     if inputs.scales:
         scale_len, _ = _validate_tensor_1d(
-            graph, inputs.scales, node, {"float", "double", "float16"}
+            graph,
+            inputs.scales,
+            node,
+            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
         )
         if scale_len not in {len(axes), rank}:
             raise UnsupportedOpError("Resize scales length mismatch")
@@ -266,7 +272,7 @@ def _resolve_scales(
         return resolved.scales, resolved.output_shape
     if inputs.sizes:
         size_len, _ = _validate_tensor_1d(
-            graph, inputs.sizes, node, {"int64", "int32"}
+            graph, inputs.sizes, node, {ScalarType.I64, ScalarType.I32}
         )
         if size_len not in {len(axes), rank}:
             raise UnsupportedOpError("Resize sizes length mismatch")
@@ -351,7 +357,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
     if config.input_dtype != config.output_dtype:
         raise UnsupportedOpError(
             "Resize expects matching input/output dtypes, "
-            f"got {config.input_dtype} and {config.output_dtype}"
+            f"got {config.input_dtype.onnx_name} and {config.output_dtype.onnx_name}"
         )
     rank = len(config.input_shape)
     axes = _parse_axes(node, rank)
@@ -369,7 +375,10 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
     roi_dtype = None
     if inputs.roi:
         roi_len, roi_dtype = _validate_tensor_1d(
-            graph, inputs.roi, node, {"float", "double", "float16"}
+            graph,
+            inputs.roi,
+            node,
+            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
         )
         if roi_len == 2 * rank:
             roi_shape = (roi_len,)
@@ -390,14 +399,17 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
     sizes_axes = None
     if inputs.scales:
         scale_len, scales_dtype = _validate_tensor_1d(
-            graph, inputs.scales, node, {"float", "double", "float16"}
+            graph,
+            inputs.scales,
+            node,
+            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
         )
         scales_shape = (scale_len,)
         if scale_len == len(axes) and len(axes) != rank:
             scales_axes = axes
     if inputs.sizes:
         size_len, sizes_dtype = _validate_tensor_1d(
-            graph, inputs.sizes, node, {"int64", "int32"}
+            graph, inputs.sizes, node, {ScalarType.I64, ScalarType.I32}
         )
         sizes_shape = (size_len,)
         if size_len == len(axes) and len(axes) != rank:

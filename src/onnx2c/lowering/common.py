@@ -2,30 +2,19 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from shared.scalar_types import ScalarType
+
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 
 
-def ensure_supported_dtype(dtype: str) -> str:
-    if dtype not in {
-        "float16",
-        "float",
-        "double",
-        "bool",
-        "int64",
-        "int32",
-        "int16",
-        "int8",
-        "uint64",
-        "uint32",
-        "uint16",
-        "uint8",
-    }:
+def ensure_supported_dtype(dtype: ScalarType) -> ScalarType:
+    if not isinstance(dtype, ScalarType):
         raise UnsupportedOpError(f"Unsupported dtype {dtype}")
     return dtype
 
 
-def value_dtype(graph: Graph, name: str, node: Node | None = None) -> str:
+def value_dtype(graph: Graph, name: str, node: Node | None = None) -> ScalarType:
     try:
         value = graph.find_value(name)
     except KeyError as exc:
@@ -48,7 +37,7 @@ def value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int,
         ) from exc
 
 
-def node_dtype(graph: Graph, node: Node, *names: str) -> str:
+def node_dtype(graph: Graph, node: Node, *names: str) -> ScalarType:
     filtered = [name for name in names if name]
     if not filtered:
         raise UnsupportedOpError(
@@ -56,8 +45,9 @@ def node_dtype(graph: Graph, node: Node, *names: str) -> str:
         )
     dtypes = {value_dtype(graph, name, node) for name in filtered}
     if len(dtypes) != 1:
+        dtype_names = ", ".join(dtype.onnx_name for dtype in sorted(dtypes, key=str))
         raise UnsupportedOpError(
-            f"{node.op_type} expects matching dtypes, got {', '.join(sorted(dtypes))}"
+            f"{node.op_type} expects matching dtypes, got {dtype_names}"
         )
     return next(iter(dtypes))
 

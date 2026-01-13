@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import ReduceOp, ReshapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
@@ -36,7 +38,7 @@ class _ReduceSpec:
     axes: tuple[int, ...] | None
     axes_input: str | None
     axes_input_shape: tuple[int, ...] | None
-    axes_input_dtype: str | None
+    axes_input_dtype: ScalarType | None
     keepdims: bool
     output_shape: tuple[int, ...]
     reduce_count: int | None
@@ -47,7 +49,7 @@ class _AxesInputSpec:
     axes: tuple[int, ...] | None
     input_name: str | None
     input_shape: tuple[int, ...] | None
-    input_dtype: str | None
+    input_dtype: ScalarType | None
     present: bool
 
 
@@ -61,7 +63,7 @@ def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
         ) from exc
 
 
-def _value_dtype(graph: Graph, name: str, node: Node) -> str:
+def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
     try:
         return graph.find_value(name).type.dtype
     except KeyError as exc:
@@ -100,7 +102,7 @@ def _axes_input_info(graph: Graph, node: Node) -> _AxesInputSpec:
             raise UnsupportedOpError(
                 f"{node.op_type} axes input must be constant or inferable from shapes"
             ) from exc
-        if value.type.dtype not in {"int64", "int32"}:
+        if value.type.dtype not in {ScalarType.I64, ScalarType.I32}:
             raise UnsupportedOpError(
                 f"{node.op_type} axes input must be int64 or int32"
             )
@@ -113,7 +115,7 @@ def _axes_input_info(graph: Graph, node: Node) -> _AxesInputSpec:
             value.type.dtype,
             True,
         )
-    if initializer.type.dtype not in {"int64", "int32"}:
+    if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
             f"{node.op_type} axes input must be int64 or int32"
         )
@@ -330,19 +332,19 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
     )
 
 
-def _reduce_dtype_supported(dtype: str) -> bool:
+def _reduce_dtype_supported(dtype: ScalarType) -> bool:
     return dtype in {
-        "float16",
-        "float",
-        "double",
-        "int64",
-        "int32",
-        "int16",
-        "int8",
-        "uint64",
-        "uint32",
-        "uint16",
-        "uint8",
+        ScalarType.F16,
+        ScalarType.F32,
+        ScalarType.F64,
+        ScalarType.I64,
+        ScalarType.I32,
+        ScalarType.I16,
+        ScalarType.I8,
+        ScalarType.U64,
+        ScalarType.U32,
+        ScalarType.U16,
+        ScalarType.U8,
     }
 
 
@@ -354,16 +356,16 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
     if op_dtype != output_dtype:
         raise UnsupportedOpError(
             f"{node.op_type} expects matching input/output dtypes, "
-            f"got {op_dtype} and {output_dtype}"
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     if not _reduce_dtype_supported(op_dtype):
         raise UnsupportedOpError(
-            f"{node.op_type} does not support dtype {op_dtype}"
+            f"{node.op_type} does not support dtype {op_dtype.onnx_name}"
         )
     if node.op_type in REDUCE_OUTPUTS_FLOAT_ONLY and op_dtype not in {
-        "float",
-        "double",
-        "float16",
+        ScalarType.F16,
+        ScalarType.F32,
+        ScalarType.F64,
     }:
         raise UnsupportedOpError(
             f"{node.op_type} supports float16, float, and double inputs only"

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import WhereOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -34,9 +36,9 @@ def lower_where(graph: Graph, node: Node) -> WhereOp:
     condition_name, x_name, y_name = node.inputs
     output_name = node.outputs[0]
     condition_dtype = _value_dtype(graph, condition_name, node)
-    if condition_dtype != "bool":
+    if condition_dtype != ScalarType.BOOL:
         raise UnsupportedOpError(
-            f"Where expects bool condition, got {condition_dtype}"
+            f"Where expects bool condition, got {condition_dtype.onnx_name}"
         )
     x_dtype = _value_dtype(graph, x_name, node)
     y_dtype = _value_dtype(graph, y_name, node)
@@ -44,7 +46,7 @@ def lower_where(graph: Graph, node: Node) -> WhereOp:
     if x_dtype != y_dtype or output_dtype != x_dtype:
         raise UnsupportedOpError(
             "Where expects matching input/output dtypes, "
-            f"got {x_dtype}, {y_dtype}, {output_dtype}"
+            f"got {x_dtype.onnx_name}, {y_dtype.onnx_name}, {output_dtype.onnx_name}"
         )
     condition_shape = _value_shape(graph, condition_name, node)
     x_shape = _value_shape(graph, x_name, node)

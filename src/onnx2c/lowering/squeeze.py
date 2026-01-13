@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import ReshapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
@@ -16,7 +18,7 @@ def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
         ) from exc
 
 
-def _value_dtype(graph: Graph, name: str, node: Node) -> str:
+def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
     try:
         return graph.find_value(name).type.dtype
     except KeyError as exc:
@@ -64,10 +66,10 @@ def _resolve_axes(graph: Graph, node: Node) -> tuple[int, ...] | None:
     if len(node.inputs) == 2:
         axes_initializer = _find_initializer(graph, node.inputs[1])
         if axes_initializer is not None:
-            if axes_initializer.type.dtype not in {"int64", "int32"}:
+            if axes_initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
                 raise UnsupportedOpError(
                     "Squeeze axes input must be int64 or int32, "
-                    f"got {axes_initializer.type.dtype}"
+                    f"got {axes_initializer.type.dtype.onnx_name}"
                 )
             axes_values = [int(value) for value in axes_initializer.data.reshape(-1)]
     elif axes_attr is not None:
@@ -117,16 +119,16 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
     if input_dtype != output_dtype:
         raise UnsupportedOpError(
             "Squeeze expects matching input/output dtypes, "
-            f"got {input_dtype} and {output_dtype}"
+            f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     axes = _resolve_axes(graph, node)
     if axes is None:
         if len(node.inputs) == 2:
             axes_dtype = _value_dtype(graph, node.inputs[1], node)
-            if axes_dtype not in {"int64", "int32"}:
+            if axes_dtype not in {ScalarType.I64, ScalarType.I32}:
                 raise UnsupportedOpError(
                     "Squeeze axes input must be int64 or int32, "
-                    f"got {axes_dtype}"
+                    f"got {axes_dtype.onnx_name}"
                 )
             _validate_output_shape_for_unknown_axes(input_shape, output_shape, node)
         else:

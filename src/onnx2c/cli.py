@@ -16,7 +16,6 @@ from typing import Sequence
 import onnx
 
 from .compiler import Compiler, CompilerOptions
-from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
 
@@ -205,12 +204,8 @@ def _handle_verify(args: argparse.Namespace) -> int:
 
     try:
         graph = import_onnx(model)
-        output_dtypes = {
-            value.name: dtype_info(value.type.dtype) for value in graph.outputs
-        }
-        input_dtypes = {
-            value.name: dtype_info(value.type.dtype) for value in graph.inputs
-        }
+        output_dtypes = {value.name: value.type.dtype for value in graph.outputs}
+        input_dtypes = {value.name: value.type.dtype for value in graph.inputs}
     except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
         LOGGER.error("Failed to resolve model dtype: %s", exc)
         return 1

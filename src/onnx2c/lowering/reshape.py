@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import ReshapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
@@ -16,7 +18,7 @@ def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
         ) from exc
 
 
-def _value_dtype(graph: Graph, name: str, node: Node) -> str:
+def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
     try:
         return graph.find_value(name).type.dtype
     except KeyError as exc:
@@ -116,7 +118,7 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
     if input_dtype != output_dtype:
         raise UnsupportedOpError(
             "Reshape expects matching input/output dtypes, "
-            f"got {input_dtype} and {output_dtype}"
+            f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     output_shape = _value_shape(graph, node.outputs[0], node)
     allowzero = int(node.attrs.get("allowzero", 0))
@@ -139,10 +141,10 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
                     "Reshape input and output element counts must match"
                 )
     else:
-        if shape_initializer.type.dtype not in {"int64", "int32"}:
+        if shape_initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
             raise UnsupportedOpError(
                 "Reshape expects int64 or int32 shape input, "
-                f"got {shape_initializer.type.dtype}"
+                f"got {shape_initializer.type.dtype.onnx_name}"
             )
         if len(shape_initializer.type.shape) != 1:
             raise UnsupportedOpError("Reshape expects a 1D shape input")

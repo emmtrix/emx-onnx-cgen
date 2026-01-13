@@ -8,6 +8,8 @@ from typing import Mapping
 import numpy as np
 import onnx
 
+from shared.scalar_types import ScalarType
+
 from .codegen.c_emitter import (
     AttentionOp,
     AveragePoolOp,
@@ -42,7 +44,6 @@ from .codegen.c_emitter import (
     UnaryOp,
     WhereOp,
 )
-from .dtypes import dtype_info
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph
 from .lowering.attention import AttentionSpec, resolve_attention_spec
@@ -178,10 +179,10 @@ class Compiler:
     ) -> tuple[
         tuple[str, ...],
         tuple[tuple[int, ...], ...],
-        tuple[str, ...],
+        tuple[ScalarType, ...],
         tuple[str, ...],
         tuple[tuple[int, ...], ...],
-        tuple[str, ...],
+        tuple[ScalarType, ...],
     ]:
         input_names = tuple(value.name for value in graph.inputs)
         input_shapes = tuple(value.type.shape for value in graph.inputs)
@@ -328,13 +329,12 @@ def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
     constants: list[ConstTensor] = []
     for initializer in graph.initializers:
         dtype = ensure_supported_dtype(initializer.type.dtype)
-        info = dtype_info(dtype)
         constants.append(
             ConstTensor(
                 name=initializer.name,
                 shape=initializer.type.shape,
                 data=tuple(
-                    info.np_dtype.type(value)
+                    dtype.np_dtype.type(value)
                     for value in initializer.data.ravel()
                 ),
                 dtype=dtype,
@@ -354,9 +354,9 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             raise UnsupportedOpError(
                 f"{node.op_type} must have 2 inputs and 1 output"
             )
-        if output_dtype != "bool":
+        if output_dtype != ScalarType.BOOL:
             raise UnsupportedOpError(
-                f"{node.op_type} expects bool output, got {output_dtype}"
+                f"{node.op_type} expects bool output, got {output_dtype.onnx_name}"
             )
         output_shape = value_shape(graph, node.outputs[0], node)
         return BinaryOp(

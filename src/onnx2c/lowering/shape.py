@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import ShapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -16,7 +18,7 @@ def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
         ) from exc
 
 
-def _value_dtype(graph: Graph, name: str, node: Node) -> str:
+def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
     try:
         return graph.find_value(name).type.dtype
     except KeyError as exc:
@@ -52,7 +54,7 @@ def lower_shape(graph: Graph, node: Node) -> ShapeOp:
         raise ShapeInferenceError("Shape output length must be positive")
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
-    if output_dtype != "int64":
+    if output_dtype != ScalarType.I64:
         raise UnsupportedOpError("Shape output dtype must be int64")
     start = node.attrs.get("start")
     end = node.attrs.get("end")

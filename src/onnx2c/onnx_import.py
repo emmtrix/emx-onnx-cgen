@@ -6,22 +6,21 @@ import onnx
 import numpy as np
 from onnx import helper, numpy_helper, shape_inference
 
-from .dtypes import DTYPE_INFO, ONNX_TO_DTYPE
+from shared.scalar_types import ScalarType
+
+from .dtypes import scalar_type_from_onnx
 from .errors import ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, Initializer, Node, TensorType, Value
 
 
-def _normalize_initializer_data(dtype: str, data: object) -> np.ndarray:
+def _normalize_initializer_data(dtype: ScalarType, data: object) -> np.ndarray:
     if isinstance(data, (onnx.TensorProto, onnx.SparseTensorProto)):
         array = numpy_helper.to_array(data)
     elif isinstance(data, np.ndarray):
         array = data
     else:
         array = np.array(data)
-    target_info = DTYPE_INFO.get(dtype)
-    if target_info is None:
-        return array
-    return array.astype(target_info.np_dtype, copy=False)
+    return array.astype(dtype.np_dtype, copy=False)
 
 
 def _format_elem_type(elem_type: int) -> str:
@@ -48,7 +47,7 @@ def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
     tensor_type = value_info.type.tensor_type
     if not tensor_type.HasField("elem_type"):
         raise ShapeInferenceError(f"Missing elem_type for tensor '{value_info.name}'")
-    dtype = ONNX_TO_DTYPE.get(tensor_type.elem_type)
+    dtype = scalar_type_from_onnx(tensor_type.elem_type)
     if dtype is None:
         raise UnsupportedOpError(
             "Unsupported elem_type "
@@ -67,7 +66,7 @@ def _values(value_infos: Iterable[onnx.ValueInfoProto]) -> tuple[Value, ...]:
 
 
 def _initializer(value: onnx.TensorProto) -> Initializer:
-    dtype = ONNX_TO_DTYPE.get(value.data_type)
+    dtype = scalar_type_from_onnx(value.data_type)
     if dtype is None:
         raise UnsupportedOpError(
             "Unsupported elem_type "
@@ -93,7 +92,7 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
     output_name = node.output[0]
     if "value" in attrs:
         tensor = attrs["value"]
-        dtype = ONNX_TO_DTYPE.get(tensor.data_type)
+        dtype = scalar_type_from_onnx(tensor.data_type)
         if dtype is None:
             raise UnsupportedOpError(
                 "Unsupported elem_type "
@@ -107,7 +106,7 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
         )
     if "sparse_value" in attrs:
         tensor = attrs["sparse_value"]
-        dtype = ONNX_TO_DTYPE.get(tensor.values.data_type)
+        dtype = scalar_type_from_onnx(tensor.values.data_type)
         if dtype is None:
             raise UnsupportedOpError(
                 "Unsupported elem_type "
@@ -121,18 +120,18 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
         )
     if "value_float" in attrs or "value_floats" in attrs:
         values = attrs.get("value_floats", attrs.get("value_float"))
-        data = _normalize_initializer_data("float", values)
+        data = _normalize_initializer_data(ScalarType.F32, values)
         return Initializer(
             name=output_name,
-            type=TensorType(dtype="float", shape=tuple(data.shape)),
+            type=TensorType(dtype=ScalarType.F32, shape=tuple(data.shape)),
             data=data,
         )
     if "value_int" in attrs or "value_ints" in attrs:
         values = attrs.get("value_ints", attrs.get("value_int"))
-        data = _normalize_initializer_data("int64", values)
+        data = _normalize_initializer_data(ScalarType.I64, values)
         return Initializer(
             name=output_name,
-            type=TensorType(dtype="int64", shape=tuple(data.shape)),
+            type=TensorType(dtype=ScalarType.I64, shape=tuple(data.shape)),
             data=data,
         )
     if "value_string" in attrs or "value_strings" in attrs:

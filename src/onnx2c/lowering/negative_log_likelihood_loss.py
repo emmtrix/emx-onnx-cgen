@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import NegativeLogLikelihoodLossOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
@@ -94,10 +96,10 @@ def _resolve_shape_from_reshape(
     allowzero = int(reshape_node.attrs.get("allowzero", 0))
     shape_initializer = _find_initializer(graph, reshape_node.inputs[1])
     if shape_initializer is not None:
-        if shape_initializer.type.dtype not in {"int64", "int32"}:
+        if shape_initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
             raise UnsupportedOpError(
                 "Reshape expects int64 or int32 shape input, "
-                f"got {shape_initializer.type.dtype}"
+                f"got {shape_initializer.type.dtype.onnx_name}"
             )
         if len(shape_initializer.type.shape) != 1:
             raise UnsupportedOpError("Reshape expects a 1D shape input")
@@ -154,7 +156,7 @@ def lower_negative_log_likelihood_loss(
     target_name = node.inputs[1]
     weight_name = node.inputs[2] if len(node.inputs) > 2 else None
     input_dtype = _value_dtype(graph, input_name, node)
-    if input_dtype not in {"float", "double", "float16"}:
+    if not input_dtype.is_float:
         raise UnsupportedOpError(
             "NegativeLogLikelihoodLoss supports float16, float, and double inputs only"
         )
@@ -164,7 +166,7 @@ def lower_negative_log_likelihood_loss(
             "NegativeLogLikelihoodLoss output dtype must match input dtype"
         )
     target_dtype = _value_dtype(graph, target_name, node)
-    if target_dtype not in {"int32", "int64"}:
+    if target_dtype not in {ScalarType.I32, ScalarType.I64}:
         raise UnsupportedOpError(
             "NegativeLogLikelihoodLoss target must be int32 or int64"
         )

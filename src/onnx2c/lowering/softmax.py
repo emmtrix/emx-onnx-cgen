@@ -16,7 +16,7 @@ def lower_softmax(graph: Graph, node: Node) -> SoftmaxOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Softmax must have 1 input and 1 output")
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-    if op_dtype not in {"float", "double", "float16"}:
+    if not op_dtype.is_float:
         raise UnsupportedOpError(
             "Softmax supports float16, float, and double inputs only"
         )

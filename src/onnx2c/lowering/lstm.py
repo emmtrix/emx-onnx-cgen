@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, Sequence
 
+from shared.scalar_types import ScalarType
+
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype, optional_name, value_dtype, value_shape
@@ -65,8 +67,8 @@ class LstmSpec:
     activation_kinds: tuple[int, ...]
     activation_alphas: tuple[float, ...]
     activation_betas: tuple[float, ...]
-    dtype: str
-    sequence_lens_dtype: str | None
+    dtype: ScalarType
+    sequence_lens_dtype: ScalarType | None
 
 
 def _normalize_activation_names(values: Iterable[object]) -> list[str]:
@@ -188,7 +190,7 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
         *(name for name in (input_b, input_initial_h, input_initial_c, input_p) if name),
         *(name for name in (output_y, output_y_h, output_y_c) if name),
     )
-    if op_dtype not in {"float", "double", "float16"}:
+    if not op_dtype.is_float:
         raise UnsupportedOpError(
             "LSTM supports float16, float, and double inputs only"
         )
@@ -225,7 +227,7 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
         _expect_shape(input_b, b_shape, (num_directions, 8 * hidden_size))
     if input_sequence_lens is not None:
         seq_dtype = value_dtype(graph, input_sequence_lens, node)
-        if seq_dtype not in {"int32", "int64"}:
+        if seq_dtype not in {ScalarType.I32, ScalarType.I64}:
             raise UnsupportedOpError("LSTM sequence_lens must be int32 or int64")
         seq_shape = value_shape(graph, input_sequence_lens, node)
         if seq_shape != (batch_size,):

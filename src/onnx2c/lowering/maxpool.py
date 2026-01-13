@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import MaxPoolOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -139,7 +141,7 @@ def resolve_maxpool_spec(graph: Graph, node: Node) -> MaxPoolSpec:
                 f"{expected_output_shape}, got {indices_shape}"
             )
         indices_dtype = _value_dtype(graph, node.outputs[1], node)
-        if indices_dtype != "int64":
+        if indices_dtype != ScalarType.I64:
             raise UnsupportedOpError("MaxPool indices output must be int64")
     pads = (*pad_begin, *pad_end)
     return MaxPoolSpec(
@@ -162,14 +164,14 @@ def lower_maxpool(graph: Graph, node: Node) -> MaxPoolOp:
     if len(node.inputs) != 1 or len(node.outputs) not in {1, 2}:
         raise UnsupportedOpError("MaxPool must have 1 input and 1 or 2 outputs")
     op_dtype = _node_dtype(graph, node, node.inputs[0], node.outputs[0])
-    if op_dtype == "bool":
+    if op_dtype == ScalarType.BOOL:
         raise UnsupportedOpError("MaxPool supports numeric inputs only")
     spec = resolve_maxpool_spec(graph, node)
     indices = node.outputs[1] if len(node.outputs) == 2 else None
     indices_dtype = (
         _value_dtype(graph, indices, node) if indices is not None else None
     )
-    if indices_dtype is not None and indices_dtype != "int64":
+    if indices_dtype is not None and indices_dtype != ScalarType.I64:
         raise UnsupportedOpError("MaxPool indices output must be int64")
     return MaxPoolOp(
         input0=node.inputs[0],

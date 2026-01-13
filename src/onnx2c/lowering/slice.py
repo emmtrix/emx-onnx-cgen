@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import SliceOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
@@ -35,7 +37,7 @@ def _read_int_list(
         raise UnsupportedOpError(
             f"{node.op_type} {label} input must be a constant initializer"
         )
-    if initializer.type.dtype not in {"int64", "int32"}:
+    if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
             f"{node.op_type} {label} input must be int64 or int32"
         )

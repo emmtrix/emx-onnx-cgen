@@ -3621,7 +3621,7 @@
   ],
   [
     "node/test_max_float16/model.onnx",
-    ""
+    "<ScalarType.F16: 'f16'>"
   ],
   [
     "node/test_max_float32/model.onnx",
@@ -3777,7 +3777,7 @@
   ],
   [
     "node/test_min_float16/model.onnx",
-    ""
+    "<ScalarType.F16: 'f16'>"
   ],
   [
     "node/test_min_float32/model.onnx",
@@ -3845,7 +3845,7 @@
   ],
   [
     "node/test_mod_mixed_sign_float16/model.onnx",
-    ""
+    "<ScalarType.F16: 'f16'>"
   ],
   [
     "node/test_mod_mixed_sign_float32/model.onnx",

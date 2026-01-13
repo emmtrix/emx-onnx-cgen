@@ -85,7 +85,7 @@ def resolve_lrn_spec(graph: Graph, node: Node) -> LrnSpec:
 @register_lowering("LRN")
 def lower_lrn(graph: Graph, node: Node) -> LrnOp:
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-    if op_dtype not in {"float", "double", "float16"}:
+    if not op_dtype.is_float:
         raise UnsupportedOpError(
             "LRN supports float16, float, and double inputs only"
         )

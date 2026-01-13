@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from shared.scalar_types import ScalarType
+
 from ..codegen.c_emitter import AttentionOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
@@ -51,9 +53,9 @@ class AttentionSpec:
 
 
 def resolve_attention_spec(
-    graph: Graph, node: Node, dtype: str
+    graph: Graph, node: Node, dtype: ScalarType
 ) -> AttentionSpec:
-    if dtype not in {"float", "double", "float16"}:
+    if not dtype.is_float:
         raise UnsupportedOpError("Unsupported op Attention")
     if len(node.inputs) < 3 or len(node.outputs) < 1:
         raise UnsupportedOpError("Unsupported op Attention")
@@ -246,7 +248,7 @@ def resolve_attention_spec(
         if mask_rank not in {2, 3, 4}:
             raise ShapeInferenceError("Attention mask must be 2D/3D/4D")
         mask_dtype = _value_dtype(graph, attn_mask_name, node)
-        if mask_dtype == "bool":
+        if mask_dtype == ScalarType.BOOL:
             mask_is_bool = True
         elif mask_dtype != dtype:
             raise UnsupportedOpError(
@@ -310,7 +312,7 @@ def resolve_attention_spec(
                 "Attention nonpad_kv_seqlen must have shape (batch,)"
             )
         nonpad_dtype = _value_dtype(graph, nonpad_name, node)
-        if nonpad_dtype != "int64":
+        if nonpad_dtype != ScalarType.I64:
             raise UnsupportedOpError(
                 "Attention nonpad_kv_seqlen must be int64"
             )

@@ -90,6 +90,7 @@
 | Unsupported op GatherND | 3 | █ |
 | Unsupported op InstanceNormalization | 3 | █ |
 | Unsupported op Loop | 3 | █ |
+| <ScalarType.F16: '*'> | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
 | Unsupported op Shrink | 3 | █ |
