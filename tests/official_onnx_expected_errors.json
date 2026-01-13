@@ -2629,7 +2629,7 @@
   ],
   [
     "node/test_gemm_default_scalar_bias/model.onnx",
-    "Gemm bias input must be rank 1 or 2, got ()"
+    ""
   ],
   [
     "node/test_gemm_default_single_elem_vector_bias/model.onnx",

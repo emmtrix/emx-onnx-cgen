@@ -1412,6 +1412,15 @@ OPERATOR_CASES = [
         "opset": 13,
     },
     {
+        "name": "GemmScalarBias",
+        "op_type": "Gemm",
+        "input_shapes": [[2, 3], [3, 4], []],
+        "output_shape": [2, 4],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"beta": 0.5},
+        "opset": 13,
+    },
+    {
         "name": "GemmTransBColumnBias",
         "op_type": "Gemm",
         "input_shapes": [[2, 3], [4, 3], [2, 1]],

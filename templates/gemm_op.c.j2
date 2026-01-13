@@ -22,6 +22,8 @@ static inline void {{ op_name }}(const {{ c_type }} {{ input_a }}{{ input_a_suff
             const {{ c_type }} bias = {{ input_c }}[c_i][c_j];
             {% elif c_rank == 1 %}
             const {{ c_type }} bias = {{ input_c }}[j];
+            {% else %}
+            const {{ c_type }} bias = {{ input_c }}[0];
             {% endif %}
             {{ output }}[i][j] = acc * {{ alpha_literal }} + bias * {{ beta_literal }};
             {% else %}
