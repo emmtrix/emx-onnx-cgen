@@ -203,6 +203,20 @@ def _eval_gather_elements(evaluator: Evaluator, node: Node) -> None:
     )
 
 
+@register_evaluator("Gather")
+def _eval_gather(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Gather must have 2 inputs and 1 output")
+    data = evaluator.values[node.inputs[0]]
+    indices = evaluator.values[node.inputs[1]]
+    if indices.dtype.type not in {np.int32, np.int64}:
+        raise UnsupportedOpError(
+            f"Gather indices must be int32 or int64, got {indices.dtype}"
+        )
+    axis = normalize_axis(int(node.attrs.get("axis", 0)), data.shape, node)
+    evaluator.values[node.outputs[0]] = np.take(data, indices, axis=axis)
+
+
 @register_evaluator("Slice")
 def _eval_slice(evaluator: Evaluator, node: Node) -> None:
     spec = resolve_slice_spec(evaluator.graph, node)

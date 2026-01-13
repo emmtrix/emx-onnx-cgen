@@ -22,7 +22,6 @@
 | Unsupported op ArgMin | 16 | ████ |
 | Unsupported op Clip | 16 | ████ |
 | Unsupported op Trilu | 16 | ████ |
-| Unsupported op Gather | 15 | ███ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
 | Unsupported op Reciprocal | 14 | ███ |
