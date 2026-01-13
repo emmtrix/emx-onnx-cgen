@@ -369,7 +369,7 @@
   ],
   [
     "node/test_attention_3d_attn_mask_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_attn_mask_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_attn_mask_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_causal/model.onnx",
@@ -377,7 +377,7 @@
   ],
   [
     "node/test_attention_3d_causal_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_causal_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_causal_expanded_function_RangeRow'"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes/model.onnx",
@@ -389,7 +389,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_causal/model.onnx",
@@ -397,11 +397,11 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_RangeRow'"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_scaled/model.onnx",
@@ -409,7 +409,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_softcap/model.onnx",
@@ -417,7 +417,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present/model.onnx",
@@ -425,11 +425,11 @@
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_gqa/model.onnx",
@@ -441,7 +441,7 @@
   ],
   [
     "node/test_attention_3d_gqa_attn_mask_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_gqa_causal/model.onnx",
@@ -449,11 +449,11 @@
   ],
   [
     "node/test_attention_3d_gqa_causal_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_RangeRow'"
   ],
   [
     "node/test_attention_3d_gqa_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_gqa_scaled/model.onnx",
@@ -461,7 +461,7 @@
   ],
   [
     "node/test_attention_3d_gqa_scaled_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_gqa_softcap/model.onnx",
@@ -469,7 +469,7 @@
   ],
   [
     "node/test_attention_3d_gqa_softcap_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present/model.onnx",
@@ -477,7 +477,7 @@
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_scaled/model.onnx",
@@ -485,7 +485,7 @@
   ],
   [
     "node/test_attention_3d_scaled_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_softcap/model.onnx",
@@ -493,7 +493,7 @@
   ],
   [
     "node/test_attention_3d_softcap_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_transpose_verification/model.onnx",
@@ -501,7 +501,7 @@
   ],
   [
     "node/test_attention_3d_transpose_verification_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_with_past_and_present/model.onnx",
@@ -509,7 +509,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx",
@@ -521,11 +521,11 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx",
@@ -533,7 +533,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx",
@@ -541,7 +541,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_QIntermediate'"
+    "Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d/model.onnx",
@@ -609,7 +609,7 @@
   ],
   [
     "node/test_attention_4d_causal_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_RangeRow'"
   ],
   [
     "node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx",
@@ -637,11 +637,11 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_RangeRow'"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled/model.onnx",
@@ -649,7 +649,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_softcap/model.onnx",
@@ -657,7 +657,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present/model.onnx",
@@ -685,7 +685,7 @@
   ],
   [
     "node/test_attention_4d_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_fp16/model.onnx",
@@ -693,7 +693,7 @@
   ],
   [
     "node/test_attention_4d_fp16_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_fp16_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_fp16_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_gqa/model.onnx",
@@ -713,11 +713,11 @@
   ],
   [
     "node/test_attention_4d_gqa_causal_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_RangeRow'"
   ],
   [
     "node/test_attention_4d_gqa_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_gqa_scaled/model.onnx",
@@ -725,7 +725,7 @@
   ],
   [
     "node/test_attention_4d_gqa_scaled_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_gqa_softcap/model.onnx",
@@ -733,7 +733,7 @@
   ],
   [
     "node/test_attention_4d_gqa_softcap_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present/model.onnx",
@@ -757,7 +757,7 @@
   ],
   [
     "node/test_attention_4d_scaled_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_softcap/model.onnx",
@@ -765,7 +765,7 @@
   ],
   [
     "node/test_attention_4d_softcap_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_with_past_and_present/model.onnx",
@@ -837,7 +837,7 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_expanded/model.onnx",
-    "Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_AttnBias'"
+    "Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_KExpanded'"
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softcap/model.onnx",
@@ -2965,11 +2965,11 @@
   ],
   [
     "node/test_identity_opt/model.onnx",
-    "Missing elem_type for tensor 'opt_in'"
+    "Unsupported value type 'optional_type' for 'opt_in'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_identity_sequence/model.onnx",
-    "Missing elem_type for tensor 'x'"
+    "Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_if/model.onnx",
@@ -2977,11 +2977,11 @@
   ],
   [
     "node/test_if_opt/model.onnx",
-    "Missing elem_type for tensor 'sequence'"
+    "Unsupported value type 'optional_type' for 'sequence'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_if_seq/model.onnx",
-    "Missing elem_type for tensor 'res'"
+    "Unsupported value type 'sequence_type' for 'res'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_image_decoder_decode_bmp_rgb/model.onnx",
@@ -3077,11 +3077,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis0_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_2d_axis1/model.onnx",
@@ -3089,11 +3089,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis1_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1/model.onnx",
@@ -3125,11 +3125,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis0_epsilon_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon/model.onnx",
@@ -3137,11 +3137,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis1_epsilon_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon/model.onnx",
@@ -3149,11 +3149,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis2_epsilon_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx",
@@ -3197,11 +3197,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis0_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis1/model.onnx",
@@ -3209,11 +3209,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis1_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis2/model.onnx",
@@ -3221,11 +3221,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis2_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis3/model.onnx",
@@ -3233,11 +3233,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx",
-    "Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis3_expanded_function_SuffixShape'"
+    "Unsupported op Size"
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1/model.onnx",
@@ -3517,11 +3517,11 @@
   ],
   [
     "node/test_loop13_seq/model.onnx",
-    "Missing elem_type for tensor 'seq_empty'"
+    "Unsupported value type 'sequence_type' for 'seq_empty'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_loop16_seq_none/model.onnx",
-    "Missing elem_type for tensor 'opt_seq'"
+    "Unsupported value type 'optional_type' for 'opt_seq'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_lpnormalization_default/model.onnx",
@@ -4169,15 +4169,15 @@
   ],
   [
     "node/test_optional_get_element_optional_sequence/model.onnx",
-    "Missing elem_type for tensor 'optional_input'"
+    "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_optional_get_element_optional_tensor/model.onnx",
-    "Missing elem_type for tensor 'optional_input'"
+    "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_optional_get_element_sequence/model.onnx",
-    "Missing elem_type for tensor 'optional_input'"
+    "Unsupported value type 'sequence_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_optional_get_element_tensor/model.onnx",
@@ -4201,15 +4201,15 @@
   ],
   [
     "node/test_optional_has_element_empty_optional_input/model.onnx",
-    "Missing elem_type for tensor 'optional_input'"
+    "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_optional_has_element_optional_input/model.onnx",
-    "Missing elem_type for tensor 'optional_input'"
+    "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_optional_has_element_tensor_input/model.onnx",
-    "Missing elem_type for tensor 'optional_input'"
+    "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_or2d/model.onnx",
@@ -5349,7 +5349,7 @@
   ],
   [
     "node/test_rotary_embedding_3d_input_expanded/model.onnx",
-    "Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_XIn'"
+    "Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_CosCacheSliced'"
   ],
   [
     "node/test_rotary_embedding_expanded/model.onnx",
@@ -5765,59 +5765,59 @@
   ],
   [
     "node/test_sequence_insert_at_back/model.onnx",
-    "Missing elem_type for tensor 'sequence'"
+    "Unsupported value type 'sequence_type' for 'sequence'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_insert_at_front/model.onnx",
-    "Missing elem_type for tensor 'sequence'"
+    "Unsupported value type 'sequence_type' for 'sequence'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_add_1_sequence_1_tensor/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_add_2_sequences/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_add_2_sequences_expanded/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_extract_shapes/model.onnx",
-    "Missing elem_type for tensor 'in_seq'"
+    "Unsupported value type 'sequence_type' for 'in_seq'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_extract_shapes_expanded/model.onnx",
-    "Missing elem_type for tensor 'in_seq'"
+    "Unsupported value type 'sequence_type' for 'in_seq'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_identity_1_sequence/model.onnx",
-    "Missing elem_type for tensor 'x'"
+    "Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_identity_1_sequence_expanded/model.onnx",
-    "Missing elem_type for tensor 'x'"
+    "Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_identity_2_sequences/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_sequence_map_identity_2_sequences_expanded/model.onnx",
-    "Missing elem_type for tensor 'x0'"
+    "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_shape/model.onnx",
@@ -6117,15 +6117,15 @@
   ],
   [
     "node/test_split_to_sequence_1/model.onnx",
-    "Missing elem_type for tensor 'seq'"
+    "Unsupported value type 'sequence_type' for 'seq'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_split_to_sequence_2/model.onnx",
-    "Missing elem_type for tensor 'seq'"
+    "Unsupported value type 'sequence_type' for 'seq'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_split_to_sequence_nokeepdims/model.onnx",
-    "Missing elem_type for tensor 'seq'"
+    "Unsupported value type 'sequence_type' for 'seq'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "node/test_split_variable_parts_1d_opset13/model.onnx",
@@ -7145,11 +7145,11 @@
   ],
   [
     "simple/test_sequence_model2/model.onnx",
-    "Missing elem_type for tensor 'seq_1'"
+    "Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "simple/test_sequence_model3/model.onnx",
-    "Missing elem_type for tensor 'seq_1'"
+    "Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "simple/test_sequence_model4/model.onnx",
@@ -7157,15 +7157,15 @@
   ],
   [
     "simple/test_sequence_model5/model.onnx",
-    "Missing elem_type for tensor 'seq_1'"
+    "Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "simple/test_sequence_model6/model.onnx",
-    "Missing elem_type for tensor 'seq_1'"
+    "Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "simple/test_sequence_model7/model.onnx",
-    "Missing elem_type for tensor 'seq_1'"
+    "Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs."
   ],
   [
     "simple/test_sequence_model8/model.onnx",
