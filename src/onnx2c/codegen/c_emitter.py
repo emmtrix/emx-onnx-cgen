@@ -1997,8 +1997,6 @@ class CEmitter:
         if isinstance(op, WhereOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
-            loop_indents = CEmitter._loop_indents(output_shape)
-            inner_indent = CEmitter._inner_indent(output_shape)
             output_array_suffix = self._param_array_suffix(output_shape)
             condition_array_suffix = self._param_array_suffix(op.condition_shape)
             x_array_suffix = self._param_array_suffix(op.x_shape)
@@ -2020,8 +2018,6 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 output_shape=output_shape,
                 loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
                 condition=op.condition,
                 input_x=op.input_x,
                 input_y=op.input_y,
@@ -2625,8 +2621,6 @@ class CEmitter:
         if isinstance(op, GatherElementsOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
-            loop_indents = CEmitter._loop_indents(output_shape)
-            inner_indent = CEmitter._inner_indent(output_shape)
             data_indices = list(loop_vars)
             data_indices[op.axis] = "gather_index"
             rendered = gather_elements_template.render(
@@ -2642,8 +2636,6 @@ class CEmitter:
                 output_suffix=self._param_array_suffix(op.output_shape),
                 output_shape=output_shape,
                 loop_vars=loop_vars,
-                loop_indents=loop_indents,
-                inner_indent=inner_indent,
                 data_indices=data_indices,
                 axis_dim=op.data_shape[op.axis],
             ).rstrip()
@@ -3207,16 +3199,6 @@ class CEmitter:
     def _loop_vars(shape: tuple[int, ...]) -> tuple[str, ...]:
         shape = CEmitter._codegen_shape(shape)
         return tuple(f"i{index}" for index in range(len(shape)))
-
-    @staticmethod
-    def _loop_indents(shape: tuple[int, ...]) -> tuple[str, ...]:
-        shape = CEmitter._codegen_shape(shape)
-        return tuple("" for _ in shape)
-
-    @staticmethod
-    def _inner_indent(shape: tuple[int, ...]) -> str:
-        CEmitter._codegen_shape(shape)
-        return ""
 
     @staticmethod
     def _broadcast_index_expr(
