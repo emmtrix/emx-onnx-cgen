@@ -252,7 +252,7 @@ class NegativeLogLikelihoodLossOp:
     c: int
     d: int
     reduction: str
-    ignore_index: int
+    ignore_index: int | None
     dtype: str
     target_dtype: str
 
@@ -2621,6 +2621,8 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
+            use_ignore_index = int(op.ignore_index is not None)
+            ignore_index = op.ignore_index if op.ignore_index is not None else -1
             rendered = nllloss_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -2637,7 +2639,8 @@ class CEmitter:
                 c=op.c,
                 d=op.d,
                 reduction=op.reduction,
-                ignore_index=op.ignore_index,
+                use_ignore_index=use_ignore_index,
+                ignore_index=ignore_index,
                 zero_literal=zero_literal,
                 one_literal=CEmitter._format_literal(op.dtype, 1),
             ).rstrip()

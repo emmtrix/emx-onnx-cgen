@@ -10,7 +10,7 @@ from onnx2c.compiler import Compiler
 
 
 def _make_nll_model(
-    *, reduction: str, with_weight: bool, ignore_index: int
+    *, reduction: str, with_weight: bool, ignore_index: int | None
 ) -> onnx.ModelProto:
     input_shape = [2, 3, 2]
     target_shape = [2, 2]
@@ -32,12 +32,14 @@ def _make_nll_model(
     output_info = helper.make_tensor_value_info(
         "out", TensorProto.FLOAT, output_shape
     )
+    node_kwargs: dict[str, object] = {"reduction": reduction}
+    if ignore_index is not None:
+        node_kwargs["ignore_index"] = ignore_index
     node = helper.make_node(
         "NegativeLogLikelihoodLoss",
         inputs=input_names,
         outputs=[output_info.name],
-        reduction=reduction,
-        ignore_index=ignore_index,
+        **node_kwargs,
     )
     graph = helper.make_graph(
         [node],
@@ -128,6 +130,27 @@ def test_nllloss_reduction_mean_matches_onnxruntime() -> None:
         dtype=np.float32,
     )
     target = np.array([[0, 2], [1, 2]], dtype=np.int64)
+    compiler = Compiler()
+    outputs = compiler.run(model, {"input": values, "target": target})
+    sess = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    (ort_out,) = sess.run(None, {"input": values, "target": target})
+    np.testing.assert_allclose(outputs["out"], ort_out, rtol=1e-4, atol=1e-5)
+
+
+def test_nllloss_default_ignore_index_matches_onnxruntime() -> None:
+    model = _make_nll_model(
+        reduction="mean", with_weight=False, ignore_index=None
+    )
+    values = np.array(
+        [
+            [[0.2, -0.3], [1.0, 0.1], [-0.5, 2.0]],
+            [[-1.0, 1.5], [0.0, -0.2], [0.5, 0.7]],
+        ],
+        dtype=np.float32,
+    )
+    target = np.array([[0, 1], [2, 1]], dtype=np.int64)
     compiler = Compiler()
     outputs = compiler.run(model, {"input": values, "target": target})
     sess = ort.InferenceSession(

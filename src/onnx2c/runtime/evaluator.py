@@ -708,7 +708,7 @@ def _apply_negative_log_likelihood_loss(
     weight: np.ndarray | None,
     *,
     reduction: str,
-    ignore_index: int,
+    ignore_index: int | None,
 ) -> np.ndarray:
     input_shape = values.shape
     if len(input_shape) < 2:
@@ -729,10 +729,10 @@ def _apply_negative_log_likelihood_loss(
     if weight is not None:
         gather_weight = np.take(weight, target.astype(np.int32), mode="clip")
         if ignore_index is not None:
-            gather_weight = np.where(target == ignore_index, 0, gather_weight).astype(
-                dtype=values.dtype
-            )
-    elif ignore_index != -1:
+            gather_weight = np.where(
+                target == ignore_index, 0, gather_weight
+            ).astype(dtype=values.dtype)
+    elif ignore_index is not None:
         gather_weight = np.where(target == ignore_index, 0, 1).astype(
             dtype=values.dtype
         )
@@ -745,14 +745,17 @@ def _apply_negative_log_likelihood_loss(
     loss = np.zeros((n, d), dtype=values.dtype)
     for i in range(n):
         for d_index in range(d):
-            if target[i][d_index] != ignore_index:
+            if ignore_index is None or target[i][d_index] != ignore_index:
                 loss[i][d_index] = -values[i][target[i][d_index]][d_index]
     if len(input_shape) != 3:
         loss = loss.reshape(target_shape)
     if gather_weight is not None:
         loss = gather_weight * loss
         if reduction == "mean":
-            loss = loss.sum() / gather_weight.sum()
+            total_weight = gather_weight.sum()
+            if total_weight == 0:
+                return np.array(0, dtype=values.dtype)
+            loss = loss.sum() / total_weight
             return loss.astype(values.dtype)
     if reduction == "mean":
         loss = np.mean(loss)

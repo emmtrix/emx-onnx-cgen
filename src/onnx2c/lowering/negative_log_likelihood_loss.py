@@ -87,7 +87,9 @@ def lower_negative_log_likelihood_loss(
     n = input_shape[0]
     c = input_shape[1]
     d = _shape_product(input_shape[2:]) if len(input_shape) > 2 else 1
-    ignore_index = int(node.attrs.get("ignore_index", -1))
+    ignore_index = node.attrs.get("ignore_index")
+    if ignore_index is not None:
+        ignore_index = int(ignore_index)
     return NegativeLogLikelihoodLossOp(
         input0=input_name,
         target=target_name,
