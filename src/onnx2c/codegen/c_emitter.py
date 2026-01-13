@@ -378,6 +378,19 @@ class GatherElementsOp:
 
 
 @dataclass(frozen=True)
+class GatherOp:
+    data: str
+    indices: str
+    output: str
+    axis: int
+    data_shape: tuple[int, ...]
+    indices_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    dtype: str
+    indices_dtype: str
+
+
+@dataclass(frozen=True)
 class TransposeOp:
     input0: str
     output: str
@@ -555,6 +568,7 @@ class LoweredModel:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | SliceOp
@@ -605,6 +619,7 @@ class CEmitter:
                 "maxpool": self._env.get_template("maxpool_op.c.j2"),
                 "concat": self._env.get_template("concat_op.c.j2"),
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
+                "gather": self._env.get_template("gather_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "slice": self._env.get_template("slice_op.c.j2"),
@@ -646,6 +661,7 @@ class CEmitter:
         maxpool_template = templates["maxpool"]
         concat_template = templates["concat"]
         gather_elements_template = templates["gather_elements"]
+        gather_template = templates["gather"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         slice_template = templates["slice"]
@@ -691,6 +707,7 @@ class CEmitter:
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
                 gather_elements_template=gather_elements_template,
+                gather_template=gather_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
                 slice_template=slice_template,
@@ -753,6 +770,7 @@ class CEmitter:
         maxpool_template = templates["maxpool"]
         concat_template = templates["concat"]
         gather_elements_template = templates["gather_elements"]
+        gather_template = templates["gather"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         slice_template = templates["slice"]
@@ -798,6 +816,7 @@ class CEmitter:
                 maxpool_template=maxpool_template,
                 concat_template=concat_template,
                 gather_elements_template=gather_elements_template,
+                gather_template=gather_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
                 slice_template=slice_template,
@@ -983,6 +1002,7 @@ class CEmitter:
             | MaxPoolOp
             | ConcatOp
             | GatherElementsOp
+            | GatherOp
             | TransposeOp
             | ReshapeOp
             | SliceOp
@@ -1110,6 +1130,7 @@ class CEmitter:
             | MaxPoolOp
             | ConcatOp
             | GatherElementsOp
+            | GatherOp
             | TransposeOp
             | ReshapeOp
             | SliceOp
@@ -1202,6 +1223,7 @@ class CEmitter:
             | MaxPoolOp
             | ConcatOp
             | GatherElementsOp
+            | GatherOp
             | TransposeOp
             | ReshapeOp
             | SliceOp
@@ -1250,6 +1272,7 @@ class CEmitter:
             | MaxPoolOp
             | ConcatOp
             | GatherElementsOp
+            | GatherOp
             | ReshapeOp
             | SliceOp
             | ResizeOp
@@ -1308,6 +1331,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | SliceOp
@@ -1399,6 +1423,8 @@ class CEmitter:
             return f"{op.input0}, {op.output}"
         if isinstance(op, GatherElementsOp):
             return f"{op.data}, {op.indices}, {op.output}"
+        if isinstance(op, GatherOp):
+            return f"{op.data}, {op.indices}, {op.output}"
         if isinstance(op, ConcatOp):
             return ", ".join((*op.inputs, op.output))
         if isinstance(op, ConstantOfShapeOp):
@@ -1466,6 +1492,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | SliceOp
@@ -1495,6 +1522,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | SliceOp
@@ -1878,6 +1906,18 @@ class CEmitter:
                 dtype=op.dtype,
                 indices_dtype=op.indices_dtype,
             )
+        if isinstance(op, GatherOp):
+            return GatherOp(
+                data=temp_map.get(op.data, op.data),
+                indices=temp_map.get(op.indices, op.indices),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+                data_shape=op.data_shape,
+                indices_shape=op.indices_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                indices_dtype=op.indices_dtype,
+            )
         if isinstance(op, ConcatOp):
             return ConcatOp(
                 inputs=tuple(temp_map.get(name, name) for name in op.inputs),
@@ -2028,6 +2068,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | SliceOp
@@ -2063,6 +2104,7 @@ class CEmitter:
         maxpool_template,
         concat_template,
         gather_elements_template,
+        gather_template,
         transpose_template,
         reshape_template,
         slice_template,
@@ -2777,6 +2819,40 @@ class CEmitter:
                 axis_dim=op.data_shape[op.axis],
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, GatherOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            output_loop_vars = loop_vars if op.output_shape else ()
+            indices_rank = len(op.indices_shape)
+            if indices_rank == 0:
+                indices_indices = ("0",)
+            else:
+                indices_indices = output_loop_vars[
+                    op.axis : op.axis + indices_rank
+                ]
+            data_indices = [
+                *output_loop_vars[: op.axis],
+                "gather_index",
+                *output_loop_vars[op.axis + indices_rank :],
+            ]
+            rendered = gather_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                data=op.data,
+                indices=op.indices,
+                output=op.output,
+                c_type=c_type,
+                indices_c_type=dtype_info(op.indices_dtype).c_type,
+                data_suffix=self._param_array_suffix(op.data_shape),
+                indices_suffix=self._param_array_suffix(op.indices_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                indices_indices=indices_indices,
+                data_indices=data_indices,
+                axis_dim=op.data_shape[op.axis],
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, TransposeOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
@@ -3252,6 +3328,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -3283,6 +3360,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
@@ -3390,6 +3468,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | SliceOp
@@ -3433,6 +3512,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, GatherElementsOp):
             return op.output_shape
+        if isinstance(op, GatherOp):
+            return op.output_shape
         if isinstance(op, TransposeOp):
             return op.output_shape
         if isinstance(op, ReshapeOp):
@@ -3471,6 +3552,7 @@ class CEmitter:
         | MaxPoolOp
         | ConcatOp
         | GatherElementsOp
+        | GatherOp
         | TransposeOp
         | ReshapeOp
         | ResizeOp
