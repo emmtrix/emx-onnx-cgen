@@ -1,19 +1,19 @@
 [
   [
     "test_gather_basic/model.onnx",
-    "Unsupported op Gather"
+    ""
   ],
   [
     "test_gather_output_scalar/model.onnx",
-    "Unsupported op Gather"
+    ""
   ],
   [
     "test_gather_scalar_axis0/model.onnx",
-    "Unsupported op Gather"
+    ""
   ],
   [
     "test_gather_scalar_axis1/model.onnx",
-    "Unsupported op Gather"
+    ""
   ],
   [
     "test_gemm_C1/model.onnx",

@@ -192,4 +192,5 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         starts=spec.starts,
         steps=spec.steps,
         dtype=dtype,
+        input_dtype=dtype,
     )
