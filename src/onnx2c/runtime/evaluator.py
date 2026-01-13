@@ -761,7 +761,10 @@ def _apply_negative_log_likelihood_loss(
     if gather_weight is not None:
         loss = gather_weight * loss
         if reduction == "mean":
-            loss = loss.sum() / gather_weight.sum()
+            weight_sum = gather_weight.sum()
+            if weight_sum == 0:
+                return np.array(0, dtype=values.dtype)
+            loss = loss.sum() / weight_sum
             return loss.astype(values.dtype)
     if reduction == "mean":
         loss = np.mean(loss)
