@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1035 / 1802 official ONNX files.
+Support 1052 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1378,71 +1378,71 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean/model.onnx | ✅ |  |
 | node/test_sce_mean_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_3d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_4d/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_4d/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_none/model.onnx | ✅ |  |
 | node/test_sce_none_expanded/model.onnx | ✅ |  |
 | node/test_sce_none_log_prob/model.onnx | ✅ |  |
-| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_none_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_none_weights/model.onnx | ✅ |  |
 | node/test_sce_none_weights_expanded/model.onnx | ✅ |  |
 | node/test_sce_none_weights_log_prob/model.onnx | ✅ |  |
-| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_none_weights_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_sce_sum/model.onnx | ✅ |  |
 | node/test_sce_sum_expanded/model.onnx | ✅ |  |
 | node/test_sce_sum_log_prob/model.onnx | ✅ |  |
-| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
+| node/test_sce_sum_log_prob_expanded/model.onnx | ✅ |  |
 | node/test_selu/model.onnx | ❌ | Selu only supports alpha=1.6732632423543772 |
 | node/test_selu_default/model.onnx | ✅ |  |
 | node/test_selu_default_expanded_ver18/model.onnx | ✅ |  |
