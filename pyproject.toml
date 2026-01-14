@@ -3,13 +3,13 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "onnx2c"
+name = "emx-onnx2c"
 version = "0.1.0"
-description = "ONNX to C compiler"
+description = "emmtrix ONNX to C Compiler"
 requires-python = ">=3.10"
 
 [project.scripts]
-onnx2c = "onnx2c.cli:main"
+emx-onnx2c = "onnx2c.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
