@@ -2,9 +2,18 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx2c.svg)](https://pypi.org/project/emx-onnx2c)
 
-emx-onnx2c compiles ONNX models into portable, deterministic C code. The
-generated C is designed to be readable, stable across runs, and easy to embed in
-larger projects without heavy runtime dependencies.
+`emx-onnx2c` compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating systems, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
+
+Key characteristics:
+
+- **No dynamic memory allocation** (`malloc`, `free`, heap usage)
+- **Static, compile-time known memory layout** for parameters, activations, and temporaries
+- **Deterministic control flow** (explicit loops, no hidden dispatch or callbacks)
+- **No OS or libc dependencies** beyond basic C
+- **Single-threaded execution model**
+- **Bitwise-stable code generation** for reproducible builds
+- **Readable, auditable C code** suitable for certification and code reviews
+- Designed for **bare-metal and RTOS-based systems**
 
 ## Goals
 
@@ -26,6 +35,12 @@ larger projects without heavy runtime dependencies.
 - Minimal C runtime templates in `templates/`.
 - ONNX Runtime comparison for end-to-end validation.
 - Official ONNX operator coverage tracking.
+- Support for a wide range of ONNX operators (see `OFFICIAL_ONNX_FILE_SUPPORT.md`).
+- Supported data types:
+  - `float`, `double`, `float16`
+  - `int8_t`, `uint8_t`, `int16_t`, `uint16_t`, `int32_t`, `uint32_t`, `int64_t`, `uint64_t`
+  - `bool`
+- Supporting dynamic dimensions by utilizing C99 variable-length arrays (VLAs).
 
 ## Requirements
 
