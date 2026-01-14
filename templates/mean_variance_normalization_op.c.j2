@@ -1,0 +1,34 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+{% for axis in non_axes %}
+for (size_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
+{% endfor %}
+    {{ c_type }} sum = {{ zero_literal }};
+{% for axis in axes %}
+    for (size_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
+{% endfor %}
+        sum += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in axes %}
+    }
+{% endfor %}
+    {{ c_type }} mean = sum / {{ reduce_count }};
+    {{ c_type }} var = {{ zero_literal }};
+{% for axis in axes %}
+    for (size_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
+{% endfor %}
+        {{ c_type }} diff = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - mean;
+        var += diff * diff;
+{% for _ in axes %}
+    }
+{% endfor %}
+    {{ c_type }} denom = {{ sqrt_fn }}(var / {{ reduce_count }} + {{ epsilon_literal }});
+{% for axis in axes %}
+    for (size_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
+{% endfor %}
+        {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - mean) / denom;
+{% for _ in axes %}
+    }
+{% endfor %}
+{% for _ in non_axes %}
+}
+{% endfor %}
+}

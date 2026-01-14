@@ -2837,7 +2837,7 @@
   ],
   [
     "node/test_group_normalization_epsilon/model.onnx",
-    "Unsupported op GroupNormalization"
+    ""
   ],
   [
     "node/test_group_normalization_epsilon_expanded/model.onnx",
@@ -2845,7 +2845,7 @@
   ],
   [
     "node/test_group_normalization_example/model.onnx",
-    "Unsupported op GroupNormalization"
+    ""
   ],
   [
     "node/test_group_normalization_example_expanded/model.onnx",
@@ -3021,11 +3021,11 @@
   ],
   [
     "node/test_instancenorm_epsilon/model.onnx",
-    "Unsupported op InstanceNormalization"
+    ""
   ],
   [
     "node/test_instancenorm_example/model.onnx",
-    "Unsupported op InstanceNormalization"
+    ""
   ],
   [
     "node/test_isinf/model.onnx",
@@ -3053,27 +3053,27 @@
   ],
   [
     "node/test_l1normalization_axis_0/model.onnx",
-    "Unsupported op LpNormalization"
+    ""
   ],
   [
     "node/test_l1normalization_axis_1/model.onnx",
-    "Unsupported op LpNormalization"
+    ""
   ],
   [
     "node/test_l1normalization_axis_last/model.onnx",
-    "Unsupported op LpNormalization"
+    ""
   ],
   [
     "node/test_l2normalization_axis_0/model.onnx",
-    "Unsupported op LpNormalization"
+    ""
   ],
   [
     "node/test_l2normalization_axis_1/model.onnx",
-    "Unsupported op LpNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis0/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded/model.onnx",
@@ -3085,7 +3085,7 @@
   ],
   [
     "node/test_layer_normalization_2d_axis1/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis1_expanded/model.onnx",
@@ -3097,7 +3097,7 @@
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx",
@@ -3109,7 +3109,7 @@
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_2/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx",
@@ -3121,7 +3121,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx",
@@ -3133,7 +3133,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx",
@@ -3145,7 +3145,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx",
@@ -3157,7 +3157,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx",
@@ -3169,7 +3169,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx",
@@ -3181,7 +3181,7 @@
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx",
@@ -3193,7 +3193,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis0/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded/model.onnx",
@@ -3205,7 +3205,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis1/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis1_expanded/model.onnx",
@@ -3217,7 +3217,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis2/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis2_expanded/model.onnx",
@@ -3229,7 +3229,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis3/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis3_expanded/model.onnx",
@@ -3241,7 +3241,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx",
@@ -3253,7 +3253,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_2/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx",
@@ -3265,7 +3265,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_3/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx",
@@ -3277,7 +3277,7 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_4/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx",
@@ -3289,7 +3289,7 @@
   ],
   [
     "node/test_layer_normalization_default_axis/model.onnx",
-    "Unsupported op LayerNormalization"
+    ""
   ],
   [
     "node/test_layer_normalization_default_axis_expanded/model.onnx",
@@ -3525,7 +3525,7 @@
   ],
   [
     "node/test_lpnormalization_default/model.onnx",
-    "Unsupported op LpNormalization"
+    ""
   ],
   [
     "node/test_lppool_1d_default/model.onnx",
@@ -3933,7 +3933,7 @@
   ],
   [
     "node/test_mvn/model.onnx",
-    "Unsupported op MeanVarianceNormalization"
+    ""
   ],
   [
     "node/test_mvn_expanded/model.onnx",
@@ -5173,7 +5173,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis0/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_2d_axis0_expanded/model.onnx",
@@ -5181,7 +5181,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis1/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_2d_axis1_expanded/model.onnx",
@@ -5189,7 +5189,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_1/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx",
@@ -5197,7 +5197,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_2/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx",
@@ -5205,7 +5205,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis0_epsilon/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx",
@@ -5213,7 +5213,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis1_epsilon/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx",
@@ -5221,7 +5221,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis2_epsilon/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx",
@@ -5229,7 +5229,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx",
@@ -5237,7 +5237,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx",
@@ -5245,7 +5245,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx",
@@ -5253,7 +5253,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis0/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis0_expanded/model.onnx",
@@ -5261,7 +5261,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis1/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis1_expanded/model.onnx",
@@ -5269,7 +5269,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis2/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis2_expanded/model.onnx",
@@ -5277,7 +5277,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis3/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis3_expanded/model.onnx",
@@ -5285,7 +5285,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_1/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx",
@@ -5293,7 +5293,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_2/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx",
@@ -5301,7 +5301,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_3/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx",
@@ -5309,7 +5309,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_4/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx",
@@ -5317,7 +5317,7 @@
   ],
   [
     "node/test_rms_normalization_default_axis/model.onnx",
-    "Unsupported op RMSNormalization"
+    ""
   ],
   [
     "node/test_rms_normalization_default_axis_expanded/model.onnx",
@@ -7105,7 +7105,7 @@
   ],
   [
     "pytorch-operator/test_operator_symbolic_override/model.onnx",
-    "Unsupported op InstanceNormalization"
+    ""
   ],
   [
     "pytorch-operator/test_operator_symbolic_override_nested/model.onnx",

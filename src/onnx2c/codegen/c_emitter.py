@@ -383,6 +383,93 @@ class BatchNormOp:
 
 
 @dataclass(frozen=True)
+class LpNormalizationOp:
+    input0: str
+    output: str
+    shape: tuple[int, ...]
+    axis: int
+    p: int
+    outer: int
+    axis_size: int
+    inner: int
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class InstanceNormalizationOp:
+    input0: str
+    scale: str
+    bias: str
+    output: str
+    shape: tuple[int, ...]
+    channels: int
+    spatial_size: int
+    epsilon: float
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class GroupNormalizationOp:
+    input0: str
+    scale: str
+    bias: str
+    output: str
+    shape: tuple[int, ...]
+    channels: int
+    num_groups: int
+    group_size: int
+    spatial_size: int
+    epsilon: float
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class LayerNormalizationOp:
+    input0: str
+    scale: str
+    bias: str | None
+    output: str
+    mean_output: str | None
+    invstd_output: str | None
+    shape: tuple[int, ...]
+    normalized_shape: tuple[int, ...]
+    scale_shape: tuple[int, ...]
+    bias_shape: tuple[int, ...] | None
+    outer: int
+    inner: int
+    axis: int
+    epsilon: float
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class MeanVarianceNormalizationOp:
+    input0: str
+    output: str
+    shape: tuple[int, ...]
+    axes: tuple[int, ...]
+    non_axes: tuple[int, ...]
+    reduce_count: int
+    epsilon: float
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class RMSNormalizationOp:
+    input0: str
+    scale: str
+    output: str
+    shape: tuple[int, ...]
+    normalized_shape: tuple[int, ...]
+    scale_shape: tuple[int, ...]
+    outer: int
+    inner: int
+    axis: int
+    epsilon: float
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class LrnOp:
     input0: str
     output: str
@@ -771,6 +858,12 @@ class LoweredModel:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -847,6 +940,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -927,6 +1026,26 @@ class CEmitter:
             return (op.input0, op.output)
         if isinstance(op, BatchNormOp):
             return (op.input0, op.scale, op.bias, op.mean, op.variance, op.output)
+        if isinstance(op, LpNormalizationOp):
+            return (op.input0, op.output)
+        if isinstance(op, InstanceNormalizationOp):
+            return (op.input0, op.scale, op.bias, op.output)
+        if isinstance(op, GroupNormalizationOp):
+            return (op.input0, op.scale, op.bias, op.output)
+        if isinstance(op, LayerNormalizationOp):
+            names = [op.input0, op.scale]
+            if op.bias is not None:
+                names.append(op.bias)
+            names.append(op.output)
+            if op.mean_output is not None:
+                names.append(op.mean_output)
+            if op.invstd_output is not None:
+                names.append(op.invstd_output)
+            return tuple(names)
+        if isinstance(op, MeanVarianceNormalizationOp):
+            return (op.input0, op.output)
+        if isinstance(op, RMSNormalizationOp):
+            return (op.input0, op.scale, op.output)
         if isinstance(op, LstmOp):
             names = [op.input_x, op.input_w, op.input_r]
             if op.input_b is not None:
@@ -1066,6 +1185,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -1106,6 +1231,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -1329,6 +1460,87 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 shape=op.shape,
                 channels=op.channels,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, LpNormalizationOp):
+            return LpNormalizationOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                shape=op.shape,
+                axis=op.axis,
+                p=op.p,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                dtype=op.dtype,
+            )
+        if isinstance(op, InstanceNormalizationOp):
+            return InstanceNormalizationOp(
+                input0=name_map.get(op.input0, op.input0),
+                scale=name_map.get(op.scale, op.scale),
+                bias=name_map.get(op.bias, op.bias),
+                output=name_map.get(op.output, op.output),
+                shape=op.shape,
+                channels=op.channels,
+                spatial_size=op.spatial_size,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, GroupNormalizationOp):
+            return GroupNormalizationOp(
+                input0=name_map.get(op.input0, op.input0),
+                scale=name_map.get(op.scale, op.scale),
+                bias=name_map.get(op.bias, op.bias),
+                output=name_map.get(op.output, op.output),
+                shape=op.shape,
+                channels=op.channels,
+                num_groups=op.num_groups,
+                group_size=op.group_size,
+                spatial_size=op.spatial_size,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, LayerNormalizationOp):
+            return LayerNormalizationOp(
+                input0=name_map.get(op.input0, op.input0),
+                scale=name_map.get(op.scale, op.scale),
+                bias=self._map_optional_name(name_map, op.bias),
+                output=name_map.get(op.output, op.output),
+                mean_output=self._map_optional_name(name_map, op.mean_output),
+                invstd_output=self._map_optional_name(name_map, op.invstd_output),
+                shape=op.shape,
+                normalized_shape=op.normalized_shape,
+                scale_shape=op.scale_shape,
+                bias_shape=op.bias_shape,
+                outer=op.outer,
+                inner=op.inner,
+                axis=op.axis,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, MeanVarianceNormalizationOp):
+            return MeanVarianceNormalizationOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                shape=op.shape,
+                axes=op.axes,
+                non_axes=op.non_axes,
+                reduce_count=op.reduce_count,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, RMSNormalizationOp):
+            return RMSNormalizationOp(
+                input0=name_map.get(op.input0, op.input0),
+                scale=name_map.get(op.scale, op.scale),
+                output=name_map.get(op.output, op.output),
+                shape=op.shape,
+                normalized_shape=op.normalized_shape,
+                scale_shape=op.scale_shape,
+                outer=op.outer,
+                inner=op.inner,
+                axis=op.axis,
                 epsilon=op.epsilon,
                 dtype=op.dtype,
             )
@@ -1783,6 +1995,20 @@ class CEmitter:
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
                 "batch_norm": self._env.get_template("batch_norm_op.c.j2"),
+                "lp_norm": self._env.get_template("lp_normalization_op.c.j2"),
+                "instance_norm": self._env.get_template(
+                    "instance_normalization_op.c.j2"
+                ),
+                "group_norm": self._env.get_template(
+                    "group_normalization_op.c.j2"
+                ),
+                "layer_norm": self._env.get_template(
+                    "layer_normalization_op.c.j2"
+                ),
+                "mean_variance_norm": self._env.get_template(
+                    "mean_variance_normalization_op.c.j2"
+                ),
+                "rms_norm": self._env.get_template("rms_normalization_op.c.j2"),
                 "lrn": self._env.get_template("lrn_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
                 "softmax": self._env.get_template("softmax_op.c.j2"),
@@ -1872,6 +2098,12 @@ class CEmitter:
         conv_template = templates["conv"]
         avg_pool_template = templates["avg_pool"]
         batch_norm_template = templates["batch_norm"]
+        lp_norm_template = templates["lp_norm"]
+        instance_norm_template = templates["instance_norm"]
+        group_norm_template = templates["group_norm"]
+        layer_norm_template = templates["layer_norm"]
+        mean_variance_norm_template = templates["mean_variance_norm"]
+        rms_norm_template = templates["rms_norm"]
         lrn_template = templates["lrn"]
         lstm_template = templates["lstm"]
         softmax_template = templates["softmax"]
@@ -1936,6 +2168,12 @@ class CEmitter:
                 conv_template=conv_template,
                 avg_pool_template=avg_pool_template,
                 batch_norm_template=batch_norm_template,
+                lp_norm_template=lp_norm_template,
+                instance_norm_template=instance_norm_template,
+                group_norm_template=group_norm_template,
+                layer_norm_template=layer_norm_template,
+                mean_variance_norm_template=mean_variance_norm_template,
+                rms_norm_template=rms_norm_template,
                 lrn_template=lrn_template,
                 lstm_template=lstm_template,
                 softmax_template=softmax_template,
@@ -2073,6 +2311,12 @@ class CEmitter:
         conv_template = templates["conv"]
         avg_pool_template = templates["avg_pool"]
         batch_norm_template = templates["batch_norm"]
+        lp_norm_template = templates["lp_norm"]
+        instance_norm_template = templates["instance_norm"]
+        group_norm_template = templates["group_norm"]
+        layer_norm_template = templates["layer_norm"]
+        mean_variance_norm_template = templates["mean_variance_norm"]
+        rms_norm_template = templates["rms_norm"]
         lrn_template = templates["lrn"]
         lstm_template = templates["lstm"]
         softmax_template = templates["softmax"]
@@ -2137,6 +2381,12 @@ class CEmitter:
                 conv_template=conv_template,
                 avg_pool_template=avg_pool_template,
                 batch_norm_template=batch_norm_template,
+                lp_norm_template=lp_norm_template,
+                instance_norm_template=instance_norm_template,
+                group_norm_template=group_norm_template,
+                layer_norm_template=layer_norm_template,
+                mean_variance_norm_template=mean_variance_norm_template,
+                rms_norm_template=rms_norm_template,
                 lrn_template=lrn_template,
                 lstm_template=lstm_template,
                 softmax_template=softmax_template,
@@ -2453,6 +2703,12 @@ class CEmitter:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
             | LrnOp
             | LstmOp
             | SoftmaxOp
@@ -2626,6 +2882,12 @@ class CEmitter:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
             | LrnOp
             | LstmOp
             | SoftmaxOp
@@ -2712,6 +2974,12 @@ class CEmitter:
                 (
                     AttentionOp,
                     BatchNormOp,
+                    LpNormalizationOp,
+                    InstanceNormalizationOp,
+                    GroupNormalizationOp,
+                    LayerNormalizationOp,
+                    MeanVarianceNormalizationOp,
+                    RMSNormalizationOp,
                     LrnOp,
                     LstmOp,
                     SoftmaxOp,
@@ -2756,6 +3024,12 @@ class CEmitter:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
             | LrnOp
             | LstmOp
             | SoftmaxOp
@@ -2828,6 +3102,12 @@ class CEmitter:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
             | LrnOp
             | LstmOp
             | SoftmaxOp
@@ -2905,6 +3185,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -2996,6 +3282,32 @@ class CEmitter:
             args.extend(
                 [op.input0, op.scale, op.bias, op.mean, op.variance, op.output]
             )
+            return ", ".join(args)
+        if isinstance(op, LpNormalizationOp):
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
+        if isinstance(op, InstanceNormalizationOp):
+            args.extend([op.input0, op.scale, op.bias, op.output])
+            return ", ".join(args)
+        if isinstance(op, GroupNormalizationOp):
+            args.extend([op.input0, op.scale, op.bias, op.output])
+            return ", ".join(args)
+        if isinstance(op, LayerNormalizationOp):
+            call_parts = [op.input0, op.scale]
+            if op.bias is not None:
+                call_parts.append(op.bias)
+            call_parts.append(op.output)
+            if op.mean_output is not None:
+                call_parts.append(op.mean_output)
+            if op.invstd_output is not None:
+                call_parts.append(op.invstd_output)
+            args.extend(call_parts)
+            return ", ".join(args)
+        if isinstance(op, MeanVarianceNormalizationOp):
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
+        if isinstance(op, RMSNormalizationOp):
+            args.extend([op.input0, op.scale, op.output])
             return ", ".join(args)
         if isinstance(op, LstmOp):
             call_parts = [op.input_x, op.input_w, op.input_r]
@@ -3160,6 +3472,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -3200,6 +3518,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -3507,6 +3831,95 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 shape=op.shape,
                 channels=op.channels,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, LpNormalizationOp):
+            return LpNormalizationOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                shape=op.shape,
+                axis=op.axis,
+                p=op.p,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                dtype=op.dtype,
+            )
+        if isinstance(op, InstanceNormalizationOp):
+            return InstanceNormalizationOp(
+                input0=temp_map.get(op.input0, op.input0),
+                scale=temp_map.get(op.scale, op.scale),
+                bias=temp_map.get(op.bias, op.bias),
+                output=temp_map.get(op.output, op.output),
+                shape=op.shape,
+                channels=op.channels,
+                spatial_size=op.spatial_size,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, GroupNormalizationOp):
+            return GroupNormalizationOp(
+                input0=temp_map.get(op.input0, op.input0),
+                scale=temp_map.get(op.scale, op.scale),
+                bias=temp_map.get(op.bias, op.bias),
+                output=temp_map.get(op.output, op.output),
+                shape=op.shape,
+                channels=op.channels,
+                num_groups=op.num_groups,
+                group_size=op.group_size,
+                spatial_size=op.spatial_size,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, LayerNormalizationOp):
+            return LayerNormalizationOp(
+                input0=temp_map.get(op.input0, op.input0),
+                scale=temp_map.get(op.scale, op.scale),
+                bias=(temp_map.get(op.bias, op.bias) if op.bias else None),
+                output=temp_map.get(op.output, op.output),
+                mean_output=(
+                    temp_map.get(op.mean_output, op.mean_output)
+                    if op.mean_output
+                    else None
+                ),
+                invstd_output=(
+                    temp_map.get(op.invstd_output, op.invstd_output)
+                    if op.invstd_output
+                    else None
+                ),
+                shape=op.shape,
+                normalized_shape=op.normalized_shape,
+                scale_shape=op.scale_shape,
+                bias_shape=op.bias_shape,
+                outer=op.outer,
+                inner=op.inner,
+                axis=op.axis,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, MeanVarianceNormalizationOp):
+            return MeanVarianceNormalizationOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                shape=op.shape,
+                axes=op.axes,
+                non_axes=op.non_axes,
+                reduce_count=op.reduce_count,
+                epsilon=op.epsilon,
+                dtype=op.dtype,
+            )
+        if isinstance(op, RMSNormalizationOp):
+            return RMSNormalizationOp(
+                input0=temp_map.get(op.input0, op.input0),
+                scale=temp_map.get(op.scale, op.scale),
+                output=temp_map.get(op.output, op.output),
+                shape=op.shape,
+                normalized_shape=op.normalized_shape,
+                scale_shape=op.scale_shape,
+                outer=op.outer,
+                inner=op.inner,
+                axis=op.axis,
                 epsilon=op.epsilon,
                 dtype=op.dtype,
             )
@@ -3909,6 +4322,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -3955,6 +4374,12 @@ class CEmitter:
         conv_template,
         avg_pool_template,
         batch_norm_template,
+        lp_norm_template,
+        instance_norm_template,
+        group_norm_template,
+        layer_norm_template,
+        mean_variance_norm_template,
+        rms_norm_template,
         lrn_template,
         lstm_template,
         softmax_template,
@@ -4443,6 +4868,189 @@ class CEmitter:
                 variance_suffix=self._param_array_suffix((op.channels,)),
                 shape=shape,
                 loop_vars=loop_vars,
+                epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, LpNormalizationOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            rendered = lp_norm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                array_suffix=self._param_array_suffix(shape),
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                p=op.p,
+                zero_literal=zero_literal,
+                abs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, InstanceNormalizationOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            loop_vars = CEmitter._loop_vars(shape)
+            rendered = instance_norm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                scale=op.scale,
+                bias=op.bias,
+                output=op.output,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                input_suffix=self._param_array_suffix(shape),
+                output_suffix=self._param_array_suffix(shape),
+                scale_suffix=self._param_array_suffix((op.channels,)),
+                bias_suffix=self._param_array_suffix((op.channels,)),
+                shape=shape,
+                loop_vars=loop_vars,
+                spatial_size=op.spatial_size,
+                epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, GroupNormalizationOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            loop_vars = CEmitter._loop_vars(shape)
+            rendered = group_norm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                scale=op.scale,
+                bias=op.bias,
+                output=op.output,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                input_suffix=self._param_array_suffix(shape),
+                output_suffix=self._param_array_suffix(shape),
+                scale_suffix=self._param_array_suffix((op.channels,)),
+                bias_suffix=self._param_array_suffix((op.channels,)),
+                shape=shape,
+                loop_vars=loop_vars,
+                num_groups=op.num_groups,
+                group_size=op.group_size,
+                spatial_size=op.spatial_size,
+                epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, LayerNormalizationOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            loop_vars = CEmitter._loop_vars(shape)
+            prefix_loop_vars = loop_vars[: op.axis]
+            norm_loop_vars = loop_vars[op.axis :]
+            scale_index_vars = [
+                "0" if dim == 1 else var
+                for dim, var in zip(op.scale_shape, norm_loop_vars)
+            ]
+            bias_index_vars = None
+            if op.bias_shape is not None and op.bias is not None:
+                bias_index_vars = [
+                    "0" if dim == 1 else var
+                    for dim, var in zip(op.bias_shape, norm_loop_vars)
+                ]
+            mean_index_vars = [
+                *prefix_loop_vars,
+                *("0" for _ in norm_loop_vars),
+            ]
+            rendered = layer_norm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                scale=op.scale,
+                bias=op.bias,
+                output=op.output,
+                mean_output=op.mean_output,
+                invstd_output=op.invstd_output,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                input_suffix=self._param_array_suffix(shape),
+                output_suffix=self._param_array_suffix(shape),
+                scale_suffix=self._param_array_suffix(op.scale_shape),
+                bias_suffix=(
+                    self._param_array_suffix(op.bias_shape)
+                    if op.bias_shape is not None
+                    else ""
+                ),
+                mean_suffix=(
+                    self._param_array_suffix(
+                        op.shape[: op.axis]
+                        + (1,) * len(op.normalized_shape)
+                    )
+                    if op.mean_output is not None
+                    else ""
+                ),
+                invstd_suffix=(
+                    self._param_array_suffix(
+                        op.shape[: op.axis]
+                        + (1,) * len(op.normalized_shape)
+                    )
+                    if op.invstd_output is not None
+                    else ""
+                ),
+                prefix_shape=shape[: op.axis],
+                norm_shape=shape[op.axis :],
+                prefix_loop_vars=prefix_loop_vars,
+                norm_loop_vars=norm_loop_vars,
+                scale_index_vars=scale_index_vars,
+                bias_index_vars=bias_index_vars,
+                mean_index_vars=mean_index_vars,
+                inner=op.inner,
+                epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, MeanVarianceNormalizationOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            loop_vars = CEmitter._loop_vars(shape)
+            rendered = mean_variance_norm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                input_suffix=self._param_array_suffix(shape),
+                output_suffix=self._param_array_suffix(shape),
+                shape=shape,
+                loop_vars=loop_vars,
+                axes=op.axes,
+                non_axes=op.non_axes,
+                reduce_count=op.reduce_count,
+                epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, RMSNormalizationOp):
+            shape = CEmitter._codegen_shape(op.shape)
+            loop_vars = CEmitter._loop_vars(shape)
+            prefix_loop_vars = loop_vars[: op.axis]
+            norm_loop_vars = loop_vars[op.axis :]
+            scale_index_vars = [
+                "0" if dim == 1 else var
+                for dim, var in zip(op.scale_shape, norm_loop_vars)
+            ]
+            rendered = rms_norm_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                scale=op.scale,
+                output=op.output,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                input_suffix=self._param_array_suffix(shape),
+                output_suffix=self._param_array_suffix(shape),
+                scale_suffix=self._param_array_suffix(op.scale_shape),
+                prefix_shape=shape[: op.axis],
+                norm_shape=shape[op.axis :],
+                prefix_loop_vars=prefix_loop_vars,
+                norm_loop_vars=norm_loop_vars,
+                scale_index_vars=scale_index_vars,
+                inner=op.inner,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
                 sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
             ).rstrip()
@@ -5625,6 +6233,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -5669,6 +6283,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -5700,6 +6320,29 @@ class CEmitter:
             return ((op.input0, op.shape), (op.input1, op.shape))
         if isinstance(op, UnaryOp):
             return ((op.input0, op.shape),)
+        if isinstance(op, LpNormalizationOp):
+            return ((op.input0, op.shape),)
+        if isinstance(op, InstanceNormalizationOp):
+            return (
+                (op.input0, op.shape),
+                (op.scale, (op.channels,)),
+                (op.bias, (op.channels,)),
+            )
+        if isinstance(op, GroupNormalizationOp):
+            return (
+                (op.input0, op.shape),
+                (op.scale, (op.channels,)),
+                (op.bias, (op.channels,)),
+            )
+        if isinstance(op, LayerNormalizationOp):
+            inputs = [(op.input0, op.shape), (op.scale, op.scale_shape)]
+            if op.bias is not None and op.bias_shape is not None:
+                inputs.append((op.bias, op.bias_shape))
+            return tuple(inputs)
+        if isinstance(op, MeanVarianceNormalizationOp):
+            return ((op.input0, op.shape),)
+        if isinstance(op, RMSNormalizationOp):
+            return ((op.input0, op.shape), (op.scale, op.scale_shape))
         if isinstance(op, ClipOp):
             return ((op.input0, op.shape),)
         if isinstance(op, CastOp):
@@ -5724,6 +6367,12 @@ class CEmitter:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
             | LrnOp
             | LstmOp
             | SoftmaxOp
@@ -5776,6 +6425,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -5872,6 +6527,17 @@ class CEmitter:
             if op.log_prob is not None and op.log_prob_shape is not None:
                 outputs.append((op.log_prob, op.log_prob_shape, op.dtype))
             return tuple(outputs)
+        if isinstance(op, LayerNormalizationOp):
+            outputs: list[tuple[str, tuple[int, ...], str]] = [
+                (op.output, op.shape, op.dtype)
+            ]
+            if op.mean_output is not None:
+                mean_shape = op.shape[: op.axis] + (1,) * len(op.normalized_shape)
+                outputs.append((op.mean_output, mean_shape, op.dtype))
+            if op.invstd_output is not None:
+                invstd_shape = op.shape[: op.axis] + (1,) * len(op.normalized_shape)
+                outputs.append((op.invstd_output, invstd_shape, op.dtype))
+            return tuple(outputs)
         if isinstance(op, MaxPoolOp):
             outputs = [(op.output, CEmitter._op_output_shape(op), op.dtype)]
             if op.indices is not None and op.indices_dtype is not None:
@@ -5901,6 +6567,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | LrnOp
         | LstmOp
         | SoftmaxOp
@@ -5943,6 +6615,18 @@ class CEmitter:
         if isinstance(op, AveragePoolOp):
             return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, BatchNormOp):
+            return op.shape
+        if isinstance(
+            op,
+            (
+                LpNormalizationOp,
+                InstanceNormalizationOp,
+                GroupNormalizationOp,
+                LayerNormalizationOp,
+                MeanVarianceNormalizationOp,
+                RMSNormalizationOp,
+            ),
+        ):
             return op.shape
         if isinstance(op, LrnOp):
             return op.shape
@@ -6010,6 +6694,12 @@ class CEmitter:
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
+        | LpNormalizationOp
+        | InstanceNormalizationOp
+        | GroupNormalizationOp
+        | LayerNormalizationOp
+        | MeanVarianceNormalizationOp
+        | RMSNormalizationOp
         | SoftmaxOp
         | LogSoftmaxOp
         | NegativeLogLikelihoodLossOp

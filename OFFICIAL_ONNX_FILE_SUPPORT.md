@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1056 / 1802 official ONNX files.
+Support 1106 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -717,9 +717,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gridsample_volumetric_nearest_align_corners_0/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_gridsample_zeros_padding/model.onnx | ❌ | Unsupported op GridSample |
-| node/test_group_normalization_epsilon/model.onnx | ❌ | Unsupported op GroupNormalization |
+| node/test_group_normalization_epsilon/model.onnx | ✅ |  |
 | node/test_group_normalization_epsilon_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
-| node/test_group_normalization_example/model.onnx | ❌ | Unsupported op GroupNormalization |
+| node/test_group_normalization_example/model.onnx | ✅ |  |
 | node/test_group_normalization_example_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_gru_batchwise/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_defaults/model.onnx | ❌ | Unsupported op GRU |
@@ -763,74 +763,74 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_image_decoder_decode_pnm_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_tiff_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_webp_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
-| node/test_instancenorm_epsilon/model.onnx | ❌ | Unsupported op InstanceNormalization |
-| node/test_instancenorm_example/model.onnx | ❌ | Unsupported op InstanceNormalization |
+| node/test_instancenorm_epsilon/model.onnx | ✅ |  |
+| node/test_instancenorm_example/model.onnx | ✅ |  |
 | node/test_isinf/model.onnx | ✅ |  |
 | node/test_isinf_float16/model.onnx | ✅ |  |
 | node/test_isinf_negative/model.onnx | ✅ |  |
 | node/test_isinf_positive/model.onnx | ✅ |  |
 | node/test_isnan/model.onnx | ✅ |  |
 | node/test_isnan_float16/model.onnx | ✅ |  |
-| node/test_l1normalization_axis_0/model.onnx | ❌ | Unsupported op LpNormalization |
-| node/test_l1normalization_axis_1/model.onnx | ❌ | Unsupported op LpNormalization |
-| node/test_l1normalization_axis_last/model.onnx | ❌ | Unsupported op LpNormalization |
-| node/test_l2normalization_axis_0/model.onnx | ❌ | Unsupported op LpNormalization |
-| node/test_l2normalization_axis_1/model.onnx | ❌ | Unsupported op LpNormalization |
-| node/test_layer_normalization_2d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_l1normalization_axis_0/model.onnx | ✅ |  |
+| node/test_l1normalization_axis_1/model.onnx | ✅ |  |
+| node/test_l1normalization_axis_last/model.onnx | ✅ |  |
+| node/test_l2normalization_axis_0/model.onnx | ✅ |  |
+| node/test_l2normalization_axis_1/model.onnx | ✅ |  |
+| node/test_layer_normalization_2d_axis0/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis0_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_2d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_2d_axis1/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis1_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_2d_axis_negative_1/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
-| node/test_layer_normalization_2d_axis_negative_2/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_2d_axis_negative_2/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
-| node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
-| node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_4d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis0/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis0_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_4d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis1/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis1_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_4d_axis2/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis2/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis2_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_4d_axis3/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis3/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis3_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis_negative_1/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
-| node/test_layer_normalization_4d_axis_negative_2/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis_negative_2/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
-| node/test_layer_normalization_4d_axis_negative_3/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis_negative_3/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
-| node/test_layer_normalization_4d_axis_negative_4/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_4d_axis_negative_4/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ✅ |  |
-| node/test_layer_normalization_default_axis/model.onnx | ❌ | Unsupported op LayerNormalization |
+| node/test_layer_normalization_default_axis/model.onnx | ✅ |  |
 | node/test_layer_normalization_default_axis_expanded/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
 | node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
 | node/test_leakyrelu/model.onnx | ❌ | LeakyRelu only supports alpha=0.01 |
@@ -889,7 +889,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_loop11/model.onnx | ❌ | Unsupported op Loop |
 | node/test_loop13_seq/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_empty'. Hint: export the model with tensor inputs/outputs. |
 | node/test_loop16_seq_none/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_seq'. Hint: export the model with tensor inputs/outputs. |
-| node/test_lpnormalization_default/model.onnx | ❌ | Unsupported op LpNormalization |
+| node/test_lpnormalization_default/model.onnx | ✅ |  |
 | node/test_lppool_1d_default/model.onnx | ❌ | Unsupported op LpPool |
 | node/test_lppool_2d_default/model.onnx | ❌ | Unsupported op LpPool |
 | node/test_lppool_2d_dilations/model.onnx | ❌ | Unsupported op LpPool |
@@ -991,7 +991,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_mul_uint32/model.onnx | ✅ |  |
 | node/test_mul_uint64/model.onnx | ✅ |  |
 | node/test_mul_uint8/model.onnx | ✅ |  |
-| node/test_mvn/model.onnx | ❌ | Unsupported op MeanVarianceNormalization |
+| node/test_mvn/model.onnx | ✅ |  |
 | node/test_mvn_expanded/model.onnx | ✅ |  |
 | node/test_mvn_expanded_ver18/model.onnx | ✅ |  |
 | node/test_neg/model.onnx | ✅ |  |
@@ -1301,43 +1301,43 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_resize_upsample_sizes_nearest_round_prefer_ceil_asymmetric/model.onnx | ✅ |  |
 | node/test_reversesequence_batch/model.onnx | ❌ | Unsupported op ReverseSequence |
 | node/test_reversesequence_time/model.onnx | ❌ | Unsupported op ReverseSequence |
-| node/test_rms_normalization_2d_axis0/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_2d_axis0/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis0_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_2d_axis1/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_2d_axis1/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_2d_axis_negative_1/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_2d_axis_negative_2/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_2d_axis_negative_2/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_3d_axis0_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_3d_axis1_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_3d_axis2_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis0/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis0/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis0_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis1/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis1/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis2/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis2/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis2_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis3/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis3/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis3_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis_negative_1/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis_negative_2/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis_negative_2/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis_negative_3/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis_negative_3/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_4d_axis_negative_4/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_4d_axis_negative_4/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
-| node/test_rms_normalization_default_axis/model.onnx | ❌ | Unsupported op RMSNormalization |
+| node/test_rms_normalization_default_axis/model.onnx | ✅ |  |
 | node/test_rms_normalization_default_axis_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rnn_seq_length/model.onnx | ❌ | Unsupported op RNN |
 | node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
@@ -1784,7 +1784,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_repeat_dim_overflow/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_selu/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_sqrt/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Unsupported op InstanceNormalization |
+| pytorch-operator/test_operator_symbolic_override/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
 | pytorch-operator/test_operator_view/model.onnx | ✅ |  |
 | simple/test_expand_shape_model1/model.onnx | ✅ |  |

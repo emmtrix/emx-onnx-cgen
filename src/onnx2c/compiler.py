@@ -14,6 +14,12 @@ from .codegen.c_emitter import (
     AttentionOp,
     AveragePoolOp,
     BatchNormOp,
+    LpNormalizationOp,
+    InstanceNormalizationOp,
+    GroupNormalizationOp,
+    LayerNormalizationOp,
+    MeanVarianceNormalizationOp,
+    RMSNormalizationOp,
     BinaryOp,
     CastOp,
     ClipOp,
@@ -76,6 +82,11 @@ from .lowering.gather_elements import lower_gather_elements
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
+from .lowering import group_normalization as _group_normalization  # noqa: F401
+from .lowering import instance_normalization as _instance_normalization  # noqa: F401
+from .lowering import layer_normalization as _layer_normalization  # noqa: F401
+from .lowering import lp_normalization as _lp_normalization  # noqa: F401
+from .lowering import mean_variance_normalization as _mean_variance_normalization  # noqa: F401
 from .lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
@@ -114,6 +125,7 @@ from .lowering.elementwise import (
     lower_shrink,
     lower_swish,
 )
+from .lowering import rms_normalization as _rms_normalization  # noqa: F401
 from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
 from .ops import (
@@ -315,6 +327,12 @@ class Compiler:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
             | LrnOp
             | LstmOp
             | SoftmaxOp
@@ -350,6 +368,12 @@ class Compiler:
             | ConvOp
             | AveragePoolOp
             | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
             | LrnOp
             | LstmOp
             | SoftmaxOp

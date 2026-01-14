@@ -6,8 +6,6 @@
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
-| Unsupported op LayerNormalization | 19 | ████████████████ |
-| Unsupported op RMSNormalization | 19 | ████████████████ |
 | ReduceMean output shape rank must match input rank | 19 | ████████████████ |
 | Unsupported op Pad | 18 | ███████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
@@ -42,7 +40,6 @@
 | Unsupported op CenterCropPad | 6 | █████ |
 | Unsupported op DFT | 6 | █████ |
 | Unsupported op Einsum | 6 | █████ |
-| Unsupported op LpNormalization | 6 | █████ |
 | Concat output shape must be (2,), got (1,) | 6 | █████ |
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
@@ -70,7 +67,6 @@
 | Elu only supports alpha=1.0 | 3 | ██ |
 | Unsupported op GatherND | 3 | ██ |
 | HardSigmoid only supports alpha=0.2 | 3 | ██ |
-| Unsupported op InstanceNormalization | 3 | ██ |
 | LeakyRelu only supports alpha=0.01 | 3 | ██ |
 | Unsupported op Loop | 3 | ██ |
 | Unsupported op Momentum | 3 | ██ |
@@ -88,7 +84,6 @@
 | Unsupported op Det | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
 | Unsupported op GlobalMaxPool | 2 | ██ |
-| Unsupported op GroupNormalization | 2 | ██ |
 | Unsupported op HammingWindow | 2 | ██ |
 | Unsupported op HannWindow | 2 | ██ |
 | Max must have 2 inputs and 1 output | 2 | ██ |
@@ -112,7 +107,6 @@
 | Unsupported op MatMulInteger | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
 | Unsupported op Mish | 1 | █ |
-| Unsupported op MeanVarianceNormalization | 1 | █ |
 | Unsupported op NonZero | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
 | Pow expects matching dtypes, got float, uint32 | 1 | █ |
