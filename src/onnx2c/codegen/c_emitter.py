@@ -5408,6 +5408,24 @@ class CEmitter:
         dim_order: list[str] = []
         dim_vars: dict[tuple[str, int, int], str] = {}
         dim_values: dict[str, int] = {}
+        reserved_names = set(model.input_names) | set(model.output_names)
+        used_names = set(reserved_names)
+        dim_aliases: dict[str, str] = {}
+
+        def _unique_dim_name(dim_name: str) -> str:
+            if dim_name in dim_aliases:
+                return dim_aliases[dim_name]
+            base_name = dim_name
+            if base_name in used_names:
+                base_name = f"{dim_name}_dim"
+            candidate = base_name
+            counter = 1
+            while candidate in used_names:
+                counter += 1
+                candidate = f"{base_name}{counter}"
+            dim_aliases[dim_name] = candidate
+            used_names.add(candidate)
+            return candidate
 
         def _register_dim(
             kind: str,
@@ -5417,6 +5435,7 @@ class CEmitter:
             dim_value: int,
         ) -> str:
             key = (kind, tensor_index, dim_index)
+            dim_name = _unique_dim_name(dim_name)
             if key not in dim_vars:
                 dim_vars[key] = dim_name
                 if dim_name not in dim_order:
