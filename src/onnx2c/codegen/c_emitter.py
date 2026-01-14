@@ -5809,8 +5809,10 @@ class CEmitter:
         shape = CEmitter._codegen_shape(shape)
         count = 1
         for dim in shape:
-            if dim <= 0:
-                raise CodegenError("Dynamic or zero dims are not supported")
+            if dim < 0:
+                raise CodegenError("Dynamic dims are not supported")
+            if dim == 0:
+                return 0
             count *= dim
         return count
 

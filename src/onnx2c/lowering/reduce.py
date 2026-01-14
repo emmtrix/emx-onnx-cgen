@@ -76,8 +76,10 @@ def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
 def _shape_product(shape: tuple[int, ...]) -> int:
     product = 1
     for dim in shape:
-        if dim <= 0:
-            raise ShapeInferenceError("Dynamic or zero dims are not supported")
+        if dim < 0:
+            raise ShapeInferenceError("Dynamic dims are not supported")
+        if dim == 0:
+            return 0
         product *= dim
     return product
 

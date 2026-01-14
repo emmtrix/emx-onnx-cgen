@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1020 / 1802 official ONNX files.
+Support 1043 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -521,7 +521,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_constant_pad_axes/model.onnx | ❌ | Unsupported op Pad |
 | node/test_constant_pad_negative_axes/model.onnx | ❌ | Unsupported op Pad |
 | node/test_constantofshape_float_ones/model.onnx | ✅ |  |
-| node/test_constantofshape_int_shape_zero/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_constantofshape_int_shape_zero/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_constantofshape_int_zeros/model.onnx | ✅ |  |
 | node/test_conv_with_autopad_same/model.onnx | ✅ |  |
 | node/test_conv_with_strides_and_asymmetric_padding/model.onnx | ✅ |  |
@@ -777,8 +777,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_l2normalization_axis_0/model.onnx | ❌ | Unsupported op LpNormalization |
 | node/test_l2normalization_axis_1/model.onnx | ❌ | Unsupported op LpNormalization |
 | node/test_layer_normalization_2d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_2d_axis0_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_2d_axis1_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ✅ |  |
@@ -786,11 +786,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_2d_axis_negative_2/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ✅ |  |
@@ -804,11 +804,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_4d_axis0_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis1/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis1_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ✅ |  |
@@ -828,8 +828,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_4/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ✅ |  |
+| node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_default_axis/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_default_axis_expanded/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
 | node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
@@ -1121,8 +1121,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_l1_do_not_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_l1_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx | ✅ |  |
-| node/test_reduce_l1_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_reduce_l1_empty_set_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_l1_empty_set/model.onnx | ✅ |  |
+| node/test_reduce_l1_empty_set_expanded/model.onnx | ✅ |  |
 | node/test_reduce_l1_keep_dims_example/model.onnx | ✅ |  |
 | node/test_reduce_l1_keep_dims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_l1_keep_dims_random/model.onnx | ✅ |  |
@@ -1139,7 +1139,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_l2_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_l2_do_not_keepdims_random_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
-| node/test_reduce_l2_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_l2_empty_set/model.onnx | ✅ |  |
 | node/test_reduce_l2_empty_set_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_l2_keep_dims_example/model.onnx | ✅ |  |
 | node/test_reduce_l2_keep_dims_example_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
@@ -1155,7 +1155,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_log_sum_default_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
 | node/test_reduce_log_sum_desc_axes/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_desc_axes_expanded/model.onnx | ✅ |  |
-| node/test_reduce_log_sum_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_log_sum_empty_set/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_empty_set_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | ❌ | ReduceSum output shape must be (1, 1, 1), got () |
@@ -1165,7 +1165,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
 | node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | ❌ | CastLike input and output shapes must match |
-| node/test_reduce_log_sum_exp_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_log_sum_exp_empty_set/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
 | node/test_reduce_log_sum_exp_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ❌ | ReduceSum output shape rank must match input rank |
@@ -1182,7 +1182,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_max_default_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_max_do_not_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_max_do_not_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_max_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_max_empty_set/model.onnx | ✅ |  |
 | node/test_reduce_max_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_max_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_max_negative_axes_keepdims_example/model.onnx | ✅ |  |
@@ -1200,7 +1200,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_min_default_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_min_do_not_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_min_do_not_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_min_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_min_empty_set/model.onnx | ✅ |  |
 | node/test_reduce_min_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_min_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_min_negative_axes_keepdims_example/model.onnx | ✅ |  |
@@ -1209,7 +1209,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_prod_default_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_prod_do_not_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_prod_do_not_keepdims_random/model.onnx | ✅ |  |
-| node/test_reduce_prod_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_prod_empty_set/model.onnx | ✅ |  |
 | node/test_reduce_prod_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_prod_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_prod_negative_axes_keepdims_example/model.onnx | ✅ |  |
@@ -1220,8 +1220,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_sum_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_empty_axes_input_noop/model.onnx | ✅ |  |
 | node/test_reduce_sum_empty_axes_input_noop_example/model.onnx | ✅ |  |
-| node/test_reduce_sum_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_sum_empty_set/model.onnx | ✅ |  |
+| node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_reduce_sum_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_sum_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_negative_axes_keepdims_example/model.onnx | ✅ |  |
@@ -1234,8 +1234,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_do_not_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_do_not_keepdims_random_expanded/model.onnx | ✅ |  |
-| node/test_reduce_sum_square_empty_set/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_reduce_sum_square_empty_set_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reduce_sum_square_empty_set/model.onnx | ✅ |  |
+| node/test_reduce_sum_square_empty_set_expanded/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_keepdims_example/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_keepdims_random/model.onnx | ✅ |  |
@@ -1250,7 +1250,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_regex_full_match_empty/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_relu/model.onnx | ✅ |  |
 | node/test_relu_expanded_ver18/model.onnx | ✅ |  |
-| node/test_reshape_allowzero_reordered/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_reshape_allowzero_reordered/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_reshape_extended_dims/model.onnx | ✅ |  |
 | node/test_reshape_negative_dim/model.onnx | ✅ |  |
 | node/test_reshape_negative_extended_dims/model.onnx | ✅ |  |
@@ -1472,7 +1472,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_shape_start_1/model.onnx | ✅ |  |
 | node/test_shape_start_1_end_2/model.onnx | ✅ |  |
 | node/test_shape_start_1_end_negative_1/model.onnx | ✅ |  |
-| node/test_shape_start_greater_than_end/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_shape_start_greater_than_end/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_shape_start_negative_1/model.onnx | ✅ |  |
 | node/test_shrink_hard/model.onnx | ✅ |  |
 | node/test_shrink_hard_expanded_ver18/model.onnx | ✅ |  |
@@ -1497,7 +1497,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_slice_neg/model.onnx | ✅ |  |
 | node/test_slice_neg_steps/model.onnx | ✅ |  |
 | node/test_slice_negative_axes/model.onnx | ✅ |  |
-| node/test_slice_start_out_of_bounds/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_slice_start_out_of_bounds/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_softmax_axis_0/model.onnx | ✅ |  |
 | node/test_softmax_axis_0_expanded/model.onnx | ✅ |  |
 | node/test_softmax_axis_0_expanded_ver18/model.onnx | ✅ |  |
@@ -1546,8 +1546,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_split_variable_parts_2d_opset18/model.onnx | ✅ |  |
 | node/test_split_variable_parts_default_axis_opset13/model.onnx | ✅ |  |
 | node/test_split_variable_parts_default_axis_opset18/model.onnx | ✅ |  |
-| node/test_split_zero_size_splits_opset13/model.onnx | ❌ | Dynamic or zero dims are not supported |
-| node/test_split_zero_size_splits_opset18/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_split_zero_size_splits_opset13/model.onnx | ❌ | Output shape must be fully defined |
+| node/test_split_zero_size_splits_opset18/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_sqrt/model.onnx | ✅ |  |
 | node/test_sqrt_example/model.onnx | ✅ |  |
 | node/test_squeeze/model.onnx | ✅ |  |
@@ -1635,7 +1635,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_tril_pos/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_tril_square/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_tril_square_neg/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_zero/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_tril_zero/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_triu/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_triu_neg/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_triu_one_row/model.onnx | ❌ | Unsupported op Trilu |
@@ -1644,7 +1644,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_triu_pos/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_triu_square/model.onnx | ❌ | Unsupported op Trilu |
 | node/test_triu_square_neg/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_zero/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_triu_zero/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_unique_length_1/model.onnx | ❌ | Unsupported op Unique |
 | node/test_unique_not_sorted_without_axis/model.onnx | ❌ | Unsupported op Unique |
 | node/test_unique_sorted_with_axis/model.onnx | ❌ | Unsupported op Unique |

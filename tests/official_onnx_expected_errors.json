@@ -2053,7 +2053,7 @@
   ],
   [
     "node/test_constantofshape_int_shape_zero/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_constantofshape_int_zeros/model.onnx",
@@ -3077,11 +3077,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis1/model.onnx",
@@ -3113,11 +3113,11 @@
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon/model.onnx",
@@ -3125,11 +3125,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis1_epsilon/model.onnx",
@@ -3185,11 +3185,11 @@
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis0/model.onnx",
@@ -3197,11 +3197,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis1/model.onnx",
@@ -3281,11 +3281,11 @@
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_layer_normalization_default_axis/model.onnx",
@@ -4453,11 +4453,11 @@
   ],
   [
     "node/test_reduce_l1_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_l1_empty_set_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_l1_keep_dims_example/model.onnx",
@@ -4525,7 +4525,7 @@
   ],
   [
     "node/test_reduce_l2_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_l2_empty_set_expanded/model.onnx",
@@ -4589,7 +4589,7 @@
   ],
   [
     "node/test_reduce_log_sum_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_log_sum_empty_set_expanded/model.onnx",
@@ -4629,7 +4629,7 @@
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx",
@@ -4697,7 +4697,7 @@
   ],
   [
     "node/test_reduce_max_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_max_keepdims_example/model.onnx",
@@ -4769,7 +4769,7 @@
   ],
   [
     "node/test_reduce_min_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_min_keepdims_example/model.onnx",
@@ -4805,7 +4805,7 @@
   ],
   [
     "node/test_reduce_prod_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_prod_keepdims_example/model.onnx",
@@ -4849,11 +4849,11 @@
   ],
   [
     "node/test_reduce_sum_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_reduce_sum_keepdims_example/model.onnx",
@@ -4905,11 +4905,11 @@
   ],
   [
     "node/test_reduce_sum_square_empty_set/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_sum_square_empty_set_expanded/model.onnx",
-    "Dynamic or zero dims are not supported"
+    ""
   ],
   [
     "node/test_reduce_sum_square_keepdims_example/model.onnx",
@@ -4969,7 +4969,7 @@
   ],
   [
     "node/test_reshape_allowzero_reordered/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_reshape_extended_dims/model.onnx",
@@ -5857,7 +5857,7 @@
   ],
   [
     "node/test_shape_start_greater_than_end/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_shape_start_negative_1/model.onnx",
@@ -5957,7 +5957,7 @@
   ],
   [
     "node/test_slice_start_out_of_bounds/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_softmax_axis_0/model.onnx",
@@ -6153,11 +6153,11 @@
   ],
   [
     "node/test_split_zero_size_splits_opset13/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_split_zero_size_splits_opset18/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_sqrt/model.onnx",
@@ -6509,7 +6509,7 @@
   ],
   [
     "node/test_tril_zero/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_triu/model.onnx",
@@ -6545,7 +6545,7 @@
   ],
   [
     "node/test_triu_zero/model.onnx",
-    "Dynamic or zero dims are not supported"
+    "Output shape must be fully defined"
   ],
   [
     "node/test_unique_length_1/model.onnx",

@@ -278,11 +278,7 @@ def _normalize_slices(
             end += dim
         start = max(0, min(start, dim))
         end = max(0, min(end, dim))
-        if end <= start:
-            raise ShapeInferenceError("Dynamic or zero dims are not supported")
-        length = (end - start + step - 1) // step
-        if length <= 0:
-            raise ShapeInferenceError("Dynamic or zero dims are not supported")
+        length = max(0, (end - start + step - 1) // step)
         normalized_starts[normalized_axis] = start
         normalized_steps[normalized_axis] = step
         output_shape[normalized_axis] = length

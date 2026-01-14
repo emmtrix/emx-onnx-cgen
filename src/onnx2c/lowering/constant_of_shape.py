@@ -59,8 +59,8 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
             "ConstantOfShape input length must match output rank"
         )
     for dim in output_shape:
-        if dim <= 0:
-            raise ShapeInferenceError("Dynamic or zero dims are not supported")
+        if dim < 0:
+            raise ShapeInferenceError("Dynamic dims are not supported")
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     if input_dtype != ScalarType.I64:
         raise UnsupportedOpError(
