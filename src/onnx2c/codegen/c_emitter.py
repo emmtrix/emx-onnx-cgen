@@ -4804,8 +4804,9 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, IdentityOp):
-            shape = CEmitter._codegen_shape(op.shape)
             output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.shape)
             output_suffix = self._param_array_suffix(shape, output_dim_names)
             input_suffix = self._param_array_suffix(shape, _dim_names_for(op.input0))
             rendered = identity_template.render(
@@ -4816,9 +4817,8 @@ class CEmitter:
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                element_count=CEmitter._element_count_expr(
-                    CEmitter._shape_dim_exprs(op.shape, output_dim_names)
-                ),
+                shape=shape,
+                loop_vars=loop_vars,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
