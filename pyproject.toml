@@ -8,6 +8,9 @@ version = "0.1.0"
 description = "ONNX to C compiler"
 requires-python = ">=3.10"
 
+[project.scripts]
+onnx2c = "onnx2c.cli:main"
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
