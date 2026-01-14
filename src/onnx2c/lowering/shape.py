@@ -50,8 +50,8 @@ def lower_shape(graph: Graph, node: Node) -> ShapeOp:
     output_shape = _value_shape(graph, node.outputs[0], node)
     if len(output_shape) != 1:
         raise ShapeInferenceError("Shape output must be 1D")
-    if output_shape[0] <= 0:
-        raise ShapeInferenceError("Shape output length must be positive")
+    if output_shape[0] < 0:
+        raise ShapeInferenceError("Shape output length must be non-negative")
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     if output_dtype != ScalarType.I64:
@@ -61,9 +61,7 @@ def lower_shape(graph: Graph, node: Node) -> ShapeOp:
     start_index, end_index = _normalize_slice_bounds(
         len(input_shape), start=start, end=end
     )
-    if end_index <= start_index:
-        raise ShapeInferenceError("Shape start must be less than end")
-    expected_shape = (end_index - start_index,)
+    expected_shape = (max(0, end_index - start_index),)
     if expected_shape != output_shape:
         raise ShapeInferenceError(
             "Shape output shape must be "

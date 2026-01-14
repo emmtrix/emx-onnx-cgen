@@ -40,9 +40,9 @@ def _read_split_sizes(graph: Graph, name: str, node: Node) -> list[int] | None:
 
 
 def _validate_static_dims(shape: tuple[int, ...], node: Node) -> None:
-    if any(dim <= 0 for dim in shape):
+    if any(dim < 0 for dim in shape):
         raise ShapeInferenceError(
-            f"{node.op_type} does not support zero or dynamic dims"
+            f"{node.op_type} does not support dynamic dims"
         )
 
 
@@ -112,8 +112,8 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
             raise ShapeInferenceError(
                 f"Split expects {len(split_sizes)} outputs, got {len(node.outputs)}"
             )
-        if any(size <= 0 for size in split_sizes):
-            raise ShapeInferenceError("Split sizes must be positive")
+        if any(size < 0 for size in split_sizes):
+            raise ShapeInferenceError("Split sizes must be non-negative")
         if sum(split_sizes) != input_shape[axis]:
             raise ShapeInferenceError(
                 "Split sizes must sum to the axis dimension"
@@ -121,21 +121,15 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
     else:
         num_outputs = _normalize_num_outputs(node, len(node.outputs))
         axis_dim = input_shape[axis]
-        if axis_dim < num_outputs:
-            raise ShapeInferenceError(
-                "Split axis dimension must be >= num_outputs"
-            )
         base = axis_dim // num_outputs
         remainder = axis_dim % num_outputs
-        if base <= 0:
-            raise ShapeInferenceError("Split axis size must be positive")
         split_sizes = [base + 1] * remainder + [base] * (
             num_outputs - remainder
         )
     computed_shapes: list[tuple[int, ...]] = []
     for size, output_shape in zip(split_sizes, output_shapes):
-        if size <= 0:
-            raise ShapeInferenceError("Split output size must be positive")
+        if size < 0:
+            raise ShapeInferenceError("Split output size must be non-negative")
         shape = list(input_shape)
         shape[axis] = size
         computed_shape = tuple(shape)

@@ -308,8 +308,8 @@ def _validate_output_shape(
         raise ShapeInferenceError(
             f"Resize output shape must be {expected}, got {actual}"
         )
-    if any(dim <= 0 for dim in actual):
-        raise ShapeInferenceError("Resize output shape must be positive")
+    if any(dim < 0 for dim in actual):
+        raise ShapeInferenceError("Resize output shape must be non-negative")
 
 
 @register_lowering("Resize")

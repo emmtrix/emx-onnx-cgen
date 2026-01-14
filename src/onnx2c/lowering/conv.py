@@ -137,8 +137,8 @@ def resolve_conv_spec(graph: Graph, node: Node) -> ConvSpec:
     ):
         effective_kernel = dilation * (kernel - 1) + 1
         out_dim = (dim + pad_start + pad_finish - effective_kernel) // stride + 1
-        if out_dim <= 0:
-            raise ShapeInferenceError("Conv output shape must be positive")
+        if out_dim < 0:
+            raise ShapeInferenceError("Conv output shape must be non-negative")
         out_spatial.append(out_dim)
     output_shape = _value_shape(graph, node.outputs[0], node)
     expected_output_shape = (batch, out_channels, *out_spatial)
