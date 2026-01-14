@@ -34,6 +34,7 @@ class BinaryOpSpec:
 BINARY_OP_TYPES = {
     "Add",
     "And",
+    "BitShift",
     "BitwiseAnd",
     "BitwiseOr",
     "BitwiseXor",
@@ -117,6 +118,7 @@ def _format_float_literal(value: float, dtype: ScalarType) -> str:
 UNARY_SYMBOLS_BOOL = {
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.LOGICAL_NOT: "!",
+    ScalarFunction.BITWISE_NOT: "bitwise_not",
 }
 
 UNARY_SYMBOLS_INT64 = {
@@ -264,6 +266,28 @@ BINARY_SPECS_INT = {
     ScalarFunction.BITWISE_XOR: BinaryOpSpec(
         "^", OperatorKind.INFIX, lambda left, right: left ^ right
     ),
+    ScalarFunction.BITWISE_LEFT_SHIFT: BinaryOpSpec(
+        "<<", OperatorKind.INFIX, np.left_shift
+    ),
+    ScalarFunction.BITWISE_RIGHT_SHIFT: BinaryOpSpec(
+        ">>", OperatorKind.INFIX, np.right_shift
+    ),
+    ScalarFunction.DIV: BinaryOpSpec(
+        "/", OperatorKind.INFIX, lambda left, right: left // right
+    ),
+    ScalarFunction.FMOD: BinaryOpSpec(
+        "%", OperatorKind.INFIX, np.fmod
+    ),
+    ScalarFunction.REMAINDER: BinaryOpSpec(
+        "remainder", OperatorKind.FUNC, np.mod
+    ),
+    ScalarFunction.MAXIMUM: BinaryOpSpec(
+        "maximum", OperatorKind.FUNC, np.maximum
+    ),
+    ScalarFunction.MINIMUM: BinaryOpSpec(
+        "minimum", OperatorKind.FUNC, np.minimum
+    ),
+    ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
     ScalarFunction.SUB: BinaryOpSpec(
         "-", OperatorKind.INFIX, lambda left, right: left - right
     ),
@@ -303,6 +327,9 @@ BINARY_SPECS_DOUBLE = {
     ScalarFunction.MUL: BinaryOpSpec(
         "*", OperatorKind.INFIX, lambda left, right: left * right
     ),
+    ScalarFunction.REMAINDER: BinaryOpSpec(
+        "remainder", OperatorKind.FUNC, np.remainder
+    ),
     ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
     ScalarFunction.PRELU: _prelu_binary_spec(ScalarType.F64),
     ScalarFunction.SUB: BinaryOpSpec(
@@ -322,6 +349,9 @@ BINARY_SPECS_FLOAT = {
     ScalarFunction.MINIMUM: BinaryOpSpec("fminf", OperatorKind.FUNC, np.minimum),
     ScalarFunction.MUL: BinaryOpSpec(
         "*", OperatorKind.INFIX, lambda left, right: left * right
+    ),
+    ScalarFunction.REMAINDER: BinaryOpSpec(
+        "remainder", OperatorKind.FUNC, np.remainder
     ),
     ScalarFunction.POW: BinaryOpSpec("powf", OperatorKind.FUNC, np.power),
     ScalarFunction.PRELU: _prelu_binary_spec(ScalarType.F32),

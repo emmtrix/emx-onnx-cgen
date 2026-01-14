@@ -993,35 +993,35 @@
   ],
   [
     "node/test_bitshift_left_uint16/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitshift_left_uint32/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitshift_left_uint64/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitshift_left_uint8/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitshift_right_uint16/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitshift_right_uint32/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitshift_right_uint64/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitshift_right_uint8/model.onnx",
-    "Unsupported op BitShift"
+    ""
   ],
   [
     "node/test_bitwise_and_i16_3d/model.onnx",
@@ -1797,7 +1797,7 @@
   ],
   [
     "node/test_celu/model.onnx",
-    "Unsupported op Celu"
+    ""
   ],
   [
     "node/test_celu_expanded/model.onnx",
@@ -1853,11 +1853,11 @@
   ],
   [
     "node/test_clip/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_default_inbounds/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_default_inbounds_expanded/model.onnx",
@@ -1865,7 +1865,7 @@
   ],
   [
     "node/test_clip_default_int8_inbounds/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_default_int8_inbounds_expanded/model.onnx",
@@ -1873,7 +1873,7 @@
   ],
   [
     "node/test_clip_default_int8_max/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_default_int8_max_expanded/model.onnx",
@@ -1881,7 +1881,7 @@
   ],
   [
     "node/test_clip_default_int8_min/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_default_int8_min_expanded/model.onnx",
@@ -1889,7 +1889,7 @@
   ],
   [
     "node/test_clip_default_max/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_default_max_expanded/model.onnx",
@@ -1897,7 +1897,7 @@
   ],
   [
     "node/test_clip_default_min/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_default_min_expanded/model.onnx",
@@ -1905,7 +1905,7 @@
   ],
   [
     "node/test_clip_example/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_example_expanded/model.onnx",
@@ -1917,7 +1917,7 @@
   ],
   [
     "node/test_clip_inbounds/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_inbounds_expanded/model.onnx",
@@ -1925,7 +1925,7 @@
   ],
   [
     "node/test_clip_min_greater_than_max/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_min_greater_than_max_expanded/model.onnx",
@@ -1933,7 +1933,7 @@
   ],
   [
     "node/test_clip_outbounds/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_outbounds_expanded/model.onnx",
@@ -1941,7 +1941,7 @@
   ],
   [
     "node/test_clip_splitbounds/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "node/test_clip_splitbounds_expanded/model.onnx",
@@ -2297,27 +2297,27 @@
   ],
   [
     "node/test_div_int16/model.onnx",
-    "Unsupported op Div"
+    ""
   ],
   [
     "node/test_div_int8/model.onnx",
-    "Unsupported op Div"
+    ""
   ],
   [
     "node/test_div_uint16/model.onnx",
-    "Unsupported op Div"
+    ""
   ],
   [
     "node/test_div_uint32/model.onnx",
-    "Unsupported op Div"
+    ""
   ],
   [
     "node/test_div_uint64/model.onnx",
-    "Unsupported op Div"
+    ""
   ],
   [
     "node/test_div_uint8/model.onnx",
-    "Unsupported op Div"
+    ""
   ],
   [
     "node/test_dropout_default/model.onnx",
@@ -2349,7 +2349,7 @@
   ],
   [
     "node/test_dynamicquantizelinear_expanded/model.onnx",
-    "Unsupported op Clip"
+    "Unsupported op Identity"
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted/model.onnx",
@@ -2357,7 +2357,7 @@
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx",
-    "Unsupported op Clip"
+    "Unsupported op Identity"
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted/model.onnx",
@@ -2365,7 +2365,7 @@
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx",
-    "Unsupported op Clip"
+    "Unsupported op Identity"
   ],
   [
     "node/test_edge_pad/model.onnx",
@@ -3029,27 +3029,27 @@
   ],
   [
     "node/test_isinf/model.onnx",
-    "Unsupported op IsInf"
+    ""
   ],
   [
     "node/test_isinf_float16/model.onnx",
-    "Unsupported op IsInf"
+    ""
   ],
   [
     "node/test_isinf_negative/model.onnx",
-    "Unsupported op IsInf"
+    ""
   ],
   [
     "node/test_isinf_positive/model.onnx",
-    "Unsupported op IsInf"
+    ""
   ],
   [
     "node/test_isnan/model.onnx",
-    "Unsupported op IsNaN"
+    ""
   ],
   [
     "node/test_isnan_float16/model.onnx",
-    "Unsupported op IsNaN"
+    ""
   ],
   [
     "node/test_l1normalization_axis_0/model.onnx",
@@ -3633,19 +3633,19 @@
   ],
   [
     "node/test_max_int16/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_max_int32/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_max_int64/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_max_int8/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_max_one_input/model.onnx",
@@ -3657,19 +3657,19 @@
   ],
   [
     "node/test_max_uint16/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_max_uint32/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_max_uint64/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_max_uint8/model.onnx",
-    "Unsupported op Max"
+    ""
   ],
   [
     "node/test_maxpool_1d_default/model.onnx",
@@ -3789,19 +3789,19 @@
   ],
   [
     "node/test_min_int16/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_min_int32/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_min_int64/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_min_int8/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_min_one_input/model.onnx",
@@ -3813,19 +3813,19 @@
   ],
   [
     "node/test_min_uint16/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_min_uint32/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_min_uint64/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_min_uint8/model.onnx",
-    "Unsupported op Min"
+    ""
   ],
   [
     "node/test_mish/model.onnx",
@@ -3837,11 +3837,11 @@
   ],
   [
     "node/test_mod_broadcast/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_int64_fmod/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_mixed_sign_float16/model.onnx",
@@ -3857,35 +3857,35 @@
   ],
   [
     "node/test_mod_mixed_sign_int16/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_mixed_sign_int32/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_mixed_sign_int64/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_mixed_sign_int8/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_uint16/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_uint32/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_uint64/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_mod_uint8/model.onnx",
-    "Unsupported op Mod"
+    ""
   ],
   [
     "node/test_momentum/model.onnx",
@@ -4281,7 +4281,7 @@
   ],
   [
     "node/test_pow_types_int32_int32/model.onnx",
-    "Unsupported op Pow"
+    ""
   ],
   [
     "node/test_pow_types_int64_float32/model.onnx",
@@ -4289,7 +4289,7 @@
   ],
   [
     "node/test_pow_types_int64_int64/model.onnx",
-    "Unsupported op Pow"
+    ""
   ],
   [
     "node/test_prelu_broadcast/model.onnx",
@@ -5865,7 +5865,7 @@
   ],
   [
     "node/test_shrink_hard/model.onnx",
-    "Unsupported op Shrink"
+    ""
   ],
   [
     "node/test_shrink_hard_expanded_ver18/model.onnx",
@@ -5873,7 +5873,7 @@
   ],
   [
     "node/test_shrink_soft/model.onnx",
-    "Unsupported op Shrink"
+    ""
   ],
   [
     "node/test_shrink_soft_expanded_ver18/model.onnx",
@@ -6301,7 +6301,7 @@
   ],
   [
     "node/test_swish/model.onnx",
-    "Unsupported op Swish"
+    ""
   ],
   [
     "node/test_swish_expanded/model.onnx",
@@ -7009,7 +7009,7 @@
   ],
   [
     "pytorch-operator/test_operator_clip/model.onnx",
-    "Unsupported op Clip"
+    ""
   ],
   [
     "pytorch-operator/test_operator_concat2/model.onnx",
@@ -7173,7 +7173,7 @@
   ],
   [
     "simple/test_shrink/model.onnx",
-    "Unsupported op Shrink"
+    ""
   ],
   [
     "simple/test_sign_model/model.onnx",

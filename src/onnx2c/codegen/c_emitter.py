@@ -137,6 +137,23 @@ class UnaryOp:
     function: ScalarFunction
     shape: tuple[int, ...]
     dtype: ScalarType
+    input_dtype: ScalarType
+    params: tuple[float, ...] = ()
+
+
+@dataclass(frozen=True)
+class ClipOp:
+    input0: str
+    input_min: str | None
+    input_max: str | None
+    output: str
+    input_shape: tuple[int, ...]
+    min_shape: tuple[int, ...] | None
+    max_shape: tuple[int, ...] | None
+    output_shape: tuple[int, ...]
+    dtype: ScalarType
+
+
 
 
 @dataclass(frozen=True)
@@ -629,6 +646,7 @@ class LoweredModel:
         BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -695,6 +713,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -727,6 +746,14 @@ class CEmitter:
             return (op.condition, op.input_x, op.input_y, op.output)
         if isinstance(op, UnaryOp):
             return (op.input0, op.output)
+        if isinstance(op, ClipOp):
+            names = [op.input0]
+            if op.input_min is not None:
+                names.append(op.input_min)
+            if op.input_max is not None:
+                names.append(op.input_max)
+            names.append(op.output)
+            return tuple(names)
         if isinstance(op, CastOp):
             return (op.input0, op.output)
         if isinstance(op, MatMulOp):
@@ -870,6 +897,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -900,6 +928,7 @@ class CEmitter:
         BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -955,6 +984,20 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 function=op.function,
                 shape=op.shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                params=op.params,
+            )
+        if isinstance(op, ClipOp):
+            return ClipOp(
+                input0=name_map.get(op.input0, op.input0),
+                input_min=self._map_optional_name(name_map, op.input_min),
+                input_max=self._map_optional_name(name_map, op.input_max),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                min_shape=op.min_shape,
+                max_shape=op.max_shape,
+                output_shape=op.output_shape,
                 dtype=op.dtype,
             )
         if isinstance(op, CastOp):
@@ -1443,6 +1486,7 @@ class CEmitter:
                 "binary": self._env.get_template("binary_op.c.j2"),
                 "where": self._env.get_template("where_op.c.j2"),
                 "unary": self._env.get_template("unary_op.c.j2"),
+                "clip": self._env.get_template("clip_op.c.j2"),
                 "cast": self._env.get_template("cast_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
@@ -1500,6 +1544,7 @@ class CEmitter:
         binary_template = templates["binary"]
         where_template = templates["where"]
         unary_template = templates["unary"]
+        clip_template = templates["clip"]
         cast_template = templates["cast"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
@@ -1552,6 +1597,7 @@ class CEmitter:
                 binary_template=binary_template,
                 where_template=where_template,
                 unary_template=unary_template,
+                clip_template=clip_template,
                 cast_template=cast_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
@@ -1652,6 +1698,7 @@ class CEmitter:
         binary_template = templates["binary"]
         where_template = templates["where"]
         unary_template = templates["unary"]
+        clip_template = templates["clip"]
         cast_template = templates["cast"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
@@ -1704,6 +1751,7 @@ class CEmitter:
                 binary_template=binary_template,
                 where_template=where_template,
                 unary_template=unary_template,
+                clip_template=clip_template,
                 cast_template=cast_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
@@ -1916,6 +1964,8 @@ class CEmitter:
         function: ScalarFunction,
         dtype: ScalarType,
         registry: ScalarFunctionRegistry,
+        *,
+        params: tuple[float, ...] = (),
     ) -> str | None:
         registry_functions = {
             ScalarFunction.ABS,
@@ -1932,6 +1982,7 @@ class CEmitter:
             ScalarFunction.BITWISE_OR,
             ScalarFunction.BITWISE_XOR,
             ScalarFunction.CEIL,
+            ScalarFunction.CELU,
             ScalarFunction.COS,
             ScalarFunction.COSH,
             ScalarFunction.DIV,
@@ -1944,6 +1995,7 @@ class CEmitter:
             ScalarFunction.HARDSWISH,
             ScalarFunction.LOG,
             ScalarFunction.FMOD,
+            ScalarFunction.REMAINDER,
             ScalarFunction.LEAKY_RELU,
             ScalarFunction.MUL,
             ScalarFunction.NEG,
@@ -1954,6 +2006,7 @@ class CEmitter:
             ScalarFunction.RELU,
             ScalarFunction.ROUND,
             ScalarFunction.SELU,
+            ScalarFunction.SHRINK,
             ScalarFunction.SIGMOID,
             ScalarFunction.SIGN,
             ScalarFunction.SIN,
@@ -1962,6 +2015,7 @@ class CEmitter:
             ScalarFunction.SOFTSIGN,
             ScalarFunction.SQRT,
             ScalarFunction.SUB,
+            ScalarFunction.SWISH,
             ScalarFunction.TAN,
             ScalarFunction.TANH,
             ScalarFunction.THRESHOLDED_RELU,
@@ -1982,7 +2036,9 @@ class CEmitter:
             return None
         try:
             return registry.request(
-                ScalarFunctionKey(function=scalar_function, return_type=dtype)
+                ScalarFunctionKey(
+                    function=scalar_function, return_type=dtype, params=params
+                )
             )
         except ScalarFunctionError:
             return None
@@ -1994,6 +2050,7 @@ class CEmitter:
             BinaryOp
             | WhereOp
             | UnaryOp
+            | ClipOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2029,6 +2086,12 @@ class CEmitter:
             includes.update({"#include <stdio.h>", "#include <stdint.h>"})
         if extra_includes:
             includes.update(extra_includes)
+        if any(
+            isinstance(op, UnaryOp)
+            and op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}
+            for op in resolved_ops
+        ):
+            includes.add("#include <math.h>")
         constant_of_shape_inputs = {
             op.input_dtype
             for op in resolved_ops
@@ -2127,6 +2190,7 @@ class CEmitter:
         resolved_ops: list[
             BinaryOp
             | UnaryOp
+            | ClipOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2182,6 +2246,25 @@ class CEmitter:
         ):
             return True
         if any(
+            isinstance(op, UnaryOp)
+            and op.function in {ScalarFunction.CELU, ScalarFunction.SWISH}
+            for op in resolved_ops
+        ):
+            return True
+        if any(
+            isinstance(op, UnaryOp)
+            and op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}
+            for op in resolved_ops
+        ):
+            return True
+        if any(
+            isinstance(op, ClipOp)
+            and op.dtype.is_float
+            and (op.input_min is None or op.input_max is None)
+            for op in resolved_ops
+        ):
+            return True
+        if any(
             isinstance(op, BinaryOp) and is_binary_math_op(op)
             for op in resolved_ops
         ):
@@ -2228,6 +2311,7 @@ class CEmitter:
         resolved_ops: list[
             BinaryOp
             | UnaryOp
+            | ClipOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2268,6 +2352,13 @@ class CEmitter:
         ):
             return True
         if any(
+            isinstance(op, ClipOp)
+            and op.dtype.is_integer
+            and (op.input_min is None or op.input_max is None)
+            for op in resolved_ops
+        ):
+            return True
+        if any(
             isinstance(op, MaxPoolOp)
             and op.dtype
             in {ScalarType.I64, ScalarType.I32, ScalarType.I16, ScalarType.I8}
@@ -2283,6 +2374,7 @@ class CEmitter:
             BinaryOp
             | WhereOp
             | UnaryOp
+            | ClipOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2340,6 +2432,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -2378,6 +2471,16 @@ class CEmitter:
             if op.input_c is None:
                 return f"{op.input_a}, {op.input_b}, {op.output}"
             return f"{op.input_a}, {op.input_b}, {op.input_c}, {op.output}"
+        if isinstance(op, UnaryOp):
+            return f"{op.input0}, {op.output}"
+        if isinstance(op, ClipOp):
+            call_parts = [op.input0]
+            if op.input_min is not None:
+                call_parts.append(op.input_min)
+            if op.input_max is not None:
+                call_parts.append(op.input_max)
+            call_parts.append(op.output)
+            return ", ".join(call_parts)
         if isinstance(op, AttentionOp):
             call_parts = [op.input_q, op.input_k, op.input_v]
             if op.input_attn_mask is not None:
@@ -2522,6 +2625,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -2552,6 +2656,7 @@ class CEmitter:
         BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -2598,6 +2703,32 @@ class CEmitter:
                 condition_shape=op.condition_shape,
                 x_shape=op.x_shape,
                 y_shape=op.y_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+            )
+        if isinstance(op, UnaryOp):
+            return UnaryOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                function=op.function,
+                shape=op.shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                params=op.params,
+            )
+        if isinstance(op, ClipOp):
+            return ClipOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input_min=temp_map.get(op.input_min, op.input_min)
+                if op.input_min is not None
+                else None,
+                input_max=temp_map.get(op.input_max, op.input_max)
+                if op.input_max is not None
+                else None,
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                min_shape=op.min_shape,
+                max_shape=op.max_shape,
                 output_shape=op.output_shape,
                 dtype=op.dtype,
             )
@@ -3107,6 +3238,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -3143,6 +3275,7 @@ class CEmitter:
         binary_template,
         where_template,
         unary_template,
+        clip_template,
         cast_template,
         matmul_template,
         gemm_template,
@@ -4363,17 +4496,75 @@ class CEmitter:
                 loop_vars=loop_vars,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ClipOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            input_expr = CEmitter._broadcast_index_expr(
+                op.input0, op.input_shape, op.output_shape, loop_vars
+            )
+            min_expr = (
+                CEmitter._broadcast_index_expr(
+                    op.input_min,
+                    op.min_shape,
+                    op.output_shape,
+                    loop_vars,
+                )
+                if op.input_min is not None
+                else op.dtype.min_literal
+            )
+            max_expr = (
+                CEmitter._broadcast_index_expr(
+                    op.input_max,
+                    op.max_shape,
+                    op.output_shape,
+                    loop_vars,
+                )
+                if op.input_max is not None
+                else op.dtype.max_literal
+            )
+            rendered = clip_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                input_min=op.input_min,
+                input_max=op.input_max,
+                output=op.output,
+                input_c_type=op.dtype.c_type,
+                output_c_type=op.dtype.c_type,
+                input_suffix=self._param_array_suffix(op.input_shape),
+                min_suffix=(
+                    self._param_array_suffix(op.min_shape)
+                    if op.min_shape is not None
+                    else None
+                ),
+                max_suffix=(
+                    self._param_array_suffix(op.max_shape)
+                    if op.max_shape is not None
+                    else None
+                ),
+                output_suffix=self._param_array_suffix(op.output_shape),
+                shape=output_shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                min_expr=min_expr,
+                max_expr=max_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, UnaryOp):
             scalar_operator = None
             if scalar_registry is not None:
                 scalar_operator = self._scalar_function_name(
-                    op.function, op.dtype, scalar_registry
+                    op.function, op.dtype, scalar_registry, params=op.params
                 )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             array_suffix = self._param_array_suffix(shape)
             operator_symbol = unary_op_symbol(op.function, dtype=op.dtype)
-            if operator_symbol is None:
+            if op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}:
+                operator_symbol = (
+                    "isinf" if op.function == ScalarFunction.ISINF else "isnan"
+                )
+            if operator_symbol is None and scalar_operator is None:
                 raise CodegenError(
                     f"Unsupported unary operator for rendering: {op.function.value}"
                 )
@@ -4384,7 +4575,8 @@ class CEmitter:
                 "array_suffix": array_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
-                "c_type": c_type,
+                "input_c_type": op.input_dtype.c_type,
+                "output_c_type": op.dtype.c_type,
                 "zero_literal": zero_literal,
             }
             rendered = unary_template.render(
@@ -4401,6 +4593,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -4433,6 +4626,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -4541,6 +4735,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -4573,6 +4768,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, UnaryOp):
             return op.shape
+        if isinstance(op, ClipOp):
+            return op.output_shape
         if isinstance(op, CastOp):
             return op.shape
         if isinstance(op, MatMulOp):
@@ -4628,6 +4825,7 @@ class CEmitter:
         op: BinaryOp
         | WhereOp
         | UnaryOp
+        | ClipOp
         | MatMulOp
         | GemmOp
         | AttentionOp
