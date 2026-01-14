@@ -27,6 +27,7 @@ from ..lowering.split import lower_split
 from ..lowering.softmax_cross_entropy_loss import (
     lower_softmax_cross_entropy_loss,
 )
+from ..lowering.arg_reduce import lower_arg_reduce
 from ..lowering.lstm import ACTIVATION_KIND_BY_NAME, resolve_lstm_spec
 from ..lowering.lrn import resolve_lrn_spec
 from ..lowering.matmul import lower_matmul
@@ -815,6 +816,36 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
     else:
         raise UnsupportedOpError(f"Unsupported reduce kind {reduce_kind}")
     evaluator.values[node.outputs[0]] = result
+
+
+@register_evaluator("ArgMax")
+@register_evaluator("ArgMin")
+def _eval_arg_reduce(evaluator: Evaluator, node: Node) -> None:
+    op = lower_arg_reduce(evaluator.graph, node)
+    value = evaluator.values[op.input0]
+    if op.select_last_index:
+        flipped = np.flip(value, axis=op.axis)
+        if op.reduce_kind == "max":
+            indices = np.argmax(flipped, axis=op.axis)
+        elif op.reduce_kind == "min":
+            indices = np.argmin(flipped, axis=op.axis)
+        else:
+            raise UnsupportedOpError(
+                f"Unsupported arg reduce kind {op.reduce_kind}"
+            )
+        indices = value.shape[op.axis] - 1 - indices
+    else:
+        if op.reduce_kind == "max":
+            indices = np.argmax(value, axis=op.axis)
+        elif op.reduce_kind == "min":
+            indices = np.argmin(value, axis=op.axis)
+        else:
+            raise UnsupportedOpError(
+                f"Unsupported arg reduce kind {op.reduce_kind}"
+            )
+    if op.keepdims:
+        indices = np.expand_dims(indices, axis=op.axis)
+    evaluator.values[op.output] = indices.astype(op.output_dtype.np_dtype)
 
 
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:

@@ -576,6 +576,20 @@ class ReduceOp:
 
 
 @dataclass(frozen=True)
+class ArgReduceOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    axis: int
+    keepdims: bool
+    select_last_index: bool
+    reduce_kind: str
+    input_dtype: ScalarType
+    output_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class ConstantOfShapeOp:
     input0: str
     output: str
@@ -718,6 +732,7 @@ class LoweredModel:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -788,6 +803,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -991,6 +1007,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -1025,6 +1042,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -1484,6 +1502,19 @@ class CEmitter:
                 reduce_count=op.reduce_count,
                 dtype=op.dtype,
             )
+        if isinstance(op, ArgReduceOp):
+            return ArgReduceOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                axis=op.axis,
+                keepdims=op.keepdims,
+                select_last_index=op.select_last_index,
+                reduce_kind=op.reduce_kind,
+                input_dtype=op.input_dtype,
+                output_dtype=op.output_dtype,
+            )
         if isinstance(op, ConstantOfShapeOp):
             return ConstantOfShapeOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1644,6 +1675,7 @@ class CEmitter:
                 "reduce_dynamic": self._env.get_template(
                     "reduce_op_dynamic.c.j2"
                 ),
+                "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
                 "constant_of_shape": self._env.get_template(
                     "constant_of_shape_op.c.j2"
                 ),
@@ -1719,6 +1751,7 @@ class CEmitter:
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
+        arg_reduce_template = templates["arg_reduce"]
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         size_template = templates["size"]
@@ -1745,10 +1778,10 @@ class CEmitter:
                 index,
                 array_suffix="",
                 loop_vars=(),
-                c_type=op.dtype.c_type,
-                zero_literal=op.dtype.zero_literal,
-                min_literal=op.dtype.min_literal,
-                max_literal=op.dtype.max_literal,
+                c_type=self._op_output_dtype(op).c_type,
+                zero_literal=self._op_output_dtype(op).zero_literal,
+                min_literal=self._op_output_dtype(op).min_literal,
+                max_literal=self._op_output_dtype(op).max_literal,
                 binary_template=binary_template,
                 where_template=where_template,
                 unary_template=unary_template,
@@ -1777,6 +1810,7 @@ class CEmitter:
                 resize_template=resize_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
+                arg_reduce_template=arg_reduce_template,
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
@@ -1908,6 +1942,7 @@ class CEmitter:
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
+        arg_reduce_template = templates["arg_reduce"]
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         size_template = templates["size"]
@@ -1934,10 +1969,10 @@ class CEmitter:
                 index,
                 array_suffix="",
                 loop_vars=(),
-                c_type=op.dtype.c_type,
-                zero_literal=op.dtype.zero_literal,
-                min_literal=op.dtype.min_literal,
-                max_literal=op.dtype.max_literal,
+                c_type=self._op_output_dtype(op).c_type,
+                zero_literal=self._op_output_dtype(op).zero_literal,
+                min_literal=self._op_output_dtype(op).min_literal,
+                max_literal=self._op_output_dtype(op).max_literal,
                 binary_template=binary_template,
                 where_template=where_template,
                 unary_template=unary_template,
@@ -1966,6 +2001,7 @@ class CEmitter:
                 resize_template=resize_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
+                arg_reduce_template=arg_reduce_template,
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
@@ -2274,6 +2310,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | ReduceOp
+            | ArgReduceOp
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
@@ -2305,9 +2342,18 @@ class CEmitter:
             *model.input_dtypes,
             *model.output_dtypes,
             *(const.dtype for const in model.constants),
-            *(op.dtype for op in resolved_ops),
             *constant_of_shape_inputs,
         }
+        model_dtypes.update(
+            op.dtype for op in resolved_ops if not isinstance(op, ArgReduceOp)
+        )
+        arg_reduce_dtypes = {
+            dtype
+            for op in resolved_ops
+            if isinstance(op, ArgReduceOp)
+            for dtype in (op.input_dtype, op.output_dtype)
+        }
+        model_dtypes.update(arg_reduce_dtypes)
         slice_input_dtypes = {
             dtype
             for op in resolved_ops
@@ -2432,6 +2478,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | ReduceOp
+            | ArgReduceOp
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
@@ -2556,6 +2603,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | ReduceOp
+            | ArgReduceOp
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
@@ -2621,6 +2669,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | ReduceOp
+            | ArgReduceOp
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
@@ -2692,6 +2741,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -2868,6 +2918,9 @@ class CEmitter:
                 return ", ".join(args)
             args.extend([op.input0, op.output])
             return ", ".join(args)
+        if isinstance(op, ArgReduceOp):
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         args.extend([op.input0, op.output])
         return ", ".join(args)
 
@@ -2938,6 +2991,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -2972,6 +3026,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -3576,6 +3631,19 @@ class CEmitter:
                 reduce_count=op.reduce_count,
                 dtype=op.dtype,
             )
+        if isinstance(op, ArgReduceOp):
+            return ArgReduceOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                axis=op.axis,
+                keepdims=op.keepdims,
+                select_last_index=op.select_last_index,
+                reduce_kind=op.reduce_kind,
+                input_dtype=op.input_dtype,
+                output_dtype=op.output_dtype,
+            )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
@@ -3613,6 +3681,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -3655,6 +3724,7 @@ class CEmitter:
         resize_template,
         reduce_template,
         reduce_dynamic_template,
+        arg_reduce_template,
         constant_of_shape_template,
         shape_template,
         size_template,
@@ -4749,6 +4819,65 @@ class CEmitter:
                 final_expr=final_expr,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ArgReduceOp):
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            reduce_var = "r0"
+            reduce_dim = op.input_shape[op.axis]
+            if op.keepdims:
+                input_indices = [
+                    reduce_var if axis == op.axis else output_loop_vars[axis]
+                    for axis in range(len(op.input_shape))
+                ]
+            else:
+                kept_axes = [
+                    axis
+                    for axis in range(len(op.input_shape))
+                    if axis != op.axis
+                ]
+                input_indices = [
+                    reduce_var
+                    if axis == op.axis
+                    else output_loop_vars[kept_axes.index(axis)]
+                    for axis in range(len(op.input_shape))
+                ]
+            init_indices = [
+                "0" if axis == op.axis else input_indices[axis]
+                for axis in range(len(op.input_shape))
+            ]
+            input_index_expr = "".join(f"[{var}]" for var in input_indices)
+            init_index_expr = "".join(f"[{var}]" for var in init_indices)
+            output_index_expr = "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            if op.reduce_kind == "max":
+                compare_op = ">=" if op.select_last_index else ">"
+            elif op.reduce_kind == "min":
+                compare_op = "<=" if op.select_last_index else "<"
+            else:
+                raise CodegenError(
+                    f"Unsupported arg reduce kind {op.reduce_kind}"
+                )
+            rendered = arg_reduce_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                input_c_type=op.input_dtype.c_type,
+                output_c_type=op.output_dtype.c_type,
+                input_suffix=self._param_array_suffix(op.input_shape),
+                output_suffix=self._param_array_suffix(op.output_shape),
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                reduce_var=reduce_var,
+                reduce_dim=reduce_dim,
+                input_index_expr=input_index_expr,
+                init_index_expr=init_index_expr,
+                output_index_expr=output_index_expr,
+                compare_op=compare_op,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ReduceOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             output_loop_vars = CEmitter._loop_vars(output_shape)
@@ -5138,6 +5267,7 @@ class CEmitter:
         | ReshapeOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -5176,6 +5306,7 @@ class CEmitter:
         | ReshapeOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -5221,6 +5352,7 @@ class CEmitter:
             | ReshapeOp
             | ResizeOp
             | ReduceOp
+            | ArgReduceOp
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
@@ -5267,6 +5399,7 @@ class CEmitter:
         | ReshapeOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -5355,6 +5488,8 @@ class CEmitter:
                 (name, shape, op.dtype)
                 for name, shape in zip(op.outputs, op.output_shapes)
             )
+        if isinstance(op, ArgReduceOp):
+            return ((op.output, CEmitter._op_output_shape(op), op.output_dtype),)
         return ((op.output, CEmitter._op_output_shape(op), op.dtype),)
 
     @staticmethod
@@ -5385,6 +5520,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
@@ -5440,6 +5576,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, ReduceOp):
             return op.output_shape
+        if isinstance(op, ArgReduceOp):
+            return op.output_shape
         if isinstance(op, ConstantOfShapeOp):
             return op.shape
         if isinstance(op, ShapeOp):
@@ -5478,13 +5616,16 @@ class CEmitter:
         | ReshapeOp
         | ResizeOp
         | ReduceOp
+        | ArgReduceOp
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
         | ExpandOp
         | RangeOp
         | SplitOp,
-    ) -> str:
+    ) -> ScalarType:
+        if isinstance(op, ArgReduceOp):
+            return op.output_dtype
         return op.dtype
 
     @staticmethod
