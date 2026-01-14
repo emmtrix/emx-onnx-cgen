@@ -18,6 +18,13 @@ from ..lowering.dropout import lower_dropout
 from ..lowering.flatten import lower_flatten
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
+from ..lowering.lp_normalization import lower_lp_normalization
+from ..lowering.instance_normalization import lower_instance_normalization
+from ..lowering.group_normalization import lower_group_normalization
+from ..lowering.layer_normalization import lower_layer_normalization
+from ..lowering.mean_variance_normalization import (
+    lower_mean_variance_normalization,
+)
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
@@ -43,6 +50,7 @@ from ..lowering.slice import _normalize_slices
 from ..lowering.shape import lower_shape
 from ..lowering.size import lower_size
 from ..lowering.softmax import lower_softmax
+from ..lowering.rms_normalization import lower_rms_normalization
 from ..lowering.squeeze import lower_squeeze
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
@@ -650,6 +658,110 @@ def _eval_batch_norm(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[op.output] = (
         (data - mean) / np.sqrt(variance + op.epsilon) * scale + bias
     )
+
+
+@register_evaluator("LpNormalization")
+def _eval_lp_normalization(evaluator: Evaluator, node: Node) -> None:
+    op = lower_lp_normalization(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    if op.p == 1:
+        denom = np.sum(np.abs(data), axis=op.axis, keepdims=True)
+    else:
+        denom = np.sqrt(np.sum(data * data, axis=op.axis, keepdims=True))
+    evaluator.values[op.output] = data / denom
+
+
+@register_evaluator("InstanceNormalization")
+def _eval_instance_normalization(evaluator: Evaluator, node: Node) -> None:
+    op = lower_instance_normalization(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    axes = tuple(range(2, data.ndim))
+    mean = np.mean(data, axis=axes, keepdims=True)
+    var = np.mean((data - mean) ** 2, axis=axes, keepdims=True)
+    scale = evaluator.values[op.scale].reshape(
+        (1, op.channels) + (1,) * (data.ndim - 2)
+    )
+    bias = evaluator.values[op.bias].reshape(
+        (1, op.channels) + (1,) * (data.ndim - 2)
+    )
+    evaluator.values[op.output] = (
+        (data - mean) / np.sqrt(var + op.epsilon) * scale + bias
+    )
+
+
+@register_evaluator("GroupNormalization")
+def _eval_group_normalization(evaluator: Evaluator, node: Node) -> None:
+    op = lower_group_normalization(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    batch = data.shape[0]
+    spatial_shape = data.shape[2:]
+    grouped = data.reshape(
+        (batch, op.num_groups, op.group_size) + spatial_shape
+    )
+    axes = tuple(range(2, grouped.ndim))
+    mean = np.mean(grouped, axis=axes, keepdims=True)
+    var = np.mean((grouped - mean) ** 2, axis=axes, keepdims=True)
+    normalized = (grouped - mean) / np.sqrt(var + op.epsilon)
+    normalized = normalized.reshape(data.shape)
+    scale = evaluator.values[op.scale].reshape(
+        (1, op.channels) + (1,) * (data.ndim - 2)
+    )
+    bias = evaluator.values[op.bias].reshape(
+        (1, op.channels) + (1,) * (data.ndim - 2)
+    )
+    evaluator.values[op.output] = normalized * scale + bias
+
+
+@register_evaluator("LayerNormalization")
+def _eval_layer_normalization(evaluator: Evaluator, node: Node) -> None:
+    op = lower_layer_normalization(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    axes = tuple(range(op.axis, data.ndim))
+    mean = np.mean(data, axis=axes, keepdims=True)
+    var = np.mean((data - mean) ** 2, axis=axes, keepdims=True)
+    inv_std = 1.0 / np.sqrt(var + op.epsilon)
+    normalized = (data - mean) * inv_std
+    scale = evaluator.values[op.scale].reshape(
+        (1,) * op.axis + evaluator.values[op.scale].shape
+    )
+    normalized = normalized * scale
+    if op.bias is not None:
+        bias = evaluator.values[op.bias].reshape(
+            (1,) * op.axis + evaluator.values[op.bias].shape
+        )
+        normalized = normalized + bias
+    evaluator.values[op.output] = normalized
+    if op.mean_output is not None:
+        evaluator.values[op.mean_output] = mean
+    if op.invstd_output is not None:
+        evaluator.values[op.invstd_output] = inv_std
+
+
+@register_evaluator("MeanVarianceNormalization")
+def _eval_mean_variance_normalization(
+    evaluator: Evaluator, node: Node
+) -> None:
+    op = lower_mean_variance_normalization(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    mean = np.mean(data, axis=op.axes, keepdims=True)
+    variance = np.mean((data - mean) ** 2, axis=op.axes, keepdims=True)
+    evaluator.values[op.output] = (data - mean) / np.sqrt(
+        variance + op.epsilon
+    )
+
+
+@register_evaluator("RMSNormalization")
+def _eval_rms_normalization(evaluator: Evaluator, node: Node) -> None:
+    op = lower_rms_normalization(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    axes = tuple(range(op.axis, data.ndim))
+    mean_square = np.mean(data * data, axis=axes, keepdims=True)
+    rms = np.sqrt(mean_square + op.epsilon)
+    normalized = data / rms
+    scale = evaluator.values[op.scale].reshape(
+        (1,) * op.axis + evaluator.values[op.scale].shape
+    )
+    evaluator.values[op.output] = normalized * scale
 
 
 @register_evaluator("LRN")

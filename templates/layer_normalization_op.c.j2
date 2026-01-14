@@ -1,0 +1,43 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, const {{ c_type }} {{ scale }}{{ scale_suffix }}{% if bias %}, const {{ c_type }} {{ bias }}{{ bias_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}{% if mean_output %}, {{ c_type }} {{ mean_output }}{{ mean_suffix }}{% endif %}{% if invstd_output %}, {{ c_type }} {{ invstd_output }}{{ invstd_suffix }}{% endif %}) {
+{% for dim in prefix_shape %}
+for (size_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
+{% endfor %}
+    {{ c_type }} sum = {{ zero_literal }};
+{% for dim in norm_shape %}
+    for (size_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
+{% endfor %}
+        sum += {{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in norm_shape %}
+    }
+{% endfor %}
+    {{ c_type }} mean = sum / {{ inner }};
+    {{ c_type }} var = {{ zero_literal }};
+{% for dim in norm_shape %}
+    for (size_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ c_type }} diff = {{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} - mean;
+        var += diff * diff;
+{% for _ in norm_shape %}
+    }
+{% endfor %}
+    var = var / {{ inner }};
+    {{ c_type }} inv_std = (({{ c_type }})1) / {{ sqrt_fn }}(var + {{ epsilon_literal }});
+{% if mean_output %}
+    {{ mean_output }}{% for var in mean_index_vars %}[{{ var }}]{% endfor %} = mean;
+{% endif %}
+{% if invstd_output %}
+    {{ invstd_output }}{% for var in mean_index_vars %}[{{ var }}]{% endfor %} = inv_std;
+{% endif %}
+{% for dim in norm_shape %}
+    for (size_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ c_type }} value = ({{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} - mean) * inv_std;
+        value = value * {{ scale }}{% for var in scale_index_vars %}[{{ var }}]{% endfor %}{% if bias %} + {{ bias }}{% for var in bias_index_vars %}[{{ var }}]{% endfor %}{% endif %};
+        {{ output }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} = value;
+{% for _ in norm_shape %}
+    }
+{% endfor %}
+{% for _ in prefix_shape %}
+}
+{% endfor %}
+}

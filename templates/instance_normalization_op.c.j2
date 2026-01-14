@@ -1,0 +1,35 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, const {{ c_type }} {{ scale }}{{ scale_suffix }}, const {{ c_type }} {{ bias }}{{ bias_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+{% for dim in shape[:2] %}
+for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+    {{ c_type }} sum = {{ zero_literal }};
+{% for dim in shape[2:] %}
+    for (size_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
+{% endfor %}
+        sum += {{ input0 }}[{{ loop_vars[0] }}][{{ loop_vars[1] }}]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %};
+{% for _ in shape[2:] %}
+    }
+{% endfor %}
+    {{ c_type }} mean = sum / {{ spatial_size }};
+    {{ c_type }} var = {{ zero_literal }};
+{% for dim in shape[2:] %}
+    for (size_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
+{% endfor %}
+        {{ c_type }} diff = {{ input0 }}[{{ loop_vars[0] }}][{{ loop_vars[1] }}]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %} - mean;
+        var += diff * diff;
+{% for _ in shape[2:] %}
+    }
+{% endfor %}
+    {{ c_type }} denom = {{ sqrt_fn }}(var / {{ spatial_size }} + {{ epsilon_literal }});
+{% for dim in shape[2:] %}
+    for (size_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
+{% endfor %}
+        {{ output }}[{{ loop_vars[0] }}][{{ loop_vars[1] }}]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %} =
+            ({{ input0 }}[{{ loop_vars[0] }}][{{ loop_vars[1] }}]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %} - mean) / denom * {{ scale }}[{{ loop_vars[1] }}] + {{ bias }}[{{ loop_vars[1] }}];
+{% for _ in shape[2:] %}
+    }
+{% endfor %}
+{% for _ in shape[:2] %}
+}
+{% endfor %}
+}

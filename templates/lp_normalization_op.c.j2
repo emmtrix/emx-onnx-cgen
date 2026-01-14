@@ -1,0 +1,27 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ array_suffix }}, {{ c_type }} {{ output }}{{ array_suffix }}) {
+    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
+    const size_t outer = {{ outer }};
+    const size_t axis_size = {{ axis_size }};
+    const size_t inner = {{ inner }};
+    for (size_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
+        for (size_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
+            size_t base = (outer_idx * axis_size * inner) + inner_idx;
+            {{ c_type }} acc = {{ zero_literal }};
+            for (size_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
+                {{ c_type }} value = input_flat[base + axis_idx * inner];
+{% if p == 1 %}
+                acc += {{ abs_fn }}(value);
+{% else %}
+                acc += value * value;
+{% endif %}
+            }
+{% if p == 2 %}
+            acc = {{ sqrt_fn }}(acc);
+{% endif %}
+            for (size_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
+                output_flat[base + axis_idx * inner] = input_flat[base + axis_idx * inner] / acc;
+            }
+        }
+    }
+}

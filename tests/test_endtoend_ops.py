@@ -1256,6 +1256,91 @@ def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
     return model, params
 
 
+def _make_lp_normalization_model(
+    *, input_shape: list[int], axis: int, p: int
+) -> onnx.ModelProto:
+    return _make_operator_model(
+        op_type="LpNormalization",
+        input_shapes=[input_shape],
+        output_shape=input_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": axis, "p": p},
+        opset=22,
+    )
+
+
+def _make_instance_normalization_model(
+    *, input_shape: list[int], epsilon: float = 1e-5
+) -> onnx.ModelProto:
+    channels = input_shape[1]
+    return _make_operator_model(
+        op_type="InstanceNormalization",
+        input_shapes=[input_shape, [channels], [channels]],
+        output_shape=input_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={"epsilon": epsilon},
+        opset=22,
+    )
+
+
+def _make_group_normalization_model(
+    *, input_shape: list[int], num_groups: int, epsilon: float = 1e-5
+) -> onnx.ModelProto:
+    channels = input_shape[1]
+    return _make_operator_model(
+        op_type="GroupNormalization",
+        input_shapes=[input_shape, [channels], [channels]],
+        output_shape=input_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={"epsilon": epsilon, "num_groups": num_groups},
+        opset=21,
+    )
+
+
+def _make_layer_normalization_model(
+    *, input_shape: list[int], axis: int, epsilon: float = 1e-5
+) -> onnx.ModelProto:
+    axis_index = axis if axis >= 0 else axis + len(input_shape)
+    normalized_shape = input_shape[axis_index:]
+    return _make_operator_model(
+        op_type="LayerNormalization",
+        input_shapes=[input_shape, normalized_shape, normalized_shape],
+        output_shape=input_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": axis, "epsilon": epsilon},
+        opset=17,
+    )
+
+
+def _make_mean_variance_normalization_model(
+    *, input_shape: list[int], axes: list[int] | None = None
+) -> onnx.ModelProto:
+    attrs = {"axes": axes} if axes is not None else None
+    return _make_operator_model(
+        op_type="MeanVarianceNormalization",
+        input_shapes=[input_shape],
+        output_shape=input_shape,
+        dtype=TensorProto.FLOAT,
+        attrs=attrs,
+        opset=13,
+    )
+
+
+def _make_rms_normalization_model(
+    *, input_shape: list[int], axis: int, epsilon: float = 1e-5
+) -> onnx.ModelProto:
+    axis_index = axis if axis >= 0 else axis + len(input_shape)
+    normalized_shape = input_shape[axis_index:]
+    return _make_operator_model(
+        op_type="RMSNormalization",
+        input_shapes=[input_shape, normalized_shape],
+        output_shape=input_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": axis, "epsilon": epsilon},
+        opset=23,
+    )
+
+
 def _maxpool_output_shape(
     input_shape: list[int],
     kernel_shape: list[int],
@@ -1477,6 +1562,21 @@ def _run_cli_verify(model: onnx.ModelProto) -> None:
             cwd=PROJECT_ROOT,
             env=env,
         )
+
+
+def _run_cli_verify_or_skip(
+    model: onnx.ModelProto, *, skip_substrings: tuple[str, ...]
+) -> None:
+    try:
+        _run_cli_verify(model)
+    except subprocess.CalledProcessError as exc:
+        stderr = exc.stderr or ""
+        if any(substr in stderr for substr in skip_substrings):
+            pytest.skip(
+                "onnxruntime does not implement this operator in the test "
+                "environment."
+            )
+        raise
 
 
 OPERATOR_CASES = [
@@ -2697,6 +2797,134 @@ def test_batchnorm_run_matches_numpy() -> None:
 
 def test_batchnorm_op_matches_onnxruntime() -> None:
     model, _ = _make_batchnorm_model()
+    _run_cli_verify(model)
+
+
+def test_lp_normalization_run_matches_numpy() -> None:
+    model = _make_lp_normalization_model(input_shape=[2, 3], axis=1, p=2)
+    compiler = Compiler()
+    data = np.array([[1.0, 2.0, 2.0], [3.0, 4.0, 0.0]], dtype=np.float32)
+    outputs = compiler.run(model, {"in0": data})
+    denom = np.sqrt(np.sum(data * data, axis=1, keepdims=True))
+    expected = data / denom
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_lp_normalization_op_matches_onnxruntime() -> None:
+    model = _make_lp_normalization_model(input_shape=[2, 3], axis=-1, p=1)
+    _run_cli_verify_or_skip(
+        model,
+        skip_substrings=(
+            "LpNormalization",
+            "NOT_IMPLEMENTED",
+        ),
+    )
+
+
+def test_instance_normalization_run_matches_numpy() -> None:
+    model = _make_instance_normalization_model(input_shape=[1, 2, 2, 3])
+    compiler = Compiler()
+    data = np.arange(12, dtype=np.float32).reshape(1, 2, 2, 3)
+    scale = np.array([1.0, 1.5], dtype=np.float32)
+    bias = np.array([0.5, -0.25], dtype=np.float32)
+    outputs = compiler.run(model, {"in0": data, "in1": scale, "in2": bias})
+    mean = np.mean(data, axis=(2, 3), keepdims=True)
+    var = np.mean((data - mean) ** 2, axis=(2, 3), keepdims=True)
+    scale_reshaped = scale.reshape(1, 2, 1, 1)
+    bias_reshaped = bias.reshape(1, 2, 1, 1)
+    expected = (data - mean) / np.sqrt(var + 1e-5) * scale_reshaped + bias_reshaped
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_instance_normalization_op_matches_onnxruntime() -> None:
+    model = _make_instance_normalization_model(input_shape=[1, 3, 2, 2])
+    _run_cli_verify(model)
+
+
+def test_group_normalization_run_matches_numpy() -> None:
+    model = _make_group_normalization_model(
+        input_shape=[1, 4, 2, 2], num_groups=2
+    )
+    compiler = Compiler()
+    data = np.arange(16, dtype=np.float32).reshape(1, 4, 2, 2)
+    scale = np.array([1.0, 1.5, 0.5, -1.0], dtype=np.float32)
+    bias = np.array([0.25, -0.5, 0.75, 1.0], dtype=np.float32)
+    outputs = compiler.run(model, {"in0": data, "in1": scale, "in2": bias})
+    grouped = data.reshape(1, 2, 2, 2, 2)
+    mean = np.mean(grouped, axis=(2, 3, 4), keepdims=True)
+    var = np.mean((grouped - mean) ** 2, axis=(2, 3, 4), keepdims=True)
+    normalized = (grouped - mean) / np.sqrt(var + 1e-5)
+    normalized = normalized.reshape(data.shape)
+    scale_reshaped = scale.reshape(1, 4, 1, 1)
+    bias_reshaped = bias.reshape(1, 4, 1, 1)
+    expected = normalized * scale_reshaped + bias_reshaped
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_group_normalization_op_matches_onnxruntime() -> None:
+    model = _make_group_normalization_model(
+        input_shape=[1, 4, 2, 2], num_groups=2
+    )
+    _run_cli_verify(model)
+
+
+def test_layer_normalization_run_matches_numpy() -> None:
+    model = _make_layer_normalization_model(
+        input_shape=[2, 3, 4], axis=-1
+    )
+    compiler = Compiler()
+    data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    scale = np.linspace(0.5, 1.5, num=4, dtype=np.float32)
+    bias = np.linspace(-0.5, 0.5, num=4, dtype=np.float32)
+    outputs = compiler.run(model, {"in0": data, "in1": scale, "in2": bias})
+    mean = np.mean(data, axis=2, keepdims=True)
+    var = np.mean((data - mean) ** 2, axis=2, keepdims=True)
+    expected = (data - mean) / np.sqrt(var + 1e-5)
+    expected = expected * scale.reshape(1, 1, 4) + bias.reshape(1, 1, 4)
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_layer_normalization_op_matches_onnxruntime() -> None:
+    model = _make_layer_normalization_model(
+        input_shape=[2, 3, 4], axis=1
+    )
+    _run_cli_verify(model)
+
+
+def test_mean_variance_normalization_run_matches_numpy() -> None:
+    model = _make_mean_variance_normalization_model(
+        input_shape=[2, 3, 2, 2], axes=[0, 2, 3]
+    )
+    compiler = Compiler()
+    data = np.arange(24, dtype=np.float32).reshape(2, 3, 2, 2)
+    outputs = compiler.run(model, {"in0": data})
+    mean = np.mean(data, axis=(0, 2, 3), keepdims=True)
+    var = np.mean((data - mean) ** 2, axis=(0, 2, 3), keepdims=True)
+    expected = (data - mean) / np.sqrt(var + 1e-9)
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_mean_variance_normalization_op_matches_onnxruntime() -> None:
+    model = _make_mean_variance_normalization_model(
+        input_shape=[2, 3, 2, 2]
+    )
+    _run_cli_verify(model)
+
+
+def test_rms_normalization_run_matches_numpy() -> None:
+    model = _make_rms_normalization_model(input_shape=[2, 3, 4], axis=-1)
+    compiler = Compiler()
+    data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    scale = np.linspace(0.25, 1.0, num=4, dtype=np.float32)
+    outputs = compiler.run(model, {"in0": data, "in1": scale})
+    mean_square = np.mean(data * data, axis=2, keepdims=True)
+    expected = data / np.sqrt(mean_square + 1e-5)
+    expected = expected * scale.reshape(1, 1, 4)
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_rms_normalization_op_matches_onnxruntime() -> None:
+    model = _make_rms_normalization_model(input_shape=[2, 3, 4], axis=1)
     _run_cli_verify(model)
 
 
