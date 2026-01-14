@@ -2,12 +2,11 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Unsupported op Expand | 57 | ██████████████████████████████ |
-| Unsupported op Range | 37 | ███████████████████ |
+| Expand shape input must be a constant initializer | 57 | ██████████████████████████████ |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ███████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████ |
 | Dynamic or zero dims are not supported | 32 | █████████████████ |
-| Unsupported op Split | 25 | █████████████ |
+| Range start input must be a constant initializer | 31 | ████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████████ |
 | Unsupported op LayerNormalization | 19 | ██████████ |
@@ -25,6 +24,7 @@
 | Unsupported op Trilu | 16 | ████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███████ |
 | Unsupported op ConvTranspose | 14 | ███████ |
+| Split split input must be a constant initializer | 14 | ███████ |
 | '*' object has no attribute '*' | 13 | ███████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████ |
 | Unsupported op CumSum | 9 | █████ |
@@ -39,6 +39,7 @@
 | Unsupported op TfIdfVectorizer | 7 | ████ |
 | Unsupported op TopK | 7 | ████ |
 | AveragePool has unsupported attributes | 6 | ███ |
+| Range limit input must be a constant initializer | 6 | ███ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ███ |
 | Unsupported op CenterCropPad | 6 | ███ |
 | Unsupported op DFT | 6 | ███ |
@@ -143,4 +144,4 @@
 | Unsupported op QLinearAdd | 2 | ██████████ |
 | Unsupported op QLinearMul | 2 | ██████████ |
 | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | █████ |
-| Unsupported op Expand | 1 | █████ |
+| Expand shape input must be a constant initializer | 1 | █████ |

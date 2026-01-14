@@ -25,11 +25,14 @@ from .codegen.c_emitter import (
     GemmOp,
     GatherOp,
     GatherElementsOp,
+    ExpandOp,
+    RangeOp,
     LrnOp,
     LstmOp,
     LogSoftmaxOp,
     NegativeLogLikelihoodLossOp,
     NodeInfo,
+    SplitOp,
     SoftmaxCrossEntropyLossOp,
     LoweredModel,
     ModelHeader,
@@ -75,6 +78,9 @@ from .lowering.logsoftmax import lower_logsoftmax
 from .lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from .lowering.expand import lower_expand
+from .lowering.range import lower_range
+from .lowering.split import lower_split
 from .lowering.softmax_cross_entropy_loss import (
     lower_softmax_cross_entropy_loss,
 )
@@ -320,6 +326,9 @@ class Compiler:
             | ResizeOp
             | ReduceOp
             | ShapeOp
+            | ExpandOp
+            | RangeOp
+            | SplitOp
         ],
         list[NodeInfo],
     ]:
@@ -351,6 +360,9 @@ class Compiler:
             | ResizeOp
             | ReduceOp
             | ShapeOp
+            | ExpandOp
+            | RangeOp
+            | SplitOp
             | WhereOp
         ] = []
         node_infos: list[NodeInfo] = []

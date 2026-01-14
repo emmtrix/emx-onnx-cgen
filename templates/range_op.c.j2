@@ -1,0 +1,8 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ start }}{{ input_suffix }}, const {{ c_type }} {{ limit }}{{ input_suffix }}, const {{ c_type }} {{ delta }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+    (void){{ limit }};
+    const {{ c_type }} start_value = {{ start }}[0];
+    const {{ c_type }} delta_value = {{ delta }}[0];
+    for (size_t idx = 0; idx < {{ length }}; ++idx) {
+        {{ output }}[idx] = start_value + (({{ c_type }})idx * delta_value);
+    }
+}

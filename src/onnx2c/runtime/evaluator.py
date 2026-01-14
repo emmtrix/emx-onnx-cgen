@@ -21,6 +21,9 @@ from ..lowering.logsoftmax import lower_logsoftmax
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from ..lowering.expand import lower_expand
+from ..lowering.range import lower_range
+from ..lowering.split import lower_split
 from ..lowering.softmax_cross_entropy_loss import (
     lower_softmax_cross_entropy_loss,
 )
@@ -658,6 +661,35 @@ def _eval_shape(evaluator: Evaluator, node: Node) -> None:
 def _eval_size(evaluator: Evaluator, node: Node) -> None:
     op = lower_size(evaluator.graph, node)
     evaluator.values[op.output] = np.array(op.value, dtype=np.int64)
+
+
+@register_evaluator("Expand")
+def _eval_expand(evaluator: Evaluator, node: Node) -> None:
+    op = lower_expand(evaluator.graph, node)
+    value = evaluator.values[op.input0]
+    evaluator.values[op.output] = np.broadcast_to(
+        value, op.output_shape
+    ).copy()
+
+
+@register_evaluator("Range")
+def _eval_range(evaluator: Evaluator, node: Node) -> None:
+    op = lower_range(evaluator.graph, node)
+    start_value = evaluator.values[op.start].reshape(-1)[0]
+    delta_value = evaluator.values[op.delta].reshape(-1)[0]
+    indices = np.arange(op.length, dtype=op.dtype.np_dtype)
+    output = start_value + indices * delta_value
+    evaluator.values[op.output] = output
+
+
+@register_evaluator("Split")
+def _eval_split(evaluator: Evaluator, node: Node) -> None:
+    op = lower_split(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    split_points = np.cumsum(op.split_sizes)[:-1]
+    outputs = np.split(data, split_points, axis=op.axis)
+    for output_name, output_value in zip(op.outputs, outputs):
+        evaluator.values[output_name] = output_value
 
 
 @register_evaluator("ReduceMean")

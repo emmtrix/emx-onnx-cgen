@@ -596,6 +596,42 @@ class SizeOp:
 
 
 @dataclass(frozen=True)
+class ExpandOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    input_shape_padded: tuple[int, ...]
+    input_strides: tuple[int, ...]
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class RangeOp:
+    start: str
+    limit: str
+    delta: str
+    output: str
+    output_shape: tuple[int, ...]
+    length: int
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class SplitOp:
+    input0: str
+    outputs: tuple[str, ...]
+    input_shape: tuple[int, ...]
+    output_shapes: tuple[tuple[int, ...], ...]
+    axis: int
+    split_sizes: tuple[int, ...]
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class ConstTensor:
     name: str
     shape: tuple[int, ...]
@@ -671,7 +707,10 @@ class LoweredModel:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
         ...,
     ]
     node_infos: tuple[NodeInfo, ...]
@@ -738,7 +777,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
     ) -> tuple[str, ...]:
         if isinstance(op, BinaryOp):
             return (op.input0, op.input1, op.output)
@@ -844,6 +886,12 @@ class CEmitter:
             return (op.input0, op.output)
         if isinstance(op, SizeOp):
             return (op.input0, op.output)
+        if isinstance(op, ExpandOp):
+            return (op.input0, op.output)
+        if isinstance(op, RangeOp):
+            return (op.start, op.limit, op.delta, op.output)
+        if isinstance(op, SplitOp):
+            return (op.input0, *op.outputs)
         if isinstance(op, ReshapeOp):
             return (op.input0, op.output)
         if isinstance(op, SliceOp):
@@ -922,7 +970,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
         name_map: dict[str, str],
     ) -> (
         BinaryOp
@@ -954,6 +1005,9 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp
     ):
         if isinstance(op, BinaryOp):
             return BinaryOp(
@@ -1424,6 +1478,41 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, ExpandOp):
+            return ExpandOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_shape_padded=op.input_shape_padded,
+                input_strides=op.input_strides,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
+        if isinstance(op, RangeOp):
+            return RangeOp(
+                start=name_map.get(op.start, op.start),
+                limit=name_map.get(op.limit, op.limit),
+                delta=name_map.get(op.delta, op.delta),
+                output=name_map.get(op.output, op.output),
+                output_shape=op.output_shape,
+                length=op.length,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
+        if isinstance(op, SplitOp):
+            return SplitOp(
+                input0=name_map.get(op.input0, op.input0),
+                outputs=tuple(
+                    name_map.get(name, name) for name in op.outputs
+                ),
+                input_shape=op.input_shape,
+                output_shapes=op.output_shapes,
+                axis=op.axis,
+                split_sizes=op.split_sizes,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
@@ -1521,6 +1610,9 @@ class CEmitter:
                 ),
                 "shape": self._env.get_template("shape_op.c.j2"),
                 "size": self._env.get_template("size_op.c.j2"),
+                "expand": self._env.get_template("expand_op.c.j2"),
+                "range": self._env.get_template("range_op.c.j2"),
+                "split": self._env.get_template("split_op.c.j2"),
             }
             if emit_testbench:
                 templates["testbench"] = self._env.get_template("testbench.c.j2")
@@ -1590,6 +1682,9 @@ class CEmitter:
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         size_template = templates["size"]
+        expand_template = templates["expand"]
+        range_template = templates["range"]
+        split_template = templates["split"]
         testbench_template = templates.get("testbench")
         reserved_names = {
             model.name,
@@ -1644,6 +1739,9 @@ class CEmitter:
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
+                expand_template=expand_template,
+                range_template=range_template,
+                split_template=split_template,
                 scalar_registry=scalar_registry,
                 dim_args=dim_args,
                 tensor_dim_names=tensor_dim_names,
@@ -1771,6 +1869,9 @@ class CEmitter:
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         size_template = templates["size"]
+        expand_template = templates["expand"]
+        range_template = templates["range"]
+        split_template = templates["split"]
         testbench_template = templates.get("testbench")
         reserved_names = {
             model.name,
@@ -1825,6 +1926,9 @@ class CEmitter:
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
+                expand_template=expand_template,
+                range_template=range_template,
+                split_template=split_template,
                 scalar_registry=scalar_registry,
                 dim_args=dim_args,
                 tensor_dim_names=tensor_dim_names,
@@ -2130,6 +2234,9 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | ExpandOp
+            | RangeOp
+            | SplitOp
         ],
         *,
         emit_testbench: bool,
@@ -2197,7 +2304,10 @@ class CEmitter:
             includes.add("#include <math.h>")
         if CEmitter._needs_limits(resolved_ops):
             includes.add("#include <limits.h>")
-        if any(isinstance(op, (ConcatOp, ReshapeOp)) for op in resolved_ops):
+        if any(
+            isinstance(op, (ConcatOp, ReshapeOp, SplitOp))
+            for op in resolved_ops
+        ):
             includes.add("#include <string.h>")
         ordered_includes = (
             "#include <stddef.h>",
@@ -2270,6 +2380,9 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | ExpandOp
+            | RangeOp
+            | SplitOp
         ],
     ) -> bool:
         math_ops = {
@@ -2391,6 +2504,9 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | ExpandOp
+            | RangeOp
+            | SplitOp
         ],
     ) -> bool:
         if any(
@@ -2453,6 +2569,9 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | ExpandOp
+            | RangeOp
+            | SplitOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
         *,
@@ -2520,7 +2639,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
         dim_order: Sequence[str],
     ) -> str:
         args: list[str] = []
@@ -2649,6 +2771,15 @@ class CEmitter:
         if isinstance(op, SizeOp):
             args.extend([op.input0, op.output])
             return ", ".join(args)
+        if isinstance(op, ExpandOp):
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
+        if isinstance(op, RangeOp):
+            args.extend([op.start, op.limit, op.delta, op.output])
+            return ", ".join(args)
+        if isinstance(op, SplitOp):
+            args.extend([op.input0, *op.outputs])
+            return ", ".join(args)
         if isinstance(op, ReshapeOp):
             args.extend([op.input0, op.output])
             return ", ".join(args)
@@ -2744,7 +2875,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
         temp_map: dict[str, str],
     ) -> (
         BinaryOp
@@ -2776,6 +2910,9 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp
     ):
         if isinstance(op, BinaryOp):
             return BinaryOp(
@@ -3234,6 +3371,41 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, ExpandOp):
+            return ExpandOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_shape_padded=op.input_shape_padded,
+                input_strides=op.input_strides,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
+        if isinstance(op, RangeOp):
+            return RangeOp(
+                start=temp_map.get(op.start, op.start),
+                limit=temp_map.get(op.limit, op.limit),
+                delta=temp_map.get(op.delta, op.delta),
+                output=temp_map.get(op.output, op.output),
+                output_shape=op.output_shape,
+                length=op.length,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
+        if isinstance(op, SplitOp):
+            return SplitOp(
+                input0=temp_map.get(op.input0, op.input0),
+                outputs=tuple(
+                    temp_map.get(name, name) for name in op.outputs
+                ),
+                input_shape=op.input_shape,
+                output_shapes=op.output_shapes,
+                axis=op.axis,
+                split_sizes=op.split_sizes,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -3357,7 +3529,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
         index: int,
         *,
         array_suffix: str,
@@ -3396,6 +3571,9 @@ class CEmitter:
         constant_of_shape_template,
         shape_template,
         size_template,
+        expand_template,
+        range_template,
+        split_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
         tensor_dim_names: Mapping[str, Mapping[int, str]] | None = None,
@@ -4594,6 +4772,85 @@ class CEmitter:
                 value=CEmitter._format_literal(op.dtype, op.value),
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ExpandOp):
+            output_dim_names = _dim_names_for(op.output)
+            output_shape = CEmitter._shape_dim_exprs(
+                op.output_shape, output_dim_names
+            )
+            loop_vars = CEmitter._loop_vars(op.output_shape)
+            input_index_terms = [
+                f"{loop_var} * {stride}"
+                for loop_var, input_dim, stride in zip(
+                    loop_vars, op.input_shape_padded, op.input_strides
+                )
+                if input_dim != 1
+            ]
+            input_index_expr = (
+                " + ".join(input_index_terms) if input_index_terms else "0"
+            )
+            rendered = expand_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                input_suffix=self._param_array_suffix(
+                    op.input_shape, _dim_names_for(op.input0)
+                ),
+                output_suffix=self._param_array_suffix(
+                    op.output_shape, output_dim_names
+                ),
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                input_index_expr=input_index_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, RangeOp):
+            scalar_suffix = self._param_array_suffix(())
+            rendered = range_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                start=op.start,
+                limit=op.limit,
+                delta=op.delta,
+                output=op.output,
+                c_type=c_type,
+                input_suffix=scalar_suffix,
+                output_suffix=self._param_array_suffix(op.output_shape),
+                length=op.length,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, SplitOp):
+            output_names = op.outputs
+            output_suffixes = tuple(
+                self._param_array_suffix(
+                    shape, _dim_names_for(name)
+                )
+                for name, shape in zip(output_names, op.output_shapes)
+            )
+            outer = 1
+            for dim in op.input_shape[: op.axis]:
+                outer *= dim
+            inner = 1
+            for dim in op.input_shape[op.axis + 1 :]:
+                inner *= dim
+            rendered = split_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                outputs=output_names,
+                output_suffixes=output_suffixes,
+                c_type=c_type,
+                input_suffix=self._param_array_suffix(
+                    op.input_shape, _dim_names_for(op.input0)
+                ),
+                axis_sizes=op.split_sizes,
+                axis_total=op.input_shape[op.axis],
+                outer=outer,
+                inner=inner,
+                output_count=len(output_names),
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, CastOp):
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
@@ -4747,8 +5004,13 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
     ) -> str:
+        if isinstance(op, SplitOp):
+            return op.outputs[0]
         return op.output
 
     @staticmethod
@@ -4780,7 +5042,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         if isinstance(op, BinaryOp):
             return ((op.input0, op.shape), (op.input1, op.shape))
@@ -4823,6 +5088,9 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | ExpandOp
+            | RangeOp
+            | SplitOp
         ],
         tensor_dim_names: dict[str, dict[int, str]],
     ) -> None:
@@ -4865,7 +5133,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...], str], ...]:
         if isinstance(op, AttentionOp):
             outputs: list[tuple[str, tuple[int, ...], str]] = [
@@ -4943,6 +5214,11 @@ class CEmitter:
                     (op.indices, CEmitter._op_output_shape(op), op.indices_dtype)
                 )
             return tuple(outputs)
+        if isinstance(op, SplitOp):
+            return tuple(
+                (name, shape, op.dtype)
+                for name, shape in zip(op.outputs, op.output_shapes)
+            )
         return ((op.output, CEmitter._op_output_shape(op), op.dtype),)
 
     @staticmethod
@@ -4975,7 +5251,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return op.shape
@@ -5031,6 +5310,10 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, SizeOp):
             return op.output_shape
+        if isinstance(op, ExpandOp):
+            return op.output_shape
+        if isinstance(op, RangeOp):
+            return op.output_shape
         if op.output_rank == 3:
             return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
         return (op.batch, op.q_heads, op.q_seq, op.v_head_size)
@@ -5061,7 +5344,10 @@ class CEmitter:
         | ReduceOp
         | ConstantOfShapeOp
         | ShapeOp
-        | SizeOp,
+        | SizeOp
+        | ExpandOp
+        | RangeOp
+        | SplitOp,
     ) -> str:
         return op.dtype
 

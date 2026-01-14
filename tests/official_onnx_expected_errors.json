@@ -369,7 +369,7 @@
   ],
   [
     "node/test_attention_3d_attn_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_causal/model.onnx",
@@ -377,7 +377,7 @@
   ],
   [
     "node/test_attention_3d_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes/model.onnx",
@@ -389,7 +389,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_causal/model.onnx",
@@ -397,11 +397,11 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_scaled/model.onnx",
@@ -409,7 +409,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_softcap/model.onnx",
@@ -417,7 +417,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present/model.onnx",
@@ -425,11 +425,11 @@
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_gqa/model.onnx",
@@ -441,7 +441,7 @@
   ],
   [
     "node/test_attention_3d_gqa_attn_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_gqa_causal/model.onnx",
@@ -449,11 +449,11 @@
   ],
   [
     "node/test_attention_3d_gqa_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_gqa_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_gqa_scaled/model.onnx",
@@ -461,7 +461,7 @@
   ],
   [
     "node/test_attention_3d_gqa_scaled_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_gqa_softcap/model.onnx",
@@ -469,7 +469,7 @@
   ],
   [
     "node/test_attention_3d_gqa_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present/model.onnx",
@@ -477,7 +477,7 @@
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_scaled/model.onnx",
@@ -485,7 +485,7 @@
   ],
   [
     "node/test_attention_3d_scaled_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_softcap/model.onnx",
@@ -493,7 +493,7 @@
   ],
   [
     "node/test_attention_3d_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_transpose_verification/model.onnx",
@@ -501,7 +501,7 @@
   ],
   [
     "node/test_attention_3d_transpose_verification_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_with_past_and_present/model.onnx",
@@ -509,7 +509,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx",
@@ -521,11 +521,11 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx",
@@ -533,7 +533,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx",
@@ -541,7 +541,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d/model.onnx",
@@ -561,11 +561,11 @@
   ],
   [
     "node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_attn_mask_3d_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_attn_mask_4d/model.onnx",
@@ -577,11 +577,11 @@
   ],
   [
     "node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_attn_mask_4d_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_attn_mask_bool/model.onnx",
@@ -593,15 +593,15 @@
   ],
   [
     "node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_attn_mask_bool_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_attn_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_causal/model.onnx",
@@ -609,7 +609,7 @@
   ],
   [
     "node/test_attention_4d_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx",
@@ -629,7 +629,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal/model.onnx",
@@ -637,11 +637,11 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled/model.onnx",
@@ -649,7 +649,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_softcap/model.onnx",
@@ -657,7 +657,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present/model.onnx",
@@ -665,7 +665,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx",
@@ -673,7 +673,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx",
@@ -681,11 +681,11 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_fp16/model.onnx",
@@ -693,7 +693,7 @@
   ],
   [
     "node/test_attention_4d_fp16_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_gqa/model.onnx",
@@ -705,7 +705,7 @@
   ],
   [
     "node/test_attention_4d_gqa_attn_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_gqa_causal/model.onnx",
@@ -713,11 +713,11 @@
   ],
   [
     "node/test_attention_4d_gqa_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_gqa_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_gqa_scaled/model.onnx",
@@ -725,7 +725,7 @@
   ],
   [
     "node/test_attention_4d_gqa_scaled_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_gqa_softcap/model.onnx",
@@ -733,7 +733,7 @@
   ],
   [
     "node/test_attention_4d_gqa_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present/model.onnx",
@@ -741,7 +741,7 @@
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx",
@@ -749,7 +749,7 @@
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_scaled/model.onnx",
@@ -757,7 +757,7 @@
   ],
   [
     "node/test_attention_4d_scaled_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_softcap/model.onnx",
@@ -765,7 +765,7 @@
   ],
   [
     "node/test_attention_4d_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_past_and_present/model.onnx",
@@ -773,7 +773,7 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx",
@@ -793,11 +793,11 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx",
@@ -809,19 +809,19 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_qk_matmul/model.onnx",
@@ -833,11 +833,11 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_qk_matmul_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softcap/model.onnx",
@@ -845,7 +845,7 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softmax/model.onnx",
@@ -853,7 +853,7 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_averagepool_1d_default/model.onnx",
@@ -1089,7 +1089,7 @@
   ],
   [
     "node/test_blackmanwindow_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range limit input must be a constant initializer"
   ],
   [
     "node/test_blackmanwindow_symmetric/model.onnx",
@@ -1097,7 +1097,7 @@
   ],
   [
     "node/test_blackmanwindow_symmetric_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range limit input must be a constant initializer"
   ],
   [
     "node/test_cast_BFLOAT16_to_FLOAT/model.onnx",
@@ -2473,11 +2473,11 @@
   ],
   [
     "node/test_expand_dim_changed/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_expand_dim_unchanged/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "node/test_eyelike_populate_off_main_diagonal/model.onnx",
@@ -2873,7 +2873,7 @@
   ],
   [
     "node/test_hammingwindow_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range limit input must be a constant initializer"
   ],
   [
     "node/test_hammingwindow_symmetric/model.onnx",
@@ -2881,7 +2881,7 @@
   ],
   [
     "node/test_hammingwindow_symmetric_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range limit input must be a constant initializer"
   ],
   [
     "node/test_hannwindow/model.onnx",
@@ -2889,7 +2889,7 @@
   ],
   [
     "node/test_hannwindow_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range limit input must be a constant initializer"
   ],
   [
     "node/test_hannwindow_symmetric/model.onnx",
@@ -2897,7 +2897,7 @@
   ],
   [
     "node/test_hannwindow_symmetric_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range limit input must be a constant initializer"
   ],
   [
     "node/test_hardmax_axis_0/model.onnx",
@@ -4397,7 +4397,7 @@
   ],
   [
     "node/test_range_float_type_positive_delta/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_range_float_type_positive_delta_expanded/model.onnx",
@@ -4405,7 +4405,7 @@
   ],
   [
     "node/test_range_int32_type_negative_delta/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_range_int32_type_negative_delta_expanded/model.onnx",
@@ -5177,7 +5177,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis0_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_2d_axis1/model.onnx",
@@ -5185,7 +5185,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis1_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_1/model.onnx",
@@ -5193,7 +5193,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_2/model.onnx",
@@ -5201,7 +5201,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_3d_axis0_epsilon/model.onnx",
@@ -5209,7 +5209,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_3d_axis1_epsilon/model.onnx",
@@ -5217,7 +5217,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_3d_axis2_epsilon/model.onnx",
@@ -5225,7 +5225,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx",
@@ -5233,7 +5233,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx",
@@ -5241,7 +5241,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx",
@@ -5249,7 +5249,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis0/model.onnx",
@@ -5257,7 +5257,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis0_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis1/model.onnx",
@@ -5265,7 +5265,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis1_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis2/model.onnx",
@@ -5273,7 +5273,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis2_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis3/model.onnx",
@@ -5281,7 +5281,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis3_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_1/model.onnx",
@@ -5289,7 +5289,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_2/model.onnx",
@@ -5297,7 +5297,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_3/model.onnx",
@@ -5305,7 +5305,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_4/model.onnx",
@@ -5313,7 +5313,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rms_normalization_default_axis/model.onnx",
@@ -5321,7 +5321,7 @@
   ],
   [
     "node/test_rms_normalization_default_axis_expanded/model.onnx",
-    "Unsupported op Range"
+    "Range start input must be a constant initializer"
   ],
   [
     "node/test_rnn_seq_length/model.onnx",
@@ -5349,11 +5349,11 @@
   ],
   [
     "node/test_rotary_embedding_3d_input_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_rotary_embedding_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_rotary_embedding_interleaved/model.onnx",
@@ -5361,7 +5361,7 @@
   ],
   [
     "node/test_rotary_embedding_interleaved_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_rotary_embedding_no_position_ids/model.onnx",
@@ -5369,7 +5369,7 @@
   ],
   [
     "node/test_rotary_embedding_no_position_ids_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_rotary_embedding_no_position_ids_interleaved/model.onnx",
@@ -5377,7 +5377,7 @@
   ],
   [
     "node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx",
@@ -5385,7 +5385,7 @@
   ],
   [
     "node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx",
@@ -5393,7 +5393,7 @@
   ],
   [
     "node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_rotary_embedding_with_rotary_dim/model.onnx",
@@ -5401,7 +5401,7 @@
   ],
   [
     "node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_round/model.onnx",
@@ -6085,35 +6085,35 @@
   ],
   [
     "node/test_split_1d_uneven_split_opset18/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_2d_uneven_split_opset18/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_equal_parts_1d_opset13/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_equal_parts_1d_opset18/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_equal_parts_2d/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_equal_parts_2d_opset13/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_equal_parts_default_axis_opset13/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_equal_parts_default_axis_opset18/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "node/test_split_to_sequence_1/model.onnx",
@@ -6129,27 +6129,27 @@
   ],
   [
     "node/test_split_variable_parts_1d_opset13/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_split_variable_parts_1d_opset18/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_split_variable_parts_2d_opset13/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_split_variable_parts_2d_opset18/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_split_variable_parts_default_axis_opset13/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_split_variable_parts_default_axis_opset18/model.onnx",
-    "Unsupported op Split"
+    "Split split input must be a constant initializer"
   ],
   [
     "node/test_split_zero_size_splits_opset13/model.onnx",
@@ -6825,11 +6825,11 @@
   ],
   [
     "pytorch-converted/test_GLU/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "pytorch-converted/test_GLU_dim/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "pytorch-converted/test_LeakyReLU/model.onnx",
@@ -7005,7 +7005,7 @@
   ],
   [
     "pytorch-operator/test_operator_chunk/model.onnx",
-    "Unsupported op Split"
+    ""
   ],
   [
     "pytorch-operator/test_operator_clip/model.onnx",
@@ -7117,19 +7117,19 @@
   ],
   [
     "simple/test_expand_shape_model1/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "simple/test_expand_shape_model2/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "simple/test_expand_shape_model3/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "simple/test_expand_shape_model4/model.onnx",
-    "Unsupported op Expand"
+    "Expand shape input must be a constant initializer"
   ],
   [
     "simple/test_gradient_of_add/model.onnx",

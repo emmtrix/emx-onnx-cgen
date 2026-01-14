@@ -1,0 +1,18 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, {% for output in outputs %}{{ c_type }} {{ output }}{{ output_suffixes[loop.index0] }}{% if not loop.last %}, {% endif %}{% endfor %}) {
+    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_ptrs[] = { {% for output in outputs %}({{ c_type }} *){{ output }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const size_t axis_sizes[] = { {% for axis in axis_sizes %}{{ axis }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    for (size_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
+        size_t input_base = outer_idx * {{ axis_total }} * {{ inner }};
+        size_t axis_offset = 0;
+        for (size_t output_idx = 0; output_idx < {{ output_count }}; ++output_idx) {
+            size_t copy_elems = axis_sizes[output_idx] * {{ inner }};
+            memcpy(
+                output_ptrs[output_idx] + outer_idx * copy_elems,
+                input_data + input_base + axis_offset,
+                copy_elems * sizeof({{ c_type }})
+            );
+            axis_offset += copy_elems;
+        }
+    }
+}

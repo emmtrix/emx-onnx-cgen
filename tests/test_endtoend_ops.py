@@ -50,6 +50,170 @@ def _make_operator_model(
     return model
 
 
+def _broadcast_shape(
+    input_shape: list[int], target_shape: list[int]
+) -> list[int]:
+    output_rank = max(len(input_shape), len(target_shape))
+    padded_input = [1] * (output_rank - len(input_shape)) + input_shape
+    padded_target = [1] * (output_rank - len(target_shape)) + target_shape
+    output_shape: list[int] = []
+    for input_dim, target_dim in zip(padded_input, padded_target):
+        if input_dim == 1:
+            output_shape.append(target_dim)
+        elif target_dim == 1 or input_dim == target_dim:
+            output_shape.append(input_dim)
+        else:
+            raise ValueError(
+                f"Shapes {input_shape} and {target_shape} are not broadcastable"
+            )
+    return output_shape
+
+
+def _make_expand_model(
+    *,
+    input_shape: list[int],
+    target_shape: list[int],
+    dtype: int,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output_shape = _broadcast_shape(input_shape, target_shape)
+    output = helper.make_tensor_value_info("output", dtype, output_shape)
+    shape_tensor = helper.make_tensor(
+        "shape",
+        TensorProto.INT64,
+        dims=[len(target_shape)],
+        vals=target_shape,
+    )
+    node = helper.make_node(
+        "Expand", inputs=["input", "shape"], outputs=[output.name]
+    )
+    graph = helper.make_graph(
+        [node],
+        "expand_graph",
+        [input_info],
+        [output],
+        initializer=[shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_range_model(
+    *,
+    start: float | int,
+    limit: float | int,
+    delta: float | int,
+    dtype: int,
+    opset: int = 11,
+) -> onnx.ModelProto:
+    start_tensor = helper.make_tensor(
+        "start",
+        dtype,
+        dims=[],
+        vals=[start],
+    )
+    limit_tensor = helper.make_tensor(
+        "limit",
+        dtype,
+        dims=[],
+        vals=[limit],
+    )
+    delta_tensor = helper.make_tensor(
+        "delta",
+        dtype,
+        dims=[],
+        vals=[delta],
+    )
+    output_values = np.arange(start, limit, delta, dtype=np.dtype("float64"))
+    output_shape = [int(output_values.shape[0])]
+    output = helper.make_tensor_value_info("output", dtype, output_shape)
+    node = helper.make_node(
+        "Range",
+        inputs=["start", "limit", "delta"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "range_graph",
+        [],
+        [output],
+        initializer=[start_tensor, limit_tensor, delta_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_split_model(
+    *,
+    input_shape: list[int],
+    split_sizes: list[int] | None,
+    axis: int,
+    dtype: int,
+    opset: int = 18,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    outputs: list[onnx.ValueInfoProto] = []
+    output_names: list[str] = []
+    if split_sizes is None:
+        num_outputs = 3
+        base = input_shape[axis] // num_outputs
+        last = input_shape[axis] - base * (num_outputs - 1)
+        split_sizes = [base] * (num_outputs - 1) + [last]
+        attrs = {"axis": axis, "num_outputs": num_outputs}
+        inputs = ["input"]
+        initializer = []
+    else:
+        attrs = {"axis": axis}
+        inputs = ["input", "split"]
+        split_tensor = helper.make_tensor(
+            "split",
+            TensorProto.INT64,
+            dims=[len(split_sizes)],
+            vals=split_sizes,
+        )
+        initializer = [split_tensor]
+    for index, size in enumerate(split_sizes):
+        output_shape = list(input_shape)
+        output_shape[axis] = size
+        name = f"output_{index}"
+        output_names.append(name)
+        outputs.append(helper.make_tensor_value_info(name, dtype, output_shape))
+    node = helper.make_node(
+        "Split",
+        inputs=inputs,
+        outputs=output_names,
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "split_graph",
+        [input_info],
+        outputs,
+        initializer=initializer,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_compare_model(
     *,
     op_type: str,
@@ -1824,6 +1988,72 @@ def test_castlike_matches_onnxruntime() -> None:
 def test_size_matches_onnxruntime() -> None:
     model = _make_size_model(input_shape=[2, 3, 4])
     _run_cli_verify(model)
+
+
+def test_expand_matches_onnxruntime() -> None:
+    model = _make_expand_model(
+        input_shape=[3, 1],
+        target_shape=[2, 3, 4],
+        dtype=TensorProto.FLOAT,
+    )
+    _run_cli_verify(model)
+
+
+def test_range_matches_onnxruntime() -> None:
+    model = _make_range_model(
+        start=1,
+        limit=7,
+        delta=2,
+        dtype=TensorProto.INT32,
+    )
+    _run_cli_verify(model)
+
+
+def test_split_matches_onnxruntime() -> None:
+    model = _make_split_model(
+        input_shape=[2, 6],
+        split_sizes=[2, 4],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    _run_cli_verify(model)
+
+
+def test_expand_run_matches_numpy() -> None:
+    model = _make_expand_model(
+        input_shape=[3, 1],
+        target_shape=[2, 3, 4],
+        dtype=TensorProto.FLOAT,
+    )
+    compiler = Compiler()
+    data = np.arange(3, dtype=np.float32).reshape(3, 1)
+    outputs = compiler.run(model, {"input": data})
+    expected_shape = _broadcast_shape([3, 1], [2, 3, 4])
+    expected = np.broadcast_to(data, expected_shape)
+    np.testing.assert_allclose(outputs["output"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_range_run_matches_numpy() -> None:
+    model = _make_range_model(start=1, limit=7, delta=2, dtype=TensorProto.INT32)
+    compiler = Compiler()
+    outputs = compiler.run(model, {})
+    expected = np.arange(1, 7, 2, dtype=np.int32)
+    np.testing.assert_array_equal(outputs["output"], expected)
+
+
+def test_split_run_matches_numpy() -> None:
+    model = _make_split_model(
+        input_shape=[2, 6],
+        split_sizes=[2, 4],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    compiler = Compiler()
+    data = np.arange(12, dtype=np.float32).reshape(2, 6)
+    outputs = compiler.run(model, {"input": data})
+    expected = np.split(data, [2], axis=1)
+    np.testing.assert_allclose(outputs["output_0"], expected[0], rtol=1e-5, atol=1e-6)
+    np.testing.assert_allclose(outputs["output_1"], expected[1], rtol=1e-5, atol=1e-6)
 
 
 def test_gemm_run_matches_numpy() -> None:
