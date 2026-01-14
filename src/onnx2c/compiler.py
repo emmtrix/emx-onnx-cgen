@@ -16,6 +16,7 @@ from .codegen.c_emitter import (
     BatchNormOp,
     BinaryOp,
     CastOp,
+    ClipOp,
     CEmitter,
     ConstTensor,
     ConvOp,
@@ -93,6 +94,14 @@ from .lowering.softmax import lower_softmax
 from .lowering.transpose import lower_transpose
 from .lowering.unsqueeze import lower_unsqueeze
 from .lowering.where import lower_where
+from .lowering.elementwise import (
+    lower_celu,
+    lower_clip,
+    lower_isinf,
+    lower_isnan,
+    lower_shrink,
+    lower_swish,
+)
 from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
 from .ops import (
@@ -256,6 +265,7 @@ class Compiler:
         list[
             BinaryOp
             | UnaryOp
+            | ClipOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -286,6 +296,7 @@ class Compiler:
         ops: list[
             BinaryOp
             | UnaryOp
+            | ClipOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -391,10 +402,54 @@ def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
 
 
 def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
-    try:
-        function = ScalarFunction.from_onnx_op(node.op_type)
-    except ScalarFunctionError as exc:
-        raise UnsupportedOpError(f"Unsupported op {node.op_type}") from exc
+    if node.op_type == "BitShift":
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError("BitShift must have 2 inputs and 1 output")
+        direction_attr = node.attrs.get("direction", "LEFT")
+        if isinstance(direction_attr, bytes):
+            direction = direction_attr.decode()
+        else:
+            direction = str(direction_attr)
+        if direction not in {"LEFT", "RIGHT"}:
+            raise UnsupportedOpError(
+                "BitShift direction must be LEFT or RIGHT"
+            )
+        op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+        if not op_dtype.is_integer:
+            raise UnsupportedOpError("BitShift expects integer inputs")
+        function = (
+            ScalarFunction.BITWISE_LEFT_SHIFT
+            if direction == "LEFT"
+            else ScalarFunction.BITWISE_RIGHT_SHIFT
+        )
+        op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
+        if op_spec is None:
+            raise UnsupportedOpError("Unsupported op BitShift")
+        output_shape = value_shape(graph, node.outputs[0], node)
+        return BinaryOp(
+            input0=node.inputs[0],
+            input1=node.inputs[1],
+            output=node.outputs[0],
+            function=function,
+            operator_kind=op_spec.kind,
+            shape=output_shape,
+            dtype=op_dtype,
+            input_dtype=op_dtype,
+        )
+    if node.op_type == "Mod":
+        fmod = int(node.attrs.get("fmod", 0))
+        if fmod not in {0, 1}:
+            raise UnsupportedOpError("Mod only supports fmod=0 or fmod=1")
+        function = (
+            ScalarFunction.FMOD if fmod == 1 else ScalarFunction.REMAINDER
+        )
+    else:
+        try:
+            function = ScalarFunction.from_onnx_op(node.op_type)
+        except ScalarFunctionError as exc:
+            raise UnsupportedOpError(
+                f"Unsupported op {node.op_type}"
+            ) from exc
     validate_unary_attrs(node.op_type, node.attrs)
     if function in COMPARE_FUNCTIONS:
         input_dtype = node_dtype(graph, node, *node.inputs)
@@ -451,4 +506,6 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
         function=function,
         shape=output_shape,
         dtype=op_dtype,
+        input_dtype=op_dtype,
+        params=(),
     )

@@ -117,6 +117,109 @@ def _eval_matmul(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = _apply_matmul(left, right)
 
 
+@register_evaluator("Clip")
+def _eval_clip(evaluator: Evaluator, node: Node) -> None:
+    if not node.inputs or len(node.outputs) != 1:
+        raise UnsupportedOpError("Clip must have 1 output")
+    input_name = node.inputs[0]
+    if not input_name:
+        raise UnsupportedOpError("Clip input must be provided")
+    x = evaluator.values[input_name]
+    min_name = optional_name(node.inputs, 1)
+    max_name = optional_name(node.inputs, 2)
+    dtype = value_dtype(evaluator.graph, input_name, node)
+    if min_name is None:
+        min_val = (
+            -np.inf
+            if dtype.is_float
+            else np.iinfo(dtype.np_dtype).min
+        )
+    else:
+        min_val = evaluator.values[min_name]
+    if max_name is None:
+        max_val = (
+            np.inf
+            if dtype.is_float
+            else np.iinfo(dtype.np_dtype).max
+        )
+    else:
+        max_val = evaluator.values[max_name]
+    evaluator.values[node.outputs[0]] = np.clip(x, min_val, max_val)
+
+
+@register_evaluator("Celu")
+def _eval_celu(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Celu must have 1 input and 1 output")
+    dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    if not dtype.is_float:
+        raise UnsupportedOpError("Celu only supports floating-point inputs")
+    alpha = float(node.attrs.get("alpha", 1.0))
+    x = evaluator.values[node.inputs[0]]
+    evaluator.values[node.outputs[0]] = np.where(
+        x > 0,
+        x,
+        alpha * (np.exp(x / alpha) - 1.0),
+    )
+
+
+@register_evaluator("Swish")
+def _eval_swish(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Swish must have 1 input and 1 output")
+    dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    if not dtype.is_float:
+        raise UnsupportedOpError("Swish only supports floating-point inputs")
+    alpha = float(node.attrs.get("alpha", 1.0))
+    x = evaluator.values[node.inputs[0]]
+    evaluator.values[node.outputs[0]] = x / (1.0 + np.exp(-alpha * x))
+
+
+@register_evaluator("Shrink")
+def _eval_shrink(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Shrink must have 1 input and 1 output")
+    bias = float(node.attrs.get("bias", 0.0))
+    lambd = float(node.attrs.get("lambd", 0.5))
+    x = evaluator.values[node.inputs[0]]
+    result = np.where(
+        x < -lambd,
+        x + bias,
+        np.where(x > lambd, x - bias, 0.0),
+    )
+    if result.dtype != x.dtype:
+        result = result.astype(x.dtype)
+    evaluator.values[node.outputs[0]] = result
+
+
+@register_evaluator("IsInf")
+def _eval_isinf(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("IsInf must have 1 input and 1 output")
+    input_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    if not input_dtype.is_float:
+        raise UnsupportedOpError("IsInf only supports floating-point inputs")
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if output_dtype != ScalarType.BOOL:
+        raise UnsupportedOpError("IsInf output must be bool")
+    x = evaluator.values[node.inputs[0]]
+    evaluator.values[node.outputs[0]] = np.isinf(x)
+
+
+@register_evaluator("IsNaN")
+def _eval_isnan(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("IsNaN must have 1 input and 1 output")
+    input_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    if not input_dtype.is_float:
+        raise UnsupportedOpError("IsNaN only supports floating-point inputs")
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if output_dtype != ScalarType.BOOL:
+        raise UnsupportedOpError("IsNaN output must be bool")
+    x = evaluator.values[node.inputs[0]]
+    evaluator.values[node.outputs[0]] = np.isnan(x)
+
+
 @register_evaluator("Gemm")
 def _eval_gemm(evaluator: Evaluator, node: Node) -> None:
     op_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
@@ -640,10 +743,49 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
 
 
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
-    try:
-        function = ScalarFunction.from_onnx_op(node.op_type)
-    except ScalarFunctionError as exc:
-        raise UnsupportedOpError(f"Unsupported op {node.op_type}") from exc
+    if node.op_type == "BitShift":
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError("BitShift must have 2 inputs and 1 output")
+        direction_attr = node.attrs.get("direction", "LEFT")
+        if isinstance(direction_attr, bytes):
+            direction = direction_attr.decode()
+        else:
+            direction = str(direction_attr)
+        if direction not in {"LEFT", "RIGHT"}:
+            raise UnsupportedOpError(
+                "BitShift direction must be LEFT or RIGHT"
+            )
+        op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
+        if not op_dtype.is_integer:
+            raise UnsupportedOpError("BitShift expects integer inputs")
+        function = (
+            ScalarFunction.BITWISE_LEFT_SHIFT
+            if direction == "LEFT"
+            else ScalarFunction.BITWISE_RIGHT_SHIFT
+        )
+        op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
+        if op_spec is None:
+            raise UnsupportedOpError("Unsupported op BitShift")
+        left = evaluator.values[node.inputs[0]]
+        right = evaluator.values[node.inputs[1]]
+        evaluator.values[node.outputs[0]] = apply_binary_op(
+            op_spec, left, right
+        )
+        return
+    if node.op_type == "Mod":
+        fmod = int(node.attrs.get("fmod", 0))
+        if fmod not in {0, 1}:
+            raise UnsupportedOpError("Mod only supports fmod=0 or fmod=1")
+        function = (
+            ScalarFunction.FMOD if fmod == 1 else ScalarFunction.REMAINDER
+        )
+    else:
+        try:
+            function = ScalarFunction.from_onnx_op(node.op_type)
+        except ScalarFunctionError as exc:
+            raise UnsupportedOpError(
+                f"Unsupported op {node.op_type}"
+            ) from exc
     validate_unary_attrs(node.op_type, node.attrs)
     if function in COMPARE_FUNCTIONS:
         input_dtype = node_dtype(evaluator.graph, node, *node.inputs)

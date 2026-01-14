@@ -20,21 +20,16 @@
 | Unsupported op Split | 17 | ████ |
 | Unsupported op ArgMax | 16 | ████ |
 | Unsupported op ArgMin | 16 | ████ |
-| Unsupported op Clip | 16 | ████ |
 | Unsupported op Trilu | 16 | ████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███ |
 | Unsupported op ConvTranspose | 14 | ███ |
 | ReduceSum output shape rank must match input rank | 12 | ███ |
 | Unsupported op Pad | 11 | ███ |
-| Unsupported op Mod | 10 | ██ |
 | Unsupported op CumSum | 9 | ██ |
 | Unsupported op ImageDecoder | 9 | ██ |
 | Unsupported op NonMaxSuppression | 9 | ██ |
-| Unsupported op BitShift | 8 | ██ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██ |
 | Unsupported op LpPool | 8 | ██ |
-| Unsupported op Max | 8 | ██ |
-| Unsupported op Min | 8 | ██ |
 | Unsupported op QLinearMatMul | 8 | ██ |
 | Unsupported op RotaryEmbedding | 8 | ██ |
 | Unsupported op Hardmax | 7 | ██ |
@@ -45,7 +40,6 @@
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █ |
 | Unsupported op CenterCropPad | 6 | █ |
 | Unsupported op DFT | 6 | █ |
-| Unsupported op Div | 6 | █ |
 | Unsupported op Einsum | 6 | █ |
 | Unsupported op Expand | 6 | █ |
 | Unsupported op LpNormalization | 6 | █ |
@@ -62,7 +56,6 @@
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | █ |
 | Unsupported op Compress | 4 | █ |
 | Unsupported op GRU | 4 | █ |
-| Unsupported op IsInf | 4 | █ |
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |
 | CastLike input and output shapes must match | 4 | █ |
@@ -72,6 +65,7 @@
 | Unsupported op Bernoulli | 3 | █ |
 | Unsupported op RandomUniformLike | 3 | █ |
 | Unsupported op DynamicQuantizeLinear | 3 | █ |
+| Unsupported op Identity | 3 | █ |
 | Elu only supports alpha=1.0 | 3 | █ |
 | Unsupported op EyeLike | 3 | █ |
 | Unsupported op GatherND | 3 | █ |
@@ -82,7 +76,6 @@
 | <ScalarType.F16: '*'> | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
 | Unsupported op RoiAlign | 3 | █ |
-| Unsupported op Shrink | 3 | █ |
 | Sum must have 2 inputs and 1 output | 3 | █ |
 | Unsupported op TensorScatter | 3 | █ |
 | Unsupported op Adagrad | 2 | █ |
@@ -100,14 +93,12 @@
 | Unsupported op GroupNormalization | 2 | █ |
 | Unsupported op HammingWindow | 2 | █ |
 | Unsupported op HannWindow | 2 | █ |
-| Unsupported op IsNaN | 2 | █ |
 | Max must have 2 inputs and 1 output | 2 | █ |
 | Unsupported op MaxUnpool | 2 | █ |
 | Mean must have 2 inputs and 1 output | 2 | █ |
 | Min must have 2 inputs and 1 output | 2 | █ |
 | Pow expects matching dtypes, got float, int32 | 2 | █ |
 | Pow expects matching dtypes, got float, int64 | 2 | █ |
-| Unsupported op Pow | 2 | █ |
 | Unsupported op Range | 2 | █ |
 | Unsupported op ReverseSequence | 2 | █ |
 | Unsupported op Scan | 2 | █ |
@@ -119,7 +110,6 @@
 | Unsupported op Gradient | 2 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
-| Unsupported op Celu | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Unsupported op If | 1 | █ |
@@ -134,7 +124,6 @@
 | Unsupported op QLinearConv | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
-| Unsupported op Swish | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
 
 ## Local ONNX file support histogram
