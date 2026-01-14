@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 988 / 1802 official ONNX files.
+Support 1020 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -58,38 +58,38 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_and_bcast4v2d/model.onnx | ✅ |  |
 | node/test_and_bcast4v3d/model.onnx | ✅ |  |
 | node/test_and_bcast4v4d/model.onnx | ✅ |  |
-| node/test_argmax_default_axis_example/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_default_axis_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_default_axis_random/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_default_axis_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_keepdims_example/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_keepdims_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_keepdims_random/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_keepdims_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_negative_axis_keepdims_example/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_negative_axis_keepdims_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_negative_axis_keepdims_random/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_negative_axis_keepdims_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_no_keepdims_example/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_no_keepdims_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_no_keepdims_random/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmax_no_keepdims_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMax |
-| node/test_argmin_default_axis_example/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_default_axis_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_default_axis_random/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_default_axis_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_keepdims_example/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_keepdims_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_keepdims_random/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_keepdims_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_negative_axis_keepdims_example/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_negative_axis_keepdims_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_negative_axis_keepdims_random/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_no_keepdims_example/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_no_keepdims_example_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_no_keepdims_random/model.onnx | ❌ | Unsupported op ArgMin |
-| node/test_argmin_no_keepdims_random_select_last_index/model.onnx | ❌ | Unsupported op ArgMin |
+| node/test_argmax_default_axis_example/model.onnx | ✅ |  |
+| node/test_argmax_default_axis_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmax_default_axis_random/model.onnx | ✅ |  |
+| node/test_argmax_default_axis_random_select_last_index/model.onnx | ✅ |  |
+| node/test_argmax_keepdims_example/model.onnx | ✅ |  |
+| node/test_argmax_keepdims_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmax_keepdims_random/model.onnx | ✅ |  |
+| node/test_argmax_keepdims_random_select_last_index/model.onnx | ✅ |  |
+| node/test_argmax_negative_axis_keepdims_example/model.onnx | ✅ |  |
+| node/test_argmax_negative_axis_keepdims_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmax_negative_axis_keepdims_random/model.onnx | ✅ |  |
+| node/test_argmax_negative_axis_keepdims_random_select_last_index/model.onnx | ✅ |  |
+| node/test_argmax_no_keepdims_example/model.onnx | ✅ |  |
+| node/test_argmax_no_keepdims_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmax_no_keepdims_random/model.onnx | ✅ |  |
+| node/test_argmax_no_keepdims_random_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_default_axis_example/model.onnx | ✅ |  |
+| node/test_argmin_default_axis_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_default_axis_random/model.onnx | ✅ |  |
+| node/test_argmin_default_axis_random_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_keepdims_example/model.onnx | ✅ |  |
+| node/test_argmin_keepdims_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_keepdims_random/model.onnx | ✅ |  |
+| node/test_argmin_keepdims_random_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_negative_axis_keepdims_example/model.onnx | ✅ |  |
+| node/test_argmin_negative_axis_keepdims_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_negative_axis_keepdims_random/model.onnx | ✅ |  |
+| node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_no_keepdims_example/model.onnx | ✅ |  |
+| node/test_argmin_no_keepdims_example_select_last_index/model.onnx | ✅ |  |
+| node/test_argmin_no_keepdims_random/model.onnx | ✅ |  |
+| node/test_argmin_no_keepdims_random_select_last_index/model.onnx | ✅ |  |
 | node/test_asin/model.onnx | ✅ |  |
 | node/test_asin_example/model.onnx | ✅ |  |
 | node/test_asinh/model.onnx | ✅ |  |
