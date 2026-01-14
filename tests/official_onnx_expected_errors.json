@@ -2053,7 +2053,7 @@
   ],
   [
     "node/test_constantofshape_int_shape_zero/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'y', got (0,). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_constantofshape_int_zeros/model.onnx",
@@ -4853,7 +4853,7 @@
   ],
   [
     "node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'reduced', got (2, 0, 1). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_reduce_sum_keepdims_example/model.onnx",
@@ -4969,7 +4969,7 @@
   ],
   [
     "node/test_reshape_allowzero_reordered/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'reshaped', got (3, 4, 0). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_reshape_extended_dims/model.onnx",
@@ -5857,7 +5857,7 @@
   ],
   [
     "node/test_shape_start_greater_than_end/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'y', got (0,). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_shape_start_negative_1/model.onnx",
@@ -5957,7 +5957,7 @@
   ],
   [
     "node/test_slice_start_out_of_bounds/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'y', got (20, 0, 5). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_softmax_axis_0/model.onnx",
@@ -6153,11 +6153,11 @@
   ],
   [
     "node/test_split_zero_size_splits_opset13/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'output_1', got (0,). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_split_zero_size_splits_opset18/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'output_1', got (0,). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_sqrt/model.onnx",
@@ -6509,7 +6509,7 @@
   ],
   [
     "node/test_tril_zero/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'y', got (3, 0, 5). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_triu/model.onnx",
@@ -6545,7 +6545,7 @@
   ],
   [
     "node/test_triu_zero/model.onnx",
-    "Output shape must be fully defined"
+    "Output shape must be fully defined for output 'y', got (0, 5). Hint: run ONNX shape inference or export with static shapes."
   ],
   [
     "node/test_unique_length_1/model.onnx",

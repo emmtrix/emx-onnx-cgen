@@ -19,9 +19,8 @@
 | Reshape input and output element counts must match | 15 | ████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
 | Unsupported op ConvTranspose | 14 | ████████████ |
-| '*' object has no attribute '*' | 13 | ███████████ |
+| '*' object has no attribute 'shape' | 13 | ███████████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
-| Output shape must be fully defined | 9 | ████████ |
 | Unsupported op CumSum | 9 | ████████ |
 | Unsupported op QuantizeLinear | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
@@ -53,6 +52,7 @@
 | Unsupported op DeformConv | 4 | ███ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
 | Unsupported op Compress | 4 | ███ |
+| Output shape must be fully defined for output '*', got (0,). Hint: run ONNX shape inference or export with static shapes. | 4 | ███ |
 | Unsupported op GRU | 4 | ███ |
 | Concat output shape must be (3,), got (1,) | 4 | ███ |
 | Concat output shape must be (4,), got (1,) | 4 | ███ |
@@ -114,6 +114,11 @@
 | Unsupported op QLinearConv | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
+| Output shape must be fully defined for output '*', got (2, 0, 1). Hint: run ONNX shape inference or export with static shapes. | 1 | █ |
+| Output shape must be fully defined for output '*', got (3, 4, 0). Hint: run ONNX shape inference or export with static shapes. | 1 | █ |
+| Output shape must be fully defined for output '*', got (20, 0, 5). Hint: run ONNX shape inference or export with static shapes. | 1 | █ |
+| Output shape must be fully defined for output '*', got (3, 0, 5). Hint: run ONNX shape inference or export with static shapes. | 1 | █ |
+| Output shape must be fully defined for output '*', got (0, 5). Hint: run ONNX shape inference or export with static shapes. | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
 | Dynamic dim for tensor '*' | 1 | █ |
 

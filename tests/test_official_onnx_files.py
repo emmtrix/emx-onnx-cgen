@@ -1898,7 +1898,13 @@ def _render_error_histogram_markdown(
     title: str = "# Error frequency",
 ) -> str:
     def _sanitize_error(error: str) -> str:
-        return re.sub(r"'[^']*'", "'*'", error)
+        def _replace(match: re.Match[str]) -> str:
+            value = match.group(1)
+            if value in {"shape"}:
+                return f"'{value}'"
+            return "'*'"
+
+        return re.sub(r"'([^']*)'", _replace, error)
 
     errors = [_sanitize_error(error) for _, error in expectations if error]
     counts = Counter(errors)

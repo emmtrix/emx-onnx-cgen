@@ -282,7 +282,11 @@ class Compiler:
         for value in graph.outputs:
             element_count = shape_product(value.type.shape)
             if element_count <= 0:
-                raise ShapeInferenceError("Output shape must be fully defined")
+                raise ShapeInferenceError(
+                    "Output shape must be fully defined for output "
+                    f"'{value.name}', got {value.type.shape}. "
+                    "Hint: run ONNX shape inference or export with static shapes."
+                )
 
     def _collect_io_specs(
         self, graph: Graph
