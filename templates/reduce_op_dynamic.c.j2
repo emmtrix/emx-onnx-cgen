@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ params | join(", ") }}) {
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(", ") }}) {
     size_t axis_count = {{ axes_count }};
     bool reduce_mask[{{ input_shape | length }}];
     for (size_t i = 0; i < {{ input_shape | length }}; ++i) {

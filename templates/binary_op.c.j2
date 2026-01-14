@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ input_c_type }} {{ input0 }}{{ array_suffix }}, const {{ input_c_type }} {{ input1 }}{{ array_suffix }}, {{ output_c_type }} {{ output }}{{ array_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}const {{ input_c_type }} {{ input0 }}{{ array_suffix }}, const {{ input_c_type }} {{ input1 }}{{ array_suffix }}, {{ output_c_type }} {{ output }}{{ array_suffix }}) {
 {% for dim in shape %}
 for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}

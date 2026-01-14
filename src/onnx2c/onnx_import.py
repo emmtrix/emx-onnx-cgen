@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Mapping
 
 import onnx
 import numpy as np
@@ -41,7 +41,11 @@ def _unsupported_value_type(value_info: onnx.ValueInfoProto) -> UnsupportedOpErr
     )
 
 
-def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
+def _tensor_type(
+    value_info: onnx.ValueInfoProto,
+    *,
+    dim_param_override: tuple[str | None, ...] | None = None,
+) -> TensorType:
     if value_info.type.WhichOneof("value") != "tensor_type":
         raise _unsupported_value_type(value_info)
     tensor_type = value_info.type.tensor_type
@@ -54,15 +58,58 @@ def _tensor_type(value_info: onnx.ValueInfoProto) -> TensorType:
             f"{_format_elem_type(tensor_type.elem_type)} for tensor '{value_info.name}'."
         )
     shape = []
-    for dim in tensor_type.shape.dim:
+    dim_params = []
+    for dim_index, dim in enumerate(tensor_type.shape.dim):
+        dim_param = dim.dim_param if dim.HasField("dim_param") else ""
+        if (
+            dim_param_override is not None
+            and dim_index < len(dim_param_override)
+            and dim_param_override[dim_index]
+        ):
+            dim_param = dim_param_override[dim_index] or ""
+        dim_params.append(dim_param or None)
         if not dim.HasField("dim_value"):
+            if dim_param:
+                shape.append(1)
+                continue
             raise ShapeInferenceError(f"Dynamic dim for tensor '{value_info.name}'")
         shape.append(dim.dim_value)
-    return TensorType(dtype=dtype, shape=tuple(shape))
+    return TensorType(
+        dtype=dtype,
+        shape=tuple(shape),
+        dim_params=tuple(dim_params),
+    )
 
 
-def _values(value_infos: Iterable[onnx.ValueInfoProto]) -> tuple[Value, ...]:
-    return tuple(Value(name=vi.name, type=_tensor_type(vi)) for vi in value_infos)
+def _values(
+    value_infos: Iterable[onnx.ValueInfoProto],
+    *,
+    dim_param_by_name: Mapping[str, tuple[str | None, ...]] | None = None,
+) -> tuple[Value, ...]:
+    dim_param_by_name = dim_param_by_name or {}
+    return tuple(
+        Value(
+            name=vi.name,
+            type=_tensor_type(
+                vi, dim_param_override=dim_param_by_name.get(vi.name)
+            ),
+        )
+        for vi in value_infos
+    )
+
+
+def _collect_dim_params(
+    value_infos: Iterable[onnx.ValueInfoProto],
+) -> dict[str, tuple[str | None, ...]]:
+    dim_params: dict[str, tuple[str | None, ...]] = {}
+    for value_info in value_infos:
+        dims = []
+        for dim in value_info.type.tensor_type.shape.dim:
+            dim_param = dim.dim_param if dim.HasField("dim_param") else ""
+            dims.append(dim_param or None)
+        if any(dims):
+            dim_params[value_info.name] = tuple(dims)
+    return dim_params
 
 
 def _initializer(value: onnx.TensorProto) -> Initializer:
@@ -76,7 +123,11 @@ def _initializer(value: onnx.TensorProto) -> Initializer:
     data = _normalize_initializer_data(dtype, value)
     return Initializer(
         name=value.name,
-        type=TensorType(dtype=dtype, shape=tuple(data.shape)),
+        type=TensorType(
+            dtype=dtype,
+            shape=tuple(data.shape),
+            dim_params=(None,) * len(data.shape),
+        ),
         data=data,
     )
 
@@ -101,7 +152,11 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
         data = _normalize_initializer_data(dtype, tensor)
         return Initializer(
             name=output_name,
-            type=TensorType(dtype=dtype, shape=tuple(data.shape)),
+            type=TensorType(
+                dtype=dtype,
+                shape=tuple(data.shape),
+                dim_params=(None,) * len(data.shape),
+            ),
             data=data,
         )
     if "sparse_value" in attrs:
@@ -115,7 +170,11 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
         data = _normalize_initializer_data(dtype, tensor)
         return Initializer(
             name=output_name,
-            type=TensorType(dtype=dtype, shape=tuple(data.shape)),
+            type=TensorType(
+                dtype=dtype,
+                shape=tuple(data.shape),
+                dim_params=(None,) * len(data.shape),
+            ),
             data=data,
         )
     if "value_float" in attrs or "value_floats" in attrs:
@@ -123,17 +182,25 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
         data = _normalize_initializer_data(ScalarType.F32, values)
         return Initializer(
             name=output_name,
-            type=TensorType(dtype=ScalarType.F32, shape=tuple(data.shape)),
-            data=data,
-        )
+        type=TensorType(
+            dtype=ScalarType.F32,
+            shape=tuple(data.shape),
+            dim_params=(None,) * len(data.shape),
+        ),
+        data=data,
+    )
     if "value_int" in attrs or "value_ints" in attrs:
         values = attrs.get("value_ints", attrs.get("value_int"))
         data = _normalize_initializer_data(ScalarType.I64, values)
         return Initializer(
             name=output_name,
-            type=TensorType(dtype=ScalarType.I64, shape=tuple(data.shape)),
-            data=data,
-        )
+        type=TensorType(
+            dtype=ScalarType.I64,
+            shape=tuple(data.shape),
+            dim_params=(None,) * len(data.shape),
+        ),
+        data=data,
+    )
     if "value_string" in attrs or "value_strings" in attrs:
         raise UnsupportedOpError(
             f"Constant '{output_name}' has unsupported string values"
@@ -142,6 +209,9 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
 
 
 def import_onnx(model: onnx.ModelProto) -> Graph:
+    dim_param_by_name = _collect_dim_params(
+        tuple(model.graph.input) + tuple(model.graph.output)
+    )
     try:
         model = shape_inference.infer_shapes(model, data_prop=True)
     except Exception as exc:  # pragma: no cover - onnx inference errors
@@ -167,9 +237,14 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
     initializers = tuple(base_initializers + constant_initializers)
     initializer_names = {initializer.name for initializer in initializers}
     inputs = _values(
-        value_info for value_info in graph.input if value_info.name not in initializer_names
+        (
+            value_info
+            for value_info in graph.input
+            if value_info.name not in initializer_names
+        ),
+        dim_param_by_name=dim_param_by_name,
     )
-    outputs = _values(graph.output)
+    outputs = _values(graph.output, dim_param_by_name=dim_param_by_name)
     values = _values(
         value_info
         for value_info in graph.value_info

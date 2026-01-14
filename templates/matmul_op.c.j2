@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input0_suffix }}, const {{ c_type }} {{ input1 }}{{ input1_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input0_suffix }}, const {{ c_type }} {{ input1 }}{{ input1_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
 {% for idx in range(output_loop_vars | length) %}
     {% for indent in range(loop.index0) %}    {% endfor %}for (size_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
 {% endfor %}

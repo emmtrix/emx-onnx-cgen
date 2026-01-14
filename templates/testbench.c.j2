@@ -32,6 +32,9 @@ static const {{ input.c_type }} {{ input.constant_name }}[] = {
 {% endfor %}
 
 int main(void) {
+{% for dim in dim_args %}
+    int {{ dim.name }} = {{ dim.value }};
+{% endfor %}
 {% for input in inputs %}
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
     {{ input.c_type }} *{{ input.name }}_ptr = ({{ input.c_type }} *){{ input.name }};
@@ -47,7 +50,7 @@ int main(void) {
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
     {{ output.c_type }} *{{ output.name }}_ptr = ({{ output.c_type }} *){{ output.name }};
 {% endfor %}
-    {{ model_name }}({% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
     printf("{\"inputs\":{");
 {% for input in inputs %}
 {% if not loop.first %}

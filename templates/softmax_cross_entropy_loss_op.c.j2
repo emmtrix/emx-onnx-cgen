@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }},
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }},
                    const {{ target_c_type }} {{ target }}{{ target_suffix }}{% if weight %},
                    const {{ c_type }} {{ weight }}[{{ c }}]{% endif %},
                    {{ c_type }} {{ output }}{{ output_suffix }}{% if log_prob %},

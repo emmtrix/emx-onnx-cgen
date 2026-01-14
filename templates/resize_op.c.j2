@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ params | join(', ') }}) {
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int64_t input_shape[{{ rank }}] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const int64_t output_shape[{{ rank }}] = { {% for dim in output_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
     double scales[{{ rank }}];

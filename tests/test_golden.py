@@ -206,6 +206,25 @@ def _make_add_initializer_model() -> onnx.ModelProto:
     return model
 
 
+def _mark_dynamic_dims(
+    model: onnx.ModelProto,
+    *,
+    input_dim_params: list[str],
+    output_dim_params: list[str],
+) -> onnx.ModelProto:
+    for value_info in model.graph.input:
+        for dim, dim_param in zip(
+            value_info.type.tensor_type.shape.dim, input_dim_params
+        ):
+            dim.dim_param = dim_param
+    for value_info in model.graph.output:
+        for dim, dim_param in zip(
+            value_info.type.tensor_type.shape.dim, output_dim_params
+        ):
+            dim.dim_param = dim_param
+    return model
+
+
 def test_codegen_golden_tanh() -> None:
     model = _make_tanh_model()
     compiler = Compiler()
@@ -219,6 +238,25 @@ def test_codegen_golden_relu() -> None:
     compiler = Compiler()
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "relu_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_dynamic_dims() -> None:
+    model = _mark_dynamic_dims(
+        _make_relu_model(),
+        input_dim_params=["N", "C"],
+        output_dim_params=["N", "C"],
+    )
+    compiler = Compiler(
+        CompilerOptions(
+            template_dir=Path("templates"),
+            model_name="dynamic_dims_model",
+        )
+    )
+    generated = compiler.compile(model)
+    golden_path = (
+        Path(__file__).parent / "golden" / "dynamic_dims_model.c"
+    )
     assert_golden(generated, golden_path)
 
 

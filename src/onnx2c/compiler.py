@@ -47,7 +47,7 @@ from .codegen.c_emitter import (
 )
 from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
-from .ir.model import Graph
+from .ir.model import Graph, Value
 from .lowering.attention import AttentionSpec, resolve_attention_spec
 from .lowering.average_pool import (
     lower_average_pool,
@@ -139,22 +139,52 @@ class Compiler:
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)
         testbench_inputs = self._resolve_testbench_inputs(graph)
+        variable_dim_inputs, variable_dim_outputs = self._collect_variable_dims(
+            graph
+        )
         lowered = self._lower_model(model, graph)
         return self._emitter.emit_model(
             lowered,
             emit_testbench=self._options.emit_testbench,
             testbench_inputs=testbench_inputs,
+            variable_dim_inputs=variable_dim_inputs,
+            variable_dim_outputs=variable_dim_outputs,
         )
 
     def compile_with_data_file(self, model: onnx.ModelProto) -> tuple[str, str]:
         graph = import_onnx(model)
         testbench_inputs = self._resolve_testbench_inputs(graph)
+        variable_dim_inputs, variable_dim_outputs = self._collect_variable_dims(
+            graph
+        )
         lowered = self._lower_model(model, graph)
         return self._emitter.emit_model_with_data_file(
             lowered,
             emit_testbench=self._options.emit_testbench,
             testbench_inputs=testbench_inputs,
+            variable_dim_inputs=variable_dim_inputs,
+            variable_dim_outputs=variable_dim_outputs,
         )
+
+    @staticmethod
+    def _collect_variable_dims(
+        graph: Graph,
+    ) -> tuple[dict[int, dict[int, str]], dict[int, dict[int, str]]]:
+        def collect(values: tuple[Value, ...]) -> dict[int, dict[int, str]]:
+            dim_map: dict[int, dict[int, str]] = {}
+            for index, value in enumerate(values):
+                dims = {
+                    dim_index: dim_param
+                    for dim_index, dim_param in enumerate(
+                        value.type.dim_params
+                    )
+                    if dim_param
+                }
+                if dims:
+                    dim_map[index] = dims
+            return dim_map
+
+        return collect(graph.inputs), collect(graph.outputs)
 
     def _lower_model(self, model: onnx.ModelProto, graph: Graph) -> LoweredModel:
         constants = _lowered_constants(graph)

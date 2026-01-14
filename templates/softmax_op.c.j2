@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ array_suffix }}, {{ c_type }} {{ output }}{{ array_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ array_suffix }}, {{ c_type }} {{ output }}{{ array_suffix }}) {
     const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
     {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
     const size_t outer = {{ outer }};

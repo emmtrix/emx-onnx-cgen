@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({% for input in inputs %}const {{ c_type }} {{ input }}{{ input_suffixes[loop.index0] }}, {% endfor %}{{ c_type }} {{ output }}{{ output_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}{% for input in inputs %}const {{ c_type }} {{ input }}{{ input_suffixes[loop.index0] }}, {% endfor %}{{ c_type }} {{ output }}{{ output_suffix }}) {
     const void *inputs[] = { {% for input in inputs %}{{ input }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const size_t axis_sizes[] = { {% for axis in axis_sizes %}{{ axis }}{% if not loop.last %}, {% endif %}{% endfor %} };
     size_t concat_axis = 0;

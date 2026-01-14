@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import re
-from typing import Mapping
+from typing import Mapping, Sequence
 
 from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
 
@@ -1534,11 +1534,30 @@ class CEmitter:
         *,
         emit_testbench: bool = False,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
+        variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
     ) -> str:
         model, name_map = self._sanitize_model_names_with_map(model)
         testbench_inputs = self._sanitize_testbench_inputs(
             testbench_inputs, name_map
         )
+        (
+            dim_order,
+            input_dim_names,
+            output_dim_names,
+            dim_values,
+        ) = self._build_variable_dim_names(
+            model,
+            variable_dim_inputs,
+            variable_dim_outputs,
+        )
+        tensor_dim_names = self._build_tensor_dim_names(
+            model,
+            input_dim_names,
+            output_dim_names,
+        )
+        dim_args = self._format_dim_args_prefix(dim_order)
+        self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
@@ -1583,6 +1602,7 @@ class CEmitter:
             original: buffer.name for original, buffer in temp_buffers.items()
         }
         resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
+        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
         operator_fns = "\n\n".join(
             self._render_op(
                 model,
@@ -1625,6 +1645,8 @@ class CEmitter:
                 shape_template=shape_template,
                 size_template=size_template,
                 scalar_registry=scalar_registry,
+                dim_args=dim_args,
+                tensor_dim_names=tensor_dim_names,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -1632,6 +1654,9 @@ class CEmitter:
             model,
             resolved_ops,
             tuple(temp_buffers.values()),
+            dim_order=dim_order,
+            input_dim_names=input_dim_names,
+            output_dim_names=output_dim_names,
         )
         scalar_functions = scalar_registry.render()
         scalar_include_lines = (
@@ -1673,6 +1698,8 @@ class CEmitter:
                         model,
                         testbench_template,
                         testbench_inputs=testbench_inputs,
+                        dim_order=dim_order,
+                        dim_values=dim_values,
                     ),
                 )
             )
@@ -1688,11 +1715,30 @@ class CEmitter:
         *,
         emit_testbench: bool = False,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
+        variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
     ) -> tuple[str, str]:
         model, name_map = self._sanitize_model_names_with_map(model)
         testbench_inputs = self._sanitize_testbench_inputs(
             testbench_inputs, name_map
         )
+        (
+            dim_order,
+            input_dim_names,
+            output_dim_names,
+            dim_values,
+        ) = self._build_variable_dim_names(
+            model,
+            variable_dim_inputs,
+            variable_dim_outputs,
+        )
+        tensor_dim_names = self._build_tensor_dim_names(
+            model,
+            input_dim_names,
+            output_dim_names,
+        )
+        dim_args = self._format_dim_args_prefix(dim_order)
+        self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
@@ -1737,6 +1783,7 @@ class CEmitter:
             original: buffer.name for original, buffer in temp_buffers.items()
         }
         resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
+        self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
         operator_fns = "\n\n".join(
             self._render_op(
                 model,
@@ -1779,6 +1826,8 @@ class CEmitter:
                 shape_template=shape_template,
                 size_template=size_template,
                 scalar_registry=scalar_registry,
+                dim_args=dim_args,
+                tensor_dim_names=tensor_dim_names,
             )
             for index, op in enumerate(resolved_ops)
         )
@@ -1786,6 +1835,9 @@ class CEmitter:
             model,
             resolved_ops,
             tuple(temp_buffers.values()),
+            dim_order=dim_order,
+            input_dim_names=input_dim_names,
+            output_dim_names=output_dim_names,
         )
         scalar_functions = scalar_registry.render()
         scalar_include_lines = (
@@ -1827,6 +1879,8 @@ class CEmitter:
                         model,
                         testbench_template,
                         testbench_inputs=testbench_inputs,
+                        dim_order=dim_order,
+                        dim_values=dim_values,
                     ),
                 )
             )
@@ -2401,18 +2455,27 @@ class CEmitter:
             | SizeOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
+        *,
+        dim_order: Sequence[str],
+        input_dim_names: Mapping[int, Mapping[int, str]],
+        output_dim_names: Mapping[int, Mapping[int, str]],
     ) -> str:
-        params = [
-            f"const {dtype.c_type} {name}{self._param_array_suffix(shape)}"
-            for name, shape, dtype in zip(
-                model.input_names, model.input_shapes, model.input_dtypes
-            )
-        ]
-        for name, shape, dtype in zip(
-            model.output_names, model.output_shapes, model.output_dtypes
+        params = []
+        if dim_order:
+            params.extend(self._format_dim_args(dim_order))
+        for index, (name, shape, dtype) in enumerate(
+            zip(model.input_names, model.input_shapes, model.input_dtypes)
         ):
             params.append(
-                f"{dtype.c_type} {name}{self._param_array_suffix(shape)}"
+                f"const {dtype.c_type} {name}"
+                f"{self._param_array_suffix(shape, input_dim_names.get(index))}"
+            )
+        for index, (name, shape, dtype) in enumerate(
+            zip(model.output_names, model.output_shapes, model.output_dtypes)
+        ):
+            params.append(
+                f"{dtype.c_type} {name}"
+                f"{self._param_array_suffix(shape, output_dim_names.get(index))}"
             )
         signature = ", ".join(params)
         lines = [f"void {model.name}({signature}) {{"]
@@ -2422,7 +2485,7 @@ class CEmitter:
                 f"    {c_type} {temp.name}{self._array_suffix(temp.shape)};"
             )
         for index, op in enumerate(resolved_ops):
-            call = self._build_op_call(op)
+            call = self._build_op_call(op, dim_order)
             lines.append(f"    {model.name}_op{index}({call});")
         lines.append("}")
         return "\n".join(lines)
@@ -2458,21 +2521,29 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp,
+        dim_order: Sequence[str],
     ) -> str:
+        args: list[str] = []
+        if dim_order:
+            args.extend(dim_order)
         if isinstance(op, BinaryOp):
-            return f"{op.input0}, {op.input1}, {op.output}"
+            args.extend([op.input0, op.input1, op.output])
+            return ", ".join(args)
         if isinstance(op, WhereOp):
-            return (
-                f"{op.condition}, {op.input_x}, {op.input_y}, {op.output}"
-            )
+            args.extend([op.condition, op.input_x, op.input_y, op.output])
+            return ", ".join(args)
         if isinstance(op, MatMulOp):
-            return f"{op.input0}, {op.input1}, {op.output}"
+            args.extend([op.input0, op.input1, op.output])
+            return ", ".join(args)
         if isinstance(op, GemmOp):
             if op.input_c is None:
-                return f"{op.input_a}, {op.input_b}, {op.output}"
-            return f"{op.input_a}, {op.input_b}, {op.input_c}, {op.output}"
+                args.extend([op.input_a, op.input_b, op.output])
+                return ", ".join(args)
+            args.extend([op.input_a, op.input_b, op.input_c, op.output])
+            return ", ".join(args)
         if isinstance(op, UnaryOp):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, ClipOp):
             call_parts = [op.input0]
             if op.input_min is not None:
@@ -2480,7 +2551,8 @@ class CEmitter:
             if op.input_max is not None:
                 call_parts.append(op.input_max)
             call_parts.append(op.output)
-            return ", ".join(call_parts)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, AttentionOp):
             call_parts = [op.input_q, op.input_k, op.input_v]
             if op.input_attn_mask is not None:
@@ -2498,18 +2570,22 @@ class CEmitter:
                 call_parts.append(op.output_present_value)
             if op.output_qk_matmul is not None:
                 call_parts.append(op.output_qk_matmul)
-            return ", ".join(call_parts)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, ConvOp):
             if op.bias is None:
-                return f"{op.input0}, {op.weights}, {op.output}"
-            return f"{op.input0}, {op.weights}, {op.bias}, {op.output}"
+                args.extend([op.input0, op.weights, op.output])
+                return ", ".join(args)
+            args.extend([op.input0, op.weights, op.bias, op.output])
+            return ", ".join(args)
         if isinstance(op, AveragePoolOp):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, BatchNormOp):
-            return (
-                f"{op.input0}, {op.scale}, {op.bias}, "
-                f"{op.mean}, {op.variance}, {op.output}"
+            args.extend(
+                [op.input0, op.scale, op.bias, op.mean, op.variance, op.output]
             )
+            return ", ".join(args)
         if isinstance(op, LstmOp):
             call_parts = [op.input_x, op.input_w, op.input_r]
             if op.input_b is not None:
@@ -2528,15 +2604,18 @@ class CEmitter:
                 call_parts.append(op.output_y_h)
             if op.output_y_c is not None:
                 call_parts.append(op.output_y_c)
-            return ", ".join(call_parts)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, (SoftmaxOp, LogSoftmaxOp)):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, NegativeLogLikelihoodLossOp):
             call_parts = [op.input0, op.target]
             if op.weight is not None:
                 call_parts.append(op.weight)
             call_parts.append(op.output)
-            return ", ".join(call_parts)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             call_parts = [op.input0, op.target]
             if op.weight is not None:
@@ -2544,27 +2623,38 @@ class CEmitter:
             call_parts.append(op.output)
             if op.log_prob is not None:
                 call_parts.append(op.log_prob)
-            return ", ".join(call_parts)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, MaxPoolOp):
             if op.indices is not None:
-                return f"{op.input0}, {op.output}, {op.indices}"
-            return f"{op.input0}, {op.output}"
+                args.extend([op.input0, op.output, op.indices])
+                return ", ".join(args)
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, GatherElementsOp):
-            return f"{op.data}, {op.indices}, {op.output}"
+            args.extend([op.data, op.indices, op.output])
+            return ", ".join(args)
         if isinstance(op, GatherOp):
-            return f"{op.data}, {op.indices}, {op.output}"
+            args.extend([op.data, op.indices, op.output])
+            return ", ".join(args)
         if isinstance(op, ConcatOp):
-            return ", ".join((*op.inputs, op.output))
+            args.extend([*op.inputs, op.output])
+            return ", ".join(args)
         if isinstance(op, ConstantOfShapeOp):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, ShapeOp):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, SizeOp):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, ReshapeOp):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, SliceOp):
-            return f"{op.input0}, {op.output}"
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, ResizeOp):
             call_parts = [op.input0]
             if op.roi_input is not None:
@@ -2574,12 +2664,16 @@ class CEmitter:
             if op.sizes_input is not None:
                 call_parts.append(op.sizes_input)
             call_parts.append(op.output)
-            return ", ".join(call_parts)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, ReduceOp):
             if op.axes_input is not None:
-                return f"{op.input0}, {op.axes_input}, {op.output}"
-            return f"{op.input0}, {op.output}"
-        return f"{op.input0}, {op.output}"
+                args.extend([op.input0, op.axes_input, op.output])
+                return ", ".join(args)
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
+        args.extend([op.input0, op.output])
+        return ", ".join(args)
 
     def _temp_buffers(
         self, model: LoweredModel, *, reserved_names: set[str] | None = None
@@ -3303,9 +3397,15 @@ class CEmitter:
         shape_template,
         size_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
+        dim_args: str = "",
+        tensor_dim_names: Mapping[str, Mapping[int, str]] | None = None,
     ) -> str:
         node_info = model.node_infos[index]
         node_comment = CEmitter._emit_node_comment(node_info, index)
+        tensor_dim_names = tensor_dim_names or {}
+
+        def _dim_names_for(name: str) -> Mapping[int, str]:
+            return tensor_dim_names.get(name, {})
 
         def with_node_comment(rendered: str) -> str:
             return f"{node_comment}\n{_format_c_indentation(rendered)}"
@@ -3328,21 +3428,23 @@ class CEmitter:
                 raise CodegenError(
                     f"Unsupported binary operator for rendering: {op.function.value}"
                 )
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            array_suffix = self._param_array_suffix(shape)
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.shape)
+            array_suffix = self._param_array_suffix(op.shape, output_dim_names)
             input_c_type = op.input_dtype.c_type
             output_c_type = op.dtype.c_type
             common = {
                 "model_name": model.name,
                 "op_name": f"{model.name}_op{index}",
-                "element_count": CEmitter._element_count(shape),
+                "element_count": CEmitter._element_count_expr(shape),
                 "array_suffix": array_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
                 "input_c_type": input_c_type,
                 "output_c_type": output_c_type,
                 "zero_literal": zero_literal,
+                "dim_args": dim_args,
             }
             left_expr = f"{op.input0}" + "".join(
                 f"[{var}]" for var in loop_vars
@@ -3373,12 +3475,23 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, WhereOp):
-            output_shape = CEmitter._codegen_shape(op.output_shape)
-            loop_vars = CEmitter._loop_vars(output_shape)
-            output_array_suffix = self._param_array_suffix(output_shape)
-            condition_array_suffix = self._param_array_suffix(op.condition_shape)
-            x_array_suffix = self._param_array_suffix(op.x_shape)
-            y_array_suffix = self._param_array_suffix(op.y_shape)
+            output_dim_names = _dim_names_for(op.output)
+            output_shape = CEmitter._shape_dim_exprs(
+                op.output_shape, output_dim_names
+            )
+            loop_vars = CEmitter._loop_vars(op.output_shape)
+            output_array_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            condition_array_suffix = self._param_array_suffix(
+                op.condition_shape, _dim_names_for(op.condition)
+            )
+            x_array_suffix = self._param_array_suffix(
+                op.x_shape, _dim_names_for(op.input_x)
+            )
+            y_array_suffix = self._param_array_suffix(
+                op.y_shape, _dim_names_for(op.input_y)
+            )
             condition_expr = CEmitter._broadcast_index_expr(
                 op.condition, op.condition_shape, op.output_shape, loop_vars
             )
@@ -3411,6 +3524,7 @@ class CEmitter:
                 input_c_type=op.dtype.c_type,
                 output_c_type=op.dtype.c_type,
                 condition_c_type=ScalarType.BOOL.c_type,
+                dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MatMulOp):
@@ -4481,9 +4595,10 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, CastOp):
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            array_suffix = self._param_array_suffix(shape)
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.shape)
+            array_suffix = self._param_array_suffix(op.shape, output_dim_names)
             rendered = cast_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -4494,11 +4609,15 @@ class CEmitter:
                 array_suffix=array_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
+                dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ClipOp):
-            output_shape = CEmitter._codegen_shape(op.output_shape)
-            loop_vars = CEmitter._loop_vars(output_shape)
+            output_dim_names = _dim_names_for(op.output)
+            output_shape = CEmitter._shape_dim_exprs(
+                op.output_shape, output_dim_names
+            )
+            loop_vars = CEmitter._loop_vars(op.output_shape)
             input_expr = CEmitter._broadcast_index_expr(
                 op.input0, op.input_shape, op.output_shape, loop_vars
             )
@@ -4531,23 +4650,32 @@ class CEmitter:
                 output=op.output,
                 input_c_type=op.dtype.c_type,
                 output_c_type=op.dtype.c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
+                input_suffix=self._param_array_suffix(
+                    op.input_shape, _dim_names_for(op.input0)
+                ),
                 min_suffix=(
-                    self._param_array_suffix(op.min_shape)
+                    self._param_array_suffix(
+                        op.min_shape, _dim_names_for(op.input_min)
+                    )
                     if op.min_shape is not None
                     else None
                 ),
                 max_suffix=(
-                    self._param_array_suffix(op.max_shape)
+                    self._param_array_suffix(
+                        op.max_shape, _dim_names_for(op.input_max)
+                    )
                     if op.max_shape is not None
                     else None
                 ),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                output_suffix=self._param_array_suffix(
+                    op.output_shape, output_dim_names
+                ),
                 shape=output_shape,
                 loop_vars=loop_vars,
                 input_expr=input_expr,
                 min_expr=min_expr,
                 max_expr=max_expr,
+                dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, UnaryOp):
@@ -4556,9 +4684,10 @@ class CEmitter:
                 scalar_operator = self._scalar_function_name(
                     op.function, op.dtype, scalar_registry, params=op.params
                 )
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            array_suffix = self._param_array_suffix(shape)
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.shape)
+            array_suffix = self._param_array_suffix(op.shape, output_dim_names)
             operator_symbol = unary_op_symbol(op.function, dtype=op.dtype)
             if op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}:
                 operator_symbol = (
@@ -4571,13 +4700,14 @@ class CEmitter:
             common = {
                 "model_name": model.name,
                 "op_name": f"{model.name}_op{index}",
-                "element_count": CEmitter._element_count(shape),
+                "element_count": CEmitter._element_count_expr(shape),
                 "array_suffix": array_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
                 "input_c_type": op.input_dtype.c_type,
                 "output_c_type": op.dtype.c_type,
                 "zero_literal": zero_literal,
+                "dim_args": dim_args,
             }
             rendered = unary_template.render(
                 **common,
@@ -4620,6 +4750,91 @@ class CEmitter:
         | SizeOp,
     ) -> str:
         return op.output
+
+    @staticmethod
+    def _op_inputs(
+        op: BinaryOp
+        | WhereOp
+        | UnaryOp
+        | ClipOp
+        | CastOp
+        | MatMulOp
+        | GemmOp
+        | AttentionOp
+        | ConvOp
+        | AveragePoolOp
+        | BatchNormOp
+        | LrnOp
+        | LstmOp
+        | SoftmaxOp
+        | LogSoftmaxOp
+        | NegativeLogLikelihoodLossOp
+        | SoftmaxCrossEntropyLossOp
+        | MaxPoolOp
+        | ConcatOp
+        | GatherElementsOp
+        | GatherOp
+        | TransposeOp
+        | ReshapeOp
+        | ResizeOp
+        | ReduceOp
+        | ConstantOfShapeOp
+        | ShapeOp
+        | SizeOp,
+    ) -> tuple[tuple[str, tuple[int, ...]], ...]:
+        if isinstance(op, BinaryOp):
+            return ((op.input0, op.shape), (op.input1, op.shape))
+        if isinstance(op, UnaryOp):
+            return ((op.input0, op.shape),)
+        if isinstance(op, ClipOp):
+            return ((op.input0, op.shape),)
+        if isinstance(op, CastOp):
+            return ((op.input0, op.shape),)
+        return ()
+
+    def _propagate_tensor_dim_names(
+        self,
+        resolved_ops: Sequence[
+            BinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | MatMulOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | AveragePoolOp
+            | BatchNormOp
+            | LrnOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | TransposeOp
+            | ReshapeOp
+            | ResizeOp
+            | ReduceOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+        ],
+        tensor_dim_names: dict[str, dict[int, str]],
+    ) -> None:
+        for op in resolved_ops:
+            for output_name, output_shape, _ in self._op_outputs(op):
+                if output_name in tensor_dim_names:
+                    continue
+                for input_name, input_shape in self._op_inputs(op):
+                    dim_names = tensor_dim_names.get(input_name)
+                    if dim_names and input_shape == output_shape:
+                        tensor_dim_names[output_name] = dict(dim_names)
+                        break
 
     @staticmethod
     def _op_outputs(
@@ -4861,12 +5076,143 @@ class CEmitter:
         shape = CEmitter._codegen_shape(shape)
         return "".join(f"[{dim}]" for dim in shape)
 
-    def _param_array_suffix(self, shape: tuple[int, ...]) -> str:
+    def _param_array_suffix(
+        self,
+        shape: tuple[int, ...],
+        dim_names: Mapping[int, str] | None = None,
+    ) -> str:
         shape = CEmitter._codegen_shape(shape)
+        dim_names = dim_names or {}
         if not self._restrict_arrays:
-            return "".join(f"[{dim}]" for dim in shape)
+            return "".join(
+                f"[{dim_names.get(index, dim)}]"
+                for index, dim in enumerate(shape)
+            )
         first, *rest = shape
-        return f"[restrict {first}]" + "".join(f"[{dim}]" for dim in rest)
+        first_dim = dim_names.get(0, first)
+        rest_dims = "".join(
+            f"[{dim_names.get(index + 1, dim)}]"
+            for index, dim in enumerate(rest)
+        )
+        return f"[restrict {first_dim}]{rest_dims}"
+
+    @staticmethod
+    def _format_dim_args(dim_order: Sequence[str]) -> list[str]:
+        return [f"int {dim_name}" for dim_name in dim_order]
+
+    @staticmethod
+    def _format_dim_args_prefix(dim_order: Sequence[str]) -> str:
+        if not dim_order:
+            return ""
+        return ", ".join(f"int {dim_name}" for dim_name in dim_order) + ", "
+
+    def _build_variable_dim_names(
+        self,
+        model: LoweredModel,
+        variable_dim_inputs: Mapping[int, Mapping[int, str]] | None,
+        variable_dim_outputs: Mapping[int, Mapping[int, str]] | None,
+    ) -> tuple[
+        list[str],
+        dict[int, dict[int, str]],
+        dict[int, dict[int, str]],
+        dict[str, int],
+    ]:
+        variable_dim_inputs = variable_dim_inputs or {}
+        variable_dim_outputs = variable_dim_outputs or {}
+        dim_order: list[str] = []
+        dim_vars: dict[tuple[str, int, int], str] = {}
+        dim_values: dict[str, int] = {}
+
+        def _register_dim(
+            kind: str,
+            tensor_index: int,
+            dim_index: int,
+            dim_name: str,
+            dim_value: int,
+        ) -> str:
+            key = (kind, tensor_index, dim_index)
+            if key not in dim_vars:
+                dim_vars[key] = dim_name
+                if dim_name not in dim_order:
+                    dim_order.append(dim_name)
+                dim_values.setdefault(dim_name, dim_value)
+            else:
+                if dim_values[dim_name] != dim_value:
+                    raise CodegenError(
+                        "Variable dimension values must be consistent, "
+                        f"got {dim_values[dim_name]} and {dim_value} for {dim_name}"
+                    )
+            return dim_name
+
+        def _build_dim_names(
+            kind: str,
+            tensor_index: int,
+            shape: tuple[int, ...],
+            variable_dims: Mapping[int, Mapping[int, str]],
+        ) -> dict[int, str]:
+            dim_names: dict[int, str] = {}
+            for dim_index, dim_name in variable_dims.get(tensor_index, {}).items():
+                if dim_index < 0 or dim_index >= len(shape):
+                    raise CodegenError(
+                        f"Variable {kind} dim {dim_index} is out of range for shape {shape}"
+                    )
+                dim_names[dim_index] = _register_dim(
+                    kind,
+                    tensor_index,
+                    dim_index,
+                    dim_name,
+                    shape[dim_index],
+                )
+            return dim_names
+
+        input_dim_names: dict[int, dict[int, str]] = {}
+        for index, shape in enumerate(model.input_shapes):
+            dim_names = _build_dim_names(
+                "input", index, shape, variable_dim_inputs
+            )
+            if dim_names:
+                input_dim_names[index] = dim_names
+
+        output_dim_names: dict[int, dict[int, str]] = {}
+        for index, shape in enumerate(model.output_shapes):
+            dim_names = _build_dim_names(
+                "output", index, shape, variable_dim_outputs
+            )
+            if dim_names:
+                output_dim_names[index] = dim_names
+
+        return dim_order, input_dim_names, output_dim_names, dim_values
+
+    @staticmethod
+    def _shape_dim_exprs(
+        shape: tuple[int, ...],
+        dim_names: Mapping[int, str] | None,
+    ) -> tuple[str | int, ...]:
+        dim_names = dim_names or {}
+        return tuple(
+            dim_names.get(index, dim) for index, dim in enumerate(shape)
+        )
+
+    @staticmethod
+    def _element_count_expr(shape_exprs: Sequence[str | int]) -> str:
+        if not shape_exprs:
+            return "1"
+        return " * ".join(str(dim) for dim in shape_exprs)
+
+    def _build_tensor_dim_names(
+        self,
+        model: LoweredModel,
+        input_dim_names: Mapping[int, Mapping[int, str]],
+        output_dim_names: Mapping[int, Mapping[int, str]],
+    ) -> dict[str, dict[int, str]]:
+        dim_names: dict[str, dict[int, str]] = {}
+        for index, name in enumerate(model.input_names):
+            if index in input_dim_names:
+                dim_names[name] = dict(input_dim_names[index])
+        for index, name in enumerate(model.output_names):
+            if index in output_dim_names:
+                dim_names[name] = dict(output_dim_names[index])
+        return dim_names
 
     @staticmethod
     def _loop_vars(shape: tuple[int, ...]) -> tuple[str, ...]:
@@ -4958,6 +5304,8 @@ class CEmitter:
         testbench_template,
         *,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        dim_order: Sequence[str],
+        dim_values: Mapping[str, int],
     ) -> str:
         input_counts = tuple(
             self._element_count(shape) for shape in model.input_shapes
@@ -5029,6 +5377,10 @@ class CEmitter:
             )
         rendered = testbench_template.render(
             model_name=model.name,
+            dim_args=[
+                {"name": dim_name, "value": dim_values[dim_name]}
+                for dim_name in dim_order
+            ],
             inputs=inputs,
             outputs=outputs,
         ).rstrip()

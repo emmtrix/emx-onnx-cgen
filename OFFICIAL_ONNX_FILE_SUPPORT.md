@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 922 / 1802 official ONNX files.
+Support 909 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -36,12 +36,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_add_uint8/model.onnx | ✅ |  |
 | node/test_affine_grid_2d/model.onnx | ❌ | Unsupported op AffineGrid |
 | node/test_affine_grid_2d_align_corners/model.onnx | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_2d_align_corners_expanded/model.onnx | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_2d_align_corners_expanded_function_W' |
-| node/test_affine_grid_2d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_2d_expanded_function_W' |
+| node/test_affine_grid_2d_align_corners_expanded/model.onnx | ❌ | Unsupported op If |
+| node/test_affine_grid_2d_expanded/model.onnx | ❌ | Unsupported op If |
 | node/test_affine_grid_3d/model.onnx | ❌ | Unsupported op AffineGrid |
 | node/test_affine_grid_3d_align_corners/model.onnx | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_3d_align_corners_expanded/model.onnx | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_3d_align_corners_expanded_function_N' |
-| node/test_affine_grid_3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'AffineGrid_test_affine_grid_3d_expanded_function_N' |
+| node/test_affine_grid_3d_align_corners_expanded/model.onnx | ❌ | Unsupported op If |
+| node/test_affine_grid_3d_expanded/model.onnx | ❌ | Unsupported op If |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx | ❌ | Unsupported op ArrayFeatureExtractor |
 | node/test_ai_onnx_ml_binarizer/model.onnx | ❌ | Unsupported op Binarizer |
 | node/test_ai_onnx_ml_label_encoder_string_int/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
@@ -100,128 +100,128 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_atanh_example/model.onnx | ✅ |  |
 | node/test_attention_3d/model.onnx | ✅ |  |
 | node/test_attention_3d_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_attn_mask_expanded_function_KExpanded' |
+| node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_causal_expanded_function_RangeRow' |
+| node/test_attention_3d_causal_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_attn_mask_expanded_function_KExpanded' |
+| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_causal_expanded_function_RangeRow' |
-| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_expanded_function_KExpanded' |
+| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_scaled_expanded_function_KExpanded' |
+| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_sizes_softcap_expanded_function_KExpanded' |
+| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_diff_heads_with_past_and_present_expanded_function_KExpanded' |
-| node/test_attention_3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_expanded_function_KExpanded' |
+| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_3d_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_gqa/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_attn_mask_expanded_function_KExpanded' |
+| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_gqa_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_causal_expanded_function_RangeRow' |
-| node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_expanded_function_KExpanded' |
+| node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_gqa_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_scaled_expanded_function_KExpanded' |
+| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_gqa_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_softcap_expanded_function_KExpanded' |
+| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_gqa_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_gqa_with_past_and_present_expanded_function_KExpanded' |
+| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_scaled_expanded_function_KExpanded' |
+| node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_softcap_expanded_function_KExpanded' |
+| node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_transpose_verification/model.onnx | ✅ |  |
-| node/test_attention_3d_transpose_verification_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_transpose_verification_expanded_function_KExpanded' |
+| node/test_attention_3d_transpose_verification_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_expanded_function_KExpanded' |
+| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_bias_expanded_function_KExpanded' |
-| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_expanded_function_KExpanded' |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded_function_KExpanded' |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded_function_KExpanded' |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_3d_causal_expanded_function_RangeRow' |
-| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_3d_expanded_function_KExpanded' |
+| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_attn_mask_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_causal_expanded_function_RangeRow' |
-| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_4d_expanded_function_KExpanded' |
+| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_attn_mask_bool/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_bool_4d/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_bool_4d_expanded_function_KExpanded' |
-| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_bool_expanded_function_KExpanded' |
-| node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_attn_mask_expanded_function_KExpanded' |
+| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_causal_expanded_function_RangeRow' |
+| node/test_attention_4d_causal_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_mask4d_padded_kv_expanded_function_AttnBias' |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Unsupported op Pad |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_attn_mask_expanded_function_KExpanded' |
+| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_causal_expanded_function_RangeRow' |
-| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_expanded_function_KExpanded' |
+| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_scaled_expanded_function_KExpanded' |
+| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_sizes_softcap_expanded_function_KExpanded' |
+| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_expanded_function_KExpanded' |
+| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded_function_KExpanded' |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded_function_KExpanded' |
-| node/test_attention_4d_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_expanded_function_KExpanded' |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_4d_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_fp16/model.onnx | ✅ |  |
-| node/test_attention_4d_fp16_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_fp16_expanded_function_KExpanded' |
+| node/test_attention_4d_fp16_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_gqa/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_attn_mask_expanded_function_KExpanded' |
+| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_gqa_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_causal_expanded_function_RangeRow' |
-| node/test_attention_4d_gqa_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_expanded_function_KExpanded' |
+| node/test_attention_4d_gqa_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_4d_gqa_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_gqa_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_scaled_expanded_function_KExpanded' |
+| node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_gqa_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_softcap_expanded_function_KExpanded' |
+| node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_gqa_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_expanded_function_KExpanded' |
+| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_gqa_with_past_and_present_fp16_expanded_function_KExpanded' |
+| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_scaled_expanded_function_KExpanded' |
+| node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_softcap_expanded_function_KExpanded' |
+| node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_expanded_function_KExpanded' |
+| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded_function_RangeRow' |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded_function_KExpanded' |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded_function_RangeRow' |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded_function_KExpanded' |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_bias_expanded_function_KExpanded' |
-| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_past_and_present_qk_matmul_expanded_function_KExpanded' |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | Unsupported op Range |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_with_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_bias_expanded_function_KExpanded' |
-| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_expanded_function_KExpanded' |
+| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Unsupported op Expand |
+| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_softcap_expanded_function_KExpanded' |
+| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Dynamic dim for tensor 'Attention_test_attention_4d_with_qk_matmul_softmax_expanded_function_KExpanded' |
+| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Unsupported op Expand |
 | node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
@@ -280,9 +280,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ✅ |  |
 | node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ✅ |  |
 | node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| node/test_blackmanwindow_expanded/model.onnx | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_expanded_function_Range' |
+| node/test_blackmanwindow_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Dynamic dim for tensor 'BlackmanWindow_test_blackmanwindow_symmetric_expanded_function_Range' |
+| node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | node/test_cast_DOUBLE_to_FLOAT/model.onnx | ✅ |  |
 | node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ✅ |  |
@@ -461,39 +461,39 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_celu_expanded/model.onnx | ✅ |  |
 | node/test_center_crop_pad_crop/model.onnx | ❌ | Unsupported op CenterCropPad |
 | node/test_center_crop_pad_crop_and_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_and_pad_expanded_function_padded_input' |
+| node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Unsupported op Pad |
 | node/test_center_crop_pad_crop_axes_chw/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_chw_expanded_function_padded_input' |
+| node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Unsupported op Pad |
 | node/test_center_crop_pad_crop_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_axes_hwc_expanded_function_padded_input' |
-| node/test_center_crop_pad_crop_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_expanded_function_padded_input' |
+| node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_center_crop_pad_crop_expanded/model.onnx | ❌ | Unsupported op Pad |
 | node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_crop_negative_axes_hwc_expanded_function_padded_input' |
+| node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ❌ | Unsupported op Pad |
 | node/test_center_crop_pad_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_pad_expanded/model.onnx | ❌ | Dynamic dim for tensor 'CenterCropPad_test_center_crop_pad_pad_expanded_function_padded_input' |
-| node/test_clip/model.onnx | ✅ |  |
-| node/test_clip_default_inbounds/model.onnx | ✅ |  |
+| node/test_center_crop_pad_pad_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_clip/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_default_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_inbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_int8_inbounds/model.onnx | ✅ |  |
+| node/test_clip_default_int8_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_int8_inbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_int8_max/model.onnx | ✅ |  |
+| node/test_clip_default_int8_max/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_int8_max_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_int8_min/model.onnx | ✅ |  |
+| node/test_clip_default_int8_min/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_int8_min_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_max/model.onnx | ✅ |  |
+| node/test_clip_default_max/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_max_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_min/model.onnx | ✅ |  |
+| node/test_clip_default_min/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_min_expanded/model.onnx | ✅ |  |
-| node/test_clip_example/model.onnx | ✅ |  |
+| node/test_clip_example/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_example_expanded/model.onnx | ✅ |  |
 | node/test_clip_expanded/model.onnx | ✅ |  |
-| node/test_clip_inbounds/model.onnx | ✅ |  |
+| node/test_clip_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_inbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_min_greater_than_max/model.onnx | ✅ |  |
+| node/test_clip_min_greater_than_max/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_min_greater_than_max_expanded/model.onnx | ✅ |  |
-| node/test_clip_outbounds/model.onnx | ✅ |  |
+| node/test_clip_outbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_outbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_splitbounds/model.onnx | ✅ |  |
+| node/test_clip_splitbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_splitbounds_expanded/model.onnx | ✅ |  |
 | node/test_col2im/model.onnx | ❌ | Unsupported op Col2Im |
 | node/test_col2im_5d/model.onnx | ❌ | Unsupported op Col2Im |
@@ -718,21 +718,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_gridsample_zeros_padding/model.onnx | ❌ | Unsupported op GridSample |
 | node/test_group_normalization_epsilon/model.onnx | ❌ | Unsupported op GroupNormalization |
-| node/test_group_normalization_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'GroupNormalization_test_group_normalization_epsilon_expanded_function_XReshaped' |
+| node/test_group_normalization_epsilon_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_group_normalization_example/model.onnx | ❌ | Unsupported op GroupNormalization |
-| node/test_group_normalization_example_expanded/model.onnx | ❌ | Dynamic dim for tensor 'GroupNormalization_test_group_normalization_example_expanded_function_XReshaped' |
+| node/test_group_normalization_example_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_gru_batchwise/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_defaults/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_seq_length/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_with_initial_bias/model.onnx | ❌ | Unsupported op GRU |
 | node/test_hammingwindow/model.onnx | ❌ | Unsupported op HammingWindow |
-| node/test_hammingwindow_expanded/model.onnx | ❌ | Dynamic dim for tensor 'HammingWindow_test_hammingwindow_expanded_function_Range' |
+| node/test_hammingwindow_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_hammingwindow_symmetric/model.onnx | ❌ | Unsupported op HammingWindow |
-| node/test_hammingwindow_symmetric_expanded/model.onnx | ❌ | Dynamic dim for tensor 'HammingWindow_test_hammingwindow_symmetric_expanded_function_Range' |
+| node/test_hammingwindow_symmetric_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_hannwindow/model.onnx | ❌ | Unsupported op HannWindow |
-| node/test_hannwindow_expanded/model.onnx | ❌ | Dynamic dim for tensor 'HannWindow_test_hannwindow_expanded_function_Range' |
+| node/test_hannwindow_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_hannwindow_symmetric/model.onnx | ❌ | Unsupported op HannWindow |
-| node/test_hannwindow_symmetric_expanded/model.onnx | ❌ | Dynamic dim for tensor 'HannWindow_test_hannwindow_symmetric_expanded_function_Range' |
+| node/test_hannwindow_symmetric_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_hardmax_axis_0/model.onnx | ❌ | Unsupported op Hardmax |
 | node/test_hardmax_axis_1/model.onnx | ❌ | Unsupported op Hardmax |
 | node/test_hardmax_axis_2/model.onnx | ❌ | Unsupported op Hardmax |
@@ -783,11 +783,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_2d_axis1_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
-| node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_1_expanded_function_SuffixShape' |
+| node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
+| node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_2d_axis_negative_2/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
-| node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_2d_axis_negative_2_expanded_function_SuffixShape' |
+| node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
@@ -798,14 +798,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_1_epsilon_expanded_function_SuffixShape' |
+| node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
+| node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
 | node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_2_epsilon_expanded_function_SuffixShape' |
+| node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
+| node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
-| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_3d_axis_negative_3_epsilon_expanded_function_SuffixShape' |
+| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_4d_axis0/model.onnx | ❌ | Unsupported op LayerNormalization |
 | node/test_layer_normalization_4d_axis0_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
@@ -819,20 +819,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_layer_normalization_4d_axis3_expanded/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ✅ |  |
 | node/test_layer_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_1_expanded_function_SuffixShape' |
+| node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
+| node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_2/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_2_expanded_function_SuffixShape' |
+| node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
+| node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx | ❌ | Concat output shape must be (3,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_3/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_3_expanded_function_SuffixShape' |
+| node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
+| node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | ❌ | Concat output shape must be (2,), got (1,) |
 | node/test_layer_normalization_4d_axis_negative_4/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' |
-| node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_4d_axis_negative_4_expanded_function_SuffixShape' |
+| node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | Dynamic or zero dims are not supported |
+| node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_layer_normalization_default_axis/model.onnx | ❌ | Unsupported op LayerNormalization |
-| node/test_layer_normalization_default_axis_expanded/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
-| node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | ❌ | Dynamic dim for tensor 'LayerNormalization_test_layer_normalization_default_axis_expanded_function_SuffixShape' |
+| node/test_layer_normalization_default_axis_expanded/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
+| node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | ❌ | Concat output shape must be (4,), got (1,) |
 | node/test_leakyrelu/model.onnx | ❌ | LeakyRelu only supports alpha=0.01 |
 | node/test_leakyrelu_default/model.onnx | ✅ |  |
 | node/test_leakyrelu_default_expanded/model.onnx | ✅ |  |
@@ -1302,63 +1302,63 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reversesequence_batch/model.onnx | ❌ | Unsupported op ReverseSequence |
 | node/test_reversesequence_time/model.onnx | ❌ | Unsupported op ReverseSequence |
 | node/test_rms_normalization_2d_axis0/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis0_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis0_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_2d_axis0_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_2d_axis1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis1_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_2d_axis1_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_1_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_2d_axis_negative_2/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_2d_axis_negative_2_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis0_epsilon_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis1_epsilon_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis2_epsilon_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_1_epsilon_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_2_epsilon_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_3d_axis_negative_3_epsilon_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis0/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis0_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis0_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis0_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis1_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis1_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis2/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis2_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis2_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis3/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis3_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis3_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis3_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_1_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis_negative_2/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_2_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis_negative_3/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_3_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_4d_axis_negative_4/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_4d_axis_negative_4_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rms_normalization_default_axis/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_default_axis_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RMSNormalization_test_rms_normalization_default_axis_expanded_function_ReduceAxes' |
+| node/test_rms_normalization_default_axis_expanded/model.onnx | ❌ | Unsupported op Range |
 | node/test_rnn_seq_length/model.onnx | ❌ | Unsupported op RNN |
 | node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
 | node/test_roialign_aligned_true/model.onnx | ❌ | Unsupported op RoiAlign |
 | node/test_roialign_mode_max/model.onnx | ❌ | Unsupported op RoiAlign |
 | node/test_rotary_embedding/model.onnx | ❌ | Unsupported op RotaryEmbedding |
 | node/test_rotary_embedding_3d_input/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_3d_input_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_3d_input_expanded_function_CosCacheSliced' |
-| node/test_rotary_embedding_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_expanded_function_CosCacheSliced' |
+| node/test_rotary_embedding_3d_input_expanded/model.onnx | ❌ | Unsupported op Split |
+| node/test_rotary_embedding_expanded/model.onnx | ❌ | Unsupported op Split |
 | node/test_rotary_embedding_interleaved/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_interleaved_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_interleaved_expanded_function_CosCacheSliced' |
+| node/test_rotary_embedding_interleaved_expanded/model.onnx | ❌ | Unsupported op Split |
 | node/test_rotary_embedding_no_position_ids/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_no_position_ids_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_expanded_function_CosCacheSliced' |
+| node/test_rotary_embedding_no_position_ids_expanded/model.onnx | ❌ | Unsupported op Split |
 | node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_interleaved_expanded_function_CosCacheSliced' |
+| node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | ❌ | Unsupported op Split |
 | node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_no_position_ids_rotary_dim_expanded_function_CosCacheSliced' |
+| node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | ❌ | Unsupported op Split |
 | node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_interleaved_rotary_dim_expanded_function_CosCacheSliced' |
+| node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | Unsupported op Split |
 | node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | Dynamic dim for tensor 'RotaryEmbedding_test_rotary_embedding_with_rotary_dim_expanded_function_CosCacheSliced' |
+| node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | Unsupported op Split |
 | node/test_round/model.onnx | ✅ |  |
 | node/test_scan9_sum/model.onnx | ❌ | Unsupported op Scan |
 | node/test_scan_sum/model.onnx | ❌ | Unsupported op Scan |
@@ -1760,7 +1760,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_addmm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_basic/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_chunk/model.onnx | ❌ | Unsupported op Split |
-| pytorch-operator/test_operator_clip/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_clip/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | pytorch-operator/test_operator_concat2/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_conv/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_convtranspose/model.onnx | ❌ | Unsupported op ConvTranspose |
@@ -1796,11 +1796,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | simple/test_sequence_model1/model.onnx | ❌ | Dynamic dim for tensor 'out' |
 | simple/test_sequence_model2/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
 | simple/test_sequence_model3/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
-| simple/test_sequence_model4/model.onnx | ❌ | Dynamic dim for tensor 'out' |
+| simple/test_sequence_model4/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
 | simple/test_sequence_model5/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
 | simple/test_sequence_model6/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
 | simple/test_sequence_model7/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
-| simple/test_sequence_model8/model.onnx | ❌ | Dynamic dim for tensor 'X' |
+| simple/test_sequence_model8/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_1'. Hint: export the model with tensor inputs/outputs. |
 | simple/test_shrink/model.onnx | ✅ |  |
 | simple/test_sign_model/model.onnx | ✅ |  |
 | simple/test_single_relu_model/model.onnx | ✅ |  |

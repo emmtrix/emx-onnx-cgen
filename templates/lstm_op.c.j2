@@ -34,7 +34,7 @@ static inline {{ c_type }} {{ op_name }}_activation(int kind, {{ c_type }} value
     }
 }
 
-static inline void {{ op_name }}(const {{ c_type }} {{ input_x }}{{ input_suffix }},
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input_x }}{{ input_suffix }},
                   const {{ c_type }} {{ input_w }}{{ w_suffix }},
                   const {{ c_type }} {{ input_r }}{{ r_suffix }}{% if input_b %},
                   const {{ c_type }} {{ input_b }}{{ b_suffix }}{% endif %}{% if input_sequence_lens %},

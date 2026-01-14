@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ input_c_type }} {{ input0 }}{{ input_suffix }}{% if input_min %}, const {{ input_c_type }} {{ input_min }}{{ min_suffix }}{% endif %}{% if input_max %}, const {{ input_c_type }} {{ input_max }}{{ max_suffix }}{% endif %}, {{ output_c_type }} {{ output }}{{ output_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}const {{ input_c_type }} {{ input0 }}{{ input_suffix }}{% if input_min %}, const {{ input_c_type }} {{ input_min }}{{ min_suffix }}{% endif %}{% if input_max %}, const {{ input_c_type }} {{ input_max }}{{ max_suffix }}{% endif %}, {{ output_c_type }} {{ output }}{{ output_suffix }}) {
 {% for dim in shape %}
 for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
