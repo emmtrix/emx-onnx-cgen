@@ -929,6 +929,57 @@ def _reduce_output_shape(
     return [dim for axis, dim in enumerate(input_shape) if axis not in normalized]
 
 
+def _arg_reduce_output_shape(
+    input_shape: list[int], axis: int, keepdims: int
+) -> list[int]:
+    rank = len(input_shape)
+    if axis < 0:
+        axis += rank
+    if keepdims:
+        return [
+            1 if dim_axis == axis else dim
+            for dim_axis, dim in enumerate(input_shape)
+        ]
+    return [dim for dim_axis, dim in enumerate(input_shape) if dim_axis != axis]
+
+
+def _make_arg_reduce_model(
+    *,
+    op_type: str,
+    input_shape: list[int],
+    output_shape: list[int],
+    axis: int,
+    keepdims: int,
+    select_last_index: int,
+    dtype: int,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output = helper.make_tensor_value_info("output", TensorProto.INT64, output_shape)
+    node = helper.make_node(
+        op_type,
+        inputs=["input"],
+        outputs=[output.name],
+        axis=axis,
+        keepdims=keepdims,
+        select_last_index=select_last_index,
+    )
+    graph = helper.make_graph(
+        [node],
+        f"{op_type.lower()}_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_unsqueeze_model(
     *, input_shape: list[int], axes: list[int], opset: int = 13
 ) -> onnx.ModelProto:
@@ -1869,6 +1920,33 @@ REDUCE_CASES = [
     },
 ]
 
+ARG_REDUCE_CASES = [
+    {
+        "name": "ArgMaxAxis0Keepdims",
+        "op_type": "ArgMax",
+        "input_shape": [3, 4],
+        "axis": 0,
+        "keepdims": 1,
+        "select_last_index": 0,
+    },
+    {
+        "name": "ArgMinAxis1NoKeepdims",
+        "op_type": "ArgMin",
+        "input_shape": [2, 5],
+        "axis": 1,
+        "keepdims": 0,
+        "select_last_index": 0,
+    },
+    {
+        "name": "ArgMaxAxisNeg1",
+        "op_type": "ArgMax",
+        "input_shape": [2, 3, 4],
+        "axis": -1,
+        "keepdims": 0,
+        "select_last_index": 0,
+    },
+]
+
 AVG_POOL_CASES = [
     {
         "name": "Kernel2Stride2",
@@ -1955,6 +2033,51 @@ def test_reduce_op_matches_onnxruntime(case: dict[str, object]) -> None:
         dtype=TensorProto.FLOAT,
     )
     _run_cli_verify(model)
+
+
+@pytest.mark.parametrize(
+    "case", ARG_REDUCE_CASES, ids=lambda case: case["name"]
+)
+def test_arg_reduce_matches_onnxruntime(case: dict[str, object]) -> None:
+    output_shape = _arg_reduce_output_shape(
+        case["input_shape"], case["axis"], case["keepdims"]
+    )
+    model = _make_arg_reduce_model(
+        op_type=case["op_type"],
+        input_shape=case["input_shape"],
+        output_shape=output_shape,
+        axis=case["axis"],
+        keepdims=case["keepdims"],
+        select_last_index=case["select_last_index"],
+        dtype=TensorProto.FLOAT,
+    )
+    _run_cli_verify(model)
+
+
+def test_argmax_select_last_index_matches_numpy() -> None:
+    input_shape = [2, 4]
+    axis = 1
+    keepdims = 1
+    output_shape = _arg_reduce_output_shape(input_shape, axis, keepdims)
+    model = _make_arg_reduce_model(
+        op_type="ArgMax",
+        input_shape=input_shape,
+        output_shape=output_shape,
+        axis=axis,
+        keepdims=keepdims,
+        select_last_index=1,
+        dtype=TensorProto.FLOAT,
+    )
+    compiler = Compiler()
+    data = np.array(
+        [[1.0, 3.0, 3.0, 2.0], [0.0, -1.0, -1.0, -2.0]],
+        dtype=np.float32,
+    )
+    outputs = compiler.run(model, {"input": data})
+    flipped = np.flip(data, axis=axis)
+    expected = data.shape[axis] - 1 - np.argmax(flipped, axis=axis)
+    expected = np.expand_dims(expected, axis=axis)
+    np.testing.assert_array_equal(outputs["output"], expected.astype(np.int64))
 
 
 def test_reduce_op_axes_input_matches_numpy() -> None:

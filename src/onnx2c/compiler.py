@@ -39,6 +39,7 @@ from .codegen.c_emitter import (
     MatMulOp,
     MaxPoolOp,
     ReduceOp,
+    ArgReduceOp,
     ReshapeOp,
     ResizeOp,
     SoftmaxOp,
@@ -90,6 +91,7 @@ from .lowering.reduce import (
     REDUCE_KIND_BY_OP,
     REDUCE_OUTPUTS_FLOAT_ONLY,
 )
+from .lowering import arg_reduce as _arg_reduce  # noqa: F401
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.slice import lower_slice
@@ -325,6 +327,7 @@ class Compiler:
             | SliceOp
             | ResizeOp
             | ReduceOp
+            | ArgReduceOp
             | ShapeOp
             | ExpandOp
             | RangeOp
@@ -359,6 +362,7 @@ class Compiler:
             | SliceOp
             | ResizeOp
             | ReduceOp
+            | ArgReduceOp
             | ShapeOp
             | ExpandOp
             | RangeOp
