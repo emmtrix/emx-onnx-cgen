@@ -19,12 +19,10 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _read_split_sizes(graph: Graph, name: str, node: Node) -> list[int]:
+def _read_split_sizes(graph: Graph, name: str, node: Node) -> list[int] | None:
     initializer = _find_initializer(graph, name)
     if initializer is None:
-        raise UnsupportedOpError(
-            f"{node.op_type} split input must be a constant initializer"
-        )
+        return None
     if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
             f"{node.op_type} split input must be int64 or int32"
@@ -93,6 +91,23 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
         )
     if split_name is not None:
         split_sizes = _read_split_sizes(graph, split_name, node)
+        if split_sizes is None:
+            split_shape, split_dtype = value_shape(
+                graph, split_name, node
+            ), value_dtype(graph, split_name, node)
+            if split_dtype not in {ScalarType.I64, ScalarType.I32}:
+                raise UnsupportedOpError(
+                    f"{node.op_type} split input must be int64 or int32"
+                )
+            if len(split_shape) != 1:
+                raise UnsupportedOpError(
+                    f"{node.op_type} split input must be a 1D tensor"
+                )
+            if split_shape[0] != len(node.outputs):
+                raise ShapeInferenceError(
+                    f"Split expects {len(node.outputs)} outputs, got {split_shape[0]}"
+                )
+            split_sizes = [shape[axis] for shape in output_shapes]
         if len(split_sizes) != len(node.outputs):
             raise ShapeInferenceError(
                 f"Split expects {len(split_sizes)} outputs, got {len(node.outputs)}"

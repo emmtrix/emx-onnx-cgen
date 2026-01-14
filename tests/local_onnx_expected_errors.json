@@ -289,7 +289,7 @@
   ],
   [
     "test_shape_const_out/model.onnx",
-    "Expand shape input must be a constant initializer"
+    ""
   ],
   [
     "test_slice_end_INT64_MAX/model.onnx",

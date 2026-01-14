@@ -29,12 +29,12 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _read_scalar_initializer(graph: Graph, name: str, node: Node, label: str) -> float | int:
+def _read_scalar_initializer(
+    graph: Graph, name: str, node: Node, label: str
+) -> float | int | None:
     initializer = _find_initializer(graph, name)
     if initializer is None:
-        raise UnsupportedOpError(
-            f"{node.op_type} {label} input must be a constant initializer"
-        )
+        return None
     data = np.array(initializer.data)
     if data.size != 1:
         raise UnsupportedOpError(
@@ -65,22 +65,33 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
         raise UnsupportedOpError(
             f"Range does not support dtype {dtype.onnx_name}"
         )
-    start_value = _read_scalar_initializer(graph, node.inputs[0], node, "start")
-    limit_value = _read_scalar_initializer(graph, node.inputs[1], node, "limit")
-    delta_value = _read_scalar_initializer(graph, node.inputs[2], node, "delta")
-    if float(delta_value) == 0.0:
-        raise UnsupportedOpError("Range delta must be non-zero")
-    raw_count = (float(limit_value) - float(start_value)) / float(delta_value)
-    length = max(int(math.ceil(raw_count)), 0)
-    if length <= 0:
-        raise ShapeInferenceError("Range output length must be positive")
     output_shape = value_shape(graph, node.outputs[0], node)
     if len(output_shape) != 1:
         raise ShapeInferenceError("Range output must be 1D")
-    if output_shape[0] != length:
-        raise ShapeInferenceError(
-            f"Range output length must be {length}, got {output_shape[0]}"
-        )
+    start_value = _read_scalar_initializer(graph, node.inputs[0], node, "start")
+    limit_value = _read_scalar_initializer(graph, node.inputs[1], node, "limit")
+    delta_value = _read_scalar_initializer(graph, node.inputs[2], node, "delta")
+    if (
+        start_value is not None
+        and limit_value is not None
+        and delta_value is not None
+    ):
+        if float(delta_value) == 0.0:
+            raise UnsupportedOpError("Range delta must be non-zero")
+        raw_count = (
+            float(limit_value) - float(start_value)
+        ) / float(delta_value)
+        length = max(int(math.ceil(raw_count)), 0)
+        if length <= 0:
+            raise ShapeInferenceError("Range output length must be positive")
+        if output_shape[0] != length:
+            raise ShapeInferenceError(
+                f"Range output length must be {length}, got {output_shape[0]}"
+            )
+    else:
+        length = output_shape[0]
+        if length <= 0:
+            raise ShapeInferenceError("Range output length must be positive")
     return RangeOp(
         start=node.inputs[0],
         limit=node.inputs[1],
