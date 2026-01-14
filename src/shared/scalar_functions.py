@@ -2053,6 +2053,15 @@ _CONVERSION_SOURCE_BY_FUNCTION: Mapping[ScalarFunction, ScalarType] = {
 }
 
 
+def _scalar_type_info(dtype: ScalarType) -> _ScalarTypeInfo:
+    try:
+        return _SCALAR_TYPE_BY_ENUM[dtype]
+    except KeyError as exc:
+        raise ScalarFunctionError(
+            f"unsupported scalar dtype: {dtype.value}"
+        ) from exc
+
+
 def _supported_ops(dtype_info: _ScalarTypeInfo) -> Set[str]:
     supported = {
         _normalize_op_name(function.value)
@@ -2104,17 +2113,17 @@ def _scalar_info_for_key(key: ScalarFunctionKey) -> tuple[_ScalarTypeInfo, str]:
     if key.function in _CONVERSION_SOURCE_BY_FUNCTION:
         source_type = _CONVERSION_SOURCE_BY_FUNCTION[key.function]
         if source_type == ScalarType.F32:
-            return _SCALAR_TYPE_BY_ENUM[key.return_type], "from_f32"
+            return _scalar_type_info(key.return_type), "from_f32"
         if source_type == ScalarType.BOOL:
             if key.return_type != ScalarType.F32:
                 raise ScalarFunctionError(
                     f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
                 )
-            return _SCALAR_TYPE_BY_ENUM[source_type], "to_f32"
+            return _scalar_type_info(source_type), "to_f32"
         raise ScalarFunctionError(
             f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
         )
-    return _SCALAR_TYPE_BY_ENUM[key.return_type], key.function.value
+    return _scalar_type_info(key.return_type), key.function.value
 
 
 def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
@@ -2163,14 +2172,14 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
                 ScalarType.U64,
                 ScalarType.BOOL,
             }:
-                target_info = _SCALAR_TYPE_BY_ENUM[key.return_type]
+                target_info = _scalar_type_info(key.return_type)
                 return f"{target_info.prefix}from_f32{param_suffix}"
             raise ScalarFunctionError(
                 f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
             )
         if source_type == ScalarType.BOOL:
             if key.return_type == ScalarType.F32:
-                source_info = _SCALAR_TYPE_BY_ENUM[source_type]
+                source_info = _scalar_type_info(source_type)
                 return f"{source_info.prefix}to_f32{param_suffix}"
             raise ScalarFunctionError(
                 f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
@@ -2179,7 +2188,7 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
             f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
         )
     op_name = key.function.value
-    dtype_info = _SCALAR_TYPE_BY_ENUM[key.return_type]
+    dtype_info = _scalar_type_info(key.return_type)
     if _normalize_op_name(op_name) not in _supported_ops(dtype_info):
         raise ScalarFunctionError(
             f"unsupported scalar op {op_name} for {dtype_info.suffix}"

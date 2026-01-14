@@ -54,7 +54,6 @@
 | ReduceSum output shape must be (1, 1, 1), got () | 5 | ████ |
 | Unsupported op ScatterND | 5 | ████ |
 | Unsupported op AffineGrid | 4 | ███ |
-| <ScalarType.F16: '*'> | 4 | ███ |
 | Unsupported op DeformConv | 4 | ███ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
 | Unsupported op Compress | 4 | ███ |
