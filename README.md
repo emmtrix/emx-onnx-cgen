@@ -1,6 +1,8 @@
-# emmtrix ONNX to C compiler
+# emmtrix ONNX to C compiler (emx-onnx2c)
 
-`emmtrix ONNX to C compiler` compiles ONNX models into portable, deterministic C code. The
+[![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx2c.svg)](https://pypi.org/project/emx-onnx2c)
+
+emx-onnx2c compiles ONNX models into portable, deterministic C code. The
 generated C is designed to be readable, stable across runs, and easy to embed in
 larger projects without heavy runtime dependencies.
 
