@@ -1,4 +1,4 @@
-# emmtrix ONNX to C compiler (emx-onnx2c)
+# emmtrix ONNX to C Compiler (emx-onnx2c)
 
 [![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx2c.svg)](https://pypi.org/project/emx-onnx2c)
 
