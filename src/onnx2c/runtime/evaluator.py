@@ -38,7 +38,7 @@ from ..lowering.reduce import (
     resolve_reduce_axes,
 )
 from ..lowering.reshape import lower_reshape
-from ..lowering.slice import resolve_slice_spec
+from ..lowering.slice import _normalize_slices
 from ..lowering.shape import lower_shape
 from ..lowering.size import lower_size
 from ..lowering.softmax import lower_softmax
@@ -325,11 +325,54 @@ def _eval_gather(evaluator: Evaluator, node: Node) -> None:
 
 @register_evaluator("Slice")
 def _eval_slice(evaluator: Evaluator, node: Node) -> None:
-    spec = resolve_slice_spec(evaluator.graph, node)
     input_value = evaluator.values[node.inputs[0]]
+    if "starts" in node.attrs or "ends" in node.attrs:
+        starts = [int(value) for value in node.attrs.get("starts", [])]
+        ends = [int(value) for value in node.attrs.get("ends", [])]
+        axes_attr = node.attrs.get("axes")
+        axes = [int(value) for value in axes_attr] if axes_attr else None
+        steps = None
+    else:
+        if len(node.inputs) < 3:
+            raise UnsupportedOpError(
+                f"{node.op_type} expects at least 3 inputs"
+            )
+        starts_value = evaluator.values[node.inputs[1]]
+        ends_value = evaluator.values[node.inputs[2]]
+        if starts_value.dtype.type not in {np.int32, np.int64}:
+            raise UnsupportedOpError(
+                f"{node.op_type} starts input must be int64 or int32"
+            )
+        if ends_value.dtype.type not in {np.int32, np.int64}:
+            raise UnsupportedOpError(
+                f"{node.op_type} ends input must be int64 or int32"
+            )
+        starts = [int(value) for value in starts_value.reshape(-1)]
+        ends = [int(value) for value in ends_value.reshape(-1)]
+        axes = None
+        steps = None
+        if len(node.inputs) >= 4 and node.inputs[3]:
+            axes_value = evaluator.values[node.inputs[3]]
+            if axes_value.dtype.type not in {np.int32, np.int64}:
+                raise UnsupportedOpError(
+                    f"{node.op_type} axes input must be int64 or int32"
+                )
+            axes = [int(value) for value in axes_value.reshape(-1)]
+        if len(node.inputs) >= 5 and node.inputs[4]:
+            steps_value = evaluator.values[node.inputs[4]]
+            if steps_value.dtype.type not in {np.int32, np.int64}:
+                raise UnsupportedOpError(
+                    f"{node.op_type} steps input must be int64 or int32"
+                )
+            steps = [int(value) for value in steps_value.reshape(-1)]
+    normalized_starts, normalized_steps, output_shape = _normalize_slices(
+        input_value.shape, starts, ends, axes, steps, node
+    )
     slices = tuple(
         slice(start, start + step * size, step)
-        for start, step, size in zip(spec.starts, spec.steps, spec.output_shape)
+        for start, step, size in zip(
+            normalized_starts, normalized_steps, output_shape
+        )
     )
     evaluator.values[node.outputs[0]] = input_value[slices]
 

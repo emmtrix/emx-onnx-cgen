@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 920 / 1802 official ONNX files.
+Support 988 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -100,128 +100,128 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_atanh_example/model.onnx | ✅ |  |
 | node/test_attention_3d/model.onnx | ✅ |  |
 | node/test_attention_3d_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_attn_mask_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_attention_3d_causal_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_3d_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_3d_gqa_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_3d_gqa_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_3d_gqa_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_3d_gqa_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_3d_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_transpose_verification/model.onnx | ✅ |  |
-| node/test_attention_3d_transpose_verification_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_transpose_verification_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_bool/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_bool_4d/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_attention_4d_causal_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Unsupported op Pad |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_4d_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_fp16/model.onnx | ✅ |  |
-| node/test_attention_4d_fp16_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_fp16_expanded/model.onnx | ❌ | <ScalarType.F16: 'f16'> |
 | node/test_attention_4d_gqa/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_gqa_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_4d_gqa_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_gqa_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_gqa_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_gqa_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_gqa_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_gqa_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ |  |
 | node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
@@ -280,9 +280,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ✅ |  |
 | node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ✅ |  |
 | node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| node/test_blackmanwindow_expanded/model.onnx | ❌ | Range limit input must be a constant initializer |
+| node/test_blackmanwindow_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Range limit input must be a constant initializer |
+| node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | node/test_cast_DOUBLE_to_FLOAT/model.onnx | ✅ |  |
 | node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ✅ |  |
@@ -626,8 +626,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_erf/model.onnx | ✅ |  |
 | node/test_exp/model.onnx | ✅ |  |
 | node/test_exp_example/model.onnx | ✅ |  |
-| node/test_expand_dim_changed/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| node/test_expand_dim_unchanged/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| node/test_expand_dim_changed/model.onnx | ✅ |  |
+| node/test_expand_dim_unchanged/model.onnx | ✅ |  |
 | node/test_eyelike_populate_off_main_diagonal/model.onnx | ❌ | Unsupported op EyeLike |
 | node/test_eyelike_with_dtype/model.onnx | ❌ | Unsupported op EyeLike |
 | node/test_eyelike_without_dtype/model.onnx | ❌ | Unsupported op EyeLike |
@@ -726,13 +726,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gru_seq_length/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_with_initial_bias/model.onnx | ❌ | Unsupported op GRU |
 | node/test_hammingwindow/model.onnx | ❌ | Unsupported op HammingWindow |
-| node/test_hammingwindow_expanded/model.onnx | ❌ | Range limit input must be a constant initializer |
+| node/test_hammingwindow_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_hammingwindow_symmetric/model.onnx | ❌ | Unsupported op HammingWindow |
-| node/test_hammingwindow_symmetric_expanded/model.onnx | ❌ | Range limit input must be a constant initializer |
+| node/test_hammingwindow_symmetric_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_hannwindow/model.onnx | ❌ | Unsupported op HannWindow |
-| node/test_hannwindow_expanded/model.onnx | ❌ | Range limit input must be a constant initializer |
+| node/test_hannwindow_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_hannwindow_symmetric/model.onnx | ❌ | Unsupported op HannWindow |
-| node/test_hannwindow_symmetric_expanded/model.onnx | ❌ | Range limit input must be a constant initializer |
+| node/test_hannwindow_symmetric_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_hardmax_axis_0/model.onnx | ❌ | Unsupported op Hardmax |
 | node/test_hardmax_axis_1/model.onnx | ❌ | Unsupported op Hardmax |
 | node/test_hardmax_axis_2/model.onnx | ❌ | Unsupported op Hardmax |
@@ -1107,9 +1107,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_quantizelinear_uint16/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_quantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
-| node/test_range_float_type_positive_delta/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_range_float_type_positive_delta/model.onnx | ✅ |  |
 | node/test_range_float_type_positive_delta_expanded/model.onnx | ❌ | Unsupported op Loop |
-| node/test_range_int32_type_negative_delta/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_range_int32_type_negative_delta/model.onnx | ✅ |  |
 | node/test_range_int32_type_negative_delta_expanded/model.onnx | ❌ | Unsupported op Loop |
 | node/test_reciprocal/model.onnx | ✅ |  |
 | node/test_reciprocal_example/model.onnx | ✅ |  |
@@ -1302,63 +1302,63 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reversesequence_batch/model.onnx | ❌ | Unsupported op ReverseSequence |
 | node/test_reversesequence_time/model.onnx | ❌ | Unsupported op ReverseSequence |
 | node/test_rms_normalization_2d_axis0/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis0_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_2d_axis0_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_2d_axis1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis1_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_2d_axis1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_2d_axis_negative_1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_2d_axis_negative_2/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_3d_axis0_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_3d_axis1_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_3d_axis2_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis0/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis0_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis0_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis1_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis2/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis2_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis2_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis3/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis3_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis3_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis_negative_1/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis_negative_2/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis_negative_3/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_4d_axis_negative_4/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rms_normalization_default_axis/model.onnx | ❌ | Unsupported op RMSNormalization |
-| node/test_rms_normalization_default_axis_expanded/model.onnx | ❌ | Range start input must be a constant initializer |
+| node/test_rms_normalization_default_axis_expanded/model.onnx | ❌ | ReduceMean output shape rank must match input rank |
 | node/test_rnn_seq_length/model.onnx | ❌ | Unsupported op RNN |
 | node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
 | node/test_roialign_aligned_true/model.onnx | ❌ | Unsupported op RoiAlign |
 | node/test_roialign_mode_max/model.onnx | ❌ | Unsupported op RoiAlign |
 | node/test_rotary_embedding/model.onnx | ❌ | Unsupported op RotaryEmbedding |
 | node/test_rotary_embedding_3d_input/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_3d_input_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
-| node/test_rotary_embedding_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_rotary_embedding_3d_input_expanded/model.onnx | ❌ | tuple index out of range |
+| node/test_rotary_embedding_expanded/model.onnx | ❌ | tuple index out of range |
 | node/test_rotary_embedding_interleaved/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_interleaved_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_rotary_embedding_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
 | node/test_rotary_embedding_no_position_ids/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_no_position_ids_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_rotary_embedding_no_position_ids_expanded/model.onnx | ❌ | tuple index out of range |
 | node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
 | node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
 | node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
 | node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
 | node/test_round/model.onnx | ✅ |  |
 | node/test_scan9_sum/model.onnx | ❌ | Unsupported op Scan |
 | node/test_scan_sum/model.onnx | ❌ | Unsupported op Scan |
@@ -1490,13 +1490,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sinh_example/model.onnx | ✅ |  |
 | node/test_size/model.onnx | ✅ |  |
 | node/test_size_example/model.onnx | ✅ |  |
-| node/test_slice/model.onnx | ❌ | Slice starts input must be a constant initializer |
-| node/test_slice_default_axes/model.onnx | ❌ | Slice starts input must be a constant initializer |
-| node/test_slice_default_steps/model.onnx | ❌ | Slice starts input must be a constant initializer |
-| node/test_slice_end_out_of_bounds/model.onnx | ❌ | Slice starts input must be a constant initializer |
-| node/test_slice_neg/model.onnx | ❌ | Slice starts input must be a constant initializer |
-| node/test_slice_neg_steps/model.onnx | ❌ | Slice starts input must be a constant initializer |
-| node/test_slice_negative_axes/model.onnx | ❌ | Slice starts input must be a constant initializer |
+| node/test_slice/model.onnx | ✅ |  |
+| node/test_slice_default_axes/model.onnx | ✅ |  |
+| node/test_slice_default_steps/model.onnx | ✅ |  |
+| node/test_slice_end_out_of_bounds/model.onnx | ✅ |  |
+| node/test_slice_neg/model.onnx | ✅ |  |
+| node/test_slice_neg_steps/model.onnx | ✅ |  |
+| node/test_slice_negative_axes/model.onnx | ✅ |  |
 | node/test_slice_start_out_of_bounds/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_softmax_axis_0/model.onnx | ✅ |  |
 | node/test_softmax_axis_0_expanded/model.onnx | ✅ |  |
@@ -1540,12 +1540,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_split_to_sequence_1/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq'. Hint: export the model with tensor inputs/outputs. |
 | node/test_split_to_sequence_2/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq'. Hint: export the model with tensor inputs/outputs. |
 | node/test_split_to_sequence_nokeepdims/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq'. Hint: export the model with tensor inputs/outputs. |
-| node/test_split_variable_parts_1d_opset13/model.onnx | ❌ | Split split input must be a constant initializer |
-| node/test_split_variable_parts_1d_opset18/model.onnx | ❌ | Split split input must be a constant initializer |
-| node/test_split_variable_parts_2d_opset13/model.onnx | ❌ | Split split input must be a constant initializer |
-| node/test_split_variable_parts_2d_opset18/model.onnx | ❌ | Split split input must be a constant initializer |
-| node/test_split_variable_parts_default_axis_opset13/model.onnx | ❌ | Split split input must be a constant initializer |
-| node/test_split_variable_parts_default_axis_opset18/model.onnx | ❌ | Split split input must be a constant initializer |
+| node/test_split_variable_parts_1d_opset13/model.onnx | ✅ |  |
+| node/test_split_variable_parts_1d_opset18/model.onnx | ✅ |  |
+| node/test_split_variable_parts_2d_opset13/model.onnx | ✅ |  |
+| node/test_split_variable_parts_2d_opset18/model.onnx | ✅ |  |
+| node/test_split_variable_parts_default_axis_opset13/model.onnx | ✅ |  |
+| node/test_split_variable_parts_default_axis_opset18/model.onnx | ✅ |  |
 | node/test_split_zero_size_splits_opset13/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_split_zero_size_splits_opset18/model.onnx | ❌ | Dynamic or zero dims are not supported |
 | node/test_sqrt/model.onnx | ✅ |  |
@@ -1787,10 +1787,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Unsupported op InstanceNormalization |
 | pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
 | pytorch-operator/test_operator_view/model.onnx | ✅ |  |
-| simple/test_expand_shape_model1/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| simple/test_expand_shape_model2/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| simple/test_expand_shape_model3/model.onnx | ❌ | Expand shape input must be a constant initializer |
-| simple/test_expand_shape_model4/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| simple/test_expand_shape_model1/model.onnx | ✅ |  |
+| simple/test_expand_shape_model2/model.onnx | ✅ |  |
+| simple/test_expand_shape_model3/model.onnx | ✅ |  |
+| simple/test_expand_shape_model4/model.onnx | ✅ |  |
 | simple/test_gradient_of_add/model.onnx | ❌ | Unsupported op Gradient |
 | simple/test_gradient_of_add_and_mul/model.onnx | ❌ | Unsupported op Gradient |
 | simple/test_sequence_model1/model.onnx | ❌ | Dynamic dim for tensor 'out' |
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 56 / 74 local ONNX files.
+Support 57 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -1891,5 +1891,5 @@ Support 56 / 74 local ONNX files.
 | test_scatternd_indices_1x2x2/model.onnx | ❌ | Unsupported op ScatterND |
 | test_scatternd_indices_2x2x2/model.onnx | ❌ | Unsupported op ScatterND |
 | test_scatternd_indices_3x2/model.onnx | ❌ | Unsupported op ScatterND |
-| test_shape_const_out/model.onnx | ❌ | Expand shape input must be a constant initializer |
+| test_shape_const_out/model.onnx | ✅ |  |
 | test_slice_end_INT64_MAX/model.onnx | ✅ |  |

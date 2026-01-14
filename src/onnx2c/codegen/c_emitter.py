@@ -508,8 +508,21 @@ class SliceOp:
     output: str
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    starts: tuple[int, ...]
-    steps: tuple[int, ...]
+    starts: tuple[int, ...] | None
+    steps: tuple[int, ...] | None
+    axes: tuple[int, ...] | None
+    starts_input: str | None
+    ends_input: str | None
+    axes_input: str | None
+    steps_input: str | None
+    starts_shape: tuple[int, ...] | None
+    ends_shape: tuple[int, ...] | None
+    axes_shape: tuple[int, ...] | None
+    steps_shape: tuple[int, ...] | None
+    starts_dtype: ScalarType | None
+    ends_dtype: ScalarType | None
+    axes_dtype: ScalarType | None
+    steps_dtype: ScalarType | None
     dtype: ScalarType
     input_dtype: ScalarType
 
@@ -895,7 +908,17 @@ class CEmitter:
         if isinstance(op, ReshapeOp):
             return (op.input0, op.output)
         if isinstance(op, SliceOp):
-            return (op.input0, op.output)
+            names = [op.input0]
+            if op.starts_input is not None:
+                names.append(op.starts_input)
+            if op.ends_input is not None:
+                names.append(op.ends_input)
+            if op.axes_input is not None:
+                names.append(op.axes_input)
+            if op.steps_input is not None:
+                names.append(op.steps_input)
+            names.append(op.output)
+            return tuple(names)
         if isinstance(op, ResizeOp):
             names = [op.input0]
             if op.roi_input is not None:
@@ -1399,6 +1422,19 @@ class CEmitter:
                 output_shape=op.output_shape,
                 starts=op.starts,
                 steps=op.steps,
+                axes=op.axes,
+                starts_input=self._map_optional_name(name_map, op.starts_input),
+                ends_input=self._map_optional_name(name_map, op.ends_input),
+                axes_input=self._map_optional_name(name_map, op.axes_input),
+                steps_input=self._map_optional_name(name_map, op.steps_input),
+                starts_shape=op.starts_shape,
+                ends_shape=op.ends_shape,
+                axes_shape=op.axes_shape,
+                steps_shape=op.steps_shape,
+                starts_dtype=op.starts_dtype,
+                ends_dtype=op.ends_dtype,
+                axes_dtype=op.axes_dtype,
+                steps_dtype=op.steps_dtype,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
@@ -1600,6 +1636,9 @@ class CEmitter:
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "slice": self._env.get_template("slice_op.c.j2"),
+                "slice_dynamic": self._env.get_template(
+                    "slice_op_dynamic.c.j2"
+                ),
                 "resize": self._env.get_template("resize_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
                 "reduce_dynamic": self._env.get_template(
@@ -1676,6 +1715,7 @@ class CEmitter:
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         slice_template = templates["slice"]
+        slice_dynamic_template = templates["slice_dynamic"]
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
@@ -1733,6 +1773,7 @@ class CEmitter:
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
                 slice_template=slice_template,
+                slice_dynamic_template=slice_dynamic_template,
                 resize_template=resize_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
@@ -1863,6 +1904,7 @@ class CEmitter:
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         slice_template = templates["slice"]
+        slice_dynamic_template = templates["slice_dynamic"]
         resize_template = templates["resize"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
@@ -1920,6 +1962,7 @@ class CEmitter:
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
                 slice_template=slice_template,
+                slice_dynamic_template=slice_dynamic_template,
                 resize_template=resize_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
@@ -2265,6 +2308,18 @@ class CEmitter:
             *(op.dtype for op in resolved_ops),
             *constant_of_shape_inputs,
         }
+        slice_input_dtypes = {
+            dtype
+            for op in resolved_ops
+            if isinstance(op, SliceOp)
+            for dtype in (
+                op.starts_dtype,
+                op.ends_dtype,
+                op.axes_dtype,
+                op.steps_dtype,
+            )
+            if dtype is not None
+        }
         maxpool_indices_dtypes = {
             op.indices_dtype
             for op in resolved_ops
@@ -2283,7 +2338,7 @@ class CEmitter:
         }
         if CEmitter._needs_stdint(
             model_dtypes,
-            (nll_target_dtypes, sce_target_dtypes),
+            (nll_target_dtypes, sce_target_dtypes, slice_input_dtypes),
             has_resize=any(isinstance(op, ResizeOp) for op in resolved_ops),
         ):
             includes.add("#include <stdint.h>")
@@ -2784,7 +2839,17 @@ class CEmitter:
             args.extend([op.input0, op.output])
             return ", ".join(args)
         if isinstance(op, SliceOp):
-            args.extend([op.input0, op.output])
+            call_parts = [op.input0]
+            if op.starts_input is not None:
+                call_parts.append(op.starts_input)
+            if op.ends_input is not None:
+                call_parts.append(op.ends_input)
+            if op.axes_input is not None:
+                call_parts.append(op.axes_input)
+            if op.steps_input is not None:
+                call_parts.append(op.steps_input)
+            call_parts.append(op.output)
+            args.extend(call_parts)
             return ", ".join(args)
         if isinstance(op, ResizeOp):
             call_parts = [op.input0]
@@ -3433,6 +3498,27 @@ class CEmitter:
                 output_shape=op.output_shape,
                 starts=op.starts,
                 steps=op.steps,
+                axes=op.axes,
+                starts_input=temp_map.get(op.starts_input, op.starts_input)
+                if op.starts_input
+                else None,
+                ends_input=temp_map.get(op.ends_input, op.ends_input)
+                if op.ends_input
+                else None,
+                axes_input=temp_map.get(op.axes_input, op.axes_input)
+                if op.axes_input
+                else None,
+                steps_input=temp_map.get(op.steps_input, op.steps_input)
+                if op.steps_input
+                else None,
+                starts_shape=op.starts_shape,
+                ends_shape=op.ends_shape,
+                axes_shape=op.axes_shape,
+                steps_shape=op.steps_shape,
+                starts_dtype=op.starts_dtype,
+                ends_dtype=op.ends_dtype,
+                axes_dtype=op.axes_dtype,
+                steps_dtype=op.steps_dtype,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
@@ -3565,6 +3651,7 @@ class CEmitter:
         transpose_template,
         reshape_template,
         slice_template,
+        slice_dynamic_template,
         resize_template,
         reduce_template,
         reduce_dynamic_template,
@@ -4396,26 +4483,75 @@ class CEmitter:
         if isinstance(op, SliceOp):
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
-            input_indices: list[str] = []
-            for start, step, loop_var in zip(op.starts, op.steps, loop_vars):
-                if step == 1:
-                    if start == 0:
-                        input_indices.append(loop_var)
+            if op.starts is not None and op.steps is not None:
+                input_indices: list[str] = []
+                for start, step, loop_var in zip(op.starts, op.steps, loop_vars):
+                    if step == 1:
+                        if start == 0:
+                            input_indices.append(loop_var)
+                        else:
+                            input_indices.append(f"{start} + {loop_var}")
                     else:
-                        input_indices.append(f"{start} + {loop_var}")
-                else:
-                    input_indices.append(f"{start} + {step} * {loop_var}")
-            rendered = slice_template.render(
+                        input_indices.append(f"{start} + {step} * {loop_var}")
+                rendered = slice_template.render(
+                    model_name=model.name,
+                    op_name=f"{model.name}_op{index}",
+                    input0=op.input0,
+                    output=op.output,
+                    c_type=c_type,
+                    input_suffix=self._param_array_suffix(op.input_shape),
+                    output_suffix=self._param_array_suffix(op.output_shape),
+                    output_shape=output_shape,
+                    loop_vars=loop_vars,
+                    input_indices=input_indices,
+                ).rstrip()
+                return with_node_comment(rendered)
+            params = [
+                f"const {c_type} {op.input0}"
+                f"{self._param_array_suffix(op.input_shape)}"
+            ]
+            if op.starts_input and op.starts_shape and op.starts_dtype:
+                starts_suffix = self._param_array_suffix(op.starts_shape)
+                params.append(
+                    f"const {op.starts_dtype.c_type} "
+                    f"{op.starts_input}{starts_suffix}"
+                )
+            if op.ends_input and op.ends_shape and op.ends_dtype:
+                ends_suffix = self._param_array_suffix(op.ends_shape)
+                params.append(
+                    f"const {op.ends_dtype.c_type} {op.ends_input}{ends_suffix}"
+                )
+            if op.axes_input and op.axes_shape and op.axes_dtype:
+                axes_suffix = self._param_array_suffix(op.axes_shape)
+                params.append(
+                    f"const {op.axes_dtype.c_type} {op.axes_input}{axes_suffix}"
+                )
+            if op.steps_input and op.steps_shape and op.steps_dtype:
+                steps_suffix = self._param_array_suffix(op.steps_shape)
+                params.append(
+                    f"const {op.steps_dtype.c_type} {op.steps_input}{steps_suffix}"
+                )
+            params.append(
+                f"{c_type} {op.output}"
+                f"{self._param_array_suffix(op.output_shape)}"
+            )
+            input_dims = CEmitter._codegen_shape(op.input_shape)
+            rendered = slice_dynamic_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
+                params=params,
                 input0=op.input0,
+                starts_input=op.starts_input,
+                ends_input=op.ends_input,
+                axes_input=op.axes_input,
+                steps_input=op.steps_input,
                 output=op.output,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_shape=input_dims,
                 output_shape=output_shape,
-                loop_vars=loop_vars,
-                input_indices=input_indices,
+                output_loop_vars=loop_vars,
+                input_rank=len(op.input_shape),
+                starts_len=op.starts_shape[0] if op.starts_shape else 0,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
