@@ -82,16 +82,16 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
             float(limit_value) - float(start_value)
         ) / float(delta_value)
         length = max(int(math.ceil(raw_count)), 0)
-        if length <= 0:
-            raise ShapeInferenceError("Range output length must be positive")
+        if length < 0:
+            raise ShapeInferenceError("Range output length must be non-negative")
         if output_shape[0] != length:
             raise ShapeInferenceError(
                 f"Range output length must be {length}, got {output_shape[0]}"
             )
     else:
         length = output_shape[0]
-        if length <= 0:
-            raise ShapeInferenceError("Range output length must be positive")
+        if length < 0:
+            raise ShapeInferenceError("Range output length must be non-negative")
     return RangeOp(
         start=node.inputs[0],
         limit=node.inputs[1],

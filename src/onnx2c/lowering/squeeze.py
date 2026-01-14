@@ -37,9 +37,9 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
 
 def _validate_shape(shape: tuple[int, ...], node: Node, label: str) -> None:
     for dim in shape:
-        if dim <= 0:
+        if dim < 0:
             raise ShapeInferenceError(
-                f"{node.op_type} does not support dynamic or zero dims in {label}"
+                f"{node.op_type} does not support dynamic dims in {label}"
             )
 
 

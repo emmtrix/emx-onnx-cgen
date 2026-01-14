@@ -56,9 +56,9 @@ def _validate_shape_input(graph: Graph, name: str, node: Node) -> None:
 
 
 def _validate_static_dims(shape: tuple[int, ...], node: Node) -> None:
-    if any(dim <= 0 for dim in shape):
+    if any(dim < 0 for dim in shape):
         raise ShapeInferenceError(
-            f"{node.op_type} does not support zero or dynamic dims"
+            f"{node.op_type} does not support dynamic dims"
         )
 
 
@@ -67,9 +67,9 @@ def _broadcast_shape(
 ) -> tuple[int, ...]:
     _validate_static_dims(input_shape, node)
     for dim in shape_values:
-        if dim <= 0:
+        if dim < 0:
             raise ShapeInferenceError(
-                f"{node.op_type} does not support zero or dynamic dims"
+                f"{node.op_type} does not support dynamic dims"
             )
     output_rank = max(len(input_shape), len(shape_values))
     input_padded = (1,) * (output_rank - len(input_shape)) + input_shape

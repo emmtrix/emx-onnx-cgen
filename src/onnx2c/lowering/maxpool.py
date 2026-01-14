@@ -123,8 +123,10 @@ def resolve_maxpool_spec(graph: Graph, node: Node) -> MaxPoolSpec:
                 out_dim -= 1
         else:
             out_dim = numerator // stride + 1
-        if out_dim <= 0:
-            raise ShapeInferenceError("MaxPool output shape must be positive")
+        if out_dim < 0:
+            raise ShapeInferenceError(
+                "MaxPool output shape must be non-negative"
+            )
         out_spatial.append(out_dim)
     expected_output_shape = (batch, channels, *out_spatial)
     output_shape = _value_shape(graph, node.outputs[0], node)

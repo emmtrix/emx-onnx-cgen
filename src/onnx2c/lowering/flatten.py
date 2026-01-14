@@ -23,8 +23,8 @@ def _flatten_output_shape(
     if rank == 0:
         return (1, 1)
     for dim in input_shape:
-        if dim <= 0:
-            raise ShapeInferenceError("Dynamic or zero dims are not supported")
+        if dim < 0:
+            raise ShapeInferenceError("Dynamic dims are not supported")
     first = shape_product(input_shape[:axis]) if axis else 1
     second = shape_product(input_shape[axis:]) if axis < rank else 1
     return (first, second)

@@ -4,7 +4,6 @@
 | --- | --- | --- |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ██████████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
-| Dynamic or zero dims are not supported | 32 | ███████████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
 | Unsupported op LayerNormalization | 19 | ████████████████ |
@@ -24,6 +23,7 @@
 | Unsupported op ConvTranspose | 14 | ████████████ |
 | '*' object has no attribute '*' | 13 | ███████████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
+| Output shape must be fully defined | 9 | ████████ |
 | Unsupported op CumSum | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Unsupported op NonMaxSuppression | 9 | ████████ |

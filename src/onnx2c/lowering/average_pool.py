@@ -92,8 +92,10 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     stride_h, stride_w = strides
     out_h = (in_h + pad_top + pad_bottom - kernel_h) // stride_h + 1
     out_w = (in_w + pad_left + pad_right - kernel_w) // stride_w + 1
-    if out_h <= 0 or out_w <= 0:
-        raise ShapeInferenceError("AveragePool output shape must be positive")
+    if out_h < 0 or out_w < 0:
+        raise ShapeInferenceError(
+            "AveragePool output shape must be non-negative"
+        )
     output_shape = _value_shape(graph, node.outputs[0], node)
     expected_output_shape = (batch, channels, out_h, out_w)
     if output_shape != expected_output_shape:
