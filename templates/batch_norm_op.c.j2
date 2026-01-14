@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, const {{ c_type }} {{ scale }}{{ scale_suffix }}, const {{ c_type }} {{ bias }}{{ bias_suffix }}, const {{ c_type }} {{ mean }}{{ mean_suffix }}, const {{ c_type }} {{ variance }}{{ variance_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, const {{ c_type }} {{ scale }}{{ scale_suffix }}, const {{ c_type }} {{ bias }}{{ bias_suffix }}, const {{ c_type }} {{ mean }}{{ mean_suffix }}, const {{ c_type }} {{ variance }}{{ variance_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
 {% for dim in shape %}
 for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}

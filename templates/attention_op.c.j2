@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ c_type }} {{ input_q }}{{ input_q_suffix }},
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input_q }}{{ input_q_suffix }},
                    const {{ c_type }} {{ input_k }}{{ input_k_suffix }},
                    const {{ c_type }} {{ input_v }}{{ input_v_suffix }}{% if input_attn_mask %},
                    const {% if mask_is_bool %}bool{% else %}{{ c_type }}{% endif %} {{ input_attn_mask }}{{ input_mask_suffix }}{% endif %}{% if input_past_key %},

@@ -12,6 +12,7 @@ from shared.scalar_types import ScalarType
 class TensorType:
     dtype: ScalarType
     shape: tuple[int, ...]
+    dim_params: tuple[str | None, ...]
 
 
 @dataclass(frozen=True)

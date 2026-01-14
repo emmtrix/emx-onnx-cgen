@@ -1,4 +1,4 @@
-static inline void {{ op_name }}(const {{ c_type }} {{ input0 }}{{ input_suffix }}, const {{ c_type }} {{ weights }}{{ weight_suffix }},{% if bias %} const {{ c_type }} {{ bias }}{{ bias_suffix }},{% endif %} {{ c_type }} {{ output }}{{ output_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, const {{ c_type }} {{ weights }}{{ weight_suffix }},{% if bias %} const {{ c_type }} {{ bias }}{{ bias_suffix }},{% endif %} {{ c_type }} {{ output }}{{ output_suffix }}) {
     for (size_t n = 0; n < {{ batch }}; ++n) {
         for (size_t g = 0; g < {{ group }}; ++g) {
             for (size_t oc = 0; oc < {{ group_out_channels }}; ++oc) {
