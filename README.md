@@ -75,7 +75,6 @@ Options:
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
-- `--restrict-arrays`: Enable `restrict` qualifiers on generated array parameters (default).
 - `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 
 ### `verify`
@@ -89,8 +88,6 @@ Options:
 - `--template-dir`: Directory containing the C templates (default: `templates`).
 - `--model-name`: Override the generated model name (default: model file stem).
 - `--cc`: Explicit C compiler command for building the testbench binary.
-- `--restrict-arrays`: Enable `restrict` qualifiers on generated array parameters (default).
-- `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 
 ## Output
 
@@ -108,15 +105,6 @@ contains the constant definitions.
 
 See [`OFFICIAL_ONNX_FILE_SUPPORT.md`](OFFICIAL_ONNX_FILE_SUPPORT.md) for the generated support matrix.
 
-## Project layout
+## Maintained by
 
-- `src/onnx2c`: Compiler package.
-- `templates/`: C templates and runtime snippets.
-- `tests/`: Pytest-based tests and ONNX fixtures.
-- `onnx2c-org/`, `emx-pytorch2c-org/`: Reference implementations for semantics.
-
-## Tests
-
-```bash
-UPDATE_REFS=1 pytest -n auto -q
-```
+This project is maintained by [emmtrix](https://www.emmtrix.com).
