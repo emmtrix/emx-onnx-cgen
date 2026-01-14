@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+import math
 from typing import Callable, Dict, List, Mapping, Set
 
 from shared.scalar_types import ScalarFunctionError, ScalarType
@@ -146,6 +147,7 @@ class ScalarFunction(str, Enum):
     BITWISE_XOR = _no_float_spec("bitwise_xor")
     CBRT = _common_unary_from_f32_spec("cbrt")
     CEIL = _bool_unary_from_f32_spec("ceil")
+    CELU = _common_unary_from_f32_spec("celu")
     CLAMP_MAX = _bool_binary_from_f32_spec("clamp_max")
     CLAMP_MIN = _bool_binary_from_f32_spec("clamp_min")
     CONJ = _bool_unary_from_f32_spec("conj", supports_unsigned_int=False)
@@ -247,7 +249,9 @@ class ScalarFunction(str, Enum):
     )
     SQRT = _common_unary_from_f32_spec("sqrt")
     SQUARE = _bool_unary_from_f32_spec("square", supports_unsigned_int=False)
+    SHRINK = _common_unary_from_f32_spec("shrink")
     SUB = _bool_binary_from_f32_spec("sub")
+    SWISH = _common_unary_from_f32_spec("swish")
     TAN = _common_unary_from_f32_spec("tan")
     TANH = _common_unary_from_f32_spec("tanh")
     THRESHOLDED_RELU = _scalar_function_spec(
@@ -305,6 +309,7 @@ class ScalarFunction(str, Enum):
 class ScalarFunctionKey:
     function: ScalarFunction
     return_type: ScalarType
+    params: tuple[float, ...] = ()
 
     @classmethod
     def for_torch_dtype(
@@ -320,11 +325,13 @@ def _conversion_key_from_alias(
         return ScalarFunctionKey(
             function=ScalarFunction.CONVERT_FROM_F32,
             return_type=dtype_info.scalar_type,
+            params=(),
         )
     if alias == "to_f32":
         return ScalarFunctionKey(
             function=ScalarFunction.CONVERT_FROM_BOOL,
             return_type=ScalarType.F32,
+            params=(),
         )
     raise ScalarFunctionError(f"unknown conversion alias: {alias}")
 
@@ -338,6 +345,7 @@ def _scalar_key_from_op(
     return ScalarFunctionKey(
         function=ScalarFunction.from_op_name(canonical_name),
         return_type=dtype_info.scalar_type,
+        params=(),
     )
 
 
@@ -364,6 +372,7 @@ _ONNX_OP_TO_SCALAR_FUNCTION = {
     "BitwiseOr": ScalarFunction.BITWISE_OR,
     "BitwiseXor": ScalarFunction.BITWISE_XOR,
     "Ceil": ScalarFunction.CEIL,
+    "Celu": ScalarFunction.CELU,
     "Cos": ScalarFunction.COS,
     "Cosh": ScalarFunction.COSH,
     "Div": ScalarFunction.DIV,
@@ -405,6 +414,7 @@ _ONNX_OP_TO_SCALAR_FUNCTION = {
     "Sqrt": ScalarFunction.SQRT,
     "Sub": ScalarFunction.SUB,
     "Sum": ScalarFunction.ADD,
+    "Swish": ScalarFunction.SWISH,
     "Tan": ScalarFunction.TAN,
     "Tanh": ScalarFunction.TANH,
     "ThresholdedRelu": ScalarFunction.THRESHOLDED_RELU,
@@ -431,6 +441,25 @@ def _float_literal(value: float, dtype_info: _ScalarTypeInfo) -> str:
     if "." not in literal and "e" not in literal and "E" not in literal:
         literal = f"{literal}.0"
     return literal
+
+
+def _param_suffix(params: tuple[float, ...]) -> str:
+    if not params:
+        return ""
+    parts: list[str] = []
+    for value in params:
+        if math.isnan(value):
+            encoded = "nan"
+        elif math.isinf(value):
+            encoded = "neg_inf" if value < 0 else "inf"
+        else:
+            encoded = format(value, ".17g")
+            if encoded == "-0":
+                encoded = "0"
+            encoded = encoded.replace("e-", "e_neg").replace("e+", "e")
+            encoded = encoded.replace("-", "neg").replace(".", "p")
+        parts.append(encoded)
+    return "__" + "_".join(parts)
 
 
 def _math_fn(base: str, dtype_info: _ScalarTypeInfo) -> str:
@@ -691,6 +720,75 @@ def _float_elu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         "        return scale * a;",
         "    }",
         f"    return scale * alpha * ({_math_fn('exp', dtype_info)}(input_scale * a) - {one});",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_celu(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 1:
+        raise ScalarFunctionError("celu expects 1 parameter: alpha")
+    alpha_value = params[0] if params else 1.0
+    alpha = _float_literal(alpha_value, dtype_info)
+    one = _float_literal(1.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        "    if (a > 0) {",
+        "        return a;",
+        "    }",
+        f"    return alpha * ({_math_fn('exp', dtype_info)}(a / alpha) - {one});",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_swish(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 1:
+        raise ScalarFunctionError("swish expects 1 parameter: alpha")
+    alpha_value = params[0] if params else 1.0
+    alpha = _float_literal(alpha_value, dtype_info)
+    one = _float_literal(1.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        f"    return a / ({one} + {_math_fn('exp', dtype_info)}(-alpha * a));",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_shrink(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 2:
+        raise ScalarFunctionError("shrink expects 2 parameters: bias, lambd")
+    bias_value = params[0] if params else 0.0
+    lambd_value = params[1] if params else 0.5
+    bias = _float_literal(bias_value, dtype_info)
+    lambd = _float_literal(lambd_value, dtype_info)
+    zero = _float_literal(0.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} bias = {bias};",
+        f"    const {dtype_info.c_type} lambd = {lambd};",
+        "    if (a < -lambd) {",
+        "        return a + bias;",
+        "    }",
+        "    if (a > lambd) {",
+        "        return a - bias;",
+        "    }",
+        f"    return {zero};",
         "}",
     ]
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
@@ -1235,6 +1333,15 @@ _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] 
     "sgn": _float_sgn,
     "sinc": _float_sinc,
     "square": _float_square,
+}
+
+_PARAMETERIZED_FLOAT_OPS: Mapping[
+    ScalarFunction,
+    Callable[[_ScalarTypeInfo, tuple[float, ...], str], _GeneratedScalar],
+] = {
+    ScalarFunction.CELU: _float_celu,
+    ScalarFunction.SHRINK: _float_shrink,
+    ScalarFunction.SWISH: _float_swish,
 }
 
 
@@ -2016,7 +2123,13 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
             f"unsupported scalar op {op_name} for {dtype_info.suffix}"
         )
     if dtype_info.is_float:
-        generated = _float_from_ops(dtype_info, op_name)
+        param_handler = _PARAMETERIZED_FLOAT_OPS.get(key.function)
+        if param_handler is not None:
+            generated = param_handler(
+                dtype_info, key.params, _function_name_for_key(key)
+            )
+        else:
+            generated = _float_from_ops(dtype_info, op_name)
     elif dtype_info.is_bool:
         generated = _bool_from_ops(op_name)
     else:
@@ -2034,6 +2147,7 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
 
 
 def _function_name_for_key(key: ScalarFunctionKey) -> str:
+    param_suffix = _param_suffix(key.params)
     if key.function in _CONVERSION_SOURCE_BY_FUNCTION:
         source_type = _CONVERSION_SOURCE_BY_FUNCTION[key.function]
         if source_type == ScalarType.F32:
@@ -2049,14 +2163,14 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
                 ScalarType.BOOL,
             }:
                 target_info = _SCALAR_TYPE_BY_ENUM[key.return_type]
-                return f"{target_info.prefix}from_f32"
+                return f"{target_info.prefix}from_f32{param_suffix}"
             raise ScalarFunctionError(
                 f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
             )
         if source_type == ScalarType.BOOL:
             if key.return_type == ScalarType.F32:
                 source_info = _SCALAR_TYPE_BY_ENUM[source_type]
-                return f"{source_info.prefix}to_f32"
+                return f"{source_info.prefix}to_f32{param_suffix}"
             raise ScalarFunctionError(
                 f"unsupported scalar conversion from {source_type.value} to {key.return_type.value}"
             )
@@ -2069,7 +2183,7 @@ def _function_name_for_key(key: ScalarFunctionKey) -> str:
         raise ScalarFunctionError(
             f"unsupported scalar op {op_name} for {dtype_info.suffix}"
         )
-    return f"{dtype_info.prefix}{op_name}"
+    return f"{dtype_info.prefix}{op_name}{param_suffix}"
 
 
 class ScalarFunctionRegistry:
@@ -2147,3 +2261,4 @@ class ScalarFunctionRegistry:
         if key in self._generated:
             return
         self._generated[key] = _generate_scalar(key)
+    "Shrink": ScalarFunction.SHRINK,

@@ -137,6 +137,8 @@ class UnaryOp:
     function: ScalarFunction
     shape: tuple[int, ...]
     dtype: ScalarType
+    input_dtype: ScalarType
+    params: tuple[float, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -152,42 +154,6 @@ class ClipOp:
     dtype: ScalarType
 
 
-@dataclass(frozen=True)
-class CeluOp:
-    input0: str
-    output: str
-    shape: tuple[int, ...]
-    dtype: ScalarType
-    alpha: float
-
-
-@dataclass(frozen=True)
-class SwishOp:
-    input0: str
-    output: str
-    shape: tuple[int, ...]
-    dtype: ScalarType
-    alpha: float
-
-
-@dataclass(frozen=True)
-class ShrinkOp:
-    input0: str
-    output: str
-    shape: tuple[int, ...]
-    dtype: ScalarType
-    bias: float
-    lambd: float
-
-
-@dataclass(frozen=True)
-class PredicateOp:
-    input0: str
-    output: str
-    function: ScalarFunction
-    shape: tuple[int, ...]
-    input_dtype: ScalarType
-    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -681,10 +647,6 @@ class LoweredModel:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -752,10 +714,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -796,8 +754,6 @@ class CEmitter:
                 names.append(op.input_max)
             names.append(op.output)
             return tuple(names)
-        if isinstance(op, (CeluOp, SwishOp, ShrinkOp, PredicateOp)):
-            return (op.input0, op.output)
         if isinstance(op, CastOp):
             return (op.input0, op.output)
         if isinstance(op, MatMulOp):
@@ -942,10 +898,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -977,10 +929,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -1037,6 +985,8 @@ class CEmitter:
                 function=op.function,
                 shape=op.shape,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                params=op.params,
             )
         if isinstance(op, ClipOp):
             return ClipOp(
@@ -1048,40 +998,6 @@ class CEmitter:
                 min_shape=op.min_shape,
                 max_shape=op.max_shape,
                 output_shape=op.output_shape,
-                dtype=op.dtype,
-            )
-        if isinstance(op, CeluOp):
-            return CeluOp(
-                input0=name_map.get(op.input0, op.input0),
-                output=name_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                alpha=op.alpha,
-            )
-        if isinstance(op, SwishOp):
-            return SwishOp(
-                input0=name_map.get(op.input0, op.input0),
-                output=name_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                alpha=op.alpha,
-            )
-        if isinstance(op, ShrinkOp):
-            return ShrinkOp(
-                input0=name_map.get(op.input0, op.input0),
-                output=name_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                bias=op.bias,
-                lambd=op.lambd,
-            )
-        if isinstance(op, PredicateOp):
-            return PredicateOp(
-                input0=name_map.get(op.input0, op.input0),
-                output=name_map.get(op.output, op.output),
-                function=op.function,
-                shape=op.shape,
-                input_dtype=op.input_dtype,
                 dtype=op.dtype,
             )
         if isinstance(op, CastOp):
@@ -1571,10 +1487,6 @@ class CEmitter:
                 "where": self._env.get_template("where_op.c.j2"),
                 "unary": self._env.get_template("unary_op.c.j2"),
                 "clip": self._env.get_template("clip_op.c.j2"),
-                "celu": self._env.get_template("celu_op.c.j2"),
-                "swish": self._env.get_template("swish_op.c.j2"),
-                "shrink": self._env.get_template("shrink_op.c.j2"),
-                "predicate": self._env.get_template("predicate_op.c.j2"),
                 "cast": self._env.get_template("cast_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
@@ -1633,10 +1545,6 @@ class CEmitter:
         where_template = templates["where"]
         unary_template = templates["unary"]
         clip_template = templates["clip"]
-        celu_template = templates["celu"]
-        swish_template = templates["swish"]
-        shrink_template = templates["shrink"]
-        predicate_template = templates["predicate"]
         cast_template = templates["cast"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
@@ -1690,10 +1598,6 @@ class CEmitter:
                 where_template=where_template,
                 unary_template=unary_template,
                 clip_template=clip_template,
-                celu_template=celu_template,
-                swish_template=swish_template,
-                shrink_template=shrink_template,
-                predicate_template=predicate_template,
                 cast_template=cast_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
@@ -1795,10 +1699,6 @@ class CEmitter:
         where_template = templates["where"]
         unary_template = templates["unary"]
         clip_template = templates["clip"]
-        celu_template = templates["celu"]
-        swish_template = templates["swish"]
-        shrink_template = templates["shrink"]
-        predicate_template = templates["predicate"]
         cast_template = templates["cast"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
@@ -1852,10 +1752,6 @@ class CEmitter:
                 where_template=where_template,
                 unary_template=unary_template,
                 clip_template=clip_template,
-                celu_template=celu_template,
-                swish_template=swish_template,
-                shrink_template=shrink_template,
-                predicate_template=predicate_template,
                 cast_template=cast_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
@@ -2068,6 +1964,8 @@ class CEmitter:
         function: ScalarFunction,
         dtype: ScalarType,
         registry: ScalarFunctionRegistry,
+        *,
+        params: tuple[float, ...] = (),
     ) -> str | None:
         registry_functions = {
             ScalarFunction.ABS,
@@ -2084,6 +1982,7 @@ class CEmitter:
             ScalarFunction.BITWISE_OR,
             ScalarFunction.BITWISE_XOR,
             ScalarFunction.CEIL,
+            ScalarFunction.CELU,
             ScalarFunction.COS,
             ScalarFunction.COSH,
             ScalarFunction.DIV,
@@ -2107,6 +2006,7 @@ class CEmitter:
             ScalarFunction.RELU,
             ScalarFunction.ROUND,
             ScalarFunction.SELU,
+            ScalarFunction.SHRINK,
             ScalarFunction.SIGMOID,
             ScalarFunction.SIGN,
             ScalarFunction.SIN,
@@ -2115,6 +2015,7 @@ class CEmitter:
             ScalarFunction.SOFTSIGN,
             ScalarFunction.SQRT,
             ScalarFunction.SUB,
+            ScalarFunction.SWISH,
             ScalarFunction.TAN,
             ScalarFunction.TANH,
             ScalarFunction.THRESHOLDED_RELU,
@@ -2135,7 +2036,9 @@ class CEmitter:
             return None
         try:
             return registry.request(
-                ScalarFunctionKey(function=scalar_function, return_type=dtype)
+                ScalarFunctionKey(
+                    function=scalar_function, return_type=dtype, params=params
+                )
             )
         except ScalarFunctionError:
             return None
@@ -2148,10 +2051,6 @@ class CEmitter:
             | WhereOp
             | UnaryOp
             | ClipOp
-            | CeluOp
-            | SwishOp
-            | ShrinkOp
-            | PredicateOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2187,6 +2086,12 @@ class CEmitter:
             includes.update({"#include <stdio.h>", "#include <stdint.h>"})
         if extra_includes:
             includes.update(extra_includes)
+        if any(
+            isinstance(op, UnaryOp)
+            and op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}
+            for op in resolved_ops
+        ):
+            includes.add("#include <math.h>")
         constant_of_shape_inputs = {
             op.input_dtype
             for op in resolved_ops
@@ -2286,10 +2191,6 @@ class CEmitter:
             BinaryOp
             | UnaryOp
             | ClipOp
-            | CeluOp
-            | SwishOp
-            | ShrinkOp
-            | PredicateOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2344,7 +2245,17 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
-        if any(isinstance(op, (CeluOp, SwishOp, PredicateOp)) for op in resolved_ops):
+        if any(
+            isinstance(op, UnaryOp)
+            and op.function in {ScalarFunction.CELU, ScalarFunction.SWISH}
+            for op in resolved_ops
+        ):
+            return True
+        if any(
+            isinstance(op, UnaryOp)
+            and op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}
+            for op in resolved_ops
+        ):
             return True
         if any(
             isinstance(op, ClipOp)
@@ -2401,10 +2312,6 @@ class CEmitter:
             BinaryOp
             | UnaryOp
             | ClipOp
-            | CeluOp
-            | SwishOp
-            | ShrinkOp
-            | PredicateOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2468,10 +2375,6 @@ class CEmitter:
             | WhereOp
             | UnaryOp
             | ClipOp
-            | CeluOp
-            | SwishOp
-            | ShrinkOp
-            | PredicateOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -2530,10 +2433,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -2582,8 +2481,6 @@ class CEmitter:
                 call_parts.append(op.input_max)
             call_parts.append(op.output)
             return ", ".join(call_parts)
-        if isinstance(op, (CeluOp, SwishOp, ShrinkOp, PredicateOp)):
-            return f"{op.input0}, {op.output}"
         if isinstance(op, AttentionOp):
             call_parts = [op.input_q, op.input_k, op.input_v]
             if op.input_attn_mask is not None:
@@ -2729,10 +2626,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -2764,10 +2657,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -2824,6 +2713,8 @@ class CEmitter:
                 function=op.function,
                 shape=op.shape,
                 dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                params=op.params,
             )
         if isinstance(op, ClipOp):
             return ClipOp(
@@ -2839,40 +2730,6 @@ class CEmitter:
                 min_shape=op.min_shape,
                 max_shape=op.max_shape,
                 output_shape=op.output_shape,
-                dtype=op.dtype,
-            )
-        if isinstance(op, CeluOp):
-            return CeluOp(
-                input0=temp_map.get(op.input0, op.input0),
-                output=temp_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                alpha=op.alpha,
-            )
-        if isinstance(op, SwishOp):
-            return SwishOp(
-                input0=temp_map.get(op.input0, op.input0),
-                output=temp_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                alpha=op.alpha,
-            )
-        if isinstance(op, ShrinkOp):
-            return ShrinkOp(
-                input0=temp_map.get(op.input0, op.input0),
-                output=temp_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                bias=op.bias,
-                lambd=op.lambd,
-            )
-        if isinstance(op, PredicateOp):
-            return PredicateOp(
-                input0=temp_map.get(op.input0, op.input0),
-                output=temp_map.get(op.output, op.output),
-                function=op.function,
-                shape=op.shape,
-                input_dtype=op.input_dtype,
                 dtype=op.dtype,
             )
         if isinstance(op, MatMulOp):
@@ -3382,10 +3239,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -3423,10 +3276,6 @@ class CEmitter:
         where_template,
         unary_template,
         clip_template,
-        celu_template,
-        swish_template,
-        shrink_template,
-        predicate_template,
         cast_template,
         matmul_template,
         gemm_template,
@@ -4701,93 +4550,21 @@ class CEmitter:
                 max_expr=max_expr,
             ).rstrip()
             return with_node_comment(rendered)
-        if isinstance(op, CeluOp):
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            exp_func = "expf" if op.dtype in {ScalarType.F16, ScalarType.F32} else "exp"
-            rendered = celu_template.render(
-                model_name=model.name,
-                op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                output=op.output,
-                c_type=op.dtype.c_type,
-                array_suffix=self._param_array_suffix(op.shape),
-                shape=shape,
-                loop_vars=loop_vars,
-                alpha_literal=CEmitter._format_literal(op.dtype, op.alpha),
-                exp_func=exp_func,
-                zero_literal=op.dtype.zero_literal,
-                one_literal=CEmitter._format_literal(op.dtype, 1.0),
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, SwishOp):
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            exp_func = "expf" if op.dtype in {ScalarType.F16, ScalarType.F32} else "exp"
-            rendered = swish_template.render(
-                model_name=model.name,
-                op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                output=op.output,
-                c_type=op.dtype.c_type,
-                array_suffix=self._param_array_suffix(op.shape),
-                shape=shape,
-                loop_vars=loop_vars,
-                alpha_literal=CEmitter._format_literal(op.dtype, op.alpha),
-                exp_func=exp_func,
-                one_literal=CEmitter._format_literal(op.dtype, 1.0),
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, ShrinkOp):
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            rendered = shrink_template.render(
-                model_name=model.name,
-                op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                output=op.output,
-                c_type=op.dtype.c_type,
-                array_suffix=self._param_array_suffix(op.shape),
-                shape=shape,
-                loop_vars=loop_vars,
-                bias_literal=CEmitter._format_literal(op.dtype, op.bias),
-                lambd_literal=CEmitter._format_literal(op.dtype, op.lambd),
-                zero_literal=op.dtype.zero_literal,
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, PredicateOp):
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            operator = (
-                "isinf"
-                if op.function == ScalarFunction.ISINF
-                else "isnan"
-            )
-            rendered = predicate_template.render(
-                model_name=model.name,
-                op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                output=op.output,
-                input_c_type=op.input_dtype.c_type,
-                output_c_type=op.dtype.c_type,
-                input_suffix=self._param_array_suffix(op.shape),
-                output_suffix=self._param_array_suffix(op.shape),
-                shape=shape,
-                loop_vars=loop_vars,
-                operator=operator,
-            ).rstrip()
-            return with_node_comment(rendered)
         if isinstance(op, UnaryOp):
             scalar_operator = None
             if scalar_registry is not None:
                 scalar_operator = self._scalar_function_name(
-                    op.function, op.dtype, scalar_registry
+                    op.function, op.dtype, scalar_registry, params=op.params
                 )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             array_suffix = self._param_array_suffix(shape)
             operator_symbol = unary_op_symbol(op.function, dtype=op.dtype)
-            if operator_symbol is None:
+            if op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}:
+                operator_symbol = (
+                    "isinf" if op.function == ScalarFunction.ISINF else "isnan"
+                )
+            if operator_symbol is None and scalar_operator is None:
                 raise CodegenError(
                     f"Unsupported unary operator for rendering: {op.function.value}"
                 )
@@ -4798,7 +4575,8 @@ class CEmitter:
                 "array_suffix": array_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
-                "c_type": c_type,
+                "input_c_type": op.input_dtype.c_type,
+                "output_c_type": op.dtype.c_type,
                 "zero_literal": zero_literal,
             }
             rendered = unary_template.render(
@@ -4816,10 +4594,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -4853,10 +4627,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -4966,10 +4736,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | CastOp
         | MatMulOp
         | GemmOp
@@ -5004,8 +4770,6 @@ class CEmitter:
             return op.shape
         if isinstance(op, ClipOp):
             return op.output_shape
-        if isinstance(op, (CeluOp, SwishOp, ShrinkOp, PredicateOp)):
-            return op.shape
         if isinstance(op, CastOp):
             return op.shape
         if isinstance(op, MatMulOp):
@@ -5062,10 +4826,6 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
-        | CeluOp
-        | SwishOp
-        | ShrinkOp
-        | PredicateOp
         | MatMulOp
         | GemmOp
         | AttentionOp

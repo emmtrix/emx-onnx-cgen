@@ -3,13 +3,7 @@ from __future__ import annotations
 from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import (
-    CeluOp,
-    ClipOp,
-    PredicateOp,
-    ShrinkOp,
-    SwishOp,
-)
+from ..codegen.c_emitter import ClipOp, UnaryOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..lowering.common import node_dtype, optional_name, value_dtype, value_shape
@@ -66,7 +60,7 @@ def lower_clip(graph: Graph, node: Node) -> ClipOp:
 
 
 @register_lowering("Celu")
-def lower_celu(graph: Graph, node: Node) -> CeluOp:
+def lower_celu(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Celu must have 1 input and 1 output")
     dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -74,17 +68,19 @@ def lower_celu(graph: Graph, node: Node) -> CeluOp:
         raise UnsupportedOpError("Celu only supports floating-point inputs")
     alpha = float(node.attrs.get("alpha", 1.0))
     output_shape = value_shape(graph, node.outputs[0], node)
-    return CeluOp(
+    return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
+        function=ScalarFunction.CELU,
         shape=output_shape,
         dtype=dtype,
-        alpha=alpha,
+        input_dtype=dtype,
+        params=(alpha,),
     )
 
 
 @register_lowering("Swish")
-def lower_swish(graph: Graph, node: Node) -> SwishOp:
+def lower_swish(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Swish must have 1 input and 1 output")
     dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -92,35 +88,40 @@ def lower_swish(graph: Graph, node: Node) -> SwishOp:
         raise UnsupportedOpError("Swish only supports floating-point inputs")
     alpha = float(node.attrs.get("alpha", 1.0))
     output_shape = value_shape(graph, node.outputs[0], node)
-    return SwishOp(
+    return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
+        function=ScalarFunction.SWISH,
         shape=output_shape,
         dtype=dtype,
-        alpha=alpha,
+        input_dtype=dtype,
+        params=(alpha,),
     )
 
 
 @register_lowering("Shrink")
-def lower_shrink(graph: Graph, node: Node) -> ShrinkOp:
+def lower_shrink(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Shrink must have 1 input and 1 output")
     dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("Shrink only supports floating-point inputs")
     bias = float(node.attrs.get("bias", 0.0))
     lambd = float(node.attrs.get("lambd", 0.5))
     output_shape = value_shape(graph, node.outputs[0], node)
-    return ShrinkOp(
+    return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
+        function=ScalarFunction.SHRINK,
         shape=output_shape,
         dtype=dtype,
-        bias=bias,
-        lambd=lambd,
+        input_dtype=dtype,
+        params=(bias, lambd),
     )
 
 
 @register_lowering("IsInf")
-def lower_isinf(graph: Graph, node: Node) -> PredicateOp:
+def lower_isinf(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("IsInf must have 1 input and 1 output")
     input_dtype = value_dtype(graph, node.inputs[0], node)
@@ -130,18 +131,19 @@ def lower_isinf(graph: Graph, node: Node) -> PredicateOp:
     if output_dtype != ScalarType.BOOL:
         raise UnsupportedOpError("IsInf output must be bool")
     output_shape = value_shape(graph, node.outputs[0], node)
-    return PredicateOp(
+    return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
         function=ScalarFunction.ISINF,
         shape=output_shape,
-        input_dtype=input_dtype,
         dtype=output_dtype,
+        input_dtype=input_dtype,
+        params=(),
     )
 
 
 @register_lowering("IsNaN")
-def lower_isnan(graph: Graph, node: Node) -> PredicateOp:
+def lower_isnan(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("IsNaN must have 1 input and 1 output")
     input_dtype = value_dtype(graph, node.inputs[0], node)
@@ -151,11 +153,12 @@ def lower_isnan(graph: Graph, node: Node) -> PredicateOp:
     if output_dtype != ScalarType.BOOL:
         raise UnsupportedOpError("IsNaN output must be bool")
     output_shape = value_shape(graph, node.outputs[0], node)
-    return PredicateOp(
+    return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
         function=ScalarFunction.ISNAN,
         shape=output_shape,
-        input_dtype=input_dtype,
         dtype=output_dtype,
+        input_dtype=input_dtype,
+        params=(),
     )

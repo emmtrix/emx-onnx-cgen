@@ -16,7 +16,6 @@ from .codegen.c_emitter import (
     BatchNormOp,
     BinaryOp,
     CastOp,
-    CeluOp,
     ClipOp,
     CEmitter,
     ConstTensor,
@@ -39,14 +38,11 @@ from .codegen.c_emitter import (
     ReduceOp,
     ReshapeOp,
     ResizeOp,
-    ShrinkOp,
     SoftmaxOp,
     ShapeOp,
     SliceOp,
-    SwishOp,
     TransposeOp,
     UnaryOp,
-    PredicateOp,
     WhereOp,
 )
 from .dtypes import dtype_info
@@ -270,10 +266,6 @@ class Compiler:
             BinaryOp
             | UnaryOp
             | ClipOp
-            | CeluOp
-            | SwishOp
-            | ShrinkOp
-            | PredicateOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -305,10 +297,6 @@ class Compiler:
             BinaryOp
             | UnaryOp
             | ClipOp
-            | CeluOp
-            | SwishOp
-            | ShrinkOp
-            | PredicateOp
             | CastOp
             | MatMulOp
             | GemmOp
@@ -518,4 +506,6 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
         function=function,
         shape=output_shape,
         dtype=op_dtype,
+        input_dtype=op_dtype,
+        params=(),
     )
