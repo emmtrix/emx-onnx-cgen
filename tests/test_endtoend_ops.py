@@ -156,6 +156,134 @@ def _make_range_model(
     return model
 
 
+def _make_eye_like_model(
+    *,
+    input_shape: list[int],
+    dtype: int,
+    k: int = 0,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output = helper.make_tensor_value_info("output", dtype, input_shape)
+    node = helper.make_node(
+        "EyeLike",
+        inputs=["input"],
+        outputs=[output.name],
+        k=k,
+    )
+    graph = helper.make_graph(
+        [node], "eye_like_graph", [input_info], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_tile_model(
+    *,
+    input_shape: list[int],
+    repeats: list[int],
+    dtype: int,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output_shape = [dim * repeat for dim, repeat in zip(input_shape, repeats)]
+    output = helper.make_tensor_value_info("output", dtype, output_shape)
+    repeats_tensor = helper.make_tensor(
+        "repeats",
+        TensorProto.INT64,
+        dims=[len(repeats)],
+        vals=repeats,
+    )
+    node = helper.make_node(
+        "Tile",
+        inputs=["input", "repeats"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "tile_graph",
+        [input_info],
+        [output],
+        initializer=[repeats_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _depth_to_space_reference(
+    value: np.ndarray, *, blocksize: int, mode: str = "DCR"
+) -> np.ndarray:
+    if value.ndim != 4:
+        raise ValueError("DepthToSpace expects 4D input")
+    b, c, h, w = value.shape
+    if mode == "DCR":
+        tmpshape = (
+            b,
+            blocksize,
+            blocksize,
+            c // (blocksize * blocksize),
+            h,
+            w,
+        )
+        reshaped = value.reshape(tmpshape)
+        transposed = np.transpose(reshaped, [0, 3, 4, 1, 5, 2])
+    else:
+        tmpshape = (
+            b,
+            c // (blocksize * blocksize),
+            blocksize,
+            blocksize,
+            h,
+            w,
+        )
+        reshaped = value.reshape(tmpshape)
+        transposed = np.transpose(reshaped, [0, 1, 4, 2, 5, 3])
+    finalshape = (
+        b,
+        c // (blocksize * blocksize),
+        h * blocksize,
+        w * blocksize,
+    )
+    return np.reshape(transposed, finalshape)
+
+
+def _space_to_depth_reference(
+    value: np.ndarray, *, blocksize: int
+) -> np.ndarray:
+    if value.ndim != 4:
+        raise ValueError("SpaceToDepth expects 4D input")
+    b, c, h, w = value.shape
+    tmpshape = (
+        b,
+        c,
+        h // blocksize,
+        blocksize,
+        w // blocksize,
+        blocksize,
+    )
+    reshaped = np.reshape(value, tmpshape)
+    transposed = np.transpose(reshaped, [0, 3, 5, 1, 2, 4])
+    finalshape = (
+        b,
+        c * blocksize * blocksize,
+        h // blocksize,
+        w // blocksize,
+    )
+    return np.reshape(transposed, finalshape)
+
+
 def _make_split_model(
     *,
     input_shape: list[int],
@@ -1993,6 +2121,94 @@ MAXPOOL_CASES = [
     },
 ]
 
+REARRANGE_ORT_CASES = [
+    {
+        "name": "Identity",
+        "model": lambda: _make_operator_model(
+            op_type="Identity",
+            input_shapes=[[2, 3]],
+            output_shape=[2, 3],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
+        "name": "EyeLike",
+        "model": lambda: _make_eye_like_model(
+            input_shape=[3, 4],
+            dtype=TensorProto.FLOAT,
+            k=0,
+        ),
+    },
+    {
+        "name": "Tile",
+        "model": lambda: _make_tile_model(
+            input_shape=[2, 1],
+            repeats=[2, 3],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
+        "name": "DepthToSpace",
+        "model": lambda: _make_operator_model(
+            op_type="DepthToSpace",
+            input_shapes=[[1, 8, 2, 2]],
+            output_shape=[1, 2, 4, 4],
+            dtype=TensorProto.FLOAT,
+            attrs={"blocksize": 2, "mode": "DCR"},
+        ),
+    },
+    {
+        "name": "SpaceToDepth",
+        "model": lambda: _make_operator_model(
+            op_type="SpaceToDepth",
+            input_shapes=[[1, 2, 4, 4]],
+            output_shape=[1, 8, 2, 2],
+            dtype=TensorProto.FLOAT,
+            attrs={"blocksize": 2},
+        ),
+    },
+]
+
+REARRANGE_UNIT_CASES = [
+    {
+        "name": "Identity",
+        "model": REARRANGE_ORT_CASES[0]["model"],
+        "input_name": "in0",
+        "input_shape": (2, 3),
+        "expected": lambda value: value,
+    },
+    {
+        "name": "EyeLike",
+        "model": REARRANGE_ORT_CASES[1]["model"],
+        "input_name": "input",
+        "input_shape": (3, 4),
+        "expected": lambda value: np.eye(3, 4, dtype=value.dtype),
+    },
+    {
+        "name": "Tile",
+        "model": REARRANGE_ORT_CASES[2]["model"],
+        "input_name": "input",
+        "input_shape": (2, 1),
+        "expected": lambda value: np.tile(value, (2, 3)),
+    },
+    {
+        "name": "DepthToSpace",
+        "model": REARRANGE_ORT_CASES[3]["model"],
+        "input_name": "in0",
+        "input_shape": (1, 8, 2, 2),
+        "expected": lambda value: _depth_to_space_reference(
+            value, blocksize=2, mode="DCR"
+        ),
+    },
+    {
+        "name": "SpaceToDepth",
+        "model": REARRANGE_ORT_CASES[4]["model"],
+        "input_name": "in0",
+        "input_shape": (1, 2, 4, 4),
+        "expected": lambda value: _space_to_depth_reference(value, blocksize=2),
+    },
+]
+
 
 @pytest.mark.parametrize("case", OPERATOR_CASES, ids=lambda case: case["name"])
 def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> None:
@@ -2140,6 +2356,28 @@ def test_split_matches_onnxruntime() -> None:
         dtype=TensorProto.FLOAT,
     )
     _run_cli_verify(model)
+
+
+@pytest.mark.parametrize("case", REARRANGE_ORT_CASES, ids=lambda case: case["name"])
+def test_rearrange_ops_match_onnxruntime(case: dict[str, object]) -> None:
+    model = case["model"]()
+    _run_cli_verify(model)
+
+
+@pytest.mark.parametrize("case", REARRANGE_UNIT_CASES, ids=lambda case: case["name"])
+def test_rearrange_ops_match_numpy(case: dict[str, object]) -> None:
+    model = case["model"]()
+    compiler = Compiler()
+    rng = np.random.default_rng(0)
+    input_data = rng.standard_normal(case["input_shape"]).astype(np.float32)
+    outputs = compiler.run(model, {case["input_name"]: input_data})
+    expected = case["expected"](input_data)
+    np.testing.assert_allclose(
+        outputs[model.graph.output[0].name],
+        expected,
+        rtol=1e-5,
+        atol=1e-6,
+    )
 
 
 def test_expand_run_matches_numpy() -> None:

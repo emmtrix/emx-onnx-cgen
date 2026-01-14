@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1043 / 1802 official ONNX files.
+Support 1035 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -555,8 +555,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_cumsum_2d_negative_axis/model.onnx | ❌ | Unsupported op CumSum |
 | node/test_deform_conv_with_mask_bias/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_deform_conv_with_multiple_offset_groups/model.onnx | ❌ | Unsupported op DeformConv |
-| node/test_depthtospace_crd_mode_example/model.onnx | ❌ | Unsupported op DepthToSpace |
-| node/test_depthtospace_example/model.onnx | ❌ | Unsupported op DepthToSpace |
+| node/test_depthtospace_crd_mode_example/model.onnx | ✅ |  |
+| node/test_depthtospace_example/model.onnx | ✅ |  |
 | node/test_dequantizelinear/model.onnx | ❌ | Unsupported op DequantizeLinear |
 | node/test_dequantizelinear_axis/model.onnx | ❌ | Unsupported op DequantizeLinear |
 | node/test_dequantizelinear_blocked/model.onnx | ❌ | Unsupported op DequantizeLinear |
@@ -595,11 +595,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dropout_default_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_random_old/model.onnx | ✅ |  |
 | node/test_dynamicquantizelinear/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
-| node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_dynamicquantizelinear_max_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
-| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
-| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported op Identity |
+| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_edge_pad/model.onnx | ❌ | Unsupported op Pad |
 | node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported op Einsum |
@@ -628,9 +628,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_exp_example/model.onnx | ✅ |  |
 | node/test_expand_dim_changed/model.onnx | ✅ |  |
 | node/test_expand_dim_unchanged/model.onnx | ✅ |  |
-| node/test_eyelike_populate_off_main_diagonal/model.onnx | ❌ | Unsupported op EyeLike |
-| node/test_eyelike_with_dtype/model.onnx | ❌ | Unsupported op EyeLike |
-| node/test_eyelike_without_dtype/model.onnx | ❌ | Unsupported op EyeLike |
+| node/test_eyelike_populate_off_main_diagonal/model.onnx | ✅ |  |
+| node/test_eyelike_with_dtype/model.onnx | ✅ |  |
+| node/test_eyelike_without_dtype/model.onnx | ✅ |  |
 | node/test_flatten_axis0/model.onnx | ✅ |  |
 | node/test_flatten_axis1/model.onnx | ✅ |  |
 | node/test_flatten_axis2/model.onnx | ✅ |  |
@@ -1378,71 +1378,71 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ✅ |  |
 | node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean/model.onnx | ✅ |  |
 | node/test_sce_mean_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_3d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_3d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_no_weight_ii/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_no_weight_ii_4d/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_no_weight_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_weight/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_weight_ii_4d/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_weight_ii_expanded/model.onnx | ✅ |  |
 | node/test_sce_mean_weight_ii_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_mean_weight_log_prob/model.onnx | ✅ |  |
-| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_mean_weight_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_none/model.onnx | ✅ |  |
 | node/test_sce_none_expanded/model.onnx | ✅ |  |
 | node/test_sce_none_log_prob/model.onnx | ✅ |  |
-| node/test_sce_none_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_none_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_none_weights/model.onnx | ✅ |  |
 | node/test_sce_none_weights_expanded/model.onnx | ✅ |  |
 | node/test_sce_none_weights_log_prob/model.onnx | ✅ |  |
-| node/test_sce_none_weights_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_none_weights_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_sce_sum/model.onnx | ✅ |  |
 | node/test_sce_sum_expanded/model.onnx | ✅ |  |
 | node/test_sce_sum_log_prob/model.onnx | ✅ |  |
-| node/test_sce_sum_log_prob_expanded/model.onnx | ✅ |  |
+| node/test_sce_sum_log_prob_expanded/model.onnx | ❌ | Identity input and output shapes must match |
 | node/test_selu/model.onnx | ❌ | Selu only supports alpha=1.6732632423543772 |
 | node/test_selu_default/model.onnx | ✅ |  |
 | node/test_selu_default_expanded_ver18/model.onnx | ✅ |  |
@@ -1527,8 +1527,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_softsign_example/model.onnx | ✅ |  |
 | node/test_softsign_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_softsign_expanded_ver18/model.onnx | ✅ |  |
-| node/test_spacetodepth/model.onnx | ❌ | Unsupported op SpaceToDepth |
-| node/test_spacetodepth_example/model.onnx | ❌ | Unsupported op SpaceToDepth |
+| node/test_spacetodepth/model.onnx | ✅ |  |
+| node/test_spacetodepth_example/model.onnx | ✅ |  |
 | node/test_split_1d_uneven_split_opset18/model.onnx | ✅ |  |
 | node/test_split_2d_uneven_split_opset18/model.onnx | ✅ |  |
 | node/test_split_equal_parts_1d_opset13/model.onnx | ✅ |  |
@@ -1605,8 +1605,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_thresholdedrelu_example/model.onnx | ❌ | ThresholdedRelu only supports alpha=1.0 |
 | node/test_thresholdedrelu_example_expanded_ver18/model.onnx | ✅ |  |
 | node/test_thresholdedrelu_expanded_ver18/model.onnx | ✅ |  |
-| node/test_tile/model.onnx | ❌ | Unsupported op Tile |
-| node/test_tile_precomputed/model.onnx | ❌ | Unsupported op Tile |
+| node/test_tile/model.onnx | ❌ | Tile repeats input must be a constant initializer |
+| node/test_tile_precomputed/model.onnx | ❌ | Tile repeats input must be a constant initializer |
 | node/test_top_k/model.onnx | ❌ | Unsupported op TopK |
 | node/test_top_k_negative_axis/model.onnx | ❌ | Unsupported op TopK |
 | node/test_top_k_same_values/model.onnx | ❌ | Unsupported op TopK |
@@ -1780,8 +1780,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_reduced_mean_keepdim/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_reduced_sum/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_repeat/model.onnx | ❌ | Unsupported op Tile |
-| pytorch-operator/test_operator_repeat_dim_overflow/model.onnx | ❌ | Unsupported op Tile |
+| pytorch-operator/test_operator_repeat/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_repeat_dim_overflow/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_selu/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_sqrt/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Unsupported op InstanceNormalization |

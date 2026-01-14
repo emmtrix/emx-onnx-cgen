@@ -1,0 +1,27 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+    (void){{ input0 }};
+    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
+    size_t total = (size_t){{ batch_size }} * {{ rows }} * {{ cols }};
+    for (size_t index = 0; index < total; ++index) {
+        output_data[index] = {{ zero_literal }};
+    }
+    int k = {{ k }};
+    size_t rows = {{ rows }};
+    size_t cols = {{ cols }};
+    size_t row_start = k >= 0 ? 0 : (size_t)(-k);
+    size_t col_start = k >= 0 ? (size_t)k : 0;
+    if (row_start >= rows || col_start >= cols) {
+        return;
+    }
+    size_t max_rows = rows - row_start;
+    size_t max_cols = cols - col_start;
+    size_t diag_len = max_rows < max_cols ? max_rows : max_cols;
+    for (size_t batch = 0; batch < {{ batch_size }}; ++batch) {
+        size_t base = batch * rows * cols;
+        for (size_t diag = 0; diag < diag_len; ++diag) {
+            size_t row = row_start + diag;
+            size_t col = col_start + diag;
+            output_data[base + row * cols + col] = {{ one_literal }};
+        }
+    }
+}

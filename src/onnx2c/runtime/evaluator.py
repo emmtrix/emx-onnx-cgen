@@ -48,7 +48,7 @@ from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
 from ..lowering.where import lower_where
 from ..lowering.registry import resolve_dispatch
-from ..lowering.common import node_dtype, optional_name, value_dtype
+from ..lowering.common import node_dtype, optional_name, value_dtype, value_shape
 from ..ops import (
     BINARY_OP_TYPES,
     COMPARE_FUNCTIONS,
@@ -283,6 +283,134 @@ def _eval_castlike(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = input_value.astype(
         output_dtype.np_dtype, copy=False
     )
+
+
+@register_evaluator("Identity")
+def _eval_identity(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Identity must have 1 input and 1 output")
+    value = evaluator.values[node.inputs[0]]
+    evaluator.values[node.outputs[0]] = np.array(value, copy=True)
+
+
+@register_evaluator("EyeLike")
+def _eval_eye_like(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("EyeLike must have 1 input and 1 output")
+    output_shape = value_shape(evaluator.graph, node.outputs[0], node)
+    if len(output_shape) < 2:
+        raise UnsupportedOpError("EyeLike expects input rank >= 2")
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    k = int(node.attrs.get("k", 0))
+    output = np.zeros(output_shape, dtype=output_dtype.np_dtype)
+    rows, cols = output_shape[-2], output_shape[-1]
+    row_start = 0 if k >= 0 else -k
+    col_start = k if k >= 0 else 0
+    if row_start < rows and col_start < cols:
+        diag_len = min(rows - row_start, cols - col_start)
+        batch_size = int(np.prod(output_shape[:-2])) if output_shape[:-2] else 1
+        view = output.reshape(batch_size, rows, cols)
+        diag_idx = np.arange(diag_len, dtype=np.int64)
+        one = output_dtype.np_dtype.type(1)
+        view[:, row_start + diag_idx, col_start + diag_idx] = one
+    evaluator.values[node.outputs[0]] = output
+
+
+@register_evaluator("Tile")
+def _eval_tile(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Tile must have 2 inputs and 1 output")
+    value = evaluator.values[node.inputs[0]]
+    repeats = evaluator.values[node.inputs[1]]
+    repeats = np.array(repeats, dtype=np.int64).reshape(-1)
+    if repeats.size != value.ndim:
+        raise UnsupportedOpError(
+            "Tile repeats must have the same rank as input shape"
+        )
+    evaluator.values[node.outputs[0]] = np.tile(value, repeats)
+
+
+@register_evaluator("DepthToSpace")
+def _eval_depth_to_space(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("DepthToSpace must have 1 input and 1 output")
+    data = evaluator.values[node.inputs[0]]
+    if data.ndim != 4:
+        raise UnsupportedOpError("DepthToSpace only supports 4D inputs")
+    blocksize = int(node.attrs.get("blocksize", 0))
+    if blocksize <= 0:
+        raise UnsupportedOpError(
+            f"DepthToSpace blocksize must be > 0, got {blocksize}"
+        )
+    mode_attr = node.attrs.get("mode", "DCR")
+    if isinstance(mode_attr, bytes):
+        mode = mode_attr.decode()
+    else:
+        mode = str(mode_attr)
+    if mode not in {"DCR", "CRD"}:
+        raise UnsupportedOpError("DepthToSpace only supports mode DCR or CRD")
+    b, c, h, w = data.shape
+    if mode == "DCR":
+        tmpshape = (
+            b,
+            blocksize,
+            blocksize,
+            c // (blocksize * blocksize),
+            h,
+            w,
+        )
+        reshaped = data.reshape(tmpshape)
+        transposed = np.transpose(reshaped, [0, 3, 4, 1, 5, 2])
+    else:
+        tmpshape = (
+            b,
+            c // (blocksize * blocksize),
+            blocksize,
+            blocksize,
+            h,
+            w,
+        )
+        reshaped = data.reshape(tmpshape)
+        transposed = np.transpose(reshaped, [0, 1, 4, 2, 5, 3])
+    finalshape = (
+        b,
+        c // (blocksize * blocksize),
+        h * blocksize,
+        w * blocksize,
+    )
+    evaluator.values[node.outputs[0]] = np.reshape(transposed, finalshape)
+
+
+@register_evaluator("SpaceToDepth")
+def _eval_space_to_depth(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("SpaceToDepth must have 1 input and 1 output")
+    data = evaluator.values[node.inputs[0]]
+    if data.ndim != 4:
+        raise UnsupportedOpError("SpaceToDepth only supports 4D inputs")
+    blocksize = int(node.attrs.get("blocksize", 0))
+    if blocksize <= 0:
+        raise UnsupportedOpError(
+            f"SpaceToDepth blocksize must be > 0, got {blocksize}"
+        )
+    b, c, h, w = data.shape
+    tmpshape = (
+        b,
+        c,
+        h // blocksize,
+        blocksize,
+        w // blocksize,
+        blocksize,
+    )
+    reshaped = np.reshape(data, tmpshape)
+    transposed = np.transpose(reshaped, [0, 3, 5, 1, 2, 4])
+    finalshape = (
+        b,
+        c * blocksize * blocksize,
+        h // blocksize,
+        w // blocksize,
+    )
+    evaluator.values[node.outputs[0]] = np.reshape(transposed, finalshape)
 
 
 @register_evaluator("Where")

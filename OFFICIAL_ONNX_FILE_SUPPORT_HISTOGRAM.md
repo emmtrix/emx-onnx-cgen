@@ -17,6 +17,7 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████████████ |
+| Identity input and output shapes must match | 17 | ██████████████ |
 | Unsupported op Trilu | 16 | █████████████ |
 | Reshape input and output element counts must match | 15 | ████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
@@ -25,6 +26,7 @@
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
 | Output shape must be fully defined | 9 | ████████ |
 | Unsupported op CumSum | 9 | ████████ |
+| Unsupported op QuantizeLinear | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Unsupported op NonMaxSuppression | 9 | ████████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
@@ -43,7 +45,6 @@
 | Unsupported op Einsum | 6 | █████ |
 | Unsupported op LpNormalization | 6 | █████ |
 | Concat output shape must be (2,), got (1,) | 6 | █████ |
-| Unsupported op QuantizeLinear | 6 | █████ |
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
 | Unsupported op If | 5 | ████ |
@@ -64,14 +65,11 @@
 | Unsupported op OptionalHasElement | 4 | ███ |
 | CastLike input and output shapes must match | 4 | ███ |
 | Unsupported op RNN | 4 | ███ |
-| Unsupported op Tile | 4 | ███ |
 | AveragePool supports auto_pad=NOTSET only | 3 | ██ |
 | Unsupported op Bernoulli | 3 | ██ |
 | Unsupported op RandomUniformLike | 3 | ██ |
 | Unsupported op DynamicQuantizeLinear | 3 | ██ |
-| Unsupported op Identity | 3 | ██ |
 | Elu only supports alpha=1.0 | 3 | ██ |
-| Unsupported op EyeLike | 3 | ██ |
 | Unsupported op GatherND | 3 | ██ |
 | HardSigmoid only supports alpha=0.2 | 3 | ██ |
 | Unsupported op InstanceNormalization | 3 | ██ |
@@ -89,7 +87,6 @@
 | Unsupported op BitwiseNot | 2 | ██ |
 | Unsupported op BlackmanWindow | 2 | ██ |
 | Unsupported op ConvInteger | 2 | ██ |
-| Unsupported op DepthToSpace | 2 | ██ |
 | Unsupported op Det | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
 | Unsupported op GlobalMaxPool | 2 | ██ |
@@ -106,9 +103,9 @@
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
-| Unsupported op SpaceToDepth | 2 | ██ |
 | Unsupported op STFT | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
+| Tile repeats input must be a constant initializer | 2 | ██ |
 | Unsupported op Gradient | 2 | ██ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |

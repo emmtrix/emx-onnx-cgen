@@ -96,6 +96,10 @@ from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.slice import lower_slice
 from .lowering.squeeze import lower_squeeze
+from .lowering import depth_space as _depth_space  # noqa: F401
+from .lowering import eye_like as _eye_like  # noqa: F401
+from .lowering import identity as _identity  # noqa: F401
+from .lowering import tile as _tile  # noqa: F401
 from .lowering.shape import lower_shape
 from .lowering.size import lower_size
 from .lowering.softmax import lower_softmax
