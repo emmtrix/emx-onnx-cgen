@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "emx-onnx2c"
 version = "0.1.0"
 description = "emmtrix ONNX to C Compiler"
+readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 
 [project.scripts]
