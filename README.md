@@ -42,46 +42,42 @@ Key characteristics:
   - `bool`
 - Supporting dynamic dimensions by utilizing C99 variable-length arrays (VLAs).
 
-## Requirements
+## Installation
 
-- Python 3.9+
-- `onnx` for compilation
-- Optional for verification:
-  - `onnxruntime`
-  - `numpy`
-  - A C compiler (uses `cc`, `gcc`, or `clang`, or `CC`/`--cc`)
-
-Install dependencies:
+Install the package directly from PyPI (recommended):
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-ci.txt
-pip install -e .
+pip install emx-onnx2c
 ```
+
+Optional for verification and tests:
+
+- `onnxruntime`
+- `numpy`
+- A C compiler (`cc`, `gcc`, `clang` or via `--cc`)
 
 ## Quickstart
 
 Compile an ONNX model into a C source file:
 
 ```bash
-python -m onnx2c compile path/to/model.onnx build/model.c
+onnx2c compile path/to/model.onnx build/model.c
 ```
 
 Verify an ONNX model end-to-end against ONNX Runtime:
 
 ```bash
-python -m onnx2c verify path/to/model.onnx
+onnx2c verify path/to/model.onnx
 ```
 
 ## CLI Reference
 
-`onnx2c` provides two subcommands: `compile` and `verify`.
+`emx-onnx2c` provides two subcommands: `compile` and `verify`.
 
 ### `compile`
 
 ```bash
-python -m onnx2c compile <model.onnx> <output.c> [options]
+emx-onnx2c compile <model.onnx> <output.c> [options]
 ```
 
 Options:
@@ -95,7 +91,7 @@ Options:
 ### `verify`
 
 ```bash
-python -m onnx2c verify <model.onnx> [options]
+emx-onnx2c verify <model.onnx> [options]
 ```
 
 Options:
