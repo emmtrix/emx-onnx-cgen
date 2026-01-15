@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 import math
 from typing import Callable, Dict, List, Mapping, Set
@@ -26,6 +26,7 @@ class _GeneratedScalar:
     lines: List[str]
     deps: Set[ScalarFunctionKey]
     includes: Set[str]
+    constants: Set[str] = field(default_factory=set)
 
 
 def _scalar_function_spec(
@@ -1089,7 +1090,7 @@ def _float_angle(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         f"    return a < {zero} ? {pi} : {zero};",
         "}",
     ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set(), constants={pi})
 
 
 def _float_conj(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
@@ -1099,13 +1100,25 @@ def _float_conj(dtype_info: _ScalarTypeInfo, name: str) -> _GeneratedScalar:
 def _float_deg2rad(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     pi = "REF_PI_F" if dtype_info.suffix == "f32" else "REF_PI_D"
     one_eighty = _float_literal(180.0, dtype_info)
-    return _simple_unary(dtype_info, "deg2rad", f"a * ({pi} / {one_eighty})")
+    generated = _simple_unary(dtype_info, "deg2rad", f"a * ({pi} / {one_eighty})")
+    return _GeneratedScalar(
+        lines=generated.lines,
+        deps=generated.deps,
+        includes=generated.includes,
+        constants={pi},
+    )
 
 
 def _float_rad2deg(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     pi = "REF_PI_F" if dtype_info.suffix == "f32" else "REF_PI_D"
     one_eighty = _float_literal(180.0, dtype_info)
-    return _simple_unary(dtype_info, "rad2deg", f"a * ({one_eighty} / {pi})")
+    generated = _simple_unary(dtype_info, "rad2deg", f"a * ({one_eighty} / {pi})")
+    return _GeneratedScalar(
+        lines=generated.lines,
+        deps=generated.deps,
+        includes=generated.includes,
+        constants={pi},
+    )
 
 
 def _float_digamma_f64() -> _GeneratedScalar:
@@ -1135,7 +1148,9 @@ def _float_digamma_f64() -> _GeneratedScalar:
         "    return result;",
         "}",
     ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+    return _GeneratedScalar(
+        lines=lines, deps=set(), includes=set(), constants={"REF_PI_D"}
+    )
 
 
 def _float_digamma(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -1186,7 +1201,7 @@ def _float_erfinv(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         "    return approx;",
         "}",
     ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set(), constants={pi})
 
 
 def _float_frac(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -1288,7 +1303,7 @@ def _float_sinc(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         f"    return {_math_fn('sin', dtype_info)}(x) / x;",
         "}",
     ]
-    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set(), constants={pi})
 
 
 def _float_square(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -2285,7 +2300,12 @@ def _generate_scalar(key: ScalarFunctionKey) -> _GeneratedScalar:
             includes.add("#include <limits.h>")
     if dtype_info.is_bool:
         includes.add("#include <stdbool.h>")
-    return _GeneratedScalar(lines=generated.lines, deps=generated.deps, includes=includes)
+    return _GeneratedScalar(
+        lines=generated.lines,
+        deps=generated.deps,
+        includes=includes,
+        constants=generated.constants,
+    )
 
 
 def _function_name_for_key(key: ScalarFunctionKey) -> str:
@@ -2352,6 +2372,7 @@ class ScalarFunctionRegistry:
     def include_lines(self) -> List[str]:
         includes: Set[str] = set()
         visited: Set[ScalarFunctionKey] = set()
+        constants: Set[str] = set()
 
         def collect(key: ScalarFunctionKey) -> None:
             if key in visited:
@@ -2362,18 +2383,28 @@ class ScalarFunctionRegistry:
             for dep in entry.deps:
                 collect(dep)
             includes.update(entry.includes)
+            constants.update(entry.constants)
 
         for key in self._requested:
             collect(key)
         ordered = sorted(includes)
-        preamble = [
-            "#ifndef REF_PI_F",
-            "#define REF_PI_F 3.14159265358979323846f",
-            "#endif",
-            "#ifndef REF_PI_D",
-            "#define REF_PI_D 3.14159265358979323846",
-            "#endif",
-        ]
+        preamble: List[str] = []
+        if "REF_PI_F" in constants:
+            preamble.extend(
+                [
+                    "#ifndef REF_PI_F",
+                    "#define REF_PI_F 3.14159265358979323846f",
+                    "#endif",
+                ]
+            )
+        if "REF_PI_D" in constants:
+            preamble.extend(
+                [
+                    "#ifndef REF_PI_D",
+                    "#define REF_PI_D 3.14159265358979323846",
+                    "#endif",
+                ]
+            )
         return ordered + preamble
 
     def render(self) -> List[str]:
