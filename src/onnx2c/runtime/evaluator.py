@@ -28,6 +28,7 @@ from ..lowering.mean_variance_normalization import (
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from ..lowering.pad import lower_pad
 from ..lowering.expand import lower_expand
 from ..lowering.range import lower_range
 from ..lowering.split import lower_split
@@ -158,6 +159,20 @@ def _eval_clip(evaluator: Evaluator, node: Node) -> None:
     else:
         max_val = evaluator.values[max_name]
     evaluator.values[node.outputs[0]] = np.clip(x, min_val, max_val)
+
+
+@register_evaluator("Pad")
+def _eval_pad(evaluator: Evaluator, node: Node) -> None:
+    op = lower_pad(evaluator.graph, node)
+    x = evaluator.values[op.input0]
+    pad_value = np.array(op.value, dtype=op.dtype.np_dtype).item()
+    pad_width = tuple(zip(op.pads_begin, op.pads_end))
+    evaluator.values[op.output] = np.pad(
+        x,
+        pad_width,
+        mode="constant",
+        constant_values=pad_value,
+    )
 
 
 @register_evaluator("Celu")

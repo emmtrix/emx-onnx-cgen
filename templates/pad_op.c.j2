@@ -1,0 +1,16 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+{% for dim in output_shape %}
+for (size_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ output }}{% for var in out_loop_vars %}[{{ var }}]{% endfor %} = {{ pad_value }};
+{% for _ in output_shape %}
+}
+{% endfor %}
+{% for dim in input_shape %}
+for (size_t {{ in_loop_vars[loop.index0] }} = 0; {{ in_loop_vars[loop.index0] }} < {{ dim }}; ++{{ in_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ output }}{% for var in in_loop_vars %}[{{ var }} + {{ pad_begin[loop.index0] }}]{% endfor %} = {{ input0 }}{% for var in in_loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in input_shape %}
+}
+{% endfor %}
+}

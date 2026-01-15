@@ -632,6 +632,19 @@ class TileOp:
 
 
 @dataclass(frozen=True)
+class PadOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    pads_begin: tuple[int, ...]
+    pads_end: tuple[int, ...]
+    value: float | int | bool
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class DepthToSpaceOp:
     input0: str
     output: str
@@ -891,6 +904,7 @@ class LoweredModel:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
@@ -974,6 +988,7 @@ class CEmitter:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
@@ -1222,6 +1237,7 @@ class CEmitter:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
@@ -1269,6 +1285,7 @@ class CEmitter:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
@@ -1783,6 +1800,18 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, PadOp):
+            return PadOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                pads_begin=op.pads_begin,
+                pads_end=op.pads_end,
+                value=op.value,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, DepthToSpaceOp):
             return DepthToSpaceOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2058,6 +2087,7 @@ class CEmitter:
                 "identity": self._env.get_template("identity_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
+                "pad": self._env.get_template("pad_op.c.j2"),
                 "depth_to_space": self._env.get_template("depth_to_space_op.c.j2"),
                 "space_to_depth": self._env.get_template("space_to_depth_op.c.j2"),
                 "slice": self._env.get_template("slice_op.c.j2"),
@@ -2150,6 +2180,7 @@ class CEmitter:
         identity_template = templates["identity"]
         eye_like_template = templates["eye_like"]
         tile_template = templates["tile"]
+        pad_template = templates["pad"]
         depth_to_space_template = templates["depth_to_space"]
         space_to_depth_template = templates["space_to_depth"]
         slice_template = templates["slice"]
@@ -2221,6 +2252,7 @@ class CEmitter:
                 identity_template=identity_template,
                 eye_like_template=eye_like_template,
                 tile_template=tile_template,
+                pad_template=pad_template,
                 depth_to_space_template=depth_to_space_template,
                 space_to_depth_template=space_to_depth_template,
                 slice_template=slice_template,
@@ -2365,6 +2397,7 @@ class CEmitter:
         identity_template = templates["identity"]
         eye_like_template = templates["eye_like"]
         tile_template = templates["tile"]
+        pad_template = templates["pad"]
         depth_to_space_template = templates["depth_to_space"]
         space_to_depth_template = templates["space_to_depth"]
         slice_template = templates["slice"]
@@ -2436,6 +2469,7 @@ class CEmitter:
                 identity_template=identity_template,
                 eye_like_template=eye_like_template,
                 tile_template=tile_template,
+                pad_template=pad_template,
                 depth_to_space_template=depth_to_space_template,
                 space_to_depth_template=space_to_depth_template,
                 slice_template=slice_template,
@@ -3240,6 +3274,7 @@ class CEmitter:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
@@ -4229,6 +4264,18 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, PadOp):
+            return PadOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                pads_begin=op.pads_begin,
+                pads_end=op.pads_end,
+                value=op.value,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, DepthToSpaceOp):
             return DepthToSpaceOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4446,6 +4493,7 @@ class CEmitter:
         identity_template,
         eye_like_template,
         tile_template,
+        pad_template,
         depth_to_space_template,
         space_to_depth_template,
         slice_template,
@@ -5611,6 +5659,37 @@ class CEmitter:
                 input_index_expr=input_index_expr,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, PadOp):
+            input_dim_names = _dim_names_for(op.input0)
+            output_dim_names = _dim_names_for(op.output)
+            input_shape = CEmitter._shape_dim_exprs(
+                op.input_shape, input_dim_names
+            )
+            output_shape = CEmitter._shape_dim_exprs(
+                op.output_shape, output_dim_names
+            )
+            in_loop_vars = CEmitter._loop_vars(op.input_shape)
+            out_loop_vars = CEmitter._loop_vars(op.output_shape)
+            rendered = pad_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                output=op.output,
+                c_type=c_type,
+                input_suffix=self._param_array_suffix(
+                    op.input_shape, input_dim_names
+                ),
+                output_suffix=self._param_array_suffix(
+                    op.output_shape, output_dim_names
+                ),
+                input_shape=input_shape,
+                output_shape=output_shape,
+                in_loop_vars=in_loop_vars,
+                out_loop_vars=out_loop_vars,
+                pad_begin=op.pads_begin,
+                pad_value=CEmitter._format_literal(op.dtype, op.value),
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, DepthToSpaceOp):
             output_suffix = self._param_array_suffix(op.output_shape)
             input_suffix = self._param_array_suffix(op.input_shape)
@@ -6379,6 +6458,7 @@ class CEmitter:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | ResizeOp
@@ -6430,6 +6510,7 @@ class CEmitter:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | ResizeOp
@@ -6479,6 +6560,8 @@ class CEmitter:
             return ((op.input0, op.shape),)
         if isinstance(op, EyeLikeOp):
             return ((op.input0, op.output_shape),)
+        if isinstance(op, PadOp):
+            return ((op.input0, op.input_shape),)
         return ()
 
     def _propagate_tensor_dim_names(
@@ -6517,6 +6600,7 @@ class CEmitter:
             | IdentityOp
             | EyeLikeOp
             | TileOp
+            | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | ResizeOp
@@ -6576,6 +6660,7 @@ class CEmitter:
         | IdentityOp
         | EyeLikeOp
         | TileOp
+        | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | ResizeOp
@@ -6725,7 +6810,8 @@ class CEmitter:
         | SizeOp
         | ExpandOp
         | RangeOp
-        | SplitOp,
+        | SplitOp
+        | PadOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return op.shape
@@ -6788,6 +6874,8 @@ class CEmitter:
         if isinstance(op, EyeLikeOp):
             return op.output_shape
         if isinstance(op, TileOp):
+            return op.output_shape
+        if isinstance(op, PadOp):
             return op.output_shape
         if isinstance(op, DepthToSpaceOp):
             return op.output_shape
@@ -6852,7 +6940,8 @@ class CEmitter:
         | SizeOp
         | ExpandOp
         | RangeOp
-        | SplitOp,
+        | SplitOp
+        | PadOp,
     ) -> ScalarType:
         if isinstance(op, ArgReduceOp):
             return op.output_dtype
