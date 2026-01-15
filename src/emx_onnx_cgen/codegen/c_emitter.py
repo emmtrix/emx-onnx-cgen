@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import itertools
+from math import prod
 from pathlib import Path
 import re
+import struct
 from typing import Mapping, Sequence
 
 from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
@@ -986,7 +988,13 @@ class LoweredModel:
 
 
 class CEmitter:
-    def __init__(self, template_dir: Path, *, restrict_arrays: bool = True) -> None:
+    def __init__(
+        self,
+        template_dir: Path,
+        *,
+        restrict_arrays: bool = True,
+        truncate_weights_after: int | None = None,
+    ) -> None:
         self._env = Environment(
             loader=FileSystemLoader(str(template_dir)),
             autoescape=select_autoescape(enabled_extensions=()),
@@ -994,6 +1002,9 @@ class CEmitter:
             lstrip_blocks=True,
         )
         self._restrict_arrays = restrict_arrays
+        if truncate_weights_after is not None and truncate_weights_after < 1:
+            raise CodegenError("truncate_weights_after must be >= 1")
+        self._truncate_weights_after = truncate_weights_after
 
     @staticmethod
     def _sanitize_identifier(name: str) -> str:
@@ -8862,24 +8873,28 @@ class CEmitter:
         for index, const in enumerate(constants, start=1):
             lines.append(self._emit_constant_comment(const, index))
             c_type = const.dtype.c_type
-            array_suffix = self._array_suffix(const.shape)
+            shape = self._codegen_shape(const.shape)
+            array_suffix = self._array_suffix(shape)
             values = [
-                self._format_value(value, const.dtype) for value in const.data
+                self._format_weight_value(value, const.dtype)
+                for value in const.data
             ]
             lines.append(
                 f"{storage_prefix} {c_type} {const.name}{array_suffix} = {{"
             )
             if values:
-                chunk_size = 8
-                chunks = [
-                    values[index : index + chunk_size]
-                    for index in range(0, len(values), chunk_size)
-                ]
-                for chunk_index, chunk in enumerate(chunks):
-                    line = "    " + ", ".join(chunk)
-                    if chunk_index != len(chunks) - 1:
-                        line += ","
-                    lines.append(line)
+                if (
+                    self._truncate_weights_after is not None
+                    and len(values) > self._truncate_weights_after
+                ):
+                    truncated_lines, _, _, _ = (
+                        self._emit_initializer_lines_truncated(
+                            values, shape, self._truncate_weights_after
+                        )
+                    )
+                    lines.extend(truncated_lines)
+                else:
+                    lines.extend(self._emit_initializer_lines(values, shape))
             lines.append("};")
             lines.append("")
         if lines and not lines[-1]:
@@ -8928,6 +8943,48 @@ class CEmitter:
         if "e" not in formatted and "E" not in formatted and "." not in formatted:
             formatted = f"{formatted}.0"
         return formatted
+
+    @staticmethod
+    def _format_float32_hex(value: float) -> str:
+        bits = struct.unpack("<I", struct.pack("<f", float(value)))[0]
+        sign = "-" if (bits >> 31) else ""
+        exponent = (bits >> 23) & 0xFF
+        mantissa = bits & 0x7FFFFF
+        if exponent == 0 and mantissa == 0:
+            return f"{sign}0x0.0p+0"
+        if exponent == 0xFF:
+            if mantissa == 0:
+                return f"{sign}INFINITY"
+            return "NAN"
+        if exponent == 0:
+            shift = mantissa.bit_length() - 1
+            exponent_val = shift - 149
+            fraction = (mantissa - (1 << shift)) << (24 - shift)
+        else:
+            exponent_val = exponent - 127
+            fraction = mantissa << 1
+        return f"{sign}0x1.{fraction:06x}p{exponent_val:+d}"
+
+    @staticmethod
+    def _format_float64_hex(value: float) -> str:
+        bits = struct.unpack("<Q", struct.pack("<d", float(value)))[0]
+        sign = "-" if (bits >> 63) else ""
+        exponent = (bits >> 52) & 0x7FF
+        mantissa = bits & 0xFFFFFFFFFFFFF
+        if exponent == 0 and mantissa == 0:
+            return f"{sign}0x0.0p+0"
+        if exponent == 0x7FF:
+            if mantissa == 0:
+                return f"{sign}INFINITY"
+            return "NAN"
+        if exponent == 0:
+            shift = mantissa.bit_length() - 1
+            exponent_val = shift - 1074
+            fraction = (mantissa - (1 << shift)) << (52 - shift)
+        else:
+            exponent_val = exponent - 1023
+            fraction = mantissa
+        return f"{sign}0x1.{fraction:013x}p{exponent_val:+d}"
 
     @staticmethod
     def _format_floating(value: float, dtype: ScalarType) -> str:
@@ -9018,6 +9075,125 @@ class CEmitter:
         if dtype == ScalarType.I8:
             return self._format_int(int(value), 8, "INT8_MIN")
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
+
+    def _format_weight_value(
+        self, value: float | int | bool, dtype: ScalarType
+    ) -> str:
+        if dtype == ScalarType.F16:
+            return f"(_Float16){self._format_float32_hex(float(value))}f"
+        if dtype == ScalarType.F32:
+            return f"{self._format_float32_hex(float(value))}f"
+        if dtype == ScalarType.F64:
+            return self._format_float64_hex(float(value))
+        if dtype == ScalarType.BOOL:
+            return "true" if bool(value) else "false"
+        if dtype == ScalarType.U64:
+            return self._format_uint(int(value), 64, "UINT64_MAX")
+        if dtype == ScalarType.U32:
+            return self._format_uint(int(value), 32, "UINT32_MAX")
+        if dtype == ScalarType.U16:
+            return self._format_uint(int(value), 16, "UINT16_MAX")
+        if dtype == ScalarType.U8:
+            return self._format_uint(int(value), 8, "UINT8_MAX")
+        if dtype == ScalarType.I64:
+            return self._format_int64(int(value))
+        if dtype == ScalarType.I32:
+            return self._format_int(int(value), 32, "INT32_MIN")
+        if dtype == ScalarType.I16:
+            return self._format_int(int(value), 16, "INT16_MIN")
+        if dtype == ScalarType.I8:
+            return self._format_int(int(value), 8, "INT8_MIN")
+        raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
+
+    @staticmethod
+    def _emit_initializer_lines(
+        values: Sequence[str],
+        shape: tuple[int, ...],
+        indent: str = "    ",
+        per_line: int = 8,
+    ) -> list[str]:
+        if len(shape) == 1:
+            lines: list[str] = []
+            for index in range(0, len(values), per_line):
+                chunk = ", ".join(values[index : index + per_line])
+                lines.append(f"{indent}{chunk},")
+            if lines:
+                lines[-1] = lines[-1].rstrip(",")
+            return lines
+        sub_shape = shape[1:]
+        sub_size = prod(sub_shape)
+        lines = []
+        for index in range(shape[0]):
+            start = index * sub_size
+            end = start + sub_size
+            lines.append(f"{indent}{{")
+            lines.extend(
+                CEmitter._emit_initializer_lines(
+                    values[start:end],
+                    sub_shape,
+                    indent + "    ",
+                    per_line,
+                )
+            )
+            lines.append(f"{indent}}},")
+        if lines:
+            lines[-1] = lines[-1].rstrip(",")
+        return lines
+
+    @staticmethod
+    def _emit_initializer_lines_truncated(
+        values: Sequence[str],
+        shape: tuple[int, ...],
+        truncate_after: int,
+        indent: str = "    ",
+        per_line: int = 8,
+        start_index: int = 0,
+        emitted: int = 0,
+    ) -> tuple[list[str], int, int, bool]:
+        if len(shape) == 1:
+            items: list[str] = []
+            truncated = False
+            index = start_index
+            for _ in range(shape[0]):
+                if emitted >= truncate_after:
+                    items.append("...")
+                    truncated = True
+                    break
+                items.append(values[index])
+                index += 1
+                emitted += 1
+            lines: list[str] = []
+            for item_index in range(0, len(items), per_line):
+                chunk = ", ".join(items[item_index : item_index + per_line])
+                lines.append(f"{indent}{chunk},")
+            if lines:
+                lines[-1] = lines[-1].rstrip(",")
+            return lines, index, emitted, truncated
+        sub_shape = shape[1:]
+        lines: list[str] = []
+        index = start_index
+        truncated = False
+        for _ in range(shape[0]):
+            lines.append(f"{indent}{{")
+            sub_lines, index, emitted, sub_truncated = (
+                CEmitter._emit_initializer_lines_truncated(
+                    values,
+                    sub_shape,
+                    truncate_after,
+                    indent + "    ",
+                    per_line,
+                    index,
+                    emitted,
+                )
+            )
+            lines.extend(sub_lines)
+            lines.append(f"{indent}}},")
+            if sub_truncated:
+                truncated = True
+                break
+        if lines:
+            lines[-1] = lines[-1].rstrip(",")
+        return lines, index, emitted, truncated
 
     @staticmethod
     def _print_format(dtype: ScalarType) -> str:

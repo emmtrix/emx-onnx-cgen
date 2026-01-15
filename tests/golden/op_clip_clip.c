@@ -29,7 +29,7 @@
  * Dtype: float
  */
 static const float weight1_min[1] = {
-    0.0f
+    0x0.0p+0f
 };
 
 /*
@@ -40,7 +40,7 @@ static const float weight1_min[1] = {
  * Dtype: float
  */
 static const float weight2_max[1] = {
-    6.0f
+    0x1.800000p+2f
 };
 
 /*

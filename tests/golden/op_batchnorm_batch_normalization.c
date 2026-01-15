@@ -30,7 +30,7 @@
  * Dtype: float
  */
 static const float weight1_scale[3] = {
-    1.0f, 1.5f, -0.5f
+    0x1.000000p+0f, 0x1.800000p+0f, -0x1.000000p-1f
 };
 
 /*
@@ -41,7 +41,7 @@ static const float weight1_scale[3] = {
  * Dtype: float
  */
 static const float weight2_bias[3] = {
-    0.0f, 0.100000001f, -0.200000003f
+    0x0.0p+0f, 0x1.99999ap-4f, -0x1.99999ap-3f
 };
 
 /*
@@ -52,7 +52,7 @@ static const float weight2_bias[3] = {
  * Dtype: float
  */
 static const float weight3_mean[3] = {
-    0.5f, -0.5f, 1.0f
+    0x1.000000p-1f, -0x1.000000p-1f, 0x1.000000p+0f
 };
 
 /*
@@ -63,7 +63,7 @@ static const float weight3_mean[3] = {
  * Dtype: float
  */
 static const float weight4_var[3] = {
-    0.25f, 0.5f, 1.5f
+    0x1.000000p-2f, 0x1.000000p-1f, 0x1.800000p+0f
 };
 
 /*
