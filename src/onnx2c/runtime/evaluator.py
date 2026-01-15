@@ -15,6 +15,7 @@ from ..lowering.concat import lower_concat
 from ..lowering.constant_of_shape import lower_constant_of_shape
 from ..lowering.conv import resolve_conv_spec
 from ..lowering.dropout import lower_dropout
+from ..lowering.cumsum import lower_cumsum
 from ..lowering.flatten import lower_flatten
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
@@ -160,6 +161,40 @@ def _eval_clip(evaluator: Evaluator, node: Node) -> None:
     else:
         max_val = evaluator.values[max_name]
     evaluator.values[node.outputs[0]] = np.clip(x, min_val, max_val)
+
+
+def _exclusive_cumsum(data: np.ndarray, axis: int) -> np.ndarray:
+    result = np.zeros_like(data)
+    if data.shape[axis] == 0:
+        return result
+    cumsum = np.cumsum(data, axis=axis, dtype=data.dtype)
+    src_slice = [slice(None)] * data.ndim
+    dst_slice = [slice(None)] * data.ndim
+    src_slice[axis] = slice(None, -1)
+    dst_slice[axis] = slice(1, None)
+    result[tuple(dst_slice)] = cumsum[tuple(src_slice)]
+    return result
+
+
+@register_evaluator("CumSum")
+def _eval_cumsum(evaluator: Evaluator, node: Node) -> None:
+    op = lower_cumsum(evaluator.graph, node)
+    x = evaluator.values[op.input0]
+    axis = op.axis
+    if axis is None:
+        axis_values = evaluator.values[op.axis_input].astype(np.int64, copy=False)
+        axis_values = axis_values.reshape(-1)
+        if axis_values.size != 1:
+            raise UnsupportedOpError("CumSum axis input must be scalar")
+        axis = normalize_axis(int(axis_values[0]), op.input_shape, node)
+    data = np.flip(x, axis=axis) if op.reverse else x
+    if op.exclusive:
+        result = _exclusive_cumsum(data, axis)
+    else:
+        result = np.cumsum(data, axis=axis, dtype=data.dtype)
+    if op.reverse:
+        result = np.flip(result, axis=axis)
+    evaluator.values[op.output] = result
 
 
 @register_evaluator("Pad")
