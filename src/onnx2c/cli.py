@@ -15,6 +15,7 @@ from typing import Sequence
 
 import onnx
 
+from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
@@ -23,7 +24,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="onnx2c", description="emmtrix ONNX to C Compiler")
+    description = (
+        "emmtrix ONNX to C Compiler "
+        f"(build date: {BUILD_DATE}, git: {GIT_VERSION})"
+    )
+    parser = argparse.ArgumentParser(prog="onnx2c", description=description)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     def add_restrict_flags(subparser: argparse.ArgumentParser) -> None:
