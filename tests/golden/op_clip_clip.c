@@ -21,10 +21,24 @@
 
 #include <stddef.h>
 
+/*
+ * Weight 1:
+ * Name: min
+ * Shape: []
+ * Elements: 1
+ * Dtype: float
+ */
 static const float min[1] = {
     0.0f
 };
 
+/*
+ * Weight 2:
+ * Name: max
+ * Shape: []
+ * Elements: 1
+ * Dtype: float
+ */
 static const float max[1] = {
     6.0f
 };

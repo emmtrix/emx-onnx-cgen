@@ -23,6 +23,13 @@
 #include <stdint.h>
 #include <string.h>
 
+/*
+ * Weight 1:
+ * Name: split
+ * Shape: (3,)
+ * Elements: 3
+ * Dtype: int64
+ */
 static const int64_t split[3] = {
     2LL, 2LL, 2LL
 };

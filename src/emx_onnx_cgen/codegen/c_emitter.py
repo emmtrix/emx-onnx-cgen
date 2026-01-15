@@ -2855,6 +2855,23 @@ class CEmitter:
         return "\n".join(comment_lines)
 
     @staticmethod
+    def _emit_constant_comment(constant: ConstTensor, index: int) -> str:
+        shape = constant.shape
+        lines = [
+            f"Weight {index}:",
+            f"Name: {constant.name}",
+            f"Shape: {shape if shape else '[]'}",
+            f"Elements: {CEmitter._element_count(shape)}",
+            f"Dtype: {constant.dtype.onnx_name}",
+        ]
+        comment_lines = ["/*"]
+        comment_lines.extend(
+            f" * {line}" if line else " *" for line in lines
+        )
+        comment_lines.append(" */")
+        return "\n".join(comment_lines)
+
+    @staticmethod
     def _collect_constant_includes(constants: tuple[ConstTensor, ...]) -> list[str]:
         if not constants:
             return []
@@ -8832,7 +8849,8 @@ class CEmitter:
         if not constants:
             return ""
         lines: list[str] = []
-        for const in constants:
+        for index, const in enumerate(constants, start=1):
+            lines.append(self._emit_constant_comment(const, index))
             c_type = const.dtype.c_type
             array_suffix = self._array_suffix(const.shape)
             values = [
@@ -8864,7 +8882,8 @@ class CEmitter:
         if not constants:
             return ""
         lines = []
-        for const in constants:
+        for index, const in enumerate(constants, start=1):
+            lines.append(self._emit_constant_comment(const, index))
             c_type = const.dtype.c_type
             array_suffix = self._array_suffix(const.shape)
             lines.append(f"extern const {c_type} {const.name}{array_suffix};")

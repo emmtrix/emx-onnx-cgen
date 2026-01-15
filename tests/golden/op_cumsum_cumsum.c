@@ -22,6 +22,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/*
+ * Weight 1:
+ * Name: axis
+ * Shape: []
+ * Elements: 1
+ * Dtype: int64
+ */
 static const int64_t axis[1] = {
     1LL
 };

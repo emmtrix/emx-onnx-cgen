@@ -22,18 +22,46 @@
 #include <stddef.h>
 #include <math.h>
 
+/*
+ * Weight 1:
+ * Name: scale
+ * Shape: (3,)
+ * Elements: 3
+ * Dtype: float
+ */
 static const float scale[3] = {
     1.0f, 1.5f, -0.5f
 };
 
+/*
+ * Weight 2:
+ * Name: bias
+ * Shape: (3,)
+ * Elements: 3
+ * Dtype: float
+ */
 static const float bias[3] = {
     0.0f, 0.100000001f, -0.200000003f
 };
 
+/*
+ * Weight 3:
+ * Name: mean
+ * Shape: (3,)
+ * Elements: 3
+ * Dtype: float
+ */
 static const float mean[3] = {
     0.5f, -0.5f, 1.0f
 };
 
+/*
+ * Weight 4:
+ * Name: var
+ * Shape: (3,)
+ * Elements: 3
+ * Dtype: float
+ */
 static const float var[3] = {
     0.25f, 0.5f, 1.5f
 };

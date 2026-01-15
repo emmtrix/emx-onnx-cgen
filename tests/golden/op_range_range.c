@@ -22,14 +22,35 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/*
+ * Weight 1:
+ * Name: start
+ * Shape: []
+ * Elements: 1
+ * Dtype: int64
+ */
 static const int64_t start[1] = {
     0LL
 };
 
+/*
+ * Weight 2:
+ * Name: limit
+ * Shape: []
+ * Elements: 1
+ * Dtype: int64
+ */
 static const int64_t limit[1] = {
     4LL
 };
 
+/*
+ * Weight 3:
+ * Name: delta
+ * Shape: []
+ * Elements: 1
+ * Dtype: int64
+ */
 static const int64_t delta[1] = {
     1LL
 };

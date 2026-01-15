@@ -23,6 +23,13 @@
 #include <stdint.h>
 #include <math.h>
 
+/*
+ * Weight 1:
+ * Name: sizes
+ * Shape: (4,)
+ * Elements: 4
+ * Dtype: int64
+ */
 static const int64_t sizes[4] = {
     1LL, 1LL, 4LL, 4LL
 };
