@@ -21,6 +21,22 @@
 
 #include <stddef.h>
 #include <math.h>
+#include <float.h>
+
+#ifndef REF_PI_F
+#define REF_PI_F 3.14159265358979323846f
+#endif
+#ifndef REF_PI_D
+#define REF_PI_D 3.14159265358979323846
+#endif
+
+static inline float ref_scalar_f32_sigmoid(float a) {
+    return 1.0f / (1.0f + expf(-a));
+}
+
+static inline float ref_scalar_f32_tanh(float a) {
+    return tanhf(a);
+}
 
 /*
  * Node 0:
@@ -31,17 +47,10 @@
  *   hidden_size: 3
  *   layout: 0
  */
-
 static inline void model_op0(const float X[restrict 1][1][2], const float W[restrict 1][12][2], const float R[restrict 1][12][3], float Y[restrict 1][1][1][3], float Y_h[restrict 1][1][3], float Y_c[restrict 1][1][3]) {
     {
         const int dir = 0;
         const int reverse = 0;
-        const float alpha_f = 1.0f;
-        const float alpha_g = 1.0f;
-        const float alpha_h = 1.0f;
-        const float beta_f = 0.0f;
-        const float beta_g = 0.0f;
-        const float beta_h = 0.0f;
         float H_prev[1][3];
         float C_prev[1][3];
         for (int b = 0; b < 1; ++b) {
@@ -81,23 +90,12 @@ static inline void model_op0(const float X[restrict 1][1][2], const float W[rest
                         gate_f += h_val * R[dir][3 * 2 + h][i];
                         gate_c += h_val * R[dir][3 * 3 + h][i];
                     }
-                    float i_gate = gate_i;
-                    i_gate = (float)1.0f / ((float)1.0f + expf(-i_gate));
-
-                    float f_gate = gate_f;
-                    f_gate = (float)1.0f / ((float)1.0f + expf(-f_gate));
-
-                    float c_gate = gate_c;
-                    c_gate = tanhf(c_gate);
-
+                    float i_gate = ref_scalar_f32_sigmoid(gate_i);
+                    float f_gate = ref_scalar_f32_sigmoid(gate_f);
+                    float c_gate = ref_scalar_f32_tanh(gate_c);
                     float c_new = f_gate * C_prev[b][h] + i_gate * c_gate;
-                    float o_gate = gate_o;
-                    o_gate = (float)1.0f / ((float)1.0f + expf(-o_gate));
-
-                    float h_gate = c_new;
-                    h_gate = tanhf(h_gate);
-
-                    float h_new = o_gate * h_gate;
+                    float o_gate = ref_scalar_f32_sigmoid(gate_o);
+                    float h_new = o_gate * ref_scalar_f32_tanh(c_new);
                     C_next[h] = c_new;
                     H_next[h] = h_new;
                     Y[step][dir][b][h] = h_new;

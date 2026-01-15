@@ -57,6 +57,20 @@ _SCALAR_TYPE_BY_DTYPE: dict[str, ScalarType] = {
     "bool": ScalarType.BOOL,
 }
 
+_LSTM_ACTIVATION_SPECS: dict[int, tuple[ScalarFunction, int]] = {
+    0: (ScalarFunction.RELU, 0),
+    1: (ScalarFunction.TANH, 0),
+    2: (ScalarFunction.SIGMOID, 0),
+    3: (ScalarFunction.AFFINE, 2),
+    4: (ScalarFunction.LEAKY_RELU, 1),
+    5: (ScalarFunction.THRESHOLDED_RELU, 1),
+    6: (ScalarFunction.SCALED_TANH, 2),
+    7: (ScalarFunction.HARDSIGMOID, 2),
+    8: (ScalarFunction.ELU, 1),
+    9: (ScalarFunction.SOFTSIGN, 0),
+    10: (ScalarFunction.SOFTPLUS, 0),
+}
+
 _C_IDENTIFIER_RE = re.compile(r"[^a-zA-Z0-9_]")
 _C_KEYWORDS = {
     "_Bool",
@@ -2868,6 +2882,7 @@ class CEmitter:
             ScalarFunction.ADD,
             ScalarFunction.ACOS,
             ScalarFunction.ACOSH,
+            ScalarFunction.AFFINE,
             ScalarFunction.LOGICAL_AND,
             ScalarFunction.ASIN,
             ScalarFunction.ASINH,
@@ -2914,6 +2929,7 @@ class CEmitter:
             ScalarFunction.SWISH,
             ScalarFunction.TAN,
             ScalarFunction.TANH,
+            ScalarFunction.SCALED_TANH,
             ScalarFunction.THRESHOLDED_RELU,
             ScalarFunction.LOGICAL_XOR,
         }
@@ -2938,6 +2954,35 @@ class CEmitter:
             )
         except ScalarFunctionError:
             return None
+
+    def _lstm_activation_function_name(
+        self,
+        kind: int,
+        alpha: float,
+        beta: float,
+        dtype: ScalarType,
+        registry: ScalarFunctionRegistry,
+    ) -> str:
+        spec = _LSTM_ACTIVATION_SPECS.get(kind)
+        if spec is None:
+            raise CodegenError(
+                f"Unsupported LSTM activation kind for codegen: {kind}"
+            )
+        function, param_count = spec
+        if param_count == 0:
+            params = ()
+        elif param_count == 1:
+            params = (alpha,)
+        else:
+            params = (alpha, beta)
+        name = self._scalar_function_name(
+            function, dtype, registry, params=params
+        )
+        if name is None:
+            raise CodegenError(
+                f"Failed to resolve scalar function for LSTM activation kind {kind}"
+            )
+        return name
 
     @staticmethod
     def _collect_includes(
@@ -6080,6 +6125,24 @@ class CEmitter:
                     else (None, "", "", False),
                 ]
             )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for LSTM codegen."
+                )
+            activation_functions = tuple(
+                self._lstm_activation_function_name(
+                    kind,
+                    alpha,
+                    beta,
+                    op.dtype,
+                    scalar_registry,
+                )
+                for kind, alpha, beta in zip(
+                    op.activation_kinds,
+                    op.activation_alphas,
+                    op.activation_betas,
+                )
+            )
             rendered = lstm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -6113,19 +6176,7 @@ class CEmitter:
                 layout=op.layout,
                 direction=op.direction,
                 input_forget=op.input_forget,
-                activation_kinds=op.activation_kinds,
-                activation_alphas=tuple(
-                    CEmitter._format_floating(value, op.dtype)
-                    for value in op.activation_alphas
-                ),
-                activation_betas=tuple(
-                    CEmitter._format_floating(value, op.dtype)
-                    for value in op.activation_betas
-                ),
-                exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
-                tanh_fn=CEmitter._math_fn(op.dtype, "tanhf", "tanh"),
-                log1p_fn=CEmitter._math_fn(op.dtype, "log1pf", "log1p"),
-                fabs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
+                activation_functions=activation_functions,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
