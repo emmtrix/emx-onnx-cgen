@@ -6,7 +6,6 @@
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
-| ReduceMean output shape rank must match input rank | 19 | ████████████████ |
 | Unsupported op Pad | 18 | ███████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ███████████████ |
@@ -29,6 +28,7 @@
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
 | Unsupported op LpPool | 8 | ███████ |
 | Unsupported op QLinearMatMul | 8 | ███████ |
+| CastLike input and output shapes must match | 8 | ███████ |
 | Unsupported op RotaryEmbedding | 8 | ███████ |
 | tuple index out of range | 8 | ███████ |
 | Unsupported op Hardmax | 7 | ██████ |
@@ -49,7 +49,6 @@
 | Unsupported op Col2Im | 5 | ████ |
 | Unsupported op DequantizeLinear | 5 | ████ |
 | Or expects identical input/output shapes | 5 | ████ |
-| ReduceSum output shape must be (1, 1, 1), got () | 5 | ████ |
 | Unsupported op ScatterND | 5 | ████ |
 | Xor expects identical input/output shapes | 5 | ████ |
 | Unsupported op AffineGrid | 4 | ███ |
@@ -62,7 +61,6 @@
 | Concat output shape must be (4,), got (1,) | 4 | ███ |
 | Unsupported op OneHot | 4 | ███ |
 | Unsupported op OptionalHasElement | 4 | ███ |
-| CastLike input and output shapes must match | 4 | ███ |
 | Unsupported op RNN | 4 | ███ |
 | AveragePool supports auto_pad=NOTSET only | 3 | ██ |
 | Unsupported op Bernoulli | 3 | ██ |
@@ -75,6 +73,7 @@
 | LeakyRelu only supports alpha=0.01 | 3 | ██ |
 | Unsupported op Loop | 3 | ██ |
 | Unsupported op Momentum | 3 | ██ |
+| ReduceMean output shape must be (2, 3, 4, 1), got () | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
 | Unsupported op TensorScatter | 3 | ██ |
 | Unsupported op Adagrad | 2 | ██ |
@@ -97,6 +96,11 @@
 | Pow expects matching dtypes, got float, int32 | 2 | ██ |
 | Pow expects matching dtypes, got float, int64 | 2 | ██ |
 | Unsupported op ReverseSequence | 2 | ██ |
+| ReduceMean output shape must be (3, 1), got () | 2 | ██ |
+| ReduceMean output shape must be (2, 1, 1), got () | 2 | ██ |
+| ReduceMean output shape must be (2, 3, 1), got () | 2 | ██ |
+| ReduceMean output shape must be (2, 1, 1, 1), got () | 2 | ██ |
+| ReduceMean output shape must be (2, 3, 1, 1), got () | 2 | ██ |
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |

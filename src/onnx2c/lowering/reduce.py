@@ -7,6 +7,7 @@ import numpy as np
 from shared.scalar_types import ScalarType
 
 from ..codegen.c_emitter import ReduceOp, ReshapeOp
+from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
 from .registry import register_lowering
@@ -131,6 +132,109 @@ def _axes_input_info(graph: Graph, node: Node) -> _AxesInputSpec:
     )
 
 
+def _axes_values_from_shape_ops(
+    graph: Graph, axes_input: str, node: Node
+) -> tuple[int, ...] | None:
+    node_by_output = {
+        output: graph_node
+        for graph_node in graph.nodes
+        for output in graph_node.outputs
+    }
+    cache: dict[str, np.ndarray] = {}
+
+    def resolve_value(name: str) -> np.ndarray | None:
+        if name in cache:
+            return cache[name]
+        initializer = _find_initializer(graph, name)
+        if initializer is not None:
+            value = np.array(initializer.data)
+            cache[name] = value
+            return value
+        producer = node_by_output.get(name)
+        if producer is None:
+            return None
+        op_type = producer.op_type
+        if op_type == "Identity":
+            if len(producer.inputs) != 1:
+                return None
+            input_value = resolve_value(producer.inputs[0])
+            if input_value is None:
+                return None
+            value = np.array(input_value, copy=True)
+        elif op_type == "Cast":
+            if len(producer.inputs) != 1:
+                return None
+            input_value = resolve_value(producer.inputs[0])
+            if input_value is None:
+                return None
+            to_attr = producer.attrs.get("to")
+            if to_attr is None:
+                return None
+            dtype = scalar_type_from_onnx(int(to_attr))
+            if dtype is None:
+                return None
+            value = np.array(input_value, dtype=dtype.np_dtype)
+        elif op_type == "Shape":
+            if len(producer.inputs) != 1:
+                return None
+            input_shape = _value_shape(graph, producer.inputs[0], node)
+            value = np.array(input_shape, dtype=np.int64)
+        elif op_type == "Size":
+            if len(producer.inputs) != 1:
+                return None
+            input_shape = _value_shape(graph, producer.inputs[0], node)
+            value = np.array(_shape_product(input_shape), dtype=np.int64)
+        elif op_type == "Range":
+            if len(producer.inputs) != 3:
+                return None
+            start_value = resolve_value(producer.inputs[0])
+            limit_value = resolve_value(producer.inputs[1])
+            delta_value = resolve_value(producer.inputs[2])
+            if (
+                start_value is None
+                or limit_value is None
+                or delta_value is None
+            ):
+                return None
+            start = np.array(start_value).reshape(-1)[0]
+            limit = np.array(limit_value).reshape(-1)[0]
+            delta = np.array(delta_value).reshape(-1)[0]
+            if float(delta) == 0.0:
+                raise UnsupportedOpError("Range delta must be non-zero")
+            dtype = _value_dtype(graph, producer.outputs[0], node)
+            value = np.arange(
+                start, limit, delta, dtype=dtype.np_dtype
+            )
+        elif op_type in {"Add", "Sub"}:
+            if len(producer.inputs) != 2:
+                return None
+            left_value = resolve_value(producer.inputs[0])
+            right_value = resolve_value(producer.inputs[1])
+            if left_value is None or right_value is None:
+                return None
+            if op_type == "Add":
+                value = np.array(left_value) + np.array(right_value)
+            else:
+                value = np.array(left_value) - np.array(right_value)
+        else:
+            return None
+        cache[name] = value
+        return value
+
+    axes_value = resolve_value(axes_input)
+    if axes_value is None:
+        return None
+    if axes_value.dtype.kind not in {"i", "u"}:
+        raise UnsupportedOpError(
+            f"{node.op_type} axes input must be int64 or int32"
+        )
+    return tuple(int(axis) for axis in axes_value.ravel())
+
+
+def _all_ones_shape(shape: tuple[int, ...]) -> bool:
+    return all(dim == 1 for dim in shape)
+
+
 def _infer_axes_from_shapes(
     input_shape: tuple[int, ...],
     output_shape: tuple[int, ...],
@@ -227,8 +331,16 @@ def resolve_reduce_axes(
         axes_input_shape = None
         axes_input_dtype = None
     elif axes_input.present:
-        output_shape = _value_shape(graph, node.outputs[0], node)
-        axes = _infer_axes_from_shapes(input_shape, output_shape, keepdims, node)
+        axes = None
+        if axes_input.input_name:
+            axes = _axes_values_from_shape_ops(
+                graph, axes_input.input_name, node
+            )
+        if axes is None:
+            output_shape = _value_shape(graph, node.outputs[0], node)
+            axes = _infer_axes_from_shapes(
+                input_shape, output_shape, keepdims, node
+            )
         if axes is None:
             axes_input_name = axes_input.input_name
             axes_input_shape = axes_input.input_shape
@@ -319,9 +431,15 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
         )
     expected_output_shape = _value_shape(graph, node.outputs[0], node)
     if expected_output_shape != output_shape:
-        raise ShapeInferenceError(
-            f"{node.op_type} output shape must be {output_shape}, got {expected_output_shape}"
-        )
+        if not (
+            _all_ones_shape(expected_output_shape)
+            and _all_ones_shape(output_shape)
+            and _shape_product(expected_output_shape)
+            == _shape_product(output_shape)
+        ):
+            raise ShapeInferenceError(
+                f"{node.op_type} output shape must be {output_shape}, got {expected_output_shape}"
+            )
     reduce_count = _shape_product(tuple(input_shape[axis] for axis in axes))
     return _ReduceSpec(
         axes=axes,
