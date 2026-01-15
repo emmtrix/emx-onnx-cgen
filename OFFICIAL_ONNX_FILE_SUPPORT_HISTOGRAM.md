@@ -8,7 +8,6 @@
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ███████████████ |
-| Unsupported op GridSample | 18 | ███████████████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |

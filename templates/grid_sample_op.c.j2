@@ -1,0 +1,182 @@
+static inline double {{ op_name }}_reflect(double value, double x_min, double x_max) {
+    const double range = x_max - x_min;
+    if (range == 0.0) {
+        return x_min;
+    }
+    if (value < x_min) {
+        const double dx = x_min - value;
+        const int n = (int)(dx / range);
+        const double r = dx - (double)n * range;
+        return (n % 2 == 0) ? (x_min + r) : (x_max - r);
+    }
+    if (value > x_max) {
+        const double dx = value - x_max;
+        const int n = (int)(dx / range);
+        const double r = dx - (double)n * range;
+        return (n % 2 == 0) ? (x_max - r) : (x_min + r);
+    }
+    return value;
+}
+{% if mode == "cubic" %}
+
+static inline void {{ op_name }}_cubic_coeffs(double x, double coeffs[4]) {
+    const double alpha = -0.75;
+    const double abs_x = fabs(x);
+    const double inv_x = 1.0 - abs_x;
+    const double span = 2.0 - abs_x;
+    coeffs[0] = ((alpha * (abs_x + 1.0) - 5.0 * alpha) * (abs_x + 1.0) + 8.0 * alpha) * (abs_x + 1.0) - 4.0 * alpha;
+    coeffs[1] = ((alpha + 2.0) * abs_x - (alpha + 3.0)) * abs_x * abs_x + 1.0;
+    coeffs[2] = ((alpha + 2.0) * inv_x - (alpha + 3.0)) * inv_x * inv_x + 1.0;
+    coeffs[3] = ((alpha * span - 5.0 * alpha) * span + 8.0 * alpha) * span - 4.0 * alpha;
+}
+{% endif %}
+
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const int input_spatial[{{ spatial_rank }}] = { {% for dim in input_spatial %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const double border_min[{{ spatial_rank }}] = { {% for dim in input_spatial %}{% if align_corners %}0.0{% else %}-0.5{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const double border_max[{{ spatial_rank }}] = { {% for dim in input_spatial %}{% if align_corners %}{{ dim - 1 }}.0{% else %}{{ dim - 0.5 }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} };
+{% set n_var = output_loop_vars[0] %}
+{% set c_var = output_loop_vars[1] %}
+{% set spatial_vars = output_loop_vars[2:] %}
+    for (size_t {{ n_var }} = 0; {{ n_var }} < {{ output_shape[0] }}; ++{{ n_var }}) {
+        for (size_t {{ c_var }} = 0; {{ c_var }} < {{ output_shape[1] }}; ++{{ c_var }}) {
+{% for index in range(spatial_rank) %}
+            for (size_t {{ spatial_vars[index] }} = 0; {{ spatial_vars[index] }} < {{ output_spatial[index] }}; ++{{ spatial_vars[index] }}) {
+{% endfor %}
+                double coords[{{ spatial_rank }}];
+{% for dim in range(spatial_rank) %}
+                const double grid_{{ dim }} = (double){{ grid }}[{{ n_var }}]{% for var in spatial_vars %}[{{ var }}]{% endfor %}[{{ spatial_rank - 1 - dim }}];
+{% if align_corners %}
+                coords[{{ dim }}] = (grid_{{ dim }} + 1.0) * (double)(input_spatial[{{ dim }}] - 1) / 2.0;
+{% else %}
+                coords[{{ dim }}] = ((grid_{{ dim }} + 1.0) * (double)input_spatial[{{ dim }}] - 1.0) / 2.0;
+{% endif %}
+{% endfor %}
+{% if padding_mode != "zeros" %}
+{% for dim in range(spatial_rank) %}
+                if (coords[{{ dim }}] < border_min[{{ dim }}] || coords[{{ dim }}] > border_max[{{ dim }}]) {
+{% if padding_mode == "border" %}
+                    if (coords[{{ dim }}] < 0.0) {
+                        coords[{{ dim }}] = 0.0;
+                    } else if (coords[{{ dim }}] > (double)(input_spatial[{{ dim }}] - 1)) {
+                        coords[{{ dim }}] = (double)(input_spatial[{{ dim }}] - 1);
+                    }
+{% else %}
+                    coords[{{ dim }}] = {{ op_name }}_reflect(coords[{{ dim }}], border_min[{{ dim }}], border_max[{{ dim }}]);
+{% endif %}
+                }
+{% endfor %}
+{% endif %}
+{% if mode == "nearest" %}
+                int in_bounds = 1;
+{% for dim in range(spatial_rank) %}
+                int idx{{ dim }} = (int)nearbyint(coords[{{ dim }}]);
+{% if padding_mode == "zeros" %}
+                if (idx{{ dim }} < 0 || idx{{ dim }} >= input_spatial[{{ dim }}]) {
+                    in_bounds = 0;
+                }
+{% elif padding_mode == "border" %}
+                if (idx{{ dim }} < 0) {
+                    idx{{ dim }} = 0;
+                } else if (idx{{ dim }} >= input_spatial[{{ dim }}]) {
+                    idx{{ dim }} = input_spatial[{{ dim }}] - 1;
+                }
+{% else %}
+                idx{{ dim }} = (int){{ op_name }}_reflect((double)idx{{ dim }}, border_min[{{ dim }}], border_max[{{ dim }}]);
+{% endif %}
+{% endfor %}
+                if (!in_bounds) {
+                    {{ output }}[{{ n_var }}][{{ c_var }}]{% for var in spatial_vars %}[{{ var }}]{% endfor %} = ({{ c_type }})0;
+                } else {
+                    {{ output }}[{{ n_var }}][{{ c_var }}]{% for var in spatial_vars %}[{{ var }}]{% endfor %} = {{ input0 }}[{{ n_var }}][{{ c_var }}]{% for dim in range(spatial_rank) %}[idx{{ dim }}]{% endfor %};
+                }
+{% elif mode == "linear" %}
+                int base[{{ spatial_rank }}];
+                int upper[{{ spatial_rank }}];
+                double w0[{{ spatial_rank }}];
+                double w1[{{ spatial_rank }}];
+{% for dim in range(spatial_rank) %}
+                base[{{ dim }}] = (int)floor(coords[{{ dim }}]);
+                upper[{{ dim }}] = base[{{ dim }}] + 1;
+                w1[{{ dim }}] = coords[{{ dim }}] - (double)base[{{ dim }}];
+                w0[{{ dim }}] = 1.0 - w1[{{ dim }}];
+{% endfor %}
+                double acc = 0.0;
+{% for offsets in linear_offsets %}
+                {
+                    double weight = 1.0;
+{% for dim in range(spatial_rank) %}
+                    int idx{{ dim }} = {% if offsets[dim] == 0 %}base[{{ dim }}]{% else %}upper[{{ dim }}]{% endif %};
+                    weight *= {% if offsets[dim] == 0 %}w0[{{ dim }}]{% else %}w1[{{ dim }}]{% endif %};
+{% endfor %}
+                    int in_bounds = 1;
+{% for dim in range(spatial_rank) %}
+{% if padding_mode == "zeros" %}
+                    if (idx{{ dim }} < 0 || idx{{ dim }} >= input_spatial[{{ dim }}]) {
+                        in_bounds = 0;
+                    }
+{% elif padding_mode == "border" %}
+                    if (idx{{ dim }} < 0) {
+                        idx{{ dim }} = 0;
+                    } else if (idx{{ dim }} >= input_spatial[{{ dim }}]) {
+                        idx{{ dim }} = input_spatial[{{ dim }}] - 1;
+                    }
+{% else %}
+                    idx{{ dim }} = (int){{ op_name }}_reflect((double)idx{{ dim }}, border_min[{{ dim }}], border_max[{{ dim }}]);
+{% endif %}
+{% endfor %}
+                    if (in_bounds) {
+                        acc += weight * (double){{ input0 }}[{{ n_var }}][{{ c_var }}]{% for dim in range(spatial_rank) %}[idx{{ dim }}]{% endfor %};
+                    }
+                }
+{% endfor %}
+                {{ output }}[{{ n_var }}][{{ c_var }}]{% for var in spatial_vars %}[{{ var }}]{% endfor %} = ({{ c_type }})acc;
+{% else %}
+                int base[{{ spatial_rank }}];
+                int idxs[{{ spatial_rank }}][4];
+                double coeffs[{{ spatial_rank }}][4];
+{% for dim in range(spatial_rank) %}
+                base[{{ dim }}] = (int)floor(coords[{{ dim }}]);
+                idxs[{{ dim }}][0] = base[{{ dim }}] - 1;
+                idxs[{{ dim }}][1] = base[{{ dim }}];
+                idxs[{{ dim }}][2] = base[{{ dim }}] + 1;
+                idxs[{{ dim }}][3] = base[{{ dim }}] + 2;
+                {{ op_name }}_cubic_coeffs(coords[{{ dim }}] - (double)base[{{ dim }}], coeffs[{{ dim }}]);
+{% endfor %}
+                double acc = 0.0;
+{% for offsets in cubic_offsets %}
+                {
+                    double weight = 1.0;
+{% for dim in range(spatial_rank) %}
+                    int idx{{ dim }} = idxs[{{ dim }}][{{ offsets[dim] }}];
+                    weight *= coeffs[{{ dim }}][{{ offsets[dim] }}];
+{% endfor %}
+                    int in_bounds = 1;
+{% for dim in range(spatial_rank) %}
+{% if padding_mode == "zeros" %}
+                    if (idx{{ dim }} < 0 || idx{{ dim }} >= input_spatial[{{ dim }}]) {
+                        in_bounds = 0;
+                    }
+{% elif padding_mode == "border" %}
+                    if (idx{{ dim }} < 0) {
+                        idx{{ dim }} = 0;
+                    } else if (idx{{ dim }} >= input_spatial[{{ dim }}]) {
+                        idx{{ dim }} = input_spatial[{{ dim }}] - 1;
+                    }
+{% else %}
+                    idx{{ dim }} = (int){{ op_name }}_reflect((double)idx{{ dim }}, border_min[{{ dim }}], border_max[{{ dim }}]);
+{% endif %}
+{% endfor %}
+                    if (in_bounds) {
+                        acc += weight * (double){{ input0 }}[{{ n_var }}][{{ c_var }}]{% for dim in range(spatial_rank) %}[idx{{ dim }}]{% endfor %};
+                    }
+                }
+{% endfor %}
+                {{ output }}[{{ n_var }}][{{ c_var }}]{% for var in spatial_vars %}[{{ var }}]{% endfor %} = ({{ c_type }})acc;
+{% endif %}
+{% for index in range(spatial_rank) %}
+            }
+{% endfor %}
+        }
+    }
+}

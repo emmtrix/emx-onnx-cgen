@@ -19,6 +19,7 @@ from ..lowering.flatten import lower_flatten
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
 from ..lowering.lp_normalization import lower_lp_normalization
+from ..lowering.grid_sample import lower_grid_sample
 from ..lowering.instance_normalization import lower_instance_normalization
 from ..lowering.group_normalization import lower_group_normalization
 from ..lowering.layer_normalization import lower_layer_normalization
@@ -219,6 +220,274 @@ def _eval_swish(evaluator: Evaluator, node: Node) -> None:
     alpha = float(node.attrs.get("alpha", 1.0))
     x = evaluator.values[node.inputs[0]]
     evaluator.values[node.outputs[0]] = x / (1.0 + np.exp(-alpha * x))
+
+
+def _grid_sample_denormalize(
+    value: float, length: int, *, align_corners: bool
+) -> float:
+    if align_corners:
+        return (value + 1.0) * (length - 1) / 2.0
+    return ((value + 1.0) * length - 1.0) / 2.0
+
+
+def _grid_sample_reflect(value: float, x_min: float, x_max: float) -> float:
+    rng = x_max - x_min
+    if rng == 0:
+        return x_min
+    if value < x_min:
+        dx = x_min - value
+        n = int(dx / rng)
+        r = dx - n * rng
+        return x_min + r if n % 2 == 0 else x_max - r
+    if value > x_max:
+        dx = value - x_max
+        n = int(dx / rng)
+        r = dx - n * rng
+        return x_max - r if n % 2 == 0 else x_min + r
+    return value
+
+
+def _grid_sample_border(
+    dims: tuple[int, ...], *, align_corners: bool
+) -> tuple[list[float], list[float]]:
+    min_vals: list[float] = []
+    max_vals: list[float] = []
+    for dim in dims:
+        if align_corners:
+            min_vals.append(0.0)
+            max_vals.append(dim - 1.0)
+        else:
+            min_vals.append(-0.5)
+            max_vals.append(dim - 0.5)
+    return min_vals, max_vals
+
+
+def _grid_sample_pixel_at(
+    data: np.ndarray,
+    indices: list[int],
+    border_min: list[float],
+    border_max: list[float],
+    padding_mode: str,
+) -> float:
+    if padding_mode == "zeros":
+        for idx, dim in zip(indices, data.shape):
+            if idx < 0 or idx >= dim:
+                return data.dtype.type(0)
+        return data[tuple(indices)]
+    if padding_mode == "border":
+        clamped = [
+            0 if idx < 0 else dim - 1 if idx >= dim else idx
+            for idx, dim in zip(indices, data.shape)
+        ]
+        return data[tuple(clamped)]
+    reflected = [
+        int(_grid_sample_reflect(idx, border_min[i], border_max[i]))
+        for i, idx in enumerate(indices)
+    ]
+    return data[tuple(reflected)]
+
+
+def _grid_sample_linear_1d(
+    data: np.ndarray,
+    coord: float,
+    border_min: float,
+    border_max: float,
+    padding_mode: str,
+) -> float:
+    base = int(np.floor(coord))
+    weight = coord - base
+    lower = _grid_sample_pixel_at(
+        data, [base], [border_min], [border_max], padding_mode
+    )
+    upper = _grid_sample_pixel_at(
+        data, [base + 1], [border_min], [border_max], padding_mode
+    )
+    return (1.0 - weight) * lower + weight * upper
+
+
+def _grid_sample_cubic_coeffs(x: float) -> np.ndarray:
+    alpha = -0.75
+    abs_x = abs(x)
+    coeffs = np.empty((4,), dtype=np.float64)
+    coeffs[0] = (
+        (alpha * (abs_x + 1.0) - 5.0 * alpha) * (abs_x + 1.0) + 8.0 * alpha
+    ) * (abs_x + 1.0) - 4.0 * alpha
+    coeffs[1] = ((alpha + 2.0) * abs_x - (alpha + 3.0)) * abs_x * abs_x + 1.0
+    inv_x = 1.0 - abs_x
+    coeffs[2] = ((alpha + 2.0) * inv_x - (alpha + 3.0)) * inv_x * inv_x + 1.0
+    span = 2.0 - abs_x
+    coeffs[3] = (
+        (alpha * span - 5.0 * alpha) * span + 8.0 * alpha
+    ) * span - 4.0 * alpha
+    return coeffs
+
+
+def _grid_sample_cubic_1d(
+    data: np.ndarray,
+    coord: float,
+    border_min: float,
+    border_max: float,
+    padding_mode: str,
+) -> float:
+    base = int(np.floor(coord))
+    coeffs = _grid_sample_cubic_coeffs(coord - base)
+    values = np.empty((4,), dtype=np.float64)
+    for offset in range(4):
+        values[offset] = _grid_sample_pixel_at(
+            data,
+            [base - 1 + offset],
+            [border_min],
+            [border_max],
+            padding_mode,
+        )
+    return float(coeffs @ values)
+
+
+def _grid_sample_linear_nd(
+    data: np.ndarray,
+    coords: np.ndarray,
+    border_min: list[float],
+    border_max: list[float],
+    padding_mode: str,
+) -> float:
+    if data.ndim == 1:
+        return _grid_sample_linear_1d(
+            data, float(coords[0]), border_min[0], border_max[0], padding_mode
+        )
+    reduced = np.array(
+        [
+            _grid_sample_linear_nd(
+                data[index],
+                coords[1:],
+                border_min[1:],
+                border_max[1:],
+                padding_mode,
+            )
+            for index in range(data.shape[0])
+        ],
+        dtype=np.float64,
+    )
+    return _grid_sample_linear_1d(
+        reduced, float(coords[0]), border_min[0], border_max[0], padding_mode
+    )
+
+
+def _grid_sample_cubic_nd(
+    data: np.ndarray,
+    coords: np.ndarray,
+    border_min: list[float],
+    border_max: list[float],
+    padding_mode: str,
+) -> float:
+    if data.ndim == 1:
+        return _grid_sample_cubic_1d(
+            data, float(coords[0]), border_min[0], border_max[0], padding_mode
+        )
+    reduced = np.array(
+        [
+            _grid_sample_cubic_nd(
+                data[index],
+                coords[1:],
+                border_min[1:],
+                border_max[1:],
+                padding_mode,
+            )
+            for index in range(data.shape[0])
+        ],
+        dtype=np.float64,
+    )
+    return _grid_sample_cubic_1d(
+        reduced, float(coords[0]), border_min[0], border_max[0], padding_mode
+    )
+
+
+@register_evaluator("GridSample")
+def _eval_grid_sample(evaluator: Evaluator, node: Node) -> None:
+    op = lower_grid_sample(evaluator.graph, node)
+    input_data = evaluator.values[op.input0]
+    grid_data = evaluator.values[op.grid]
+    output = np.empty(op.output_shape, dtype=input_data.dtype)
+    if output.size == 0:
+        evaluator.values[op.output] = output
+        return
+    dims = op.input_spatial
+    border_min, border_max = _grid_sample_border(
+        dims, align_corners=op.align_corners
+    )
+    for n in range(op.output_shape[0]):
+        grid_batch = grid_data[n]
+        for c in range(op.output_shape[1]):
+            input_slice = input_data[n, c]
+            for out_idx in np.ndindex(*op.output_spatial):
+                coords = np.array(
+                    grid_batch[out_idx][::-1], dtype=np.float64
+                )
+                for i, dim in enumerate(dims):
+                    coords[i] = _grid_sample_denormalize(
+                        float(coords[i]), dim, align_corners=op.align_corners
+                    )
+                if op.mode == "nearest":
+                    rounded = np.rint(coords).astype(int)
+                    if op.padding_mode != "zeros":
+                        for i, dim in enumerate(dims):
+                            if (
+                                rounded[i] < border_min[i]
+                                or rounded[i] > border_max[i]
+                            ):
+                                if op.padding_mode == "border":
+                                    rounded[i] = min(
+                                        max(rounded[i], 0), dim - 1
+                                    )
+                                else:
+                                    rounded[i] = int(
+                                        _grid_sample_reflect(
+                                            rounded[i],
+                                            border_min[i],
+                                            border_max[i],
+                                        )
+                                    )
+                    value = _grid_sample_pixel_at(
+                        input_slice,
+                        rounded.tolist(),
+                        border_min,
+                        border_max,
+                        op.padding_mode,
+                    )
+                else:
+                    if op.padding_mode != "zeros":
+                        for i, dim in enumerate(dims):
+                            if (
+                                coords[i] < border_min[i]
+                                or coords[i] > border_max[i]
+                            ):
+                                if op.padding_mode == "border":
+                                    coords[i] = min(
+                                        max(coords[i], 0.0), dim - 1.0
+                                    )
+                                else:
+                                    coords[i] = _grid_sample_reflect(
+                                        coords[i],
+                                        border_min[i],
+                                        border_max[i],
+                                    )
+                    if op.mode == "linear":
+                        value = _grid_sample_linear_nd(
+                            input_slice,
+                            coords,
+                            border_min,
+                            border_max,
+                            op.padding_mode,
+                        )
+                    else:
+                        value = _grid_sample_cubic_nd(
+                            input_slice,
+                            coords,
+                            border_min,
+                            border_max,
+                            op.padding_mode,
+                        )
+                output[(n, c, *out_idx)] = value
+    evaluator.values[op.output] = output
 
 
 _VARIADIC_COMBINE_FUNCS: dict[
