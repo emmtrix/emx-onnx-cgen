@@ -4472,6 +4472,26 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LstmOp):
+            used_params: set[str] = set()
+
+            def unique_param(name: str | None) -> str | None:
+                if name is None:
+                    return None
+                unique = self._ensure_unique_identifier(name, used_params)
+                used_params.add(unique)
+                return unique
+
+            input_x = unique_param(op.input_x)
+            input_w = unique_param(op.input_w)
+            input_r = unique_param(op.input_r)
+            input_b = unique_param(op.input_b)
+            input_sequence_lens = unique_param(op.input_sequence_lens)
+            input_initial_h = unique_param(op.input_initial_h)
+            input_initial_c = unique_param(op.input_initial_c)
+            input_p = unique_param(op.input_p)
+            output_y = unique_param(op.output_y)
+            output_y_h = unique_param(op.output_y_h)
+            output_y_c = unique_param(op.output_y_c)
             input_x_shape = (
                 (op.seq_length, op.batch_size, op.input_size)
                 if op.layout == 0
@@ -4508,17 +4528,17 @@ class CEmitter:
             rendered = lstm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
-                input_x=op.input_x,
-                input_w=op.input_w,
-                input_r=op.input_r,
-                input_b=op.input_b,
-                input_sequence_lens=op.input_sequence_lens,
-                input_initial_h=op.input_initial_h,
-                input_initial_c=op.input_initial_c,
-                input_p=op.input_p,
-                output_y=op.output_y,
-                output_y_h=op.output_y_h,
-                output_y_c=op.output_y_c,
+                input_x=input_x,
+                input_w=input_w,
+                input_r=input_r,
+                input_b=input_b,
+                input_sequence_lens=input_sequence_lens,
+                input_initial_h=input_initial_h,
+                input_initial_c=input_initial_c,
+                input_p=input_p,
+                output_y=output_y,
+                output_y_h=output_y_h,
+                output_y_c=output_y_c,
                 c_type=c_type,
                 seq_c_type=(op.sequence_lens_dtype or ScalarType.I64).c_type,
                 zero_literal=zero_literal,
