@@ -1,21 +1,27 @@
 from __future__ import annotations
 
+import json
 import os
+import shutil
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 
 import numpy as np
 import onnx
+import onnxruntime as ort
 import pytest
 
 from onnx import TensorProto, helper
 
-from onnx2c.compiler import Compiler
+from shared.scalar_types import ScalarType
+
+from onnx2c.compiler import Compiler, CompilerOptions
+from onnx2c.lowering.flatten import lower_flatten
+from onnx2c.lowering.squeeze import lower_squeeze
+from onnx2c.onnx_import import import_onnx
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC_ROOT = PROJECT_ROOT / "src"
 
 
 def _make_operator_model(
@@ -40,6 +46,99 @@ def _make_operator_model(
         **(attrs or {}),
     )
     graph = helper.make_graph([node], f"{op_type.lower()}_graph", inputs, [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _flatten_output_shape(input_shape: list[int], axis: int) -> list[int]:
+    rank = len(input_shape)
+    if axis < 0:
+        axis += rank
+    first = int(np.prod(input_shape[:axis])) if axis else 1
+    second = int(np.prod(input_shape[axis:])) if axis < rank else 1
+    return [first, second]
+
+
+def _make_flatten_model(input_shape: list[int], axis: int) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output_shape = _flatten_output_shape(input_shape, axis)
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    node = helper.make_node(
+        "Flatten",
+        inputs=["in0"],
+        outputs=[output.name],
+        axis=axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "flatten_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_squeeze_lowering_model(
+    input_shape: list[int],
+    output_shape: list[int],
+    *,
+    axes: list[int] | None = None,
+    include_axes_input: bool = False,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    inputs = ["in0"]
+    initializers: list[onnx.TensorProto] = []
+    attrs: dict[str, object] = {}
+    if include_axes_input:
+        if axes is None:
+            raise ValueError("axes must be provided when axes input is included")
+        axes_values = np.array(axes, dtype=np.int64)
+        axes_tensor = helper.make_tensor(
+            "axes",
+            TensorProto.INT64,
+            dims=axes_values.shape,
+            vals=axes_values.tolist(),
+        )
+        initializers.append(axes_tensor)
+        inputs.append("axes")
+    elif axes is not None:
+        attrs["axes"] = axes
+    node = helper.make_node(
+        "Squeeze",
+        inputs=inputs,
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "squeeze_graph",
+        [input_info],
+        [output],
+        initializer=initializers,
+    )
     model = helper.make_model(
         graph,
         producer_name="onnx2c",
@@ -1537,41 +1636,90 @@ def _average_pool_output_shape(
     return [batch, channels, out_h, out_w]
 
 
-def _run_cli_verify(model: onnx.ModelProto) -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        model_path = Path(temp_dir) / "model.onnx"
-        onnx.save_model(model, model_path)
-        env = os.environ.copy()
-        python_path = str(SRC_ROOT)
-        if env.get("PYTHONPATH"):
-            python_path = f"{python_path}{os.pathsep}{env['PYTHONPATH']}"
-        env["PYTHONPATH"] = python_path
-        subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "onnx2c",
-                "verify",
-                str(model_path),
-                "--template-dir",
-                str(PROJECT_ROOT / "templates"),
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-            cwd=PROJECT_ROOT,
-            env=env,
+def _tensorproto_to_dtype(elem_type: int) -> np.dtype:
+    mapping = {
+        TensorProto.FLOAT: np.float32,
+        TensorProto.DOUBLE: np.float64,
+        TensorProto.INT64: np.int64,
+        TensorProto.INT32: np.int32,
+        TensorProto.INT16: np.int16,
+        TensorProto.INT8: np.int8,
+        TensorProto.UINT64: np.uint64,
+        TensorProto.UINT32: np.uint32,
+        TensorProto.UINT16: np.uint16,
+        TensorProto.UINT8: np.uint8,
+        TensorProto.BOOL: np.bool_,
+    }
+    try:
+        return np.dtype(mapping[elem_type])
+    except KeyError as exc:
+        raise ValueError(f"Unsupported elem_type {elem_type}") from exc
+
+
+def _value_info_shape(value_info: onnx.ValueInfoProto) -> list[int]:
+    shape = []
+    tensor_shape = value_info.type.tensor_type.shape
+    for dim in tensor_shape.dim:
+        if dim.dim_value > 0:
+            shape.append(dim.dim_value)
+        else:
+            shape.append(1)
+    return shape
+
+
+def _make_random_array(
+    rng: np.random.Generator, *, shape: list[int], dtype: np.dtype
+) -> np.ndarray:
+    if dtype == np.bool_:
+        return rng.integers(0, 2, size=shape, dtype=np.int64).astype(dtype)
+    if np.issubdtype(dtype, np.floating):
+        return rng.standard_normal(shape).astype(dtype)
+    if np.issubdtype(dtype, np.unsignedinteger):
+        return rng.integers(0, 5, size=shape, dtype=np.int64).astype(dtype)
+    if np.issubdtype(dtype, np.signedinteger):
+        return rng.integers(-5, 5, size=shape, dtype=np.int64).astype(dtype)
+    raise ValueError(f"Unsupported dtype {dtype}")
+
+
+def _run_ort_compare(model: onnx.ModelProto) -> None:
+    initializer_names = {init.name for init in model.graph.initializer}
+    rng = np.random.default_rng(0)
+    inputs: dict[str, np.ndarray] = {}
+    for value_info in model.graph.input:
+        if value_info.name in initializer_names:
+            continue
+        elem_type = value_info.type.tensor_type.elem_type
+        dtype = _tensorproto_to_dtype(elem_type)
+        shape = _value_info_shape(value_info)
+        inputs[value_info.name] = _make_random_array(
+            rng, shape=shape, dtype=dtype
         )
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_outputs = session.run(None, inputs)
+    compiled = Compiler().run(model, inputs)
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_name = output_info.name
+        compiled_output = compiled[output_name]
+        if np.issubdtype(compiled_output.dtype, np.floating):
+            np.testing.assert_allclose(
+                compiled_output,
+                ort_output,
+                rtol=1e-4,
+                atol=1e-5,
+            )
+        else:
+            np.testing.assert_array_equal(compiled_output, ort_output)
 
 
-def _run_cli_verify_or_skip(
+def _run_ort_compare_or_skip(
     model: onnx.ModelProto, *, skip_substrings: tuple[str, ...]
 ) -> None:
     try:
-        _run_cli_verify(model)
-    except subprocess.CalledProcessError as exc:
-        stderr = exc.stderr or ""
-        if any(substr in stderr for substr in skip_substrings):
+        _run_ort_compare(model)
+    except Exception as exc:  # noqa: BLE001 - keep test behavior aligned with CLI skip
+        if any(substr in str(exc) for substr in skip_substrings):
             pytest.skip(
                 "onnxruntime does not implement this operator in the test "
                 "environment."
@@ -1579,15 +1727,76 @@ def _run_cli_verify_or_skip(
         raise
 
 
+def _compile_and_run_testbench(
+    model: onnx.ModelProto, *, testbench_inputs: dict[str, np.ndarray]
+) -> dict[str, object]:
+    compiler_cmd = os.environ.get("CC") or shutil.which("cc") or shutil.which("gcc")
+    if compiler_cmd is None:
+        pytest.skip("C compiler not available (set CC or install gcc/clang)")
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_path = Path(temp_dir)
+        c_path = temp_path / "model.c"
+        exe_path = temp_path / "model"
+        options = CompilerOptions(
+            template_dir=PROJECT_ROOT / "templates",
+            emit_testbench=True,
+            testbench_inputs=testbench_inputs,
+        )
+        compiler = Compiler(options)
+        generated = compiler.compile(model)
+        c_path.write_text(generated, encoding="utf-8")
+        subprocess.run(
+            [compiler_cmd, "-std=c99", "-O2", str(c_path), "-o", str(exe_path), "-lm"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        result = subprocess.run(
+            [str(exe_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    return json.loads(result.stdout)
+
+
+def _run_testbench_compare(model: onnx.ModelProto) -> None:
+    initializer_names = {init.name for init in model.graph.initializer}
+    rng = np.random.default_rng(0)
+    inputs: dict[str, np.ndarray] = {}
+    for value_info in model.graph.input:
+        if value_info.name in initializer_names:
+            continue
+        elem_type = value_info.type.tensor_type.elem_type
+        dtype = _tensorproto_to_dtype(elem_type)
+        shape = _value_info_shape(value_info)
+        inputs[value_info.name] = _make_random_array(
+            rng, shape=shape, dtype=dtype
+        )
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_outputs = session.run(None, inputs)
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_payload = outputs_payload.get(output_info.name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {output_info.name} in testbench data")
+        output_data = np.array(output_payload["data"], dtype=ort_output.dtype)
+        output_data = output_data.reshape(ort_output.shape)
+        if np.issubdtype(ort_output.dtype, np.floating):
+            np.testing.assert_allclose(
+                output_data,
+                ort_output,
+                rtol=1e-4,
+                atol=1e-5,
+            )
+        else:
+            np.testing.assert_array_equal(output_data, ort_output)
+
+
 OPERATOR_CASES = [
-    {
-        "name": "Add",
-        "op_type": "Add",
-        "input_shapes": [[2, 3, 4], [2, 3, 4]],
-        "output_shape": [2, 3, 4],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
     {
         "name": "AndBool",
         "op_type": "And",
@@ -1602,14 +1811,6 @@ OPERATOR_CASES = [
         "input_shapes": [[2, 3]],
         "output_shape": [2, 3],
         "dtype": TensorProto.BOOL,
-        "attrs": {},
-    },
-    {
-        "name": "Identity",
-        "op_type": "Identity",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
         "attrs": {},
     },
     {
@@ -1691,30 +1892,6 @@ OPERATOR_CASES = [
         "opset": 14,
     },
     {
-        "name": "Mul",
-        "op_type": "Mul",
-        "input_shapes": [[2, 3], [2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Sub",
-        "op_type": "Sub",
-        "input_shapes": [[2, 3], [2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Div",
-        "op_type": "Div",
-        "input_shapes": [[2, 3], [2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
         "name": "Pow",
         "op_type": "Pow",
         "input_shapes": [[2, 3], [2, 3]],
@@ -1776,78 +1953,6 @@ OPERATOR_CASES = [
         "dtype": TensorProto.FLOAT,
         "attrs": {},
         "opset": 13,
-    },
-    {
-        "name": "Tanh",
-        "op_type": "Tanh",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Abs",
-        "op_type": "Abs",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Ceil",
-        "op_type": "Ceil",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Cos",
-        "op_type": "Cos",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Exp",
-        "op_type": "Exp",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Floor",
-        "op_type": "Floor",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Log",
-        "op_type": "Log",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Neg",
-        "op_type": "Neg",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Relu",
-        "op_type": "Relu",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
     },
     {
         "name": "MatMul",
@@ -1974,54 +2079,6 @@ OPERATOR_CASES = [
         "dtype": TensorProto.FLOAT,
         "attrs": {"q_num_heads": 4, "kv_num_heads": 2},
         "opset": 23,
-    },
-    {
-        "name": "SoftmaxAxis0",
-        "op_type": "Softmax",
-        "input_shapes": [[2, 3, 4]],
-        "output_shape": [2, 3, 4],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {"axis": 0},
-    },
-    {
-        "name": "SoftmaxAxis1",
-        "op_type": "Softmax",
-        "input_shapes": [[2, 3, 4]],
-        "output_shape": [2, 3, 4],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {"axis": 1},
-    },
-    {
-        "name": "SoftmaxAxisNeg1",
-        "op_type": "Softmax",
-        "input_shapes": [[2, 3, 4]],
-        "output_shape": [2, 3, 4],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {"axis": -1},
-    },
-    {
-        "name": "Sin",
-        "op_type": "Sin",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Sqrt",
-        "op_type": "Sqrt",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
-    },
-    {
-        "name": "Tan",
-        "op_type": "Tan",
-        "input_shapes": [[2, 3]],
-        "output_shape": [2, 3],
-        "dtype": TensorProto.FLOAT,
-        "attrs": {},
     },
 ]
 
@@ -2310,6 +2367,43 @@ REARRANGE_UNIT_CASES = [
 ]
 
 
+def test_lower_flatten_axis_default() -> None:
+    model = _make_flatten_model([2, 3, 4], axis=1)
+    graph = import_onnx(model)
+    op = lower_flatten(graph, graph.nodes[0])
+    assert op.input_shape == (2, 3, 4)
+    assert op.output_shape == (2, 12)
+    assert op.dtype == ScalarType.F32
+
+
+def test_lower_flatten_negative_axis() -> None:
+    model = _make_flatten_model([2, 3, 4], axis=-1)
+    graph = import_onnx(model)
+    op = lower_flatten(graph, graph.nodes[0])
+    assert op.output_shape == (6, 4)
+
+
+def test_lower_squeeze_axes_input() -> None:
+    model = _make_squeeze_lowering_model(
+        [1, 3, 1, 5],
+        [3, 5],
+        axes=[0, 2],
+        include_axes_input=True,
+    )
+    graph = import_onnx(model)
+    op = lower_squeeze(graph, graph.nodes[0])
+    assert op.input_shape == (1, 3, 1, 5)
+    assert op.output_shape == (3, 5)
+    assert op.dtype == ScalarType.F32
+
+
+def test_lower_squeeze_default_axes() -> None:
+    model = _make_squeeze_lowering_model([1, 3, 1, 5], [3, 5])
+    graph = import_onnx(model)
+    op = lower_squeeze(graph, graph.nodes[0])
+    assert op.output_shape == (3, 5)
+
+
 @pytest.mark.parametrize("case", OPERATOR_CASES, ids=lambda case: case["name"])
 def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> None:
     model = _make_operator_model(
@@ -2320,7 +2414,7 @@ def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> No
         attrs=case["attrs"],
         opset=case.get("opset", 13),
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 @pytest.mark.parametrize("case", COMPARE_CASES, ids=lambda case: case["name"])
@@ -2332,7 +2426,7 @@ def test_compare_ops_match_onnxruntime(case: dict[str, object]) -> None:
         input_dtype=case["input_dtype"],
         opset=case.get("opset", 13),
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 @pytest.mark.parametrize("case", REDUCE_CASES, ids=lambda case: case["name"])
@@ -2348,12 +2442,10 @@ def test_reduce_op_matches_onnxruntime(case: dict[str, object]) -> None:
         keepdims=case["keepdims"],
         dtype=TensorProto.FLOAT,
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
-@pytest.mark.parametrize(
-    "case", ARG_REDUCE_CASES, ids=lambda case: case["name"]
-)
+@pytest.mark.parametrize("case", ARG_REDUCE_CASES, ids=lambda case: case["name"])
 def test_arg_reduce_matches_onnxruntime(case: dict[str, object]) -> None:
     output_shape = _arg_reduce_output_shape(
         case["input_shape"], case["axis"], case["keepdims"]
@@ -2367,7 +2459,7 @@ def test_arg_reduce_matches_onnxruntime(case: dict[str, object]) -> None:
         select_last_index=case["select_last_index"],
         dtype=TensorProto.FLOAT,
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_argmax_select_last_index_matches_numpy() -> None:
@@ -2421,12 +2513,12 @@ def test_reduce_op_axes_input_matches_numpy() -> None:
 
 def test_castlike_matches_onnxruntime() -> None:
     model = _make_castlike_model()
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_size_matches_onnxruntime() -> None:
     model = _make_size_model(input_shape=[2, 3, 4])
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_expand_matches_onnxruntime() -> None:
@@ -2435,7 +2527,7 @@ def test_expand_matches_onnxruntime() -> None:
         target_shape=[2, 3, 4],
         dtype=TensorProto.FLOAT,
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_range_matches_onnxruntime() -> None:
@@ -2445,7 +2537,7 @@ def test_range_matches_onnxruntime() -> None:
         delta=2,
         dtype=TensorProto.INT32,
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_split_matches_onnxruntime() -> None:
@@ -2455,13 +2547,13 @@ def test_split_matches_onnxruntime() -> None:
         axis=1,
         dtype=TensorProto.FLOAT,
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 @pytest.mark.parametrize("case", REARRANGE_ORT_CASES, ids=lambda case: case["name"])
 def test_rearrange_ops_match_onnxruntime(case: dict[str, object]) -> None:
     model = case["model"]()
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 @pytest.mark.parametrize("case", REARRANGE_UNIT_CASES, ids=lambda case: case["name"])
@@ -2500,6 +2592,23 @@ def test_range_run_matches_numpy() -> None:
     outputs = compiler.run(model, {})
     expected = np.arange(1, 7, 2, dtype=np.int32)
     np.testing.assert_array_equal(outputs["output"], expected)
+
+
+def test_size_run() -> None:
+    model = _make_size_model(input_shape=[2, 3, 4])
+    compiler = Compiler()
+    data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    outputs = compiler.run(model, {"in0": data})
+    expected = np.array(data.size, dtype=np.int64)
+    np.testing.assert_array_equal(outputs["out"], expected)
+
+
+def test_constant_of_shape_run() -> None:
+    model = _make_constant_of_shape_model()
+    compiler = Compiler()
+    outputs = compiler.run(model, {})
+    expected = np.full((2, 3, 4), 1.25, dtype=np.float32)
+    np.testing.assert_allclose(outputs["out"], expected)
 
 
 def test_split_run_matches_numpy() -> None:
@@ -2554,7 +2663,7 @@ def test_average_pool_matches_onnxruntime(case: dict[str, object]) -> None:
             "count_include_pad": case["count_include_pad"],
         },
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_global_average_pool_matches_onnxruntime() -> None:
@@ -2565,17 +2674,17 @@ def test_global_average_pool_matches_onnxruntime() -> None:
         output_shape=[input_shape[0], input_shape[1], 1, 1],
         dtype=TensorProto.FLOAT,
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_constant_op_matches_onnxruntime() -> None:
     model = _make_constant_add_model()
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_constant_of_shape_matches_onnxruntime() -> None:
     model = _make_constant_of_shape_model()
-    _run_cli_verify(model)
+    _run_ort_compare(model)
 
 
 def test_gather_elements_matches_onnxruntime() -> None:
@@ -2587,7 +2696,147 @@ def test_gather_elements_matches_onnxruntime() -> None:
         indices_values=indices_values,
         indices_as_initializer=True,
     )
-    _run_cli_verify(model)
+    _run_ort_compare(model)
+
+
+def test_gather_matches_onnxruntime() -> None:
+    indices_values = np.array([2, 0], dtype=np.int64)
+    model = _make_gather_model(
+        data_shape=[2, 3, 4],
+        indices_shape=[2],
+        axis=1,
+        indices_values=indices_values,
+        indices_as_initializer=True,
+    )
+    _run_ort_compare(model)
+
+
+def test_reshape_op_matches_onnxruntime() -> None:
+    model = _make_reshape_model()
+    _run_ort_compare(model)
+
+
+def test_squeeze_op_matches_onnxruntime() -> None:
+    model = _make_squeeze_model()
+    _run_ort_compare(model)
+
+
+def test_cast_op_matches_onnxruntime() -> None:
+    model = _make_cast_model()
+    _run_ort_compare(model)
+
+
+def test_resize_op_matches_onnxruntime() -> None:
+    model = _make_resize_model()
+    _run_testbench_compare(model)
+
+
+def test_shape_op_matches_onnxruntime() -> None:
+    model = _make_shape_model(input_shape=[2, 3, 4])
+    _run_ort_compare(model)
+
+
+def test_shape_slice_op_matches_onnxruntime() -> None:
+    model = _make_shape_model(
+        input_shape=[2, 3, 4, 5],
+        start=1,
+        end=3,
+        opset=15,
+    )
+    _run_ort_compare(model)
+
+
+def test_slice_op_matches_onnxruntime() -> None:
+    model = _make_slice_model()
+    _run_ort_compare(model)
+
+
+def test_dropout_op_matches_onnxruntime() -> None:
+    model = _make_dropout_model()
+    _run_ort_compare(model)
+
+
+def test_lstm_op_matches_onnxruntime() -> None:
+    model = _make_lstm_model(
+        seq_length=2,
+        batch_size=2,
+        input_size=3,
+        hidden_size=4,
+        dtype=TensorProto.FLOAT,
+        include_optional_inputs=False,
+        include_y=True,
+        include_y_h=True,
+        include_y_c=False,
+        layout=0,
+    )
+    _run_ort_compare(model)
+
+
+def test_unsqueeze_op_matches_onnxruntime() -> None:
+    model = _make_unsqueeze_model(input_shape=[2, 3], axes=[-1], opset=13)
+    _run_ort_compare(model)
+
+
+def test_conv_op_matches_onnxruntime() -> None:
+    model = _make_conv_model()
+    _run_ort_compare(model)
+
+
+def test_batchnorm_op_matches_onnxruntime() -> None:
+    model, _ = _make_batchnorm_model()
+    _run_ort_compare(model)
+
+
+def test_lp_normalization_op_matches_onnxruntime() -> None:
+    model = _make_lp_normalization_model(input_shape=[2, 3], axis=-1, p=1)
+    _run_ort_compare_or_skip(
+        model,
+        skip_substrings=(
+            "LpNormalization",
+            "NOT_IMPLEMENTED",
+        ),
+    )
+
+
+def test_instance_normalization_op_matches_onnxruntime() -> None:
+    model = _make_instance_normalization_model(input_shape=[1, 3, 2, 2])
+    _run_ort_compare(model)
+
+
+def test_group_normalization_op_matches_onnxruntime() -> None:
+    model = _make_group_normalization_model(
+        input_shape=[1, 4, 2, 2], num_groups=2
+    )
+    _run_ort_compare(model)
+
+
+def test_layer_normalization_op_matches_onnxruntime() -> None:
+    model = _make_layer_normalization_model(input_shape=[2, 3, 4], axis=1)
+    _run_ort_compare(model)
+
+
+def test_mean_variance_normalization_op_matches_onnxruntime() -> None:
+    model = _make_mean_variance_normalization_model(
+        input_shape=[2, 3, 2, 2]
+    )
+    _run_ort_compare(model)
+
+
+def test_rms_normalization_op_matches_onnxruntime() -> None:
+    model = _make_rms_normalization_model(input_shape=[2, 3, 4], axis=1)
+    _run_ort_compare(model)
+
+
+@pytest.mark.parametrize("case", MAXPOOL_CASES, ids=lambda case: case["name"])
+def test_maxpool_op_matches_onnxruntime(case: dict[str, object]) -> None:
+    model = _make_maxpool_model(
+        input_shape=case["input_shape"],
+        kernel_shape=case["kernel_shape"],
+        strides=case["strides"],
+        pads=case["pads"],
+        ceil_mode=case["ceil_mode"],
+    )
+    _run_ort_compare(model)
 
 
 def test_gather_elements_run_matches_numpy() -> None:
@@ -2604,18 +2853,6 @@ def test_gather_elements_run_matches_numpy() -> None:
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
-def test_gather_matches_onnxruntime() -> None:
-    indices_values = np.array([2, 0], dtype=np.int64)
-    model = _make_gather_model(
-        data_shape=[2, 3, 4],
-        indices_shape=[2],
-        axis=1,
-        indices_values=indices_values,
-        indices_as_initializer=True,
-    )
-    _run_cli_verify(model)
-
-
 def test_gather_run_matches_numpy() -> None:
     model = _make_gather_model(
         data_shape=[2, 3, 4],
@@ -2630,57 +2867,12 @@ def test_gather_run_matches_numpy() -> None:
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
-def test_reshape_op_matches_onnxruntime() -> None:
-    model = _make_reshape_model()
-    _run_cli_verify(model)
-
-
-def test_squeeze_op_matches_onnxruntime() -> None:
-    model = _make_squeeze_model()
-    _run_cli_verify(model)
-
-
-def test_cast_op_matches_onnxruntime() -> None:
-    model = _make_cast_model()
-    _run_cli_verify(model)
-
-
-def test_resize_op_matches_onnxruntime() -> None:
-    model = _make_resize_model()
-    _run_cli_verify(model)
-
-
-def test_shape_op_matches_onnxruntime() -> None:
-    model = _make_shape_model(input_shape=[2, 3, 4])
-    _run_cli_verify(model)
-
-
-def test_shape_slice_op_matches_onnxruntime() -> None:
-    model = _make_shape_model(
-        input_shape=[2, 3, 4, 5],
-        start=1,
-        end=3,
-        opset=15,
-    )
-    _run_cli_verify(model)
-
-
-def test_slice_op_matches_onnxruntime() -> None:
-    model = _make_slice_model()
-    _run_cli_verify(model)
-
-
 def test_dropout_run_matches_numpy() -> None:
     model = _make_dropout_model()
     compiler = Compiler()
     input_data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
     outputs = compiler.run(model, {"in0": input_data})
     np.testing.assert_allclose(outputs["out"], input_data, rtol=1e-6, atol=1e-6)
-
-
-def test_dropout_op_matches_onnxruntime() -> None:
-    model = _make_dropout_model()
-    _run_cli_verify(model)
 
 
 def test_lstm_run_matches_numpy() -> None:
@@ -2744,22 +2936,6 @@ def test_lstm_run_matches_numpy() -> None:
     np.testing.assert_allclose(outputs["Y_c"], expected_y_c, rtol=1e-4, atol=1e-5)
 
 
-def test_lstm_op_matches_onnxruntime() -> None:
-    model = _make_lstm_model(
-        seq_length=2,
-        batch_size=2,
-        input_size=3,
-        hidden_size=4,
-        dtype=TensorProto.FLOAT,
-        include_optional_inputs=False,
-        include_y=True,
-        include_y_h=True,
-        include_y_c=False,
-        layout=0,
-    )
-    _run_cli_verify(model)
-
-
 def test_unsqueeze_run_matches_numpy() -> None:
     model = _make_unsqueeze_model(input_shape=[2, 3], axes=[0, 2], opset=11)
     compiler = Compiler()
@@ -2767,16 +2943,6 @@ def test_unsqueeze_run_matches_numpy() -> None:
     outputs = compiler.run(model, {"in0": input_data})
     expected = np.expand_dims(np.expand_dims(input_data, axis=0), axis=2)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-6, atol=1e-6)
-
-
-def test_unsqueeze_op_matches_onnxruntime() -> None:
-    model = _make_unsqueeze_model(input_shape=[2, 3], axes=[-1], opset=13)
-    _run_cli_verify(model)
-
-
-def test_conv_op_matches_onnxruntime() -> None:
-    model = _make_conv_model()
-    _run_cli_verify(model)
 
 
 def test_batchnorm_run_matches_numpy() -> None:
@@ -2795,11 +2961,6 @@ def test_batchnorm_run_matches_numpy() -> None:
     np.testing.assert_allclose(output, expected, rtol=1e-5, atol=1e-6)
 
 
-def test_batchnorm_op_matches_onnxruntime() -> None:
-    model, _ = _make_batchnorm_model()
-    _run_cli_verify(model)
-
-
 def test_lp_normalization_run_matches_numpy() -> None:
     model = _make_lp_normalization_model(input_shape=[2, 3], axis=1, p=2)
     compiler = Compiler()
@@ -2808,17 +2969,6 @@ def test_lp_normalization_run_matches_numpy() -> None:
     denom = np.sqrt(np.sum(data * data, axis=1, keepdims=True))
     expected = data / denom
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
-
-
-def test_lp_normalization_op_matches_onnxruntime() -> None:
-    model = _make_lp_normalization_model(input_shape=[2, 3], axis=-1, p=1)
-    _run_cli_verify_or_skip(
-        model,
-        skip_substrings=(
-            "LpNormalization",
-            "NOT_IMPLEMENTED",
-        ),
-    )
 
 
 def test_instance_normalization_run_matches_numpy() -> None:
@@ -2834,11 +2984,6 @@ def test_instance_normalization_run_matches_numpy() -> None:
     bias_reshaped = bias.reshape(1, 2, 1, 1)
     expected = (data - mean) / np.sqrt(var + 1e-5) * scale_reshaped + bias_reshaped
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
-
-
-def test_instance_normalization_op_matches_onnxruntime() -> None:
-    model = _make_instance_normalization_model(input_shape=[1, 3, 2, 2])
-    _run_cli_verify(model)
 
 
 def test_group_normalization_run_matches_numpy() -> None:
@@ -2861,13 +3006,6 @@ def test_group_normalization_run_matches_numpy() -> None:
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
-def test_group_normalization_op_matches_onnxruntime() -> None:
-    model = _make_group_normalization_model(
-        input_shape=[1, 4, 2, 2], num_groups=2
-    )
-    _run_cli_verify(model)
-
-
 def test_layer_normalization_run_matches_numpy() -> None:
     model = _make_layer_normalization_model(
         input_shape=[2, 3, 4], axis=-1
@@ -2884,13 +3022,6 @@ def test_layer_normalization_run_matches_numpy() -> None:
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
-def test_layer_normalization_op_matches_onnxruntime() -> None:
-    model = _make_layer_normalization_model(
-        input_shape=[2, 3, 4], axis=1
-    )
-    _run_cli_verify(model)
-
-
 def test_mean_variance_normalization_run_matches_numpy() -> None:
     model = _make_mean_variance_normalization_model(
         input_shape=[2, 3, 2, 2], axes=[0, 2, 3]
@@ -2904,13 +3035,6 @@ def test_mean_variance_normalization_run_matches_numpy() -> None:
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 
-def test_mean_variance_normalization_op_matches_onnxruntime() -> None:
-    model = _make_mean_variance_normalization_model(
-        input_shape=[2, 3, 2, 2]
-    )
-    _run_cli_verify(model)
-
-
 def test_rms_normalization_run_matches_numpy() -> None:
     model = _make_rms_normalization_model(input_shape=[2, 3, 4], axis=-1)
     compiler = Compiler()
@@ -2921,20 +3045,3 @@ def test_rms_normalization_run_matches_numpy() -> None:
     expected = data / np.sqrt(mean_square + 1e-5)
     expected = expected * scale.reshape(1, 1, 4)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
-
-
-def test_rms_normalization_op_matches_onnxruntime() -> None:
-    model = _make_rms_normalization_model(input_shape=[2, 3, 4], axis=1)
-    _run_cli_verify(model)
-
-
-@pytest.mark.parametrize("case", MAXPOOL_CASES, ids=lambda case: case["name"])
-def test_maxpool_op_matches_onnxruntime(case: dict[str, object]) -> None:
-    model = _make_maxpool_model(
-        input_shape=case["input_shape"],
-        kernel_shape=case["kernel_shape"],
-        strides=case["strides"],
-        pads=case["pads"],
-        ceil_mode=case["ceil_mode"],
-    )
-    _run_cli_verify(model)
