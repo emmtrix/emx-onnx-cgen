@@ -42,7 +42,7 @@ static inline float ref_scalar_f32_relu(float a) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_Relu(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_relu(const float input0[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);
@@ -51,5 +51,5 @@ static inline void node0_Relu(const float input0[restrict 2][3], float output[re
 }
 
 void model(const float x[restrict 2][3], float out[restrict 2][3]) {
-    node0_Relu(x, out);
+    node0_relu(x, out);
 }

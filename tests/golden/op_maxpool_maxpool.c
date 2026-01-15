@@ -34,7 +34,7 @@
  *   pads: [0, 0, 0, 0]
  *   strides: [2, 2]
  */
-static inline void node0_MaxPool(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
+static inline void node0_maxpool(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
     for (size_t n = 0; n < 1; ++n) {
         for (size_t c = 0; c < 1; ++c) {
             for (size_t oh = 0; oh < 2; ++oh) {
@@ -64,5 +64,5 @@ static inline void node0_MaxPool(const float input0[restrict 1][1][4][4], float 
 }
 
 void model(const float in0[restrict 1][1][4][4], float out[restrict 1][1][2][2]) {
-    node0_MaxPool(in0, out);
+    node0_maxpool(in0, out);
 }

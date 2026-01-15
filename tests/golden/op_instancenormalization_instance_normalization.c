@@ -31,7 +31,7 @@
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  */
-static inline void node0_InstanceNormalization(const float input0[restrict 1][3][2][2], const float scale[restrict 3], const float bias[restrict 3], float output[restrict 1][3][2][2]) {
+static inline void node0_instancenormalization(const float input0[restrict 1][3][2][2], const float scale[restrict 3], const float bias[restrict 3], float output[restrict 1][3][2][2]) {
     for (size_t i0 = 0; i0 < 1; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
@@ -60,5 +60,5 @@ static inline void node0_InstanceNormalization(const float input0[restrict 1][3]
 }
 
 void model(const float in0[restrict 1][3][2][2], const float in1[restrict 3], const float in2[restrict 3], float out[restrict 1][3][2][2]) {
-    node0_InstanceNormalization(in0, in1, in2, out);
+    node0_instancenormalization(in0, in1, in2, out);
 }

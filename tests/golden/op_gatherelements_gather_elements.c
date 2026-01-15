@@ -31,7 +31,7 @@
  * Attrs:
  *   axis: 0
  */
-static inline void node0_GatherElements(const float data[restrict 2][3], const int64_t indices[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_gatherelements(const float data[restrict 2][3], const int64_t indices[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             int64_t gather_index = (int64_t)indices[i0][i1];
@@ -44,5 +44,5 @@ static inline void node0_GatherElements(const float data[restrict 2][3], const i
 }
 
 void model(const float data[restrict 2][3], const int64_t indices[restrict 2][3], float out[restrict 2][3]) {
-    node0_GatherElements(data, indices, out);
+    node0_gatherelements(data, indices, out);
 }

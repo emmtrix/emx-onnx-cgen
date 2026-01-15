@@ -35,10 +35,10 @@ static const int64_t shape[2] = {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_Reshape(const float input0[restrict 2][3][4], float output[restrict 2][12]) {
+static inline void node0_reshape(const float input0[restrict 2][3][4], float output[restrict 2][12]) {
     memcpy(output, input0, sizeof(float) * 24);
 }
 
 void model(const float in0[restrict 2][3][4], float out[restrict 2][12]) {
-    node0_Reshape(in0, out);
+    node0_reshape(in0, out);
 }

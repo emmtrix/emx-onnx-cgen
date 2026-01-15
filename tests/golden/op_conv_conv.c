@@ -40,7 +40,7 @@ static const float bias[1] = {
  *   pads: [1, 1, 1, 1]
  *   strides: [1, 1]
  */
-static inline void node0_Conv(const float input0[restrict 1][1][4][4], const float weights[restrict 1][1][3][3], const float bias[restrict 1], float output[restrict 1][1][4][4]) {
+static inline void node0_conv(const float input0[restrict 1][1][4][4], const float weights[restrict 1][1][3][3], const float bias[restrict 1], float output[restrict 1][1][4][4]) {
     for (size_t n = 0; n < 1; ++n) {
         for (size_t g = 0; g < 1; ++g) {
             for (size_t oc = 0; oc < 1; ++oc) {
@@ -70,5 +70,5 @@ static inline void node0_Conv(const float input0[restrict 1][1][4][4], const flo
 }
 
 void model(const float in0[restrict 1][1][4][4], float out[restrict 1][1][4][4]) {
-    node0_Conv(in0, weight, bias, out);
+    node0_conv(in0, weight, bias, out);
 }

@@ -42,7 +42,7 @@ static inline float ref_scalar_f32_add(float a, float b) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_Add(const float input0[restrict 2][3][4], const float input1[restrict 2][3][4], float output[restrict 2][3][4]) {
+static inline void node0_add(const float input0[restrict 2][3][4], const float input1[restrict 2][3][4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
@@ -53,5 +53,5 @@ static inline void node0_Add(const float input0[restrict 2][3][4], const float i
 }
 
 void model(const float a[restrict 2][3][4], const float b[restrict 2][3][4], float out[restrict 2][3][4]) {
-    node0_Add(a, b, out);
+    node0_add(a, b, out);
 }
