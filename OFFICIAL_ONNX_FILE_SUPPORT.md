@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1106 / 1802 official ONNX files.
+Support 968 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -12,8 +12,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | light/light_densenet121.onnx | ✅ |  |
 | light/light_inception_v1.onnx | ✅ |  |
 | light/light_inception_v2.onnx | ✅ |  |
-| light/light_resnet50.onnx | ✅ |  |
-| light/light_shufflenet.onnx | ✅ |  |
+| light/light_resnet50.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| light/light_shufflenet.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | light/light_squeezenet.onnx | ✅ |  |
 | light/light_vgg19.onnx | ✅ |  |
 | light/light_zfnet512.onnx | ✅ |  |
@@ -50,14 +50,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx | ❌ | Unsupported op TreeEnsemble |
 | node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx | ❌ | Unsupported op TreeEnsemble |
-| node/test_and2d/model.onnx | ✅ |  |
-| node/test_and3d/model.onnx | ✅ |  |
-| node/test_and4d/model.onnx | ✅ |  |
-| node/test_and_bcast3v1d/model.onnx | ✅ |  |
-| node/test_and_bcast3v2d/model.onnx | ✅ |  |
-| node/test_and_bcast4v2d/model.onnx | ✅ |  |
-| node/test_and_bcast4v3d/model.onnx | ✅ |  |
-| node/test_and_bcast4v4d/model.onnx | ✅ |  |
+| node/test_and2d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_and3d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_and4d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_and_bcast3v1d/model.onnx | ❌ | And expects identical input/output shapes |
+| node/test_and_bcast3v2d/model.onnx | ❌ | And expects identical input/output shapes |
+| node/test_and_bcast4v2d/model.onnx | ❌ | And expects identical input/output shapes |
+| node/test_and_bcast4v3d/model.onnx | ❌ | And expects identical input/output shapes |
+| node/test_and_bcast4v4d/model.onnx | ❌ | And expects identical input/output shapes |
 | node/test_argmax_default_axis_example/model.onnx | ✅ |  |
 | node/test_argmax_default_axis_example_select_last_index/model.onnx | ✅ |  |
 | node/test_argmax_default_axis_random/model.onnx | ✅ |  |
@@ -100,22 +100,22 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_atanh_example/model.onnx | ✅ |  |
 | node/test_attention_3d/model.onnx | ✅ |  |
 | node/test_attention_3d_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ |  |
-| node/test_attention_3d_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_3d_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_gqa/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
@@ -129,59 +129,59 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_3d_gqa_with_past_and_present/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_3d_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_scaled_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_softcap_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_transpose_verification/model.onnx | ✅ |  |
-| node/test_attention_3d_transpose_verification_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_transpose_verification_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_attn_mask_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_attn_mask_bool/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_bool_4d/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Unsupported op Pad |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_fp16/model.onnx | ✅ |  |
-| node/test_attention_4d_fp16_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_fp16_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_gqa/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
@@ -197,31 +197,31 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_scaled_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_softcap_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_with_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
@@ -264,21 +264,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_bitshift_right_uint32/model.onnx | ✅ |  |
 | node/test_bitshift_right_uint64/model.onnx | ✅ |  |
 | node/test_bitshift_right_uint8/model.onnx | ✅ |  |
-| node/test_bitwise_and_i16_3d/model.onnx | ✅ |  |
-| node/test_bitwise_and_i32_2d/model.onnx | ✅ |  |
-| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ✅ |  |
-| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ✅ |  |
+| node/test_bitwise_and_i16_3d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_bitwise_and_i32_2d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ❌ | BitwiseAnd expects identical input/output shapes |
+| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ❌ | BitwiseAnd expects identical input/output shapes |
 | node/test_bitwise_not_2d/model.onnx | ✅ |  |
 | node/test_bitwise_not_3d/model.onnx | ❌ | Unsupported op BitwiseNot |
 | node/test_bitwise_not_4d/model.onnx | ❌ | Unsupported op BitwiseNot |
-| node/test_bitwise_or_i16_4d/model.onnx | ✅ |  |
-| node/test_bitwise_or_i32_2d/model.onnx | ✅ |  |
-| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ✅ |  |
-| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ✅ |  |
-| node/test_bitwise_xor_i16_3d/model.onnx | ✅ |  |
-| node/test_bitwise_xor_i32_2d/model.onnx | ✅ |  |
-| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ✅ |  |
-| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ✅ |  |
+| node/test_bitwise_or_i16_4d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_bitwise_or_i32_2d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ❌ | BitwiseOr expects identical input/output shapes |
+| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ❌ | BitwiseOr expects identical input/output shapes |
+| node/test_bitwise_xor_i16_3d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_bitwise_xor_i32_2d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ❌ | BitwiseXor expects identical input/output shapes |
+| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ❌ | BitwiseXor expects identical input/output shapes |
 | node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
 | node/test_blackmanwindow_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
@@ -653,13 +653,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gathernd_example_int32/model.onnx | ❌ | Unsupported op GatherND |
 | node/test_gathernd_example_int32_batch_dim1/model.onnx | ❌ | Unsupported op GatherND |
 | node/test_gelu_default_1/model.onnx | ✅ |  |
-| node/test_gelu_default_1_expanded/model.onnx | ✅ |  |
+| node/test_gelu_default_1_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
 | node/test_gelu_default_2/model.onnx | ✅ |  |
-| node/test_gelu_default_2_expanded/model.onnx | ✅ |  |
+| node/test_gelu_default_2_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
 | node/test_gelu_tanh_1/model.onnx | ❌ | Gelu only supports approximate=none |
-| node/test_gelu_tanh_1_expanded/model.onnx | ✅ |  |
+| node/test_gelu_tanh_1_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
 | node/test_gelu_tanh_2/model.onnx | ❌ | Gelu only supports approximate=none |
-| node/test_gelu_tanh_2_expanded/model.onnx | ✅ |  |
+| node/test_gelu_tanh_2_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
 | node/test_gemm_all_attributes/model.onnx | ✅ |  |
 | node/test_gemm_alpha/model.onnx | ✅ |  |
 | node/test_gemm_beta/model.onnx | ✅ |  |
@@ -679,20 +679,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_greater_bcast/model.onnx | ✅ |  |
 | node/test_greater_equal/model.onnx | ✅ |  |
 | node/test_greater_equal_bcast/model.onnx | ✅ |  |
-| node/test_greater_equal_bcast_expanded/model.onnx | ✅ |  |
-| node/test_greater_equal_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_bcast_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_greater_equal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_greater_equal_int16/model.onnx | ✅ |  |
-| node/test_greater_equal_int16_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_int16_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_greater_equal_int8/model.onnx | ✅ |  |
-| node/test_greater_equal_int8_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_int8_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_greater_equal_uint16/model.onnx | ✅ |  |
-| node/test_greater_equal_uint16_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint16_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_greater_equal_uint32/model.onnx | ✅ |  |
-| node/test_greater_equal_uint32_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint32_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_greater_equal_uint64/model.onnx | ✅ |  |
-| node/test_greater_equal_uint64_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint64_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_greater_equal_uint8/model.onnx | ✅ |  |
-| node/test_greater_equal_uint8_expanded/model.onnx | ✅ |  |
+| node/test_greater_equal_uint8_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_greater_int16/model.onnx | ✅ |  |
 | node/test_greater_int8/model.onnx | ✅ |  |
 | node/test_greater_uint16/model.onnx | ✅ |  |
@@ -742,10 +742,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_hardmax_one_hot/model.onnx | ❌ | Unsupported op Hardmax |
 | node/test_hardsigmoid/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_hardsigmoid_default/model.onnx | ✅ |  |
-| node/test_hardsigmoid_default_expanded_ver18/model.onnx | ✅ |  |
+| node/test_hardsigmoid_default_expanded_ver18/model.onnx | ❌ | Min expects identical input/output shapes |
 | node/test_hardsigmoid_example/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
-| node/test_hardsigmoid_example_expanded_ver18/model.onnx | ✅ |  |
-| node/test_hardsigmoid_expanded_ver18/model.onnx | ✅ |  |
+| node/test_hardsigmoid_example_expanded_ver18/model.onnx | ❌ | Min expects identical input/output shapes |
+| node/test_hardsigmoid_expanded_ver18/model.onnx | ❌ | Min expects identical input/output shapes |
 | node/test_hardswish/model.onnx | ✅ |  |
 | node/test_hardswish_expanded/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_identity/model.onnx | ✅ |  |
@@ -843,20 +843,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_less_bcast/model.onnx | ✅ |  |
 | node/test_less_equal/model.onnx | ✅ |  |
 | node/test_less_equal_bcast/model.onnx | ✅ |  |
-| node/test_less_equal_bcast_expanded/model.onnx | ✅ |  |
-| node/test_less_equal_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_bcast_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_less_equal_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_less_equal_int16/model.onnx | ✅ |  |
-| node/test_less_equal_int16_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_int16_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_less_equal_int8/model.onnx | ✅ |  |
-| node/test_less_equal_int8_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_int8_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_less_equal_uint16/model.onnx | ✅ |  |
-| node/test_less_equal_uint16_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint16_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_less_equal_uint32/model.onnx | ✅ |  |
-| node/test_less_equal_uint32_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint32_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_less_equal_uint64/model.onnx | ✅ |  |
-| node/test_less_equal_uint64_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint64_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_less_equal_uint8/model.onnx | ✅ |  |
-| node/test_less_equal_uint8_expanded/model.onnx | ✅ |  |
+| node/test_less_equal_uint8_expanded/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_less_int16/model.onnx | ✅ |  |
 | node/test_less_int8/model.onnx | ✅ |  |
 | node/test_less_uint16/model.onnx | ✅ |  |
@@ -912,20 +912,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_matmul_4d_1d/model.onnx | ✅ |  |
 | node/test_matmul_bcast/model.onnx | ✅ |  |
 | node/test_matmulinteger/model.onnx | ❌ | Unsupported op MatMulInteger |
-| node/test_max_example/model.onnx | ❌ | Max must have 2 inputs and 1 output |
-| node/test_max_float16/model.onnx | ✅ |  |
-| node/test_max_float32/model.onnx | ✅ |  |
-| node/test_max_float64/model.onnx | ✅ |  |
-| node/test_max_int16/model.onnx | ✅ |  |
-| node/test_max_int32/model.onnx | ✅ |  |
-| node/test_max_int64/model.onnx | ✅ |  |
-| node/test_max_int8/model.onnx | ✅ |  |
-| node/test_max_one_input/model.onnx | ❌ | Max must have 2 inputs and 1 output |
-| node/test_max_two_inputs/model.onnx | ✅ |  |
-| node/test_max_uint16/model.onnx | ✅ |  |
-| node/test_max_uint32/model.onnx | ✅ |  |
-| node/test_max_uint64/model.onnx | ✅ |  |
-| node/test_max_uint8/model.onnx | ✅ |  |
+| node/test_max_example/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_float16/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_float32/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_float64/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_int16/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_int32/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_int64/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_int8/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_one_input/model.onnx | ❌ | Max must have at least 2 inputs and 1 output |
+| node/test_max_two_inputs/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_uint16/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_uint32/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_uint64/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_max_uint8/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_maxpool_1d_default/model.onnx | ✅ |  |
 | node/test_maxpool_2d_ceil/model.onnx | ✅ |  |
 | node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx | ✅ |  |
@@ -947,24 +947,24 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | ✅ |  |
 | node/test_maxunpool_export_with_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | node/test_maxunpool_export_without_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
-| node/test_mean_example/model.onnx | ❌ | Mean must have 2 inputs and 1 output |
-| node/test_mean_one_input/model.onnx | ❌ | Mean must have 2 inputs and 1 output |
-| node/test_mean_two_inputs/model.onnx | ✅ |  |
+| node/test_mean_example/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_mean_one_input/model.onnx | ❌ | Mean must have at least 2 inputs and 1 output |
+| node/test_mean_two_inputs/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_melweightmatrix/model.onnx | ❌ | Unsupported op MelWeightMatrix |
-| node/test_min_example/model.onnx | ❌ | Min must have 2 inputs and 1 output |
-| node/test_min_float16/model.onnx | ✅ |  |
-| node/test_min_float32/model.onnx | ✅ |  |
-| node/test_min_float64/model.onnx | ✅ |  |
-| node/test_min_int16/model.onnx | ✅ |  |
-| node/test_min_int32/model.onnx | ✅ |  |
-| node/test_min_int64/model.onnx | ✅ |  |
-| node/test_min_int8/model.onnx | ✅ |  |
-| node/test_min_one_input/model.onnx | ❌ | Min must have 2 inputs and 1 output |
-| node/test_min_two_inputs/model.onnx | ✅ |  |
-| node/test_min_uint16/model.onnx | ✅ |  |
-| node/test_min_uint32/model.onnx | ✅ |  |
-| node/test_min_uint64/model.onnx | ✅ |  |
-| node/test_min_uint8/model.onnx | ✅ |  |
+| node/test_min_example/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_float16/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_float32/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_float64/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_int16/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_int32/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_int64/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_int8/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_one_input/model.onnx | ❌ | Min must have at least 2 inputs and 1 output |
+| node/test_min_two_inputs/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_uint16/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_uint32/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_uint64/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_min_uint8/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_mish/model.onnx | ❌ | Unsupported op Mish |
 | node/test_mish_expanded/model.onnx | ✅ |  |
 | node/test_mod_broadcast/model.onnx | ✅ |  |
@@ -1061,14 +1061,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_optional_has_element_empty_optional_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | node/test_optional_has_element_optional_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | node/test_optional_has_element_tensor_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
-| node/test_or2d/model.onnx | ✅ |  |
-| node/test_or3d/model.onnx | ✅ |  |
-| node/test_or4d/model.onnx | ✅ |  |
-| node/test_or_bcast3v1d/model.onnx | ✅ |  |
-| node/test_or_bcast3v2d/model.onnx | ✅ |  |
-| node/test_or_bcast4v2d/model.onnx | ✅ |  |
-| node/test_or_bcast4v3d/model.onnx | ✅ |  |
-| node/test_or_bcast4v4d/model.onnx | ✅ |  |
+| node/test_or2d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_or3d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_or4d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_or_bcast3v1d/model.onnx | ❌ | Or expects identical input/output shapes |
+| node/test_or_bcast3v2d/model.onnx | ❌ | Or expects identical input/output shapes |
+| node/test_or_bcast4v2d/model.onnx | ❌ | Or expects identical input/output shapes |
+| node/test_or_bcast4v3d/model.onnx | ❌ | Or expects identical input/output shapes |
+| node/test_or_bcast4v4d/model.onnx | ❌ | Or expects identical input/output shapes |
 | node/test_pow/model.onnx | ✅ |  |
 | node/test_pow_bcast_array/model.onnx | ✅ |  |
 | node/test_pow_bcast_scalar/model.onnx | ✅ |  |
@@ -1249,7 +1249,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_regex_full_match_email_domain/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_regex_full_match_empty/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_relu/model.onnx | ✅ |  |
-| node/test_relu_expanded_ver18/model.onnx | ✅ |  |
+| node/test_relu_expanded_ver18/model.onnx | ❌ | Max expects identical input/output shapes |
 | node/test_reshape_allowzero_reordered/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_reshape_extended_dims/model.onnx | ✅ |  |
 | node/test_reshape_negative_dim/model.onnx | ✅ |  |
@@ -1580,9 +1580,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_sub_uint32/model.onnx | ✅ |  |
 | node/test_sub_uint64/model.onnx | ✅ |  |
 | node/test_sub_uint8/model.onnx | ✅ |  |
-| node/test_sum_example/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
-| node/test_sum_one_input/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
-| node/test_sum_two_inputs/model.onnx | ✅ |  |
+| node/test_sum_example/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_sum_one_input/model.onnx | ❌ | Sum must have at least 2 inputs and 1 output |
+| node/test_sum_two_inputs/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | node/test_swish/model.onnx | ✅ |  |
 | node/test_swish_expanded/model.onnx | ✅ |  |
 | node/test_tan/model.onnx | ✅ |  |
@@ -1662,14 +1662,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_where_example/model.onnx | ✅ |  |
 | node/test_where_long_example/model.onnx | ✅ |  |
 | node/test_wrap_pad/model.onnx | ❌ | Unsupported op Pad |
-| node/test_xor2d/model.onnx | ✅ |  |
-| node/test_xor3d/model.onnx | ✅ |  |
-| node/test_xor4d/model.onnx | ✅ |  |
-| node/test_xor_bcast3v1d/model.onnx | ✅ |  |
-| node/test_xor_bcast3v2d/model.onnx | ✅ |  |
-| node/test_xor_bcast4v2d/model.onnx | ✅ |  |
-| node/test_xor_bcast4v3d/model.onnx | ✅ |  |
-| node/test_xor_bcast4v4d/model.onnx | ✅ |  |
+| node/test_xor2d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_xor3d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_xor4d/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
+| node/test_xor_bcast3v1d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| node/test_xor_bcast3v2d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| node/test_xor_bcast4v2d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| node/test_xor_bcast4v3d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| node/test_xor_bcast4v4d/model.onnx | ❌ | Xor expects identical input/output shapes |
 | pytorch-converted/test_AvgPool1d/model.onnx | ✅ |  |
 | pytorch-converted/test_AvgPool1d_stride/model.onnx | ✅ |  |
 | pytorch-converted/test_AvgPool2d/model.onnx | ✅ |  |
@@ -1767,9 +1767,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_exp/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_flatten/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_index/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_max/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_max/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | pytorch-operator/test_operator_maxpool/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_min/model.onnx | ✅ |  |
+| pytorch-operator/test_operator_min/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | pytorch-operator/test_operator_mm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_non_float_params/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_pad/model.onnx | ❌ | Unsupported op Pad |
@@ -1785,7 +1785,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_selu/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_sqrt/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_symbolic_override/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Sum must have 2 inputs and 1 output |
+| pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | 'MultiInputBinaryOp' object has no attribute 'input0' |
 | pytorch-operator/test_operator_view/model.onnx | ✅ |  |
 | simple/test_expand_shape_model1/model.onnx | ✅ |  |
 | simple/test_expand_shape_model2/model.onnx | ✅ |  |

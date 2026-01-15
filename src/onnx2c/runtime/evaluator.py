@@ -55,6 +55,7 @@ from ..lowering.squeeze import lower_squeeze
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
 from ..lowering.where import lower_where
+from ..lowering.variadic import BINARY_ONLY_OPS, VARIADIC_OP_FUNCTIONS
 from ..lowering.registry import resolve_dispatch
 from ..lowering.common import node_dtype, optional_name, value_dtype, value_shape
 from ..ops import (
@@ -185,6 +186,89 @@ def _eval_swish(evaluator: Evaluator, node: Node) -> None:
     alpha = float(node.attrs.get("alpha", 1.0))
     x = evaluator.values[node.inputs[0]]
     evaluator.values[node.outputs[0]] = x / (1.0 + np.exp(-alpha * x))
+
+
+_VARIADIC_COMBINE_FUNCS: dict[
+    ScalarFunction, Callable[[np.ndarray, np.ndarray], np.ndarray]
+] = {
+    ScalarFunction.ADD: np.add,
+    ScalarFunction.MAXIMUM: np.maximum,
+    ScalarFunction.MINIMUM: np.minimum,
+    ScalarFunction.LOGICAL_AND: np.logical_and,
+    ScalarFunction.LOGICAL_OR: np.logical_or,
+    ScalarFunction.LOGICAL_XOR: np.logical_xor,
+    ScalarFunction.BITWISE_AND: np.bitwise_and,
+    ScalarFunction.BITWISE_OR: np.bitwise_or,
+    ScalarFunction.BITWISE_XOR: np.bitwise_xor,
+}
+
+
+def _validate_variadic_inputs(
+    evaluator: Evaluator, node: Node, *, function: ScalarFunction
+) -> tuple[ScalarType, tuple[int, ...]]:
+    if len(node.outputs) != 1:
+        raise UnsupportedOpError(f"{node.op_type} must have 1 output")
+    if node.op_type in BINARY_ONLY_OPS:
+        if len(node.inputs) != 2:
+            raise UnsupportedOpError(
+                f"{node.op_type} must have exactly 2 inputs"
+            )
+    elif len(node.inputs) < 2:
+        raise UnsupportedOpError(
+            f"{node.op_type} must have at least 2 inputs"
+        )
+    for name in node.inputs:
+        if not name:
+            raise UnsupportedOpError(f"{node.op_type} input must be provided")
+    op_dtype = node_dtype(evaluator.graph, node, *node.inputs, *node.outputs)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching input/output dtypes, "
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
+        )
+    output_shape = value_shape(evaluator.graph, node.outputs[0], node)
+    for name in node.inputs:
+        input_shape = value_shape(evaluator.graph, name, node)
+        if input_shape != output_shape:
+            raise UnsupportedOpError(
+                f"{node.op_type} expects identical input/output shapes"
+            )
+    if function in {
+        ScalarFunction.LOGICAL_AND,
+        ScalarFunction.LOGICAL_OR,
+        ScalarFunction.LOGICAL_XOR,
+    } and op_dtype != ScalarType.BOOL:
+        raise UnsupportedOpError(f"{node.op_type} expects bool inputs")
+    if function in {
+        ScalarFunction.BITWISE_AND,
+        ScalarFunction.BITWISE_OR,
+        ScalarFunction.BITWISE_XOR,
+    } and not op_dtype.is_integer:
+        raise UnsupportedOpError(f"{node.op_type} expects integer inputs")
+    if function == ScalarFunction.MEAN and not op_dtype.is_float:
+        raise UnsupportedOpError(f"{node.op_type} expects floating-point inputs")
+    return op_dtype, output_shape
+
+
+def _eval_variadic(evaluator: Evaluator, node: Node) -> None:
+    function = VARIADIC_OP_FUNCTIONS[node.op_type]
+    _validate_variadic_inputs(evaluator, node, function=function)
+    values = [evaluator.values[name] for name in node.inputs]
+    if function == ScalarFunction.MEAN:
+        combine_func = _VARIADIC_COMBINE_FUNCS[ScalarFunction.ADD]
+    else:
+        combine_func = _VARIADIC_COMBINE_FUNCS[function]
+    result = values[0]
+    for value in values[1:]:
+        result = combine_func(result, value)
+    if function == ScalarFunction.MEAN:
+        result = result / len(values)
+    evaluator.values[node.outputs[0]] = result
+
+
+for _op_type in VARIADIC_OP_FUNCTIONS:
+    register_evaluator(_op_type)(_eval_variadic)
 
 
 @register_evaluator("Shrink")

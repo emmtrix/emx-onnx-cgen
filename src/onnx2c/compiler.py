@@ -21,6 +21,7 @@ from .codegen.c_emitter import (
     MeanVarianceNormalizationOp,
     RMSNormalizationOp,
     BinaryOp,
+    MultiInputBinaryOp,
     CastOp,
     ClipOp,
     CEmitter,
@@ -125,6 +126,7 @@ from .lowering.elementwise import (
     lower_shrink,
     lower_swish,
 )
+from .lowering import variadic as _variadic  # noqa: F401
 from .lowering import rms_normalization as _rms_normalization  # noqa: F401
 from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
@@ -318,6 +320,7 @@ class Compiler:
     ) -> tuple[
         list[
             BinaryOp
+            | MultiInputBinaryOp
             | UnaryOp
             | ClipOp
             | CastOp
@@ -359,6 +362,7 @@ class Compiler:
     ]:
         ops: list[
             BinaryOp
+            | MultiInputBinaryOp
             | UnaryOp
             | ClipOp
             | CastOp

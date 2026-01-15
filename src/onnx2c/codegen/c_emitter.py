@@ -110,6 +110,17 @@ class BinaryOp:
 
 
 @dataclass(frozen=True)
+class MultiInputBinaryOp:
+    inputs: tuple[str, ...]
+    output: str
+    function: ScalarFunction
+    operator_kind: OperatorKind
+    shape: tuple[int, ...]
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class WhereOp:
     condition: str
     input_x: str
@@ -848,6 +859,7 @@ class LoweredModel:
     constants: tuple[ConstTensor, ...]
     ops: tuple[
         BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -930,6 +942,7 @@ class CEmitter:
     @staticmethod
     def _op_names(
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -976,6 +989,8 @@ class CEmitter:
     ) -> tuple[str, ...]:
         if isinstance(op, BinaryOp):
             return (op.input0, op.input1, op.output)
+        if isinstance(op, MultiInputBinaryOp):
+            return (*op.inputs, op.output)
         if isinstance(op, WhereOp):
             return (op.condition, op.input_x, op.input_y, op.output)
         if isinstance(op, UnaryOp):
@@ -1175,6 +1190,7 @@ class CEmitter:
     def _map_op_names(
         self,
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -1221,6 +1237,7 @@ class CEmitter:
         name_map: dict[str, str],
     ) -> (
         BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -1269,6 +1286,16 @@ class CEmitter:
             return BinaryOp(
                 input0=name_map.get(op.input0, op.input0),
                 input1=name_map.get(op.input1, op.input1),
+                output=name_map.get(op.output, op.output),
+                function=op.function,
+                operator_kind=op.operator_kind,
+                shape=op.shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
+        if isinstance(op, MultiInputBinaryOp):
+            return MultiInputBinaryOp(
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
                 output=name_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
@@ -1985,6 +2012,9 @@ class CEmitter:
         try:
             templates = {
                 "binary": self._env.get_template("binary_op.c.j2"),
+                "multi_input": self._env.get_template(
+                    "multi_input_op.c.j2"
+                ),
                 "where": self._env.get_template("where_op.c.j2"),
                 "unary": self._env.get_template("unary_op.c.j2"),
                 "clip": self._env.get_template("clip_op.c.j2"),
@@ -2088,6 +2118,7 @@ class CEmitter:
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
+        multi_input_template = templates["multi_input"]
         where_template = templates["where"]
         unary_template = templates["unary"]
         clip_template = templates["clip"]
@@ -2158,6 +2189,7 @@ class CEmitter:
                 min_literal=self._op_output_dtype(op).min_literal,
                 max_literal=self._op_output_dtype(op).max_literal,
                 binary_template=binary_template,
+                multi_input_template=multi_input_template,
                 where_template=where_template,
                 unary_template=unary_template,
                 clip_template=clip_template,
@@ -2301,6 +2333,7 @@ class CEmitter:
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
         binary_template = templates["binary"]
+        multi_input_template = templates["multi_input"]
         where_template = templates["where"]
         unary_template = templates["unary"]
         clip_template = templates["clip"]
@@ -2371,6 +2404,7 @@ class CEmitter:
                 min_literal=self._op_output_dtype(op).min_literal,
                 max_literal=self._op_output_dtype(op).max_literal,
                 binary_template=binary_template,
+                multi_input_template=multi_input_template,
                 where_template=where_template,
                 unary_template=unary_template,
                 clip_template=clip_template,
@@ -3462,6 +3496,7 @@ class CEmitter:
     @staticmethod
     def _resolve_op(
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -3508,6 +3543,7 @@ class CEmitter:
         temp_map: dict[str, str],
     ) -> (
         BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -3556,6 +3592,16 @@ class CEmitter:
             return BinaryOp(
                 input0=temp_map.get(op.input0, op.input0),
                 input1=temp_map.get(op.input1, op.input1),
+                output=temp_map.get(op.output, op.output),
+                function=op.function,
+                operator_kind=op.operator_kind,
+                shape=op.shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
+        if isinstance(op, MultiInputBinaryOp):
+            return MultiInputBinaryOp(
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
                 output=temp_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
@@ -4312,6 +4358,7 @@ class CEmitter:
         self,
         model: LoweredModel,
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -4364,6 +4411,7 @@ class CEmitter:
         min_literal: str,
         max_literal: str,
         binary_template,
+        multi_input_template,
         where_template,
         unary_template,
         clip_template,
@@ -4485,6 +4533,79 @@ class CEmitter:
                 left_expr=left_expr,
                 right_expr=right_expr,
                 operator_expr=operator_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, MultiInputBinaryOp):
+            scalar_operator = None
+            if (
+                scalar_registry is not None
+                and op.function not in COMPARE_FUNCTIONS
+                and op.function != ScalarFunction.MEAN
+            ):
+                scalar_operator = self._scalar_function_name(
+                    op.function, op.input_dtype, scalar_registry
+                )
+            op_spec = binary_op_symbol(
+                op.function,
+                dtype=op.input_dtype,
+                validate_attrs=False,
+            )
+            if op_spec is None:
+                raise CodegenError(
+                    "Unsupported multi-input operator for rendering: "
+                    f"{op.function.value}"
+                )
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.shape)
+            array_suffix = self._param_array_suffix(op.shape, output_dim_names)
+            input_c_type = op.input_dtype.c_type
+            output_c_type = op.dtype.c_type
+            common = {
+                "model_name": model.name,
+                "op_name": f"{model.name}_op{index}",
+                "element_count": CEmitter._element_count_expr(shape),
+                "array_suffix": array_suffix,
+                "shape": shape,
+                "loop_vars": loop_vars,
+                "input_c_type": input_c_type,
+                "output_c_type": output_c_type,
+                "zero_literal": zero_literal,
+                "dim_args": dim_args,
+            }
+            input_exprs = [
+                f"{name}" + "".join(f"[{var}]" for var in loop_vars)
+                for name in op.inputs
+            ]
+            output_expr = f"{op.output}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            operator = op_spec.operator
+            operator_kind = op.operator_kind
+            operator_expr = None
+            mean_scale = None
+            if op.function == ScalarFunction.MEAN:
+                operator = "+"
+                operator_kind = OperatorKind.INFIX
+                mean_scale = len(op.inputs)
+            if scalar_operator is not None:
+                operator = scalar_operator
+                operator_kind = OperatorKind.FUNC
+            if operator_kind == OperatorKind.EXPR:
+                raise CodegenError(
+                    "Multi-input operators do not support expression operators."
+                )
+            rendered = multi_input_template.render(
+                **common,
+                inputs=op.inputs,
+                input_exprs=input_exprs,
+                output=op.output,
+                output_expr=output_expr,
+                operator=operator,
+                operator_kind=operator_kind.value,
+                operator_expr=operator_expr,
+                mean_scale=mean_scale,
+                is_mean=op.function == ScalarFunction.MEAN,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, WhereOp):
@@ -6223,6 +6344,7 @@ class CEmitter:
     @staticmethod
     def _op_output(
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -6273,6 +6395,7 @@ class CEmitter:
     @staticmethod
     def _op_inputs(
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -6318,6 +6441,8 @@ class CEmitter:
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         if isinstance(op, BinaryOp):
             return ((op.input0, op.shape), (op.input1, op.shape))
+        if isinstance(op, MultiInputBinaryOp):
+            return tuple((name, op.shape) for name in op.inputs)
         if isinstance(op, UnaryOp):
             return ((op.input0, op.shape),)
         if isinstance(op, LpNormalizationOp):
@@ -6357,6 +6482,7 @@ class CEmitter:
         self,
         resolved_ops: Sequence[
             BinaryOp
+            | MultiInputBinaryOp
             | WhereOp
             | UnaryOp
             | ClipOp
@@ -6415,6 +6541,7 @@ class CEmitter:
     @staticmethod
     def _op_outputs(
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -6557,6 +6684,7 @@ class CEmitter:
     @staticmethod
     def _op_output_shape(
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp
@@ -6597,6 +6725,8 @@ class CEmitter:
         | SplitOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
+            return op.shape
+        if isinstance(op, MultiInputBinaryOp):
             return op.shape
         if isinstance(op, WhereOp):
             return op.output_shape
@@ -6685,6 +6815,7 @@ class CEmitter:
     @staticmethod
     def _op_output_dtype(
         op: BinaryOp
+        | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
         | ClipOp

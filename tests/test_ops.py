@@ -16,9 +16,12 @@ from onnx import TensorProto, helper
 
 from shared.scalar_types import ScalarType
 
+from onnx2c.codegen.c_emitter import MultiInputBinaryOp
 from onnx2c.compiler import Compiler, CompilerOptions
 from onnx2c.lowering.flatten import lower_flatten
 from onnx2c.lowering.squeeze import lower_squeeze
+from onnx2c.lowering import variadic as _variadic  # noqa: F401
+from onnx2c.lowering.registry import get_lowering
 from onnx2c.onnx_import import import_onnx
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -2082,6 +2085,82 @@ OPERATOR_CASES = [
     },
 ]
 
+VARIADIC_OP_CASES = [
+    {
+        "name": "SumFloat",
+        "op_type": "Sum",
+        "dtype": TensorProto.FLOAT,
+        "input_shape": [2, 3],
+        "input_count": 3,
+    },
+    {
+        "name": "MeanFloat",
+        "op_type": "Mean",
+        "dtype": TensorProto.FLOAT,
+        "input_shape": [2, 3],
+        "input_count": 3,
+    },
+    {
+        "name": "MaxFloat",
+        "op_type": "Max",
+        "dtype": TensorProto.FLOAT,
+        "input_shape": [2, 3],
+        "input_count": 3,
+    },
+    {
+        "name": "MinFloat",
+        "op_type": "Min",
+        "dtype": TensorProto.FLOAT,
+        "input_shape": [2, 3],
+        "input_count": 3,
+    },
+    {
+        "name": "AndBool",
+        "op_type": "And",
+        "dtype": TensorProto.BOOL,
+        "input_shape": [2, 3],
+        "input_count": 2,
+    },
+    {
+        "name": "OrBool",
+        "op_type": "Or",
+        "dtype": TensorProto.BOOL,
+        "input_shape": [2, 3],
+        "input_count": 2,
+    },
+    {
+        "name": "XorBool",
+        "op_type": "Xor",
+        "dtype": TensorProto.BOOL,
+        "input_shape": [2, 3],
+        "input_count": 2,
+    },
+    {
+        "name": "BitwiseAndInt32",
+        "op_type": "BitwiseAnd",
+        "dtype": TensorProto.INT32,
+        "input_shape": [2, 3],
+        "input_count": 2,
+        "opset": 18,
+    },
+    {
+        "name": "BitwiseOrInt32",
+        "op_type": "BitwiseOr",
+        "dtype": TensorProto.INT32,
+        "input_shape": [2, 3],
+        "input_count": 2,
+        "opset": 18,
+    },
+    {
+        "name": "BitwiseXorInt32",
+        "op_type": "BitwiseXor",
+        "dtype": TensorProto.INT32,
+        "input_shape": [2, 3],
+        "input_count": 2,
+        "opset": 18,
+    },
+]
+
 COMPARE_CASES = [
     {
         "name": "EqualFloat",
@@ -2404,6 +2483,21 @@ def test_lower_squeeze_default_axes() -> None:
     assert op.output_shape == (3, 5)
 
 
+def test_lower_variadic_sum_uses_multi_input_op() -> None:
+    model = _make_operator_model(
+        op_type="Sum",
+        input_shapes=[[2, 2], [2, 2], [2, 2]],
+        output_shape=[2, 2],
+        dtype=TensorProto.FLOAT,
+    )
+    graph = import_onnx(model)
+    lowering = get_lowering("Sum")
+    assert lowering is not None
+    op = lowering(graph, graph.nodes[0])
+    assert isinstance(op, MultiInputBinaryOp)
+    assert op.inputs == ("in0", "in1", "in2")
+
+
 @pytest.mark.parametrize("case", OPERATOR_CASES, ids=lambda case: case["name"])
 def test_operator_c_testbench_matches_onnxruntime(case: dict[str, object]) -> None:
     model = _make_operator_model(
@@ -2424,6 +2518,21 @@ def test_compare_ops_match_onnxruntime(case: dict[str, object]) -> None:
         input_shapes=case["input_shapes"],
         output_shape=case["output_shape"],
         input_dtype=case["input_dtype"],
+        opset=case.get("opset", 13),
+    )
+    _run_ort_compare(model)
+
+
+@pytest.mark.parametrize("case", VARIADIC_OP_CASES, ids=lambda case: case["name"])
+def test_variadic_ops_match_onnxruntime(case: dict[str, object]) -> None:
+    input_shape = case["input_shape"]
+    input_count = case["input_count"]
+    model = _make_operator_model(
+        op_type=case["op_type"],
+        input_shapes=[input_shape for _ in range(input_count)],
+        output_shape=input_shape,
+        dtype=case["dtype"],
+        attrs={},
         opset=case.get("opset", 13),
     )
     _run_ort_compare(model)
