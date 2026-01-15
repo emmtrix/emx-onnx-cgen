@@ -32,7 +32,6 @@
 | Unsupported op Hardmax | 7 | ██████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | Unsupported op TopK | 7 | ██████ |
-| Pad axes input must be a constant initializer | 6 | █████ |
 | AveragePool has unsupported attributes | 6 | █████ |
 | Cast input and output shapes must match | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
@@ -103,6 +102,7 @@
 | Unsupported op Gradient | 2 | ██ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
+| Pad value input must be a scalar | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
