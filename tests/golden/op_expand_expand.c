@@ -29,11 +29,12 @@ static const int64_t shape[2] = {
 /*
  * Node 0:
  * OpType: Expand
+ * Name: n/a
  * Inputs: input, shape
  * Outputs: output
  * Attrs: n/a
  */
-static inline void model_op0(const float input0[restrict 1][3], float output[restrict 2][3]) {
+static inline void node0_Expand(const float input0[restrict 1][3], float output[restrict 2][3]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     size_t output_index = 0;
@@ -47,5 +48,5 @@ static inline void model_op0(const float input0[restrict 1][3], float output[res
 }
 
 void model(const float input[restrict 1][3], float output[restrict 2][3]) {
-    model_op0(input, output);
+    node0_Expand(input, output);
 }

@@ -30,6 +30,7 @@ static const int64_t sizes[4] = {
 /*
  * Node 0:
  * OpType: Resize
+ * Name: n/a
  * Inputs: in0, , , sizes
  * Outputs: out
  * Attrs:
@@ -37,7 +38,7 @@ static const int64_t sizes[4] = {
  *   mode: nearest
  *   nearest_mode: floor
  */
-static inline void model_op0(const float input0[restrict 1][1][2][2], const int64_t sizes_input[restrict 4], float output[restrict 1][1][4][4]) {
+static inline void node0_Resize(const float input0[restrict 1][1][2][2], const int64_t sizes_input[restrict 4], float output[restrict 1][1][4][4]) {
     const int64_t input_shape[4] = { 1, 1, 2, 2 };
     const int64_t output_shape[4] = { 1, 1, 4, 4 };
     double scales[4];
@@ -115,5 +116,5 @@ static inline void model_op0(const float input0[restrict 1][1][2][2], const int6
 }
 
 void model(const float in0[restrict 1][1][2][2], float out[restrict 1][1][4][4]) {
-    model_op0(in0, sizes, out);
+    node0_Resize(in0, sizes, out);
 }

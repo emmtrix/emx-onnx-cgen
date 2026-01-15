@@ -24,6 +24,7 @@ class Value:
 @dataclass(frozen=True)
 class Node:
     op_type: str
+    name: str | None
     inputs: tuple[str, ...]
     outputs: tuple[str, ...]
     attrs: Mapping[str, object]

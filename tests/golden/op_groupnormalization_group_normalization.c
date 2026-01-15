@@ -25,13 +25,14 @@
 /*
  * Node 0:
  * OpType: GroupNormalization
+ * Name: n/a
  * Inputs: in0, in1, in2
  * Outputs: out
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  *   num_groups: 2
  */
-static inline void model_op0(const float input0[restrict 1][4][2][2], const float scale[restrict 4], const float bias[restrict 4], float output[restrict 1][4][2][2]) {
+static inline void node0_GroupNormalization(const float input0[restrict 1][4][2][2], const float scale[restrict 4], const float bias[restrict 4], float output[restrict 1][4][2][2]) {
     for (size_t i0 = 0; i0 < 1; ++i0) {
         for (size_t g = 0; g < 2; ++g) {
             float sum = 0.0f;
@@ -69,5 +70,5 @@ static inline void model_op0(const float input0[restrict 1][4][2][2], const floa
 }
 
 void model(const float in0[restrict 1][4][2][2], const float in1[restrict 4], const float in2[restrict 4], float out[restrict 1][4][2][2]) {
-    model_op0(in0, in1, in2, out);
+    node0_GroupNormalization(in0, in1, in2, out);
 }

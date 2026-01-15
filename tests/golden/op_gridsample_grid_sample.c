@@ -25,6 +25,7 @@
 /*
  * Node 0:
  * OpType: GridSample
+ * Name: n/a
  * Inputs: x, grid
  * Outputs: y
  * Attrs:
@@ -32,7 +33,7 @@
  *   mode: linear
  *   padding_mode: zeros
  */
-static inline double model_op0_reflect(double value, double x_min, double x_max) {
+static inline double node0_GridSample_reflect(double value, double x_min, double x_max) {
     const double range = x_max - x_min;
     if (range == 0.0) {
         return x_min;
@@ -52,7 +53,7 @@ static inline double model_op0_reflect(double value, double x_min, double x_max)
     return value;
 }
 
-static inline void model_op0(const float x[restrict 1][1][2][2], const float grid[restrict 1][2][2][2], float y[restrict 1][1][2][2]) {
+static inline void node0_GridSample(const float x[restrict 1][1][2][2], const float grid[restrict 1][2][2][2], float y[restrict 1][1][2][2]) {
     const int input_spatial[2] = { 2, 2 };
     const double border_min[2] = { -0.5, -0.5 };
     const double border_max[2] = { 1.5, 1.5 };
@@ -154,5 +155,5 @@ static inline void model_op0(const float x[restrict 1][1][2][2], const float gri
 }
 
 void model(const float x[restrict 1][1][2][2], const float grid[restrict 1][2][2][2], float y[restrict 1][1][2][2]) {
-    model_op0(x, grid, y);
+    node0_GridSample(x, grid, y);
 }

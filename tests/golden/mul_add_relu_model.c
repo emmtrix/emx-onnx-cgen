@@ -45,11 +45,12 @@ static inline float ref_scalar_f32_relu(float a) {
 /*
  * Node 0:
  * OpType: Mul
+ * Name: n/a
  * Inputs: a, b
  * Outputs: mul_out
  * Attrs: n/a
  */
-static inline void model_op0(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_Mul(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_mul(input0[i0][i1], input1[i0][i1]);
@@ -60,11 +61,12 @@ static inline void model_op0(const float input0[restrict 2][3], const float inpu
 /*
  * Node 1:
  * OpType: Add
+ * Name: n/a
  * Inputs: mul_out, c
  * Outputs: add_out
  * Attrs: n/a
  */
-static inline void model_op1(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
+static inline void node1_Add(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_add(input0[i0][i1], input1[i0][i1]);
@@ -75,11 +77,12 @@ static inline void model_op1(const float input0[restrict 2][3], const float inpu
 /*
  * Node 2:
  * OpType: Relu
+ * Name: n/a
  * Inputs: add_out
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op2(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node2_Relu(const float input0[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);
@@ -90,7 +93,7 @@ static inline void model_op2(const float input0[restrict 2][3], float output[res
 void model(const float a[restrict 2][3], const float b[restrict 2][3], const float c[restrict 2][3], float out[restrict 2][3]) {
     float tmp0[2][3];
     float tmp1[2][3];
-    model_op0(a, b, tmp0);
-    model_op1(tmp0, c, tmp1);
-    model_op2(tmp1, out);
+    node0_Mul(a, b, tmp0);
+    node1_Add(tmp0, c, tmp1);
+    node2_Relu(tmp1, out);
 }

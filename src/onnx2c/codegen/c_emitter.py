@@ -151,6 +151,7 @@ class WhereOp:
 @dataclass(frozen=True)
 class NodeInfo:
     op_type: str
+    name: str | None
     inputs: tuple[str, ...]
     outputs: tuple[str, ...]
     attrs: dict[str, object]
@@ -1002,6 +1003,14 @@ class CEmitter:
         if sanitized[0].isdigit():
             sanitized = f"v_{sanitized}"
         return sanitized
+
+    def _op_function_name(self, model: LoweredModel, index: int) -> str:
+        node_info = model.node_infos[index]
+        parts = [f"node{index}", node_info.op_type]
+        if node_info.name:
+            parts.append(node_info.name)
+        base_name = "_".join(parts)
+        return self._sanitize_identifier(base_name)
 
     @staticmethod
     def _ensure_unique_identifier(base: str, used: set[str]) -> str:
@@ -2827,6 +2836,7 @@ class CEmitter:
         lines = [
             f"Node {index}:",
             f"OpType: {node_info.op_type}",
+            f"Name: {node_info.name}" if node_info.name else "Name: n/a",
             "Inputs: "
             + (", ".join(node_info.inputs) if node_info.inputs else "n/a"),
             "Outputs: "
@@ -3474,8 +3484,9 @@ class CEmitter:
                 f"    {c_type} {temp.name}{self._array_suffix(temp.shape)};"
             )
         for index, op in enumerate(resolved_ops):
+            op_name = self._op_function_name(model, index)
             call = self._build_op_call(op, dim_order)
-            lines.append(f"    {model.name}_op{index}({call});")
+            lines.append(f"    {op_name}({call});")
         lines.append("}")
         return "\n".join(lines)
 
@@ -4837,6 +4848,7 @@ class CEmitter:
     ) -> str:
         node_info = model.node_infos[index]
         node_comment = CEmitter._emit_node_comment(node_info, index)
+        op_name = self._op_function_name(model, index)
         tensor_dim_names = tensor_dim_names or {}
 
         def _dim_names_for(name: str) -> Mapping[int, str]:
@@ -4885,7 +4897,7 @@ class CEmitter:
             )
             common = {
                 "model_name": model.name,
-                "op_name": f"{model.name}_op{index}",
+                "op_name": op_name,
                 "element_count": CEmitter._element_count_expr(shape),
                 "array_suffix": array_suffix,
                 "shape": shape,
@@ -4967,7 +4979,7 @@ class CEmitter:
             )
             common = {
                 "model_name": model.name,
-                "op_name": f"{model.name}_op{index}",
+                "op_name": op_name,
                 "element_count": CEmitter._element_count_expr(shape),
                 "array_suffix": array_suffix,
                 "shape": shape,
@@ -5074,7 +5086,7 @@ class CEmitter:
             )
             rendered = where_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
                 condition=params["condition"],
@@ -5144,7 +5156,7 @@ class CEmitter:
             )
             rendered = matmul_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 input1=params["input1"],
                 output=params["output"],
@@ -5219,7 +5231,7 @@ class CEmitter:
                 c_dim1 = op.c_shape[1]
             rendered = gemm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input_a=params["input_a"],
                 input_b=params["input_b"],
                 input_c=params["input_c"],
@@ -5407,7 +5419,7 @@ class CEmitter:
             )
             rendered = attention_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input_q=params["input_q"],
                 input_k=params["input_k"],
                 input_v=params["input_v"],
@@ -5514,7 +5526,7 @@ class CEmitter:
             )
             rendered = conv_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 weights=params["weights"],
                 bias=params["bias"],
@@ -5560,7 +5572,7 @@ class CEmitter:
             )
             rendered = avg_pool_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -5616,7 +5628,7 @@ class CEmitter:
             )
             rendered = batch_norm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 scale=params["scale"],
                 bias=params["bias"],
@@ -5651,7 +5663,7 @@ class CEmitter:
             )
             rendered = lp_norm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -5691,7 +5703,7 @@ class CEmitter:
             )
             rendered = instance_norm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 scale=params["scale"],
                 bias=params["bias"],
@@ -5735,7 +5747,7 @@ class CEmitter:
             )
             rendered = group_norm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 scale=params["scale"],
                 bias=params["bias"],
@@ -5842,7 +5854,7 @@ class CEmitter:
             )
             rendered = layer_norm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 scale=params["scale"],
                 bias=params["bias"],
@@ -5886,7 +5898,7 @@ class CEmitter:
             )
             rendered = mean_variance_norm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -5931,7 +5943,7 @@ class CEmitter:
             )
             rendered = rms_norm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 scale=params["scale"],
                 output=params["output"],
@@ -5967,7 +5979,7 @@ class CEmitter:
             )
             rendered = lrn_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6147,7 +6159,7 @@ class CEmitter:
             )
             rendered = lstm_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input_x=params["input_x"],
                 input_w=params["input_w"],
                 input_r=params["input_r"],
@@ -6194,7 +6206,7 @@ class CEmitter:
             )
             rendered = softmax_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6219,7 +6231,7 @@ class CEmitter:
             )
             rendered = logsoftmax_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6262,7 +6274,7 @@ class CEmitter:
             )
             rendered = nllloss_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 target=params["target"],
                 weight=params["weight"],
@@ -6328,7 +6340,7 @@ class CEmitter:
             )
             rendered = softmax_cross_entropy_loss_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 target=params["target"],
                 weight=params["weight"],
@@ -6387,7 +6399,7 @@ class CEmitter:
             )
             rendered = maxpool_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 indices=params["indices"],
@@ -6442,7 +6454,7 @@ class CEmitter:
             )
             rendered = concat_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 inputs=input_names,
                 output=params["output"],
                 params=param_decls,
@@ -6484,7 +6496,7 @@ class CEmitter:
             )
             rendered = gather_elements_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 data=params["data"],
                 indices=params["indices"],
                 output=params["output"],
@@ -6540,7 +6552,7 @@ class CEmitter:
             )
             rendered = gather_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 data=params["data"],
                 indices=params["indices"],
                 output=params["output"],
@@ -6579,7 +6591,7 @@ class CEmitter:
                     input_indices[input_axis] = loop_vars[output_axis]
             rendered = transpose_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6605,7 +6617,7 @@ class CEmitter:
             )
             rendered = reshape_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6632,7 +6644,7 @@ class CEmitter:
             )
             rendered = identity_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6663,7 +6675,7 @@ class CEmitter:
             )
             rendered = eye_like_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6709,7 +6721,7 @@ class CEmitter:
             input_index_expr = " + ".join(input_index_terms) or "0"
             rendered = tile_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6800,7 +6812,7 @@ class CEmitter:
                 pad_value_expr = CEmitter._format_literal(op.dtype, op.value)
             rendered = pad_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=op.input0,
                 pads_input=op.pads_input,
                 axes_input=op.axes_input,
@@ -6848,7 +6860,7 @@ class CEmitter:
             )
             rendered = depth_to_space_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6880,7 +6892,7 @@ class CEmitter:
             )
             rendered = space_to_depth_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -6930,7 +6942,7 @@ class CEmitter:
                 )
                 rendered = slice_template.render(
                     model_name=model.name,
-                    op_name=f"{model.name}_op{index}",
+                    op_name=op_name,
                     input0=name_params["input0"],
                     output=name_params["output"],
                     params=param_decls,
@@ -6993,7 +7005,7 @@ class CEmitter:
             input_dims = CEmitter._codegen_shape(op.input_shape)
             rendered = slice_dynamic_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 params=params,
                 input0=name_params["input0"],
                 starts_input=name_params["starts_input"],
@@ -7089,7 +7101,7 @@ class CEmitter:
                 )
             rendered = resize_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 params=params,
                 input0=name_params["input0"],
                 output=name_params["output"],
@@ -7141,7 +7153,7 @@ class CEmitter:
             output_loop_vars = CEmitter._loop_vars(op.output_shape)
             rendered = grid_sample_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 params=params,
                 input0=op.input0,
                 grid=op.grid,
@@ -7267,7 +7279,7 @@ class CEmitter:
             )
             rendered = reduce_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -7336,7 +7348,7 @@ class CEmitter:
             )
             rendered = arg_reduce_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -7455,7 +7467,7 @@ class CEmitter:
             )
             rendered = reduce_dynamic_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 params=params,
                 input0=name_params["input0"],
                 axes_input=name_params["axes_input"],
@@ -7498,7 +7510,7 @@ class CEmitter:
             )
             rendered = constant_of_shape_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -7525,7 +7537,7 @@ class CEmitter:
             )
             rendered = shape_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -7553,7 +7565,7 @@ class CEmitter:
             )
             rendered = size_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -7597,7 +7609,7 @@ class CEmitter:
             )
             rendered = expand_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -7624,7 +7636,7 @@ class CEmitter:
             )
             rendered = cumsum_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 axis_input=params["axis_input"],
                 axis_c_type=axis_c_type,
@@ -7668,7 +7680,7 @@ class CEmitter:
             )
             rendered = range_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 start=params["start"],
                 limit=params["limit"],
                 delta=params["delta"],
@@ -7718,7 +7730,7 @@ class CEmitter:
             )
             rendered = split_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 outputs=output_names,
                 params=param_decls,
@@ -7748,7 +7760,7 @@ class CEmitter:
             )
             rendered = cast_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
@@ -7844,7 +7856,7 @@ class CEmitter:
             )
             rendered = clip_template.render(
                 model_name=model.name,
-                op_name=f"{model.name}_op{index}",
+                op_name=op_name,
                 input0=params["input0"],
                 input_min=params["input_min"],
                 input_max=params["input_max"],
@@ -7894,7 +7906,7 @@ class CEmitter:
                 )
             common = {
                 "model_name": model.name,
-                "op_name": f"{model.name}_op{index}",
+                "op_name": op_name,
                 "element_count": CEmitter._element_count_expr(shape),
                 "array_suffix": array_suffix,
                 "shape": shape,

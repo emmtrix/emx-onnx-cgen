@@ -41,12 +41,13 @@ static const float var[3] = {
 /*
  * Node 0:
  * OpType: BatchNormalization
+ * Name: n/a
  * Inputs: in0, scale, bias, mean, var
  * Outputs: out
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  */
-static inline void model_op0(const float input0[restrict 2][3][2][2], const float scale[restrict 3], const float bias[restrict 3], const float mean[restrict 3], const float variance[restrict 3], float output[restrict 2][3][2][2]) {
+static inline void node0_BatchNormalization(const float input0[restrict 2][3][2][2], const float scale[restrict 3], const float bias[restrict 3], const float mean[restrict 3], const float variance[restrict 3], float output[restrict 2][3][2][2]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 2; ++i2) {
@@ -61,5 +62,5 @@ static inline void model_op0(const float input0[restrict 2][3][2][2], const floa
 }
 
 void model(const float in0[restrict 2][3][2][2], float out[restrict 2][3][2][2]) {
-    model_op0(in0, scale, bias, mean, var, out);
+    node0_BatchNormalization(in0, scale, bias, mean, var, out);
 }

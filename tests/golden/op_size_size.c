@@ -25,15 +25,16 @@
 /*
  * Node 0:
  * OpType: Size
+ * Name: n/a
  * Inputs: in0
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float input0[restrict 2][3][4], int64_t output[restrict 1]) {
+static inline void node0_Size(const float input0[restrict 2][3][4], int64_t output[restrict 1]) {
     (void)input0;
     output[0] = 24LL;
 }
 
 void model(const float in0[restrict 2][3][4], int64_t out[restrict 1]) {
-    model_op0(in0, out);
+    node0_Size(in0, out);
 }

@@ -41,11 +41,12 @@ static const int64_t steps[2] = {
 /*
  * Node 0:
  * OpType: Slice
+ * Name: n/a
  * Inputs: in0, starts, ends, axes, steps
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float input0[restrict 2][3][4], float output[restrict 2][3][1]) {
+static inline void node0_Slice(const float input0[restrict 2][3][4], float output[restrict 2][3][1]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 1; ++i2) {
@@ -56,5 +57,5 @@ static inline void model_op0(const float input0[restrict 2][3][4], float output[
 }
 
 void model(const float in0[restrict 2][3][4], float out[restrict 2][3][1]) {
-    model_op0(in0, out);
+    node0_Slice(in0, out);
 }
