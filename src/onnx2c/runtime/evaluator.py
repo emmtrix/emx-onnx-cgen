@@ -2117,6 +2117,9 @@ def _apply_lstm(
         initial_h = np.zeros((num_directions, batch_size, hidden_size), dtype=x.dtype)
     if initial_c is None:
         initial_c = np.zeros((num_directions, batch_size, hidden_size), dtype=x.dtype)
+    if spec.layout == 1:
+        initial_h = np.swapaxes(initial_h, 0, 1)
+        initial_c = np.swapaxes(initial_c, 0, 1)
     output_y = None
     if spec.output_y is not None:
         output_y = np.zeros(
@@ -2193,6 +2196,11 @@ def _apply_lstm(
             output_y_h[dir_index] = h_prev
         if output_y_c is not None:
             output_y_c[dir_index] = c_prev
-    if output_y is not None and spec.layout == 1:
-        output_y = np.transpose(output_y, (2, 0, 1, 3))
+    if spec.layout == 1:
+        if output_y is not None:
+            output_y = np.transpose(output_y, (2, 0, 1, 3))
+        if output_y_h is not None:
+            output_y_h = np.swapaxes(output_y_h, 0, 1)
+        if output_y_c is not None:
+            output_y_c = np.swapaxes(output_y_c, 0, 1)
     return output_y, output_y_h, output_y_c

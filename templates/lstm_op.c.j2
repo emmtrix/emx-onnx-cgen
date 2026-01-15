@@ -60,12 +60,20 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         for (int b = 0; b < {{ batch_size }}; ++b) {
             for (int h = 0; h < {{ hidden_size }}; ++h) {
                 {% if input_initial_h %}
+                {% if layout == 0 %}
                 H_prev[b][h] = {{ input_initial_h }}[dir][b][h];
+                {% else %}
+                H_prev[b][h] = {{ input_initial_h }}[b][dir][h];
+                {% endif %}
                 {% else %}
                 H_prev[b][h] = {{ zero_literal }};
                 {% endif %}
                 {% if input_initial_c %}
+                {% if layout == 0 %}
                 C_prev[b][h] = {{ input_initial_c }}[dir][b][h];
+                {% else %}
+                C_prev[b][h] = {{ input_initial_c }}[b][dir][h];
+                {% endif %}
                 {% else %}
                 C_prev[b][h] = {{ zero_literal }};
                 {% endif %}
@@ -194,14 +202,22 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% if output_y_h %}
         for (int b = 0; b < {{ batch_size }}; ++b) {
             for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if layout == 0 %}
                 {{ output_y_h }}[dir][b][h] = H_prev[b][h];
+                {% else %}
+                {{ output_y_h }}[b][dir][h] = H_prev[b][h];
+                {% endif %}
             }
         }
         {% endif %}
         {% if output_y_c %}
         for (int b = 0; b < {{ batch_size }}; ++b) {
             for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if layout == 0 %}
                 {{ output_y_c }}[dir][b][h] = C_prev[b][h];
+                {% else %}
+                {{ output_y_c }}[b][dir][h] = C_prev[b][h];
+                {% endif %}
             }
         }
         {% endif %}
