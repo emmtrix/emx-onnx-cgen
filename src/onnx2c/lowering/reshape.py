@@ -75,6 +75,7 @@ def _resolve_target_shape(
     output_dims: list[int] = []
     unknown_index: int | None = None
     known_product = 1
+    contains_zero = False
     for index, dim in enumerate(shape_values):
         if dim == -1:
             if unknown_index is not None:
@@ -83,6 +84,7 @@ def _resolve_target_shape(
             output_dims.append(-1)
             continue
         if dim == 0:
+            contains_zero = True
             if allowzero == 0:
                 if index >= len(input_shape):
                     raise ShapeInferenceError(
@@ -93,13 +95,24 @@ def _resolve_target_shape(
             raise ShapeInferenceError("Reshape dims must be >= -1")
         output_dims.append(dim)
         known_product *= dim
+    if allowzero == 1 and contains_zero and unknown_index is not None:
+        raise ShapeInferenceError(
+            "Reshape allowzero cannot combine zero and -1 dimensions"
+        )
     input_product = _shape_product(input_shape)
     if unknown_index is not None:
-        if known_product == 0 or input_product % known_product != 0:
-            raise ShapeInferenceError(
-                "Reshape cannot infer dimension from input shape"
-            )
-        output_dims[unknown_index] = input_product // known_product
+        if known_product == 0:
+            if input_product != 0:
+                raise ShapeInferenceError(
+                    "Reshape cannot infer dimension from input shape"
+                )
+            output_dims[unknown_index] = 0
+        else:
+            if input_product % known_product != 0:
+                raise ShapeInferenceError(
+                    "Reshape cannot infer dimension from input shape"
+                )
+            output_dims[unknown_index] = input_product // known_product
     output_shape = tuple(output_dims)
     if _shape_product(output_shape) != input_product:
         raise ShapeInferenceError(
