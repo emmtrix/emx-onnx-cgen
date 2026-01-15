@@ -15,6 +15,7 @@ from typing import Sequence
 
 import onnx
 
+from ._build_info import BUILD_DATE
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
@@ -23,7 +24,8 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="onnx2c", description="ONNX to C compiler")
+    description = f"ONNX to C compiler (build date: {BUILD_DATE})"
+    parser = argparse.ArgumentParser(prog="onnx2c", description=description)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     def add_restrict_flags(subparser: argparse.ArgumentParser) -> None:
