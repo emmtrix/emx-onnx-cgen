@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1089 / 1802 official ONNX files.
+Support 1102 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1304,41 +1304,41 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_rms_normalization_2d_axis0/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis0_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis1/model.onnx | ✅ |  |
-| node/test_rms_normalization_2d_axis1_expanded/model.onnx | ❌ | ReduceMean output shape must be (3, 1), got () |
+| node/test_rms_normalization_2d_axis1_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis_negative_1/model.onnx | ✅ |  |
-| node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ❌ | ReduceMean output shape must be (3, 1), got () |
+| node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis_negative_2/model.onnx | ✅ |  |
 | node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis0_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis1_epsilon/model.onnx | ✅ |  |
-| node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 1, 1), got () |
+| node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis2_epsilon/model.onnx | ✅ |  |
-| node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 3, 1), got () |
+| node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx | ✅ |  |
-| node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 3, 1), got () |
+| node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx | ✅ |  |
-| node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 1, 1), got () |
+| node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx | ✅ |  |
 | node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis0/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis0_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis1/model.onnx | ✅ |  |
-| node/test_rms_normalization_4d_axis1_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 1, 1, 1), got () |
+| node/test_rms_normalization_4d_axis1_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis2/model.onnx | ✅ |  |
-| node/test_rms_normalization_4d_axis2_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 3, 1, 1), got () |
+| node/test_rms_normalization_4d_axis2_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis3/model.onnx | ✅ |  |
-| node/test_rms_normalization_4d_axis3_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 3, 4, 1), got () |
+| node/test_rms_normalization_4d_axis3_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_1/model.onnx | ✅ |  |
-| node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 3, 4, 1), got () |
+| node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_2/model.onnx | ✅ |  |
-| node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 3, 1, 1), got () |
+| node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_3/model.onnx | ✅ |  |
-| node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 1, 1, 1), got () |
+| node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_4/model.onnx | ✅ |  |
 | node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ✅ |  |
 | node/test_rms_normalization_default_axis/model.onnx | ✅ |  |
-| node/test_rms_normalization_default_axis_expanded/model.onnx | ❌ | ReduceMean output shape must be (2, 3, 4, 1), got () |
+| node/test_rms_normalization_default_axis_expanded/model.onnx | ✅ |  |
 | node/test_rnn_seq_length/model.onnx | ❌ | Unsupported op RNN |
 | node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
 | node/test_roialign_aligned_true/model.onnx | ❌ | Unsupported op RoiAlign |
