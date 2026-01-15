@@ -51,7 +51,16 @@ def _build_parser() -> argparse.ArgumentParser:
         "compile", help="Compile an ONNX model into C source"
     )
     compile_parser.add_argument("model", type=Path, help="Path to the ONNX model")
-    compile_parser.add_argument("output", type=Path, help="Output C file path")
+    compile_parser.add_argument(
+        "output",
+        type=Path,
+        nargs="?",
+        default=None,
+        help=(
+            "Output C file path (default: use model filename with .c suffix, "
+            "e.g., model.onnx -> model.c)"
+        ),
+    )
     compile_parser.add_argument(
         "--template-dir",
         type=Path,
@@ -122,7 +131,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 def _handle_compile(args: argparse.Namespace) -> int:
     model_path: Path = args.model
-    output_path: Path = args.output
+    output_path: Path = args.output or model_path.with_suffix(".c")
     model_name = args.model_name or output_path.stem
     try:
         model_checksum = _model_checksum(model_path)
