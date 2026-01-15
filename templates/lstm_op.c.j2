@@ -30,31 +30,19 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 {% endif %}
             }
         }
-        for (int step = 0; step < {{ seq_length }}; ++step) {
-            int t = reverse ? ({{ seq_length }} - 1 - step) : step;
-            for (int b = 0; b < {{ batch_size }}; ++b) {
-                int seq_limit = {{ seq_length }};
-                {% if input_sequence_lens %}
-                seq_limit = (int){{ input_sequence_lens }}[b];
-                if (seq_limit < 0) {
-                    seq_limit = 0;
-                }
-                if (seq_limit > {{ seq_length }}) {
-                    seq_limit = {{ seq_length }};
-                }
-                {% endif %}
-                if (step >= seq_limit) {
-                    {% if output_y %}
-                    for (int h = 0; h < {{ hidden_size }}; ++h) {
-                        {% if layout == 0 %}
-                        {{ output_y }}[step][dir][b][h] = {{ zero_literal }};
-                        {% else %}
-                        {{ output_y }}[b][step][dir][h] = {{ zero_literal }};
-                        {% endif %}
-                    }
-                    {% endif %}
-                    continue;
-                }
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            int seq_limit = {{ seq_length }};
+            {% if input_sequence_lens %}
+            seq_limit = (int){{ input_sequence_lens }}[b];
+            if (seq_limit < 0) {
+                seq_limit = 0;
+            }
+            if (seq_limit > {{ seq_length }}) {
+                seq_limit = {{ seq_length }};
+            }
+            {% endif %}
+            for (int step = 0; step < seq_limit; ++step) {
+                int t = reverse ? ({{ seq_length }} - 1 - step) : step;
                 {{ c_type }} H_next[{{ hidden_size }}];
                 {{ c_type }} C_next[{{ hidden_size }}];
                 for (int h = 0; h < {{ hidden_size }}; ++h) {
@@ -148,6 +136,17 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     H_prev[b][h] = H_next[h];
                 }
             }
+            {% if output_y %}
+            for (int step = seq_limit; step < {{ seq_length }}; ++step) {
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {% if layout == 0 %}
+                    {{ output_y }}[step][dir][b][h] = {{ zero_literal }};
+                    {% else %}
+                    {{ output_y }}[b][step][dir][h] = {{ zero_literal }};
+                    {% endif %}
+                }
+            }
+            {% endif %}
         }
         {% if output_y_h %}
         for (int b = 0; b < {{ batch_size }}; ++b) {
