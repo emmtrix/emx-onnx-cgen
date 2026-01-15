@@ -1,8 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }},
-                   const {{ target_c_type }} {{ target }}{{ target_suffix }}{% if weight %},
-                   const {{ c_type }} {{ weight }}[{{ c }}]{% endif %},
-                   {{ c_type }} {{ output }}{{ output_suffix }}{% if log_prob %},
-                   {{ c_type }} {{ log_prob }}{{ log_prob_suffix }}{% endif %}) {
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
     const {{ target_c_type }} *target_flat = (const {{ target_c_type }} *){{ target }};
     {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};

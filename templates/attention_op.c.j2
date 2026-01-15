@@ -1,14 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input_q }}{{ input_q_suffix }},
-                   const {{ c_type }} {{ input_k }}{{ input_k_suffix }},
-                   const {{ c_type }} {{ input_v }}{{ input_v_suffix }}{% if input_attn_mask %},
-                   const {% if mask_is_bool %}bool{% else %}{{ c_type }}{% endif %} {{ input_attn_mask }}{{ input_mask_suffix }}{% endif %}{% if input_past_key %},
-                   const {{ c_type }} {{ input_past_key }}{{ input_past_key_suffix }}{% endif %}{% if input_past_value %},
-                   const {{ c_type }} {{ input_past_value }}{{ input_past_value_suffix }}{% endif %}{% if input_nonpad_kv_seqlen %},
-                   const {{ nonpad_c_type }} {{ input_nonpad_kv_seqlen }}{{ input_nonpad_suffix }}{% endif %},
-                   {{ c_type }} {{ output }}{{ output_suffix }}{% if output_present_key %},
-                   {{ c_type }} {{ output_present_key }}{{ output_present_key_suffix }}{% endif %}{% if output_present_value %},
-                   {{ c_type }} {{ output_present_value }}{{ output_present_value_suffix }}{% endif %}{% if output_qk_matmul %},
-                   {{ c_type }} {{ output_qk_matmul }}{{ output_qk_matmul_suffix }}{% endif %}) {
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} scale = {{ scale_literal }};
     const {{ c_type }} softcap = {{ softcap_literal }};
     {% if output_present_key %}

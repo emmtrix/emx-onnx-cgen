@@ -34,17 +34,7 @@ static inline {{ c_type }} {{ op_name }}_activation(int kind, {{ c_type }} value
     }
 }
 
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input_x }}{{ input_suffix }},
-                  const {{ c_type }} {{ input_w }}{{ w_suffix }},
-                  const {{ c_type }} {{ input_r }}{{ r_suffix }}{% if input_b %},
-                  const {{ c_type }} {{ input_b }}{{ b_suffix }}{% endif %}{% if input_sequence_lens %},
-                  const {{ seq_c_type }} {{ input_sequence_lens }}{{ seq_suffix }}{% endif %}{% if input_initial_h %},
-                  const {{ c_type }} {{ input_initial_h }}{{ h_suffix }}{% endif %}{% if input_initial_c %},
-                  const {{ c_type }} {{ input_initial_c }}{{ c_suffix }}{% endif %}{% if input_p %},
-                  const {{ c_type }} {{ input_p }}{{ p_suffix }}{% endif %}{% if output_y %},
-                  {{ c_type }} {{ output_y }}{{ y_suffix }}{% endif %}{% if output_y_h %},
-                  {{ c_type }} {{ output_y_h }}{{ y_h_suffix }}{% endif %}{% if output_y_c %},
-                  {{ c_type }} {{ output_y_c }}{{ y_c_suffix }}{% endif %}) {
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int activations[] = { {% for value in activation_kinds %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const {{ c_type }} activation_alpha[] = { {% for value in activation_alphas %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const {{ c_type }} activation_beta[] = { {% for value in activation_betas %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };

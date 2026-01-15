@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     (void){{ input0 }};
     {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
     size_t total = (size_t){{ batch_size }} * {{ rows }} * {{ cols }};

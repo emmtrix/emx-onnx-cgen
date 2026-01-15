@@ -953,6 +953,53 @@ class CEmitter:
             mapped[key] = unique
         return mapped
 
+    def _shared_param_map(
+        self, params: Sequence[tuple[str, str | None]]
+    ) -> dict[str, str | None]:
+        used: set[str] = set()
+        mapped: dict[str, str | None] = {}
+        name_map: dict[str, str] = {}
+        for key, name in params:
+            if name is None:
+                mapped[key] = None
+                continue
+            if name in name_map:
+                mapped[key] = name_map[name]
+                continue
+            unique = self._ensure_unique_identifier(name, used)
+            used.add(unique)
+            name_map[name] = unique
+            mapped[key] = unique
+        return mapped
+
+    @staticmethod
+    def _build_param_decls(
+        specs: Sequence[tuple[str | None, str, str, bool]]
+    ) -> list[str]:
+        ordered: list[str] = []
+        grouped: dict[str, dict[str, object]] = {}
+        for name, c_type, suffix, is_const in specs:
+            if name is None:
+                continue
+            if name not in grouped:
+                grouped[name] = {
+                    "c_type": c_type,
+                    "suffix": suffix,
+                    "is_const": is_const,
+                }
+                ordered.append(name)
+            else:
+                if not is_const:
+                    grouped[name]["is_const"] = False
+        decls: list[str] = []
+        for name in ordered:
+            info = grouped[name]
+            const_prefix = "const " if info["is_const"] else ""
+            decls.append(
+                f"{const_prefix}{info['c_type']} {name}{info['suffix']}"
+            )
+        return decls
+
     @staticmethod
     def _op_names(
         op: BinaryOp
@@ -4489,7 +4536,7 @@ class CEmitter:
             return f"{node_comment}\n{_format_c_indentation(rendered)}"
 
         if isinstance(op, BinaryOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("input1", op.input1),
@@ -4519,6 +4566,13 @@ class CEmitter:
             array_suffix = self._param_array_suffix(op.shape, output_dim_names)
             input_c_type = op.input_dtype.c_type
             output_c_type = op.dtype.c_type
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_c_type, array_suffix, True),
+                    (params["input1"], input_c_type, array_suffix, True),
+                    (params["output"], output_c_type, array_suffix, False),
+                ]
+            )
             common = {
                 "model_name": model.name,
                 "op_name": f"{model.name}_op{index}",
@@ -4530,6 +4584,7 @@ class CEmitter:
                 "output_c_type": output_c_type,
                 "zero_literal": zero_literal,
                 "dim_args": dim_args,
+                "params": param_decls,
             }
             left_expr = f"{params['input0']}" + "".join(
                 f"[{var}]" for var in loop_vars
@@ -4560,6 +4615,12 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MultiInputBinaryOp):
+            params = self._shared_param_map(
+                [
+                    *( (f"input{idx}", name) for idx, name in enumerate(op.inputs) ),
+                    ("output", op.output),
+                ]
+            )
             scalar_operator = None
             if (
                 scalar_registry is not None
@@ -4585,6 +4646,15 @@ class CEmitter:
             array_suffix = self._param_array_suffix(op.shape, output_dim_names)
             input_c_type = op.input_dtype.c_type
             output_c_type = op.dtype.c_type
+            input_names = [
+                params[f"input{idx}"] for idx in range(len(op.inputs))
+            ]
+            param_decls = self._build_param_decls(
+                [
+                    *( (name, input_c_type, array_suffix, True) for name in input_names ),
+                    (params["output"], output_c_type, array_suffix, False),
+                ]
+            )
             common = {
                 "model_name": model.name,
                 "op_name": f"{model.name}_op{index}",
@@ -4596,12 +4666,13 @@ class CEmitter:
                 "output_c_type": output_c_type,
                 "zero_literal": zero_literal,
                 "dim_args": dim_args,
+                "params": param_decls,
             }
             input_exprs = [
                 f"{name}" + "".join(f"[{var}]" for var in loop_vars)
-                for name in op.inputs
+                for name in input_names
             ]
-            output_expr = f"{op.output}" + "".join(
+            output_expr = f"{params['output']}" + "".join(
                 f"[{var}]" for var in loop_vars
             )
             operator = op_spec.operator
@@ -4621,9 +4692,9 @@ class CEmitter:
                 )
             rendered = multi_input_template.render(
                 **common,
-                inputs=op.inputs,
+                inputs=input_names,
                 input_exprs=input_exprs,
-                output=op.output,
+                output=params["output"],
                 output_expr=output_expr,
                 operator=operator,
                 operator_kind=operator_kind.value,
@@ -4633,7 +4704,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, WhereOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("condition", op.condition),
                     ("input_x", op.input_x),
@@ -4673,6 +4744,24 @@ class CEmitter:
             output_expr = f"{params['output']}" + "".join(
                 f"[{var}]" for var in loop_vars
             )
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["condition"],
+                        ScalarType.BOOL.c_type,
+                        condition_array_suffix,
+                        True,
+                    ),
+                    (params["input_x"], op.dtype.c_type, x_array_suffix, True),
+                    (params["input_y"], op.dtype.c_type, y_array_suffix, True),
+                    (
+                        params["output"],
+                        op.dtype.c_type,
+                        output_array_suffix,
+                        False,
+                    ),
+                ]
+            )
             rendered = where_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -4694,10 +4783,11 @@ class CEmitter:
                 output_c_type=op.dtype.c_type,
                 condition_c_type=ScalarType.BOOL.c_type,
                 dim_args=dim_args,
+                params=param_decls,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MatMulOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("input1", op.input1),
@@ -4732,18 +4822,29 @@ class CEmitter:
                 input0=params["input0"],
                 input1=params["input1"],
             )
+            input0_suffix = self._param_array_suffix(op.input0_shape)
+            input1_suffix = self._param_array_suffix(op.input1_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input0_suffix, True),
+                    (params["input1"], c_type, input1_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = matmul_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 input1=params["input1"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 acc_type=c_type,
                 zero_literal=zero_literal,
-                input0_suffix=self._param_array_suffix(op.input0_shape),
-                input1_suffix=self._param_array_suffix(op.input1_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input0_suffix=input0_suffix,
+                input1_suffix=input1_suffix,
+                output_suffix=output_suffix,
                 output_loop_vars=output_loop_vars,
                 output_loop_bounds=output_shape,
                 output_index_expr=output_index_expr,
@@ -4755,7 +4856,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GemmOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input_a", op.input_a),
                     ("input_b", op.input_b),
@@ -4765,6 +4866,29 @@ class CEmitter:
             )
             input_a_shape = (op.k, op.m) if op.trans_a else (op.m, op.k)
             input_b_shape = (op.n, op.k) if op.trans_b else (op.k, op.n)
+            input_a_suffix = self._param_array_suffix(input_a_shape)
+            input_b_suffix = self._param_array_suffix(input_b_shape)
+            output_suffix = self._param_array_suffix((op.m, op.n))
+            c_suffix = (
+                self._param_array_suffix(op.c_shape)
+                if op.c_shape is not None
+                else ""
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input_a"], c_type, input_a_suffix, True),
+                    (params["input_b"], c_type, input_b_suffix, True),
+                    (
+                        params["input_c"],
+                        c_type,
+                        c_suffix,
+                        True,
+                    )
+                    if params["input_c"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             alpha_literal = CEmitter._format_literal(op.dtype, op.alpha)
             beta_literal = CEmitter._format_literal(op.dtype, op.beta)
             if op.c_shape is None:
@@ -4790,6 +4914,7 @@ class CEmitter:
                 input_b=params["input_b"],
                 input_c=params["input_c"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 acc_type=c_type,
                 zero_literal=zero_literal,
@@ -4800,13 +4925,11 @@ class CEmitter:
                 m=op.m,
                 n=op.n,
                 k=op.k,
-                input_a_suffix=self._param_array_suffix(input_a_shape),
-                input_b_suffix=self._param_array_suffix(input_b_shape),
-                output_suffix=self._param_array_suffix((op.m, op.n)),
+                input_a_suffix=input_a_suffix,
+                input_b_suffix=input_b_suffix,
+                output_suffix=output_suffix,
                 c_suffix=(
-                    self._param_array_suffix(op.c_shape)
-                    if op.c_shape is not None
-                    else None
+                    c_suffix if op.c_shape is not None else None
                 ),
                 c_rank=c_rank,
                 c_dim0=c_dim0,
@@ -4814,7 +4937,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AttentionOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input_q", op.input_q),
                     ("input_k", op.input_k),
@@ -4864,6 +4987,114 @@ class CEmitter:
                 if op.output_qk_matmul is not None
                 else None
             )
+            input_q_suffix = self._param_array_suffix(input_q_shape)
+            input_k_suffix = self._param_array_suffix(input_k_shape)
+            input_v_suffix = self._param_array_suffix(input_v_shape)
+            input_mask_suffix = (
+                self._param_array_suffix(op.mask_shape)
+                if op.input_attn_mask is not None
+                else ""
+            )
+            input_past_key_suffix = (
+                self._param_array_suffix(
+                    (op.batch, op.kv_heads, op.past_seq, op.qk_head_size)
+                )
+                if op.input_past_key is not None
+                else ""
+            )
+            input_past_value_suffix = (
+                self._param_array_suffix(
+                    (op.batch, op.kv_heads, op.past_seq, op.v_head_size)
+                )
+                if op.input_past_value is not None
+                else ""
+            )
+            input_nonpad_suffix = (
+                self._param_array_suffix((op.batch,))
+                if op.input_nonpad_kv_seqlen is not None
+                else ""
+            )
+            output_suffix = self._param_array_suffix(output_shape)
+            output_present_key_suffix = (
+                self._param_array_suffix(present_key_shape)
+                if present_key_shape is not None
+                else ""
+            )
+            output_present_value_suffix = (
+                self._param_array_suffix(present_value_shape)
+                if present_value_shape is not None
+                else ""
+            )
+            output_qk_matmul_suffix = (
+                self._param_array_suffix(qk_matmul_shape)
+                if qk_matmul_shape is not None
+                else ""
+            )
+            mask_c_type = "bool" if op.mask_is_bool else c_type
+            param_decls = self._build_param_decls(
+                [
+                    (params["input_q"], c_type, input_q_suffix, True),
+                    (params["input_k"], c_type, input_k_suffix, True),
+                    (params["input_v"], c_type, input_v_suffix, True),
+                    (
+                        params["input_attn_mask"],
+                        mask_c_type,
+                        input_mask_suffix,
+                        True,
+                    )
+                    if params["input_attn_mask"]
+                    else (None, "", "", True),
+                    (
+                        params["input_past_key"],
+                        c_type,
+                        input_past_key_suffix,
+                        True,
+                    )
+                    if params["input_past_key"]
+                    else (None, "", "", True),
+                    (
+                        params["input_past_value"],
+                        c_type,
+                        input_past_value_suffix,
+                        True,
+                    )
+                    if params["input_past_value"]
+                    else (None, "", "", True),
+                    (
+                        params["input_nonpad_kv_seqlen"],
+                        ScalarType.I64.c_type,
+                        input_nonpad_suffix,
+                        True,
+                    )
+                    if params["input_nonpad_kv_seqlen"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                    (
+                        params["output_present_key"],
+                        c_type,
+                        output_present_key_suffix,
+                        False,
+                    )
+                    if params["output_present_key"]
+                    else (None, "", "", False),
+                    (
+                        params["output_present_value"],
+                        c_type,
+                        output_present_value_suffix,
+                        False,
+                    )
+                    if params["output_present_value"]
+                    else (None, "", "", False),
+                    (
+                        params["output_qk_matmul"],
+                        c_type,
+                        output_qk_matmul_suffix,
+                        False,
+                    )
+                    if params["output_qk_matmul"]
+                    else (None, "", "", False),
+                ]
+            )
             rendered = attention_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -4878,6 +5109,7 @@ class CEmitter:
                 output_present_key=params["output_present_key"],
                 output_present_value=params["output_present_value"],
                 output_qk_matmul=params["output_qk_matmul"],
+                params=param_decls,
                 c_type=c_type,
                 nonpad_c_type=ScalarType.I64.c_type,
                 zero_literal=zero_literal,
@@ -4914,53 +5146,21 @@ class CEmitter:
                 mask_broadcast_q_seq=int(op.mask_broadcast_q_seq),
                 mask_q_seq=op.mask_q_seq or 0,
                 mask_kv_seq=op.mask_kv_seq or 0,
-                input_q_suffix=self._param_array_suffix(input_q_shape),
-                input_k_suffix=self._param_array_suffix(input_k_shape),
-                input_v_suffix=self._param_array_suffix(input_v_shape),
-                input_mask_suffix=(
-                    self._param_array_suffix(op.mask_shape)
-                    if op.input_attn_mask is not None
-                    else ""
-                ),
-                input_past_key_suffix=(
-                    self._param_array_suffix(
-                        (op.batch, op.kv_heads, op.past_seq, op.qk_head_size)
-                    )
-                    if op.input_past_key is not None
-                    else ""
-                ),
-                input_past_value_suffix=(
-                    self._param_array_suffix(
-                        (op.batch, op.kv_heads, op.past_seq, op.v_head_size)
-                    )
-                    if op.input_past_value is not None
-                    else ""
-                ),
-                input_nonpad_suffix=(
-                    self._param_array_suffix((op.batch,))
-                    if op.input_nonpad_kv_seqlen is not None
-                    else ""
-                ),
-                output_suffix=self._param_array_suffix(output_shape),
-                output_present_key_suffix=(
-                    self._param_array_suffix(present_key_shape)
-                    if present_key_shape is not None
-                    else ""
-                ),
-                output_present_value_suffix=(
-                    self._param_array_suffix(present_value_shape)
-                    if present_value_shape is not None
-                    else ""
-                ),
-                output_qk_matmul_suffix=(
-                    self._param_array_suffix(qk_matmul_shape)
-                    if qk_matmul_shape is not None
-                    else ""
-                ),
+                input_q_suffix=input_q_suffix,
+                input_k_suffix=input_k_suffix,
+                input_v_suffix=input_v_suffix,
+                input_mask_suffix=input_mask_suffix,
+                input_past_key_suffix=input_past_key_suffix,
+                input_past_value_suffix=input_past_value_suffix,
+                input_nonpad_suffix=input_nonpad_suffix,
+                output_suffix=output_suffix,
+                output_present_key_suffix=output_present_key_suffix,
+                output_present_value_suffix=output_present_value_suffix,
+                output_qk_matmul_suffix=output_qk_matmul_suffix,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("weights", op.weights),
@@ -4983,6 +5183,25 @@ class CEmitter:
             pad_begin = op.pads[: op.spatial_rank]
             group_in_channels = op.in_channels // op.group
             group_out_channels = op.out_channels // op.group
+            input_suffix = self._param_array_suffix(input_shape)
+            weight_suffix = self._param_array_suffix(weight_shape)
+            bias_suffix = self._param_array_suffix((op.out_channels,))
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["weights"], c_type, weight_suffix, True),
+                    (
+                        params["bias"],
+                        c_type,
+                        bias_suffix,
+                        True,
+                    )
+                    if params["bias"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = conv_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -4990,12 +5209,13 @@ class CEmitter:
                 weights=params["weights"],
                 bias=params["bias"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=self._param_array_suffix(input_shape),
-                weight_suffix=self._param_array_suffix(weight_shape),
-                bias_suffix=self._param_array_suffix((op.out_channels,)),
-                output_suffix=self._param_array_suffix(output_shape),
+                input_suffix=input_suffix,
+                weight_suffix=weight_suffix,
+                bias_suffix=bias_suffix,
+                output_suffix=output_suffix,
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
@@ -5015,20 +5235,29 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AveragePoolOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             input_shape = (op.batch, op.channels, op.in_h, op.in_w)
             output_shape = (op.batch, op.channels, op.out_h, op.out_w)
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = avg_pool_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=self._param_array_suffix(input_shape),
-                output_suffix=self._param_array_suffix(output_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 batch=op.batch,
                 channels=op.channels,
                 in_h=op.in_h,
@@ -5047,7 +5276,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BatchNormOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("scale", op.scale),
@@ -5059,6 +5288,22 @@ class CEmitter:
             )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
+            input_suffix = self._param_array_suffix(shape)
+            output_suffix = self._param_array_suffix(shape)
+            scale_suffix = self._param_array_suffix((op.channels,))
+            bias_suffix = self._param_array_suffix((op.channels,))
+            mean_suffix = self._param_array_suffix((op.channels,))
+            variance_suffix = self._param_array_suffix((op.channels,))
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["scale"], c_type, scale_suffix, True),
+                    (params["bias"], c_type, bias_suffix, True),
+                    (params["mean"], c_type, mean_suffix, True),
+                    (params["variance"], c_type, variance_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = batch_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -5068,13 +5313,14 @@ class CEmitter:
                 mean=params["mean"],
                 variance=params["variance"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(shape),
-                output_suffix=self._param_array_suffix(shape),
-                scale_suffix=self._param_array_suffix((op.channels,)),
-                bias_suffix=self._param_array_suffix((op.channels,)),
-                mean_suffix=self._param_array_suffix((op.channels,)),
-                variance_suffix=self._param_array_suffix((op.channels,)),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                scale_suffix=scale_suffix,
+                bias_suffix=bias_suffix,
+                mean_suffix=mean_suffix,
+                variance_suffix=variance_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
@@ -5082,14 +5328,25 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LpNormalizationOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
             shape = CEmitter._codegen_shape(op.shape)
+            array_suffix = self._param_array_suffix(shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, array_suffix, True),
+                    (params["output"], c_type, array_suffix, False),
+                ]
+            )
             rendered = lp_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                output=op.output,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                array_suffix=self._param_array_suffix(shape),
+                array_suffix=array_suffix,
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
@@ -5100,21 +5357,42 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, InstanceNormalizationOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("scale", op.scale),
+                    ("bias", op.bias),
+                    ("output", op.output),
+                ]
+            )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
+            input_suffix = self._param_array_suffix(shape)
+            output_suffix = self._param_array_suffix(shape)
+            scale_suffix = self._param_array_suffix((op.channels,))
+            bias_suffix = self._param_array_suffix((op.channels,))
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["scale"], c_type, scale_suffix, True),
+                    (params["bias"], c_type, bias_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = instance_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                scale=op.scale,
-                bias=op.bias,
-                output=op.output,
+                input0=params["input0"],
+                scale=params["scale"],
+                bias=params["bias"],
+                output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=self._param_array_suffix(shape),
-                output_suffix=self._param_array_suffix(shape),
-                scale_suffix=self._param_array_suffix((op.channels,)),
-                bias_suffix=self._param_array_suffix((op.channels,)),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                scale_suffix=scale_suffix,
+                bias_suffix=bias_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
                 spatial_size=op.spatial_size,
@@ -5123,21 +5401,42 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GroupNormalizationOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("scale", op.scale),
+                    ("bias", op.bias),
+                    ("output", op.output),
+                ]
+            )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
+            input_suffix = self._param_array_suffix(shape)
+            output_suffix = self._param_array_suffix(shape)
+            scale_suffix = self._param_array_suffix((op.channels,))
+            bias_suffix = self._param_array_suffix((op.channels,))
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["scale"], c_type, scale_suffix, True),
+                    (params["bias"], c_type, bias_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = group_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                scale=op.scale,
-                bias=op.bias,
-                output=op.output,
+                input0=params["input0"],
+                scale=params["scale"],
+                bias=params["bias"],
+                output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=self._param_array_suffix(shape),
-                output_suffix=self._param_array_suffix(shape),
-                scale_suffix=self._param_array_suffix((op.channels,)),
-                bias_suffix=self._param_array_suffix((op.channels,)),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                scale_suffix=scale_suffix,
+                bias_suffix=bias_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
                 num_groups=op.num_groups,
@@ -5148,6 +5447,16 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LayerNormalizationOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("scale", op.scale),
+                    ("bias", op.bias),
+                    ("output", op.output),
+                    ("mean_output", op.mean_output),
+                    ("invstd_output", op.invstd_output),
+                ]
+            )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             prefix_loop_vars = loop_vars[: op.axis]
@@ -5166,41 +5475,79 @@ class CEmitter:
                 *prefix_loop_vars,
                 *("0" for _ in norm_loop_vars),
             ]
+            input_suffix = self._param_array_suffix(shape)
+            output_suffix = self._param_array_suffix(shape)
+            scale_suffix = self._param_array_suffix(op.scale_shape)
+            bias_suffix = (
+                self._param_array_suffix(op.bias_shape)
+                if op.bias_shape is not None
+                else ""
+            )
+            mean_suffix = (
+                self._param_array_suffix(
+                    op.shape[: op.axis]
+                    + (1,) * len(op.normalized_shape)
+                )
+                if op.mean_output is not None
+                else ""
+            )
+            invstd_suffix = (
+                self._param_array_suffix(
+                    op.shape[: op.axis]
+                    + (1,) * len(op.normalized_shape)
+                )
+                if op.invstd_output is not None
+                else ""
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["scale"], c_type, scale_suffix, True),
+                    (
+                        params["bias"],
+                        c_type,
+                        bias_suffix,
+                        True,
+                    )
+                    if params["bias"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                    (
+                        params["mean_output"],
+                        c_type,
+                        mean_suffix,
+                        False,
+                    )
+                    if params["mean_output"]
+                    else (None, "", "", False),
+                    (
+                        params["invstd_output"],
+                        c_type,
+                        invstd_suffix,
+                        False,
+                    )
+                    if params["invstd_output"]
+                    else (None, "", "", False),
+                ]
+            )
             rendered = layer_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                scale=op.scale,
-                bias=op.bias,
-                output=op.output,
-                mean_output=op.mean_output,
-                invstd_output=op.invstd_output,
+                input0=params["input0"],
+                scale=params["scale"],
+                bias=params["bias"],
+                output=params["output"],
+                mean_output=params["mean_output"],
+                invstd_output=params["invstd_output"],
+                params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=self._param_array_suffix(shape),
-                output_suffix=self._param_array_suffix(shape),
-                scale_suffix=self._param_array_suffix(op.scale_shape),
-                bias_suffix=(
-                    self._param_array_suffix(op.bias_shape)
-                    if op.bias_shape is not None
-                    else ""
-                ),
-                mean_suffix=(
-                    self._param_array_suffix(
-                        op.shape[: op.axis]
-                        + (1,) * len(op.normalized_shape)
-                    )
-                    if op.mean_output is not None
-                    else ""
-                ),
-                invstd_suffix=(
-                    self._param_array_suffix(
-                        op.shape[: op.axis]
-                        + (1,) * len(op.normalized_shape)
-                    )
-                    if op.invstd_output is not None
-                    else ""
-                ),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                scale_suffix=scale_suffix,
+                bias_suffix=bias_suffix,
+                mean_suffix=mean_suffix,
+                invstd_suffix=invstd_suffix,
                 prefix_shape=shape[: op.axis],
                 norm_shape=shape[op.axis :],
                 prefix_loop_vars=prefix_loop_vars,
@@ -5214,17 +5561,29 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MeanVarianceNormalizationOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
+            input_suffix = self._param_array_suffix(shape)
+            output_suffix = self._param_array_suffix(shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = mean_variance_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                output=op.output,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=self._param_array_suffix(shape),
-                output_suffix=self._param_array_suffix(shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
                 axes=op.axes,
@@ -5235,6 +5594,13 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, RMSNormalizationOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("scale", op.scale),
+                    ("output", op.output),
+                ]
+            )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             prefix_loop_vars = loop_vars[: op.axis]
@@ -5243,17 +5609,28 @@ class CEmitter:
                 "0" if dim == 1 else var
                 for dim, var in zip(op.scale_shape, norm_loop_vars)
             ]
+            input_suffix = self._param_array_suffix(shape)
+            output_suffix = self._param_array_suffix(shape)
+            scale_suffix = self._param_array_suffix(op.scale_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["scale"], c_type, scale_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = rms_norm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
-                input0=op.input0,
-                scale=op.scale,
-                output=op.output,
+                input0=params["input0"],
+                scale=params["scale"],
+                output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
-                input_suffix=self._param_array_suffix(shape),
-                output_suffix=self._param_array_suffix(shape),
-                scale_suffix=self._param_array_suffix(op.scale_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                scale_suffix=scale_suffix,
                 prefix_shape=shape[: op.axis],
                 norm_shape=shape[op.axis :],
                 prefix_loop_vars=prefix_loop_vars,
@@ -5265,19 +5642,28 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LrnOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
+            input_suffix = self._param_array_suffix(shape)
+            output_suffix = self._param_array_suffix(shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = lrn_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(shape),
-                output_suffix=self._param_array_suffix(shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 shape=shape,
                 channels=op.channels,
                 half=op.half,
@@ -5292,7 +5678,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LstmOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input_x", op.input_x),
                     ("input_w", op.input_w),
@@ -5340,6 +5726,92 @@ class CEmitter:
                 if op.layout == 0
                 else (op.batch_size, op.seq_length, op.num_directions, op.hidden_size)
             )
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input_x"],
+                        c_type,
+                        self._param_array_suffix(input_x_shape),
+                        True,
+                    ),
+                    (
+                        params["input_w"],
+                        c_type,
+                        self._param_array_suffix(w_shape),
+                        True,
+                    ),
+                    (
+                        params["input_r"],
+                        c_type,
+                        self._param_array_suffix(r_shape),
+                        True,
+                    ),
+                    (
+                        params["input_b"],
+                        c_type,
+                        self._param_array_suffix(b_shape),
+                        True,
+                    )
+                    if params["input_b"]
+                    else (None, "", "", True),
+                    (
+                        params["input_sequence_lens"],
+                        (op.sequence_lens_dtype or ScalarType.I64).c_type,
+                        self._param_array_suffix(seq_shape),
+                        True,
+                    )
+                    if params["input_sequence_lens"]
+                    else (None, "", "", True),
+                    (
+                        params["input_initial_h"],
+                        c_type,
+                        self._param_array_suffix(h_shape),
+                        True,
+                    )
+                    if params["input_initial_h"]
+                    else (None, "", "", True),
+                    (
+                        params["input_initial_c"],
+                        c_type,
+                        self._param_array_suffix(c_shape),
+                        True,
+                    )
+                    if params["input_initial_c"]
+                    else (None, "", "", True),
+                    (
+                        params["input_p"],
+                        c_type,
+                        self._param_array_suffix(p_shape),
+                        True,
+                    )
+                    if params["input_p"]
+                    else (None, "", "", True),
+                    (
+                        params["output_y"],
+                        c_type,
+                        self._param_array_suffix(y_shape),
+                        False,
+                    )
+                    if params["output_y"]
+                    else (None, "", "", False),
+                    (
+                        params["output_y_h"],
+                        c_type,
+                        self._param_array_suffix(h_shape),
+                        False,
+                    )
+                    if params["output_y_h"]
+                    else (None, "", "", False),
+                    (
+                        params["output_y_c"],
+                        c_type,
+                        self._param_array_suffix(c_shape),
+                        False,
+                    )
+                    if params["output_y_c"]
+                    else (None, "", "", False),
+                ]
+            )
             rendered = lstm_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -5354,6 +5826,7 @@ class CEmitter:
                 output_y=params["output_y"],
                 output_y_h=params["output_y_h"],
                 output_y_c=params["output_y_c"],
+                params=param_decls,
                 c_type=c_type,
                 seq_c_type=(op.sequence_lens_dtype or ScalarType.I64).c_type,
                 zero_literal=zero_literal,
@@ -5364,25 +5837,6 @@ class CEmitter:
                     else CEmitter._format_literal(op.dtype, 0)
                 ),
                 use_clip=int(op.clip is not None and op.clip > 0),
-                input_suffix=self._param_array_suffix(input_x_shape),
-                w_suffix=self._param_array_suffix(w_shape),
-                r_suffix=self._param_array_suffix(r_shape),
-                b_suffix=self._param_array_suffix(b_shape) if b_shape else None,
-                seq_suffix=self._param_array_suffix(seq_shape) if seq_shape else None,
-                h_suffix=self._param_array_suffix(h_shape) if h_shape else None,
-                c_suffix=self._param_array_suffix(c_shape) if c_shape else None,
-                p_suffix=self._param_array_suffix(p_shape) if p_shape else None,
-                y_suffix=self._param_array_suffix(y_shape) if op.output_y else None,
-                y_h_suffix=(
-                    self._param_array_suffix((op.num_directions, op.batch_size, op.hidden_size))
-                    if op.output_y_h
-                    else None
-                ),
-                y_c_suffix=(
-                    self._param_array_suffix((op.num_directions, op.batch_size, op.hidden_size))
-                    if op.output_y_c
-                    else None
-                ),
                 seq_length=op.seq_length,
                 batch_size=op.batch_size,
                 input_size=op.input_size,
@@ -5407,16 +5861,24 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
+            )
+            array_suffix = self._param_array_suffix(op.shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, array_suffix, True),
+                    (params["output"], c_type, array_suffix, False),
+                ]
             )
             rendered = softmax_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                array_suffix=self._param_array_suffix(op.shape),
+                array_suffix=array_suffix,
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
@@ -5424,16 +5886,24 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LogSoftmaxOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
+            )
+            array_suffix = self._param_array_suffix(op.shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, array_suffix, True),
+                    (params["output"], c_type, array_suffix, False),
+                ]
             )
             rendered = logsoftmax_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                array_suffix=self._param_array_suffix(op.shape),
+                array_suffix=array_suffix,
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
@@ -5442,12 +5912,31 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("target", op.target),
                     ("weight", op.weight),
                     ("output", op.output),
+                ]
+            )
+            input_suffix = self._param_array_suffix(op.input_shape)
+            target_suffix = self._param_array_suffix(op.target_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            weight_suffix = f"[{op.c}]"
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["target"], op.target_dtype.c_type, target_suffix, True),
+                    (
+                        params["weight"],
+                        c_type,
+                        weight_suffix,
+                        True,
+                    )
+                    if params["weight"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
                 ]
             )
             rendered = nllloss_template.render(
@@ -5457,11 +5946,12 @@ class CEmitter:
                 target=params["target"],
                 weight=params["weight"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 target_c_type=op.target_dtype.c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                target_suffix=self._param_array_suffix(op.target_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_suffix=input_suffix,
+                target_suffix=target_suffix,
+                output_suffix=output_suffix,
                 n=op.n,
                 c=op.c,
                 d=op.d,
@@ -5472,7 +5962,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("target", op.target),
@@ -5483,6 +5973,38 @@ class CEmitter:
             )
             use_ignore_index = int(op.ignore_index is not None)
             ignore_index = op.ignore_index if op.ignore_index is not None else -1
+            input_suffix = self._param_array_suffix(op.input_shape)
+            target_suffix = self._param_array_suffix(op.target_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            log_prob_suffix = (
+                self._param_array_suffix(op.log_prob_shape)
+                if op.log_prob_shape is not None
+                else ""
+            )
+            weight_suffix = f"[{op.c}]"
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["target"], op.target_dtype.c_type, target_suffix, True),
+                    (
+                        params["weight"],
+                        c_type,
+                        weight_suffix,
+                        True,
+                    )
+                    if params["weight"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                    (
+                        params["log_prob"],
+                        c_type,
+                        log_prob_suffix,
+                        False,
+                    )
+                    if params["log_prob"]
+                    else (None, "", "", False),
+                ]
+            )
             rendered = softmax_cross_entropy_loss_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -5491,16 +6013,13 @@ class CEmitter:
                 weight=params["weight"],
                 output=params["output"],
                 log_prob=params["log_prob"],
+                params=param_decls,
                 c_type=c_type,
                 target_c_type=op.target_dtype.c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                target_suffix=self._param_array_suffix(op.target_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
-                log_prob_suffix=(
-                    self._param_array_suffix(op.log_prob_shape)
-                    if op.log_prob_shape is not None
-                    else None
-                ),
+                input_suffix=input_suffix,
+                target_suffix=target_suffix,
+                output_suffix=output_suffix,
+                log_prob_suffix=log_prob_suffix if op.log_prob_shape is not None else None,
                 n=op.n,
                 c=op.c,
                 d=op.d,
@@ -5514,7 +6033,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MaxPoolOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("output", op.output),
@@ -5528,17 +6047,35 @@ class CEmitter:
                 if op.indices is not None and op.indices_dtype is not None
                 else None
             )
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            indices_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                    (
+                        params["indices"],
+                        indices_c_type or ScalarType.I64.c_type,
+                        indices_suffix,
+                        False,
+                    )
+                    if params["indices"]
+                    else (None, "", "", False),
+                ]
+            )
             rendered = maxpool_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
                 indices=params["indices"],
+                params=param_decls,
                 c_type=c_type,
                 min_literal=min_literal,
-                input_suffix=self._param_array_suffix(input_shape),
-                output_suffix=self._param_array_suffix(output_shape),
-                indices_suffix=self._param_array_suffix(output_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                indices_suffix=indices_suffix,
                 indices_c_type=indices_c_type,
                 batch=op.batch,
                 channels=op.channels,
@@ -5557,7 +6094,7 @@ class CEmitter:
             input_params = [
                 (f"input_{index}", name) for index, name in enumerate(op.inputs)
             ]
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [*input_params, ("output", op.output)]
             )
             input_names = tuple(
@@ -5569,16 +6106,28 @@ class CEmitter:
             outer = CEmitter._element_count(op.output_shape[:axis] or (1,))
             inner = CEmitter._element_count(op.output_shape[axis + 1 :] or (1,))
             axis_sizes = tuple(shape[axis] for shape in op.input_shapes)
+            input_suffixes = tuple(
+                self._param_array_suffix(shape) for shape in op.input_shapes
+            )
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    *(
+                        (name, c_type, suffix, True)
+                        for name, suffix in zip(input_names, input_suffixes)
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = concat_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 inputs=input_names,
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                input_suffixes=tuple(
-                    self._param_array_suffix(shape) for shape in op.input_shapes
-                ),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_suffixes=input_suffixes,
+                output_suffix=output_suffix,
                 axis_sizes=axis_sizes,
                 input_count=len(op.inputs),
                 outer=outer,
@@ -5586,7 +6135,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GatherElementsOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("data", op.data),
                     ("indices", op.indices),
@@ -5597,17 +6146,33 @@ class CEmitter:
             loop_vars = CEmitter._loop_vars(output_shape)
             data_indices = list(loop_vars)
             data_indices[op.axis] = "gather_index"
+            data_suffix = self._param_array_suffix(op.data_shape)
+            indices_suffix = self._param_array_suffix(op.indices_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["indices"],
+                        op.indices_dtype.c_type,
+                        indices_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = gather_elements_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 data=params["data"],
                 indices=params["indices"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 indices_c_type=op.indices_dtype.c_type,
-                data_suffix=self._param_array_suffix(op.data_shape),
-                indices_suffix=self._param_array_suffix(op.indices_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                data_suffix=data_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
                 data_indices=data_indices,
@@ -5615,7 +6180,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GatherOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("data", op.data),
                     ("indices", op.indices),
@@ -5637,17 +6202,33 @@ class CEmitter:
                 "gather_index",
                 *output_loop_vars[op.axis + indices_rank :],
             ]
+            data_suffix = self._param_array_suffix(op.data_shape)
+            indices_suffix = self._param_array_suffix(op.indices_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["indices"],
+                        op.indices_dtype.c_type,
+                        indices_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = gather_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 data=params["data"],
                 indices=params["indices"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 indices_c_type=op.indices_dtype.c_type,
-                data_suffix=self._param_array_suffix(op.data_shape),
-                indices_suffix=self._param_array_suffix(op.indices_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                data_suffix=data_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
                 indices_indices=indices_indices,
@@ -5656,13 +6237,19 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, TransposeOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_shape = CEmitter._codegen_shape(op.output_shape)
             loop_vars = CEmitter._loop_vars(output_shape)
             output_suffix = self._param_array_suffix(output_shape)
             input_suffix = self._param_array_suffix(op.input_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             if not op.input_shape:
                 input_indices = [loop_vars[0]]
             else:
@@ -5674,6 +6261,7 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
@@ -5683,22 +6271,31 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ReshapeOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
+            )
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
             )
             rendered = reshape_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 element_count=CEmitter._element_count(op.output_shape),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, IdentityOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
@@ -5706,11 +6303,18 @@ class CEmitter:
             loop_vars = CEmitter._loop_vars(op.shape)
             output_suffix = self._param_array_suffix(shape, output_dim_names)
             input_suffix = self._param_array_suffix(shape, _dim_names_for(op.input0))
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = identity_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
@@ -5719,7 +6323,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
@@ -5730,11 +6334,18 @@ class CEmitter:
             )
             batch_dims = op.output_shape[:-2]
             batch_size = CEmitter._element_count(batch_dims or (1,))
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = eye_like_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
@@ -5748,7 +6359,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, TileOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
@@ -5762,6 +6373,12 @@ class CEmitter:
             output_suffix = self._param_array_suffix(
                 op.output_shape, output_dim_names
             )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             input_index_terms = [
                 f"({var} % {dim}) * {stride}"
                 for var, dim, stride in zip(
@@ -5774,6 +6391,7 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
@@ -5783,16 +6401,23 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, DepthToSpaceOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_suffix = self._param_array_suffix(op.output_shape)
             input_suffix = self._param_array_suffix(op.input_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = depth_to_space_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
@@ -5808,16 +6433,23 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SpaceToDepthOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_suffix = self._param_array_suffix(op.output_shape)
             input_suffix = self._param_array_suffix(op.input_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = space_to_depth_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
@@ -5832,7 +6464,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SliceOp):
-            name_params = self._unique_param_map(
+            name_params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("starts_input", op.starts_input),
@@ -5854,50 +6486,75 @@ class CEmitter:
                             input_indices.append(f"{start} + {loop_var}")
                     else:
                         input_indices.append(f"{start} + {step} * {loop_var}")
+                input_suffix = self._param_array_suffix(op.input_shape)
+                output_suffix = self._param_array_suffix(op.output_shape)
+                param_decls = self._build_param_decls(
+                    [
+                        (name_params["input0"], c_type, input_suffix, True),
+                        (name_params["output"], c_type, output_suffix, False),
+                    ]
+                )
                 rendered = slice_template.render(
                     model_name=model.name,
                     op_name=f"{model.name}_op{index}",
                     input0=name_params["input0"],
                     output=name_params["output"],
+                    params=param_decls,
                     c_type=c_type,
-                    input_suffix=self._param_array_suffix(op.input_shape),
-                    output_suffix=self._param_array_suffix(op.output_shape),
+                    input_suffix=input_suffix,
+                    output_suffix=output_suffix,
                     output_shape=output_shape,
                     loop_vars=loop_vars,
                     input_indices=input_indices,
                 ).rstrip()
                 return with_node_comment(rendered)
-            params = [
-                f"const {c_type} {name_params['input0']}"
-                f"{self._param_array_suffix(op.input_shape)}"
-            ]
-            if op.starts_input and op.starts_shape and op.starts_dtype:
-                starts_suffix = self._param_array_suffix(op.starts_shape)
-                params.append(
-                    f"const {op.starts_dtype.c_type} "
-                    f"{name_params['starts_input']}{starts_suffix}"
-                )
-            if op.ends_input and op.ends_shape and op.ends_dtype:
-                ends_suffix = self._param_array_suffix(op.ends_shape)
-                params.append(
-                    f"const {op.ends_dtype.c_type} "
-                    f"{name_params['ends_input']}{ends_suffix}"
-                )
-            if op.axes_input and op.axes_shape and op.axes_dtype:
-                axes_suffix = self._param_array_suffix(op.axes_shape)
-                params.append(
-                    f"const {op.axes_dtype.c_type} "
-                    f"{name_params['axes_input']}{axes_suffix}"
-                )
-            if op.steps_input and op.steps_shape and op.steps_dtype:
-                steps_suffix = self._param_array_suffix(op.steps_shape)
-                params.append(
-                    f"const {op.steps_dtype.c_type} "
-                    f"{name_params['steps_input']}{steps_suffix}"
-                )
-            params.append(
-                f"{c_type} {name_params['output']}"
-                f"{self._param_array_suffix(op.output_shape)}"
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            params = self._build_param_decls(
+                [
+                    (name_params["input0"], c_type, input_suffix, True),
+                    (
+                        name_params["starts_input"],
+                        op.starts_dtype.c_type if op.starts_dtype else "",
+                        self._param_array_suffix(op.starts_shape)
+                        if op.starts_shape
+                        else "",
+                        True,
+                    )
+                    if op.starts_input and op.starts_shape and op.starts_dtype
+                    else (None, "", "", True),
+                    (
+                        name_params["ends_input"],
+                        op.ends_dtype.c_type if op.ends_dtype else "",
+                        self._param_array_suffix(op.ends_shape)
+                        if op.ends_shape
+                        else "",
+                        True,
+                    )
+                    if op.ends_input and op.ends_shape and op.ends_dtype
+                    else (None, "", "", True),
+                    (
+                        name_params["axes_input"],
+                        op.axes_dtype.c_type if op.axes_dtype else "",
+                        self._param_array_suffix(op.axes_shape)
+                        if op.axes_shape
+                        else "",
+                        True,
+                    )
+                    if op.axes_input and op.axes_shape and op.axes_dtype
+                    else (None, "", "", True),
+                    (
+                        name_params["steps_input"],
+                        op.steps_dtype.c_type if op.steps_dtype else "",
+                        self._param_array_suffix(op.steps_shape)
+                        if op.steps_shape
+                        else "",
+                        True,
+                    )
+                    if op.steps_input and op.steps_shape and op.steps_dtype
+                    else (None, "", "", True),
+                    (name_params["output"], c_type, output_suffix, False),
+                ]
             )
             input_dims = CEmitter._codegen_shape(op.input_shape)
             rendered = slice_dynamic_template.render(
@@ -5919,7 +6576,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
-            name_params = self._unique_param_map(
+            name_params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("roi_input", op.roi_input),
@@ -5930,9 +6587,6 @@ class CEmitter:
             )
             input_suffix = self._param_array_suffix(op.input_shape)
             output_suffix = self._param_array_suffix(op.output_shape)
-            params = [
-                f"const {c_type} {name_params['input0']}{input_suffix}"
-            ]
             roi_suffix = None
             scales_suffix = None
             sizes_suffix = None
@@ -5942,25 +6596,42 @@ class CEmitter:
             if op.roi_input and op.roi_shape and op.roi_dtype:
                 roi_suffix = self._param_array_suffix(op.roi_shape)
                 roi_c_type = op.roi_dtype.c_type
-                params.append(
-                    f"const {roi_c_type} "
-                    f"{name_params['roi_input']}{roi_suffix}"
-                )
             if op.scales_input and op.scales_shape and op.scales_dtype:
                 scales_suffix = self._param_array_suffix(op.scales_shape)
                 scales_c_type = op.scales_dtype.c_type
-                params.append(
-                    f"const {scales_c_type} "
-                    f"{name_params['scales_input']}{scales_suffix}"
-                )
             if op.sizes_input and op.sizes_shape and op.sizes_dtype:
                 sizes_suffix = self._param_array_suffix(op.sizes_shape)
                 sizes_c_type = op.sizes_dtype.c_type
-                params.append(
-                    f"const {sizes_c_type} "
-                    f"{name_params['sizes_input']}{sizes_suffix}"
-                )
-            params.append(f"{c_type} {name_params['output']}{output_suffix}")
+            params = self._build_param_decls(
+                [
+                    (name_params["input0"], c_type, input_suffix, True),
+                    (
+                        name_params["roi_input"],
+                        roi_c_type or "",
+                        roi_suffix or "",
+                        True,
+                    )
+                    if roi_c_type
+                    else (None, "", "", True),
+                    (
+                        name_params["scales_input"],
+                        scales_c_type or "",
+                        scales_suffix or "",
+                        True,
+                    )
+                    if scales_c_type
+                    else (None, "", "", True),
+                    (
+                        name_params["sizes_input"],
+                        sizes_c_type or "",
+                        sizes_suffix or "",
+                        True,
+                    )
+                    if sizes_c_type
+                    else (None, "", "", True),
+                    (name_params["output"], c_type, output_suffix, False),
+                ]
+            )
             scales_axis_map = None
             if op.scales_input:
                 scales_axis_map = (
@@ -6025,7 +6696,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ReduceOp) and op.axes_input is None:
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_shape = CEmitter._codegen_shape(op.output_shape)
@@ -6112,14 +6783,23 @@ class CEmitter:
                 raise CodegenError(
                     f"Unsupported reduce kind {op.reduce_kind}"
                 )
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = reduce_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 output_shape=output_shape,
                 output_loop_vars=output_loop_vars,
                 reduce_loop_vars=reduce_loop_vars,
@@ -6131,7 +6811,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ArgReduceOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_shape = CEmitter._codegen_shape(op.output_shape)
@@ -6172,15 +6852,24 @@ class CEmitter:
                 raise CodegenError(
                     f"Unsupported arg reduce kind {op.reduce_kind}"
                 )
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["output"], op.output_dtype.c_type, output_suffix, False),
+                ]
+            )
             rendered = arg_reduce_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 input_c_type=op.input_dtype.c_type,
                 output_c_type=op.output_dtype.c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 output_shape=output_shape,
                 output_loop_vars=output_loop_vars,
                 reduce_var=reduce_var,
@@ -6193,7 +6882,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ReduceOp):
-            name_params = self._unique_param_map(
+            name_params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("axes_input", op.axes_input),
@@ -6269,19 +6958,26 @@ class CEmitter:
                 raise CodegenError(
                     f"Unsupported reduce kind {op.reduce_kind}"
                 )
-            params = [
-                f"const {c_type} {name_params['input0']}"
-                f"{self._param_array_suffix(op.input_shape)}"
-            ]
-            if op.axes_input and op.axes_input_shape and op.axes_input_dtype:
-                axes_suffix = self._param_array_suffix(op.axes_input_shape)
-                params.append(
-                    f"const {axes_c_type} "
-                    f"{name_params['axes_input']}{axes_suffix}"
-                )
-            params.append(
-                f"{c_type} {name_params['output']}"
-                f"{self._param_array_suffix(op.output_shape)}"
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            axes_suffix = (
+                self._param_array_suffix(op.axes_input_shape)
+                if op.axes_input_shape
+                else ""
+            )
+            params = self._build_param_decls(
+                [
+                    (name_params["input0"], c_type, input_suffix, True),
+                    (
+                        name_params["axes_input"],
+                        axes_c_type,
+                        axes_suffix,
+                        True,
+                    )
+                    if name_params["axes_input"]
+                    else (None, "", "", True),
+                    (name_params["output"], c_type, output_suffix, False),
+                ]
             )
             rendered = reduce_dynamic_template.render(
                 model_name=model.name,
@@ -6313,20 +7009,28 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             shape = CEmitter._codegen_shape(op.shape)
             loop_vars = CEmitter._loop_vars(shape)
             array_suffix = self._param_array_suffix(shape)
+            input_suffix = self._param_array_suffix(op.input_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["output"], c_type, array_suffix, False),
+                ]
+            )
             rendered = constant_of_shape_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 input_c_type=op.input_dtype.c_type,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
+                input_suffix=input_suffix,
                 array_suffix=array_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
@@ -6334,18 +7038,27 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ShapeOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
+            )
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
             )
             rendered = shape_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 input_c_type=op.input_dtype.c_type,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 values=[
                     CEmitter._format_literal(op.dtype, value)
                     for value in op.values
@@ -6353,23 +7066,32 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SizeOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
+            )
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
             )
             rendered = size_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 input_c_type=op.input_dtype.c_type,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(op.input_shape),
-                output_suffix=self._param_array_suffix(op.output_shape),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 value=CEmitter._format_literal(op.dtype, op.value),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ExpandOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
@@ -6377,6 +7099,18 @@ class CEmitter:
                 op.output_shape, output_dim_names
             )
             loop_vars = CEmitter._loop_vars(op.output_shape)
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             input_index_terms = [
                 f"{loop_var} * {stride}"
                 for loop_var, input_dim, stride in zip(
@@ -6392,20 +7126,17 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(
-                    op.input_shape, _dim_names_for(op.input0)
-                ),
-                output_suffix=self._param_array_suffix(
-                    op.output_shape, output_dim_names
-                ),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
                 output_shape=output_shape,
                 loop_vars=loop_vars,
                 input_index_expr=input_index_expr,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, RangeOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("start", op.start),
                     ("limit", op.limit),
@@ -6414,6 +7145,15 @@ class CEmitter:
                 ]
             )
             scalar_suffix = self._param_array_suffix(())
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["start"], c_type, scalar_suffix, True),
+                    (params["limit"], c_type, scalar_suffix, True),
+                    (params["delta"], c_type, scalar_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
             rendered = range_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -6421,9 +7161,10 @@ class CEmitter:
                 limit=params["limit"],
                 delta=params["delta"],
                 output=params["output"],
+                params=param_decls,
                 c_type=c_type,
                 input_suffix=scalar_suffix,
-                output_suffix=self._param_array_suffix(op.output_shape),
+                output_suffix=output_suffix,
                 length=op.length,
             ).rstrip()
             return with_node_comment(rendered)
@@ -6432,7 +7173,7 @@ class CEmitter:
                 (f"output_{index}", name)
                 for index, name in enumerate(op.outputs)
             ]
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), *output_params]
             )
             output_names = tuple(
@@ -6451,16 +7192,27 @@ class CEmitter:
             inner = 1
             for dim in op.input_shape[op.axis + 1 :]:
                 inner *= dim
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    *(
+                        (name, c_type, suffix, False)
+                        for name, suffix in zip(output_names, output_suffixes)
+                    ),
+                ]
+            )
             rendered = split_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 outputs=output_names,
+                params=param_decls,
                 output_suffixes=output_suffixes,
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(
-                    op.input_shape, _dim_names_for(op.input0)
-                ),
+                input_suffix=input_suffix,
                 axis_sizes=op.split_sizes,
                 axis_total=op.input_shape[op.axis],
                 outer=outer,
@@ -6469,18 +7221,25 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, CastOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
             loop_vars = CEmitter._loop_vars(op.shape)
             array_suffix = self._param_array_suffix(op.shape, output_dim_names)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, array_suffix, True),
+                    (params["output"], op.dtype.c_type, array_suffix, False),
+                ]
+            )
             rendered = cast_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=params["input0"],
                 output=params["output"],
+                params=param_decls,
                 input_c_type=op.input_dtype.c_type,
                 output_c_type=op.dtype.c_type,
                 array_suffix=array_suffix,
@@ -6490,7 +7249,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ClipOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [
                     ("input0", op.input0),
                     ("input_min", op.input_min),
@@ -6529,6 +7288,48 @@ class CEmitter:
                 if op.input_max is not None
                 else op.dtype.max_literal
             )
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            min_suffix = (
+                self._param_array_suffix(
+                    op.min_shape, _dim_names_for(op.input_min)
+                )
+                if op.min_shape is not None
+                else ""
+            )
+            max_suffix = (
+                self._param_array_suffix(
+                    op.max_shape, _dim_names_for(op.input_max)
+                )
+                if op.max_shape is not None
+                else ""
+            )
+            output_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.dtype.c_type, input_suffix, True),
+                    (
+                        params["input_min"],
+                        op.dtype.c_type,
+                        min_suffix,
+                        True,
+                    )
+                    if params["input_min"]
+                    else (None, "", "", True),
+                    (
+                        params["input_max"],
+                        op.dtype.c_type,
+                        max_suffix,
+                        True,
+                    )
+                    if params["input_max"]
+                    else (None, "", "", True),
+                    (params["output"], op.dtype.c_type, output_suffix, False),
+                ]
+            )
             rendered = clip_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
@@ -6536,28 +7337,13 @@ class CEmitter:
                 input_min=params["input_min"],
                 input_max=params["input_max"],
                 output=params["output"],
+                params=param_decls,
                 input_c_type=op.dtype.c_type,
                 output_c_type=op.dtype.c_type,
-                input_suffix=self._param_array_suffix(
-                    op.input_shape, _dim_names_for(op.input0)
-                ),
-                min_suffix=(
-                    self._param_array_suffix(
-                        op.min_shape, _dim_names_for(op.input_min)
-                    )
-                    if op.min_shape is not None
-                    else None
-                ),
-                max_suffix=(
-                    self._param_array_suffix(
-                        op.max_shape, _dim_names_for(op.input_max)
-                    )
-                    if op.max_shape is not None
-                    else None
-                ),
-                output_suffix=self._param_array_suffix(
-                    op.output_shape, output_dim_names
-                ),
+                input_suffix=input_suffix,
+                min_suffix=min_suffix,
+                max_suffix=max_suffix,
+                output_suffix=output_suffix,
                 shape=output_shape,
                 loop_vars=loop_vars,
                 input_expr=input_expr,
@@ -6567,7 +7353,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, UnaryOp):
-            params = self._unique_param_map(
+            params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             scalar_operator = None
@@ -6579,6 +7365,12 @@ class CEmitter:
             shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
             loop_vars = CEmitter._loop_vars(op.shape)
             array_suffix = self._param_array_suffix(op.shape, output_dim_names)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, array_suffix, True),
+                    (params["output"], op.dtype.c_type, array_suffix, False),
+                ]
+            )
             operator_symbol = unary_op_symbol(op.function, dtype=op.dtype)
             if op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}:
                 operator_symbol = (
@@ -6599,6 +7391,7 @@ class CEmitter:
                 "output_c_type": op.dtype.c_type,
                 "zero_literal": zero_literal,
                 "dim_args": dim_args,
+                "params": param_decls,
             }
             rendered = unary_template.render(
                 **common,

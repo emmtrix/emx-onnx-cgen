@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}, {% for output in outputs %}{{ c_type }} {{ output }}{{ output_suffixes[loop.index0] }}{% if not loop.last %}, {% endif %}{% endfor %}) {
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
     {{ c_type }} *output_ptrs[] = { {% for output in outputs %}({{ c_type }} *){{ output }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const size_t axis_sizes[] = { {% for axis in axis_sizes %}{{ axis }}{% if not loop.last %}, {% endif %}{% endfor %} };
