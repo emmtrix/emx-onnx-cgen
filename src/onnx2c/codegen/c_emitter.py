@@ -5969,14 +5969,19 @@ class CEmitter:
                 else None
             )
             seq_shape = (op.batch_size,) if op.input_sequence_lens is not None else None
-            h_shape = (
+            state_shape = (
                 (op.num_directions, op.batch_size, op.hidden_size)
-                if op.input_initial_h is not None
+                if op.layout == 0
+                else (op.batch_size, op.num_directions, op.hidden_size)
+            )
+            h_shape = (
+                state_shape
+                if op.input_initial_h is not None or op.output_y_h is not None
                 else None
             )
             c_shape = (
-                (op.num_directions, op.batch_size, op.hidden_size)
-                if op.input_initial_c is not None
+                state_shape
+                if op.input_initial_c is not None or op.output_y_c is not None
                 else None
             )
             p_shape = (
