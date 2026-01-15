@@ -59,16 +59,10 @@ static inline void model_op0(const float X[restrict 1][1][2], const float W[rest
                 C_prev[b][h] = 0.0f;
             }
         }
-        for (int step = 0; step < 1; ++step) {
-            int t = reverse ? (1 - 1 - step) : step;
-            for (int b = 0; b < 1; ++b) {
-                int seq_limit = 1;
-                if (step >= seq_limit) {
-                    for (int h = 0; h < 3; ++h) {
-                        Y[step][dir][b][h] = 0.0f;
-                    }
-                    continue;
-                }
+        for (int b = 0; b < 1; ++b) {
+            int seq_limit = 1;
+            for (int step = 0; step < seq_limit; ++step) {
+                int t = reverse ? (1 - 1 - step) : step;
                 float H_next[3];
                 float C_next[3];
                 for (int h = 0; h < 3; ++h) {
@@ -103,6 +97,11 @@ static inline void model_op0(const float X[restrict 1][1][2], const float W[rest
                 for (int h = 0; h < 3; ++h) {
                     C_prev[b][h] = C_next[h];
                     H_prev[b][h] = H_next[h];
+                }
+            }
+            for (int step = seq_limit; step < 1; ++step) {
+                for (int h = 0; h < 3; ++h) {
+                    Y[step][dir][b][h] = 0.0f;
                 }
             }
         }
