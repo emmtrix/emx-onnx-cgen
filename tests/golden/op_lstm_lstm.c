@@ -31,58 +31,17 @@
  *   hidden_size: 3
  *   layout: 0
  */
-static inline float model_op0_activation(int kind, float value, float alpha, float beta) {
-    switch (kind) {
-        case 0: /* Relu */
-        return value > 0.0f ? value : 0.0f;
-        case 1: /* Tanh */
-        return tanhf(value);
-        case 2: /* Sigmoid */
-        return (float)1.0f / ((float)1.0f + expf(-value));
-        case 3: /* Affine */
-        return alpha * value + beta;
-        case 4: /* LeakyRelu */
-        return value < 0.0f ? alpha * value : value;
-        case 5: /* ThresholdedRelu */
-        return value > alpha ? value : 0.0f;
-        case 6: /* ScaledTanh */
-        return alpha * tanhf(beta * value);
-        case 7: /* HardSigmoid */
-        value = alpha * value + beta;
-        if (value < 0.0f) {
-            return 0.0f;
-        }
-        if (value > (float)1.0f) {
-            return (float)1.0f;
-        }
-        return value;
-        case 8: /* Elu */
-        return value >= 0.0f ? value : alpha * (expf(value) - (float)1.0f);
-        case 9: /* Softsign */
-        return value / ((float)1.0f + fabsf(value));
-        case 10: /* Softplus */
-        return log1pf(expf(value));
-        default:
-        return value;
-    }
-}
 
 static inline void model_op0(const float X[restrict 1][1][2], const float W[restrict 1][12][2], const float R[restrict 1][12][3], float Y[restrict 1][1][1][3], float Y_h[restrict 1][1][3], float Y_c[restrict 1][1][3]) {
-    const int activations[] = { 2, 1, 1 };
-    const float activation_alpha[] = { 1.0f, 1.0f, 1.0f };
-    const float activation_beta[] = { 0.0f, 0.0f, 0.0f };
-    for (int dir = 0; dir < 1; ++dir) {
-        int reverse = 0;
-        int act_offset = dir * 3;
-        int act_f = activations[act_offset];
-        int act_g = activations[act_offset + 1];
-        int act_h = activations[act_offset + 2];
-        float alpha_f = activation_alpha[act_offset];
-        float alpha_g = activation_alpha[act_offset + 1];
-        float alpha_h = activation_alpha[act_offset + 2];
-        float beta_f = activation_beta[act_offset];
-        float beta_g = activation_beta[act_offset + 1];
-        float beta_h = activation_beta[act_offset + 2];
+    {
+        const int dir = 0;
+        const int reverse = 0;
+        const float alpha_f = 1.0f;
+        const float alpha_g = 1.0f;
+        const float alpha_h = 1.0f;
+        const float beta_f = 0.0f;
+        const float beta_g = 0.0f;
+        const float beta_h = 0.0f;
         float H_prev[1][3];
         float C_prev[1][3];
         for (int b = 0; b < 1; ++b) {
@@ -122,13 +81,23 @@ static inline void model_op0(const float X[restrict 1][1][2], const float W[rest
                         gate_f += h_val * R[dir][3 * 2 + h][i];
                         gate_c += h_val * R[dir][3 * 3 + h][i];
                     }
-                    float i_gate = model_op0_activation(act_f, gate_i, alpha_f, beta_f);
-                    float f_gate;
-                    f_gate = model_op0_activation(act_f, gate_f, alpha_f, beta_f);
-                    float c_gate = model_op0_activation(act_g, gate_c, alpha_g, beta_g);
+                    float i_gate = gate_i;
+                    i_gate = (float)1.0f / ((float)1.0f + expf(-i_gate));
+
+                    float f_gate = gate_f;
+                    f_gate = (float)1.0f / ((float)1.0f + expf(-f_gate));
+
+                    float c_gate = gate_c;
+                    c_gate = tanhf(c_gate);
+
                     float c_new = f_gate * C_prev[b][h] + i_gate * c_gate;
-                    float o_gate = model_op0_activation(act_f, gate_o, alpha_f, beta_f);
-                    float h_new = o_gate * model_op0_activation(act_h, c_new, alpha_h, beta_h);
+                    float o_gate = gate_o;
+                    o_gate = (float)1.0f / ((float)1.0f + expf(-o_gate));
+
+                    float h_gate = c_new;
+                    h_gate = tanhf(h_gate);
+
+                    float h_new = o_gate * h_gate;
                     C_next[h] = c_new;
                     H_next[h] = h_new;
                     Y[step][dir][b][h] = h_new;

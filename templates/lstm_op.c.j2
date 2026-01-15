@@ -1,60 +1,54 @@
-static inline {{ c_type }} {{ op_name }}_activation(int kind, {{ c_type }} value, {{ c_type }} alpha, {{ c_type }} beta) {
-    switch (kind) {
-        case 0: /* Relu */
-            return value > {{ zero_literal }} ? value : {{ zero_literal }};
-        case 1: /* Tanh */
-            return {{ tanh_fn }}(value);
-        case 2: /* Sigmoid */
-            return ({{ c_type }}){{ one_literal }} / (({{ c_type }}){{ one_literal }} + {{ exp_fn }}(-value));
-        case 3: /* Affine */
-            return alpha * value + beta;
-        case 4: /* LeakyRelu */
-            return value < {{ zero_literal }} ? alpha * value : value;
-        case 5: /* ThresholdedRelu */
-            return value > alpha ? value : {{ zero_literal }};
-        case 6: /* ScaledTanh */
-            return alpha * {{ tanh_fn }}(beta * value);
-        case 7: /* HardSigmoid */
-            value = alpha * value + beta;
-            if (value < {{ zero_literal }}) {
-                return {{ zero_literal }};
-            }
-            if (value > ({{ c_type }}){{ one_literal }}) {
-                return ({{ c_type }}){{ one_literal }};
-            }
-            return value;
-        case 8: /* Elu */
-            return value >= {{ zero_literal }} ? value : alpha * ({{ exp_fn }}(value) - ({{ c_type }}){{ one_literal }});
-        case 9: /* Softsign */
-            return value / (({{ c_type }}){{ one_literal }} + {{ fabs_fn }}(value));
-        case 10: /* Softplus */
-            return {{ log1p_fn }}({{ exp_fn }}(value));
-        default:
-            return value;
+{% macro apply_activation_assign(var, kind, value, alpha, beta) -%}
+    {{ c_type }} {{ var }} = {{ value }};
+    {% if kind == 0 %}
+    if ({{ var }} < {{ zero_literal }}) {
+        {{ var }} = {{ zero_literal }};
     }
-}
+    {% elif kind == 1 %}
+    {{ var }} = {{ tanh_fn }}({{ var }});
+    {% elif kind == 2 %}
+    {{ var }} = ({{ c_type }}){{ one_literal }} / (({{ c_type }}){{ one_literal }} + {{ exp_fn }}(-{{ var }}));
+    {% elif kind == 3 %}
+    {{ var }} = {{ alpha }} * {{ var }} + {{ beta }};
+    {% elif kind == 4 %}
+    if ({{ var }} < {{ zero_literal }}) {
+        {{ var }} = {{ alpha }} * {{ var }};
+    }
+    {% elif kind == 5 %}
+    if ({{ var }} <= {{ alpha }}) {
+        {{ var }} = {{ zero_literal }};
+    }
+    {% elif kind == 6 %}
+    {{ var }} = {{ alpha }} * {{ tanh_fn }}({{ beta }} * {{ var }});
+    {% elif kind == 7 %}
+    {{ var }} = {{ alpha }} * {{ var }} + {{ beta }};
+    if ({{ var }} < {{ zero_literal }}) {
+        {{ var }} = {{ zero_literal }};
+    } else if ({{ var }} > ({{ c_type }}){{ one_literal }}) {
+        {{ var }} = ({{ c_type }}){{ one_literal }};
+    }
+    {% elif kind == 8 %}
+    if ({{ var }} < {{ zero_literal }}) {
+        {{ var }} = {{ alpha }} * ({{ exp_fn }}({{ var }}) - ({{ c_type }}){{ one_literal }});
+    }
+    {% elif kind == 9 %}
+    {{ var }} = {{ var }} / (({{ c_type }}){{ one_literal }} + {{ fabs_fn }}({{ var }}));
+    {% elif kind == 10 %}
+    {{ var }} = {{ log1p_fn }}({{ exp_fn }}({{ var }}));
+    {% endif %}
+{%- endmacro %}
 
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const int activations[] = { {% for value in activation_kinds %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    const {{ c_type }} activation_alpha[] = { {% for value in activation_alphas %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    const {{ c_type }} activation_beta[] = { {% for value in activation_betas %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    for (int dir = 0; dir < {{ num_directions }}; ++dir) {
-        int reverse = 0;
-        {% if direction == "reverse" %}
-        reverse = 1;
-        {% elif direction == "bidirectional" %}
-        reverse = dir == 1;
-        {% endif %}
-        int act_offset = dir * 3;
-        int act_f = activations[act_offset];
-        int act_g = activations[act_offset + 1];
-        int act_h = activations[act_offset + 2];
-        {{ c_type }} alpha_f = activation_alpha[act_offset];
-        {{ c_type }} alpha_g = activation_alpha[act_offset + 1];
-        {{ c_type }} alpha_h = activation_alpha[act_offset + 2];
-        {{ c_type }} beta_f = activation_beta[act_offset];
-        {{ c_type }} beta_g = activation_beta[act_offset + 1];
-        {{ c_type }} beta_h = activation_beta[act_offset + 2];
+    {% for dir in range(num_directions) %}
+    {
+        const int dir = {{ dir }};
+        const int reverse = {% if direction == "reverse" %}1{% elif direction == "bidirectional" and dir == 1 %}1{% else %}0{% endif %};
+        const {{ c_type }} alpha_f = {{ activation_alphas[dir * 3] }};
+        const {{ c_type }} alpha_g = {{ activation_alphas[dir * 3 + 1] }};
+        const {{ c_type }} alpha_h = {{ activation_alphas[dir * 3 + 2] }};
+        const {{ c_type }} beta_f = {{ activation_betas[dir * 3] }};
+        const {{ c_type }} beta_g = {{ activation_betas[dir * 3 + 1] }};
+        const {{ c_type }} beta_h = {{ activation_betas[dir * 3 + 2] }};
         {{ c_type }} H_prev[{{ batch_size }}][{{ hidden_size }}];
         {{ c_type }} C_prev[{{ batch_size }}][{{ hidden_size }}];
         for (int b = 0; b < {{ batch_size }}; ++b) {
@@ -158,31 +152,76 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     }
                     {% endif %}
                     {% if input_p %}
-                    {{ c_type }} i_gate = {{ op_name }}_activation(
-                        act_f, gate_i + {{ input_p }}[dir][h] * C_prev[b][h], alpha_f, beta_f);
+                    {{ apply_activation_assign(
+                        "i_gate",
+                        activation_kinds[dir * 3],
+                        "gate_i + " ~ input_p ~ "[dir][h] * C_prev[b][h]",
+                        "alpha_f",
+                        "beta_f",
+                    ) }}
                     {% else %}
-                    {{ c_type }} i_gate = {{ op_name }}_activation(act_f, gate_i, alpha_f, beta_f);
+                    {{ apply_activation_assign(
+                        "i_gate",
+                        activation_kinds[dir * 3],
+                        "gate_i",
+                        "alpha_f",
+                        "beta_f",
+                    ) }}
                     {% endif %}
-                    {{ c_type }} f_gate;
                     {% if input_forget %}
-                    f_gate = ({{ c_type }}){{ one_literal }} - i_gate;
+                    {{ c_type }} f_gate = ({{ c_type }}){{ one_literal }} - i_gate;
                     {% else %}
                     {% if input_p %}
-                    f_gate = {{ op_name }}_activation(
-                        act_f, gate_f + {{ input_p }}[dir][{{ hidden_size }} * 2 + h] * C_prev[b][h], alpha_f, beta_f);
+                    {{ apply_activation_assign(
+                        "f_gate",
+                        activation_kinds[dir * 3],
+                        "gate_f + " ~ input_p ~ "[dir][" ~ hidden_size ~ " * 2 + h] * C_prev[b][h]",
+                        "alpha_f",
+                        "beta_f",
+                    ) }}
                     {% else %}
-                    f_gate = {{ op_name }}_activation(act_f, gate_f, alpha_f, beta_f);
+                    {{ apply_activation_assign(
+                        "f_gate",
+                        activation_kinds[dir * 3],
+                        "gate_f",
+                        "alpha_f",
+                        "beta_f",
+                    ) }}
                     {% endif %}
                     {% endif %}
-                    {{ c_type }} c_gate = {{ op_name }}_activation(act_g, gate_c, alpha_g, beta_g);
+                    {{ apply_activation_assign(
+                        "c_gate",
+                        activation_kinds[dir * 3 + 1],
+                        "gate_c",
+                        "alpha_g",
+                        "beta_g",
+                    ) }}
                     {{ c_type }} c_new = f_gate * C_prev[b][h] + i_gate * c_gate;
                     {% if input_p %}
-                    {{ c_type }} o_gate = {{ op_name }}_activation(
-                        act_f, gate_o + {{ input_p }}[dir][{{ hidden_size }} + h] * c_new, alpha_f, beta_f);
+                    {{ apply_activation_assign(
+                        "o_gate",
+                        activation_kinds[dir * 3],
+                        "gate_o + " ~ input_p ~ "[dir][" ~ hidden_size ~ " + h] * c_new",
+                        "alpha_f",
+                        "beta_f",
+                    ) }}
                     {% else %}
-                    {{ c_type }} o_gate = {{ op_name }}_activation(act_f, gate_o, alpha_f, beta_f);
+                    {{ apply_activation_assign(
+                        "o_gate",
+                        activation_kinds[dir * 3],
+                        "gate_o",
+                        "alpha_f",
+                        "beta_f",
+                    ) }}
                     {% endif %}
-                    {{ c_type }} h_new = o_gate * {{ op_name }}_activation(act_h, c_new, alpha_h, beta_h);
+                    {{ apply_activation_assign(
+                        "h_gate",
+                        activation_kinds[dir * 3 + 2],
+                        "c_new",
+                        "alpha_h",
+                        "beta_h",
+                    ) }}
+                    {{ c_type }} h_new = o_gate * h_gate;
                     C_next[h] = c_new;
                     H_next[h] = h_new;
                     {% if output_y %}
@@ -222,4 +261,5 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         }
         {% endif %}
     }
+    {% endfor %}
 }
