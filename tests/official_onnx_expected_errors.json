@@ -17,11 +17,11 @@
   ],
   [
     "light/light_resnet50.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "light/light_shufflenet.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "light/light_squeezenet.onnx",
@@ -169,15 +169,15 @@
   ],
   [
     "node/test_and2d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_and3d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_and4d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_and_bcast3v1d/model.onnx",
@@ -369,7 +369,7 @@
   ],
   [
     "node/test_attention_3d_attn_mask_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_causal/model.onnx",
@@ -377,7 +377,7 @@
   ],
   [
     "node/test_attention_3d_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_diff_heads_sizes/model.onnx",
@@ -389,7 +389,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_causal/model.onnx",
@@ -397,11 +397,11 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_scaled/model.onnx",
@@ -409,7 +409,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_softcap/model.onnx",
@@ -417,7 +417,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present/model.onnx",
@@ -425,11 +425,11 @@
   ],
   [
     "node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_gqa/model.onnx",
@@ -485,7 +485,7 @@
   ],
   [
     "node/test_attention_3d_scaled_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_softcap/model.onnx",
@@ -493,7 +493,7 @@
   ],
   [
     "node/test_attention_3d_softcap_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_transpose_verification/model.onnx",
@@ -501,7 +501,7 @@
   ],
   [
     "node/test_attention_3d_transpose_verification_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_with_past_and_present/model.onnx",
@@ -509,7 +509,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx",
@@ -521,11 +521,11 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx",
@@ -533,7 +533,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx",
@@ -541,7 +541,7 @@
   ],
   [
     "node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d/model.onnx",
@@ -561,11 +561,11 @@
   ],
   [
     "node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_attn_mask_3d_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_attn_mask_4d/model.onnx",
@@ -577,11 +577,11 @@
   ],
   [
     "node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_attn_mask_4d_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_attn_mask_bool/model.onnx",
@@ -593,15 +593,15 @@
   ],
   [
     "node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_attn_mask_bool_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_attn_mask_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_causal/model.onnx",
@@ -609,7 +609,7 @@
   ],
   [
     "node/test_attention_4d_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx",
@@ -629,7 +629,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal/model.onnx",
@@ -637,11 +637,11 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled/model.onnx",
@@ -649,7 +649,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_softcap/model.onnx",
@@ -657,7 +657,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present/model.onnx",
@@ -665,7 +665,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx",
@@ -673,7 +673,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx",
@@ -681,11 +681,11 @@
   ],
   [
     "node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_fp16/model.onnx",
@@ -693,7 +693,7 @@
   ],
   [
     "node/test_attention_4d_fp16_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_gqa/model.onnx",
@@ -757,7 +757,7 @@
   ],
   [
     "node/test_attention_4d_scaled_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_softcap/model.onnx",
@@ -765,7 +765,7 @@
   ],
   [
     "node/test_attention_4d_softcap_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_past_and_present/model.onnx",
@@ -773,7 +773,7 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx",
@@ -793,11 +793,11 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx",
@@ -809,19 +809,19 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_qk_matmul/model.onnx",
@@ -833,11 +833,11 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_qk_matmul_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softcap/model.onnx",
@@ -845,7 +845,7 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softmax/model.onnx",
@@ -853,7 +853,7 @@
   ],
   [
     "node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_averagepool_1d_default/model.onnx",
@@ -1025,11 +1025,11 @@
   ],
   [
     "node/test_bitwise_and_i16_3d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_bitwise_and_i32_2d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_bitwise_and_ui64_bcast_3v1d/model.onnx",
@@ -1053,11 +1053,11 @@
   ],
   [
     "node/test_bitwise_or_i16_4d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_bitwise_or_i32_2d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_bitwise_or_ui64_bcast_3v1d/model.onnx",
@@ -1069,11 +1069,11 @@
   ],
   [
     "node/test_bitwise_xor_i16_3d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_bitwise_xor_i32_2d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx",
@@ -2685,11 +2685,11 @@
   ],
   [
     "node/test_greater_equal_bcast_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_equal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_equal_int16/model.onnx",
@@ -2697,7 +2697,7 @@
   ],
   [
     "node/test_greater_equal_int16_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_equal_int8/model.onnx",
@@ -2705,7 +2705,7 @@
   ],
   [
     "node/test_greater_equal_int8_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_equal_uint16/model.onnx",
@@ -2713,7 +2713,7 @@
   ],
   [
     "node/test_greater_equal_uint16_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_equal_uint32/model.onnx",
@@ -2721,7 +2721,7 @@
   ],
   [
     "node/test_greater_equal_uint32_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_equal_uint64/model.onnx",
@@ -2729,7 +2729,7 @@
   ],
   [
     "node/test_greater_equal_uint64_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_equal_uint8/model.onnx",
@@ -2737,7 +2737,7 @@
   ],
   [
     "node/test_greater_equal_uint8_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_greater_int16/model.onnx",
@@ -3341,11 +3341,11 @@
   ],
   [
     "node/test_less_equal_bcast_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_equal_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_equal_int16/model.onnx",
@@ -3353,7 +3353,7 @@
   ],
   [
     "node/test_less_equal_int16_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_equal_int8/model.onnx",
@@ -3361,7 +3361,7 @@
   ],
   [
     "node/test_less_equal_int8_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_equal_uint16/model.onnx",
@@ -3369,7 +3369,7 @@
   ],
   [
     "node/test_less_equal_uint16_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_equal_uint32/model.onnx",
@@ -3377,7 +3377,7 @@
   ],
   [
     "node/test_less_equal_uint32_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_equal_uint64/model.onnx",
@@ -3385,7 +3385,7 @@
   ],
   [
     "node/test_less_equal_uint64_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_equal_uint8/model.onnx",
@@ -3393,7 +3393,7 @@
   ],
   [
     "node/test_less_equal_uint8_expanded/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_less_int16/model.onnx",
@@ -3617,35 +3617,35 @@
   ],
   [
     "node/test_max_example/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_float16/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_float32/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_float64/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_int16/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_int32/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_int64/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_int8/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_one_input/model.onnx",
@@ -3653,23 +3653,23 @@
   ],
   [
     "node/test_max_two_inputs/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_uint16/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_uint32/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_uint64/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_max_uint8/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_maxpool_1d_default/model.onnx",
@@ -3757,7 +3757,7 @@
   ],
   [
     "node/test_mean_example/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_mean_one_input/model.onnx",
@@ -3765,7 +3765,7 @@
   ],
   [
     "node/test_mean_two_inputs/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_melweightmatrix/model.onnx",
@@ -3773,35 +3773,35 @@
   ],
   [
     "node/test_min_example/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_float16/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_float32/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_float64/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_int16/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_int32/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_int64/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_int8/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_one_input/model.onnx",
@@ -3809,23 +3809,23 @@
   ],
   [
     "node/test_min_two_inputs/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_uint16/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_uint32/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_uint64/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_min_uint8/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_mish/model.onnx",
@@ -4213,15 +4213,15 @@
   ],
   [
     "node/test_or2d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_or3d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_or4d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_or_bcast3v1d/model.onnx",
@@ -6289,7 +6289,7 @@
   ],
   [
     "node/test_sum_example/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_sum_one_input/model.onnx",
@@ -6297,7 +6297,7 @@
   ],
   [
     "node/test_sum_two_inputs/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_swish/model.onnx",
@@ -6617,15 +6617,15 @@
   ],
   [
     "node/test_xor2d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_xor3d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_xor4d/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "node/test_xor_bcast3v1d/model.onnx",
@@ -7037,7 +7037,7 @@
   ],
   [
     "pytorch-operator/test_operator_max/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "pytorch-operator/test_operator_maxpool/model.onnx",
@@ -7045,7 +7045,7 @@
   ],
   [
     "pytorch-operator/test_operator_min/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "pytorch-operator/test_operator_mm/model.onnx",
@@ -7109,7 +7109,7 @@
   ],
   [
     "pytorch-operator/test_operator_symbolic_override_nested/model.onnx",
-    "'MultiInputBinaryOp' object has no attribute 'input0'"
+    ""
   ],
   [
     "pytorch-operator/test_operator_view/model.onnx",
