@@ -24,45 +24,45 @@
 
 /*
  * Weight 1:
- * Name: starts
+ * Name: weight1_starts
  * Shape: (2,)
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t starts[2] = {
+static const int64_t weight1_starts[2] = {
     0LL, 1LL
 };
 
 /*
  * Weight 2:
- * Name: ends
+ * Name: weight2_ends
  * Shape: (2,)
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t ends[2] = {
+static const int64_t weight2_ends[2] = {
     2LL, 3LL
 };
 
 /*
  * Weight 3:
- * Name: axes
+ * Name: weight3_axes
  * Shape: (2,)
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t axes[2] = {
+static const int64_t weight3_axes[2] = {
     0LL, 2LL
 };
 
 /*
  * Weight 4:
- * Name: steps
+ * Name: weight4_steps
  * Shape: (2,)
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t steps[2] = {
+static const int64_t weight4_steps[2] = {
     1LL, 2LL
 };
 

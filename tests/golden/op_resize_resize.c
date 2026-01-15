@@ -25,12 +25,12 @@
 
 /*
  * Weight 1:
- * Name: sizes
+ * Name: weight1_sizes
  * Shape: (4,)
  * Elements: 4
  * Dtype: int64
  */
-static const int64_t sizes[4] = {
+static const int64_t weight1_sizes[4] = {
     1LL, 1LL, 4LL, 4LL
 };
 
@@ -123,5 +123,5 @@ static inline void node0_resize(const float input0[restrict 1][1][2][2], const i
 }
 
 void model(const float in0[restrict 1][1][2][2], float out[restrict 1][1][4][4]) {
-    node0_resize(in0, sizes, out);
+    node0_resize(in0, weight1_sizes, out);
 }

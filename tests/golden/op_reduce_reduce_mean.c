@@ -24,12 +24,12 @@
 
 /*
  * Weight 1:
- * Name: axes
+ * Name: weight1_axes
  * Shape: (1,)
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t axes[1] = {
+static const int64_t weight1_axes[1] = {
     1LL
 };
 

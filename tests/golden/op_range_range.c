@@ -24,34 +24,34 @@
 
 /*
  * Weight 1:
- * Name: start
+ * Name: weight1_start
  * Shape: []
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t start[1] = {
+static const int64_t weight1_start[1] = {
     0LL
 };
 
 /*
  * Weight 2:
- * Name: limit
+ * Name: weight2_limit
  * Shape: []
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t limit[1] = {
+static const int64_t weight2_limit[1] = {
     4LL
 };
 
 /*
  * Weight 3:
- * Name: delta
+ * Name: weight3_delta
  * Shape: []
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t delta[1] = {
+static const int64_t weight3_delta[1] = {
     1LL
 };
 
@@ -73,5 +73,5 @@ static inline void node0_range(const int64_t start[restrict 1], const int64_t li
 }
 
 void model(int64_t output[restrict 4]) {
-    node0_range(start, limit, delta, output);
+    node0_range(weight1_start, weight2_limit, weight3_delta, output);
 }

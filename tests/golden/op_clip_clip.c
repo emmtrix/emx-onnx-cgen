@@ -23,23 +23,23 @@
 
 /*
  * Weight 1:
- * Name: min
+ * Name: weight1_min
  * Shape: []
  * Elements: 1
  * Dtype: float
  */
-static const float min[1] = {
+static const float weight1_min[1] = {
     0.0f
 };
 
 /*
  * Weight 2:
- * Name: max
+ * Name: weight2_max
  * Shape: []
  * Elements: 1
  * Dtype: float
  */
-static const float max[1] = {
+static const float weight2_max[1] = {
     6.0f
 };
 
@@ -67,5 +67,5 @@ static inline void node0_clip(const float input0[restrict 2][3], const float inp
 }
 
 void model(const float input[restrict 2][3], float output[restrict 2][3]) {
-    node0_clip(input, min, max, output);
+    node0_clip(input, weight1_min, weight2_max, output);
 }

@@ -25,12 +25,12 @@
 
 /*
  * Weight 1:
- * Name: weight
+ * Name: weight1_weight
  * Shape: (2, 3)
  * Elements: 6
  * Dtype: float
  */
-static const float weight[2][3] = {
+static const float weight1_weight[2][3] = {
     0.100000001f, 0.200000003f, 0.300000012f, 0.400000006f, 0.5f, 0.600000024f
 };
 
@@ -55,5 +55,5 @@ static inline void node0_add(const float input0[restrict 2][3], const float inpu
 }
 
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
-    node0_add(in0, weight, out);
+    node0_add(in0, weight1_weight, out);
 }

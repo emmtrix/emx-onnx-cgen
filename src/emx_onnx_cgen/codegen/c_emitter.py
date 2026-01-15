@@ -1329,18 +1329,28 @@ class CEmitter:
     def _build_name_map(self, model: LoweredModel) -> dict[str, str]:
         used: set[str] = set()
         name_map: dict[str, str] = {}
+        constant_names = {const.name for const in model.constants}
         names = [model.name]
         names.extend(model.input_names)
         names.extend(model.output_names)
-        names.extend(const.name for const in model.constants)
         for op in model.ops:
-            names.extend(self._op_names(op))
+            names.extend(
+                name for name in self._op_names(op) if name not in constant_names
+            )
         for name in names:
             if name in name_map:
                 continue
             sanitized = self._sanitize_identifier(name)
             unique = self._ensure_unique_identifier(sanitized, used)
             name_map[name] = unique
+            used.add(unique)
+        for index, const in enumerate(model.constants, start=1):
+            if const.name in name_map:
+                continue
+            base_name = self._sanitize_identifier(const.name.lower())
+            weight_name = f"weight{index}_{base_name}"
+            unique = self._ensure_unique_identifier(weight_name, used)
+            name_map[const.name] = unique
             used.add(unique)
         return name_map
 

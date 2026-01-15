@@ -24,12 +24,12 @@
 
 /*
  * Weight 1:
- * Name: shape
+ * Name: weight1_shape
  * Shape: (3,)
  * Elements: 3
  * Dtype: int64
  */
-static const int64_t shape[3] = {
+static const int64_t weight1_shape[3] = {
     2LL, 3LL, 4LL
 };
 
@@ -58,5 +58,5 @@ static inline void node0_constantofshape(const int64_t input0[restrict 3], float
 }
 
 void model(float out[restrict 2][3][4]) {
-    node0_constantofshape(shape, out);
+    node0_constantofshape(weight1_shape, out);
 }

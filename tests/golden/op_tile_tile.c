@@ -24,12 +24,12 @@
 
 /*
  * Weight 1:
- * Name: repeats
+ * Name: weight1_repeats
  * Shape: (2,)
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t repeats[2] = {
+static const int64_t weight1_repeats[2] = {
     2LL, 1LL
 };
 

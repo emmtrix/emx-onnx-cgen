@@ -38,6 +38,6 @@ def test_compile_with_data_file_emits_externs() -> None:
     )
     main_source, data_source = compiler.compile_with_data_file(model)
 
-    assert "extern const float weights[2][2];" in main_source
+    assert "extern const float weight1_weights[2][2];" in main_source
     assert "static const float" not in main_source
-    assert "const float weights[2][2]" in data_source
+    assert "const float weight1_weights[2][2]" in data_source

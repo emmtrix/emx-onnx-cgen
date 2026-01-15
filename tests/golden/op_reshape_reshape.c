@@ -25,12 +25,12 @@
 
 /*
  * Weight 1:
- * Name: shape
+ * Name: weight1_shape
  * Shape: (2,)
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t shape[2] = {
+static const int64_t weight1_shape[2] = {
     0LL, -1LL
 };
 

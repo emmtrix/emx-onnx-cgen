@@ -23,24 +23,24 @@
 
 /*
  * Weight 1:
- * Name: weight
+ * Name: weight1_weight
  * Shape: (1, 1, 3, 3)
  * Elements: 9
  * Dtype: float
  */
-static const float weight[1][1][3][3] = {
+static const float weight1_weight[1][1][3][3] = {
     0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f,
     8.0f
 };
 
 /*
  * Weight 2:
- * Name: bias
+ * Name: weight2_bias
  * Shape: (1,)
  * Elements: 1
  * Dtype: float
  */
-static const float bias[1] = {
+static const float weight2_bias[1] = {
     0.25f
 };
 
@@ -84,5 +84,5 @@ static inline void node0_conv(const float input0[restrict 1][1][4][4], const flo
 }
 
 void model(const float in0[restrict 1][1][4][4], float out[restrict 1][1][4][4]) {
-    node0_conv(in0, weight, bias, out);
+    node0_conv(in0, weight1_weight, weight2_bias, out);
 }

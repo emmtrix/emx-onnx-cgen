@@ -24,45 +24,45 @@
 
 /*
  * Weight 1:
- * Name: scale
+ * Name: weight1_scale
  * Shape: (3,)
  * Elements: 3
  * Dtype: float
  */
-static const float scale[3] = {
+static const float weight1_scale[3] = {
     1.0f, 1.5f, -0.5f
 };
 
 /*
  * Weight 2:
- * Name: bias
+ * Name: weight2_bias
  * Shape: (3,)
  * Elements: 3
  * Dtype: float
  */
-static const float bias[3] = {
+static const float weight2_bias[3] = {
     0.0f, 0.100000001f, -0.200000003f
 };
 
 /*
  * Weight 3:
- * Name: mean
+ * Name: weight3_mean
  * Shape: (3,)
  * Elements: 3
  * Dtype: float
  */
-static const float mean[3] = {
+static const float weight3_mean[3] = {
     0.5f, -0.5f, 1.0f
 };
 
 /*
  * Weight 4:
- * Name: var
+ * Name: weight4_var
  * Shape: (3,)
  * Elements: 3
  * Dtype: float
  */
-static const float var[3] = {
+static const float weight4_var[3] = {
     0.25f, 0.5f, 1.5f
 };
 
@@ -90,5 +90,5 @@ static inline void node0_batchnormalization(const float input0[restrict 2][3][2]
 }
 
 void model(const float in0[restrict 2][3][2][2], float out[restrict 2][3][2][2]) {
-    node0_batchnormalization(in0, scale, bias, mean, var, out);
+    node0_batchnormalization(in0, weight1_scale, weight2_bias, weight3_mean, weight4_var, out);
 }

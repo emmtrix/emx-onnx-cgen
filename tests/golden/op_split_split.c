@@ -25,12 +25,12 @@
 
 /*
  * Weight 1:
- * Name: split
+ * Name: weight1_split
  * Shape: (3,)
  * Elements: 3
  * Dtype: int64
  */
-static const int64_t split[3] = {
+static const int64_t weight1_split[3] = {
     2LL, 2LL, 2LL
 };
 
