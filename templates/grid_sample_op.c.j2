@@ -1,0 +1,127 @@
+{% if padding_mode == "reflection" %}
+static inline double {{ op_name }}_reflect(double coord, int64_t size) {
+    if (size <= 1) {
+        return 0.0;
+    }
+    const double span = (double)(size - 1);
+    const double period = 2.0 * span;
+    coord = fmod(coord, period);
+    if (coord < 0.0) {
+        coord += period;
+    }
+    if (coord > span) {
+        coord = period - coord;
+    }
+    return coord;
+}
+{% endif %}
+static inline void {{ op_name }}(
+    const {{ c_type }} {{ input0 }}{{ input_suffix }},
+    const {{ grid_c_type }} {{ grid }}{{ grid_suffix }},
+    {{ c_type }} {{ output }}{{ output_suffix }}
+) {
+    const int64_t input_spatial[{{ spatial_rank }}] = { {% for dim in input_shape[2:] %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const int64_t output_spatial[{{ spatial_rank }}] = { {% for dim in output_shape[2:] %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    for (size_t n = 0; n < {{ input_shape[0] }}; ++n) {
+        for (size_t c = 0; c < {{ input_shape[1] }}; ++c) {
+{% for dim in output_shape[2:] %}
+            for (size_t o{{ loop.index0 }} = 0; o{{ loop.index0 }} < {{ dim }}; ++o{{ loop.index0 }}) {
+{% endfor %}
+                double coord[{{ spatial_rank }}];
+{% for axis in range(spatial_rank) %}
+                {
+                    const double grid_val = (double){{ grid }}[n]{% for dim in range(spatial_rank) %}[o{{ dim }}]{% endfor %}[{{ spatial_rank - 1 - axis }}];
+                    const double input_size = (double)input_spatial[{{ axis }}];
+                    double coord_val;
+{% if align_corners %}
+                    if (input_spatial[{{ axis }}] > 1) {
+                        coord_val = (grid_val + 1.0) * (input_size - 1.0) / 2.0;
+                    } else {
+                        coord_val = 0.0;
+                    }
+{% else %}
+                    coord_val = ((grid_val + 1.0) * input_size - 1.0) / 2.0;
+{% endif %}
+{% if padding_mode == "border" %}
+                    if (coord_val < 0.0) {
+                        coord_val = 0.0;
+                    } else if (coord_val > input_size - 1.0) {
+                        coord_val = input_size - 1.0;
+                    }
+{% elif padding_mode == "reflection" %}
+                    coord_val = {{ op_name }}_reflect(coord_val, input_spatial[{{ axis }}]);
+{% endif %}
+                    coord[{{ axis }}] = coord_val;
+                }
+{% endfor %}
+{% if mode == "nearest" %}
+                int out_of_bounds = 0;
+                int64_t idx[{{ spatial_rank }}];
+{% for axis in range(spatial_rank) %}
+                {
+                    double rounded = nearbyint(coord[{{ axis }}]);
+                    int64_t index = (int64_t)rounded;
+{% if padding_mode == "zeros" %}
+                    if (index < 0 || index >= input_spatial[{{ axis }}]) {
+                        out_of_bounds = 1;
+                    }
+{% else %}
+                    if (index < 0) {
+                        index = 0;
+                    } else if (index >= input_spatial[{{ axis }}]) {
+                        index = input_spatial[{{ axis }}] - 1;
+                    }
+{% endif %}
+                    idx[{{ axis }}] = index;
+                }
+{% endfor %}
+                if (out_of_bounds) {
+                    {{ output }}[n][c]{% for dim in range(spatial_rank) %}[o{{ dim }}]{% endfor %} = ({{ c_type }}){{ zero_literal }};
+                } else {
+                    {{ output }}[n][c]{% for dim in range(spatial_rank) %}[o{{ dim }}]{% endfor %} = {{ input0 }}[n][c]{% for axis in range(spatial_rank) %}[idx[{{ axis }}]]{% endfor %};
+                }
+{% else %}
+                double acc = 0.0;
+                int64_t floor_idx[{{ spatial_rank }}];
+                double frac[{{ spatial_rank }}];
+{% for axis in range(spatial_rank) %}
+                {
+                    double floor_val = floor(coord[{{ axis }}]);
+                    floor_idx[{{ axis }}] = (int64_t)floor_val;
+                    frac[{{ axis }}] = coord[{{ axis }}] - floor_val;
+                }
+{% endfor %}
+{% set combo_count = 2 ** spatial_rank %}
+{% for combo in range(combo_count) %}
+                {
+                    double weight = 1.0;
+                    int in_bounds = 1;
+{% for axis in range(spatial_rank) %}
+                    int64_t idx{{ axis }} = floor_idx[{{ axis }}] + {{ (combo // (2 ** axis)) % 2 }};
+                    double weight{{ axis }} = {{ (combo // (2 ** axis)) % 2 }} ? frac[{{ axis }}] : (1.0 - frac[{{ axis }}]);
+                    weight *= weight{{ axis }};
+{% if padding_mode == "zeros" %}
+                    if (idx{{ axis }} < 0 || idx{{ axis }} >= input_spatial[{{ axis }}]) {
+                        in_bounds = 0;
+                    }
+{% else %}
+                    if (idx{{ axis }} < 0) {
+                        idx{{ axis }} = 0;
+                    } else if (idx{{ axis }} >= input_spatial[{{ axis }}]) {
+                        idx{{ axis }} = input_spatial[{{ axis }}] - 1;
+                    }
+{% endif %}
+{% endfor %}
+                    if (in_bounds && weight != 0.0) {
+                        acc += weight * (double){{ input0 }}[n][c]{% for axis in range(spatial_rank) %}[idx{{ axis }}]{% endfor %};
+                    }
+                }
+{% endfor %}
+                {{ output }}[n][c]{% for dim in range(spatial_rank) %}[o{{ dim }}]{% endfor %} = ({{ c_type }})acc;
+{% endif %}
+{% for dim in output_shape[2:] %}
+            }
+{% endfor %}
+        }
+    }
+}

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
+import itertools
 import math
 
 import numpy as np
@@ -25,6 +26,7 @@ from ..lowering.layer_normalization import lower_layer_normalization
 from ..lowering.mean_variance_normalization import (
     lower_mean_variance_normalization,
 )
+from ..lowering.grid_sample import lower_grid_sample
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
@@ -186,6 +188,120 @@ def _eval_swish(evaluator: Evaluator, node: Node) -> None:
     alpha = float(node.attrs.get("alpha", 1.0))
     x = evaluator.values[node.inputs[0]]
     evaluator.values[node.outputs[0]] = x / (1.0 + np.exp(-alpha * x))
+
+
+@register_evaluator("GridSample")
+def _eval_grid_sample(evaluator: Evaluator, node: Node) -> None:
+    op = lower_grid_sample(evaluator.graph, node)
+    x = evaluator.values[op.input0]
+    grid = evaluator.values[op.grid]
+    evaluator.values[op.output] = _grid_sample(
+        x,
+        grid,
+        mode=op.mode,
+        padding_mode=op.padding_mode,
+        align_corners=op.align_corners,
+    )
+
+
+def _reflect_coord(coord: float, size: int) -> float:
+    if size <= 1:
+        return 0.0
+    span = float(size - 1)
+    period = 2.0 * span
+    coord = math.fmod(coord, period)
+    if coord < 0.0:
+        coord += period
+    if coord > span:
+        coord = period - coord
+    return coord
+
+
+def _grid_sample(
+    x: np.ndarray,
+    grid: np.ndarray,
+    *,
+    mode: str,
+    padding_mode: str,
+    align_corners: bool,
+) -> np.ndarray:
+    n, c, *input_spatial = x.shape
+    spatial_rank = len(input_spatial)
+    output_spatial = grid.shape[1:-1]
+    output = np.zeros((n, c, *output_spatial), dtype=x.dtype)
+    for n_idx in range(n):
+        for out_idx in np.ndindex(*output_spatial):
+            grid_vec = grid[(n_idx,) + out_idx]
+            coords: list[float] = []
+            for axis in range(spatial_rank):
+                grid_val = float(grid_vec[spatial_rank - 1 - axis])
+                size = input_spatial[axis]
+                if align_corners:
+                    if size > 1:
+                        coord = (grid_val + 1.0) * (size - 1) / 2.0
+                    else:
+                        coord = 0.0
+                else:
+                    coord = ((grid_val + 1.0) * size - 1.0) / 2.0
+                if padding_mode == "border":
+                    coord = min(max(coord, 0.0), size - 1)
+                elif padding_mode == "reflection":
+                    coord = _reflect_coord(coord, size)
+                coords.append(coord)
+            floors = [math.floor(coord) for coord in coords]
+            fracs = [coord - floor for coord, floor in zip(coords, floors)]
+            for c_idx in range(c):
+                if mode == "nearest":
+                    indices: list[int] = []
+                    out_of_bounds = False
+                    for axis, coord in enumerate(coords):
+                        index = int(np.rint(coord))
+                        if padding_mode == "zeros":
+                            if index < 0 or index >= input_spatial[axis]:
+                                out_of_bounds = True
+                                break
+                        else:
+                            index = min(
+                                max(index, 0), input_spatial[axis] - 1
+                            )
+                        indices.append(index)
+                    if out_of_bounds:
+                        output[(n_idx, c_idx) + out_idx] = 0
+                    else:
+                        output[(n_idx, c_idx) + out_idx] = x[
+                            (n_idx, c_idx) + tuple(indices)
+                        ]
+                else:
+                    acc = 0.0
+                    for combo in itertools.product(
+                        [0, 1], repeat=spatial_rank
+                    ):
+                        weight = 1.0
+                        indices: list[int] = []
+                        in_bounds = True
+                        for axis, bit in enumerate(combo):
+                            index = int(floors[axis] + bit)
+                            weight *= (
+                                fracs[axis] if bit else 1.0 - fracs[axis]
+                            )
+                            if padding_mode == "zeros":
+                                if (
+                                    index < 0
+                                    or index >= input_spatial[axis]
+                                ):
+                                    in_bounds = False
+                                    break
+                            else:
+                                index = min(
+                                    max(index, 0), input_spatial[axis] - 1
+                                )
+                            indices.append(index)
+                        if in_bounds and weight != 0.0:
+                            acc += weight * float(
+                                x[(n_idx, c_idx) + tuple(indices)]
+                            )
+                    output[(n_idx, c_idx) + out_idx] = acc
+    return output
 
 
 _VARIADIC_COMBINE_FUNCS: dict[

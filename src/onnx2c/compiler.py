@@ -33,6 +33,7 @@ from .codegen.c_emitter import (
     GatherOp,
     GatherElementsOp,
     ExpandOp,
+    GridSampleOp,
     RangeOp,
     LrnOp,
     LstmOp,
@@ -88,6 +89,7 @@ from .lowering import instance_normalization as _instance_normalization  # noqa:
 from .lowering import layer_normalization as _layer_normalization  # noqa: F401
 from .lowering import lp_normalization as _lp_normalization  # noqa: F401
 from .lowering import mean_variance_normalization as _mean_variance_normalization  # noqa: F401
+from .lowering import grid_sample as _grid_sample  # noqa: F401
 from .lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
@@ -351,6 +353,7 @@ class Compiler:
             | ReshapeOp
             | SliceOp
             | ResizeOp
+            | GridSampleOp
             | ReduceOp
             | ArgReduceOp
             | ShapeOp
@@ -393,6 +396,7 @@ class Compiler:
             | ReshapeOp
             | SliceOp
             | ResizeOp
+            | GridSampleOp
             | ReduceOp
             | ArgReduceOp
             | ShapeOp

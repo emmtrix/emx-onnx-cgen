@@ -711,6 +711,21 @@ class ResizeOp:
 
 
 @dataclass(frozen=True)
+class GridSampleOp:
+    input0: str
+    grid: str
+    output: str
+    input_shape: tuple[int, ...]
+    grid_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    mode: str
+    padding_mode: str
+    align_corners: bool
+    dtype: ScalarType
+    grid_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class ReduceOp:
     input0: str
     output: str
@@ -895,6 +910,7 @@ class LoweredModel:
         | SpaceToDepthOp
         | SliceOp
         | ResizeOp
+        | GridSampleOp
         | ReduceOp
         | ArgReduceOp
         | ConstantOfShapeOp
@@ -2065,6 +2081,7 @@ class CEmitter:
                     "slice_op_dynamic.c.j2"
                 ),
                 "resize": self._env.get_template("resize_op.c.j2"),
+                "grid_sample": self._env.get_template("grid_sample_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
                 "reduce_dynamic": self._env.get_template(
                     "reduce_op_dynamic.c.j2"
@@ -2155,6 +2172,7 @@ class CEmitter:
         slice_template = templates["slice"]
         slice_dynamic_template = templates["slice_dynamic"]
         resize_template = templates["resize"]
+        grid_sample_template = templates["grid_sample"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
         arg_reduce_template = templates["arg_reduce"]
@@ -2226,6 +2244,7 @@ class CEmitter:
                 slice_template=slice_template,
                 slice_dynamic_template=slice_dynamic_template,
                 resize_template=resize_template,
+                grid_sample_template=grid_sample_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
                 arg_reduce_template=arg_reduce_template,
@@ -2370,6 +2389,7 @@ class CEmitter:
         slice_template = templates["slice"]
         slice_dynamic_template = templates["slice_dynamic"]
         resize_template = templates["resize"]
+        grid_sample_template = templates["grid_sample"]
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
         arg_reduce_template = templates["arg_reduce"]
@@ -2441,6 +2461,7 @@ class CEmitter:
                 slice_template=slice_template,
                 slice_dynamic_template=slice_dynamic_template,
                 resize_template=resize_template,
+                grid_sample_template=grid_sample_template,
                 reduce_template=reduce_template,
                 reduce_dynamic_template=reduce_dynamic_template,
                 arg_reduce_template=arg_reduce_template,
@@ -4451,6 +4472,7 @@ class CEmitter:
         slice_template,
         slice_dynamic_template,
         resize_template,
+        grid_sample_template,
         reduce_template,
         reduce_dynamic_template,
         arg_reduce_template,
@@ -5818,6 +5840,31 @@ class CEmitter:
                 ),
                 antialias=op.antialias,
                 keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, GridSampleOp):
+            input_suffix = self._param_array_suffix(op.input_shape)
+            grid_suffix = self._param_array_suffix(op.grid_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            rendered = grid_sample_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=op.input0,
+                grid=op.grid,
+                output=op.output,
+                c_type=c_type,
+                grid_c_type=op.grid_dtype.c_type,
+                zero_literal=op.dtype.zero_literal,
+                input_suffix=input_suffix,
+                grid_suffix=grid_suffix,
+                output_suffix=output_suffix,
+                input_shape=op.input_shape,
+                grid_shape=op.grid_shape,
+                output_shape=op.output_shape,
+                spatial_rank=len(op.input_shape) - 2,
+                mode=op.mode,
+                padding_mode=op.padding_mode,
+                align_corners=op.align_corners,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ReduceOp) and op.axes_input is None:
