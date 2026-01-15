@@ -165,8 +165,23 @@ def _eval_clip(evaluator: Evaluator, node: Node) -> None:
 def _eval_pad(evaluator: Evaluator, node: Node) -> None:
     op = lower_pad(evaluator.graph, node)
     x = evaluator.values[op.input0]
-    pad_value = np.array(op.value, dtype=op.dtype.np_dtype).item()
-    pad_width = tuple(zip(op.pads_begin, op.pads_end))
+    if op.value_input is not None:
+        value_array = evaluator.values[op.value_input]
+        pad_value = np.array(value_array, dtype=op.dtype.np_dtype).reshape(-1)[0].item()
+    else:
+        pad_value = np.array(op.value, dtype=op.dtype.np_dtype).item()
+    if op.pads_input is not None:
+        pads_values = evaluator.values[op.pads_input].astype(np.int64, copy=False)
+        pads_values = pads_values.reshape(-1)
+        rank = len(op.input_shape)
+        pads_begin = pads_values[:rank]
+        pads_end = pads_values[rank: rank * 2]
+        pad_width = tuple(
+            (int(pads_begin[index]), int(pads_end[index]))
+            for index in range(rank)
+        )
+    else:
+        pad_width = tuple(zip(op.pads_begin or (), op.pads_end or ()))
     pad_kwargs = {}
     if op.mode == "constant":
         pad_kwargs["constant_values"] = pad_value

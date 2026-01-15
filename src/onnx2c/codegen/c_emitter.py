@@ -637,10 +637,15 @@ class PadOp:
     output: str
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
-    pads_begin: tuple[int, ...]
-    pads_end: tuple[int, ...]
+    pads_begin: tuple[int, ...] | None
+    pads_end: tuple[int, ...] | None
+    pads_input: str | None
+    pads_shape: tuple[int, ...] | None
+    pads_dtype: ScalarType | None
     mode: str
     value: float | int | bool
+    value_input: str | None
+    value_shape: tuple[int, ...] | None
     dtype: ScalarType
     input_dtype: ScalarType
     input_strides: tuple[int, ...]
@@ -1144,6 +1149,13 @@ class CEmitter:
             return (op.input0, op.output)
         if isinstance(op, TileOp):
             return (op.input0, op.output)
+        if isinstance(op, PadOp):
+            names = [op.input0, op.output]
+            if op.pads_input is not None:
+                names.append(op.pads_input)
+            if op.value_input is not None:
+                names.append(op.value_input)
+            return tuple(names)
         if isinstance(op, DepthToSpaceOp):
             return (op.input0, op.output)
         if isinstance(op, SpaceToDepthOp):
@@ -1810,8 +1822,13 @@ class CEmitter:
                 output_shape=op.output_shape,
                 pads_begin=op.pads_begin,
                 pads_end=op.pads_end,
+                pads_input=self._map_optional_name(name_map, op.pads_input),
+                pads_shape=op.pads_shape,
+                pads_dtype=op.pads_dtype,
                 mode=op.mode,
                 value=op.value,
+                value_input=self._map_optional_name(name_map, op.value_input),
+                value_shape=op.value_shape,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 input_strides=op.input_strides,
@@ -4276,8 +4293,21 @@ class CEmitter:
                 output_shape=op.output_shape,
                 pads_begin=op.pads_begin,
                 pads_end=op.pads_end,
+                pads_input=(
+                    temp_map.get(op.pads_input, op.pads_input)
+                    if op.pads_input is not None
+                    else None
+                ),
+                pads_shape=op.pads_shape,
+                pads_dtype=op.pads_dtype,
                 mode=op.mode,
                 value=op.value,
+                value_input=(
+                    temp_map.get(op.value_input, op.value_input)
+                    if op.value_input is not None
+                    else None
+                ),
+                value_shape=op.value_shape,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 input_strides=op.input_strides,
@@ -5680,15 +5710,50 @@ class CEmitter:
             reflect_vars = tuple(
                 f"pad_reflect{index}" for index in range(len(op.output_shape))
             )
+            if op.pads_input is not None:
+                pads_c_type = op.pads_dtype.c_type if op.pads_dtype else "int64_t"
+                pads_suffix = (
+                    self._param_array_suffix(
+                        op.pads_shape or (), _dim_names_for(op.pads_input)
+                    )
+                    if op.pads_shape is not None
+                    else ""
+                )
+                pad_begin_exprs = tuple(
+                    f"{op.pads_input}[{index}]" for index in range(len(op.output_shape))
+                )
+            else:
+                pads_c_type = None
+                pads_suffix = None
+                pad_begin_exprs = tuple(
+                    str(value) for value in (op.pads_begin or ())
+                )
+            if op.value_input is not None:
+                value_suffix = (
+                    self._param_array_suffix(
+                        op.value_shape or (), _dim_names_for(op.value_input)
+                    )
+                    if op.value_shape is not None
+                    else ""
+                )
+                pad_value_expr = f"{op.value_input}[0]"
+            else:
+                value_suffix = None
+                pad_value_expr = CEmitter._format_literal(op.dtype, op.value)
             rendered = pad_template.render(
                 model_name=model.name,
                 op_name=f"{model.name}_op{index}",
                 input0=op.input0,
+                pads_input=op.pads_input,
+                value_input=op.value_input,
                 output=op.output,
                 c_type=c_type,
+                pads_c_type=pads_c_type,
                 input_suffix=self._param_array_suffix(
                     op.input_shape, input_dim_names
                 ),
+                pads_suffix=pads_suffix,
+                value_suffix=value_suffix,
                 output_suffix=self._param_array_suffix(
                     op.output_shape, output_dim_names
                 ),
@@ -5696,10 +5761,10 @@ class CEmitter:
                 output_shape=output_shape,
                 in_loop_vars=in_loop_vars,
                 out_loop_vars=out_loop_vars,
-                pad_begin=op.pads_begin,
+                pad_begin_exprs=pad_begin_exprs,
                 input_strides=op.input_strides,
                 mode=op.mode,
-                pad_value=CEmitter._format_literal(op.dtype, op.value),
+                pad_value_expr=pad_value_expr,
                 input0_flat="input_flat",
                 base_index="pad_index",
                 idx_vars=idx_vars,
@@ -6577,7 +6642,12 @@ class CEmitter:
         if isinstance(op, EyeLikeOp):
             return ((op.input0, op.output_shape),)
         if isinstance(op, PadOp):
-            return ((op.input0, op.input_shape),)
+            inputs = [(op.input0, op.input_shape)]
+            if op.pads_input is not None and op.pads_shape is not None:
+                inputs.append((op.pads_input, op.pads_shape))
+            if op.value_input is not None and op.value_shape is not None:
+                inputs.append((op.value_input, op.value_shape))
+            return tuple(inputs)
         return ()
 
     def _propagate_tensor_dim_names(

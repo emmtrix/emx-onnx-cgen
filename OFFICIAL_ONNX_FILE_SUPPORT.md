@@ -162,7 +162,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_causal_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
@@ -461,16 +461,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_celu_expanded/model.onnx | ✅ |  |
 | node/test_center_crop_pad_crop/model.onnx | ❌ | Unsupported op CenterCropPad |
 | node/test_center_crop_pad_crop_and_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Pad output shape mismatch: expected (20, 8, 3), got (1, 1, 1) |
 | node/test_center_crop_pad_crop_axes_chw/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_center_crop_pad_crop_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Pad pads input must be a constant initializer |
-| node/test_center_crop_pad_crop_expanded/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
+| node/test_center_crop_pad_crop_expanded/model.onnx | ❌ | Pad output shape mismatch: expected (20, 10, 3), got (1, 1, 1) |
 | node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_center_crop_pad_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_pad_expanded/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_center_crop_pad_pad_expanded/model.onnx | ❌ | Pad output shape mismatch: expected (10, 7, 3), got (1, 1, 1) |
 | node/test_clip/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_inbounds_expanded/model.onnx | ✅ |  |
@@ -517,9 +517,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_concat_3d_axis_negative_2/model.onnx | ✅ |  |
 | node/test_concat_3d_axis_negative_3/model.onnx | ✅ |  |
 | node/test_constant/model.onnx | ❌ | Graph must contain at least one node |
-| node/test_constant_pad/model.onnx | ❌ | Pad pads input must be a constant initializer |
-| node/test_constant_pad_axes/model.onnx | ❌ | Pad pads input must be a constant initializer |
-| node/test_constant_pad_negative_axes/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_constant_pad/model.onnx | ❌ | Pad output shape mismatch: expected (1, 3, 4, 5), got (1, 3, 7, 12) |
+| node/test_constant_pad_axes/model.onnx | ❌ | Pad axes input must be a constant initializer |
+| node/test_constant_pad_negative_axes/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_constantofshape_float_ones/model.onnx | ✅ |  |
 | node/test_constantofshape_int_shape_zero/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_constantofshape_int_zeros/model.onnx | ✅ |  |
@@ -600,7 +600,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
 | node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
-| node/test_edge_pad/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_edge_pad/model.onnx | ❌ | Pad output shape mismatch: expected (1, 3, 4, 5), got (1, 3, 6, 7) |
 | node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_inner_prod/model.onnx | ❌ | Unsupported op Einsum |
@@ -1244,7 +1244,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx | ✅ |  |
-| node/test_reflect_pad/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_reflect_pad/model.onnx | ❌ | Pad output shape mismatch: expected (1, 3, 4, 5), got (1, 3, 6, 7) |
 | node/test_regex_full_match_basic/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_regex_full_match_email_domain/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_regex_full_match_empty/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
@@ -1661,7 +1661,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_upsample_nearest/model.onnx | ❌ | Unsupported op Upsample |
 | node/test_where_example/model.onnx | ✅ |  |
 | node/test_where_long_example/model.onnx | ✅ |  |
-| node/test_wrap_pad/model.onnx | ❌ | Pad pads input must be a constant initializer |
+| node/test_wrap_pad/model.onnx | ❌ | Pad output shape mismatch: expected (1, 3, 4, 5), got (1, 3, 6, 7) |
 | node/test_xor2d/model.onnx | ✅ |  |
 | node/test_xor3d/model.onnx | ✅ |  |
 | node/test_xor4d/model.onnx | ✅ |  |
