@@ -2579,7 +2579,7 @@ def test_lower_flatten_negative_axis() -> None:
     assert op.output_shape == (6, 4)
 
 
-def test_lower_pad_dynamic_axes_rejected() -> None:
+def test_lower_pad_dynamic_axes_input() -> None:
     input_info = helper.make_tensor_value_info(
         "input", TensorProto.FLOAT, [2, 3]
     )
@@ -2608,10 +2608,13 @@ def test_lower_pad_dynamic_axes_rejected() -> None:
     model.ir_version = 7
     onnx.checker.check_model(model)
     graph = import_onnx(model)
-    with pytest.raises(
-        UnsupportedOpError, match="Pad axes input must be a constant initializer"
-    ):
-        get_lowering("Pad")(graph, graph.nodes[0])
+    op = get_lowering("Pad")(graph, graph.nodes[0])
+    assert op.pads_input == "pads"
+    assert op.pads_shape == (4,)
+    assert op.axes_input == "axes"
+    assert op.axes_shape == (2,)
+    assert op.pads_begin is None
+    assert op.pads_end is None
 
 
 def test_lower_squeeze_axes_input() -> None:

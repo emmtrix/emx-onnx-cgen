@@ -643,6 +643,11 @@ class PadOp:
     pads_input: str | None
     pads_shape: tuple[int, ...] | None
     pads_dtype: ScalarType | None
+    pads_axis_map: tuple[int | None, ...] | None
+    pads_values: tuple[int, ...] | None
+    axes_input: str | None
+    axes_shape: tuple[int, ...] | None
+    axes_dtype: ScalarType | None
     mode: str
     value: float | int | bool
     value_input: str | None
@@ -1188,6 +1193,8 @@ class CEmitter:
             names = [op.input0, op.output]
             if op.pads_input is not None:
                 names.append(op.pads_input)
+            if op.axes_input is not None:
+                names.append(op.axes_input)
             if op.value_input is not None:
                 names.append(op.value_input)
             return tuple(names)
@@ -1864,6 +1871,11 @@ class CEmitter:
                 pads_input=self._map_optional_name(name_map, op.pads_input),
                 pads_shape=op.pads_shape,
                 pads_dtype=op.pads_dtype,
+                pads_axis_map=op.pads_axis_map,
+                pads_values=op.pads_values,
+                axes_input=self._map_optional_name(name_map, op.axes_input),
+                axes_shape=op.axes_shape,
+                axes_dtype=op.axes_dtype,
                 mode=op.mode,
                 value=op.value,
                 value_input=self._map_optional_name(name_map, op.value_input),
@@ -3544,6 +3556,17 @@ class CEmitter:
         if isinstance(op, ReshapeOp):
             args.extend([op.input0, op.output])
             return ", ".join(args)
+        if isinstance(op, PadOp):
+            call_parts = [op.input0]
+            if op.pads_input is not None:
+                call_parts.append(op.pads_input)
+            if op.axes_input is not None:
+                call_parts.append(op.axes_input)
+            if op.value_input is not None:
+                call_parts.append(op.value_input)
+            call_parts.append(op.output)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, SliceOp):
             call_parts = [op.input0]
             if op.starts_input is not None:
@@ -4372,6 +4395,15 @@ class CEmitter:
                 ),
                 pads_shape=op.pads_shape,
                 pads_dtype=op.pads_dtype,
+                pads_axis_map=op.pads_axis_map,
+                pads_values=op.pads_values,
+                axes_input=(
+                    temp_map.get(op.axes_input, op.axes_input)
+                    if op.axes_input is not None
+                    else None
+                ),
+                axes_shape=op.axes_shape,
+                axes_dtype=op.axes_dtype,
                 mode=op.mode,
                 value=op.value,
                 value_input=(
@@ -5958,6 +5990,9 @@ class CEmitter:
             reflect_vars = tuple(
                 f"pad_reflect{index}" for index in range(len(op.output_shape))
             )
+            pads_c_type = None
+            pads_suffix = None
+            pads_values = op.pads_values
             if op.pads_input is not None:
                 pads_c_type = op.pads_dtype.c_type if op.pads_dtype else "int64_t"
                 pads_suffix = (
@@ -5967,12 +6002,41 @@ class CEmitter:
                     if op.pads_shape is not None
                     else ""
                 )
-                pad_begin_exprs = tuple(
-                    f"{op.pads_input}[{index}]" for index in range(len(op.output_shape))
+            elif pads_values is not None:
+                pads_c_type = "int64_t"
+
+            axes_c_type = None
+            axes_suffix = None
+            axes_length = None
+            if op.axes_input is not None:
+                axes_c_type = op.axes_dtype.c_type if op.axes_dtype else "int64_t"
+                axes_suffix = (
+                    self._param_array_suffix(
+                        op.axes_shape or (), _dim_names_for(op.axes_input)
+                    )
+                    if op.axes_shape is not None
+                    else ""
                 )
+                axes_length = op.axes_shape[0] if op.axes_shape is not None else 0
+                pad_begin_exprs = tuple(
+                    f"pad_begin[{index}]" for index in range(len(op.output_shape))
+                )
+            elif op.pads_input is not None:
+                if op.pads_axis_map is not None:
+                    pad_begin_exprs = tuple(
+                        (
+                            f"{op.pads_input}[{axis_index}]"
+                            if axis_index is not None
+                            else "0"
+                        )
+                        for axis_index in op.pads_axis_map
+                    )
+                else:
+                    pad_begin_exprs = tuple(
+                        f"{op.pads_input}[{index}]"
+                        for index in range(len(op.output_shape))
+                    )
             else:
-                pads_c_type = None
-                pads_suffix = None
                 pad_begin_exprs = tuple(
                     str(value) for value in (op.pads_begin or ())
                 )
@@ -5993,14 +6057,17 @@ class CEmitter:
                 op_name=f"{model.name}_op{index}",
                 input0=op.input0,
                 pads_input=op.pads_input,
+                axes_input=op.axes_input,
                 value_input=op.value_input,
                 output=op.output,
                 c_type=c_type,
                 pads_c_type=pads_c_type,
+                axes_c_type=axes_c_type,
                 input_suffix=self._param_array_suffix(
                     op.input_shape, input_dim_names
                 ),
                 pads_suffix=pads_suffix,
+                axes_suffix=axes_suffix,
                 value_suffix=value_suffix,
                 output_suffix=self._param_array_suffix(
                     op.output_shape, output_dim_names
@@ -6010,6 +6077,8 @@ class CEmitter:
                 in_loop_vars=in_loop_vars,
                 out_loop_vars=out_loop_vars,
                 pad_begin_exprs=pad_begin_exprs,
+                axes_length=axes_length,
+                pads_values=pads_values,
                 input_strides=op.input_strides,
                 mode=op.mode,
                 pad_value_expr=pad_value_expr,
@@ -7031,6 +7100,8 @@ class CEmitter:
             inputs = [(op.input0, op.input_shape)]
             if op.pads_input is not None and op.pads_shape is not None:
                 inputs.append((op.pads_input, op.pads_shape))
+            if op.axes_input is not None and op.axes_shape is not None:
+                inputs.append((op.axes_input, op.axes_shape))
             if op.value_input is not None and op.value_shape is not None:
                 inputs.append((op.value_input, op.value_shape))
             return tuple(inputs)

@@ -1,5 +1,24 @@
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if pads_input %}, const {{ pads_c_type }} {{ pads_input }}{{ pads_suffix }}{% endif %}{% if value_input %}, const {{ c_type }} {{ value_input }}{{ value_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if pads_input %}, const {{ pads_c_type }} {{ pads_input }}{{ pads_suffix }}{% endif %}{% if axes_input %}, const {{ axes_c_type }} {{ axes_input }}{{ axes_suffix }}{% endif %}{% if value_input %}, const {{ c_type }} {{ value_input }}{{ value_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
 const {{ c_type }} *{{ input0_flat }} = (const {{ c_type }} *){{ input0 }};
+{% if axes_input %}
+{% if pads_values %}
+const {{ pads_c_type }} pad_values[] = { {% for value in pads_values %}{{ value }}{{ ", " if not loop.last else "" }}{% endfor %} };
+{% endif %}
+ptrdiff_t pad_begin[{{ output_shape|length }}];
+for (size_t pad_index = 0; pad_index < {{ output_shape|length }}; ++pad_index) {
+    pad_begin[pad_index] = 0;
+}
+for (size_t axis_index = 0; axis_index < {{ axes_length }}; ++axis_index) {
+    ptrdiff_t axis = (ptrdiff_t){{ axes_input }}[axis_index];
+    if (axis < 0) {
+        axis += {{ output_shape|length }};
+    }
+    if (axis < 0 || axis >= (ptrdiff_t){{ output_shape|length }}) {
+        continue;
+    }
+    pad_begin[axis] = {% if pads_input %}{{ pads_input }}[axis_index]{% else %}pad_values[axis_index]{% endif %};
+}
+{% endif %}
 {% for dim in output_shape %}
 for (size_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
 {% endfor %}

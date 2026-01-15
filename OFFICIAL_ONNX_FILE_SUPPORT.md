@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1120 / 1802 official ONNX files.
+Support 1132 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 

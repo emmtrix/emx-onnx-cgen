@@ -130,15 +130,34 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
 
     axes_name = optional_name(node.inputs, 3)
     axes = None
+    axes_input = None
+    axes_shape = None
+    axes_dtype = None
     if axes_name:
         axes = _read_int_initializer(graph, axes_name, node, label="axes")
         if axes is None:
-            raise UnsupportedOpError("Pad axes input must be a constant initializer")
-        axes = _normalize_axes(axes, input_shape, node)
-    if pads_input is not None and axes is not None:
-        raise UnsupportedOpError("Pad axes input must be a constant initializer")
+            axes_shape = value_shape(graph, axes_name, node)
+            axes_dtype = value_dtype(graph, axes_name, node)
+            if axes_dtype not in {ScalarType.I64, ScalarType.I32}:
+                raise UnsupportedOpError(
+                    "Pad axes input must be int64 or int32"
+                )
+            if len(axes_shape) != 1:
+                raise UnsupportedOpError("Pad axes input must be a 1D tensor")
+            if axes_shape[0] < 0:
+                raise ShapeInferenceError(
+                    "Pad axes input must have a static length"
+                )
+            axes_input = axes_name
+        else:
+            axes = _normalize_axes(axes, input_shape, node)
 
-    if axes is None:
+    pads_axis_map = None
+    pads_values = None
+    pads_begin = None
+    pads_end = None
+
+    if axes_input is None and axes is None:
         if pads is None:
             if pads_shape is None or pads_shape[0] != 2 * len(input_shape):
                 raise ShapeInferenceError(
@@ -153,22 +172,43 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
                 )
             pads_begin = list(pads[: len(input_shape)])
             pads_end = list(pads[len(input_shape) :])
+    elif axes_input is None:
+        if pads_input is not None:
+            if pads_shape is None or pads_shape[0] != 2 * len(axes):
+                raise ShapeInferenceError(
+                    "Pad pads must have length 2 * len(axes)"
+                )
+            pads_axis_map = [None] * len(input_shape)
+            for index, axis in enumerate(axes):
+                pads_axis_map[axis] = index
+        else:
+            if len(pads) != 2 * len(axes):
+                raise ShapeInferenceError(
+                    "Pad pads must have length 2 * len(axes)"
+                )
+            pads_begin = [0] * len(input_shape)
+            pads_end = [0] * len(input_shape)
+            for index, axis in enumerate(axes):
+                pads_begin[axis] = pads[index]
+                pads_end[axis] = pads[index + len(axes)]
     else:
-        if len(pads) != 2 * len(axes):
-            raise ShapeInferenceError(
-                "Pad pads must have length 2 * len(axes)"
-            )
-        pads_begin = [0] * len(input_shape)
-        pads_end = [0] * len(input_shape)
-        for index, axis in enumerate(axes):
-            pads_begin[axis] = pads[index]
-            pads_end[axis] = pads[index + len(axes)]
+        axes_len = axes_shape[0] if axes_shape is not None else 0
+        if pads_input is not None:
+            if pads_shape is None or pads_shape[0] != 2 * axes_len:
+                raise ShapeInferenceError(
+                    "Pad pads must have length 2 * len(axes)"
+                )
+        else:
+            if len(pads) != 2 * axes_len:
+                raise ShapeInferenceError(
+                    "Pad pads must have length 2 * len(axes)"
+                )
+            pads_values = pads
 
     if pads_begin is not None and pads_end is not None:
         if any(value < 0 for value in pads_begin + pads_end):
             raise UnsupportedOpError("Pad pads must be non-negative")
 
-    if pads_begin is not None and pads_end is not None:
         expected_shape = tuple(
             dim + pad_before + pad_after
             for dim, pad_before, pad_after in zip(
@@ -180,6 +220,9 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
                 "Pad output shape mismatch: "
                 f"expected {expected_shape}, got {output_shape}"
             )
+    elif pads_values is not None:
+        if any(value < 0 for value in pads_values):
+            raise UnsupportedOpError("Pad pads must be non-negative")
 
     value_name = optional_name(node.inputs, 2)
     pad_value = None
@@ -223,6 +266,17 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
         pads_input=pads_input,
         pads_shape=pads_shape,
         pads_dtype=pads_dtype,
+        pads_axis_map=(
+            tuple(pads_axis_map) if pads_axis_map is not None else None
+        ),
+        pads_values=(
+            tuple(int(value) for value in pads_values)
+            if pads_values is not None
+            else None
+        ),
+        axes_input=axes_input,
+        axes_shape=axes_shape,
+        axes_dtype=axes_dtype,
         mode=mode,
         value=pad_value,
         value_input=value_input,
