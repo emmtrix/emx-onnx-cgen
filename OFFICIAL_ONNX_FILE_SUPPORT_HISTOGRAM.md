@@ -73,7 +73,6 @@
 | LeakyRelu only supports alpha=0.01 | 3 | ██ |
 | Unsupported op Loop | 3 | ██ |
 | Unsupported op Momentum | 3 | ██ |
-| ReduceMean output shape must be (2, 3, 4, 1), got () | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
 | Unsupported op TensorScatter | 3 | ██ |
 | Unsupported op Adagrad | 2 | ██ |
@@ -96,11 +95,6 @@
 | Pow expects matching dtypes, got float, int32 | 2 | ██ |
 | Pow expects matching dtypes, got float, int64 | 2 | ██ |
 | Unsupported op ReverseSequence | 2 | ██ |
-| ReduceMean output shape must be (3, 1), got () | 2 | ██ |
-| ReduceMean output shape must be (2, 1, 1), got () | 2 | ██ |
-| ReduceMean output shape must be (2, 3, 1), got () | 2 | ██ |
-| ReduceMean output shape must be (2, 1, 1, 1), got () | 2 | ██ |
-| ReduceMean output shape must be (2, 3, 1, 1), got () | 2 | ██ |
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
