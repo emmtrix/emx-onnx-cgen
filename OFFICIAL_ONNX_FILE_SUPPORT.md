@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1102 / 1802 official ONNX files.
+Support 1101 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -162,7 +162,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_causal/model.onnx | ✅ |  |
 | node/test_attention_4d_causal_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
@@ -461,16 +461,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_celu_expanded/model.onnx | ✅ |  |
 | node/test_center_crop_pad_crop/model.onnx | ❌ | Unsupported op CenterCropPad |
 | node/test_center_crop_pad_crop_and_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ✅ |  |
 | node/test_center_crop_pad_crop_axes_chw/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_center_crop_pad_crop_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Unsupported op Pad |
-| node/test_center_crop_pad_crop_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
+| node/test_center_crop_pad_crop_expanded/model.onnx | ✅ |  |
 | node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_center_crop_pad_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_pad_expanded/model.onnx | ❌ | Unsupported op Pad |
+| node/test_center_crop_pad_pad_expanded/model.onnx | ✅ |  |
 | node/test_clip/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
 | node/test_clip_default_inbounds_expanded/model.onnx | ✅ |  |
@@ -517,9 +517,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_concat_3d_axis_negative_2/model.onnx | ✅ |  |
 | node/test_concat_3d_axis_negative_3/model.onnx | ✅ |  |
 | node/test_constant/model.onnx | ❌ | Graph must contain at least one node |
-| node/test_constant_pad/model.onnx | ❌ | Unsupported op Pad |
-| node/test_constant_pad_axes/model.onnx | ❌ | Unsupported op Pad |
-| node/test_constant_pad_negative_axes/model.onnx | ❌ | Unsupported op Pad |
+| node/test_constant_pad/model.onnx | ✅ |  |
+| node/test_constant_pad_axes/model.onnx | ❌ | Pad axes input must be a constant initializer |
+| node/test_constant_pad_negative_axes/model.onnx | ❌ | Pad axes input must be a constant initializer |
 | node/test_constantofshape_float_ones/model.onnx | ✅ |  |
 | node/test_constantofshape_int_shape_zero/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_constantofshape_int_zeros/model.onnx | ✅ |  |
@@ -600,7 +600,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
 | node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
 | node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
-| node/test_edge_pad/model.onnx | ❌ | Unsupported op Pad |
+| node/test_edge_pad/model.onnx | ✅ |  |
 | node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_inner_prod/model.onnx | ❌ | Unsupported op Einsum |
@@ -1244,7 +1244,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx | ✅ |  |
 | node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx | ✅ |  |
-| node/test_reflect_pad/model.onnx | ❌ | Unsupported op Pad |
+| node/test_reflect_pad/model.onnx | ✅ |  |
 | node/test_regex_full_match_basic/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_regex_full_match_email_domain/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | node/test_regex_full_match_empty/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
@@ -1661,7 +1661,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_upsample_nearest/model.onnx | ❌ | Unsupported op Upsample |
 | node/test_where_example/model.onnx | ✅ |  |
 | node/test_where_long_example/model.onnx | ✅ |  |
-| node/test_wrap_pad/model.onnx | ❌ | Unsupported op Pad |
+| node/test_wrap_pad/model.onnx | ✅ |  |
 | node/test_xor2d/model.onnx | ✅ |  |
 | node/test_xor3d/model.onnx | ✅ |  |
 | node/test_xor4d/model.onnx | ✅ |  |
@@ -1682,7 +1682,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx | ✅ |  |
 | pytorch-converted/test_BatchNorm3d_eval/model.onnx | ✅ |  |
 | pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx | ✅ |  |
-| pytorch-converted/test_ConstantPad2d/model.onnx | ❌ | Unsupported op Pad |
+| pytorch-converted/test_ConstantPad2d/model.onnx | ✅ |  |
 | pytorch-converted/test_Conv1d/model.onnx | ✅ |  |
 | pytorch-converted/test_Conv1d_dilated/model.onnx | ✅ |  |
 | pytorch-converted/test_Conv1d_groups/model.onnx | ✅ |  |
@@ -1738,8 +1738,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_PixelShuffle/model.onnx | ✅ |  |
 | pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx | ✅ |  |
 | pytorch-converted/test_ReLU/model.onnx | ✅ |  |
-| pytorch-converted/test_ReflectionPad2d/model.onnx | ❌ | Unsupported op Pad |
-| pytorch-converted/test_ReplicationPad2d/model.onnx | ❌ | Unsupported op Pad |
+| pytorch-converted/test_ReflectionPad2d/model.onnx | ✅ |  |
+| pytorch-converted/test_ReplicationPad2d/model.onnx | ✅ |  |
 | pytorch-converted/test_SELU/model.onnx | ✅ |  |
 | pytorch-converted/test_Sigmoid/model.onnx | ✅ |  |
 | pytorch-converted/test_Softmax/model.onnx | ✅ |  |
@@ -1747,7 +1747,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_Softplus/model.onnx | ✅ |  |
 | pytorch-converted/test_Softsign/model.onnx | ✅ |  |
 | pytorch-converted/test_Tanh/model.onnx | ✅ |  |
-| pytorch-converted/test_ZeroPad2d/model.onnx | ❌ | Unsupported op Pad |
+| pytorch-converted/test_ZeroPad2d/model.onnx | ✅ |  |
 | pytorch-converted/test_log_softmax_dim3/model.onnx | ✅ |  |
 | pytorch-converted/test_log_softmax_lastdim/model.onnx | ✅ |  |
 | pytorch-converted/test_softmax_functional_dim3/model.onnx | ✅ |  |
@@ -1772,7 +1772,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_min/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_mm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_non_float_params/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_pad/model.onnx | ❌ | Unsupported op Pad |
+| pytorch-operator/test_operator_pad/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_params/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_permute2/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_pow/model.onnx | ✅ |  |
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 57 / 74 local ONNX files.
+Support 63 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -1874,12 +1874,12 @@ Support 57 / 74 local ONNX files.
 | test_maxpool_stride_1/model.onnx | ✅ |  |
 | test_maxpool_stride_2/model.onnx | ✅ |  |
 | test_nodes_out_of_order/model.onnx | ✅ |  |
-| test_pad_constant_default/model.onnx | ❌ | Unsupported op Pad |
-| test_pad_constant_input/model.onnx | ❌ | Unsupported op Pad |
-| test_pad_edge/model.onnx | ❌ | Unsupported op Pad |
-| test_pad_edge_allaxes/model.onnx | ❌ | Unsupported op Pad |
-| test_pad_reflect_allaxes/model.onnx | ❌ | Unsupported op Pad |
-| test_pad_reflect_nopadding/model.onnx | ❌ | Unsupported op Pad |
+| test_pad_constant_default/model.onnx | ✅ |  |
+| test_pad_constant_input/model.onnx | ✅ |  |
+| test_pad_edge/model.onnx | ✅ |  |
+| test_pad_edge_allaxes/model.onnx | ✅ |  |
+| test_pad_reflect_allaxes/model.onnx | ✅ |  |
+| test_pad_reflect_nopadding/model.onnx | ✅ |  |
 | test_qlinearadd_int8/model.onnx | ❌ | Unsupported op QLinearAdd |
 | test_qlinearadd_uint8/model.onnx | ❌ | Unsupported op QLinearAdd |
 | test_qlinearmul_int8/model.onnx | ❌ | Unsupported op QLinearMul |

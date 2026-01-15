@@ -18,6 +18,7 @@ from shared.scalar_types import ScalarType
 
 from onnx2c.codegen.c_emitter import MultiInputBinaryOp
 from onnx2c.compiler import Compiler, CompilerOptions
+from onnx2c.errors import UnsupportedOpError
 from onnx2c.lowering.flatten import lower_flatten
 from onnx2c.lowering.squeeze import lower_squeeze
 from onnx2c.lowering import variadic as _variadic  # noqa: F401
@@ -313,6 +314,60 @@ def _make_tile_model(
         [input_info],
         [output],
         initializer=[repeats_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_pad_model(
+    *,
+    input_shape: list[int],
+    pads: list[int],
+    value: float | int | None,
+    dtype: int,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output_shape = [
+        dim + pads[index] + pads[index + len(input_shape)]
+        for index, dim in enumerate(input_shape)
+    ]
+    output = helper.make_tensor_value_info("output", dtype, output_shape)
+    pads_tensor = helper.make_tensor(
+        "pads",
+        TensorProto.INT64,
+        dims=[len(pads)],
+        vals=pads,
+    )
+    inputs = ["input", "pads"]
+    initializers = [pads_tensor]
+    if value is not None:
+        value_tensor = helper.make_tensor(
+            "value",
+            dtype,
+            dims=[],
+            vals=[value],
+        )
+        inputs.append("value")
+        initializers.append(value_tensor)
+    node = helper.make_node(
+        "Pad",
+        inputs=inputs,
+        outputs=[output.name],
+        mode="constant",
+    )
+    graph = helper.make_graph(
+        [node],
+        "pad_graph",
+        [input_info],
+        [output],
+        initializer=initializers,
     )
     model = helper.make_model(
         graph,
@@ -2384,6 +2439,15 @@ REARRANGE_ORT_CASES = [
         ),
     },
     {
+        "name": "PadConstant",
+        "model": lambda: _make_pad_model(
+            input_shape=[2, 3],
+            pads=[1, 2, 3, 4],
+            value=1.5,
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
         "name": "DepthToSpace",
         "model": lambda: _make_operator_model(
             op_type="DepthToSpace",
@@ -2428,8 +2492,17 @@ REARRANGE_UNIT_CASES = [
         "expected": lambda value: np.tile(value, (2, 3)),
     },
     {
-        "name": "DepthToSpace",
+        "name": "PadConstant",
         "model": REARRANGE_ORT_CASES[3]["model"],
+        "input_name": "input",
+        "input_shape": (2, 3),
+        "expected": lambda value: np.pad(
+            value, ((1, 3), (2, 4)), mode="constant", constant_values=1.5
+        ),
+    },
+    {
+        "name": "DepthToSpace",
+        "model": REARRANGE_ORT_CASES[4]["model"],
         "input_name": "in0",
         "input_shape": (1, 8, 2, 2),
         "expected": lambda value: _depth_to_space_reference(
@@ -2438,7 +2511,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "SpaceToDepth",
-        "model": REARRANGE_ORT_CASES[4]["model"],
+        "model": REARRANGE_ORT_CASES[5]["model"],
         "input_name": "in0",
         "input_shape": (1, 2, 4, 4),
         "expected": lambda value: _space_to_depth_reference(value, blocksize=2),
@@ -2460,6 +2533,41 @@ def test_lower_flatten_negative_axis() -> None:
     graph = import_onnx(model)
     op = lower_flatten(graph, graph.nodes[0])
     assert op.output_shape == (6, 4)
+
+
+def test_lower_pad_dynamic_axes_rejected() -> None:
+    input_info = helper.make_tensor_value_info(
+        "input", TensorProto.FLOAT, [2, 3]
+    )
+    pads_info = helper.make_tensor_value_info("pads", TensorProto.INT64, [4])
+    axes_info = helper.make_tensor_value_info("axes", TensorProto.INT64, [2])
+    output_info = helper.make_tensor_value_info(
+        "output", TensorProto.FLOAT, [2, 3]
+    )
+    node = helper.make_node(
+        "Pad",
+        inputs=["input", "pads", "", "axes"],
+        outputs=[output_info.name],
+        mode="constant",
+    )
+    graph = helper.make_graph(
+        [node],
+        "pad_axes_graph",
+        [input_info, pads_info, axes_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 18)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    graph = import_onnx(model)
+    with pytest.raises(
+        UnsupportedOpError, match="Pad axes input must be a constant initializer"
+    ):
+        get_lowering("Pad")(graph, graph.nodes[0])
 
 
 def test_lower_squeeze_axes_input() -> None:

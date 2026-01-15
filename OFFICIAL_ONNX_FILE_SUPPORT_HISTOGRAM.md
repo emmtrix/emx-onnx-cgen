@@ -6,7 +6,6 @@
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
-| Unsupported op Pad | 18 | ███████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ███████████████ |
 | Unsupported op GridSample | 18 | ███████████████ |
@@ -34,6 +33,7 @@
 | Unsupported op Hardmax | 7 | ██████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | Unsupported op TopK | 7 | ██████ |
+| Pad axes input must be a constant initializer | 6 | █████ |
 | AveragePool has unsupported attributes | 6 | █████ |
 | Cast input and output shapes must match | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
@@ -130,9 +130,8 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Unsupported op Pad | 6 | ██████████████████████████████ |
-| Unsupported op ScatterND | 4 | ████████████████████ |
-| Unsupported LSTM direction b'*' | 2 | ██████████ |
-| Unsupported op QLinearAdd | 2 | ██████████ |
-| Unsupported op QLinearMul | 2 | ██████████ |
-| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | █████ |
+| Unsupported op ScatterND | 4 | ██████████████████████████████ |
+| Unsupported LSTM direction b'*' | 2 | ███████████████ |
+| Unsupported op QLinearAdd | 2 | ███████████████ |
+| Unsupported op QLinearMul | 2 | ███████████████ |
+| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | ████████ |

@@ -28,6 +28,7 @@ from ..lowering.mean_variance_normalization import (
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from ..lowering.pad import lower_pad
 from ..lowering.expand import lower_expand
 from ..lowering.range import lower_range
 from ..lowering.split import lower_split
@@ -158,6 +159,38 @@ def _eval_clip(evaluator: Evaluator, node: Node) -> None:
     else:
         max_val = evaluator.values[max_name]
     evaluator.values[node.outputs[0]] = np.clip(x, min_val, max_val)
+
+
+@register_evaluator("Pad")
+def _eval_pad(evaluator: Evaluator, node: Node) -> None:
+    op = lower_pad(evaluator.graph, node)
+    x = evaluator.values[op.input0]
+    if op.value_input is not None:
+        value_array = evaluator.values[op.value_input]
+        pad_value = np.array(value_array, dtype=op.dtype.np_dtype).reshape(-1)[0].item()
+    else:
+        pad_value = np.array(op.value, dtype=op.dtype.np_dtype).item()
+    if op.pads_input is not None:
+        pads_values = evaluator.values[op.pads_input].astype(np.int64, copy=False)
+        pads_values = pads_values.reshape(-1)
+        rank = len(op.input_shape)
+        pads_begin = pads_values[:rank]
+        pads_end = pads_values[rank: rank * 2]
+        pad_width = tuple(
+            (int(pads_begin[index]), int(pads_end[index]))
+            for index in range(rank)
+        )
+    else:
+        pad_width = tuple(zip(op.pads_begin or (), op.pads_end or ()))
+    pad_kwargs = {}
+    if op.mode == "constant":
+        pad_kwargs["constant_values"] = pad_value
+    evaluator.values[op.output] = np.pad(
+        x,
+        pad_width,
+        mode=op.mode,
+        **pad_kwargs,
+    )
 
 
 @register_evaluator("Celu")
