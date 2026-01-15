@@ -3260,6 +3260,9 @@ class CEmitter:
         if isinstance(op, BinaryOp):
             args.extend([op.input0, op.input1, op.output])
             return ", ".join(args)
+        if isinstance(op, MultiInputBinaryOp):
+            args.extend([*op.inputs, op.output])
+            return ", ".join(args)
         if isinstance(op, WhereOp):
             args.extend([op.condition, op.input_x, op.input_y, op.output])
             return ", ".join(args)
