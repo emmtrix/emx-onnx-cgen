@@ -24,12 +24,13 @@
 /*
  * Node 0:
  * OpType: SpaceToDepth
+ * Name: n/a
  * Inputs: in0
  * Outputs: out
  * Attrs:
  *   blocksize: 2
  */
-static inline void model_op0(const float input0[restrict 1][1][4][4], float output[restrict 1][4][2][2]) {
+static inline void node0_SpaceToDepth(const float input0[restrict 1][1][4][4], float output[restrict 1][4][2][2]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     size_t output_index = 0;
@@ -53,5 +54,5 @@ static inline void model_op0(const float input0[restrict 1][1][4][4], float outp
 }
 
 void model(const float in0[restrict 1][1][4][4], float out[restrict 1][4][2][2]) {
-    model_op0(in0, out);
+    node0_SpaceToDepth(in0, out);
 }

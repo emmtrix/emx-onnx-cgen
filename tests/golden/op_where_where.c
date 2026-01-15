@@ -25,11 +25,12 @@
 /*
  * Node 0:
  * OpType: Where
+ * Name: n/a
  * Inputs: condition, x, y
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const bool condition[restrict 2][3], const float input_x[restrict 2][3], const float input_y[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_Where(const bool condition[restrict 2][3], const float input_x[restrict 2][3], const float input_y[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = condition[i0][i1] ? input_x[i0][i1] : input_y[i0][i1];
@@ -38,5 +39,5 @@ static inline void model_op0(const bool condition[restrict 2][3], const float in
 }
 
 void model(const bool condition[restrict 2][3], const float x[restrict 2][3], const float y[restrict 2][3], float out[restrict 2][3]) {
-    model_op0(condition, x, y, out);
+    node0_Where(condition, x, y, out);
 }

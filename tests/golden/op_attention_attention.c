@@ -25,11 +25,12 @@
 /*
  * Node 0:
  * OpType: Attention
+ * Name: n/a
  * Inputs: in0, in1, in2
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float input_q[restrict 1][2][3][4], const float input_k[restrict 1][2][5][4], const float input_v[restrict 1][2][5][4], float output[restrict 1][2][3][4]) {
+static inline void node0_Attention(const float input_q[restrict 1][2][3][4], const float input_k[restrict 1][2][5][4], const float input_v[restrict 1][2][5][4], float output[restrict 1][2][3][4]) {
     const float scale = 0.5f;
     const float softcap = 0.0f;
     for (int b = 0; b < 1; ++b) {
@@ -88,5 +89,5 @@ static inline void model_op0(const float input_q[restrict 1][2][3][4], const flo
 }
 
 void model(const float in0[restrict 1][2][3][4], const float in1[restrict 1][2][5][4], const float in2[restrict 1][2][5][4], float out[restrict 1][2][3][4]) {
-    model_op0(in0, in1, in2, out);
+    node0_Attention(in0, in1, in2, out);
 }

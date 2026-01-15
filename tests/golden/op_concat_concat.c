@@ -25,12 +25,13 @@
 /*
  * Node 0:
  * OpType: Concat
+ * Name: n/a
  * Inputs: in0, in1
  * Outputs: out
  * Attrs:
  *   axis: 2
  */
-static inline void model_op0(const float input_0[restrict 1][2][3], const float input_1[restrict 1][2][1], float output[restrict 1][2][4]) {
+static inline void node0_Concat(const float input_0[restrict 1][2][3], const float input_1[restrict 1][2][1], float output[restrict 1][2][4]) {
     const void *inputs[] = { input_0, input_1 };
     const size_t axis_sizes[] = { 3, 1 };
     size_t concat_axis = 0;
@@ -60,5 +61,5 @@ static inline void model_op0(const float input_0[restrict 1][2][3], const float 
 }
 
 void model(const float in0[restrict 1][2][3], const float in1[restrict 1][2][1], float out[restrict 1][2][4]) {
-    model_op0(in0, in1, out);
+    node0_Concat(in0, in1, out);
 }

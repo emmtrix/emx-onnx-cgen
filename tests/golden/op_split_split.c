@@ -30,12 +30,13 @@ static const int64_t split[3] = {
 /*
  * Node 0:
  * OpType: Split
+ * Name: n/a
  * Inputs: input, split
  * Outputs: output_0, output_1, output_2
  * Attrs:
  *   axis: 1
  */
-static inline void model_op0(const float input0[restrict 2][6], float output_0[restrict 2][2], float output_1[restrict 2][2], float output_2[restrict 2][2]) {
+static inline void node0_Split(const float input0[restrict 2][6], float output_0[restrict 2][2], float output_1[restrict 2][2], float output_2[restrict 2][2]) {
     const float *input_data = (const float *)input0;
     float *output_ptrs[] = { (float *)output_0, (float *)output_1, (float *)output_2 };
     const size_t axis_sizes[] = { 2, 2, 2 };
@@ -55,5 +56,5 @@ static inline void model_op0(const float input0[restrict 2][6], float output_0[r
 }
 
 void model(const float input[restrict 2][6], float output_0[restrict 2][2], float output_1[restrict 2][2], float output_2[restrict 2][2]) {
-    model_op0(input, output_0, output_1, output_2);
+    node0_Split(input, output_0, output_1, output_2);
 }

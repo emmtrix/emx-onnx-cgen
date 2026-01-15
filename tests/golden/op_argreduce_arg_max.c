@@ -25,6 +25,7 @@
 /*
  * Node 0:
  * OpType: ArgMax
+ * Name: n/a
  * Inputs: input
  * Outputs: output
  * Attrs:
@@ -32,7 +33,7 @@
  *   keepdims: 1
  *   select_last_index: 0
  */
-static inline void model_op0(const float input0[restrict 2][3][4], int64_t output[restrict 2][1][4]) {
+static inline void node0_ArgMax(const float input0[restrict 2][3][4], int64_t output[restrict 2][1][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 1; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
@@ -52,5 +53,5 @@ static inline void model_op0(const float input0[restrict 2][3][4], int64_t outpu
 }
 
 void model(const float input[restrict 2][3][4], int64_t output[restrict 2][1][4]) {
-    model_op0(input, output);
+    node0_ArgMax(input, output);
 }

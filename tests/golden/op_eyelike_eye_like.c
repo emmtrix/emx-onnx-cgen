@@ -24,12 +24,13 @@
 /*
  * Node 0:
  * OpType: EyeLike
+ * Name: n/a
  * Inputs: input
  * Outputs: output
  * Attrs:
  *   k: 0
  */
-static inline void model_op0(const float input0[restrict 3][3], float output[restrict 3][3]) {
+static inline void node0_EyeLike(const float input0[restrict 3][3], float output[restrict 3][3]) {
     (void)input0;
     float *output_data = (float *)output;
     size_t total = (size_t)1 * 3 * 3;
@@ -58,5 +59,5 @@ static inline void model_op0(const float input0[restrict 3][3], float output[res
 }
 
 void model(const float input[restrict 3][3], float output[restrict 3][3]) {
-    model_op0(input, output);
+    node0_EyeLike(input, output);
 }

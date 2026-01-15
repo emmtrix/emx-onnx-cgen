@@ -25,13 +25,14 @@
 /*
  * Node 0:
  * OpType: LayerNormalization
+ * Name: n/a
  * Inputs: in0, in1, in2
  * Outputs: out
  * Attrs:
  *   axis: 1
  *   epsilon: 9.999999747378752e-06
  */
-static inline void model_op0(const float input0[restrict 2][3][4], const float scale[restrict 3][4], const float bias[restrict 3][4], float output[restrict 2][3][4]) {
+static inline void node0_LayerNormalization(const float input0[restrict 2][3][4], const float scale[restrict 3][4], const float bias[restrict 3][4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         float sum = 0.0f;
         for (size_t i1 = 0; i1 < 3; ++i1) {
@@ -60,5 +61,5 @@ static inline void model_op0(const float input0[restrict 2][3][4], const float s
 }
 
 void model(const float in0[restrict 2][3][4], const float in1[restrict 3][4], const float in2[restrict 3][4], float out[restrict 2][3][4]) {
-    model_op0(in0, in1, in2, out);
+    node0_LayerNormalization(in0, in1, in2, out);
 }

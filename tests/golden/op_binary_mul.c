@@ -37,11 +37,12 @@ static inline float ref_scalar_f32_mul(float a, float b) {
 /*
  * Node 0:
  * OpType: Mul
+ * Name: n/a
  * Inputs: in0, in1
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_Mul(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_mul(input0[i0][i1], input1[i0][i1]);
@@ -50,5 +51,5 @@ static inline void model_op0(const float input0[restrict 2][3], const float inpu
 }
 
 void model(const float in0[restrict 2][3], const float in1[restrict 2][3], float out[restrict 2][3]) {
-    model_op0(in0, in1, out);
+    node0_Mul(in0, in1, out);
 }

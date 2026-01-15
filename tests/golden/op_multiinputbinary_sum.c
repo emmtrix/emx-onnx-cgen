@@ -37,11 +37,12 @@ static inline float ref_scalar_f32_add(float a, float b) {
 /*
  * Node 0:
  * OpType: Sum
+ * Name: n/a
  * Inputs: in0, in1, in2
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float input0[restrict 2][3], const float input1[restrict 2][3], const float input2[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_Sum(const float input0[restrict 2][3], const float input1[restrict 2][3], const float input2[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = input0[i0][i1];
@@ -52,5 +53,5 @@ static inline void model_op0(const float input0[restrict 2][3], const float inpu
 }
 
 void model(const float in0[restrict 2][3], const float in1[restrict 2][3], const float in2[restrict 2][3], float out[restrict 2][3]) {
-    model_op0(in0, in1, in2, out);
+    node0_Sum(in0, in1, in2, out);
 }
