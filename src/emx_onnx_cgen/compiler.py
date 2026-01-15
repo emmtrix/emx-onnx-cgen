@@ -157,6 +157,7 @@ class CompilerOptions:
     model_checksum: str | None = None
     restrict_arrays: bool = True
     testbench_inputs: Mapping[str, np.ndarray] | None = None
+    truncate_weights_after: int | None = None
 
 
 class Compiler:
@@ -165,7 +166,9 @@ class Compiler:
             options = CompilerOptions(template_dir=Path("templates"))
         self._options = options
         self._emitter = CEmitter(
-            options.template_dir, restrict_arrays=options.restrict_arrays
+            options.template_dir,
+            restrict_arrays=options.restrict_arrays,
+            truncate_weights_after=options.truncate_weights_after,
         )
 
     def compile(self, model: onnx.ModelProto) -> str:
