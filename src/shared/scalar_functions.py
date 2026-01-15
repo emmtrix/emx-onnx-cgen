@@ -139,6 +139,7 @@ class ScalarFunction(str, Enum):
     ATAN = _common_unary_from_f32_spec("atan")
     ATAN2 = _common_binary_from_f32_spec("atan2")
     ATANH = _common_unary_from_f32_spec("atanh")
+    AFFINE = _common_unary_from_f32_spec("affine")
     BITWISE_AND = _no_float_spec("bitwise_and")
     BITWISE_LEFT_SHIFT = _int_only_spec("bitwise_left_shift")
     BITWISE_NOT = _no_float_spec("bitwise_not")
@@ -225,6 +226,7 @@ class ScalarFunction(str, Enum):
         supports_bool=False,
     )
     RAD2DEG = _common_unary_from_f32_spec("rad2deg")
+    SCALED_TANH = _common_unary_from_f32_spec("scaled_tanh")
     REAL = _bool_unary_from_f32_spec("real", supports_unsigned_int=False)
     RECIPROCAL = _bool_unary_from_f32_spec("reciprocal")
     RELU = _bool_unary_from_f32_spec("relu")
@@ -726,6 +728,28 @@ def _float_elu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _float_elu_param(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 1:
+        raise ScalarFunctionError("elu expects 1 parameter: alpha")
+    alpha_value = params[0] if params else 1.0
+    alpha = _float_literal(alpha_value, dtype_info)
+    one = _float_literal(1.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        "    if (a >= 0) {",
+        "        return a;",
+        "    }",
+        f"    return alpha * ({_math_fn('exp', dtype_info)}(a) - {one});",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
 def _float_celu(
     dtype_info: _ScalarTypeInfo,
     params: tuple[float, ...],
@@ -748,6 +772,48 @@ def _float_celu(
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
+def _float_affine(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 2:
+        raise ScalarFunctionError("affine expects 2 parameters: alpha, beta")
+    alpha_value = params[0] if params else 1.0
+    beta_value = params[1] if len(params) > 1 else 0.0
+    alpha = _float_literal(alpha_value, dtype_info)
+    beta = _float_literal(beta_value, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        f"    const {dtype_info.c_type} beta = {beta};",
+        "    return alpha * a + beta;",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_scaled_tanh(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 2:
+        raise ScalarFunctionError("scaled_tanh expects 2 parameters: alpha, beta")
+    alpha_value = params[0] if params else 1.0
+    beta_value = params[1] if len(params) > 1 else 1.0
+    alpha = _float_literal(alpha_value, dtype_info)
+    beta = _float_literal(beta_value, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        f"    const {dtype_info.c_type} beta = {beta};",
+        f"    return alpha * {_math_fn('tanh', dtype_info)}(beta * a);",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
 def _float_swish(
     dtype_info: _ScalarTypeInfo,
     params: tuple[float, ...],
@@ -762,6 +828,66 @@ def _float_swish(
         f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
         f"    const {dtype_info.c_type} alpha = {alpha};",
         f"    return a / ({one} + {_math_fn('exp', dtype_info)}(-alpha * a));",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_leaky_relu_param(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 1:
+        raise ScalarFunctionError("leaky_relu expects 1 parameter: alpha")
+    alpha_value = params[0] if params else 0.01
+    alpha = _float_literal(alpha_value, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        "    return a < 0 ? alpha * a : a;",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_thresholded_relu_param(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 1:
+        raise ScalarFunctionError("thresholded_relu expects 1 parameter: alpha")
+    alpha_value = params[0] if params else 1.0
+    alpha = _float_literal(alpha_value, dtype_info)
+    zero = _float_literal(0.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    const {dtype_info.c_type} alpha = {alpha};",
+        f"    return a > alpha ? a : {zero};",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
+def _float_hardsigmoid_param(
+    dtype_info: _ScalarTypeInfo,
+    params: tuple[float, ...],
+    function_name: str,
+) -> _GeneratedScalar:
+    if params and len(params) != 2:
+        raise ScalarFunctionError("hardsigmoid expects 2 parameters: alpha, beta")
+    alpha_value = params[0] if params else 0.2
+    beta_value = params[1] if len(params) > 1 else 0.5
+    alpha = _float_literal(alpha_value, dtype_info)
+    beta = _float_literal(beta_value, dtype_info)
+    zero = _float_literal(0.0, dtype_info)
+    one = _float_literal(1.0, dtype_info)
+    lines = [
+        f"static inline {dtype_info.c_type} {function_name}({dtype_info.c_type} a) {{",
+        f"    {dtype_info.c_type} value = a * {alpha} + {beta};",
+        f"    {dtype_info.c_type} clamped = {_math_fn('fmin', dtype_info)}({one}, {_math_fn('fmax', dtype_info)}({zero}, value));",
+        "    return clamped;",
         "}",
     ]
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
@@ -1340,9 +1466,15 @@ _PARAMETERIZED_FLOAT_OPS: Mapping[
     ScalarFunction,
     Callable[[_ScalarTypeInfo, tuple[float, ...], str], _GeneratedScalar],
 ] = {
+    ScalarFunction.AFFINE: _float_affine,
     ScalarFunction.CELU: _float_celu,
+    ScalarFunction.ELU: _float_elu_param,
+    ScalarFunction.HARDSIGMOID: _float_hardsigmoid_param,
+    ScalarFunction.LEAKY_RELU: _float_leaky_relu_param,
+    ScalarFunction.SCALED_TANH: _float_scaled_tanh,
     ScalarFunction.SHRINK: _float_shrink,
     ScalarFunction.SWISH: _float_swish,
+    ScalarFunction.THRESHOLDED_RELU: _float_thresholded_relu_param,
 }
 
 
