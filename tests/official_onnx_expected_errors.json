@@ -1853,11 +1853,11 @@
   ],
   [
     "node/test_clip/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_default_inbounds/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_default_inbounds_expanded/model.onnx",
@@ -1865,7 +1865,7 @@
   ],
   [
     "node/test_clip_default_int8_inbounds/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_default_int8_inbounds_expanded/model.onnx",
@@ -1873,7 +1873,7 @@
   ],
   [
     "node/test_clip_default_int8_max/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_default_int8_max_expanded/model.onnx",
@@ -1881,7 +1881,7 @@
   ],
   [
     "node/test_clip_default_int8_min/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_default_int8_min_expanded/model.onnx",
@@ -1889,7 +1889,7 @@
   ],
   [
     "node/test_clip_default_max/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_default_max_expanded/model.onnx",
@@ -1897,7 +1897,7 @@
   ],
   [
     "node/test_clip_default_min/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_default_min_expanded/model.onnx",
@@ -1905,7 +1905,7 @@
   ],
   [
     "node/test_clip_example/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_example_expanded/model.onnx",
@@ -1917,7 +1917,7 @@
   ],
   [
     "node/test_clip_inbounds/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_inbounds_expanded/model.onnx",
@@ -1925,7 +1925,7 @@
   ],
   [
     "node/test_clip_min_greater_than_max/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_min_greater_than_max_expanded/model.onnx",
@@ -1933,7 +1933,7 @@
   ],
   [
     "node/test_clip_outbounds/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_outbounds_expanded/model.onnx",
@@ -1941,7 +1941,7 @@
   ],
   [
     "node/test_clip_splitbounds/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "node/test_clip_splitbounds_expanded/model.onnx",
@@ -7009,7 +7009,7 @@
   ],
   [
     "pytorch-operator/test_operator_clip/model.onnx",
-    "'ClipOp' object has no attribute 'shape'"
+    ""
   ],
   [
     "pytorch-operator/test_operator_concat2/model.onnx",

@@ -16,7 +16,6 @@
 | Reshape input and output element counts must match | 15 | ████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
 | Unsupported op ConvTranspose | 14 | ████████████ |
-| '*' object has no attribute '*' | 13 | ███████████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
 | Output shape must be fully defined | 9 | ████████ |
 | Unsupported op QuantizeLinear | 9 | ████████ |

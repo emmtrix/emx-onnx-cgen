@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1146 / 1802 official ONNX files.
+Support 1159 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -471,29 +471,29 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ✅ |  |
 | node/test_center_crop_pad_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
 | node/test_center_crop_pad_pad_expanded/model.onnx | ✅ |  |
-| node/test_clip/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
-| node/test_clip_default_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip/model.onnx | ✅ |  |
+| node/test_clip_default_inbounds/model.onnx | ✅ |  |
 | node/test_clip_default_inbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_int8_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_default_int8_inbounds/model.onnx | ✅ |  |
 | node/test_clip_default_int8_inbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_int8_max/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_default_int8_max/model.onnx | ✅ |  |
 | node/test_clip_default_int8_max_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_int8_min/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_default_int8_min/model.onnx | ✅ |  |
 | node/test_clip_default_int8_min_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_max/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_default_max/model.onnx | ✅ |  |
 | node/test_clip_default_max_expanded/model.onnx | ✅ |  |
-| node/test_clip_default_min/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_default_min/model.onnx | ✅ |  |
 | node/test_clip_default_min_expanded/model.onnx | ✅ |  |
-| node/test_clip_example/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_example/model.onnx | ✅ |  |
 | node/test_clip_example_expanded/model.onnx | ✅ |  |
 | node/test_clip_expanded/model.onnx | ✅ |  |
-| node/test_clip_inbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_inbounds/model.onnx | ✅ |  |
 | node/test_clip_inbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_min_greater_than_max/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_min_greater_than_max/model.onnx | ✅ |  |
 | node/test_clip_min_greater_than_max_expanded/model.onnx | ✅ |  |
-| node/test_clip_outbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_outbounds/model.onnx | ✅ |  |
 | node/test_clip_outbounds_expanded/model.onnx | ✅ |  |
-| node/test_clip_splitbounds/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| node/test_clip_splitbounds/model.onnx | ✅ |  |
 | node/test_clip_splitbounds_expanded/model.onnx | ✅ |  |
 | node/test_col2im/model.onnx | ❌ | Unsupported op Col2Im |
 | node/test_col2im_5d/model.onnx | ❌ | Unsupported op Col2Im |
@@ -1760,7 +1760,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_addmm/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_basic/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_chunk/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_clip/model.onnx | ❌ | 'ClipOp' object has no attribute 'shape' |
+| pytorch-operator/test_operator_clip/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_concat2/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_conv/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_convtranspose/model.onnx | ❌ | Unsupported op ConvTranspose |
