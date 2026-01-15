@@ -307,7 +307,10 @@ def _handle_verify(args: argparse.Namespace) -> int:
 def _format_command_line(argv: Sequence[str] | None) -> str:
     if argv is None:
         argv = sys.argv
-    return shlex.join([str(arg) for arg in argv])
+    args = [str(arg) for arg in argv[1:]]
+    if not args:
+        return ""
+    return shlex.join(args)
 
 
 def _model_checksum(model_path: Path) -> str:
