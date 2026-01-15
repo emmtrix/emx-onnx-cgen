@@ -29,8 +29,19 @@
  * Dtype: float
  */
 static const float weight1_weight[1][1][3][3] = {
-    0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f,
-    8.0f
+    {
+        {
+            {
+                0x0.0p+0f, 0x1.000000p+0f, 0x1.000000p+1f
+            },
+            {
+                0x1.800000p+1f, 0x1.000000p+2f, 0x1.400000p+2f
+            },
+            {
+                0x1.800000p+2f, 0x1.c00000p+2f, 0x1.000000p+3f
+            }
+        }
+    }
 };
 
 /*
@@ -41,7 +52,7 @@ static const float weight1_weight[1][1][3][3] = {
  * Dtype: float
  */
 static const float weight2_bias[1] = {
-    0.25f
+    0x1.000000p-2f
 };
 
 /*

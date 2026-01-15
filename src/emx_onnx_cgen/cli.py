@@ -86,6 +86,15 @@ def _build_parser() -> argparse.ArgumentParser:
             "named like the output with a _data suffix"
         ),
     )
+    compile_parser.add_argument(
+        "--truncate-weights-after",
+        type=int,
+        default=None,
+        help=(
+            "Truncate inline weight initializers after N values and insert "
+            "\"...\" placeholders (default: no truncation)"
+        ),
+    )
     add_restrict_flags(compile_parser)
 
     verify_parser = subparsers.add_parser(
@@ -110,6 +119,15 @@ def _build_parser() -> argparse.ArgumentParser:
         type=str,
         default=None,
         help="C compiler command to build the testbench binary",
+    )
+    verify_parser.add_argument(
+        "--truncate-weights-after",
+        type=int,
+        default=None,
+        help=(
+            "Truncate inline weight initializers after N values and insert "
+            "\"...\" placeholders (default: no truncation)"
+        ),
     )
     add_restrict_flags(verify_parser)
     return parser
@@ -143,6 +161,7 @@ def _handle_compile(args: argparse.Namespace) -> int:
             command_line=args.command_line,
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
+            truncate_weights_after=args.truncate_weights_after,
         )
         compiler = Compiler(options)
         if args.emit_data_file:
@@ -217,6 +236,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
             command_line=args.command_line,
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
+            truncate_weights_after=args.truncate_weights_after,
         )
         compiler = Compiler(options)
         generated = compiler.compile(model)

@@ -31,7 +31,12 @@
  * Dtype: float
  */
 static const float weight1_weight[2][3] = {
-    0.100000001f, 0.200000003f, 0.300000012f, 0.400000006f, 0.5f, 0.600000024f
+    {
+        0x1.99999ap-4f, 0x1.99999ap-3f, 0x1.333334p-2f
+    },
+    {
+        0x1.99999ap-2f, 0x1.000000p-1f, 0x1.333334p-1f
+    }
 };
 
 static inline float ref_scalar_f32_add(float a, float b) {

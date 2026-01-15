@@ -41,7 +41,7 @@ static const int64_t weight1_pads[4] = {
  * Dtype: float
  */
 static const float weight2_value[1] = {
-    0.0f
+    0x0.0p+0f
 };
 
 /*
