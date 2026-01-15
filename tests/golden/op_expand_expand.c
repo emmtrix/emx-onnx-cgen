@@ -22,6 +22,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/*
+ * Weight 1:
+ * Name: shape
+ * Shape: (2,)
+ * Elements: 2
+ * Dtype: int64
+ */
 static const int64_t shape[2] = {
     2LL, 3LL
 };

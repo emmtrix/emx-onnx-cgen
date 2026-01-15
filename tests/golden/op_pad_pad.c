@@ -22,10 +22,24 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/*
+ * Weight 1:
+ * Name: pads
+ * Shape: (4,)
+ * Elements: 4
+ * Dtype: int64
+ */
 static const int64_t pads[4] = {
     0LL, 1LL, 0LL, 1LL
 };
 
+/*
+ * Weight 2:
+ * Name: value
+ * Shape: []
+ * Elements: 1
+ * Dtype: float
+ */
 static const float value[1] = {
     0.0f
 };

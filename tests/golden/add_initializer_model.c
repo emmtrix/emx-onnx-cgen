@@ -30,6 +30,13 @@
 #define REF_PI_D 3.14159265358979323846
 #endif
 
+/*
+ * Weight 1:
+ * Name: weight
+ * Shape: (2, 3)
+ * Elements: 6
+ * Dtype: float
+ */
 static const float weight[2][3] = {
     0.100000001f, 0.200000003f, 0.300000012f, 0.400000006f, 0.5f, 0.600000024f
 };

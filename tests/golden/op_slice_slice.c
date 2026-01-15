@@ -22,18 +22,46 @@
 #include <stddef.h>
 #include <stdint.h>
 
+/*
+ * Weight 1:
+ * Name: starts
+ * Shape: (2,)
+ * Elements: 2
+ * Dtype: int64
+ */
 static const int64_t starts[2] = {
     0LL, 1LL
 };
 
+/*
+ * Weight 2:
+ * Name: ends
+ * Shape: (2,)
+ * Elements: 2
+ * Dtype: int64
+ */
 static const int64_t ends[2] = {
     2LL, 3LL
 };
 
+/*
+ * Weight 3:
+ * Name: axes
+ * Shape: (2,)
+ * Elements: 2
+ * Dtype: int64
+ */
 static const int64_t axes[2] = {
     0LL, 2LL
 };
 
+/*
+ * Weight 4:
+ * Name: steps
+ * Shape: (2,)
+ * Elements: 2
+ * Dtype: int64
+ */
 static const int64_t steps[2] = {
     1LL, 2LL
 };
