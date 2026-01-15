@@ -1,8 +1,8 @@
-# emmtrix ONNX to C Compiler (emx-onnx2c)
+# emmtrix ONNX-to-C Code Generator (emx-onnx-cgen)
 
-[![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx2c.svg)](https://pypi.org/project/emx-onnx2c)
+[![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx-cgen.svg)](https://pypi.org/project/emx-onnx-cgen)
 
-`emx-onnx2c` compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating systems, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
+`emx-onnx-cgen` compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating systems, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
 
 Key characteristics:
 
@@ -47,7 +47,7 @@ Key characteristics:
 Install the package directly from PyPI (recommended):
 
 ```bash
-pip install emx-onnx2c
+pip install emx-onnx-cgen
 ```
 
 Optional for verification and tests:
@@ -61,23 +61,23 @@ Optional for verification and tests:
 Compile an ONNX model into a C source file:
 
 ```bash
-onnx2c compile path/to/model.onnx build/model.c
+emx-onnx-cgen compile path/to/model.onnx build/model.c
 ```
 
 Verify an ONNX model end-to-end against ONNX Runtime:
 
 ```bash
-onnx2c verify path/to/model.onnx
+emx-onnx-cgen verify path/to/model.onnx
 ```
 
 ## CLI Reference
 
-`emx-onnx2c` provides two subcommands: `compile` and `verify`.
+`emx-onnx-cgen` provides two subcommands: `compile` and `verify`.
 
 ### `compile`
 
 ```bash
-emx-onnx2c compile <model.onnx> <output.c> [options]
+emx-onnx-cgen compile <model.onnx> <output.c> [options]
 ```
 
 Options:
@@ -91,7 +91,7 @@ Options:
 ### `verify`
 
 ```bash
-emx-onnx2c verify <model.onnx> [options]
+emx-onnx-cgen verify <model.onnx> [options]
 ```
 
 Options:

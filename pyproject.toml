@@ -4,14 +4,14 @@ build-backend = "build_backend"
 backend-path = ["."]
 
 [project]
-name = "emx-onnx2c"
+name = "emx-onnx-cgen"
 version = "0.1.1"
-description = "emmtrix ONNX to C Compiler"
+description = "emmtrix ONNX-to-C Code Generator"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 
 [project.scripts]
-emx-onnx2c = "onnx2c.cli:main"
+emx-onnx-cgen = "onnx2c.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
