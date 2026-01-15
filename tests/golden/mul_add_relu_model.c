@@ -84,9 +84,9 @@ static inline void node2_relu(const float input0[restrict 2][3], float output[re
 }
 
 void model(const float a[restrict 2][3], const float b[restrict 2][3], const float c[restrict 2][3], float out[restrict 2][3]) {
-    float tmp0[2][3];
-    float tmp1[2][3];
-    node0_mul(a, b, tmp0);
-    node1_add(tmp0, c, tmp1);
-    node2_relu(tmp1, out);
+    float tmp0_mul_out[2][3];
+    float tmp1_add_out[2][3];
+    node0_mul(a, b, tmp0_mul_out);
+    node1_add(tmp0_mul_out, c, tmp1_add_out);
+    node2_relu(tmp1_add_out, out);
 }

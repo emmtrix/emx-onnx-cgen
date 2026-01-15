@@ -3817,11 +3817,11 @@ class CEmitter:
             return {}
         if len(intermediates) == 1:
             name, shape, dtype = intermediates[0]
-            temp_name = allocate_temp_name("tmp")
+            temp_name = allocate_temp_name(f"tmp0_{name}")
             return {name: TempBuffer(name=temp_name, shape=shape, dtype=dtype)}
         return {
             name: TempBuffer(
-                name=allocate_temp_name(f"tmp{index}"),
+                name=allocate_temp_name(f"tmp{index}_{name}"),
                 shape=shape,
                 dtype=dtype,
             )

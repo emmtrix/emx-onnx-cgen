@@ -64,7 +64,7 @@ static inline void node1_add(const float input0[restrict 2][3], const float inpu
 }
 
 void model(const float a[restrict 2][3], const float b[restrict 2][3], const float c[restrict 2][3], float out[restrict 2][3]) {
-    float tmp[2][3];
-    node0_mul(a, b, tmp);
-    node1_add(tmp, c, out);
+    float tmp0_mul_out[2][3];
+    node0_mul(a, b, tmp0_mul_out);
+    node1_add(tmp0_mul_out, c, out);
 }
