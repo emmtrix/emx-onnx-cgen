@@ -1,0 +1,62 @@
+static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if pads_input %}, const {{ pads_c_type }} {{ pads_input }}{{ pads_suffix }}{% endif %}{% if value_input %}, const {{ c_type }} {{ value_input }}{{ value_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+const {{ c_type }} *{{ input0_flat }} = (const {{ c_type }} *){{ input0 }};
+{% for dim in output_shape %}
+for (size_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ output }}{% for var in out_loop_vars %}[{{ var }}]{% endfor %} = {{ pad_value_expr }};
+{% for _ in output_shape %}
+}
+{% endfor %}
+{% for dim in output_shape %}
+for (size_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
+{% endfor %}
+ptrdiff_t {{ base_index }} = 0;
+int pad_in_bounds = 1;
+{% for index in range(output_shape|length) %}
+ptrdiff_t {{ idx_vars[index] }} = (ptrdiff_t){{ out_loop_vars[index] }} - (ptrdiff_t)({{ pad_begin_exprs[index] }});
+if ({{ input_shape[index] }} == 0) {
+    pad_in_bounds = 0;
+}
+{% if mode == "constant" %}
+if (pad_in_bounds && ({{ idx_vars[index] }} < 0 || {{ idx_vars[index] }} >= (ptrdiff_t){{ input_shape[index] }})) {
+    pad_in_bounds = 0;
+}
+{% elif mode == "edge" %}
+if (pad_in_bounds && {{ idx_vars[index] }} < 0) {
+    {{ idx_vars[index] }} = 0;
+} else if (pad_in_bounds && {{ idx_vars[index] }} >= (ptrdiff_t){{ input_shape[index] }}) {
+    {{ idx_vars[index] }} = (ptrdiff_t){{ input_shape[index] }} - 1;
+}
+{% elif mode == "wrap" %}
+if (pad_in_bounds) {
+    {{ idx_vars[index] }} %= (ptrdiff_t){{ input_shape[index] }};
+    if ({{ idx_vars[index] }} < 0) {
+        {{ idx_vars[index] }} += (ptrdiff_t){{ input_shape[index] }};
+    }
+}
+{% elif mode == "reflect" %}
+if (pad_in_bounds && {{ input_shape[index] }} == 1) {
+    {{ idx_vars[index] }} = 0;
+} else if (pad_in_bounds) {
+    ptrdiff_t {{ reflect_vars[index] }} = (ptrdiff_t){{ input_shape[index] }} - 1;
+    {{ idx_vars[index] }} %= (2 * {{ reflect_vars[index] }});
+    if ({{ idx_vars[index] }} < 0) {
+        {{ idx_vars[index] }} += 2 * {{ reflect_vars[index] }};
+    }
+    if ({{ idx_vars[index] }} > {{ reflect_vars[index] }}) {
+        {{ idx_vars[index] }} = 2 * {{ reflect_vars[index] }} - {{ idx_vars[index] }};
+    }
+}
+{% endif %}
+if (pad_in_bounds) {
+    {{ base_index }} += {{ idx_vars[index] }} * {{ input_strides[index] }};
+}
+{% endfor %}
+if (!pad_in_bounds) {
+    continue;
+}
+{{ output }}{% for var in out_loop_vars %}[{{ var }}]{% endfor %} = {{ input0_flat }}[{{ base_index }}];
+{% for _ in output_shape %}
+}
+{% endfor %}
+}

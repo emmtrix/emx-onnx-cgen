@@ -617,7 +617,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx",
-    "Unsupported op Pad"
+    "Pad axes input must be a constant initializer"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes/model.onnx",
@@ -1813,7 +1813,7 @@
   ],
   [
     "node/test_center_crop_pad_crop_and_pad_expanded/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "node/test_center_crop_pad_crop_axes_chw/model.onnx",
@@ -1821,7 +1821,7 @@
   ],
   [
     "node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx",
-    "Unsupported op Pad"
+    "Pad axes input must be a constant initializer"
   ],
   [
     "node/test_center_crop_pad_crop_axes_hwc/model.onnx",
@@ -1829,11 +1829,11 @@
   ],
   [
     "node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx",
-    "Unsupported op Pad"
+    "Pad axes input must be a constant initializer"
   ],
   [
     "node/test_center_crop_pad_crop_expanded/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx",
@@ -1841,7 +1841,7 @@
   ],
   [
     "node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx",
-    "Unsupported op Pad"
+    "Pad axes input must be a constant initializer"
   ],
   [
     "node/test_center_crop_pad_pad/model.onnx",
@@ -1849,7 +1849,7 @@
   ],
   [
     "node/test_center_crop_pad_pad_expanded/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "node/test_clip/model.onnx",
@@ -2037,15 +2037,15 @@
   ],
   [
     "node/test_constant_pad/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "node/test_constant_pad_axes/model.onnx",
-    "Unsupported op Pad"
+    "Pad axes input must be a constant initializer"
   ],
   [
     "node/test_constant_pad_negative_axes/model.onnx",
-    "Unsupported op Pad"
+    "Pad axes input must be a constant initializer"
   ],
   [
     "node/test_constantofshape_float_ones/model.onnx",
@@ -2369,7 +2369,7 @@
   ],
   [
     "node/test_edge_pad/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "node/test_einsum_batch_diagonal/model.onnx",
@@ -4945,7 +4945,7 @@
   ],
   [
     "node/test_reflect_pad/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "node/test_regex_full_match_basic/model.onnx",
@@ -6613,7 +6613,7 @@
   ],
   [
     "node/test_wrap_pad/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "node/test_xor2d/model.onnx",
@@ -6697,7 +6697,7 @@
   ],
   [
     "pytorch-converted/test_ConstantPad2d/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "pytorch-converted/test_Conv1d/model.onnx",
@@ -6921,11 +6921,11 @@
   ],
   [
     "pytorch-converted/test_ReflectionPad2d/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "pytorch-converted/test_ReplicationPad2d/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "pytorch-converted/test_SELU/model.onnx",
@@ -6957,7 +6957,7 @@
   ],
   [
     "pytorch-converted/test_ZeroPad2d/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "pytorch-converted/test_log_softmax_dim3/model.onnx",
@@ -7057,7 +7057,7 @@
   ],
   [
     "pytorch-operator/test_operator_pad/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "pytorch-operator/test_operator_params/model.onnx",

@@ -221,27 +221,27 @@
   ],
   [
     "test_pad_constant_default/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "test_pad_constant_input/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "test_pad_edge/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "test_pad_edge_allaxes/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "test_pad_reflect_allaxes/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "test_pad_reflect_nopadding/model.onnx",
-    "Unsupported op Pad"
+    ""
   ],
   [
     "test_qlinearadd_int8/model.onnx",

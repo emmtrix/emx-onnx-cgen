@@ -39,6 +39,7 @@ from .codegen.c_emitter import (
     LogSoftmaxOp,
     NegativeLogLikelihoodLossOp,
     NodeInfo,
+    PadOp,
     SplitOp,
     SoftmaxCrossEntropyLossOp,
     LoweredModel,
@@ -100,6 +101,7 @@ from .lowering.softmax_cross_entropy_loss import (
 )
 from .lowering.matmul import lower_matmul
 from .lowering.maxpool import MaxPoolSpec, resolve_maxpool_spec
+from .lowering import pad as _pad  # noqa: F401
 from .lowering.reduce import (
     REDUCE_KIND_BY_OP,
     REDUCE_OUTPUTS_FLOAT_ONLY,
@@ -357,6 +359,7 @@ class Compiler:
             | ReduceOp
             | ArgReduceOp
             | ShapeOp
+            | PadOp
             | ExpandOp
             | RangeOp
             | SplitOp
@@ -399,6 +402,7 @@ class Compiler:
             | ReduceOp
             | ArgReduceOp
             | ShapeOp
+            | PadOp
             | ExpandOp
             | RangeOp
             | SplitOp
