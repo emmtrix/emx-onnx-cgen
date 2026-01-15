@@ -31,7 +31,7 @@
  * Attrs:
  *   axis: 1
  */
-static inline void node0_LogSoftmax(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_logsoftmax(const float input0[restrict 2][3], float output[restrict 2][3]) {
     const float *input_flat = (const float *)input0;
     float *output_flat = (float *)output;
     const size_t outer = 2;
@@ -62,5 +62,5 @@ static inline void node0_LogSoftmax(const float input0[restrict 2][3], float out
 }
 
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
-    node0_LogSoftmax(in0, out);
+    node0_logsoftmax(in0, out);
 }

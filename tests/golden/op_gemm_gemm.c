@@ -31,7 +31,7 @@
  *   alpha: 1.0
  *   beta: 1.0
  */
-static inline void node0_Gemm(const float input_a[restrict 2][3], const float input_b[restrict 3][4], const float input_c[restrict 2][4], float output[restrict 2][4]) {
+static inline void node0_gemm(const float input_a[restrict 2][3], const float input_b[restrict 3][4], const float input_c[restrict 2][4], float output[restrict 2][4]) {
     for (size_t i = 0; i < 2; ++i) {
         for (size_t j = 0; j < 4; ++j) {
             float acc = 0.0f;
@@ -49,5 +49,5 @@ static inline void node0_Gemm(const float input_a[restrict 2][3], const float in
 }
 
 void model(const float in0[restrict 2][3], const float in1[restrict 3][4], const float in2[restrict 2][4], float out[restrict 2][4]) {
-    node0_Gemm(in0, in1, in2, out);
+    node0_gemm(in0, in1, in2, out);
 }

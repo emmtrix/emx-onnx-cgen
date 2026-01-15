@@ -30,7 +30,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_Attention(const float input_q[restrict 1][2][3][4], const float input_k[restrict 1][2][5][4], const float input_v[restrict 1][2][5][4], float output[restrict 1][2][3][4]) {
+static inline void node0_attention(const float input_q[restrict 1][2][3][4], const float input_k[restrict 1][2][5][4], const float input_v[restrict 1][2][5][4], float output[restrict 1][2][3][4]) {
     const float scale = 0.5f;
     const float softcap = 0.0f;
     for (int b = 0; b < 1; ++b) {
@@ -89,5 +89,5 @@ static inline void node0_Attention(const float input_q[restrict 1][2][3][4], con
 }
 
 void model(const float in0[restrict 1][2][3][4], const float in1[restrict 1][2][5][4], const float in2[restrict 1][2][5][4], float out[restrict 1][2][3][4]) {
-    node0_Attention(in0, in1, in2, out);
+    node0_attention(in0, in1, in2, out);
 }

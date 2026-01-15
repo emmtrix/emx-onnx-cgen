@@ -48,7 +48,7 @@ static inline float ref_scalar_f32_tanh(float a) {
  *   hidden_size: 3
  *   layout: 0
  */
-static inline void node0_LSTM(const float input_x[restrict 1][1][2], const float input_w[restrict 1][12][2], const float input_r[restrict 1][12][3], float output_y[restrict 1][1][1][3], float output_y_h[restrict 1][1][3], float output_y_c[restrict 1][1][3]) {
+static inline void node0_lstm(const float input_x[restrict 1][1][2], const float input_w[restrict 1][12][2], const float input_r[restrict 1][12][3], float output_y[restrict 1][1][1][3], float output_y_h[restrict 1][1][3], float output_y_c[restrict 1][1][3]) {
     {
         const int dir = 0;
         const int reverse = 0;
@@ -120,5 +120,5 @@ static inline void node0_LSTM(const float input_x[restrict 1][1][2], const float
 }
 
 void model(const float X[restrict 1][1][2], const float W[restrict 1][12][2], const float R[restrict 1][12][3], float Y[restrict 1][1][1][3], float Y_h[restrict 1][1][3], float Y_c[restrict 1][1][3]) {
-    node0_LSTM(X, W, R, Y, Y_h, Y_c);
+    node0_lstm(X, W, R, Y, Y_h, Y_c);
 }

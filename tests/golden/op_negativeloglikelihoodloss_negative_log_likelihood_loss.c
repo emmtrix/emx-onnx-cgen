@@ -31,7 +31,7 @@
  * Attrs:
  *   reduction: mean
  */
-static inline void node0_NegativeLogLikelihoodLoss(const float input0[restrict 2][3], const int64_t target[restrict 2], float output[restrict 1]) {
+static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2][3], const int64_t target[restrict 2], float output[restrict 1]) {
     const float *input_flat = (const float *)input0;
     const int64_t *target_flat = (const int64_t *)target;
     float *output_flat = (float *)output;
@@ -63,5 +63,5 @@ static inline void node0_NegativeLogLikelihoodLoss(const float input0[restrict 2
 }
 
 void model(const float input[restrict 2][3], const int64_t target[restrict 2], float loss[restrict 1]) {
-    node0_NegativeLogLikelihoodLoss(input, target, loss);
+    node0_negativeloglikelihoodloss(input, target, loss);
 }

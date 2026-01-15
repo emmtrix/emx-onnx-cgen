@@ -1006,10 +1006,8 @@ class CEmitter:
 
     def _op_function_name(self, model: LoweredModel, index: int) -> str:
         node_info = model.node_infos[index]
-        parts = [f"node{index}", node_info.op_type]
-        if node_info.name:
-            parts.append(node_info.name)
-        base_name = "_".join(parts)
+        suffix = node_info.name or node_info.op_type
+        base_name = f"node{index}_{suffix}".lower()
         return self._sanitize_identifier(base_name)
 
     @staticmethod

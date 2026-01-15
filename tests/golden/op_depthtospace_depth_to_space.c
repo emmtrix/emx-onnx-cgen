@@ -31,7 +31,7 @@
  *   blocksize: 2
  *   mode: DCR
  */
-static inline void node0_DepthToSpace(const float input0[restrict 1][4][2][2], float output[restrict 1][1][4][4]) {
+static inline void node0_depthtospace(const float input0[restrict 1][4][2][2], float output[restrict 1][1][4][4]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     size_t output_index = 0;
@@ -55,5 +55,5 @@ static inline void node0_DepthToSpace(const float input0[restrict 1][4][2][2], f
 }
 
 void model(const float in0[restrict 1][4][2][2], float out[restrict 1][1][4][4]) {
-    node0_DepthToSpace(in0, out);
+    node0_depthtospace(in0, out);
 }

@@ -30,7 +30,7 @@
  * Attrs:
  *   blocksize: 2
  */
-static inline void node0_SpaceToDepth(const float input0[restrict 1][1][4][4], float output[restrict 1][4][2][2]) {
+static inline void node0_spacetodepth(const float input0[restrict 1][1][4][4], float output[restrict 1][4][2][2]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     size_t output_index = 0;
@@ -54,5 +54,5 @@ static inline void node0_SpaceToDepth(const float input0[restrict 1][1][4][4], f
 }
 
 void model(const float in0[restrict 1][1][4][4], float out[restrict 1][4][2][2]) {
-    node0_SpaceToDepth(in0, out);
+    node0_spacetodepth(in0, out);
 }

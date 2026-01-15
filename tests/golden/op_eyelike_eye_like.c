@@ -30,7 +30,7 @@
  * Attrs:
  *   k: 0
  */
-static inline void node0_EyeLike(const float input0[restrict 3][3], float output[restrict 3][3]) {
+static inline void node0_eyelike(const float input0[restrict 3][3], float output[restrict 3][3]) {
     (void)input0;
     float *output_data = (float *)output;
     size_t total = (size_t)1 * 3 * 3;
@@ -59,5 +59,5 @@ static inline void node0_EyeLike(const float input0[restrict 3][3], float output
 }
 
 void model(const float input[restrict 3][3], float output[restrict 3][3]) {
-    node0_EyeLike(input, output);
+    node0_eyelike(input, output);
 }

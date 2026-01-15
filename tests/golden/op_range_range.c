@@ -42,7 +42,7 @@ static const int64_t delta[1] = {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void node0_Range(const int64_t start[restrict 1], const int64_t limit[restrict 1], const int64_t delta[restrict 1], int64_t output[restrict 4]) {
+static inline void node0_range(const int64_t start[restrict 1], const int64_t limit[restrict 1], const int64_t delta[restrict 1], int64_t output[restrict 4]) {
     (void)limit;
     const int64_t start_value = start[0];
     const int64_t delta_value = delta[0];
@@ -52,5 +52,5 @@ static inline void node0_Range(const int64_t start[restrict 1], const int64_t li
 }
 
 void model(int64_t output[restrict 4]) {
-    node0_Range(start, limit, delta, output);
+    node0_range(start, limit, delta, output);
 }

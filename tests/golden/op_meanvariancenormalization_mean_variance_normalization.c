@@ -31,7 +31,7 @@
  * Attrs:
  *   axes: [-1]
  */
-static inline void node0_MeanVarianceNormalization(const float input0[restrict 2][3][4], float output[restrict 2][3][4]) {
+static inline void node0_meanvariancenormalization(const float input0[restrict 2][3][4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
@@ -53,5 +53,5 @@ static inline void node0_MeanVarianceNormalization(const float input0[restrict 2
 }
 
 void model(const float in0[restrict 2][3][4], float out[restrict 2][3][4]) {
-    node0_MeanVarianceNormalization(in0, out);
+    node0_meanvariancenormalization(in0, out);
 }

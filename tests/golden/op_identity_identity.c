@@ -30,7 +30,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_Identity(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_identity(const float input0[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = input0[i0][i1];
@@ -39,5 +39,5 @@ static inline void node0_Identity(const float input0[restrict 2][3], float outpu
 }
 
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
-    node0_Identity(in0, out);
+    node0_identity(in0, out);
 }

@@ -30,7 +30,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_Shape(const float input0[restrict 2][3][4], int64_t output[restrict 3]) {
+static inline void node0_shape(const float input0[restrict 2][3][4], int64_t output[restrict 3]) {
     (void)input0;
     output[0] = 2LL;
     output[1] = 3LL;
@@ -38,5 +38,5 @@ static inline void node0_Shape(const float input0[restrict 2][3][4], int64_t out
 }
 
 void model(const float in0[restrict 2][3][4], int64_t out[restrict 3]) {
-    node0_Shape(in0, out);
+    node0_shape(in0, out);
 }

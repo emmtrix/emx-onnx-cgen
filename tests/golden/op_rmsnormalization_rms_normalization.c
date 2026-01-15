@@ -32,7 +32,7 @@
  *   axis: -1
  *   epsilon: 9.999999747378752e-06
  */
-static inline void node0_RMSNormalization(const float input0[restrict 2][3][4], const float scale[restrict 4], float output[restrict 2][3][4]) {
+static inline void node0_rmsnormalization(const float input0[restrict 2][3][4], const float scale[restrict 4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
@@ -52,5 +52,5 @@ static inline void node0_RMSNormalization(const float input0[restrict 2][3][4], 
 }
 
 void model(const float in0[restrict 2][3][4], const float in1[restrict 4], float out[restrict 2][3][4]) {
-    node0_RMSNormalization(in0, in1, out);
+    node0_rmsnormalization(in0, in1, out);
 }
