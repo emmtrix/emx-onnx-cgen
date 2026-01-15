@@ -25,12 +25,13 @@
 /*
  * Node 0:
  * OpType: Gather
+ * Name: n/a
  * Inputs: data, indices
  * Outputs: out
  * Attrs:
  *   axis: 0
  */
-static inline void model_op0(const float data[restrict 3][2], const int64_t indices[restrict 2], float output[restrict 2][2]) {
+static inline void node0_Gather(const float data[restrict 3][2], const int64_t indices[restrict 2], float output[restrict 2][2]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 2; ++i1) {
             int64_t gather_index = (int64_t)indices[i0];
@@ -43,5 +44,5 @@ static inline void model_op0(const float data[restrict 3][2], const int64_t indi
 }
 
 void model(const float data[restrict 3][2], const int64_t indices[restrict 2], float out[restrict 2][2]) {
-    model_op0(data, indices, out);
+    node0_Gather(data, indices, out);
 }

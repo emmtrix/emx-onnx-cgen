@@ -29,13 +29,14 @@ static const int64_t axis[1] = {
 /*
  * Node 0:
  * OpType: CumSum
+ * Name: n/a
  * Inputs: input, axis
  * Outputs: output
  * Attrs:
  *   exclusive: 0
  *   reverse: 0
  */
-static inline void model_op0(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_CumSum(const float input0[restrict 2][3], float output[restrict 2][3]) {
     const size_t dims[2] = { 2, 3 };
     int axis = 1;
     if (axis < 0) {
@@ -67,5 +68,5 @@ static inline void model_op0(const float input0[restrict 2][3], float output[res
 }
 
 void model(const float input[restrict 2][3], float output[restrict 2][3]) {
-    model_op0(input, output);
+    node0_CumSum(input, output);
 }

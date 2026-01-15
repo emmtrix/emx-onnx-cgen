@@ -25,12 +25,13 @@
 /*
  * Node 0:
  * OpType: MeanVarianceNormalization
+ * Name: n/a
  * Inputs: in0
  * Outputs: out
  * Attrs:
  *   axes: [-1]
  */
-static inline void model_op0(const float input0[restrict 2][3][4], float output[restrict 2][3][4]) {
+static inline void node0_MeanVarianceNormalization(const float input0[restrict 2][3][4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
@@ -52,5 +53,5 @@ static inline void model_op0(const float input0[restrict 2][3][4], float output[
 }
 
 void model(const float in0[restrict 2][3][4], float out[restrict 2][3][4]) {
-    model_op0(in0, out);
+    node0_MeanVarianceNormalization(in0, out);
 }

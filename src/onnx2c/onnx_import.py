@@ -229,6 +229,7 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
         nodes.append(
             Node(
                 op_type=node.op_type,
+                name=node.name or None,
                 inputs=tuple(node.input),
                 outputs=tuple(node.output),
                 attrs=_node_attrs(node),

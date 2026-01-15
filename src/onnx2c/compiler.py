@@ -426,6 +426,7 @@ class Compiler:
             node_infos.append(
                 NodeInfo(
                     op_type=node.op_type,
+                    name=node.name,
                     inputs=tuple(node.inputs),
                     outputs=tuple(node.outputs),
                     attrs=dict(node.attrs),

@@ -24,13 +24,14 @@
 /*
  * Node 0:
  * OpType: AveragePool
+ * Name: n/a
  * Inputs: input
  * Outputs: output
  * Attrs:
  *   kernel_shape: [2, 2]
  *   strides: [2, 2]
  */
-static inline void model_op0(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
+static inline void node0_AveragePool(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
     for (size_t n = 0; n < 1; ++n) {
         for (size_t c = 0; c < 1; ++c) {
             for (size_t oh = 0; oh < 2; ++oh) {
@@ -65,5 +66,5 @@ static inline void model_op0(const float input0[restrict 1][1][4][4], float outp
 }
 
 void model(const float input[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
-    model_op0(input, output);
+    node0_AveragePool(input, output);
 }

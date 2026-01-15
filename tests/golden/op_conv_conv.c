@@ -33,13 +33,14 @@ static const float bias[1] = {
 /*
  * Node 0:
  * OpType: Conv
+ * Name: n/a
  * Inputs: in0, weight, bias
  * Outputs: out
  * Attrs:
  *   pads: [1, 1, 1, 1]
  *   strides: [1, 1]
  */
-static inline void model_op0(const float input0[restrict 1][1][4][4], const float weights[restrict 1][1][3][3], const float bias[restrict 1], float output[restrict 1][1][4][4]) {
+static inline void node0_Conv(const float input0[restrict 1][1][4][4], const float weights[restrict 1][1][3][3], const float bias[restrict 1], float output[restrict 1][1][4][4]) {
     for (size_t n = 0; n < 1; ++n) {
         for (size_t g = 0; g < 1; ++g) {
             for (size_t oc = 0; oc < 1; ++oc) {
@@ -69,5 +70,5 @@ static inline void model_op0(const float input0[restrict 1][1][4][4], const floa
 }
 
 void model(const float in0[restrict 1][1][4][4], float out[restrict 1][1][4][4]) {
-    model_op0(in0, weight, bias, out);
+    node0_Conv(in0, weight, bias, out);
 }

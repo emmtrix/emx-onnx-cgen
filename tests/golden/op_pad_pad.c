@@ -33,12 +33,13 @@ static const float value[1] = {
 /*
  * Node 0:
  * OpType: Pad
+ * Name: n/a
  * Inputs: input, pads, value
  * Outputs: output
  * Attrs:
  *   mode: constant
  */
-static inline void model_op0(const float input[restrict 2][3], float output[restrict 2][5]) {
+static inline void node0_Pad(const float input[restrict 2][3], float output[restrict 2][5]) {
     const float *input_flat = (const float *)input;
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 5; ++i1) {
@@ -78,5 +79,5 @@ static inline void model_op0(const float input[restrict 2][3], float output[rest
 }
 
 void model(const float input[restrict 2][3], float output[restrict 2][5]) {
-    model_op0(input, output);
+    node0_Pad(input, output);
 }

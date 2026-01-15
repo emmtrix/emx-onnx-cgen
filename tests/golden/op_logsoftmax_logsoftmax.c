@@ -25,12 +25,13 @@
 /*
  * Node 0:
  * OpType: LogSoftmax
+ * Name: n/a
  * Inputs: in0
  * Outputs: out
  * Attrs:
  *   axis: 1
  */
-static inline void model_op0(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_LogSoftmax(const float input0[restrict 2][3], float output[restrict 2][3]) {
     const float *input_flat = (const float *)input0;
     float *output_flat = (float *)output;
     const size_t outer = 2;
@@ -61,5 +62,5 @@ static inline void model_op0(const float input0[restrict 2][3], float output[res
 }
 
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
-    model_op0(in0, out);
+    node0_LogSoftmax(in0, out);
 }

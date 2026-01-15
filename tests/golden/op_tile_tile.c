@@ -29,11 +29,12 @@ static const int64_t repeats[2] = {
 /*
  * Node 0:
  * OpType: Tile
+ * Name: n/a
  * Inputs: input, repeats
  * Outputs: output
  * Attrs: n/a
  */
-static inline void model_op0(const float input0[restrict 2][3], float output[restrict 4][3]) {
+static inline void node0_Tile(const float input0[restrict 2][3], float output[restrict 4][3]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     size_t output_index = 0;
@@ -47,5 +48,5 @@ static inline void model_op0(const float input0[restrict 2][3], float output[res
 }
 
 void model(const float input[restrict 2][3], float output[restrict 4][3]) {
-    model_op0(input, output);
+    node0_Tile(input, output);
 }

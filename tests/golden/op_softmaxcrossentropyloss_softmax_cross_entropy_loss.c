@@ -26,12 +26,13 @@
 /*
  * Node 0:
  * OpType: SoftmaxCrossEntropyLoss
+ * Name: n/a
  * Inputs: scores, labels
  * Outputs: loss, log_prob
  * Attrs:
  *   reduction: mean
  */
-static inline void model_op0(const float input0[restrict 2][3], const int64_t target[restrict 2], float output[restrict 1], float log_prob[restrict 2][3]) {
+static inline void node0_SoftmaxCrossEntropyLoss(const float input0[restrict 2][3], const int64_t target[restrict 2], float output[restrict 1], float log_prob[restrict 2][3]) {
     const float *input_flat = (const float *)input0;
     const int64_t *target_flat = (const int64_t *)target;
     float *output_flat = (float *)output;
@@ -76,5 +77,5 @@ static inline void model_op0(const float input0[restrict 2][3], const int64_t ta
 }
 
 void model(const float scores[restrict 2][3], const int64_t labels[restrict 2], float loss[restrict 1], float log_prob[restrict 2][3]) {
-    model_op0(scores, labels, loss, log_prob);
+    node0_SoftmaxCrossEntropyLoss(scores, labels, loss, log_prob);
 }

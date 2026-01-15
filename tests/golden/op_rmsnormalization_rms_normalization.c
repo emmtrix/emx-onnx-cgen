@@ -25,13 +25,14 @@
 /*
  * Node 0:
  * OpType: RMSNormalization
+ * Name: n/a
  * Inputs: in0, in1
  * Outputs: out
  * Attrs:
  *   axis: -1
  *   epsilon: 9.999999747378752e-06
  */
-static inline void model_op0(const float input0[restrict 2][3][4], const float scale[restrict 4], float output[restrict 2][3][4]) {
+static inline void node0_RMSNormalization(const float input0[restrict 2][3][4], const float scale[restrict 4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
@@ -51,5 +52,5 @@ static inline void model_op0(const float input0[restrict 2][3][4], const float s
 }
 
 void model(const float in0[restrict 2][3][4], const float in1[restrict 4], float out[restrict 2][3][4]) {
-    model_op0(in0, in1, out);
+    node0_RMSNormalization(in0, in1, out);
 }

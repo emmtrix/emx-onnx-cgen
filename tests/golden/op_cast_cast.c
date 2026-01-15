@@ -25,12 +25,13 @@
 /*
  * Node 0:
  * OpType: Cast
+ * Name: n/a
  * Inputs: in0
  * Outputs: out
  * Attrs:
  *   to: 6
  */
-static inline void model_op0(const float input0[restrict 2][3], int32_t output[restrict 2][3]) {
+static inline void node0_Cast(const float input0[restrict 2][3], int32_t output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = (int32_t)input0[i0][i1];
@@ -39,5 +40,5 @@ static inline void model_op0(const float input0[restrict 2][3], int32_t output[r
 }
 
 void model(const float in0[restrict 2][3], int32_t out[restrict 2][3]) {
-    model_op0(in0, out);
+    node0_Cast(in0, out);
 }
