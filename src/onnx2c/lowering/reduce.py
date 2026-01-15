@@ -235,6 +235,16 @@ def _all_ones_shape(shape: tuple[int, ...]) -> bool:
     return all(dim == 1 for dim in shape)
 
 
+def _allow_unknown_reduce_output_shape(
+    expected_output_shape: tuple[int, ...],
+    output_shape: tuple[int, ...],
+    input_shape: tuple[int, ...],
+) -> bool:
+    if expected_output_shape != () or not output_shape or not input_shape:
+        return False
+    return True
+
+
 def _infer_axes_from_shapes(
     input_shape: tuple[int, ...],
     output_shape: tuple[int, ...],
@@ -431,7 +441,11 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
         )
     expected_output_shape = _value_shape(graph, node.outputs[0], node)
     if expected_output_shape != output_shape:
-        if not (
+        if _allow_unknown_reduce_output_shape(
+            expected_output_shape, output_shape, input_shape
+        ):
+            pass
+        elif not (
             _all_ones_shape(expected_output_shape)
             and _all_ones_shape(output_shape)
             and _shape_product(expected_output_shape)
