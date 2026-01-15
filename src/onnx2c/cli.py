@@ -23,7 +23,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="onnx2c", description="ONNX to C compiler")
+    parser = argparse.ArgumentParser(prog="onnx2c", description="emmtrix ONNX to C Compiler")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     def add_restrict_flags(subparser: argparse.ArgumentParser) -> None:
