@@ -6861,6 +6861,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, ResizeOp):
             return op.output_shape
+        if isinstance(op, GridSampleOp):
+            return op.output_shape
         if isinstance(op, ReduceOp):
             return op.output_shape
         if isinstance(op, ArgReduceOp):
@@ -6909,6 +6911,7 @@ class CEmitter:
         | TransposeOp
         | ReshapeOp
         | ResizeOp
+        | GridSampleOp
         | ReduceOp
         | ArgReduceOp
         | ConstantOfShapeOp

@@ -2765,11 +2765,11 @@
   ],
   [
     "node/test_gridsample/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_aligncorners_true/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_bicubic/model.onnx",
@@ -2785,55 +2785,55 @@
   ],
   [
     "node/test_gridsample_bilinear/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_bilinear_align_corners_0_additional_1/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_bilinear_align_corners_1_additional_1/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_border_padding/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_nearest/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_nearest_align_corners_0_additional_1/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_nearest_align_corners_1_additional_1/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_reflection_padding/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_volumetric_bilinear_align_corners_0/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_volumetric_bilinear_align_corners_1/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_volumetric_nearest_align_corners_0/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_gridsample_zeros_padding/model.onnx",
-    "'GridSampleOp' object has no attribute 'output_rank'"
+    "'GridSampleOp' object has no attribute 'function'"
   ],
   [
     "node/test_group_normalization_epsilon/model.onnx",
