@@ -11,7 +11,7 @@ readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 
 [project.scripts]
-emx-onnx-cgen = "onnx2c.cli:main"
+emx-onnx-cgen = "emx_onnx_cgen.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from onnx import TensorProto, helper
 
-from onnx2c.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 
 
 def _signature_param_names(source: str) -> list[str]:

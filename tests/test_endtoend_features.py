@@ -14,7 +14,7 @@ import pytest
 
 from onnx import TensorProto, helper
 
-from onnx2c.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PROJECT_ROOT / "src"
@@ -98,7 +98,7 @@ def _run_cli_verify(model_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "onnx2c",
+            "emx_onnx_cgen",
             "verify",
             str(model_path),
             "--template-dir",

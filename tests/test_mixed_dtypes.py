@@ -5,7 +5,7 @@ import onnx
 import onnxruntime as ort
 from onnx import TensorProto, helper
 
-from onnx2c.compiler import Compiler
+from emx_onnx_cgen.compiler import Compiler
 
 
 def _make_mixed_dtype_model() -> onnx.ModelProto:

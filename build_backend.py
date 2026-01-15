@@ -6,7 +6,9 @@ import subprocess
 
 from setuptools import build_meta as _build_meta
 
-BUILD_INFO_MODULE = Path(__file__).resolve().parent / "src" / "onnx2c" / "_build_info.py"
+BUILD_INFO_MODULE = (
+    Path(__file__).resolve().parent / "src" / "emx_onnx_cgen" / "_build_info.py"
+)
 
 
 def _write_build_info() -> None:

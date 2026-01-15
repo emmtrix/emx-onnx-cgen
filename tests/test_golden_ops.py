@@ -7,7 +7,7 @@ import onnx
 from onnx import TensorProto, helper
 
 from golden_utils import assert_golden
-from onnx2c import Compiler
+from emx_onnx_cgen import Compiler
 from test_ops import (
     _make_arg_reduce_model,
     _make_batchnorm_model,

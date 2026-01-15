@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 from onnx import TensorProto, helper
 
-from onnx2c.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 
 
 def test_multi_output_graph_compile_and_run() -> None:

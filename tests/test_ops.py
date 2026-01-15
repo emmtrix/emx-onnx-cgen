@@ -16,15 +16,15 @@ from onnx import TensorProto, helper
 
 from shared.scalar_types import ScalarType
 
-from onnx2c.codegen.c_emitter import MultiInputBinaryOp
-from onnx2c.compiler import Compiler, CompilerOptions
-from onnx2c.errors import UnsupportedOpError
-from onnx2c.lowering.flatten import lower_flatten
-from onnx2c.lowering.grid_sample import lower_grid_sample
-from onnx2c.lowering.squeeze import lower_squeeze
-from onnx2c.lowering import variadic as _variadic  # noqa: F401
-from onnx2c.lowering.registry import get_lowering
-from onnx2c.onnx_import import import_onnx
+from emx_onnx_cgen.codegen.c_emitter import MultiInputBinaryOp
+from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.errors import UnsupportedOpError
+from emx_onnx_cgen.lowering.flatten import lower_flatten
+from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
+from emx_onnx_cgen.lowering.squeeze import lower_squeeze
+from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
+from emx_onnx_cgen.lowering.registry import get_lowering
+from emx_onnx_cgen.onnx_import import import_onnx
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

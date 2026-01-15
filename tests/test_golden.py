@@ -11,8 +11,8 @@ import pytest
 from typing import Callable
 from onnx import TensorProto, helper
 
-from onnx2c import Compiler
-from onnx2c.compiler import CompilerOptions
+from emx_onnx_cgen import Compiler
+from emx_onnx_cgen.compiler import CompilerOptions
 from golden_utils import assert_golden
 
 

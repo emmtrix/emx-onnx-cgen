@@ -15,7 +15,7 @@ import pytest
 
 from onnx import numpy_helper
 
-from onnx2c.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 
 OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
     Path(__file__).resolve().parent / "official_onnx_expected_errors.json"

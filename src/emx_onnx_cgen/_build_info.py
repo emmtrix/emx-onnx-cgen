@@ -1,4 +1,4 @@
-"""Build metadata for onnx2c."""
+"""Build metadata for emx_onnx_cgen."""
 
 BUILD_DATE = "unknown"
 GIT_VERSION = "unknown"

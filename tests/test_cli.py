@@ -33,7 +33,7 @@ def _run_cli_verify(model: onnx.ModelProto) -> None:
             [
                 sys.executable,
                 "-m",
-                "onnx2c",
+                "emx_onnx_cgen",
                 "verify",
                 str(model_path),
                 "--template-dir",

@@ -5,7 +5,7 @@ import onnx
 
 from onnx import TensorProto, helper
 
-from onnx2c.onnx_import import import_onnx
+from emx_onnx_cgen.onnx_import import import_onnx
 
 
 def _make_constant_model() -> tuple[onnx.ModelProto, np.ndarray]:
