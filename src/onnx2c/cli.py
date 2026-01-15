@@ -190,7 +190,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
     model_path: Path = args.model
     model_name = args.model_name or model_path.stem
     model_checksum = _model_checksum(model_path)
-    compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=True)
+    compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=False)
     if compiler_cmd is None:
         LOGGER.error("No C compiler found (set --cc or CC environment variable).")
         return 1
