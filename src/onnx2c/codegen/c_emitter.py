@@ -831,6 +831,20 @@ class ExpandOp:
 
 
 @dataclass(frozen=True)
+class CumSumOp:
+    input0: str
+    axis_input: str | None
+    axis_input_dtype: ScalarType | None
+    axis: int | None
+    output: str
+    input_shape: tuple[int, ...]
+    dtype: ScalarType
+    input_dtype: ScalarType
+    exclusive: bool
+    reverse: bool
+
+
+@dataclass(frozen=True)
 class RangeOp:
     start: str
     limit: str
@@ -947,6 +961,7 @@ class LoweredModel:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
         ...,
@@ -1046,6 +1061,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
     ) -> tuple[str, ...]:
@@ -1177,6 +1193,12 @@ class CEmitter:
             return (op.input0, op.output)
         if isinstance(op, ExpandOp):
             return (op.input0, op.output)
+        if isinstance(op, CumSumOp):
+            names = [op.input0]
+            if op.axis_input is not None:
+                names.append(op.axis_input)
+            names.append(op.output)
+            return tuple(names)
         if isinstance(op, RangeOp):
             return (op.start, op.limit, op.delta, op.output)
         if isinstance(op, SplitOp):
@@ -1307,6 +1329,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
         name_map: dict[str, str],
@@ -1356,6 +1379,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp
     ):
@@ -2046,6 +2070,19 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, CumSumOp):
+            return CumSumOp(
+                input0=name_map.get(op.input0, op.input0),
+                axis_input=self._map_optional_name(name_map, op.axis_input),
+                axis_input_dtype=op.axis_input_dtype,
+                axis=op.axis,
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                exclusive=op.exclusive,
+                reverse=op.reverse,
+            )
         if isinstance(op, RangeOp):
             return RangeOp(
                 start=name_map.get(op.start, op.start),
@@ -2196,6 +2233,7 @@ class CEmitter:
                 "shape": self._env.get_template("shape_op.c.j2"),
                 "size": self._env.get_template("size_op.c.j2"),
                 "expand": self._env.get_template("expand_op.c.j2"),
+                "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
                 "split": self._env.get_template("split_op.c.j2"),
             }
@@ -2284,6 +2322,7 @@ class CEmitter:
         shape_template = templates["shape"]
         size_template = templates["size"]
         expand_template = templates["expand"]
+        cumsum_template = templates["cumsum"]
         range_template = templates["range"]
         split_template = templates["split"]
         testbench_template = templates.get("testbench")
@@ -2357,6 +2396,7 @@ class CEmitter:
                 shape_template=shape_template,
                 size_template=size_template,
                 expand_template=expand_template,
+                cumsum_template=cumsum_template,
                 range_template=range_template,
                 split_template=split_template,
                 scalar_registry=scalar_registry,
@@ -2503,6 +2543,7 @@ class CEmitter:
         shape_template = templates["shape"]
         size_template = templates["size"]
         expand_template = templates["expand"]
+        cumsum_template = templates["cumsum"]
         range_template = templates["range"]
         split_template = templates["split"]
         testbench_template = templates.get("testbench")
@@ -2576,6 +2617,7 @@ class CEmitter:
                 shape_template=shape_template,
                 size_template=size_template,
                 expand_template=expand_template,
+                cumsum_template=cumsum_template,
                 range_template=range_template,
                 split_template=split_template,
                 scalar_registry=scalar_registry,
@@ -2897,6 +2939,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | ExpandOp
+            | CumSumOp
             | RangeOp
             | SplitOp
         ],
@@ -3077,6 +3120,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | ExpandOp
+            | CumSumOp
             | RangeOp
             | SplitOp
         ],
@@ -3221,6 +3265,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | ExpandOp
+            | CumSumOp
             | RangeOp
             | SplitOp
         ],
@@ -3300,6 +3345,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | ExpandOp
+            | CumSumOp
             | RangeOp
             | SplitOp
         ],
@@ -3385,6 +3431,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
         dim_order: Sequence[str],
@@ -3547,6 +3594,12 @@ class CEmitter:
         if isinstance(op, ExpandOp):
             args.extend([op.input0, op.output])
             return ", ".join(args)
+        if isinstance(op, CumSumOp):
+            args.append(op.input0)
+            if op.axis_input is not None:
+                args.append(op.axis_input)
+            args.append(op.output)
+            return ", ".join(args)
         if isinstance(op, RangeOp):
             args.extend([op.start, op.limit, op.delta, op.output])
             return ", ".join(args)
@@ -3691,6 +3744,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
         temp_map: dict[str, str],
@@ -3739,6 +3793,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp
     ):
@@ -4309,6 +4364,19 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, CumSumOp):
+            return CumSumOp(
+                input0=temp_map.get(op.input0, op.input0),
+                axis_input=CEmitter._map_optional_name(temp_map, op.axis_input),
+                axis_input_dtype=op.axis_input_dtype,
+                axis=op.axis,
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                exclusive=op.exclusive,
+                reverse=op.reverse,
+            )
         if isinstance(op, RangeOp):
             return RangeOp(
                 start=temp_map.get(op.start, op.start),
@@ -4608,6 +4676,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
         index: int,
@@ -4665,6 +4734,7 @@ class CEmitter:
         shape_template,
         size_template,
         expand_template,
+        cumsum_template,
         range_template,
         split_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
@@ -6750,6 +6820,44 @@ class CEmitter:
                 input_index_expr=input_index_expr,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, CumSumOp):
+            params = self._unique_param_map(
+                [
+                    ("input0", op.input0),
+                    ("axis_input", op.axis_input),
+                    ("output", op.output),
+                ]
+            )
+            input_dim_names = _dim_names_for(op.input0)
+            output_dim_names = _dim_names_for(op.output)
+            axis_c_type = (
+                op.axis_input_dtype.c_type if op.axis_input_dtype else "int64_t"
+            )
+            rendered = cumsum_template.render(
+                model_name=model.name,
+                op_name=f"{model.name}_op{index}",
+                input0=params["input0"],
+                axis_input=params["axis_input"],
+                axis_c_type=axis_c_type,
+                axis_suffix=self._param_array_suffix(()),
+                axis_literal=op.axis,
+                output=params["output"],
+                c_type=c_type,
+                input_suffix=self._param_array_suffix(
+                    op.input_shape, input_dim_names
+                ),
+                output_suffix=self._param_array_suffix(
+                    op.input_shape, output_dim_names
+                ),
+                input_shape=CEmitter._shape_dim_exprs(
+                    op.input_shape, input_dim_names
+                ),
+                rank=len(op.input_shape),
+                exclusive=op.exclusive,
+                reverse=op.reverse,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, RangeOp):
             params = self._unique_param_map(
                 [
@@ -7001,6 +7109,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
     ) -> str:
@@ -7054,6 +7163,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
@@ -7105,6 +7215,8 @@ class CEmitter:
             if op.value_input is not None and op.value_shape is not None:
                 inputs.append((op.value_input, op.value_shape))
             return tuple(inputs)
+        if isinstance(op, CumSumOp):
+            return ((op.input0, op.input_shape),)
         return ()
 
     def _propagate_tensor_dim_names(
@@ -7355,6 +7467,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp
         | PadOp,
@@ -7445,6 +7558,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, ExpandOp):
             return op.output_shape
+        if isinstance(op, CumSumOp):
+            return op.input_shape
         if isinstance(op, RangeOp):
             return op.output_shape
         if op.output_rank == 3:
@@ -7488,6 +7603,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | ExpandOp
+        | CumSumOp
         | RangeOp
         | SplitOp
         | PadOp,

@@ -260,6 +260,47 @@ def _make_range_model(
     return model
 
 
+def _make_cumsum_model(
+    *,
+    input_shape: list[int],
+    axis: int,
+    dtype: int,
+    exclusive: bool = False,
+    reverse: bool = False,
+    opset: int = 14,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output = helper.make_tensor_value_info("output", dtype, input_shape)
+    axis_tensor = helper.make_tensor(
+        "axis",
+        TensorProto.INT64,
+        dims=[],
+        vals=[axis],
+    )
+    node = helper.make_node(
+        "CumSum",
+        inputs=["input", "axis"],
+        outputs=[output.name],
+        exclusive=int(exclusive),
+        reverse=int(reverse),
+    )
+    graph = helper.make_graph(
+        [node],
+        "cumsum_graph",
+        [input_info],
+        [output],
+        initializer=[axis_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_eye_like_model(
     *,
     input_shape: list[int],
@@ -324,6 +365,34 @@ def _make_tile_model(
     model.ir_version = 7
     onnx.checker.check_model(model)
     return model
+
+
+def _exclusive_cumsum_numpy(data: np.ndarray, axis: int) -> np.ndarray:
+    result = np.zeros_like(data)
+    if data.shape[axis] == 0:
+        return result
+    cumsum = np.cumsum(data, axis=axis, dtype=data.dtype)
+    src_slice = [slice(None)] * data.ndim
+    dst_slice = [slice(None)] * data.ndim
+    src_slice[axis] = slice(None, -1)
+    dst_slice[axis] = slice(1, None)
+    result[tuple(dst_slice)] = cumsum[tuple(src_slice)]
+    return result
+
+
+def _cumsum_numpy(
+    data: np.ndarray,
+    *,
+    axis: int,
+    exclusive: bool,
+    reverse: bool,
+) -> np.ndarray:
+    working = np.flip(data, axis=axis) if reverse else data
+    if exclusive:
+        result = _exclusive_cumsum_numpy(working, axis)
+    else:
+        result = np.cumsum(working, axis=axis, dtype=data.dtype)
+    return np.flip(result, axis=axis) if reverse else result
 
 
 def _make_pad_model(
@@ -2818,6 +2887,17 @@ def test_range_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+def test_cumsum_matches_onnxruntime() -> None:
+    model = _make_cumsum_model(
+        input_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        exclusive=True,
+        reverse=True,
+    )
+    _run_ort_compare(model)
+
+
 def test_split_matches_onnxruntime() -> None:
     model = _make_split_model(
         input_shape=[2, 6],
@@ -2870,6 +2950,34 @@ def test_range_run_matches_numpy() -> None:
     outputs = compiler.run(model, {})
     expected = np.arange(1, 7, 2, dtype=np.int32)
     np.testing.assert_array_equal(outputs["output"], expected)
+
+
+@pytest.mark.parametrize(
+    ("axis", "exclusive", "reverse"),
+    [
+        (0, False, False),
+        (1, True, False),
+        (-1, True, True),
+    ],
+)
+def test_cumsum_run_matches_numpy(
+    axis: int, exclusive: bool, reverse: bool
+) -> None:
+    model = _make_cumsum_model(
+        input_shape=[2, 3],
+        axis=axis,
+        dtype=TensorProto.FLOAT,
+        exclusive=exclusive,
+        reverse=reverse,
+    )
+    compiler = Compiler()
+    rng = np.random.default_rng(0)
+    data = rng.standard_normal((2, 3)).astype(np.float32)
+    outputs = compiler.run(model, {"input": data})
+    expected = _cumsum_numpy(
+        data, axis=axis, exclusive=exclusive, reverse=reverse
+    )
+    np.testing.assert_allclose(outputs["output"], expected, rtol=1e-5, atol=1e-6)
 
 
 def test_size_run() -> None:
