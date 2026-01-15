@@ -1841,13 +1841,34 @@ LOCAL_ONNX_DATA_ROOT = (
 
 
 def _load_official_onnx_file_expectations() -> list[tuple[str, str]]:
-    data = json.loads(OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH.read_text(encoding="utf-8"))
-    return [(path, error) for path, error in data]
+    return list(_OFFICIAL_ONNX_FILE_EXPECTATIONS)
 
 
 def _load_local_onnx_file_expectations() -> list[tuple[str, str]]:
-    data = json.loads(LOCAL_ONNX_FILE_EXPECTATIONS_PATH.read_text(encoding="utf-8"))
+    return list(_LOCAL_ONNX_FILE_EXPECTATIONS)
+
+
+def _read_onnx_file_expectations(path: Path) -> list[tuple[str, str]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
     return [(path, error) for path, error in data]
+
+
+def _set_official_onnx_file_expectations(expectations: list[tuple[str, str]]) -> None:
+    global _OFFICIAL_ONNX_FILE_EXPECTATIONS
+    _OFFICIAL_ONNX_FILE_EXPECTATIONS = expectations
+
+
+def _set_local_onnx_file_expectations(expectations: list[tuple[str, str]]) -> None:
+    global _LOCAL_ONNX_FILE_EXPECTATIONS
+    _LOCAL_ONNX_FILE_EXPECTATIONS = expectations
+
+
+_OFFICIAL_ONNX_FILE_EXPECTATIONS = _read_onnx_file_expectations(
+    OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH
+)
+_LOCAL_ONNX_FILE_EXPECTATIONS = _read_onnx_file_expectations(
+    LOCAL_ONNX_FILE_EXPECTATIONS_PATH
+)
 
 
 def _render_onnx_file_support_table(expectations: list[tuple[str, str]]) -> list[str]:
@@ -2192,6 +2213,7 @@ def test_official_onnx_expected_errors() -> None:
             json.dumps(actual_expectations, indent=2) + "\n",
             encoding="utf-8",
         )
+        _set_official_onnx_file_expectations(actual_expectations)
         return
 
 
@@ -2226,6 +2248,7 @@ def test_local_onnx_expected_errors() -> None:
             json.dumps(actual_expectations, indent=2) + "\n",
             encoding="utf-8",
         )
+        _set_local_onnx_file_expectations(actual_expectations)
         return
 
 
