@@ -7995,7 +7995,12 @@ class CEmitter:
         if isinstance(op, RMSNormalizationOp):
             return ((op.input0, op.shape), (op.scale, op.scale_shape))
         if isinstance(op, ClipOp):
-            return ((op.input0, op.shape),)
+            inputs = [(op.input0, op.input_shape)]
+            if op.input_min is not None and op.min_shape is not None:
+                inputs.append((op.input_min, op.min_shape))
+            if op.input_max is not None and op.max_shape is not None:
+                inputs.append((op.input_max, op.max_shape))
+            return tuple(inputs)
         if isinstance(op, CastOp):
             return ((op.input0, op.shape),)
         if isinstance(op, IdentityOp):
