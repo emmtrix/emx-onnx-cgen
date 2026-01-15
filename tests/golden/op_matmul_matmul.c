@@ -28,14 +28,14 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float in0[restrict 2][3], const float in1[restrict 3][4], float out[restrict 2][4]) {
+static inline void model_op0(const float input0[restrict 2][3], const float input1[restrict 3][4], float output[restrict 2][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 4; ++i1) {
             float acc = 0.0f;
             for (size_t k = 0; k < 3; ++k) {
-                acc += in0[i0][k] * in1[k][i1];
+                acc += input0[i0][k] * input1[k][i1];
             }
-            out[i0][i1] = acc;
+            output[i0][i1] = acc;
         }
     }
 }

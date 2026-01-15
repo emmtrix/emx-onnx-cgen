@@ -30,28 +30,28 @@
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  */
-static inline void model_op0(const float in0[restrict 1][3][2][2], const float in1[restrict 3], const float in2[restrict 3], float out[restrict 1][3][2][2]) {
+static inline void model_op0(const float input0[restrict 1][3][2][2], const float scale[restrict 3], const float bias[restrict 3], float output[restrict 1][3][2][2]) {
     for (size_t i0 = 0; i0 < 1; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
             for (size_t i2 = 0; i2 < 2; ++i2) {
                 for (size_t i3 = 0; i3 < 2; ++i3) {
-                    sum += in0[i0][i1][i2][i3];
+                    sum += input0[i0][i1][i2][i3];
                 }
             }
             float mean = sum / 4;
             float var = 0.0f;
             for (size_t i2 = 0; i2 < 2; ++i2) {
                 for (size_t i3 = 0; i3 < 2; ++i3) {
-                    float diff = in0[i0][i1][i2][i3] - mean;
+                    float diff = input0[i0][i1][i2][i3] - mean;
                     var += diff * diff;
                 }
             }
             float denom = sqrtf(var / 4 + 9.99999975e-06f);
             for (size_t i2 = 0; i2 < 2; ++i2) {
                 for (size_t i3 = 0; i3 < 2; ++i3) {
-                    out[i0][i1][i2][i3] =
-                    (in0[i0][i1][i2][i3] - mean) / denom * in1[i1] + in2[i1];
+                    output[i0][i1][i2][i3] =
+                    (input0[i0][i1][i2][i3] - mean) / denom * scale[i1] + bias[i1];
                 }
             }
         }

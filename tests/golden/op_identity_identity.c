@@ -29,10 +29,10 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float in0[restrict 2][3], float out[restrict 2][3]) {
+static inline void model_op0(const float input0[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            out[i0][i1] = in0[i0][i1];
+            output[i0][i1] = input0[i0][i1];
         }
     }
 }

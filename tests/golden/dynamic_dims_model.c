@@ -41,10 +41,10 @@ static inline float ref_scalar_f32_relu(float a) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void dynamic_dims_model_op0(int N, int C, const float x[restrict N][C], float out[restrict N][C]) {
+static inline void dynamic_dims_model_op0(int N, int C, const float input0[restrict N][C], float output[restrict N][C]) {
     for (size_t i0 = 0; i0 < N; ++i0) {
         for (size_t i1 = 0; i1 < C; ++i1) {
-            out[i0][i1] = ref_scalar_f32_relu(x[i0][i1]);
+            output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);
         }
     }
 }

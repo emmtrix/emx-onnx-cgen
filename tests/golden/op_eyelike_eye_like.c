@@ -29,8 +29,8 @@
  * Attrs:
  *   k: 0
  */
-static inline void model_op0(const float input[restrict 3][3], float output[restrict 3][3]) {
-    (void)input;
+static inline void model_op0(const float input0[restrict 3][3], float output[restrict 3][3]) {
+    (void)input0;
     float *output_data = (float *)output;
     size_t total = (size_t)1 * 3 * 3;
     for (size_t index = 0; index < total; ++index) {

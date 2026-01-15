@@ -30,14 +30,14 @@
  * Attrs:
  *   axis: 0
  */
-static inline void model_op0(const float data[restrict 3][2], const int64_t indices[restrict 2], float out[restrict 2][2]) {
+static inline void model_op0(const float data[restrict 3][2], const int64_t indices[restrict 2], float output[restrict 2][2]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 2; ++i1) {
             int64_t gather_index = (int64_t)indices[i0];
             if (gather_index < 0) {
                 gather_index += 3;
             }
-            out[i0][i1] = data[gather_index][i1];
+            output[i0][i1] = data[gather_index][i1];
         }
     }
 }

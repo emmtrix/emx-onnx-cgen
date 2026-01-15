@@ -30,22 +30,22 @@
  * Attrs:
  *   axes: [-1]
  */
-static inline void model_op0(const float in0[restrict 2][3][4], float out[restrict 2][3][4]) {
+static inline void model_op0(const float input0[restrict 2][3][4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                sum += in0[i0][i1][i2];
+                sum += input0[i0][i1][i2];
             }
             float mean = sum / 4;
             float var = 0.0f;
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                float diff = in0[i0][i1][i2] - mean;
+                float diff = input0[i0][i1][i2] - mean;
                 var += diff * diff;
             }
             float denom = sqrtf(var / 4 + 1e-09f);
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                out[i0][i1][i2] = (in0[i0][i1][i2] - mean) / denom;
+                output[i0][i1][i2] = (input0[i0][i1][i2] - mean) / denom;
             }
         }
     }

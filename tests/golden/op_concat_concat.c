@@ -30,8 +30,8 @@
  * Attrs:
  *   axis: 2
  */
-static inline void model_op0(const float in0[restrict 1][2][3], const float in1[restrict 1][2][1], float out[restrict 1][2][4]) {
-    const void *inputs[] = { in0, in1 };
+static inline void model_op0(const float input_0[restrict 1][2][3], const float input_1[restrict 1][2][1], float output[restrict 1][2][4]) {
+    const void *inputs[] = { input_0, input_1 };
     const size_t axis_sizes[] = { 3, 1 };
     size_t concat_axis = 0;
     for (size_t idx = 0; idx < 2; ++idx) {
@@ -50,7 +50,7 @@ static inline void model_op0(const float in0[restrict 1][2][3], const float in1[
             (const unsigned char *)inputs[input_idx];
             size_t input_offset = outer_idx * copy_elems;
             memcpy(
-            ((unsigned char *)out) + (output_offset + axis_offset) * sizeof(float),
+            ((unsigned char *)output) + (output_offset + axis_offset) * sizeof(float),
             input_bytes + input_offset * sizeof(float),
             copy_elems * sizeof(float)
             );

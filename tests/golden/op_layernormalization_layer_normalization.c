@@ -31,19 +31,19 @@
  *   axis: 1
  *   epsilon: 9.999999747378752e-06
  */
-static inline void model_op0(const float in0[restrict 2][3][4], const float in1[restrict 3][4], const float in2[restrict 3][4], float out[restrict 2][3][4]) {
+static inline void model_op0(const float input0[restrict 2][3][4], const float scale[restrict 3][4], const float bias[restrict 3][4], float output[restrict 2][3][4]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         float sum = 0.0f;
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                sum += in0[i0][i1][i2];
+                sum += input0[i0][i1][i2];
             }
         }
         float mean = sum / 12;
         float var = 0.0f;
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                float diff = in0[i0][i1][i2] - mean;
+                float diff = input0[i0][i1][i2] - mean;
                 var += diff * diff;
             }
         }
@@ -51,9 +51,9 @@ static inline void model_op0(const float in0[restrict 2][3][4], const float in1[
         float inv_std = ((float)1) / sqrtf(var + 9.99999975e-06f);
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                float value = (in0[i0][i1][i2] - mean) * inv_std;
-                value = value * in1[i1][i2] + in2[i1][i2];
-                out[i0][i1][i2] = value;
+                float value = (input0[i0][i1][i2] - mean) * inv_std;
+                value = value * scale[i1][i2] + bias[i1][i2];
+                output[i0][i1][i2] = value;
             }
         }
     }

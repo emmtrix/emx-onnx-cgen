@@ -30,7 +30,7 @@
  *   kernel_shape: [2, 2]
  *   strides: [2, 2]
  */
-static inline void model_op0(const float input[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
+static inline void model_op0(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
     for (size_t n = 0; n < 1; ++n) {
         for (size_t c = 0; c < 1; ++c) {
             for (size_t oh = 0; oh < 2; ++oh) {
@@ -53,7 +53,7 @@ static inline void model_op0(const float input[restrict 1][1][4][4], float outpu
                                 }
                                 continue;
                             }
-                            acc += input[n][c][ih][iw];
+                            acc += input0[n][c][ih][iw];
                             count += 1;
                         }
                     }

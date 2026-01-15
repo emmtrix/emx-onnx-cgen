@@ -45,10 +45,10 @@ static inline float ref_scalar_f32_add(float a, float b) {
  * Outputs: mul_out
  * Attrs: n/a
  */
-static inline void model_op0(const float a[restrict 2][3], const float b[restrict 2][3], float tmp[restrict 2][3]) {
+static inline void model_op0(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            tmp[i0][i1] = ref_scalar_f32_mul(a[i0][i1], b[i0][i1]);
+            output[i0][i1] = ref_scalar_f32_mul(input0[i0][i1], input1[i0][i1]);
         }
     }
 }
@@ -60,10 +60,10 @@ static inline void model_op0(const float a[restrict 2][3], const float b[restric
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op1(const float tmp[restrict 2][3], const float c[restrict 2][3], float out[restrict 2][3]) {
+static inline void model_op1(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            out[i0][i1] = ref_scalar_f32_add(tmp[i0][i1], c[i0][i1]);
+            output[i0][i1] = ref_scalar_f32_add(input0[i0][i1], input1[i0][i1]);
         }
     }
 }

@@ -1023,7 +1023,8 @@ class CEmitter:
             if name is None:
                 mapped[key] = None
                 continue
-            unique = self._ensure_unique_identifier(name, used)
+            sanitized = self._sanitize_identifier(key)
+            unique = self._ensure_unique_identifier(sanitized, used)
             used.add(unique)
             mapped[key] = unique
         return mapped
@@ -1038,12 +1039,13 @@ class CEmitter:
             if name is None:
                 mapped[key] = None
                 continue
-            if name in name_map:
-                mapped[key] = name_map[name]
+            if key in name_map:
+                mapped[key] = name_map[key]
                 continue
-            unique = self._ensure_unique_identifier(name, used)
+            sanitized = self._sanitize_identifier(key)
+            unique = self._ensure_unique_identifier(sanitized, used)
             used.add(unique)
-            name_map[name] = unique
+            name_map[key] = unique
             mapped[key] = unique
         return mapped
 

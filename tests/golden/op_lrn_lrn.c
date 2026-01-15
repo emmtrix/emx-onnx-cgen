@@ -33,7 +33,7 @@
  *   bias: 1.0
  *   size: 3
  */
-static inline void model_op0(const float in0[restrict 1][3][4][4], float out[restrict 1][3][4][4]) {
+static inline void model_op0(const float input0[restrict 1][3][4][4], float output[restrict 1][3][4][4]) {
     for (size_t i0 = 0; i0 < 1; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
@@ -45,11 +45,11 @@ static inline void model_op0(const float in0[restrict 1][3][4][4], float out[res
                     }
                     float sum = 0.0f;
                     for (size_t c = channel_start; c <= channel_end; ++c) {
-                        float val = in0[i0][c][i2][i3];
+                        float val = input0[i0][c][i2][i3];
                         sum += val * val;
                     }
                     float scale = 1.0f + 3.33333325e-05f * sum;
-                    out[i0][i1][i2][i3] = in0[i0][i1][i2][i3] / powf(scale, 0.75f);
+                    output[i0][i1][i2][i3] = input0[i0][i1][i2][i3] / powf(scale, 0.75f);
                 }
             }
         }

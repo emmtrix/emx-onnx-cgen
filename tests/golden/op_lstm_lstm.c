@@ -47,7 +47,7 @@ static inline float ref_scalar_f32_tanh(float a) {
  *   hidden_size: 3
  *   layout: 0
  */
-static inline void model_op0(const float X[restrict 1][1][2], const float W[restrict 1][12][2], const float R[restrict 1][12][3], float Y[restrict 1][1][1][3], float Y_h[restrict 1][1][3], float Y_c[restrict 1][1][3]) {
+static inline void model_op0(const float input_x[restrict 1][1][2], const float input_w[restrict 1][12][2], const float input_r[restrict 1][12][3], float output_y[restrict 1][1][1][3], float output_y_h[restrict 1][1][3], float output_y_c[restrict 1][1][3]) {
     {
         const int dir = 0;
         const int reverse = 0;
@@ -71,18 +71,18 @@ static inline void model_op0(const float X[restrict 1][1][2], const float W[rest
                     float gate_f = 0.0f;
                     float gate_c = 0.0f;
                     for (int i = 0; i < 2; ++i) {
-                        float x_val = X[t][b][i];
-                        gate_i += x_val * W[dir][h][i];
-                        gate_o += x_val * W[dir][3 + h][i];
-                        gate_f += x_val * W[dir][3 * 2 + h][i];
-                        gate_c += x_val * W[dir][3 * 3 + h][i];
+                        float x_val = input_x[t][b][i];
+                        gate_i += x_val * input_w[dir][h][i];
+                        gate_o += x_val * input_w[dir][3 + h][i];
+                        gate_f += x_val * input_w[dir][3 * 2 + h][i];
+                        gate_c += x_val * input_w[dir][3 * 3 + h][i];
                     }
                     for (int i = 0; i < 3; ++i) {
                         float h_val = H_prev[b][i];
-                        gate_i += h_val * R[dir][h][i];
-                        gate_o += h_val * R[dir][3 + h][i];
-                        gate_f += h_val * R[dir][3 * 2 + h][i];
-                        gate_c += h_val * R[dir][3 * 3 + h][i];
+                        gate_i += h_val * input_r[dir][h][i];
+                        gate_o += h_val * input_r[dir][3 + h][i];
+                        gate_f += h_val * input_r[dir][3 * 2 + h][i];
+                        gate_c += h_val * input_r[dir][3 * 3 + h][i];
                     }
                     float i_gate = ref_scalar_f32_sigmoid(gate_i);
                     float f_gate = ref_scalar_f32_sigmoid(gate_f);
@@ -92,7 +92,7 @@ static inline void model_op0(const float X[restrict 1][1][2], const float W[rest
                     float h_new = o_gate * ref_scalar_f32_tanh(c_new);
                     C_next[h] = c_new;
                     H_next[h] = h_new;
-                    Y[step][dir][b][h] = h_new;
+                    output_y[step][dir][b][h] = h_new;
                 }
                 for (int h = 0; h < 3; ++h) {
                     C_prev[b][h] = C_next[h];
@@ -101,18 +101,18 @@ static inline void model_op0(const float X[restrict 1][1][2], const float W[rest
             }
             for (int step = seq_limit; step < 1; ++step) {
                 for (int h = 0; h < 3; ++h) {
-                    Y[step][dir][b][h] = 0.0f;
+                    output_y[step][dir][b][h] = 0.0f;
                 }
             }
         }
         for (int b = 0; b < 1; ++b) {
             for (int h = 0; h < 3; ++h) {
-                Y_h[dir][b][h] = H_prev[b][h];
+                output_y_h[dir][b][h] = H_prev[b][h];
             }
         }
         for (int b = 0; b < 1; ++b) {
             for (int h = 0; h < 3; ++h) {
-                Y_c[dir][b][h] = C_prev[b][h];
+                output_y_c[dir][b][h] = C_prev[b][h];
             }
         }
     }

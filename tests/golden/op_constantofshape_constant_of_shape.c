@@ -38,12 +38,12 @@ float_data: 1.25
 name: "fill"
 
  */
-static inline void model_op0(const int64_t shape[restrict 3], float out[restrict 2][3][4]) {
-    (void)shape;
+static inline void model_op0(const int64_t input0[restrict 3], float output[restrict 2][3][4]) {
+    (void)input0;
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
-                out[i0][i1][i2] = 1.25f;
+                output[i0][i1][i2] = 1.25f;
             }
         }
     }

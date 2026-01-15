@@ -41,12 +41,12 @@ static inline float ref_scalar_f32_add(float a, float b) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float in0[restrict 2][3], const float in1[restrict 2][3], const float in2[restrict 2][3], float out[restrict 2][3]) {
+static inline void model_op0(const float input0[restrict 2][3], const float input1[restrict 2][3], const float input2[restrict 2][3], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            out[i0][i1] = in0[i0][i1];
-            out[i0][i1] = ref_scalar_f32_add(out[i0][i1], in1[i0][i1]);
-            out[i0][i1] = ref_scalar_f32_add(out[i0][i1], in2[i0][i1]);
+            output[i0][i1] = input0[i0][i1];
+            output[i0][i1] = ref_scalar_f32_add(output[i0][i1], input1[i0][i1]);
+            output[i0][i1] = ref_scalar_f32_add(output[i0][i1], input2[i0][i1]);
         }
     }
 }

@@ -31,7 +31,7 @@
  *   epsilon: 9.999999747378752e-06
  *   num_groups: 2
  */
-static inline void model_op0(const float in0[restrict 1][4][2][2], const float in1[restrict 4], const float in2[restrict 4], float out[restrict 1][4][2][2]) {
+static inline void model_op0(const float input0[restrict 1][4][2][2], const float scale[restrict 4], const float bias[restrict 4], float output[restrict 1][4][2][2]) {
     for (size_t i0 = 0; i0 < 1; ++i0) {
         for (size_t g = 0; g < 2; ++g) {
             float sum = 0.0f;
@@ -39,7 +39,7 @@ static inline void model_op0(const float in0[restrict 1][4][2][2], const float i
                 size_t c = g * 2 + c_in_group;
                 for (size_t i2 = 0; i2 < 2; ++i2) {
                     for (size_t i3 = 0; i3 < 2; ++i3) {
-                        sum += in0[i0][c][i2][i3];
+                        sum += input0[i0][c][i2][i3];
                     }
                 }
             }
@@ -49,7 +49,7 @@ static inline void model_op0(const float in0[restrict 1][4][2][2], const float i
                 size_t c = g * 2 + c_in_group;
                 for (size_t i2 = 0; i2 < 2; ++i2) {
                     for (size_t i3 = 0; i3 < 2; ++i3) {
-                        float diff = in0[i0][c][i2][i3] - mean;
+                        float diff = input0[i0][c][i2][i3] - mean;
                         var += diff * diff;
                     }
                 }
@@ -59,8 +59,8 @@ static inline void model_op0(const float in0[restrict 1][4][2][2], const float i
                 size_t c = g * 2 + c_in_group;
                 for (size_t i2 = 0; i2 < 2; ++i2) {
                     for (size_t i3 = 0; i3 < 2; ++i3) {
-                        out[i0][c][i2][i3] =
-                        (in0[i0][c][i2][i3] - mean) / denom * in1[c] + in2[c];
+                        output[i0][c][i2][i3] =
+                        (input0[i0][c][i2][i3] - mean) / denom * scale[c] + bias[c];
                     }
                 }
             }

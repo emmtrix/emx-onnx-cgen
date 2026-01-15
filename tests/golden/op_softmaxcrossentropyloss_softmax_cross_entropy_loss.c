@@ -31,10 +31,10 @@
  * Attrs:
  *   reduction: mean
  */
-static inline void model_op0(const float scores[restrict 2][3], const int64_t labels[restrict 2], float loss[restrict 1], float log_prob[restrict 2][3]) {
-    const float *input_flat = (const float *)scores;
-    const int64_t *target_flat = (const int64_t *)labels;
-    float *output_flat = (float *)loss;
+static inline void model_op0(const float input0[restrict 2][3], const int64_t target[restrict 2], float output[restrict 1], float log_prob[restrict 2][3]) {
+    const float *input_flat = (const float *)input0;
+    const int64_t *target_flat = (const int64_t *)target;
+    float *output_flat = (float *)output;
     float *log_prob_flat = (float *)log_prob;
     const size_t n = 2;
     const size_t c = 3;

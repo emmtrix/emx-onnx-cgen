@@ -37,7 +37,7 @@ static const int64_t sizes[4] = {
  *   mode: nearest
  *   nearest_mode: floor
  */
-static inline void model_op0(const float in0[restrict 1][1][2][2], const int64_t sizes[restrict 4], float out[restrict 1][1][4][4]) {
+static inline void model_op0(const float input0[restrict 1][1][2][2], const int64_t sizes_input[restrict 4], float output[restrict 1][1][4][4]) {
     const int64_t input_shape[4] = { 1, 1, 2, 2 };
     const int64_t output_shape[4] = { 1, 1, 4, 4 };
     double scales[4];
@@ -46,10 +46,10 @@ static inline void model_op0(const float in0[restrict 1][1][2][2], const int64_t
     for (size_t r = 0; r < 4; ++r) {
         scales[r] = 1.0;
     }
-    scales[0] = (double)sizes[0] / (double)input_shape[0];
-    scales[1] = (double)sizes[1] / (double)input_shape[1];
-    scales[2] = (double)sizes[2] / (double)input_shape[2];
-    scales[3] = (double)sizes[3] / (double)input_shape[3];
+    scales[0] = (double)sizes_input[0] / (double)input_shape[0];
+    scales[1] = (double)sizes_input[1] / (double)input_shape[1];
+    scales[2] = (double)sizes_input[2] / (double)input_shape[2];
+    scales[3] = (double)sizes_input[3] / (double)input_shape[3];
     for (size_t i0 = 0; i0 < 1; ++i0) {
         for (size_t i1 = 0; i1 < 1; ++i1) {
             for (size_t i2 = 0; i2 < 4; ++i2) {
@@ -64,7 +64,7 @@ static inline void model_op0(const float in0[restrict 1][1][2][2], const int64_t
                     double x_orig3;
                     x_orig3 = (double)i3 / scales[3];
                     if (use_extrapolation) {
-                        out[i0][i1][i2][i3] = (float)0.0;
+                        output[i0][i1][i2][i3] = (float)0.0;
                     } else {
                         const double x_val0 = x_orig0;
                         const double x_floor0 = floor(x_val0);
@@ -106,7 +106,7 @@ static inline void model_op0(const float in0[restrict 1][1][2][2], const int64_t
                         } else if (idx3 >= input_shape[3]) {
                             idx3 = (int)input_shape[3] - 1;
                         }
-                        out[i0][i1][i2][i3] = in0[idx0][idx1][idx2][idx3];
+                        output[i0][i1][i2][i3] = input0[idx0][idx1][idx2][idx3];
                     }
                 }
             }

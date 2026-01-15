@@ -33,7 +33,7 @@
  *   pads: [0, 0, 0, 0]
  *   strides: [2, 2]
  */
-static inline void model_op0(const float in0[restrict 1][1][4][4], float out[restrict 1][1][2][2]) {
+static inline void model_op0(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
     for (size_t n = 0; n < 1; ++n) {
         for (size_t c = 0; c < 1; ++c) {
             for (size_t oh = 0; oh < 2; ++oh) {
@@ -49,13 +49,13 @@ static inline void model_op0(const float in0[restrict 1][1][4][4], float out[res
                             if (iw < 0 || iw >= 4) {
                                 continue;
                             }
-                            float val = in0[n][c][ih][iw];
+                            float val = input0[n][c][ih][iw];
                             if (val > max_value) {
                                 max_value = val;
                             }
                         }
                     }
-                    out[n][c][oh][ow] = max_value;
+                    output[n][c][oh][ow] = max_value;
                 }
             }
         }

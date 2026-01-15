@@ -29,11 +29,11 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float in0[restrict 2][3][4], int64_t out[restrict 3]) {
-    (void)in0;
-    out[0] = 2LL;
-    out[1] = 3LL;
-    out[2] = 4LL;
+static inline void model_op0(const float input0[restrict 2][3][4], int64_t output[restrict 3]) {
+    (void)input0;
+    output[0] = 2LL;
+    output[1] = 3LL;
+    output[2] = 4LL;
 }
 
 void model(const float in0[restrict 2][3][4], int64_t out[restrict 3]) {

@@ -33,8 +33,8 @@ static const int64_t shape[2] = {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void model_op0(const float input[restrict 1][3], float output[restrict 2][3]) {
-    const float *input_data = (const float *)input;
+static inline void model_op0(const float input0[restrict 1][3], float output[restrict 2][3]) {
+    const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     size_t output_index = 0;
     for (size_t i0 = 0; i0 < 2; ++i0) {

@@ -30,9 +30,9 @@
  *   blocksize: 2
  *   mode: DCR
  */
-static inline void model_op0(const float in0[restrict 1][4][2][2], float out[restrict 1][1][4][4]) {
-    const float *input_data = (const float *)in0;
-    float *output_data = (float *)out;
+static inline void model_op0(const float input0[restrict 1][4][2][2], float output[restrict 1][1][4][4]) {
+    const float *input_data = (const float *)input0;
+    float *output_data = (float *)output;
     size_t output_index = 0;
     for (size_t n = 0; n < 1; ++n) {
         for (size_t c_out = 0; c_out < 1; ++c_out) {

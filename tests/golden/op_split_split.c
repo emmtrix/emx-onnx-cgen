@@ -35,8 +35,8 @@ static const int64_t split[3] = {
  * Attrs:
  *   axis: 1
  */
-static inline void model_op0(const float input[restrict 2][6], float output_0[restrict 2][2], float output_1[restrict 2][2], float output_2[restrict 2][2]) {
-    const float *input_data = (const float *)input;
+static inline void model_op0(const float input0[restrict 2][6], float output_0[restrict 2][2], float output_1[restrict 2][2], float output_2[restrict 2][2]) {
+    const float *input_data = (const float *)input0;
     float *output_ptrs[] = { (float *)output_0, (float *)output_1, (float *)output_2 };
     const size_t axis_sizes[] = { 2, 2, 2 };
     for (size_t outer_idx = 0; outer_idx < 2; ++outer_idx) {

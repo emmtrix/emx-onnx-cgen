@@ -29,11 +29,11 @@
  * Attrs:
  *   perm: [2, 0, 1]
  */
-static inline void model_op0(const float in0[restrict 2][3][4], float out[restrict 4][2][3]) {
+static inline void model_op0(const float input0[restrict 2][3][4], float output[restrict 4][2][3]) {
     for (size_t i0 = 0; i0 < 4; ++i0) {
         for (size_t i1 = 0; i1 < 2; ++i1) {
             for (size_t i2 = 0; i2 < 3; ++i2) {
-                out[i0][i1][i2] = in0[i1][i2][i0];
+                output[i0][i1][i2] = input0[i1][i2][i0];
             }
         }
     }

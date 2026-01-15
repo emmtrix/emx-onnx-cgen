@@ -34,8 +34,8 @@ static const int64_t shape[2] = {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float in0[restrict 2][3][4], float out[restrict 2][12]) {
-    memcpy(out, in0, sizeof(float) * 24);
+static inline void model_op0(const float input0[restrict 2][3][4], float output[restrict 2][12]) {
+    memcpy(output, input0, sizeof(float) * 24);
 }
 
 void model(const float in0[restrict 2][3][4], float out[restrict 2][12]) {

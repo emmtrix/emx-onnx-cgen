@@ -29,7 +29,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void model_op0(const float in0[restrict 1][2][3][4], const float in1[restrict 1][2][5][4], const float in2[restrict 1][2][5][4], float out[restrict 1][2][3][4]) {
+static inline void model_op0(const float input_q[restrict 1][2][3][4], const float input_k[restrict 1][2][5][4], const float input_v[restrict 1][2][5][4], float output[restrict 1][2][3][4]) {
     const float scale = 0.5f;
     const float softcap = 0.0f;
     for (int b = 0; b < 1; ++b) {
@@ -44,8 +44,8 @@ static inline void model_op0(const float in0[restrict 1][2][3][4], const float i
                     for (int d = 0; d < 4; ++d) {
                         float q_val;
                         float k_val;
-                        q_val = in0[b][h][qi][d];
-                        k_val = in1[b][kv_head][k_index][d];
+                        q_val = input_q[b][h][qi][d];
+                        k_val = input_k[b][kv_head][k_index][d];
                         score += q_val * k_val;
                     }
                     score *= scale;
@@ -78,9 +78,9 @@ static inline void model_op0(const float in0[restrict 1][2][3][4], const float i
                     float acc = 0.0f;
                     for (int ki = 0; ki < 5; ++ki) {
                         float weight = weights[ki] * inv_sum;
-                        acc += weight * in2[b][kv_head][ki][vd];
+                        acc += weight * input_v[b][kv_head][ki][vd];
                     }
-                    out[b][h][qi][vd] = acc;
+                    output[b][h][qi][vd] = acc;
                 }
             }
         }

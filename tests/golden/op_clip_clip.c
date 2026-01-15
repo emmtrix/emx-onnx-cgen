@@ -36,15 +36,15 @@ static const float max[1] = {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void model_op0(const float input[restrict 2][3], const float min[restrict 1], const float max[restrict 1], float output[restrict 2][3]) {
+static inline void model_op0(const float input0[restrict 2][3], const float input_min[restrict 1], const float input_max[restrict 1], float output[restrict 2][3]) {
     for (size_t i0 = 0; i0 < 2; ++i0) {
         for (size_t i1 = 0; i1 < 3; ++i1) {
-            float value = input[i0][i1];
-            if (value < min[0]) {
-                value = min[0];
+            float value = input0[i0][i1];
+            if (value < input_min[0]) {
+                value = input_min[0];
             }
-            if (value > max[0]) {
-                value = max[0];
+            if (value > input_max[0]) {
+                value = input_max[0];
             }
             output[i0][i1] = value;
         }
