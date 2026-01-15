@@ -925,6 +925,11 @@ def _make_lstm_model(
     ]
     input_names = ["X", "W", "R"]
     if include_optional_inputs:
+        state_shape = (
+            [1, batch_size, hidden_size]
+            if layout == 0
+            else [batch_size, 1, hidden_size]
+        )
         inputs.extend(
             [
                 helper.make_tensor_value_info(
@@ -934,10 +939,10 @@ def _make_lstm_model(
                     "sequence_lens", TensorProto.INT32, [batch_size]
                 ),
                 helper.make_tensor_value_info(
-                    "initial_h", dtype, [1, batch_size, hidden_size]
+                    "initial_h", dtype, state_shape
                 ),
                 helper.make_tensor_value_info(
-                    "initial_c", dtype, [1, batch_size, hidden_size]
+                    "initial_c", dtype, state_shape
                 ),
                 helper.make_tensor_value_info(
                     "P", dtype, [1, 3 * hidden_size]
@@ -959,18 +964,19 @@ def _make_lstm_model(
             helper.make_tensor_value_info("Y", dtype, y_shape)
         )
         output_names.append("Y")
+    state_shape = (
+        [1, batch_size, hidden_size]
+        if layout == 0
+        else [batch_size, 1, hidden_size]
+    )
     if include_y_h:
         outputs.append(
-            helper.make_tensor_value_info(
-                "Y_h", dtype, [1, batch_size, hidden_size]
-            )
+            helper.make_tensor_value_info("Y_h", dtype, state_shape)
         )
         output_names.append("Y_h")
     if include_y_c:
         outputs.append(
-            helper.make_tensor_value_info(
-                "Y_c", dtype, [1, batch_size, hidden_size]
-            )
+            helper.make_tensor_value_info("Y_c", dtype, state_shape)
         )
         output_names.append("Y_c")
     node = helper.make_node(
@@ -1010,6 +1016,8 @@ def _lstm_reference(
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     if layout == 1:
         x = np.swapaxes(x, 0, 1)
+        initial_h = np.swapaxes(initial_h, 0, 1)
+        initial_c = np.swapaxes(initial_c, 0, 1)
     seq_length, batch_size, _ = x.shape
     hidden_size = r.shape[-1]
     y = np.zeros((seq_length, 1, batch_size, hidden_size), dtype=x.dtype)
@@ -1039,6 +1047,8 @@ def _lstm_reference(
     y_c = c_prev.reshape(1, batch_size, hidden_size)
     if layout == 1:
         y = np.transpose(y, (2, 0, 1, 3))
+        y_h = np.swapaxes(y_h, 0, 1)
+        y_c = np.swapaxes(y_c, 0, 1)
     return y, y_h, y_c
 
 
@@ -3332,6 +3342,71 @@ def test_lstm_run_matches_numpy() -> None:
     np.testing.assert_allclose(outputs["Y"], expected_y, rtol=1e-4, atol=1e-5)
     np.testing.assert_allclose(outputs["Y_h"], expected_y_h, rtol=1e-4, atol=1e-5)
     np.testing.assert_allclose(outputs["Y_c"], expected_y_c, rtol=1e-4, atol=1e-5)
+
+
+def test_lstm_layout1_run_matches_numpy() -> None:
+    seq_length = 4
+    batch_size = 2
+    input_size = 3
+    hidden_size = 5
+    model = _make_lstm_model(
+        seq_length=seq_length,
+        batch_size=batch_size,
+        input_size=input_size,
+        hidden_size=hidden_size,
+        dtype=TensorProto.FLOAT,
+        include_optional_inputs=True,
+        include_y=True,
+        include_y_h=True,
+        include_y_c=True,
+        layout=1,
+    )
+    compiler = Compiler()
+    x = np.linspace(
+        0.05, 0.9, num=seq_length * batch_size * input_size, dtype=np.float32
+    ).reshape(batch_size, seq_length, input_size)
+    w = np.linspace(
+        0.1, 0.7, num=4 * hidden_size * input_size, dtype=np.float32
+    ).reshape(1, 4 * hidden_size, input_size)
+    r = np.linspace(
+        0.2, 0.8, num=4 * hidden_size * hidden_size, dtype=np.float32
+    ).reshape(1, 4 * hidden_size, hidden_size)
+    b = np.full((1, 8 * hidden_size), 0.03, dtype=np.float32)
+    sequence_lens = np.array([4, 3], dtype=np.int32)
+    initial_h = np.zeros((batch_size, 1, hidden_size), dtype=np.float32)
+    initial_c = np.zeros((batch_size, 1, hidden_size), dtype=np.float32)
+    p = np.full((1, 3 * hidden_size), 0.01, dtype=np.float32)
+    outputs = compiler.run(
+        model,
+        {
+            "X": x,
+            "W": w,
+            "R": r,
+            "B": b,
+            "sequence_lens": sequence_lens,
+            "initial_h": initial_h,
+            "initial_c": initial_c,
+            "P": p,
+        },
+    )
+    expected_y, expected_y_h, expected_y_c = _lstm_reference(
+        x=x,
+        w=w,
+        r=r,
+        b=b,
+        sequence_lens=sequence_lens,
+        initial_h=initial_h,
+        initial_c=initial_c,
+        p=p,
+        layout=1,
+    )
+    np.testing.assert_allclose(outputs["Y"], expected_y, rtol=1e-4, atol=1e-5)
+    np.testing.assert_allclose(
+        outputs["Y_h"], expected_y_h, rtol=1e-4, atol=1e-5
+    )
+    np.testing.assert_allclose(
+        outputs["Y_c"], expected_y_c, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_unsqueeze_run_matches_numpy() -> None:
