@@ -393,20 +393,26 @@ def _eval_grid_sample(evaluator: Evaluator, node: Node) -> None:
                     coords[i] = _grid_sample_denormalize(
                         float(coords[i]), dim, align_corners=op.align_corners
                     )
-                    if op.padding_mode != "zeros" and (
-                        coords[i] < border_min[i]
-                        or coords[i] > border_max[i]
-                    ):
-                        if op.padding_mode == "border":
-                            coords[i] = min(
-                                max(coords[i], 0.0), dim - 1.0
-                            )
-                        else:
-                            coords[i] = _grid_sample_reflect(
-                                coords[i], border_min[i], border_max[i]
-                            )
                 if op.mode == "nearest":
                     rounded = np.rint(coords).astype(int)
+                    if op.padding_mode != "zeros":
+                        for i, dim in enumerate(dims):
+                            if (
+                                rounded[i] < border_min[i]
+                                or rounded[i] > border_max[i]
+                            ):
+                                if op.padding_mode == "border":
+                                    rounded[i] = min(
+                                        max(rounded[i], 0), dim - 1
+                                    )
+                                else:
+                                    rounded[i] = int(
+                                        _grid_sample_reflect(
+                                            rounded[i],
+                                            border_min[i],
+                                            border_max[i],
+                                        )
+                                    )
                     value = _grid_sample_pixel_at(
                         input_slice,
                         rounded.tolist(),
@@ -414,22 +420,39 @@ def _eval_grid_sample(evaluator: Evaluator, node: Node) -> None:
                         border_max,
                         op.padding_mode,
                     )
-                elif op.mode == "linear":
-                    value = _grid_sample_linear_nd(
-                        input_slice,
-                        coords,
-                        border_min,
-                        border_max,
-                        op.padding_mode,
-                    )
                 else:
-                    value = _grid_sample_cubic_nd(
-                        input_slice,
-                        coords,
-                        border_min,
-                        border_max,
-                        op.padding_mode,
-                    )
+                    if op.padding_mode != "zeros":
+                        for i, dim in enumerate(dims):
+                            if (
+                                coords[i] < border_min[i]
+                                or coords[i] > border_max[i]
+                            ):
+                                if op.padding_mode == "border":
+                                    coords[i] = min(
+                                        max(coords[i], 0.0), dim - 1.0
+                                    )
+                                else:
+                                    coords[i] = _grid_sample_reflect(
+                                        coords[i],
+                                        border_min[i],
+                                        border_max[i],
+                                    )
+                    if op.mode == "linear":
+                        value = _grid_sample_linear_nd(
+                            input_slice,
+                            coords,
+                            border_min,
+                            border_max,
+                            op.padding_mode,
+                        )
+                    else:
+                        value = _grid_sample_cubic_nd(
+                            input_slice,
+                            coords,
+                            border_min,
+                            border_max,
+                            op.padding_mode,
+                        )
                 output[(n, c, *out_idx)] = value
     evaluator.values[op.output] = output
 
