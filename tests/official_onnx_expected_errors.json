@@ -5185,7 +5185,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis1_expanded/model.onnx",
-    "ReduceMean output shape must be (3, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_1/model.onnx",
@@ -5193,7 +5193,7 @@
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx",
-    "ReduceMean output shape must be (3, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_2d_axis_negative_2/model.onnx",
@@ -5217,7 +5217,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 1, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis2_epsilon/model.onnx",
@@ -5225,7 +5225,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 3, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx",
@@ -5233,7 +5233,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 3, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx",
@@ -5241,7 +5241,7 @@
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 1, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx",
@@ -5265,7 +5265,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis1_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 1, 1, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis2/model.onnx",
@@ -5273,7 +5273,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis2_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 3, 1, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis3/model.onnx",
@@ -5281,7 +5281,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis3_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 3, 4, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_1/model.onnx",
@@ -5289,7 +5289,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 3, 4, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_2/model.onnx",
@@ -5297,7 +5297,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 3, 1, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_3/model.onnx",
@@ -5305,7 +5305,7 @@
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 1, 1, 1), got ()"
+    ""
   ],
   [
     "node/test_rms_normalization_4d_axis_negative_4/model.onnx",
@@ -5321,7 +5321,7 @@
   ],
   [
     "node/test_rms_normalization_default_axis_expanded/model.onnx",
-    "ReduceMean output shape must be (2, 3, 4, 1), got ()"
+    ""
   ],
   [
     "node/test_rnn_seq_length/model.onnx",
