@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1137 / 1802 official ONNX files.
+Support 1146 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -544,15 +544,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_cos_example/model.onnx | ✅ |  |
 | node/test_cosh/model.onnx | ✅ |  |
 | node/test_cosh_example/model.onnx | ✅ |  |
-| node/test_cumsum_1d/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_1d_exclusive/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_1d_int32_exclusive/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_1d_reverse/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_1d_reverse_exclusive/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_2d_axis_0/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_2d_axis_1/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_2d_int32/model.onnx | ❌ | Unsupported op CumSum |
-| node/test_cumsum_2d_negative_axis/model.onnx | ❌ | Unsupported op CumSum |
+| node/test_cumsum_1d/model.onnx | ✅ |  |
+| node/test_cumsum_1d_exclusive/model.onnx | ✅ |  |
+| node/test_cumsum_1d_int32_exclusive/model.onnx | ✅ |  |
+| node/test_cumsum_1d_reverse/model.onnx | ✅ |  |
+| node/test_cumsum_1d_reverse_exclusive/model.onnx | ✅ |  |
+| node/test_cumsum_2d_axis_0/model.onnx | ✅ |  |
+| node/test_cumsum_2d_axis_1/model.onnx | ✅ |  |
+| node/test_cumsum_2d_int32/model.onnx | ✅ |  |
+| node/test_cumsum_2d_negative_axis/model.onnx | ✅ |  |
 | node/test_deform_conv_with_mask_bias/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_deform_conv_with_multiple_offset_groups/model.onnx | ❌ | Unsupported op DeformConv |
 | node/test_depthtospace_crd_mode_example/model.onnx | ✅ |  |

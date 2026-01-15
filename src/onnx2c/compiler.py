@@ -29,6 +29,7 @@ from .codegen.c_emitter import (
     ConvOp,
     ConcatOp,
     ConstantOfShapeOp,
+    CumSumOp,
     GemmOp,
     GatherOp,
     GatherElementsOp,
@@ -79,6 +80,7 @@ from .lowering.common import (
 from .lowering.conv import ConvSpec, resolve_conv_spec
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .lowering.dropout import lower_dropout
+from .lowering import cumsum as _cumsum  # noqa: F401
 from .lowering.flatten import lower_flatten
 from .lowering.gather import lower_gather
 from .lowering.gather_elements import lower_gather_elements
@@ -361,6 +363,7 @@ class Compiler:
             | ShapeOp
             | PadOp
             | ExpandOp
+            | CumSumOp
             | RangeOp
             | SplitOp
         ],
@@ -404,6 +407,7 @@ class Compiler:
             | ShapeOp
             | PadOp
             | ExpandOp
+            | CumSumOp
             | RangeOp
             | SplitOp
             | WhereOp

@@ -2145,39 +2145,39 @@
   ],
   [
     "node/test_cumsum_1d/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_1d_exclusive/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_1d_int32_exclusive/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_1d_reverse/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_1d_reverse_exclusive/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_2d_axis_0/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_2d_axis_1/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_2d_int32/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_cumsum_2d_negative_axis/model.onnx",
-    "Unsupported op CumSum"
+    ""
   ],
   [
     "node/test_deform_conv_with_mask_bias/model.onnx",

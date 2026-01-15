@@ -19,7 +19,6 @@
 | '*' object has no attribute '*' | 13 | ███████████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
 | Output shape must be fully defined | 9 | ████████ |
-| Unsupported op CumSum | 9 | ████████ |
 | Unsupported op QuantizeLinear | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Unsupported op NonMaxSuppression | 9 | ████████ |
