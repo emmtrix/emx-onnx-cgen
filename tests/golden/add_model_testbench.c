@@ -79,91 +79,101 @@ static int64_t rng_next_i64(void) {
 
 
 int main(void) {
+
     float a[2][3][4];
-    float *a_ptr = (float *)a;
-    for (idx_t i = 0; i < 24; ++i) {
-        a_ptr[i] = rng_next_float();
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                a[i0][i1][i2] = rng_next_float();
+            }
+        }
     }
     float b[2][3][4];
-    float *b_ptr = (float *)b;
-    for (idx_t i = 0; i < 24; ++i) {
-        b_ptr[i] = rng_next_float();
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                b[i0][i1][i2] = rng_next_float();
+            }
+        }
     }
+
     float out[2][3][4];
-    float *out_ptr = (float *)out;
+
     model(a, b, out);
+
     printf("{\"inputs\":{");
-            printf("\"a\":{\"shape\":[2,3,4],\"data\":");
-                printf("[");
-                for (idx_t i0 = 0; i0 < 2; ++i0) {
-                    if (i0) {
-                        printf(",");
-                    }
-                    printf("[");
-                    for (idx_t i1 = 0; i1 < 3; ++i1) {
-                        if (i1) {
-                            printf(",");
-                        }
-                        printf("[");
-                        for (idx_t i2 = 0; i2 < 4; ++i2) {
-                            if (i2) {
-                                printf(",");
-                            }
-                            printf("%.8g", (double)a_ptr[((i0 * 3 + i1) * 4 + i2)]);
-                        }
-                        printf("]");
-                    }
-                    printf("]");
-                }
-                printf("]}");
+    printf("\"a\":{\"shape\":[2,3,4],\"data\":");
+    printf("[");
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        if (i0) {
             printf(",");
-            printf("\"b\":{\"shape\":[2,3,4],\"data\":");
-                printf("[");
-                for (idx_t i0 = 0; i0 < 2; ++i0) {
-                    if (i0) {
-                        printf(",");
-                    }
-                    printf("[");
-                    for (idx_t i1 = 0; i1 < 3; ++i1) {
-                        if (i1) {
-                            printf(",");
-                        }
-                        printf("[");
-                        for (idx_t i2 = 0; i2 < 4; ++i2) {
-                            if (i2) {
-                                printf(",");
-                            }
-                            printf("%.8g", (double)b_ptr[((i0 * 3 + i1) * 4 + i2)]);
-                        }
-                        printf("]");
-                    }
-                    printf("]");
+        }
+        printf("[");
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            if (i1) {
+                printf(",");
+            }
+            printf("[");
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                if (i2) {
+                    printf(",");
                 }
-                printf("]}");
-            printf("},\"outputs\":{");
-            printf("\"out\":{\"shape\":[2,3,4],\"data\":");
-                printf("[");
-                for (idx_t i0 = 0; i0 < 2; ++i0) {
-                    if (i0) {
-                        printf(",");
-                    }
-                    printf("[");
-                    for (idx_t i1 = 0; i1 < 3; ++i1) {
-                        if (i1) {
-                            printf(",");
-                        }
-                        printf("[");
-                        for (idx_t i2 = 0; i2 < 4; ++i2) {
-                            if (i2) {
-                                printf(",");
-                            }
-                            printf("%.8g", (double)out_ptr[((i0 * 3 + i1) * 4 + i2)]);
-                        }
-                        printf("]");
-                    }
-                    printf("]");
+                printf("%.8g", (double)a[i0][i1][i2]);
+            }
+            printf("]");
+        }
+        printf("]");
+    }
+    printf("]}");
+    printf(",");
+    printf("\"b\":{\"shape\":[2,3,4],\"data\":");
+    printf("[");
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        if (i0) {
+            printf(",");
+        }
+        printf("[");
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            if (i1) {
+                printf(",");
+            }
+            printf("[");
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                if (i2) {
+                    printf(",");
                 }
-                printf("]}");
-            printf("}}\n");
+                printf("%.8g", (double)b[i0][i1][i2]);
+            }
+            printf("]");
+        }
+        printf("]");
+    }
+    printf("]}");
+
+    printf("},\"outputs\":{");
+    printf("\"out\":{\"shape\":[2,3,4],\"data\":");
+    printf("[");
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        if (i0) {
+            printf(",");
+        }
+        printf("[");
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            if (i1) {
+                printf(",");
+            }
+            printf("[");
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                if (i2) {
+                    printf(",");
+                }
+                printf("%.8g", (double)out[i0][i1][i2]);
+            }
+            printf("]");
+        }
+        printf("]");
+    }
+    printf("]}");
+    printf("}}\n");
     return 0;
 }

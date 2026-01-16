@@ -26,6 +26,38 @@ from shared.scalar_types import ScalarFunctionError, ScalarType
 
 
 def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
+    def strip_string_literals(line: str) -> str:
+        sanitized: list[str] = []
+        in_string = False
+        in_char = False
+        escape = False
+        for char in line:
+            if escape:
+                escape = False
+                if not (in_string or in_char):
+                    sanitized.append(char)
+                continue
+            if in_string:
+                if char == "\\":
+                    escape = True
+                elif char == '"':
+                    in_string = False
+                continue
+            if in_char:
+                if char == "\\":
+                    escape = True
+                elif char == "'":
+                    in_char = False
+                continue
+            if char == '"':
+                in_string = True
+                continue
+            if char == "'":
+                in_char = True
+                continue
+            sanitized.append(char)
+        return "".join(sanitized)
+
     formatted_lines: list[str] = []
     indent_level = 0
     for line in source.splitlines():
@@ -36,8 +68,9 @@ def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
         if stripped.startswith("}"):
             indent_level = max(indent_level - 1, 0)
         formatted_lines.append(f"{indent * indent_level}{stripped}")
-        open_count = stripped.count("{")
-        close_count = stripped.count("}")
+        sanitized = strip_string_literals(stripped)
+        open_count = sanitized.count("{")
+        close_count = sanitized.count("}")
         if stripped.startswith("}"):
             close_count = max(close_count - 1, 0)
         indent_level += open_count - close_count
@@ -9569,6 +9602,9 @@ class CEmitter:
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": count,
                     "array_suffix": self._array_suffix(codegen_shape),
+                    "array_index_expr": "".join(
+                        f"[{var}]" for var in loop_vars
+                    ),
                     "loop_vars": loop_vars,
                     "rank": len(codegen_shape),
                     "index_expr": self._index_expr(codegen_shape, loop_vars),
@@ -9594,6 +9630,9 @@ class CEmitter:
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": self._element_count(codegen_shape),
                     "array_suffix": self._array_suffix(codegen_shape),
+                    "array_index_expr": "".join(
+                        f"[{var}]" for var in output_loop_vars
+                    ),
                     "loop_vars": output_loop_vars,
                     "rank": len(codegen_shape),
                     "index_expr": self._index_expr(codegen_shape, output_loop_vars),
