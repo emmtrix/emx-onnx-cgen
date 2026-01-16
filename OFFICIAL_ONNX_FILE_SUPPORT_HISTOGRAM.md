@@ -14,6 +14,7 @@
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
+| Where output shape must be (1, 1), got (1,) | 10 | ████████ |
 | Output shape must be fully defined | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Unsupported op NonMaxSuppression | 9 | ████████ |
