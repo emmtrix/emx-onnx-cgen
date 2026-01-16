@@ -51,49 +51,53 @@ def test_ulp_intdiff_rejects_non_float() -> None:
 @pytest.mark.parametrize("dtype", [np.float16, np.float32, np.float64])
 def test_ulp_intdiff_examples(dtype: np.dtype) -> None:
     dtype = np.dtype(dtype)
-    finfo = np.finfo(dtype)
-    eps = finfo.eps
-    min_sub = np.nextafter(dtype.type(0.0), dtype.type(1.0))
-    expected_pow2 = 2 ** finfo.nmant
-
-    cases = [
-        (
-            dtype.type(1.0),
-            dtype.type(1.0) + eps,
-            1,
-        ),
-        (
-            dtype.type(1.0),
-            dtype.type(1.0) - eps,
-            2,
-        ),
-        (
-            min_sub,
-            dtype.type(0.0),
-            1,
-        ),
-        (
-            -min_sub,
-            min_sub,
-            3,
-        ),
-        (
-            dtype.type(-1.0),
-            dtype.type(-1.0) - eps,
-            1,
-        ),
-        (
-            dtype.type(-1.0),
-            dtype.type(-1.0) + eps,
-            2,
-        ),
-        (dtype.type(-0.0), dtype.type(0.0), 1),
-        (dtype.type(0.0), dtype.type(0.0), 0),
-        (finfo.max, dtype.type(np.inf), 1),
-        (-finfo.max, dtype.type(-np.inf), 1),
-        (dtype.type(1.0), dtype.type(0.5), expected_pow2),
-        (dtype.type(1.0), dtype.type(2.0), expected_pow2),
-    ]
+    if dtype == np.dtype("float16"):
+        cases = [
+            (np.float16(1.0), np.float16(1.0009765625), 1),
+            (np.float16(1.0), np.float16(0.9990234375), 2),
+            (np.float16(5.9604645e-08), np.float16(0.0), 1),
+            (np.float16(-5.9604645e-08), np.float16(5.9604645e-08), 3),
+            (np.float16(-1.0), np.float16(-1.0009765625), 1),
+            (np.float16(-1.0), np.float16(-0.9990234375), 2),
+            (np.float16(-0.0), np.float16(0.0), 1),
+            (np.float16(0.0), np.float16(0.0), 0),
+            (np.float16(65504.0), np.float16(np.inf), 1),
+            (np.float16(-65504.0), np.float16(-np.inf), 1),
+            (np.float16(1.0), np.float16(0.5), 1024),
+            (np.float16(1.0), np.float16(2.0), 1024),
+        ]
+    elif dtype == np.dtype("float32"):
+        cases = [
+            (np.float32(1.0), np.float32(1.0000001192092896), 1),
+            (np.float32(1.0), np.float32(0.9999998807907104), 2),
+            (np.float32(1.4012985e-45), np.float32(0.0), 1),
+            (np.float32(-1.4012985e-45), np.float32(1.4012985e-45), 3),
+            (np.float32(-1.0), np.float32(-1.0000001192092896), 1),
+            (np.float32(-1.0), np.float32(-0.9999998807907104), 2),
+            (np.float32(-0.0), np.float32(0.0), 1),
+            (np.float32(0.0), np.float32(0.0), 0),
+            (np.float32(3.4028235e38), np.float32(np.inf), 1),
+            (np.float32(-3.4028235e38), np.float32(-np.inf), 1),
+            (np.float32(1.0), np.float32(0.5), 8388608),
+            (np.float32(1.0), np.float32(2.0), 8388608),
+        ]
+    elif dtype == np.dtype("float64"):
+        cases = [
+            (np.float64(1.0), np.float64(1.0000000000000002), 1),
+            (np.float64(1.0), np.float64(0.9999999999999998), 2),
+            (np.float64(5e-324), np.float64(0.0), 1),
+            (np.float64(-5e-324), np.float64(5e-324), 3),
+            (np.float64(-1.0), np.float64(-1.0000000000000002), 1),
+            (np.float64(-1.0), np.float64(-0.9999999999999998), 2),
+            (np.float64(-0.0), np.float64(0.0), 1),
+            (np.float64(0.0), np.float64(0.0), 0),
+            (np.float64(1.7976931348623157e308), np.float64(np.inf), 1),
+            (np.float64(-1.7976931348623157e308), np.float64(-np.inf), 1),
+            (np.float64(1.0), np.float64(0.5), 4503599627370496),
+            (np.float64(1.0), np.float64(2.0), 4503599627370496),
+        ]
+    else:
+        raise AssertionError(f"unexpected dtype: {dtype}")
 
     for value1, value2, expected in cases:
         assert ulp_intdiff_float(value1, value2) == expected
