@@ -12,7 +12,6 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████████████ |
-| Reshape input and output element counts must match | 15 | ████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
 | Output shape must be fully defined | 9 | ████████ |

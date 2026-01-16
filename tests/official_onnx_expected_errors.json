@@ -377,7 +377,7 @@
   ],
   [
     "node/test_attention_3d_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes/model.onnx",
@@ -397,7 +397,7 @@
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_3d_diff_heads_sizes_expanded/model.onnx",
@@ -441,7 +441,7 @@
   ],
   [
     "node/test_attention_3d_gqa_attn_mask_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_3d_gqa_causal/model.onnx",
@@ -449,11 +449,11 @@
   ],
   [
     "node/test_attention_3d_gqa_causal_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_3d_gqa_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_3d_gqa_scaled/model.onnx",
@@ -461,7 +461,7 @@
   ],
   [
     "node/test_attention_3d_gqa_scaled_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_3d_gqa_softcap/model.onnx",
@@ -469,7 +469,7 @@
   ],
   [
     "node/test_attention_3d_gqa_softcap_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present/model.onnx",
@@ -477,7 +477,7 @@
   ],
   [
     "node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_3d_scaled/model.onnx",
@@ -561,7 +561,7 @@
   ],
   [
     "node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_4d_attn_mask_3d_expanded/model.onnx",
@@ -577,7 +577,7 @@
   ],
   [
     "node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_4d_attn_mask_4d_expanded/model.onnx",
@@ -609,7 +609,7 @@
   ],
   [
     "node/test_attention_4d_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx",
@@ -637,7 +637,7 @@
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_4d_diff_heads_sizes_expanded/model.onnx",
@@ -705,7 +705,7 @@
   ],
   [
     "node/test_attention_4d_gqa_attn_mask_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_4d_gqa_causal/model.onnx",
@@ -713,11 +713,11 @@
   ],
   [
     "node/test_attention_4d_gqa_causal_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_4d_gqa_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_4d_gqa_scaled/model.onnx",
@@ -725,7 +725,7 @@
   ],
   [
     "node/test_attention_4d_gqa_scaled_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_4d_gqa_softcap/model.onnx",
@@ -733,7 +733,7 @@
   ],
   [
     "node/test_attention_4d_gqa_softcap_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present/model.onnx",
@@ -741,7 +741,7 @@
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx",
@@ -749,7 +749,7 @@
   ],
   [
     "node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_attention_4d_scaled/model.onnx",
@@ -793,7 +793,7 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx",
@@ -809,7 +809,7 @@
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx",
-    ""
+    "Where output shape must be (1, 1), got (1,)"
   ],
   [
     "node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx",
@@ -2841,7 +2841,7 @@
   ],
   [
     "node/test_group_normalization_epsilon_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_group_normalization_example/model.onnx",
@@ -2849,7 +2849,7 @@
   ],
   [
     "node/test_group_normalization_example_expanded/model.onnx",
-    "Reshape input and output element counts must match"
+    ""
   ],
   [
     "node/test_gru_batchwise/model.onnx",

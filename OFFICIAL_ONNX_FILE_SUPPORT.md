@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1208 / 1802 official ONNX files.
+Support 1223 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -118,16 +118,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_3d_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
-| node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_gqa_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_scaled/model.onnx | ✅ |  |
 | node/test_attention_3d_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_3d_softcap/model.onnx | ✅ |  |
@@ -184,18 +184,18 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_fp16_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
-| node/test_attention_4d_gqa_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_gqa_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_gqa_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_gqa_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_gqa_softcap_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ |  |
-| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_scaled/model.onnx | ✅ |  |
 | node/test_attention_4d_scaled_expanded/model.onnx | ✅ |  |
 | node/test_attention_4d_softcap/model.onnx | ✅ |  |
@@ -718,9 +718,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx | ✅ |  |
 | node/test_gridsample_zeros_padding/model.onnx | ✅ |  |
 | node/test_group_normalization_epsilon/model.onnx | ✅ |  |
-| node/test_group_normalization_epsilon_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_group_normalization_epsilon_expanded/model.onnx | ✅ |  |
 | node/test_group_normalization_example/model.onnx | ✅ |  |
-| node/test_group_normalization_example_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_group_normalization_example_expanded/model.onnx | ✅ |  |
 | node/test_gru_batchwise/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_defaults/model.onnx | ❌ | Unsupported op GRU |
 | node/test_gru_seq_length/model.onnx | ❌ | Unsupported op GRU |
