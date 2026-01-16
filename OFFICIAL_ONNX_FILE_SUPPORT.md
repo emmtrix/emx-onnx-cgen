@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1175 / 1802 official ONNX files.
+Support 1127 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -100,88 +100,88 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_atanh_example/model.onnx | ✅ |  |
 | node/test_attention_3d/model.onnx | ✅ |  |
 | node/test_attention_3d_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_causal_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
+| node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ |  |
-| node/test_attention_3d_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
+| node/test_attention_3d_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_gqa/model.onnx | ✅ |  |
 | node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_gqa_causal/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
-| node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
+| node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_gqa_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_gqa_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_gqa_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_scaled/model.onnx | ✅ |  |
-| node/test_attention_3d_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_transpose_verification/model.onnx | ✅ |  |
-| node/test_attention_3d_transpose_verification_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_transpose_verification_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
+| node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ |  |
+| node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | Reshape cannot infer dimension from input shape |
 | node/test_attention_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_3d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_attn_mask_4d/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_attn_mask_bool/model.onnx | ✅ |  |
 | node/test_attention_4d_attn_mask_bool_4d/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_causal_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Pad value input must be a scalar |
 | node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ |  |
 | node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_diff_heads_sizes_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ |  |
-| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_fp16/model.onnx | ✅ |  |
-| node/test_attention_4d_fp16_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_fp16_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_gqa/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
@@ -197,31 +197,31 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ |  |
 | node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_scaled/model.onnx | ✅ |  |
-| node/test_attention_4d_scaled_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_with_past_and_present/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ |  |
 | node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_with_qk_matmul/model.onnx | ✅ |  |
 | node/test_attention_4d_with_qk_matmul_bias/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
+| node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ |  |
-| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ |  |
+| node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Reshape input and output element counts must match |
 | node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |

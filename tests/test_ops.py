@@ -846,6 +846,37 @@ def _make_reshape_model() -> onnx.ModelProto:
     return model
 
 
+def _make_dynamic_reshape_model() -> onnx.ModelProto:
+    input_shape = [2, 3]
+    output_shape = [2, 3]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    shape_info = helper.make_tensor_value_info("shape", TensorProto.INT64, [2])
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    node = helper.make_node(
+        "Reshape",
+        inputs=["in0", "shape"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "reshape_dynamic_graph",
+        [input_info, shape_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_squeeze_model() -> onnx.ModelProto:
     input_shape = [1, 3, 1, 5]
     output_shape = [3, 5]
@@ -1912,7 +1943,11 @@ def _make_random_array(
     raise ValueError(f"Unsupported dtype {dtype}")
 
 
-def _run_ort_compare(model: onnx.ModelProto) -> None:
+def _run_ort_compare(
+    model: onnx.ModelProto,
+    *,
+    inputs_override: dict[str, np.ndarray] | None = None,
+) -> None:
     initializer_names = {init.name for init in model.graph.initializer}
     rng = np.random.default_rng(0)
     inputs: dict[str, np.ndarray] = {}
@@ -1925,6 +1960,8 @@ def _run_ort_compare(model: onnx.ModelProto) -> None:
         inputs[value_info.name] = _make_random_array(
             rng, shape=shape, dtype=dtype
         )
+    if inputs_override:
+        inputs.update(inputs_override)
     session = ort.InferenceSession(
         model.SerializeToString(), providers=["CPUExecutionProvider"]
     )
@@ -2786,6 +2823,15 @@ def test_lower_squeeze_default_axes() -> None:
     graph = import_onnx(model)
     op = lower_squeeze(graph, graph.nodes[0])
     assert op.output_shape == (3, 5)
+
+
+def test_reshape_dynamic_shape_input_matches_onnxruntime() -> None:
+    model = _make_dynamic_reshape_model()
+    inputs = {
+        "in0": np.random.default_rng(0).standard_normal((2, 3)).astype(np.float32),
+        "shape": np.array([3, 2], dtype=np.int64),
+    }
+    _run_ort_compare(model, inputs_override=inputs)
 
 
 def test_lower_gridsample_builds_spec() -> None:

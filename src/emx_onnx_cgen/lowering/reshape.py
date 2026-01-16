@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import numpy as np
+
 from shared.scalar_types import ScalarType
 
 from ..codegen.c_emitter import ReshapeOp
+from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
 from .registry import register_lowering
@@ -63,7 +66,148 @@ def _shape_values_from_shape_node(
     return list(source_shape)
 
 
-def _resolve_target_shape(
+def _resolve_shape_values_from_graph(
+    graph: Graph, name: str, node: Node
+) -> list[int] | None:
+    node_by_output = {
+        output: candidate
+        for candidate in graph.nodes
+        for output in candidate.outputs
+        if output
+    }
+    initializer_by_name = {
+        initializer.name: initializer for initializer in graph.initializers
+    }
+    input_names = {value.name for value in graph.inputs}
+    cache: dict[str, np.ndarray | None] = {}
+
+    def resolve_axes(target: Node) -> list[int] | None:
+        if len(target.inputs) > 1 and target.inputs[1]:
+            axes_value = resolve_value(target.inputs[1])
+            if axes_value is None:
+                return None
+            return [int(axis) for axis in axes_value.reshape(-1)]
+        axes_attr = target.attrs.get("axes")
+        if axes_attr is None:
+            return None
+        return [int(axis) for axis in axes_attr]
+
+    def resolve_value(value_name: str) -> np.ndarray | None:
+        if not value_name:
+            return None
+        if value_name in cache:
+            return cache[value_name]
+        if value_name in initializer_by_name:
+            value = initializer_by_name[value_name].data
+            cache[value_name] = value
+            return value
+        if value_name in input_names:
+            cache[value_name] = None
+            return None
+        producer = node_by_output.get(value_name)
+        if producer is None:
+            cache[value_name] = None
+            return None
+        resolved = resolve_node(producer)
+        cache[value_name] = resolved
+        return resolved
+
+    def resolve_node(target: Node) -> np.ndarray | None:
+        if target.op_type == "Shape":
+            return np.array(
+                _value_shape(graph, target.inputs[0], node), dtype=np.int64
+            )
+        if target.op_type == "Identity":
+            return resolve_value(target.inputs[0])
+        if target.op_type == "Cast":
+            input_value = resolve_value(target.inputs[0])
+            if input_value is None:
+                return None
+            target_dtype = scalar_type_from_onnx(int(target.attrs.get("to", 0)))
+            if target_dtype is None:
+                return None
+            return input_value.astype(target_dtype.np_dtype, copy=False)
+        if target.op_type in {"Add", "Sub", "Mul", "Div"}:
+            left = resolve_value(target.inputs[0])
+            right = resolve_value(target.inputs[1])
+            if left is None or right is None:
+                return None
+            if target.op_type == "Add":
+                return left + right
+            if target.op_type == "Sub":
+                return left - right
+            if target.op_type == "Mul":
+                return left * right
+            return left / right
+        if target.op_type == "Concat":
+            axis = int(target.attrs.get("axis", 0))
+            parts = [resolve_value(name) for name in target.inputs if name]
+            if any(part is None for part in parts):
+                return None
+            return np.concatenate(parts, axis=axis)
+        if target.op_type == "Unsqueeze":
+            axes = resolve_axes(target)
+            value = resolve_value(target.inputs[0])
+            if axes is None or value is None:
+                return None
+            for axis in sorted(axes):
+                value = np.expand_dims(value, axis=axis)
+            return value
+        if target.op_type == "Squeeze":
+            axes = resolve_axes(target)
+            value = resolve_value(target.inputs[0])
+            if value is None:
+                return None
+            if axes is None:
+                return np.squeeze(value)
+            return np.squeeze(value, axis=tuple(axes))
+        if target.op_type == "Gather":
+            data = resolve_value(target.inputs[0])
+            indices = resolve_value(target.inputs[1])
+            if data is None or indices is None:
+                return None
+            axis = int(target.attrs.get("axis", 0))
+            return np.take(data, indices.astype(np.int64), axis=axis)
+        if target.op_type == "Slice":
+            data = resolve_value(target.inputs[0])
+            starts = resolve_value(target.inputs[1])
+            ends = resolve_value(target.inputs[2])
+            if data is None or starts is None or ends is None:
+                return None
+            axes_value = (
+                resolve_value(target.inputs[3]) if len(target.inputs) > 3 else None
+            )
+            steps_value = (
+                resolve_value(target.inputs[4]) if len(target.inputs) > 4 else None
+            )
+            axes = (
+                [int(axis) for axis in axes_value.reshape(-1)]
+                if axes_value is not None
+                else list(range(starts.size))
+            )
+            steps = (
+                [int(step) for step in steps_value.reshape(-1)]
+                if steps_value is not None
+                else [1] * len(axes)
+            )
+            slices = [slice(None)] * data.ndim
+            for axis, start, end, step in zip(
+                axes,
+                starts.reshape(-1),
+                ends.reshape(-1),
+                steps,
+            ):
+                slices[axis] = slice(int(start), int(end), int(step))
+            return data[tuple(slices)]
+        return None
+
+    resolved = resolve_value(name)
+    if resolved is None:
+        return None
+    return [int(value) for value in resolved.reshape(-1)]
+
+
+def resolve_reshape_output_shape(
     input_shape: tuple[int, ...],
     shape_values: list[int],
     *,
@@ -142,14 +286,27 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
             graph, node.inputs[1], node
         )
         if shape_values is not None:
-            resolved_shape = _resolve_target_shape(
+            resolved_shape = resolve_reshape_output_shape(
                 input_shape,
                 shape_values,
                 allowzero=allowzero,
                 node=node,
             )
         else:
-            if _shape_product(output_shape) != _shape_product(input_shape):
+            shape_values = _resolve_shape_values_from_graph(
+                graph, node.inputs[1], node
+            )
+            if shape_values is not None:
+                try:
+                    resolved_shape = resolve_reshape_output_shape(
+                        input_shape,
+                        shape_values,
+                        allowzero=allowzero,
+                        node=node,
+                    )
+                except ShapeInferenceError:
+                    resolved_shape = None
+            elif _shape_product(output_shape) != _shape_product(input_shape):
                 raise ShapeInferenceError(
                     "Reshape input and output element counts must match"
                 )
@@ -162,7 +319,7 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
         if len(shape_initializer.type.shape) != 1:
             raise UnsupportedOpError("Reshape expects a 1D shape input")
         shape_values = [int(value) for value in shape_initializer.data.reshape(-1)]
-        resolved_shape = _resolve_target_shape(
+        resolved_shape = resolve_reshape_output_shape(
             input_shape,
             shape_values,
             allowzero=allowzero,

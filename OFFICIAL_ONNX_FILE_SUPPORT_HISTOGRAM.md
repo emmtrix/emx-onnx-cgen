@@ -2,42 +2,43 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ██████████████████████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ███████████████ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████████████ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████████████ |
-| Reshape input and output element counts must match | 15 | ████████████ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
-| Unsupported op ConvTranspose | 14 | ████████████ |
-| ReduceSum output shape rank must match input rank | 12 | ██████████ |
-| Output shape must be fully defined | 9 | ████████ |
-| Unsupported op QuantizeLinear | 9 | ████████ |
-| Unsupported op ImageDecoder | 9 | ████████ |
-| Unsupported op NonMaxSuppression | 9 | ████████ |
-| Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
-| Unsupported op LpPool | 8 | ███████ |
-| Unsupported op QLinearMatMul | 8 | ███████ |
-| CastLike input and output shapes must match | 8 | ███████ |
-| Unsupported op RotaryEmbedding | 8 | ███████ |
-| tuple index out of range | 8 | ███████ |
-| Unsupported op Hardmax | 7 | ██████ |
-| Unsupported op TfIdfVectorizer | 7 | ██████ |
-| Unsupported op TopK | 7 | ██████ |
-| AveragePool has unsupported attributes | 6 | █████ |
-| Cast input and output shapes must match | 6 | █████ |
-| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
-| Unsupported op CenterCropPad | 6 | █████ |
-| Unsupported op DFT | 6 | █████ |
-| Unsupported op Einsum | 6 | █████ |
-| Concat output shape must be (2,), got (1,) | 6 | █████ |
-| Unsupported op ScatterElements | 6 | █████ |
-| Unsupported op Unique | 6 | █████ |
+| Reshape input and output element counts must match | 40 | ██████████████████████████████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ███████████████████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ████████████████████████ |
+| Reshape cannot infer dimension from input shape | 23 | █████████████████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████████████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | █████████████ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | █████████████ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | █████████████ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | █████████████ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ██████████ |
+| Unsupported op ConvTranspose | 14 | ██████████ |
+| ReduceSum output shape rank must match input rank | 12 | █████████ |
+| Output shape must be fully defined | 9 | ███████ |
+| Unsupported op QuantizeLinear | 9 | ███████ |
+| Unsupported op ImageDecoder | 9 | ███████ |
+| Unsupported op NonMaxSuppression | 9 | ███████ |
+| Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
+| Unsupported op LpPool | 8 | ██████ |
+| Unsupported op QLinearMatMul | 8 | ██████ |
+| CastLike input and output shapes must match | 8 | ██████ |
+| Unsupported op RotaryEmbedding | 8 | ██████ |
+| tuple index out of range | 8 | ██████ |
+| Unsupported op Hardmax | 7 | █████ |
+| Unsupported op TfIdfVectorizer | 7 | █████ |
+| Unsupported op TopK | 7 | █████ |
+| AveragePool has unsupported attributes | 6 | ████ |
+| Cast input and output shapes must match | 6 | ████ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ████ |
+| Unsupported op CenterCropPad | 6 | ████ |
+| Unsupported op DFT | 6 | ████ |
+| Unsupported op Einsum | 6 | ████ |
+| Concat output shape must be (2,), got (1,) | 6 | ████ |
+| Unsupported op ScatterElements | 6 | ████ |
+| Unsupported op Unique | 6 | ████ |
 | Unsupported op If | 5 | ████ |
 | And expects identical input/output shapes | 5 | ████ |
 | AveragePool expects 2D kernel_shape | 5 | ████ |

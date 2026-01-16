@@ -48,7 +48,7 @@ from ..lowering.reduce import (
     normalize_reduce_axes,
     resolve_reduce_axes,
 )
-from ..lowering.reshape import lower_reshape
+from ..lowering.reshape import lower_reshape, resolve_reshape_output_shape
 from ..lowering.slice import _normalize_slices
 from ..lowering.shape import lower_shape
 from ..lowering.size import lower_size
@@ -1409,10 +1409,20 @@ def _eval_squeeze(evaluator: Evaluator, node: Node) -> None:
 
 @register_evaluator("Reshape")
 def _eval_reshape(evaluator: Evaluator, node: Node) -> None:
+    input_value = evaluator.values[node.inputs[0]]
+    shape_name = node.inputs[1]
+    if shape_name in evaluator.values:
+        shape_values = evaluator.values[shape_name].reshape(-1).tolist()
+        output_shape = resolve_reshape_output_shape(
+            tuple(int(dim) for dim in input_value.shape),
+            [int(value) for value in shape_values],
+            allowzero=int(node.attrs.get("allowzero", 0)),
+            node=node,
+        )
+        evaluator.values[node.outputs[0]] = input_value.reshape(output_shape)
+        return
     op = lower_reshape(evaluator.graph, node)
-    evaluator.values[op.output] = evaluator.values[op.input0].reshape(
-        op.output_shape
-    )
+    evaluator.values[op.output] = input_value.reshape(op.output_shape)
 
 
 @register_evaluator("Flatten")
