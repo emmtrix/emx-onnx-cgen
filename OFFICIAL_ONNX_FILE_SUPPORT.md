@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1185 / 1802 official ONNX files.
+Support 1208 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -529,17 +529,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_conv_with_strides_padding/model.onnx | ✅ |  |
 | node/test_convinteger_with_padding/model.onnx | ❌ | Unsupported op ConvInteger |
 | node/test_convinteger_without_padding/model.onnx | ❌ | Unsupported op ConvInteger |
-| node/test_convtranspose/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_1d/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_3d/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_autopad_same/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_dilations/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_group_2/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_group_2_image_3/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_kernel_shape/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_output_shape/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_pad/model.onnx | ❌ | Unsupported op ConvTranspose |
-| node/test_convtranspose_pads/model.onnx | ❌ | Unsupported op ConvTranspose |
+| node/test_convtranspose/model.onnx | ✅ |  |
+| node/test_convtranspose_1d/model.onnx | ✅ |  |
+| node/test_convtranspose_3d/model.onnx | ✅ |  |
+| node/test_convtranspose_autopad_same/model.onnx | ✅ |  |
+| node/test_convtranspose_dilations/model.onnx | ✅ |  |
+| node/test_convtranspose_group_2/model.onnx | ✅ |  |
+| node/test_convtranspose_group_2_image_3/model.onnx | ✅ |  |
+| node/test_convtranspose_kernel_shape/model.onnx | ✅ |  |
+| node/test_convtranspose_output_shape/model.onnx | ❌ | ConvTranspose output shape must be fully defined and non-negative |
+| node/test_convtranspose_pad/model.onnx | ✅ |  |
+| node/test_convtranspose_pads/model.onnx | ✅ |  |
 | node/test_cos/model.onnx | ✅ |  |
 | node/test_cos_example/model.onnx | ✅ |  |
 | node/test_cosh/model.onnx | ✅ |  |
@@ -595,11 +595,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_dropout_default_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_random_old/model.onnx | ✅ |  |
 | node/test_dynamicquantizelinear/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
-| node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_dynamicquantizelinear_expanded/model.onnx | ✅ |  |
 | node/test_dynamicquantizelinear_max_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
-| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ✅ |  |
 | node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
-| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ✅ |  |
 | node/test_edge_pad/model.onnx | ✅ |  |
 | node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported op Einsum |
 | node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported op Einsum |
@@ -890,14 +890,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_loop13_seq/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_empty'. Hint: export the model with tensor inputs/outputs. |
 | node/test_loop16_seq_none/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_seq'. Hint: export the model with tensor inputs/outputs. |
 | node/test_lpnormalization_default/model.onnx | ✅ |  |
-| node/test_lppool_1d_default/model.onnx | ❌ | Unsupported op LpPool |
-| node/test_lppool_2d_default/model.onnx | ❌ | Unsupported op LpPool |
-| node/test_lppool_2d_dilations/model.onnx | ❌ | Unsupported op LpPool |
-| node/test_lppool_2d_pads/model.onnx | ❌ | Unsupported op LpPool |
-| node/test_lppool_2d_same_lower/model.onnx | ❌ | Unsupported op LpPool |
-| node/test_lppool_2d_same_upper/model.onnx | ❌ | Unsupported op LpPool |
-| node/test_lppool_2d_strides/model.onnx | ❌ | Unsupported op LpPool |
-| node/test_lppool_3d_default/model.onnx | ❌ | Unsupported op LpPool |
+| node/test_lppool_1d_default/model.onnx | ❌ | LpPool expects 2D kernel_shape |
+| node/test_lppool_2d_default/model.onnx | ✅ |  |
+| node/test_lppool_2d_dilations/model.onnx | ❌ | LpPool supports dilations=1 only |
+| node/test_lppool_2d_pads/model.onnx | ✅ |  |
+| node/test_lppool_2d_same_lower/model.onnx | ❌ | LpPool supports auto_pad=NOTSET only |
+| node/test_lppool_2d_same_upper/model.onnx | ❌ | LpPool supports auto_pad=NOTSET only |
+| node/test_lppool_2d_strides/model.onnx | ✅ |  |
+| node/test_lppool_3d_default/model.onnx | ❌ | LpPool expects 2D kernel_shape |
 | node/test_lrn/model.onnx | ✅ |  |
 | node/test_lrn_default/model.onnx | ✅ |  |
 | node/test_lstm_batchwise/model.onnx | ✅ |  |
@@ -1094,17 +1094,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_qlinearmatmul_3D_int8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
 | node/test_qlinearmatmul_3D_uint8_float16/model.onnx | ❌ | Unsupported op QLinearMatMul |
 | node/test_qlinearmatmul_3D_uint8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| node/test_quantizelinear/model.onnx | ❌ | Unsupported op QuantizeLinear |
-| node/test_quantizelinear_axis/model.onnx | ❌ | Unsupported op QuantizeLinear |
-| node/test_quantizelinear_blocked_asymmetric/model.onnx | ❌ | Unsupported op QuantizeLinear |
-| node/test_quantizelinear_blocked_symmetric/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_quantizelinear/model.onnx | ✅ |  |
+| node/test_quantizelinear_axis/model.onnx | ✅ |  |
+| node/test_quantizelinear_blocked_asymmetric/model.onnx | ❌ | QuantizeLinear block_size is not supported |
+| node/test_quantizelinear_blocked_symmetric/model.onnx | ❌ | QuantizeLinear block_size is not supported |
 | node/test_quantizelinear_e4m3fn/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_e5m2/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_float4e2m1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
-| node/test_quantizelinear_int16/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_quantizelinear_int16/model.onnx | ✅ |  |
 | node/test_quantizelinear_int2/model.onnx | ❌ | Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_int4/model.onnx | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
-| node/test_quantizelinear_uint16/model.onnx | ❌ | Unsupported op QuantizeLinear |
+| node/test_quantizelinear_uint16/model.onnx | ✅ |  |
 | node/test_quantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | node/test_range_float_type_positive_delta/model.onnx | ✅ |  |
@@ -1709,8 +1709,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-converted/test_Conv3d_no_bias/model.onnx | ✅ |  |
 | pytorch-converted/test_Conv3d_stride/model.onnx | ✅ |  |
 | pytorch-converted/test_Conv3d_stride_padding/model.onnx | ✅ |  |
-| pytorch-converted/test_ConvTranspose2d/model.onnx | ❌ | Unsupported op ConvTranspose |
-| pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ❌ | Unsupported op ConvTranspose |
+| pytorch-converted/test_ConvTranspose2d/model.onnx | ✅ |  |
+| pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ✅ |  |
 | pytorch-converted/test_ELU/model.onnx | ❌ | Elu only supports alpha=1.0 |
 | pytorch-converted/test_Embedding/model.onnx | ✅ |  |
 | pytorch-converted/test_Embedding_sparse/model.onnx | ✅ |  |
@@ -1763,7 +1763,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | pytorch-operator/test_operator_clip/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_concat2/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_conv/model.onnx | ✅ |  |
-| pytorch-operator/test_operator_convtranspose/model.onnx | ❌ | Unsupported op ConvTranspose |
+| pytorch-operator/test_operator_convtranspose/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_exp/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_flatten/model.onnx | ✅ |  |
 | pytorch-operator/test_operator_index/model.onnx | ✅ |  |

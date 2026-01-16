@@ -14,6 +14,7 @@ from ..lowering.batch_normalization import lower_batch_normalization
 from ..lowering.concat import lower_concat
 from ..lowering.constant_of_shape import lower_constant_of_shape
 from ..lowering.conv import resolve_conv_spec
+from ..lowering.conv_transpose import resolve_conv_transpose_spec
 from ..lowering.dropout import lower_dropout
 from ..lowering.cumsum import lower_cumsum
 from ..lowering.flatten import lower_flatten
@@ -21,6 +22,7 @@ from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
 from ..lowering.hardmax import lower_hardmax
 from ..lowering.lp_normalization import lower_lp_normalization
+from ..lowering.lp_pool import lower_lp_pool
 from ..lowering.grid_sample import lower_grid_sample
 from ..lowering.instance_normalization import lower_instance_normalization
 from ..lowering.group_normalization import lower_group_normalization
@@ -60,6 +62,7 @@ from ..lowering.squeeze import lower_squeeze
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
 from ..lowering.where import lower_where
+from ..lowering.quantize_linear import resolve_quantize_spec
 from ..lowering.variadic import BINARY_ONLY_OPS, VARIADIC_OP_FUNCTIONS
 from ..lowering.registry import resolve_dispatch
 from ..lowering.common import node_dtype, optional_name, value_dtype, value_shape
@@ -1137,6 +1140,28 @@ def _eval_conv(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = _apply_conv(spec, data, weights, bias)
 
 
+@register_evaluator("ConvTranspose")
+def _eval_conv_transpose(evaluator: Evaluator, node: Node) -> None:
+    op_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    if op_dtype != output_dtype:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects matching input/output dtypes, "
+            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
+        )
+    if not op_dtype.is_float:
+        raise UnsupportedOpError(
+            "ConvTranspose supports float16, float, and double inputs only"
+        )
+    spec = resolve_conv_transpose_spec(evaluator.graph, node)
+    data = evaluator.values[node.inputs[0]]
+    weights = evaluator.values[node.inputs[1]]
+    bias = evaluator.values[node.inputs[2]] if len(node.inputs) > 2 else None
+    evaluator.values[node.outputs[0]] = _apply_conv_transpose(
+        spec, data, weights, bias
+    )
+
+
 @register_evaluator("BatchNormalization")
 def _eval_batch_norm(evaluator: Evaluator, node: Node) -> None:
     op = lower_batch_normalization(evaluator.graph, node)
@@ -1168,6 +1193,59 @@ def _eval_lp_normalization(evaluator: Evaluator, node: Node) -> None:
         denom = np.sqrt(np.sum(data * data, axis=op.axis, keepdims=True))
     evaluator.values[op.output] = data / denom
 
+
+@register_evaluator("LpPool")
+def _eval_lp_pool(evaluator: Evaluator, node: Node) -> None:
+    op = lower_lp_pool(evaluator.graph, node)
+    data = evaluator.values[op.input0]
+    output = np.zeros(
+        (op.batch, op.channels, op.out_h, op.out_w), dtype=data.dtype
+    )
+    for n in range(op.batch):
+        for c in range(op.channels):
+            for out_h in range(op.out_h):
+                for out_w in range(op.out_w):
+                    h_start = out_h * op.stride_h - op.pad_top
+                    w_start = out_w * op.stride_w - op.pad_left
+                    acc = 0.0
+                    for kh in range(op.kernel_h):
+                        for kw in range(op.kernel_w):
+                            in_h = h_start + kh
+                            in_w = w_start + kw
+                            if in_h < 0 or in_h >= op.in_h:
+                                continue
+                            if in_w < 0 or in_w >= op.in_w:
+                                continue
+                            value = data[(n, c, in_h, in_w)]
+                            acc += abs(value) ** op.p
+                    output[(n, c, out_h, out_w)] = acc ** (1.0 / op.p)
+    evaluator.values[op.output] = output
+
+
+@register_evaluator("QuantizeLinear")
+def _eval_quantize_linear(evaluator: Evaluator, node: Node) -> None:
+    spec = resolve_quantize_spec(evaluator.graph, node)
+    data = evaluator.values[node.inputs[0]]
+    scale = evaluator.values[node.inputs[1]]
+    zero_point_name = optional_name(node.inputs, 2)
+    if zero_point_name is None:
+        zero_point = 0
+    else:
+        zero_point = evaluator.values[zero_point_name]
+    if spec.axis is None:
+        scaled = data / scale + zero_point
+    else:
+        shape = [1] * data.ndim
+        shape[spec.axis] = scale.shape[0]
+        scaled = data / scale.reshape(shape) + np.asarray(zero_point).reshape(
+            shape
+        )
+    rounded = np.rint(scaled)
+    info = np.iinfo(spec.output_dtype.np_dtype)
+    clipped = np.clip(rounded, info.min, info.max)
+    evaluator.values[node.outputs[0]] = clipped.astype(
+        spec.output_dtype.np_dtype, copy=False
+    )
 
 @register_evaluator("InstanceNormalization")
 def _eval_instance_normalization(evaluator: Evaluator, node: Node) -> None:
@@ -1977,7 +2055,9 @@ def _apply_attention(
     return output, key_total, value_total, qk_output
 
 
-def _apply_conv(spec, data: np.ndarray, weights: np.ndarray, bias: np.ndarray | None) -> np.ndarray:
+def _apply_conv(
+    spec, data: np.ndarray, weights: np.ndarray, bias: np.ndarray | None
+) -> np.ndarray:
     output = np.zeros(
         (spec.batch, spec.out_channels, *spec.out_spatial),
         dtype=data.dtype,
@@ -2025,6 +2105,60 @@ def _apply_conv(spec, data: np.ndarray, weights: np.ndarray, bias: np.ndarray | 
                                 (oc_global, ic, *kernel_index)
                             ]
                     output[(n, oc_global, *out_index)] = acc
+    return output
+
+
+def _apply_conv_transpose(
+    spec, data: np.ndarray, weights: np.ndarray, bias: np.ndarray | None
+) -> np.ndarray:
+    output = np.zeros(
+        (spec.batch, spec.out_channels, *spec.out_spatial), dtype=data.dtype
+    )
+    if bias is not None:
+        output += bias.reshape((1, spec.out_channels) + (1,) * spec.spatial_rank)
+    pad_begin = spec.pads[: spec.spatial_rank]
+    group_in_channels = spec.in_channels // spec.group
+    group_out_channels = spec.out_channels // spec.group
+    for n in range(spec.batch):
+        for g in range(spec.group):
+            oc_base = g * group_out_channels
+            ic_base = g * group_in_channels
+            for ic in range(group_in_channels):
+                ic_global = ic_base + ic
+                for in_index in np.ndindex(*spec.in_spatial):
+                    value = data[(n, ic_global, *in_index)]
+                    for oc in range(group_out_channels):
+                        oc_global = oc_base + oc
+                        for kernel_index in np.ndindex(*spec.kernel_shape):
+                            out_index = []
+                            valid = True
+                            for (
+                                in_dim,
+                                kernel_dim,
+                                stride,
+                                dilation,
+                                pad,
+                                out_size,
+                            ) in zip(
+                                in_index,
+                                kernel_index,
+                                spec.strides,
+                                spec.dilations,
+                                pad_begin,
+                                spec.out_spatial,
+                            ):
+                                out_dim = (
+                                    in_dim * stride + kernel_dim * dilation - pad
+                                )
+                                if out_dim < 0 or out_dim >= out_size:
+                                    valid = False
+                                    break
+                                out_index.append(out_dim)
+                            if not valid:
+                                continue
+                            output[(n, oc_global, *out_index)] += value * weights[
+                                (ic_global, oc, *kernel_index)
+                            ]
     return output
 
 

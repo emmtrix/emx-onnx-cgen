@@ -2085,47 +2085,47 @@
   ],
   [
     "node/test_convtranspose/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_1d/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_3d/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_autopad_same/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_dilations/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_group_2/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_group_2_image_3/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_kernel_shape/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_output_shape/model.onnx",
-    "Unsupported op ConvTranspose"
+    "ConvTranspose output shape must be fully defined and non-negative"
   ],
   [
     "node/test_convtranspose_pad/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_convtranspose_pads/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "node/test_cos/model.onnx",
@@ -2349,7 +2349,7 @@
   ],
   [
     "node/test_dynamicquantizelinear_expanded/model.onnx",
-    "Unsupported op QuantizeLinear"
+    ""
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted/model.onnx",
@@ -2357,7 +2357,7 @@
   ],
   [
     "node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx",
-    "Unsupported op QuantizeLinear"
+    ""
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted/model.onnx",
@@ -2365,7 +2365,7 @@
   ],
   [
     "node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx",
-    "Unsupported op QuantizeLinear"
+    ""
   ],
   [
     "node/test_edge_pad/model.onnx",
@@ -3529,35 +3529,35 @@
   ],
   [
     "node/test_lppool_1d_default/model.onnx",
-    "Unsupported op LpPool"
+    "LpPool expects 2D kernel_shape"
   ],
   [
     "node/test_lppool_2d_default/model.onnx",
-    "Unsupported op LpPool"
+    ""
   ],
   [
     "node/test_lppool_2d_dilations/model.onnx",
-    "Unsupported op LpPool"
+    "LpPool supports dilations=1 only"
   ],
   [
     "node/test_lppool_2d_pads/model.onnx",
-    "Unsupported op LpPool"
+    ""
   ],
   [
     "node/test_lppool_2d_same_lower/model.onnx",
-    "Unsupported op LpPool"
+    "LpPool supports auto_pad=NOTSET only"
   ],
   [
     "node/test_lppool_2d_same_upper/model.onnx",
-    "Unsupported op LpPool"
+    "LpPool supports auto_pad=NOTSET only"
   ],
   [
     "node/test_lppool_2d_strides/model.onnx",
-    "Unsupported op LpPool"
+    ""
   ],
   [
     "node/test_lppool_3d_default/model.onnx",
-    "Unsupported op LpPool"
+    "LpPool expects 2D kernel_shape"
   ],
   [
     "node/test_lrn/model.onnx",
@@ -4345,19 +4345,19 @@
   ],
   [
     "node/test_quantizelinear/model.onnx",
-    "Unsupported op QuantizeLinear"
+    ""
   ],
   [
     "node/test_quantizelinear_axis/model.onnx",
-    "Unsupported op QuantizeLinear"
+    ""
   ],
   [
     "node/test_quantizelinear_blocked_asymmetric/model.onnx",
-    "Unsupported op QuantizeLinear"
+    "QuantizeLinear block_size is not supported"
   ],
   [
     "node/test_quantizelinear_blocked_symmetric/model.onnx",
-    "Unsupported op QuantizeLinear"
+    "QuantizeLinear block_size is not supported"
   ],
   [
     "node/test_quantizelinear_e4m3fn/model.onnx",
@@ -4373,7 +4373,7 @@
   ],
   [
     "node/test_quantizelinear_int16/model.onnx",
-    "Unsupported op QuantizeLinear"
+    ""
   ],
   [
     "node/test_quantizelinear_int2/model.onnx",
@@ -4385,7 +4385,7 @@
   ],
   [
     "node/test_quantizelinear_uint16/model.onnx",
-    "Unsupported op QuantizeLinear"
+    ""
   ],
   [
     "node/test_quantizelinear_uint2/model.onnx",
@@ -6805,11 +6805,11 @@
   ],
   [
     "pytorch-converted/test_ConvTranspose2d/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "pytorch-converted/test_ELU/model.onnx",
@@ -7021,7 +7021,7 @@
   ],
   [
     "pytorch-operator/test_operator_convtranspose/model.onnx",
-    "Unsupported op ConvTranspose"
+    ""
   ],
   [
     "pytorch-operator/test_operator_exp/model.onnx",

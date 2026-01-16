@@ -14,14 +14,11 @@
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████████████ |
 | Reshape input and output element counts must match | 15 | ████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
-| Unsupported op ConvTranspose | 14 | ████████████ |
 | ReduceSum output shape rank must match input rank | 12 | ██████████ |
 | Output shape must be fully defined | 9 | ████████ |
-| Unsupported op QuantizeLinear | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Unsupported op NonMaxSuppression | 9 | ████████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
-| Unsupported op LpPool | 8 | ███████ |
 | Unsupported op QLinearMatMul | 8 | ███████ |
 | CastLike input and output shapes must match | 8 | ███████ |
 | Unsupported op RotaryEmbedding | 8 | ███████ |
@@ -84,9 +81,12 @@
 | Gelu only supports approximate=none | 2 | ██ |
 | Unsupported op HammingWindow | 2 | ██ |
 | Unsupported op HannWindow | 2 | ██ |
+| LpPool expects 2D kernel_shape | 2 | ██ |
+| LpPool supports auto_pad=NOTSET only | 2 | ██ |
 | Unsupported op MaxUnpool | 2 | ██ |
 | Pow expects matching dtypes, got float, int32 | 2 | ██ |
 | Pow expects matching dtypes, got float, int64 | 2 | ██ |
+| QuantizeLinear block_size is not supported | 2 | ██ |
 | Unsupported op ReverseSequence | 2 | ██ |
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
@@ -99,7 +99,9 @@
 | Unsupported op Binarizer | 1 | █ |
 | Pad value input must be a scalar | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
+| ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
+| LpPool supports dilations=1 only | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
 | Max must have at least 2 inputs | 1 | █ |
 | Mean must have at least 2 inputs | 1 | █ |

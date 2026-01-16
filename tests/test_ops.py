@@ -1571,6 +1571,129 @@ def _make_conv_model() -> onnx.ModelProto:
     return model
 
 
+def _make_conv_transpose_model() -> onnx.ModelProto:
+    input_shape = [1, 1, 3, 3]
+    weight_shape = [1, 1, 3, 3]
+    output_shape = [1, 1, 3, 3]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    weight_values = np.arange(9, dtype=np.float32).reshape(weight_shape)
+    weight_tensor = helper.make_tensor(
+        "weight",
+        TensorProto.FLOAT,
+        dims=weight_shape,
+        vals=weight_values.flatten().tolist(),
+    )
+    bias_values = np.array([0.5], dtype=np.float32)
+    bias_tensor = helper.make_tensor(
+        "bias",
+        TensorProto.FLOAT,
+        dims=[1],
+        vals=bias_values.tolist(),
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    conv_node = helper.make_node(
+        "ConvTranspose",
+        inputs=["in0", "weight", "bias"],
+        outputs=[output.name],
+        pads=[1, 1, 1, 1],
+        strides=[1, 1],
+    )
+    graph = helper.make_graph(
+        [conv_node],
+        "convtranspose_graph",
+        [input_info],
+        [output],
+        initializer=[weight_tensor, bias_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_lp_pool_model() -> onnx.ModelProto:
+    input_shape = [1, 1, 4, 4]
+    output_shape = [1, 1, 2, 2]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    node = helper.make_node(
+        "LpPool",
+        inputs=["in0"],
+        outputs=[output.name],
+        kernel_shape=[2, 2],
+        strides=[2, 2],
+        p=2,
+    )
+    graph = helper.make_graph(
+        [node],
+        "lppool_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_quantize_linear_model() -> onnx.ModelProto:
+    input_shape = [2, 2]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.UINT8, input_shape
+    )
+    scale_tensor = helper.make_tensor(
+        "scale",
+        TensorProto.FLOAT,
+        dims=[],
+        vals=[0.1],
+    )
+    zero_point_tensor = helper.make_tensor(
+        "zero_point",
+        TensorProto.UINT8,
+        dims=[],
+        vals=[128],
+    )
+    node = helper.make_node(
+        "QuantizeLinear",
+        inputs=["in0", "scale", "zero_point"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "quantize_linear_graph",
+        [input_info],
+        [output],
+        initializer=[scale_tensor, zero_point_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
     input_shape = [2, 3, 2, 2]
     input_info = helper.make_tensor_value_info(
@@ -3326,6 +3449,21 @@ def test_unsqueeze_op_matches_onnxruntime() -> None:
 
 def test_conv_op_matches_onnxruntime() -> None:
     model = _make_conv_model()
+    _run_ort_compare(model)
+
+
+def test_conv_transpose_op_matches_onnxruntime() -> None:
+    model = _make_conv_transpose_model()
+    _run_ort_compare(model)
+
+
+def test_lp_pool_matches_onnxruntime() -> None:
+    model = _make_lp_pool_model()
+    _run_ort_compare(model)
+
+
+def test_quantize_linear_matches_onnxruntime() -> None:
+    model = _make_quantize_linear_model()
     _run_ort_compare(model)
 
 

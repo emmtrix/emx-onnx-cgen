@@ -308,6 +308,27 @@ class ConvOp:
 
 
 @dataclass(frozen=True)
+class ConvTransposeOp:
+    input0: str
+    weights: str
+    bias: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    output_padding: tuple[int, ...]
+    group: int
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class AveragePoolOp:
     input0: str
     output: str
@@ -327,6 +348,41 @@ class AveragePoolOp:
     pad_right: int
     count_include_pad: bool
     dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class LpPoolOp:
+    input0: str
+    output: str
+    batch: int
+    channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_h: int
+    kernel_w: int
+    stride_h: int
+    stride_w: int
+    pad_top: int
+    pad_left: int
+    pad_bottom: int
+    pad_right: int
+    p: int
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
+class QuantizeLinearOp:
+    input0: str
+    scale: str
+    zero_point: str | None
+    output: str
+    input_shape: tuple[int, ...]
+    axis: int | None
+    dtype: ScalarType
+    input_dtype: ScalarType
+    scale_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -966,11 +1022,14 @@ class LoweredModel:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -1132,6 +1191,7 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
@@ -1195,6 +1255,12 @@ class CEmitter:
             return tuple(names)
         if isinstance(op, CastOp):
             return (op.input0, op.output)
+        if isinstance(op, QuantizeLinearOp):
+            names = [op.input0, op.scale]
+            if op.zero_point is not None:
+                names.append(op.zero_point)
+            names.append(op.output)
+            return tuple(names)
         if isinstance(op, MatMulOp):
             return (op.input0, op.input1, op.output)
         if isinstance(op, GemmOp):
@@ -1227,7 +1293,15 @@ class CEmitter:
                 names.append(op.bias)
             names.append(op.output)
             return tuple(names)
+        if isinstance(op, ConvTransposeOp):
+            names = [op.input0, op.weights]
+            if op.bias is not None:
+                names.append(op.bias)
+            names.append(op.output)
+            return tuple(names)
         if isinstance(op, AveragePoolOp):
+            return (op.input0, op.output)
+        if isinstance(op, LpPoolOp):
             return (op.input0, op.output)
         if isinstance(op, BatchNormOp):
             return (op.input0, op.scale, op.bias, op.mean, op.variance, op.output)
@@ -1418,11 +1492,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -1470,11 +1547,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -1577,6 +1657,18 @@ class CEmitter:
                 shape=op.shape,
                 input_dtype=op.input_dtype,
                 dtype=op.dtype,
+            )
+        if isinstance(op, QuantizeLinearOp):
+            return QuantizeLinearOp(
+                input0=name_map.get(op.input0, op.input0),
+                scale=name_map.get(op.scale, op.scale),
+                zero_point=self._map_optional_name(name_map, op.zero_point),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                axis=op.axis,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                scale_dtype=op.scale_dtype,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -1689,6 +1781,26 @@ class CEmitter:
                 group=op.group,
                 dtype=op.dtype,
             )
+        if isinstance(op, ConvTransposeOp):
+            return ConvTransposeOp(
+                input0=name_map.get(op.input0, op.input0),
+                weights=name_map.get(op.weights, op.weights),
+                bias=self._map_optional_name(name_map, op.bias),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                output_padding=op.output_padding,
+                group=op.group,
+                dtype=op.dtype,
+            )
         if isinstance(op, AveragePoolOp):
             return AveragePoolOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1708,6 +1820,27 @@ class CEmitter:
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
+                dtype=op.dtype,
+            )
+        if isinstance(op, LpPoolOp):
+            return LpPoolOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                pad_bottom=op.pad_bottom,
+                pad_right=op.pad_right,
+                p=op.p,
                 dtype=op.dtype,
             )
         if isinstance(op, BatchNormOp):
@@ -2331,11 +2464,18 @@ class CEmitter:
                 "unary": self._env.get_template("unary_op.c.j2"),
                 "clip": self._env.get_template("clip_op.c.j2"),
                 "cast": self._env.get_template("cast_op.c.j2"),
+                "quantize_linear": self._env.get_template(
+                    "quantize_linear_op.c.j2"
+                ),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
+                "conv_transpose": self._env.get_template(
+                    "conv_transpose_op.c.j2"
+                ),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
+                "lp_pool": self._env.get_template("lp_pool_op.c.j2"),
                 "batch_norm": self._env.get_template("batch_norm_op.c.j2"),
                 "lp_norm": self._env.get_template("lp_normalization_op.c.j2"),
                 "instance_norm": self._env.get_template(
@@ -2440,11 +2580,14 @@ class CEmitter:
         unary_template = templates["unary"]
         clip_template = templates["clip"]
         cast_template = templates["cast"]
+        quantize_linear_template = templates["quantize_linear"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
         conv_template = templates["conv"]
+        conv_transpose_template = templates["conv_transpose"]
         avg_pool_template = templates["avg_pool"]
+        lp_pool_template = templates["lp_pool"]
         batch_norm_template = templates["batch_norm"]
         lp_norm_template = templates["lp_norm"]
         instance_norm_template = templates["instance_norm"]
@@ -2516,11 +2659,14 @@ class CEmitter:
                 unary_template=unary_template,
                 clip_template=clip_template,
                 cast_template=cast_template,
+                quantize_linear_template=quantize_linear_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
                 conv_template=conv_template,
+                conv_transpose_template=conv_transpose_template,
                 avg_pool_template=avg_pool_template,
+                lp_pool_template=lp_pool_template,
                 batch_norm_template=batch_norm_template,
                 lp_norm_template=lp_norm_template,
                 instance_norm_template=instance_norm_template,
@@ -2671,11 +2817,14 @@ class CEmitter:
         unary_template = templates["unary"]
         clip_template = templates["clip"]
         cast_template = templates["cast"]
+        quantize_linear_template = templates["quantize_linear"]
         matmul_template = templates["matmul"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
         conv_template = templates["conv"]
+        conv_transpose_template = templates["conv_transpose"]
         avg_pool_template = templates["avg_pool"]
+        lp_pool_template = templates["lp_pool"]
         batch_norm_template = templates["batch_norm"]
         lp_norm_template = templates["lp_norm"]
         instance_norm_template = templates["instance_norm"]
@@ -2747,11 +2896,14 @@ class CEmitter:
                 unary_template=unary_template,
                 clip_template=clip_template,
                 cast_template=cast_template,
+                quantize_linear_template=quantize_linear_template,
                 matmul_template=matmul_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
                 conv_template=conv_template,
+                conv_transpose_template=conv_transpose_template,
                 avg_pool_template=avg_pool_template,
+                lp_pool_template=lp_pool_template,
                 batch_norm_template=batch_norm_template,
                 lp_norm_template=lp_norm_template,
                 instance_norm_template=instance_norm_template,
@@ -3129,11 +3281,14 @@ class CEmitter:
             | UnaryOp
             | ClipOp
             | CastOp
+            | QuantizeLinearOp
             | MatMulOp
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvTransposeOp
             | AveragePoolOp
+            | LpPoolOp
             | BatchNormOp
             | LpNormalizationOp
             | InstanceNormalizationOp
@@ -3330,11 +3485,14 @@ class CEmitter:
             | UnaryOp
             | ClipOp
             | CastOp
+            | QuantizeLinearOp
             | MatMulOp
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvTransposeOp
             | AveragePoolOp
+            | LpPoolOp
             | BatchNormOp
             | LpNormalizationOp
             | InstanceNormalizationOp
@@ -3468,6 +3626,11 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
+        if any(
+            isinstance(op, (LpPoolOp, QuantizeLinearOp))
+            for op in resolved_ops
+        ):
+            return True
         return False
 
     @staticmethod
@@ -3477,11 +3640,14 @@ class CEmitter:
             | UnaryOp
             | ClipOp
             | CastOp
+            | QuantizeLinearOp
             | MatMulOp
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvTransposeOp
             | AveragePoolOp
+            | LpPoolOp
             | BatchNormOp
             | LpNormalizationOp
             | InstanceNormalizationOp
@@ -3548,6 +3714,11 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
+        if any(
+            isinstance(op, QuantizeLinearOp) and op.dtype.is_integer
+            for op in resolved_ops
+        ):
+            return True
         return False
 
     def _emit_model_wrapper(
@@ -3559,11 +3730,14 @@ class CEmitter:
             | UnaryOp
             | ClipOp
             | CastOp
+            | QuantizeLinearOp
             | MatMulOp
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvTransposeOp
             | AveragePoolOp
+            | LpPoolOp
             | BatchNormOp
             | LpNormalizationOp
             | InstanceNormalizationOp
@@ -3647,11 +3821,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -3726,6 +3903,13 @@ class CEmitter:
             call_parts.append(op.output)
             args.extend(call_parts)
             return ", ".join(args)
+        if isinstance(op, QuantizeLinearOp):
+            call_parts = [op.input0, op.scale]
+            if op.zero_point is not None:
+                call_parts.append(op.zero_point)
+            call_parts.append(op.output)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, AttentionOp):
             call_parts = [op.input_q, op.input_k, op.input_v]
             if op.input_attn_mask is not None:
@@ -3751,7 +3935,16 @@ class CEmitter:
                 return ", ".join(args)
             args.extend([op.input0, op.weights, op.bias, op.output])
             return ", ".join(args)
+        if isinstance(op, ConvTransposeOp):
+            if op.bias is None:
+                args.extend([op.input0, op.weights, op.output])
+                return ", ".join(args)
+            args.extend([op.input0, op.weights, op.bias, op.output])
+            return ", ".join(args)
         if isinstance(op, AveragePoolOp):
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
+        if isinstance(op, LpPoolOp):
             args.extend([op.input0, op.output])
             return ", ".join(args)
         if isinstance(op, BatchNormOp):
@@ -3963,11 +4156,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -4014,11 +4210,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -4142,6 +4341,22 @@ class CEmitter:
                 shape=op.shape,
                 input_dtype=op.input_dtype,
                 dtype=op.dtype,
+            )
+        if isinstance(op, QuantizeLinearOp):
+            return QuantizeLinearOp(
+                input0=temp_map.get(op.input0, op.input0),
+                scale=temp_map.get(op.scale, op.scale),
+                zero_point=(
+                    temp_map.get(op.zero_point, op.zero_point)
+                    if op.zero_point is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                axis=op.axis,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                scale_dtype=op.scale_dtype,
             )
         if isinstance(op, GemmOp):
             return GemmOp(
@@ -4316,6 +4531,26 @@ class CEmitter:
                 group=op.group,
                 dtype=op.dtype,
             )
+        if isinstance(op, ConvTransposeOp):
+            return ConvTransposeOp(
+                input0=temp_map.get(op.input0, op.input0),
+                weights=temp_map.get(op.weights, op.weights),
+                bias=temp_map.get(op.bias, op.bias) if op.bias else None,
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                output_padding=op.output_padding,
+                group=op.group,
+                dtype=op.dtype,
+            )
         if isinstance(op, AveragePoolOp):
             return AveragePoolOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4335,6 +4570,27 @@ class CEmitter:
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
+                dtype=op.dtype,
+            )
+        if isinstance(op, LpPoolOp):
+            return LpPoolOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                pad_bottom=op.pad_bottom,
+                pad_right=op.pad_right,
+                p=op.p,
                 dtype=op.dtype,
             )
         if isinstance(op, BatchNormOp):
@@ -4928,11 +5184,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -4985,11 +5244,14 @@ class CEmitter:
         unary_template,
         clip_template,
         cast_template,
+        quantize_linear_template,
         matmul_template,
         gemm_template,
         attention_template,
         conv_template,
+        conv_transpose_template,
         avg_pool_template,
+        lp_pool_template,
         batch_norm_template,
         lp_norm_template,
         instance_norm_template,
@@ -5745,6 +6007,81 @@ class CEmitter:
                 in_indices=in_indices,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ConvTransposeOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("weights", op.weights),
+                    ("bias", op.bias),
+                    ("output", op.output),
+                ]
+            )
+            input_shape = (op.batch, op.in_channels, *op.in_spatial)
+            weight_shape = (
+                op.in_channels,
+                op.out_channels // op.group,
+                *op.kernel_shape,
+            )
+            output_shape = (op.batch, op.out_channels, *op.out_spatial)
+            in_indices = tuple(f"id{dim}" for dim in range(op.spatial_rank))
+            kernel_indices = tuple(
+                f"kd{dim}" for dim in range(op.spatial_rank)
+            )
+            out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
+            pad_begin = op.pads[: op.spatial_rank]
+            group_in_channels = op.in_channels // op.group
+            group_out_channels = op.out_channels // op.group
+            input_suffix = self._param_array_suffix(input_shape)
+            weight_suffix = self._param_array_suffix(weight_shape)
+            bias_suffix = self._param_array_suffix((op.out_channels,))
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["weights"], c_type, weight_suffix, True),
+                    (
+                        params["bias"],
+                        c_type,
+                        bias_suffix,
+                        True,
+                    )
+                    if params["bias"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = conv_transpose_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                weights=params["weights"],
+                bias=params["bias"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                zero_literal=zero_literal,
+                input_suffix=input_suffix,
+                weight_suffix=weight_suffix,
+                bias_suffix=bias_suffix,
+                output_suffix=output_suffix,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads_begin=pad_begin,
+                dilations=op.dilations,
+                group=op.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                in_indices=in_indices,
+                kernel_indices=kernel_indices,
+                out_indices=out_indices,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, AveragePoolOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -5784,6 +6121,49 @@ class CEmitter:
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=int(op.count_include_pad),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, LpPoolOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_shape = (op.batch, op.channels, op.in_h, op.in_w)
+            output_shape = (op.batch, op.channels, op.out_h, op.out_w)
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = lp_pool_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                batch=op.batch,
+                channels=op.channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                pad_bottom=op.pad_bottom,
+                pad_right=op.pad_right,
+                p=op.p,
+                zero_literal=zero_literal,
+                abs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
+                pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BatchNormOp):
@@ -8042,6 +8422,86 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, QuantizeLinearOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("scale", op.scale),
+                    ("zero_point", op.zero_point),
+                    ("output", op.output),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.input_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.input_shape)
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            scale_shape = (
+                ()
+                if op.axis is None
+                else (op.input_shape[op.axis],)
+            )
+            scale_suffix = self._param_array_suffix(
+                scale_shape, _dim_names_for(op.scale)
+            )
+            zero_point_suffix = self._param_array_suffix(
+                scale_shape, _dim_names_for(op.zero_point or "")
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["scale"], op.scale_dtype.c_type, scale_suffix, True),
+                    (
+                        params["zero_point"],
+                        op.dtype.c_type,
+                        zero_point_suffix,
+                        True,
+                    )
+                    if params["zero_point"]
+                    else (None, "", "", True),
+                    (params["output"], op.dtype.c_type, input_suffix, False),
+                ]
+            )
+            compute_type = "double" if op.input_dtype == ScalarType.F64 else "float"
+            round_fn = CEmitter._math_fn(
+                op.input_dtype, "nearbyintf", "nearbyint"
+            )
+            scale_index = "0" if op.axis is None else loop_vars[op.axis]
+            input_expr = f"{params['input0']}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            output_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            scale_expr = f"{params['scale']}[{scale_index}]"
+            if params["zero_point"]:
+                zero_expr = f"{params['zero_point']}[{scale_index}]"
+            else:
+                zero_expr = "0"
+            rendered = quantize_linear_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                scale=params["scale"],
+                zero_point=params["zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                input_c_type=op.input_dtype.c_type,
+                output_c_type=op.dtype.c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                scale_expr=scale_expr,
+                zero_expr=zero_expr,
+                output_expr=output_expr,
+                round_fn=round_fn,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ClipOp):
             params = self._shared_param_map(
                 [
@@ -8204,11 +8664,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -8260,11 +8723,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -8342,6 +8808,16 @@ class CEmitter:
             return tuple(inputs)
         if isinstance(op, CastOp):
             return ((op.input0, op.shape),)
+        if isinstance(op, QuantizeLinearOp):
+            scale_shape = (
+                ()
+                if op.axis is None
+                else (op.input_shape[op.axis],)
+            )
+            inputs = [(op.input0, op.input_shape), (op.scale, scale_shape)]
+            if op.zero_point is not None:
+                inputs.append((op.zero_point, scale_shape))
+            return tuple(inputs)
         if isinstance(op, IdentityOp):
             return ((op.input0, op.shape),)
         if isinstance(op, EyeLikeOp):
@@ -8375,11 +8851,14 @@ class CEmitter:
             | UnaryOp
             | ClipOp
             | CastOp
+            | QuantizeLinearOp
             | MatMulOp
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvTransposeOp
             | AveragePoolOp
+            | LpPoolOp
             | BatchNormOp
             | LpNormalizationOp
             | InstanceNormalizationOp
@@ -8438,11 +8917,14 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp
@@ -8638,6 +9120,8 @@ class CEmitter:
             return op.shape
         if isinstance(op, ClipOp):
             return op.output_shape
+        if isinstance(op, QuantizeLinearOp):
+            return op.input_shape
         if isinstance(op, CastOp):
             return op.shape
         if isinstance(op, MatMulOp):
@@ -8646,7 +9130,11 @@ class CEmitter:
             return (op.m, op.n)
         if isinstance(op, ConvOp):
             return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, ConvTransposeOp):
+            return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, AveragePoolOp):
+            return (op.batch, op.channels, op.out_h, op.out_w)
+        if isinstance(op, LpPoolOp):
             return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, BatchNormOp):
             return op.shape
@@ -8733,11 +9221,15 @@ class CEmitter:
         | WhereOp
         | UnaryOp
         | ClipOp
+        | CastOp
+        | QuantizeLinearOp
         | MatMulOp
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvTransposeOp
         | AveragePoolOp
+        | LpPoolOp
         | BatchNormOp
         | LpNormalizationOp
         | InstanceNormalizationOp

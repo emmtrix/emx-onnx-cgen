@@ -27,6 +27,7 @@ from .codegen.c_emitter import (
     CEmitter,
     ConstTensor,
     ConvOp,
+    ConvTransposeOp,
     ConcatOp,
     ConstantOfShapeOp,
     CumSumOp,
@@ -35,6 +36,8 @@ from .codegen.c_emitter import (
     GatherElementsOp,
     ExpandOp,
     RangeOp,
+    LpPoolOp,
+    QuantizeLinearOp,
     LrnOp,
     LstmOp,
     LogSoftmaxOp,
@@ -81,6 +84,7 @@ from .lowering.common import (
     value_shape,
 )
 from .lowering.conv import ConvSpec, resolve_conv_spec
+from .lowering import conv_transpose as _conv_transpose  # noqa: F401
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .lowering.dropout import lower_dropout
 from .lowering import cumsum as _cumsum  # noqa: F401
@@ -95,6 +99,7 @@ from .lowering import group_normalization as _group_normalization  # noqa: F401
 from .lowering import instance_normalization as _instance_normalization  # noqa: F401
 from .lowering import layer_normalization as _layer_normalization  # noqa: F401
 from .lowering import lp_normalization as _lp_normalization  # noqa: F401
+from .lowering import lp_pool as _lp_pool  # noqa: F401
 from .lowering import mean_variance_normalization as _mean_variance_normalization  # noqa: F401
 from .lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
@@ -116,6 +121,7 @@ from .lowering import arg_reduce as _arg_reduce  # noqa: F401
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.grid_sample import lower_grid_sample
+from .lowering import quantize_linear as _quantize_linear  # noqa: F401
 from .lowering.slice import lower_slice
 from .lowering.squeeze import lower_squeeze
 from .lowering import depth_space as _depth_space  # noqa: F401
@@ -338,11 +344,14 @@ class Compiler:
             | UnaryOp
             | ClipOp
             | CastOp
+            | QuantizeLinearOp
             | MatMulOp
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvTransposeOp
             | AveragePoolOp
+            | LpPoolOp
             | BatchNormOp
             | LpNormalizationOp
             | InstanceNormalizationOp
@@ -384,11 +393,14 @@ class Compiler:
             | UnaryOp
             | ClipOp
             | CastOp
+            | QuantizeLinearOp
             | MatMulOp
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvTransposeOp
             | AveragePoolOp
+            | LpPoolOp
             | BatchNormOp
             | LpNormalizationOp
             | InstanceNormalizationOp
