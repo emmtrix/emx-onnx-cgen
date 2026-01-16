@@ -19,6 +19,7 @@ from ..lowering.cumsum import lower_cumsum
 from ..lowering.flatten import lower_flatten
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
+from ..lowering.hardmax import lower_hardmax
 from ..lowering.lp_normalization import lower_lp_normalization
 from ..lowering.grid_sample import lower_grid_sample
 from ..lowering.instance_normalization import lower_instance_normalization
@@ -27,6 +28,7 @@ from ..lowering.layer_normalization import lower_layer_normalization
 from ..lowering.mean_variance_normalization import (
     lower_mean_variance_normalization,
 )
+from ..lowering.global_max_pool import lower_global_max_pool
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
@@ -1318,6 +1320,18 @@ def _eval_maxpool(evaluator: Evaluator, node: Node) -> None:
         evaluator.values[indices_output] = indices
 
 
+@register_evaluator("GlobalMaxPool")
+def _eval_global_max_pool(evaluator: Evaluator, node: Node) -> None:
+    op = lower_global_max_pool(evaluator.graph, node)
+    value = evaluator.values[node.inputs[0]]
+    if not op.axes:
+        evaluator.values[node.outputs[0]] = value.copy()
+        return
+    evaluator.values[node.outputs[0]] = np.max(
+        value, axis=op.axes, keepdims=op.keepdims
+    )
+
+
 @register_evaluator("Softmax")
 def _eval_softmax(evaluator: Evaluator, node: Node) -> None:
     op = lower_softmax(evaluator.graph, node)
@@ -1330,6 +1344,19 @@ def _eval_logsoftmax(evaluator: Evaluator, node: Node) -> None:
     op = lower_logsoftmax(evaluator.graph, node)
     value = evaluator.values[node.inputs[0]]
     evaluator.values[node.outputs[0]] = _apply_logsoftmax(value, op.axis)
+
+
+@register_evaluator("Hardmax")
+def _eval_hardmax(evaluator: Evaluator, node: Node) -> None:
+    op = lower_hardmax(evaluator.graph, node)
+    value = evaluator.values[node.inputs[0]]
+    max_values = np.max(value, axis=op.axis, keepdims=True)
+    is_max = value == max_values
+    max_index = np.argmax(is_max, axis=op.axis)
+    output = np.zeros_like(value)
+    ones = np.array(1.0, dtype=value.dtype)
+    np.put_along_axis(output, np.expand_dims(max_index, axis=op.axis), ones, axis=op.axis)
+    evaluator.values[node.outputs[0]] = output
 
 
 @register_evaluator("NegativeLogLikelihoodLoss")

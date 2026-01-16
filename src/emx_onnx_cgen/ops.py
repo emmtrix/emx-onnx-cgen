@@ -87,6 +87,7 @@ UNARY_OP_TYPES = {
     "Identity",
     "LeakyRelu",
     "Log",
+    "Mish",
     "Neg",
     "Not",
     "Reciprocal",
@@ -177,6 +178,7 @@ UNARY_SYMBOLS_DOUBLE = {
     ScalarFunction.LEAKY_RELU: "leaky_relu",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.LOG: "log",
+    ScalarFunction.MISH: "mish",
     ScalarFunction.NEG: "neg",
     ScalarFunction.RECIPROCAL: "reciprocal",
     ScalarFunction.RELU: "relu",
@@ -215,6 +217,7 @@ UNARY_SYMBOLS_FLOAT = {
     ScalarFunction.LEAKY_RELU: "leaky_relu",
     ScalarFunction.POSITIVE: "identity",
     ScalarFunction.LOG: "logf",
+    ScalarFunction.MISH: "mish",
     ScalarFunction.NEG: "neg",
     ScalarFunction.RECIPROCAL: "reciprocal",
     ScalarFunction.RELU: "relu",
@@ -457,6 +460,7 @@ UNARY_APPLY_FUNCS = {
     "thresholded_relu": lambda value: np.where(
         value > 1.0, value, 0.0
     ),
+    "mish": lambda value: value * np.tanh(np.log1p(np.exp(value))),
     "atanhf": np.arctanh,
     "atanh": np.arctanh,
 }

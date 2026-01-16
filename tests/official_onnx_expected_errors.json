@@ -2661,11 +2661,11 @@
   ],
   [
     "node/test_globalmaxpool/model.onnx",
-    "Unsupported op GlobalMaxPool"
+    ""
   ],
   [
     "node/test_globalmaxpool_precomputed/model.onnx",
-    "Unsupported op GlobalMaxPool"
+    ""
   ],
   [
     "node/test_greater/model.onnx",
@@ -2901,31 +2901,31 @@
   ],
   [
     "node/test_hardmax_axis_0/model.onnx",
-    "Unsupported op Hardmax"
+    ""
   ],
   [
     "node/test_hardmax_axis_1/model.onnx",
-    "Unsupported op Hardmax"
+    ""
   ],
   [
     "node/test_hardmax_axis_2/model.onnx",
-    "Unsupported op Hardmax"
+    ""
   ],
   [
     "node/test_hardmax_default_axis/model.onnx",
-    "Unsupported op Hardmax"
+    ""
   ],
   [
     "node/test_hardmax_example/model.onnx",
-    "Unsupported op Hardmax"
+    ""
   ],
   [
     "node/test_hardmax_negative_axis/model.onnx",
-    "Unsupported op Hardmax"
+    ""
   ],
   [
     "node/test_hardmax_one_hot/model.onnx",
-    "Unsupported op Hardmax"
+    ""
   ],
   [
     "node/test_hardsigmoid/model.onnx",
@@ -3829,7 +3829,7 @@
   ],
   [
     "node/test_mish/model.onnx",
-    "Unsupported op Mish"
+    ""
   ],
   [
     "node/test_mish_expanded/model.onnx",

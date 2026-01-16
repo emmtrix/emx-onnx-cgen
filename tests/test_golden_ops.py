@@ -39,6 +39,9 @@ from test_ops import (
     _make_eye_like_model,
     _make_instance_normalization_model,
     _make_group_normalization_model,
+    _make_global_max_pool_model,
+    _make_hardmax_model,
+    _make_mish_model,
 )
 
 
@@ -411,6 +414,7 @@ OP_GOLDEN_CASES = [
     ("averagepool", "average_pool", _make_average_pool_model),
     ("softmax", "softmax", _make_softmax_model),
     ("logsoftmax", "logsoftmax", _make_logsoftmax_model),
+    ("hardmax", "hardmax", _make_hardmax_model),
     (
         "negativeloglikelihoodloss",
         "negative_log_likelihood_loss",
@@ -469,6 +473,7 @@ OP_GOLDEN_CASES = [
             ceil_mode=0,
         ),
     ),
+    ("globalmaxpool", "global_max_pool", _make_global_max_pool_model),
     ("concat", "concat", _make_concat_model),
     (
         "gatherelements",
@@ -543,6 +548,7 @@ OP_GOLDEN_CASES = [
         "range",
         lambda: _make_range_model(start=0, limit=4, delta=1, dtype=TensorProto.INT64),
     ),
+    ("mish", "mish", _make_mish_model),
     (
         "split",
         "split",
