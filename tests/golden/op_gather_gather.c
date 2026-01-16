@@ -37,7 +37,7 @@
 static inline void node0_gather(const float data[restrict 3][2], const int64_t indices[restrict 2], float output[restrict 2][2]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 2; ++i1) {
-            int64_t gather_index = (int64_t)indices[i0];
+            idx_t gather_index = indices[i0];
             if (gather_index < 0) {
                 gather_index += 3;
             }

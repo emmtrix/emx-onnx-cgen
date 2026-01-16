@@ -12,16 +12,16 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     }
     for (idx_t i = 0; i < {{ starts_len }}; ++i) {
 {% if axes_input %}
-        int64_t axis_value = (int64_t){{ axes_input }}[i];
+        idx_t axis_value = {{ axes_input }}[i];
 {% else %}
-        int64_t axis_value = (int64_t)i;
+        idx_t axis_value = i;
 {% endif %}
         if (axis_value < 0) {
-            axis_value += (int64_t)input_rank;
+            axis_value += input_rank;
         }
-        idx_t axis = (idx_t)axis_value;
-        int64_t dim = (int64_t)input_dims[axis];
-        int64_t start_value = (int64_t){{ starts_input }}[i];
+        idx_t axis = axis_value;
+        idx_t dim = input_dims[axis];
+        idx_t start_value = {{ starts_input }}[i];
         if (start_value < 0) {
             start_value += dim;
         }
@@ -31,12 +31,12 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         if (start_value > dim) {
             start_value = dim;
         }
-        int64_t step_value = 1;
+        idx_t step_value = 1;
 {% if steps_input %}
-        step_value = (int64_t){{ steps_input }}[i];
+        step_value = {{ steps_input }}[i];
 {% endif %}
-        start_indices[axis] = (idx_t)start_value;
-        step_values[axis] = (idx_t)step_value;
+        start_indices[axis] = start_value;
+        step_values[axis] = step_value;
     }
 {% for dim in output_shape %}
     for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {

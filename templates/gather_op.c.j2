@@ -2,7 +2,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in output_shape %}
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-int64_t gather_index = (int64_t){{ indices }}{% for var in indices_indices %}[{{ var }}]{% endfor %};
+idx_t gather_index = {{ indices }}{% for var in indices_indices %}[{{ var }}]{% endfor %};
 if (gather_index < 0) {
     gather_index += {{ axis_dim }};
 }
