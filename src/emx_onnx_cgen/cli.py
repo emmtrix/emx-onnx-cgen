@@ -150,7 +150,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _handle_compile(args: argparse.Namespace) -> int:
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
-    model_name = args.model_name or output_path.stem
+    model_name = args.model_name or "model"
     try:
         model_checksum = _model_checksum(model_path)
         model = onnx.load_model(model_path)
@@ -221,7 +221,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
     import onnxruntime as ort
 
     model_path: Path = args.model
-    model_name = args.model_name or model_path.stem
+    model_name = args.model_name or "model"
     model_checksum = _model_checksum(model_path)
     compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=False)
     if compiler_cmd is None:
