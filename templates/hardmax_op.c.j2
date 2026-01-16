@@ -1,0 +1,25 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
+    const idx_t outer = {{ outer }};
+    const idx_t axis_size = {{ axis_size }};
+    const idx_t inner = {{ inner }};
+    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
+        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
+            idx_t base = (outer_idx * axis_size * inner) + inner_idx;
+            {{ c_type }} max_value = input_flat[base];
+            idx_t max_index = 0;
+            for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
+                {{ c_type }} value = input_flat[base + axis_idx * inner];
+                if (value > max_value) {
+                    max_value = value;
+                    max_index = axis_idx;
+                }
+            }
+            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
+                output_flat[base + axis_idx * inner] =
+                    axis_idx == max_index ? {{ one_literal }} : {{ zero_literal }};
+            }
+        }
+    }
+}

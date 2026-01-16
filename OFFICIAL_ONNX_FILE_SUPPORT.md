@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1175 / 1802 official ONNX files.
+Support 1185 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -673,8 +673,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_gemm_transposeB/model.onnx | ✅ |  |
 | node/test_globalaveragepool/model.onnx | ✅ |  |
 | node/test_globalaveragepool_precomputed/model.onnx | ✅ |  |
-| node/test_globalmaxpool/model.onnx | ❌ | Unsupported op GlobalMaxPool |
-| node/test_globalmaxpool_precomputed/model.onnx | ❌ | Unsupported op GlobalMaxPool |
+| node/test_globalmaxpool/model.onnx | ✅ |  |
+| node/test_globalmaxpool_precomputed/model.onnx | ✅ |  |
 | node/test_greater/model.onnx | ✅ |  |
 | node/test_greater_bcast/model.onnx | ✅ |  |
 | node/test_greater_equal/model.onnx | ✅ |  |
@@ -733,13 +733,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_hannwindow_expanded/model.onnx | ❌ | Cast input and output shapes must match |
 | node/test_hannwindow_symmetric/model.onnx | ❌ | Unsupported op HannWindow |
 | node/test_hannwindow_symmetric_expanded/model.onnx | ❌ | Cast input and output shapes must match |
-| node/test_hardmax_axis_0/model.onnx | ❌ | Unsupported op Hardmax |
-| node/test_hardmax_axis_1/model.onnx | ❌ | Unsupported op Hardmax |
-| node/test_hardmax_axis_2/model.onnx | ❌ | Unsupported op Hardmax |
-| node/test_hardmax_default_axis/model.onnx | ❌ | Unsupported op Hardmax |
-| node/test_hardmax_example/model.onnx | ❌ | Unsupported op Hardmax |
-| node/test_hardmax_negative_axis/model.onnx | ❌ | Unsupported op Hardmax |
-| node/test_hardmax_one_hot/model.onnx | ❌ | Unsupported op Hardmax |
+| node/test_hardmax_axis_0/model.onnx | ✅ |  |
+| node/test_hardmax_axis_1/model.onnx | ✅ |  |
+| node/test_hardmax_axis_2/model.onnx | ✅ |  |
+| node/test_hardmax_default_axis/model.onnx | ✅ |  |
+| node/test_hardmax_example/model.onnx | ✅ |  |
+| node/test_hardmax_negative_axis/model.onnx | ✅ |  |
+| node/test_hardmax_one_hot/model.onnx | ✅ |  |
 | node/test_hardsigmoid/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_hardsigmoid_default/model.onnx | ✅ |  |
 | node/test_hardsigmoid_default_expanded_ver18/model.onnx | ❌ | Min expects identical input/output shapes |
@@ -965,7 +965,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_min_uint32/model.onnx | ✅ |  |
 | node/test_min_uint64/model.onnx | ✅ |  |
 | node/test_min_uint8/model.onnx | ✅ |  |
-| node/test_mish/model.onnx | ❌ | Unsupported op Mish |
+| node/test_mish/model.onnx | ✅ |  |
 | node/test_mish_expanded/model.onnx | ✅ |  |
 | node/test_mod_broadcast/model.onnx | ✅ |  |
 | node/test_mod_int64_fmod/model.onnx | ✅ |  |

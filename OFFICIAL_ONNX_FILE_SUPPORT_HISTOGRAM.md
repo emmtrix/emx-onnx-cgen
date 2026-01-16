@@ -26,7 +26,6 @@
 | CastLike input and output shapes must match | 8 | ███████ |
 | Unsupported op RotaryEmbedding | 8 | ███████ |
 | tuple index out of range | 8 | ███████ |
-| Unsupported op Hardmax | 7 | ██████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | Unsupported op TopK | 7 | ██████ |
 | AveragePool has unsupported attributes | 6 | █████ |
@@ -83,7 +82,6 @@
 | Unsupported op ConvInteger | 2 | ██ |
 | Unsupported op Det | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
-| Unsupported op GlobalMaxPool | 2 | ██ |
 | Unsupported op HammingWindow | 2 | ██ |
 | Unsupported op HannWindow | 2 | ██ |
 | Unsupported op MaxUnpool | 2 | ██ |
@@ -107,7 +105,6 @@
 | Mean must have at least 2 inputs | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
 | Min must have at least 2 inputs | 1 | █ |
-| Unsupported op Mish | 1 | █ |
 | Unsupported op NonZero | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
 | Pow expects matching dtypes, got float, uint32 | 1 | █ |

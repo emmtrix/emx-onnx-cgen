@@ -397,6 +397,7 @@ _ONNX_OP_TO_SCALAR_FUNCTION = {
     "Max": ScalarFunction.MAXIMUM,
     "Mean": ScalarFunction.MEAN,
     "Min": ScalarFunction.MINIMUM,
+    "Mish": ScalarFunction.MISH,
     "Mod": ScalarFunction.FMOD,
     "Mul": ScalarFunction.MUL,
     "Neg": ScalarFunction.NEG,

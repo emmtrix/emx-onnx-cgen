@@ -38,6 +38,7 @@ from .codegen.c_emitter import (
     LrnOp,
     LstmOp,
     LogSoftmaxOp,
+    HardmaxOp,
     NegativeLogLikelihoodLossOp,
     NodeInfo,
     PadOp,
@@ -52,6 +53,7 @@ from .codegen.c_emitter import (
     ReshapeOp,
     ResizeOp,
     GridSampleOp,
+    HardmaxOp,
     SoftmaxOp,
     ShapeOp,
     SliceOp,
@@ -67,6 +69,7 @@ from .lowering.average_pool import (
     lower_average_pool,
     lower_global_average_pool,
 )
+from .lowering import global_max_pool as _global_max_pool  # noqa: F401
 from .lowering.batch_normalization import lower_batch_normalization
 from .lowering.cast import lower_cast
 from .lowering.concat import lower_concat
@@ -87,6 +90,7 @@ from .lowering.gather_elements import lower_gather_elements
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
+from .lowering import hardmax as _hardmax  # noqa: F401
 from .lowering import group_normalization as _group_normalization  # noqa: F401
 from .lowering import instance_normalization as _instance_normalization  # noqa: F401
 from .lowering import layer_normalization as _layer_normalization  # noqa: F401
@@ -350,6 +354,7 @@ class Compiler:
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
+            | HardmaxOp
             | NegativeLogLikelihoodLossOp
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
@@ -395,6 +400,7 @@ class Compiler:
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
+            | HardmaxOp
             | NegativeLogLikelihoodLossOp
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp

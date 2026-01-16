@@ -260,6 +260,38 @@ def _make_range_model(
     return model
 
 
+def _make_hardmax_model() -> onnx.ModelProto:
+    return _make_operator_model(
+        op_type="Hardmax",
+        input_shapes=[[2, 3]],
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": 1},
+        opset=13,
+    )
+
+
+def _make_global_max_pool_model() -> onnx.ModelProto:
+    input_shape = [1, 2, 4, 3]
+    return _make_operator_model(
+        op_type="GlobalMaxPool",
+        input_shapes=[input_shape],
+        output_shape=[input_shape[0], input_shape[1], 1, 1],
+        dtype=TensorProto.FLOAT,
+        opset=13,
+    )
+
+
+def _make_mish_model() -> onnx.ModelProto:
+    return _make_operator_model(
+        op_type="Mish",
+        input_shapes=[[2, 3]],
+        output_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        opset=18,
+    )
+
+
 def _make_cumsum_model(
     *,
     input_shape: list[int],
@@ -3162,6 +3194,21 @@ def test_global_average_pool_matches_onnxruntime() -> None:
         output_shape=[input_shape[0], input_shape[1], 1, 1],
         dtype=TensorProto.FLOAT,
     )
+    _run_ort_compare(model)
+
+
+def test_global_max_pool_matches_onnxruntime() -> None:
+    model = _make_global_max_pool_model()
+    _run_ort_compare(model)
+
+
+def test_hardmax_matches_onnxruntime() -> None:
+    model = _make_hardmax_model()
+    _run_ort_compare(model)
+
+
+def test_mish_matches_onnxruntime() -> None:
+    model = _make_mish_model()
     _run_ort_compare(model)
 
 
