@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1159 / 1802 official ONNX files.
+Support 1175 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1627,23 +1627,23 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | node/test_transpose_all_permutations_4/model.onnx | ✅ |  |
 | node/test_transpose_all_permutations_5/model.onnx | ✅ |  |
 | node/test_transpose_default/model.onnx | ✅ |  |
-| node/test_tril/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_neg/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_one_row_neg/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_out_neg/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_out_pos/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_pos/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_square/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_tril_square_neg/model.onnx | ❌ | Unsupported op Trilu |
+| node/test_tril/model.onnx | ✅ |  |
+| node/test_tril_neg/model.onnx | ✅ |  |
+| node/test_tril_one_row_neg/model.onnx | ✅ |  |
+| node/test_tril_out_neg/model.onnx | ✅ |  |
+| node/test_tril_out_pos/model.onnx | ✅ |  |
+| node/test_tril_pos/model.onnx | ✅ |  |
+| node/test_tril_square/model.onnx | ✅ |  |
+| node/test_tril_square_neg/model.onnx | ✅ |  |
 | node/test_tril_zero/model.onnx | ❌ | Output shape must be fully defined |
-| node/test_triu/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_neg/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_one_row/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_out_neg_out/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_out_pos/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_pos/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_square/model.onnx | ❌ | Unsupported op Trilu |
-| node/test_triu_square_neg/model.onnx | ❌ | Unsupported op Trilu |
+| node/test_triu/model.onnx | ✅ |  |
+| node/test_triu_neg/model.onnx | ✅ |  |
+| node/test_triu_one_row/model.onnx | ✅ |  |
+| node/test_triu_out_neg_out/model.onnx | ✅ |  |
+| node/test_triu_out_pos/model.onnx | ✅ |  |
+| node/test_triu_pos/model.onnx | ✅ |  |
+| node/test_triu_square/model.onnx | ✅ |  |
+| node/test_triu_square_neg/model.onnx | ✅ |  |
 | node/test_triu_zero/model.onnx | ❌ | Output shape must be fully defined |
 | node/test_unique_length_1/model.onnx | ❌ | Unsupported op Unique |
 | node/test_unique_not_sorted_without_axis/model.onnx | ❌ | Unsupported op Unique |
