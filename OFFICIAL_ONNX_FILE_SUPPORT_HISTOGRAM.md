@@ -4,7 +4,6 @@
 | --- | --- | --- |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ██████████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
-| '*' object has no attribute '*' | 23 | ███████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
