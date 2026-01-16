@@ -19,7 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -33,26 +37,26 @@
 static inline void node0_eyelike(const float input0[restrict 3][3], float output[restrict 3][3]) {
     (void)input0;
     float *output_data = (float *)output;
-    size_t total = (size_t)1 * 3 * 3;
-    for (size_t index = 0; index < total; ++index) {
+    idx_t total = (idx_t)1 * 3 * 3;
+    for (idx_t index = 0; index < total; ++index) {
         output_data[index] = 0.0f;
     }
     int k = 0;
-    size_t rows = 3;
-    size_t cols = 3;
-    size_t row_start = k >= 0 ? 0 : (size_t)(-k);
-    size_t col_start = k >= 0 ? (size_t)k : 0;
+    idx_t rows = 3;
+    idx_t cols = 3;
+    idx_t row_start = k >= 0 ? 0 : (idx_t)(-k);
+    idx_t col_start = k >= 0 ? (idx_t)k : 0;
     if (row_start >= rows || col_start >= cols) {
         return;
     }
-    size_t max_rows = rows - row_start;
-    size_t max_cols = cols - col_start;
-    size_t diag_len = max_rows < max_cols ? max_rows : max_cols;
-    for (size_t batch = 0; batch < 1; ++batch) {
-        size_t base = batch * rows * cols;
-        for (size_t diag = 0; diag < diag_len; ++diag) {
-            size_t row = row_start + diag;
-            size_t col = col_start + diag;
+    idx_t max_rows = rows - row_start;
+    idx_t max_cols = cols - col_start;
+    idx_t diag_len = max_rows < max_cols ? max_rows : max_cols;
+    for (idx_t batch = 0; batch < 1; ++batch) {
+        idx_t base = batch * rows * cols;
+        for (idx_t diag = 0; diag < diag_len; ++diag) {
+            idx_t row = row_start + diag;
+            idx_t col = col_start + diag;
             output_data[base + row * cols + col] = ((float)1);
         }
     }

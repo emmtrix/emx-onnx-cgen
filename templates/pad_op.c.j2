@@ -5,10 +5,10 @@ const {{ c_type }} *{{ input0_flat }} = (const {{ c_type }} *){{ input0 }};
 const {{ pads_c_type }} pad_values[] = { {% for value in pads_values %}{{ value }}{{ ", " if not loop.last else "" }}{% endfor %} };
 {% endif %}
 ptrdiff_t pad_begin[{{ output_shape|length }}];
-for (size_t pad_index = 0; pad_index < {{ output_shape|length }}; ++pad_index) {
+for (idx_t pad_index = 0; pad_index < {{ output_shape|length }}; ++pad_index) {
     pad_begin[pad_index] = 0;
 }
-for (size_t axis_index = 0; axis_index < {{ axes_length }}; ++axis_index) {
+for (idx_t axis_index = 0; axis_index < {{ axes_length }}; ++axis_index) {
     ptrdiff_t axis = (ptrdiff_t){{ axes_input }}[axis_index];
     if (axis < 0) {
         axis += {{ output_shape|length }};
@@ -20,14 +20,14 @@ for (size_t axis_index = 0; axis_index < {{ axes_length }}; ++axis_index) {
 }
 {% endif %}
 {% for dim in output_shape %}
-for (size_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
+for (idx_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
 {% endfor %}
 {{ output }}{% for var in out_loop_vars %}[{{ var }}]{% endfor %} = {{ pad_value_expr }};
 {% for _ in output_shape %}
 }
 {% endfor %}
 {% for dim in output_shape %}
-for (size_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
+for (idx_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
 {% endfor %}
 ptrdiff_t {{ base_index }} = 0;
 int pad_in_bounds = 1;

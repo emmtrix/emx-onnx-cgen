@@ -1,8 +1,8 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    for (size_t i = 0; i < {{ m }}; ++i) {
-        for (size_t j = 0; j < {{ n }}; ++j) {
+    for (idx_t i = 0; i < {{ m }}; ++i) {
+        for (idx_t j = 0; j < {{ n }}; ++j) {
             {{ acc_type }} acc = {{ zero_literal }};
-            for (size_t k = 0; k < {{ k }}; ++k) {
+            for (idx_t k = 0; k < {{ k }}; ++k) {
                 {% if trans_a %}
                 const {{ c_type }} a_val = {{ input_a }}[k][i];
                 {% else %}
@@ -17,11 +17,11 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
             {% if input_c %}
             {% if c_rank == 2 %}
-            size_t c_i = {% if c_dim0 == 1 %}0{% else %}i{% endif %};
-            size_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
+            idx_t c_i = {% if c_dim0 == 1 %}0{% else %}i{% endif %};
+            idx_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
             const {{ c_type }} bias = {{ input_c }}[c_i][c_j];
             {% elif c_rank == 1 %}
-            size_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
+            idx_t c_j = {% if c_dim1 == 1 %}0{% else %}j{% endif %};
             const {{ c_type }} bias = {{ input_c }}[c_j];
             {% else %}
             const {{ c_type }} bias = {{ input_c }}[0];

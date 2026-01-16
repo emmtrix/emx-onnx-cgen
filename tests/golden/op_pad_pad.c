@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+#include <stddef.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -55,13 +59,13 @@ static const float weight2_value[1] = {
  */
 static inline void node0_pad(const float input[restrict 2][3], float output[restrict 2][5]) {
     const float *input_flat = (const float *)input;
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 5; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 5; ++i1) {
             output[i0][i1] = 0.0f;
         }
     }
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 5; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 5; ++i1) {
             ptrdiff_t pad_index = 0;
             int pad_in_bounds = 1;
             ptrdiff_t pad_idx0 = (ptrdiff_t)i0 - (ptrdiff_t)(0);

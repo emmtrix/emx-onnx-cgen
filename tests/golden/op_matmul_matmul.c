@@ -19,7 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -30,10 +34,10 @@
  * Attrs: n/a
  */
 static inline void node0_matmul(const float input0[restrict 2][3], const float input1[restrict 3][4], float output[restrict 2][4]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 4; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 4; ++i1) {
             float acc = 0.0f;
-            for (size_t k = 0; k < 3; ++k) {
+            for (idx_t k = 0; k < 3; ++k) {
                 acc += input0[i0][k] * input1[k][i1];
             }
             output[i0][i1] = acc;

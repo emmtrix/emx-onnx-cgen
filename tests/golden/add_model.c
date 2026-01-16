@@ -19,9 +19,13 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
 #include <float.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 static inline float ref_scalar_f32_add(float a, float b) {
     return a + b;
@@ -36,9 +40,9 @@ static inline float ref_scalar_f32_add(float a, float b) {
  * Attrs: n/a
  */
 static inline void node0_add(const float input0[restrict 2][3][4], const float input1[restrict 2][3][4], float output[restrict 2][3][4]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
-            for (size_t i2 = 0; i2 < 4; ++i2) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
                 output[i0][i1][i2] = ref_scalar_f32_add(input0[i0][i1][i2], input1[i0][i1][i2]);
             }
         }

@@ -19,8 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -44,10 +47,10 @@ static const int64_t weight1_repeats[2] = {
 static inline void node0_tile(const float input0[restrict 2][3], float output[restrict 4][3]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
-    size_t output_index = 0;
-    for (size_t i0 = 0; i0 < 4; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
-            size_t input_index = (i0 % 2) * 3 + (i1 % 3) * 1;
+    idx_t output_index = 0;
+    for (idx_t i0 = 0; i0 < 4; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            idx_t input_index = (i0 % 2) * 3 + (i1 % 3) * 1;
             output_data[output_index] = input_data[input_index];
             output_index++;
         }

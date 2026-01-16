@@ -19,8 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -67,7 +70,7 @@ static inline void node0_range(const int64_t start[restrict 1], const int64_t li
     (void)limit;
     const int64_t start_value = start[0];
     const int64_t delta_value = delta[0];
-    for (size_t idx = 0; idx < 4; ++idx) {
+    for (idx_t idx = 0; idx < 4; ++idx) {
         output[idx] = start_value + ((int64_t)idx * delta_value);
     }
 }

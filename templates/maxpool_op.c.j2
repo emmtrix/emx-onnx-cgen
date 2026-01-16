@@ -1,13 +1,13 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    for (size_t n = 0; n < {{ batch }}; ++n) {
-        for (size_t c = 0; c < {{ channels }}; ++c) {
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
 {% if spatial_rank == 1 %}
-            for (size_t ox = 0; ox < {{ out_spatial[0] }}; ++ox) {
+            for (idx_t ox = 0; ox < {{ out_spatial[0] }}; ++ox) {
                 {{ c_type }} max_value = {{ min_literal }};
 {% if indices %}
                 {{ indices_c_type }} max_index = 0;
 {% endif %}
-                for (size_t kx = 0; kx < {{ kernel_shape[0] }}; ++kx) {
+                for (idx_t kx = 0; kx < {{ kernel_shape[0] }}; ++kx) {
                     const int ix = (int)(ox * {{ strides[0] }} + kx * {{ dilations[0] }}) - {{ pads[0] }};
                     if (ix < 0 || ix >= {{ in_spatial[0] }}) {
                         continue;
@@ -30,18 +30,18 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
             }
 {% elif spatial_rank == 2 %}
-            for (size_t oh = 0; oh < {{ out_spatial[0] }}; ++oh) {
-                for (size_t ow = 0; ow < {{ out_spatial[1] }}; ++ow) {
+            for (idx_t oh = 0; oh < {{ out_spatial[0] }}; ++oh) {
+                for (idx_t ow = 0; ow < {{ out_spatial[1] }}; ++ow) {
                     {{ c_type }} max_value = {{ min_literal }};
 {% if indices %}
                     {{ indices_c_type }} max_index = 0;
 {% endif %}
-                    for (size_t kh = 0; kh < {{ kernel_shape[0] }}; ++kh) {
+                    for (idx_t kh = 0; kh < {{ kernel_shape[0] }}; ++kh) {
                         const int ih = (int)(oh * {{ strides[0] }} + kh * {{ dilations[0] }}) - {{ pads[0] }};
                         if (ih < 0 || ih >= {{ in_spatial[0] }}) {
                             continue;
                         }
-                        for (size_t kw = 0; kw < {{ kernel_shape[1] }}; ++kw) {
+                        for (idx_t kw = 0; kw < {{ kernel_shape[1] }}; ++kw) {
                             const int iw = (int)(ow * {{ strides[1] }} + kw * {{ dilations[1] }}) - {{ pads[1] }};
                             if (iw < 0 || iw >= {{ in_spatial[1] }}) {
                                 continue;
@@ -66,24 +66,24 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
 {% elif spatial_rank == 3 %}
-            for (size_t od = 0; od < {{ out_spatial[0] }}; ++od) {
-                for (size_t oh = 0; oh < {{ out_spatial[1] }}; ++oh) {
-                    for (size_t ow = 0; ow < {{ out_spatial[2] }}; ++ow) {
+            for (idx_t od = 0; od < {{ out_spatial[0] }}; ++od) {
+                for (idx_t oh = 0; oh < {{ out_spatial[1] }}; ++oh) {
+                    for (idx_t ow = 0; ow < {{ out_spatial[2] }}; ++ow) {
                         {{ c_type }} max_value = {{ min_literal }};
 {% if indices %}
                         {{ indices_c_type }} max_index = 0;
 {% endif %}
-                        for (size_t kd = 0; kd < {{ kernel_shape[0] }}; ++kd) {
+                        for (idx_t kd = 0; kd < {{ kernel_shape[0] }}; ++kd) {
                             const int id = (int)(od * {{ strides[0] }} + kd * {{ dilations[0] }}) - {{ pads[0] }};
                             if (id < 0 || id >= {{ in_spatial[0] }}) {
                                 continue;
                             }
-                            for (size_t kh = 0; kh < {{ kernel_shape[1] }}; ++kh) {
+                            for (idx_t kh = 0; kh < {{ kernel_shape[1] }}; ++kh) {
                                 const int ih = (int)(oh * {{ strides[1] }} + kh * {{ dilations[1] }}) - {{ pads[1] }};
                                 if (ih < 0 || ih >= {{ in_spatial[1] }}) {
                                     continue;
                                 }
-                                for (size_t kw = 0; kw < {{ kernel_shape[2] }}; ++kw) {
+                                for (idx_t kw = 0; kw < {{ kernel_shape[2] }}; ++kw) {
                                     const int iw = (int)(ow * {{ strides[2] }} + kw * {{ dilations[2] }}) - {{ pads[2] }};
                                     if (iw < 0 || iw >= {{ in_spatial[2] }}) {
                                         continue;

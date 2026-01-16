@@ -19,7 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -34,18 +38,18 @@
 static inline void node0_depthtospace(const float input0[restrict 1][4][2][2], float output[restrict 1][1][4][4]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
-    size_t output_index = 0;
-    for (size_t n = 0; n < 1; ++n) {
-        for (size_t c_out = 0; c_out < 1; ++c_out) {
-            for (size_t h_out = 0; h_out < 4; ++h_out) {
-                size_t h_in = h_out / 2;
-                size_t offset_h = h_out % 2;
-                for (size_t w_out = 0; w_out < 4; ++w_out) {
-                    size_t w_in = w_out / 2;
-                    size_t offset_w = w_out % 2;
-                    size_t c_in;
+    idx_t output_index = 0;
+    for (idx_t n = 0; n < 1; ++n) {
+        for (idx_t c_out = 0; c_out < 1; ++c_out) {
+            for (idx_t h_out = 0; h_out < 4; ++h_out) {
+                idx_t h_in = h_out / 2;
+                idx_t offset_h = h_out % 2;
+                for (idx_t w_out = 0; w_out < 4; ++w_out) {
+                    idx_t w_in = w_out / 2;
+                    idx_t offset_w = w_out % 2;
+                    idx_t c_in;
                     c_in = (offset_h * 2 + offset_w) * 1 + c_out;
-                    size_t input_index = ((n * 4 + c_in) * 2 + h_in) * 2 + w_in;
+                    idx_t input_index = ((n * 4 + c_in) * 2 + h_in) * 2 + w_in;
                     output_data[output_index] = input_data[input_index];
                     output_index++;
                 }

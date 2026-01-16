@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -33,16 +37,16 @@
  *   epsilon: 9.999999747378752e-06
  */
 static inline void node0_rmsnormalization(const float input0[restrict 2][3][4], const float scale[restrict 4], float output[restrict 2][3][4]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
-            for (size_t i2 = 0; i2 < 4; ++i2) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
                 float value = input0[i0][i1][i2];
                 sum += value * value;
             }
             float mean_square = sum / 4;
             float denom = sqrtf(mean_square + 9.99999975e-06f);
-            for (size_t i2 = 0; i2 < 4; ++i2) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
                 float value = input0[i0][i1][i2] / denom;
                 value = value * scale[i2];
                 output[i0][i1][i2] = value;

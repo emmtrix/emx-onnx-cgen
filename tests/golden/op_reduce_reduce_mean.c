@@ -19,8 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -43,11 +46,11 @@ static const int64_t weight1_axes[1] = {
  *   keepdims: 1
  */
 static inline void node0_reducemean(const float input0[restrict 2][3][4], float output[restrict 2][1][4]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 1; ++i1) {
-            for (size_t i2 = 0; i2 < 4; ++i2) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 1; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
                 float acc = 0.0f;
-                for (size_t r0 = 0; r0 < 3; ++r0) {
+                for (idx_t r0 = 0; r0 < 3; ++r0) {
                     acc += input0[i0][r0][i2];
                 }
                 output[i0][i1][i2] = acc / 3.0f;

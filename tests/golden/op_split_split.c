@@ -19,9 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -46,12 +49,12 @@ static const int64_t weight1_split[3] = {
 static inline void node0_split(const float input0[restrict 2][6], float output_0[restrict 2][2], float output_1[restrict 2][2], float output_2[restrict 2][2]) {
     const float *input_data = (const float *)input0;
     float *output_ptrs[] = { (float *)output_0, (float *)output_1, (float *)output_2 };
-    const size_t axis_sizes[] = { 2, 2, 2 };
-    for (size_t outer_idx = 0; outer_idx < 2; ++outer_idx) {
-        size_t input_base = outer_idx * 6 * 1;
-        size_t axis_offset = 0;
-        for (size_t output_idx = 0; output_idx < 3; ++output_idx) {
-            size_t copy_elems = axis_sizes[output_idx] * 1;
+    const idx_t axis_sizes[] = { 2, 2, 2 };
+    for (idx_t outer_idx = 0; outer_idx < 2; ++outer_idx) {
+        idx_t input_base = outer_idx * 6 * 1;
+        idx_t axis_offset = 0;
+        for (idx_t output_idx = 0; output_idx < 3; ++output_idx) {
+            idx_t copy_elems = axis_sizes[output_idx] * 1;
             memcpy(
             output_ptrs[output_idx] + outer_idx * copy_elems,
             input_data + input_base + axis_offset,

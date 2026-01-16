@@ -1,10 +1,10 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in output_shape %}
-for (size_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
 {{ input_c_type }} best = {{ input0 }}{{ init_index_expr }};
 {{ output_c_type }} best_index = 0;
-for (size_t {{ reduce_var }} = 1; {{ reduce_var }} < {{ reduce_dim }}; ++{{ reduce_var }}) {
+for (idx_t {{ reduce_var }} = 1; {{ reduce_var }} < {{ reduce_dim }}; ++{{ reduce_var }}) {
     {{ input_c_type }} candidate = {{ input0 }}{{ input_index_expr }};
     if (candidate {{ compare_op }} best) {
         best = candidate;

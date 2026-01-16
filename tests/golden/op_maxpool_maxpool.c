@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -35,17 +39,17 @@
  *   strides: [2, 2]
  */
 static inline void node0_maxpool(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
-    for (size_t n = 0; n < 1; ++n) {
-        for (size_t c = 0; c < 1; ++c) {
-            for (size_t oh = 0; oh < 2; ++oh) {
-                for (size_t ow = 0; ow < 2; ++ow) {
+    for (idx_t n = 0; n < 1; ++n) {
+        for (idx_t c = 0; c < 1; ++c) {
+            for (idx_t oh = 0; oh < 2; ++oh) {
+                for (idx_t ow = 0; ow < 2; ++ow) {
                     float max_value = -INFINITY;
-                    for (size_t kh = 0; kh < 2; ++kh) {
+                    for (idx_t kh = 0; kh < 2; ++kh) {
                         const int ih = (int)(oh * 2 + kh * 1) - 0;
                         if (ih < 0 || ih >= 4) {
                             continue;
                         }
-                        for (size_t kw = 0; kw < 2; ++kw) {
+                        for (idx_t kw = 0; kw < 2; ++kw) {
                             const int iw = (int)(ow * 2 + kw * 1) - 0;
                             if (iw < 0 || iw >= 4) {
                                 continue;

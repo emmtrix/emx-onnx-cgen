@@ -1,13 +1,13 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in shape[:1] %}
-for (size_t {{ loop_vars[0] }} = 0; {{ loop_vars[0] }} < {{ dim }}; ++{{ loop_vars[0] }}) {
+for (idx_t {{ loop_vars[0] }} = 0; {{ loop_vars[0] }} < {{ dim }}; ++{{ loop_vars[0] }}) {
 {% endfor %}
-    for (size_t g = 0; g < {{ num_groups }}; ++g) {
+    for (idx_t g = 0; g < {{ num_groups }}; ++g) {
         {{ c_type }} sum = {{ zero_literal }};
-        for (size_t c_in_group = 0; c_in_group < {{ group_size }}; ++c_in_group) {
-            size_t c = g * {{ group_size }} + c_in_group;
+        for (idx_t c_in_group = 0; c_in_group < {{ group_size }}; ++c_in_group) {
+            idx_t c = g * {{ group_size }} + c_in_group;
 {% for dim in shape[2:] %}
-            for (size_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
+            for (idx_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
 {% endfor %}
                 sum += {{ input0 }}[{{ loop_vars[0] }}][c]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %};
 {% for _ in shape[2:] %}
@@ -16,10 +16,10 @@ for (size_t {{ loop_vars[0] }} = 0; {{ loop_vars[0] }} < {{ dim }}; ++{{ loop_va
         }
         {{ c_type }} mean = sum / ({{ group_size }} * {{ spatial_size }});
         {{ c_type }} var = {{ zero_literal }};
-        for (size_t c_in_group = 0; c_in_group < {{ group_size }}; ++c_in_group) {
-            size_t c = g * {{ group_size }} + c_in_group;
+        for (idx_t c_in_group = 0; c_in_group < {{ group_size }}; ++c_in_group) {
+            idx_t c = g * {{ group_size }} + c_in_group;
 {% for dim in shape[2:] %}
-            for (size_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
+            for (idx_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
 {% endfor %}
                 {{ c_type }} diff = {{ input0 }}[{{ loop_vars[0] }}][c]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %} - mean;
                 var += diff * diff;
@@ -28,10 +28,10 @@ for (size_t {{ loop_vars[0] }} = 0; {{ loop_vars[0] }} < {{ dim }}; ++{{ loop_va
 {% endfor %}
         }
         {{ c_type }} denom = {{ sqrt_fn }}(var / ({{ group_size }} * {{ spatial_size }}) + {{ epsilon_literal }});
-        for (size_t c_in_group = 0; c_in_group < {{ group_size }}; ++c_in_group) {
-            size_t c = g * {{ group_size }} + c_in_group;
+        for (idx_t c_in_group = 0; c_in_group < {{ group_size }}; ++c_in_group) {
+            idx_t c = g * {{ group_size }} + c_in_group;
 {% for dim in shape[2:] %}
-            for (size_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
+            for (idx_t {{ loop_vars[loop.index0 + 2] }} = 0; {{ loop_vars[loop.index0 + 2] }} < {{ dim }}; ++{{ loop_vars[loop.index0 + 2] }}) {
 {% endfor %}
                 {{ output }}[{{ loop_vars[0] }}][c]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %} =
                     ({{ input0 }}[{{ loop_vars[0] }}][c]{% for var in loop_vars[2:] %}[{{ var }}]{% endfor %} - mean) / denom * {{ scale }}[c] + {{ bias }}[c];

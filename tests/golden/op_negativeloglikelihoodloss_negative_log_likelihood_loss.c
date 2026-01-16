@@ -19,8 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -35,20 +38,20 @@ static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2
     const float *input_flat = (const float *)input0;
     const int64_t *target_flat = (const int64_t *)target;
     float *output_flat = (float *)output;
-    const size_t n = 2;
-    const size_t c = 3;
-    const size_t d = 1;
+    const idx_t n = 2;
+    const idx_t c = 3;
+    const idx_t d = 1;
     float loss_sum = 0.0f;
     float weight_sum = 0.0f;
-    for (size_t n_idx = 0; n_idx < n; ++n_idx) {
-        for (size_t d_idx = 0; d_idx < d; ++d_idx) {
-            size_t target_index = n_idx * d + d_idx;
+    for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
+        for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
+            idx_t target_index = n_idx * d + d_idx;
             int64_t target_value = target_flat[target_index];
             if ((int64_t)target_value == -1) {
                 continue;
             }
-            size_t class_index = (size_t)target_value;
-            size_t input_index = (n_idx * c + class_index) * d + d_idx;
+            idx_t class_index = (idx_t)target_value;
+            idx_t input_index = (n_idx * c + class_index) * d + d_idx;
             float value = -input_flat[input_index];
             float sample_weight = 1.0f;
             loss_sum += value;

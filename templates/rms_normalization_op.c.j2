@@ -1,10 +1,10 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in prefix_shape %}
-for (size_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
+for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
 {% endfor %}
     {{ c_type }} sum = {{ zero_literal }};
 {% for dim in norm_shape %}
-    for (size_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
+    for (idx_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
 {% endfor %}
         {{ c_type }} value = {{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %};
         sum += value * value;
@@ -14,7 +14,7 @@ for (size_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.in
     {{ c_type }} mean_square = sum / {{ inner }};
     {{ c_type }} denom = {{ sqrt_fn }}(mean_square + {{ epsilon_literal }});
 {% for dim in norm_shape %}
-    for (size_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
+    for (idx_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
 {% endfor %}
         {{ c_type }} value = {{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} / denom;
         value = value * {{ scale }}{% for var in scale_index_vars %}[{{ var }}]{% endfor %};

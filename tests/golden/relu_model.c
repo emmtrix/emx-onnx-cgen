@@ -19,9 +19,13 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
 #include <float.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 static inline float ref_scalar_f32_relu(float a) {
     return a > 0.0f ? a : 0.0f;
@@ -36,8 +40,8 @@ static inline float ref_scalar_f32_relu(float a) {
  * Attrs: n/a
  */
 static inline void node0_relu(const float input0[restrict 2][3], float output[restrict 2][3]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);
         }
     }

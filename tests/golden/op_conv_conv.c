@@ -19,7 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -66,17 +70,17 @@ static const float weight2_bias[1] = {
  *   strides: [1, 1]
  */
 static inline void node0_conv(const float input0[restrict 1][1][4][4], const float weights[restrict 1][1][3][3], const float bias[restrict 1], float output[restrict 1][1][4][4]) {
-    for (size_t n = 0; n < 1; ++n) {
-        for (size_t g = 0; g < 1; ++g) {
-            for (size_t oc = 0; oc < 1; ++oc) {
-                const size_t oc_global = g * 1 + oc;
-                for (size_t od0 = 0; od0 < 4; ++od0) {
-                    for (size_t od1 = 0; od1 < 4; ++od1) {
+    for (idx_t n = 0; n < 1; ++n) {
+        for (idx_t g = 0; g < 1; ++g) {
+            for (idx_t oc = 0; oc < 1; ++oc) {
+                const idx_t oc_global = g * 1 + oc;
+                for (idx_t od0 = 0; od0 < 4; ++od0) {
+                    for (idx_t od1 = 0; od1 < 4; ++od1) {
                         float acc = bias[oc_global];
-                        for (size_t ic = 0; ic < 1; ++ic) {
-                            const size_t ic_global = g * 1 + ic;
-                            for (size_t kd0 = 0; kd0 < 3; ++kd0) {
-                                for (size_t kd1 = 0; kd1 < 3; ++kd1) {
+                        for (idx_t ic = 0; ic < 1; ++ic) {
+                            const idx_t ic_global = g * 1 + ic;
+                            for (idx_t kd0 = 0; kd0 < 3; ++kd0) {
+                                for (idx_t kd1 = 0; kd1 < 3; ++kd1) {
                                     const int id0 = (int)(od0 * 1 + kd0 * 1) - 1;
                                     const int id1 = (int)(od1 * 1 + kd1 * 1) - 1;
                                     if (id0 < 0 || id0 >= 4 || id1 < 0 || id1 >= 4) {

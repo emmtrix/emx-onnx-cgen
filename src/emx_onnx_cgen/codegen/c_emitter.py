@@ -2562,7 +2562,13 @@ class CEmitter:
             emit_testbench=emit_testbench,
             extra_includes=scalar_includes,
         )
-        sections = [self._emit_header_comment(model.header), "", *includes]
+        sections = [
+            self._emit_header_comment(model.header),
+            "",
+            *includes,
+            "",
+            self._emit_index_type_define(),
+        ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
         sections.append("")
@@ -2785,7 +2791,13 @@ class CEmitter:
             emit_testbench=emit_testbench,
             extra_includes=scalar_includes,
         )
-        sections = [self._emit_header_comment(model.header), "", *includes]
+        sections = [
+            self._emit_header_comment(model.header),
+            "",
+            *includes,
+            "",
+            self._emit_index_type_define(),
+        ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
         sections.append("")
@@ -3132,9 +3144,9 @@ class CEmitter:
         emit_testbench: bool,
         extra_includes: set[str] | None = None,
     ) -> list[str]:
-        includes: set[str] = {"#include <stddef.h>"}
+        includes: set[str] = {"#include <stdint.h>"}
         if emit_testbench:
-            includes.update({"#include <stdio.h>", "#include <stdint.h>"})
+            includes.add("#include <stdio.h>")
         if extra_includes:
             includes.update(extra_includes)
         if any(
@@ -3217,6 +3229,8 @@ class CEmitter:
             for op in resolved_ops
         ):
             includes.add("#include <stdlib.h>")
+        if any(isinstance(op, PadOp) for op in resolved_ops):
+            includes.add("#include <stddef.h>")
         if CEmitter._needs_math(resolved_ops):
             includes.add("#include <math.h>")
         if CEmitter._needs_limits(resolved_ops):
@@ -3227,9 +3241,9 @@ class CEmitter:
         ):
             includes.add("#include <string.h>")
         ordered_includes = (
-            "#include <stddef.h>",
-            "#include <stdio.h>",
             "#include <stdint.h>",
+            "#include <stdio.h>",
+            "#include <stddef.h>",
             "#include <stdbool.h>",
             "#include <stdlib.h>",
             "#include <math.h>",
@@ -3238,6 +3252,16 @@ class CEmitter:
             "#include <string.h>",
         )
         return [include for include in ordered_includes if include in includes]
+
+    @staticmethod
+    def _emit_index_type_define() -> str:
+        return "\n".join(
+            (
+                "#ifndef idx_t",
+                "#define idx_t int32_t",
+                "#endif",
+            )
+        )
 
     @staticmethod
     def _needs_stdint(

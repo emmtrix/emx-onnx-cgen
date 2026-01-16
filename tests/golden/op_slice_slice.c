@@ -19,8 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -75,9 +78,9 @@ static const int64_t weight4_steps[2] = {
  * Attrs: n/a
  */
 static inline void node0_slice(const float input0[restrict 2][3][4], float output[restrict 2][3][1]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
-            for (size_t i2 = 0; i2 < 1; ++i2) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 1; ++i2) {
                 output[i0][i1][i2] = input0[i0][i1][1 + 2 * i2];
             }
         }

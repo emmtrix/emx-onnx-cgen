@@ -19,9 +19,13 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
 #include <float.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 static inline float ref_scalar_f32_sigmoid(float a) {
     return 1.0f / (1.0f + expf(-a));

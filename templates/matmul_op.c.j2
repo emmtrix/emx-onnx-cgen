@@ -1,9 +1,9 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for idx in range(output_loop_vars | length) %}
-    {% for indent in range(loop.index0) %}    {% endfor %}for (size_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
 {% endfor %}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ acc_type }} acc = {{ zero_literal }};
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (size_t k = 0; k < {{ k }}; ++k) {
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (idx_t k = 0; k < {{ k }}; ++k) {
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += {{ input0_index_expr }} * {{ input1_index_expr }};
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = acc;

@@ -1,8 +1,8 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in shape %}
-for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-size_t c = {{ loop_vars[1] }};
+idx_t c = {{ loop_vars[1] }};
 {{ c_type }} denom = {{ sqrt_fn }}({{ variance }}[c] + {{ epsilon_literal }});
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - {{ mean }}[c]) / denom * {{ scale }}[c] + {{ bias }}[c];
 {% for _ in shape %}

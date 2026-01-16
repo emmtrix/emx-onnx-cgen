@@ -1,16 +1,16 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const size_t input_rank = {{ input_rank }};
-    const size_t input_dims[] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    size_t start_indices[{{ input_rank }}];
-    size_t step_values[{{ input_rank }}];
+    const idx_t input_rank = {{ input_rank }};
+    const idx_t input_dims[] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    idx_t start_indices[{{ input_rank }}];
+    idx_t step_values[{{ input_rank }}];
 {% if ends_input %}
     (void){{ ends_input }};
 {% endif %}
-    for (size_t idx = 0; idx < input_rank; ++idx) {
+    for (idx_t idx = 0; idx < input_rank; ++idx) {
         start_indices[idx] = 0;
         step_values[idx] = 1;
     }
-    for (size_t i = 0; i < {{ starts_len }}; ++i) {
+    for (idx_t i = 0; i < {{ starts_len }}; ++i) {
 {% if axes_input %}
         int64_t axis_value = (int64_t){{ axes_input }}[i];
 {% else %}
@@ -19,7 +19,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         if (axis_value < 0) {
             axis_value += (int64_t)input_rank;
         }
-        size_t axis = (size_t)axis_value;
+        idx_t axis = (idx_t)axis_value;
         int64_t dim = (int64_t)input_dims[axis];
         int64_t start_value = (int64_t){{ starts_input }}[i];
         if (start_value < 0) {
@@ -35,11 +35,11 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if steps_input %}
         step_value = (int64_t){{ steps_input }}[i];
 {% endif %}
-        start_indices[axis] = (size_t)start_value;
-        step_values[axis] = (size_t)step_value;
+        start_indices[axis] = (idx_t)start_value;
+        step_values[axis] = (idx_t)step_value;
     }
 {% for dim in output_shape %}
-    for (size_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+    for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
         {{ output }}{% for var in output_loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in output_loop_vars %}[start_indices[{{ loop.index0 }}] + ({{ var }} * step_values[{{ loop.index0 }}])]{% endfor %};
 {% for _ in output_shape %}

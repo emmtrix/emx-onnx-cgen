@@ -19,9 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -51,17 +54,17 @@ static inline void node0_resize(const float input0[restrict 1][1][2][2], const i
     double scales[4];
     const double roi[8] = {
         0.0,        0.0,        0.0,        0.0,        1.0,        1.0,        1.0,        1.0    };
-    for (size_t r = 0; r < 4; ++r) {
+    for (idx_t r = 0; r < 4; ++r) {
         scales[r] = 1.0;
     }
     scales[0] = (double)sizes_input[0] / (double)input_shape[0];
     scales[1] = (double)sizes_input[1] / (double)input_shape[1];
     scales[2] = (double)sizes_input[2] / (double)input_shape[2];
     scales[3] = (double)sizes_input[3] / (double)input_shape[3];
-    for (size_t i0 = 0; i0 < 1; ++i0) {
-        for (size_t i1 = 0; i1 < 1; ++i1) {
-            for (size_t i2 = 0; i2 < 4; ++i2) {
-                for (size_t i3 = 0; i3 < 4; ++i3) {
+    for (idx_t i0 = 0; i0 < 1; ++i0) {
+        for (idx_t i1 = 0; i1 < 1; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                for (idx_t i3 = 0; i3 < 4; ++i3) {
                     int use_extrapolation = 0;
                     double x_orig0;
                     x_orig0 = (double)i0 / scales[0];

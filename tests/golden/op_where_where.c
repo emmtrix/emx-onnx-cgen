@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <stdbool.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -31,8 +35,8 @@
  * Attrs: n/a
  */
 static inline void node0_where(const bool condition[restrict 2][3], const float input_x[restrict 2][3], const float input_y[restrict 2][3], float output[restrict 2][3]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = condition[i0][i1] ? input_x[i0][i1] : input_y[i0][i1];
         }
     }
