@@ -5,11 +5,11 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     for (idx_t index = 0; index < total; ++index) {
         output_data[index] = {{ zero_literal }};
     }
-    int k = {{ k }};
+    idx_t k = {{ k }};
     idx_t rows = {{ rows }};
     idx_t cols = {{ cols }};
-    idx_t row_start = k >= 0 ? 0 : (idx_t)(-k);
-    idx_t col_start = k >= 0 ? (idx_t)k : 0;
+    idx_t row_start = k >= 0 ? 0 : -k;
+    idx_t col_start = k >= 0 ? k : 0;
     if (row_start >= rows || col_start >= cols) {
         return;
     }

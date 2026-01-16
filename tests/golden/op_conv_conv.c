@@ -81,8 +81,8 @@ static inline void node0_conv(const float input0[restrict 1][1][4][4], const flo
                             const idx_t ic_global = g * 1 + ic;
                             for (idx_t kd0 = 0; kd0 < 3; ++kd0) {
                                 for (idx_t kd1 = 0; kd1 < 3; ++kd1) {
-                                    const int id0 = (int)(od0 * 1 + kd0 * 1) - 1;
-                                    const int id1 = (int)(od1 * 1 + kd1 * 1) - 1;
+                                    const idx_t id0 = od0 * 1 + kd0 * 1 - 1;
+                                    const idx_t id1 = od1 * 1 + kd1 * 1 - 1;
                                     if (id0 < 0 || id0 >= 4 || id1 < 0 || id1 >= 4) {
                                         continue;
                                     }

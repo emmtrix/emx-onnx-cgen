@@ -6,7 +6,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     {{ c_type }} acc = {{ zero_literal }};
                     idx_t count = 0;
                     for (idx_t kh = 0; kh < {{ kernel_h }}; ++kh) {
-                        const int ih = (int)(oh * {{ stride_h }} + kh) - {{ pad_top }};
+                        const idx_t ih = oh * {{ stride_h }} + kh - {{ pad_top }};
                         if (ih < 0 || ih >= {{ in_h }}) {
                             if ({{ count_include_pad }}) {
                                 count += {{ kernel_w }};
@@ -14,7 +14,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             continue;
                         }
                         for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
-                            const int iw = (int)(ow * {{ stride_w }} + kw) - {{ pad_left }};
+                            const idx_t iw = ow * {{ stride_w }} + kw - {{ pad_left }};
                             if (iw < 0 || iw >= {{ in_w }}) {
                                 if ({{ count_include_pad }}) {
                                     count += 1;

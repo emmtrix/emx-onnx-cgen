@@ -45,12 +45,12 @@ static inline void node0_maxpool(const float input0[restrict 1][1][4][4], float 
                 for (idx_t ow = 0; ow < 2; ++ow) {
                     float max_value = -INFINITY;
                     for (idx_t kh = 0; kh < 2; ++kh) {
-                        const int ih = (int)(oh * 2 + kh * 1) - 0;
+                        const idx_t ih = oh * 2 + kh * 1 - 0;
                         if (ih < 0 || ih >= 4) {
                             continue;
                         }
                         for (idx_t kw = 0; kw < 2; ++kw) {
-                            const int iw = (int)(ow * 2 + kw * 1) - 0;
+                            const idx_t iw = ow * 2 + kw * 1 - 0;
                             if (iw < 0 || iw >= 4) {
                                 continue;
                             }

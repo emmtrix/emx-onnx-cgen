@@ -41,11 +41,11 @@ static inline void node0_eyelike(const float input0[restrict 3][3], float output
     for (idx_t index = 0; index < total; ++index) {
         output_data[index] = 0.0f;
     }
-    int k = 0;
+    idx_t k = 0;
     idx_t rows = 3;
     idx_t cols = 3;
-    idx_t row_start = k >= 0 ? 0 : (idx_t)(-k);
-    idx_t col_start = k >= 0 ? (idx_t)k : 0;
+    idx_t row_start = k >= 0 ? 0 : -k;
+    idx_t col_start = k >= 0 ? k : 0;
     if (row_start >= rows || col_start >= cols) {
         return;
     }

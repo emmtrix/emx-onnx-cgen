@@ -13,7 +13,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         for (idx_t {{ kernel_indices[dim] }} = 0; {{ kernel_indices[dim] }} < {{ kernel_shape[dim] }}; ++{{ kernel_indices[dim] }}) {
                         {% endfor %}
                             {% for dim in range(spatial_rank) %}
-                            const int {{ in_indices[dim] }} = (int)({{ out_indices[dim] }} * {{ strides[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }}) - {{ pads_begin[dim] }};
+                            const idx_t {{ in_indices[dim] }} = {{ out_indices[dim] }} * {{ strides[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }} - {{ pads_begin[dim] }};
                             {% endfor %}
                             if ({% for dim in range(spatial_rank) %}{{ in_indices[dim] }} < 0 || {{ in_indices[dim] }} >= {{ in_spatial[dim] }}{% if not loop.last %} || {% endif %}{% endfor %}) {
                                 continue;
