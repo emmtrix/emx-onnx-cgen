@@ -9990,11 +9990,11 @@ class CEmitter:
     @staticmethod
     def _print_format(dtype: ScalarType) -> str:
         if dtype == ScalarType.F16:
-            return "%.8g"
+            return "\\\"%a\\\""
         if dtype == ScalarType.F32:
-            return "%.8g"
+            return "\\\"%a\\\""
         if dtype == ScalarType.F64:
-            return "%.17g"
+            return "\\\"%a\\\""
         if dtype == ScalarType.BOOL:
             return "%d"
         if dtype == ScalarType.U64:

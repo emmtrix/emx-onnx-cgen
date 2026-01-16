@@ -118,7 +118,7 @@ int main(void) {
                 if (i2) {
                     printf(",");
                 }
-                printf("%.8g", (double)a[i0][i1][i2]);
+                printf("\"%a\"", (double)a[i0][i1][i2]);
             }
             printf("]");
         }
@@ -142,7 +142,7 @@ int main(void) {
                 if (i2) {
                     printf(",");
                 }
-                printf("%.8g", (double)b[i0][i1][i2]);
+                printf("\"%a\"", (double)b[i0][i1][i2]);
             }
             printf("]");
         }
@@ -167,7 +167,7 @@ int main(void) {
                 if (i2) {
                     printf(",");
                 }
-                printf("%.8g", (double)out[i0][i1][i2]);
+                printf("\"%a\"", (double)out[i0][i1][i2]);
             }
             printf("]");
         }

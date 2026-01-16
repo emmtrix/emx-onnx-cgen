@@ -16,6 +16,7 @@ import pytest
 from onnx import numpy_helper
 
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.testbench import decode_testbench_array
 
 OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
     Path(__file__).resolve().parent / "official_onnx_expected_errors.json"
@@ -343,7 +344,7 @@ def _assert_outputs_match(
         output_payload = outputs.get(name)
         if output_payload is None:
             raise AssertionError(f"Missing output {name} in testbench data")
-        output_data = np.array(output_payload["data"], dtype=expected.dtype)
+        output_data = decode_testbench_array(output_payload["data"], expected.dtype)
         output_data = output_data.reshape(expected.shape)
         if np.issubdtype(expected.dtype, np.floating):
             np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)
