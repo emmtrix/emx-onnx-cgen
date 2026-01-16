@@ -1,16 +1,16 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    for (size_t n = 0; n < {{ batch }}; ++n) {
-        for (size_t g = 0; g < {{ group }}; ++g) {
-            for (size_t oc = 0; oc < {{ group_out_channels }}; ++oc) {
-                const size_t oc_global = g * {{ group_out_channels }} + oc;
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t g = 0; g < {{ group }}; ++g) {
+            for (idx_t oc = 0; oc < {{ group_out_channels }}; ++oc) {
+                const idx_t oc_global = g * {{ group_out_channels }} + oc;
                 {% for dim in range(spatial_rank) %}
-                for (size_t {{ out_indices[dim] }} = 0; {{ out_indices[dim] }} < {{ out_spatial[dim] }}; ++{{ out_indices[dim] }}) {
+                for (idx_t {{ out_indices[dim] }} = 0; {{ out_indices[dim] }} < {{ out_spatial[dim] }}; ++{{ out_indices[dim] }}) {
                 {% endfor %}
                     {{ c_type }} acc = {% if bias %}{{ bias }}[oc_global]{% else %}{{ zero_literal }}{% endif %};
-                    for (size_t ic = 0; ic < {{ group_in_channels }}; ++ic) {
-                        const size_t ic_global = g * {{ group_in_channels }} + ic;
+                    for (idx_t ic = 0; ic < {{ group_in_channels }}; ++ic) {
+                        const idx_t ic_global = g * {{ group_in_channels }} + ic;
                         {% for dim in range(spatial_rank) %}
-                        for (size_t {{ kernel_indices[dim] }} = 0; {{ kernel_indices[dim] }} < {{ kernel_shape[dim] }}; ++{{ kernel_indices[dim] }}) {
+                        for (idx_t {{ kernel_indices[dim] }} = 0; {{ kernel_indices[dim] }} < {{ kernel_shape[dim] }}; ++{{ kernel_indices[dim] }}) {
                         {% endfor %}
                             {% for dim in range(spatial_rank) %}
                             const int {{ in_indices[dim] }} = (int)({{ out_indices[dim] }} * {{ strides[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }}) - {{ pads_begin[dim] }};

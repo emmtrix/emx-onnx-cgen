@@ -19,8 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:

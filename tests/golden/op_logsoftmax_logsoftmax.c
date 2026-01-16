@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -34,26 +38,26 @@
 static inline void node0_logsoftmax(const float input0[restrict 2][3], float output[restrict 2][3]) {
     const float *input_flat = (const float *)input0;
     float *output_flat = (float *)output;
-    const size_t outer = 2;
-    const size_t axis_size = 3;
-    const size_t inner = 1;
-    for (size_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
-        for (size_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
-            size_t base = (outer_idx * axis_size * inner) + inner_idx;
+    const idx_t outer = 2;
+    const idx_t axis_size = 3;
+    const idx_t inner = 1;
+    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
+        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
+            idx_t base = (outer_idx * axis_size * inner) + inner_idx;
             float max_value = input_flat[base];
-            for (size_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
+            for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
                 float value = input_flat[base + axis_idx * inner];
                 if (value > max_value) {
                     max_value = value;
                 }
             }
             float sum = 0;
-            for (size_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
+            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 float value = expf(input_flat[base + axis_idx * inner] - max_value);
                 sum += value;
             }
             float logsum = logf(sum);
-            for (size_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
+            for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 float value = input_flat[base + axis_idx * inner] - max_value;
                 output_flat[base + axis_idx * inner] = value - logsum;
             }

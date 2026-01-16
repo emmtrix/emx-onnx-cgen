@@ -19,7 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -31,9 +35,9 @@
  *   perm: [2, 0, 1]
  */
 static inline void node0_transpose(const float input0[restrict 2][3][4], float output[restrict 4][2][3]) {
-    for (size_t i0 = 0; i0 < 4; ++i0) {
-        for (size_t i1 = 0; i1 < 2; ++i1) {
-            for (size_t i2 = 0; i2 < 3; ++i2) {
+    for (idx_t i0 = 0; i0 < 4; ++i0) {
+        for (idx_t i1 = 0; i1 < 2; ++i1) {
+            for (idx_t i2 = 0; i2 < 3; ++i2) {
                 output[i0][i1][i2] = input0[i1][i2][i0];
             }
         }

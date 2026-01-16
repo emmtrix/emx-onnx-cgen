@@ -19,9 +19,13 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
 #include <float.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 static inline float ref_scalar_f32_mul(float a, float b) {
     return a * b;
@@ -40,8 +44,8 @@ static inline float ref_scalar_f32_add(float a, float b) {
  * Attrs: n/a
  */
 static inline void node0_mul(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_mul(input0[i0][i1], input1[i0][i1]);
         }
     }
@@ -56,8 +60,8 @@ static inline void node0_mul(const float input0[restrict 2][3], const float inpu
  * Attrs: n/a
  */
 static inline void node1_add(const float input0[restrict 2][3], const float input1[restrict 2][3], float output[restrict 2][3]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_add(input0[i0][i1], input1[i0][i1]);
         }
     }

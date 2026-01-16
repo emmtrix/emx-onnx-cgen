@@ -38,7 +38,7 @@ int main(void) {
 {% for input in inputs %}
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
     {{ input.c_type }} *{{ input.name }}_ptr = ({{ input.c_type }} *){{ input.name }};
-    for (size_t i = 0; i < {{ input.count }}; ++i) {
+    for (idx_t i = 0; i < {{ input.count }}; ++i) {
 {% if input.constant_name %}
         {{ input.name }}_ptr[i] = {{ input.constant_name }}[i];
 {% else %}
@@ -59,7 +59,7 @@ int main(void) {
     printf("\"{{ input.name }}\":{\"shape\":[{{ input.shape_literal }}],\"data\":");
     printf("[");
 {% for depth in range(input.rank) %}
-for (size_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
     if ({{ input.loop_vars[depth] }}) {
         printf(",");
     }
@@ -84,7 +84,7 @@ printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}_ptr[{{
     printf("\"{{ output.name }}\":{\"shape\":[{{ output.shape_literal }}],\"data\":");
     printf("[");
 {% for depth in range(output.rank) %}
-for (size_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
     if ({{ output.loop_vars[depth] }}) {
         printf(",");
     }

@@ -1,11 +1,11 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
     {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
-    size_t output_index = 0;
+    idx_t output_index = 0;
 {% for dim in output_shape %}
-    for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-        size_t input_index = {{ input_index_expr }};
+        idx_t input_index = {{ input_index_expr }};
         output_data[output_index] = input_data[input_index];
         output_index++;
 {% for _ in output_shape %}

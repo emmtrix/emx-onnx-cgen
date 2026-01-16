@@ -6,14 +6,14 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ k_c_type }} *k_data = (const {{ k_c_type }} *){{ k_input }};
     k = (int64_t)k_data[0];
     {% endif %}
-    size_t rows = {{ rows }};
-    size_t cols = {{ cols }};
-    size_t batch_size = {{ batch_size }};
-    for (size_t batch = 0; batch < batch_size; ++batch) {
-        size_t base = batch * rows * cols;
-        for (size_t row = 0; row < rows; ++row) {
-            for (size_t col = 0; col < cols; ++col) {
-                size_t offset = base + row * cols + col;
+    idx_t rows = {{ rows }};
+    idx_t cols = {{ cols }};
+    idx_t batch_size = {{ batch_size }};
+    for (idx_t batch = 0; batch < batch_size; ++batch) {
+        idx_t base = batch * rows * cols;
+        for (idx_t row = 0; row < rows; ++row) {
+            for (idx_t col = 0; col < cols; ++col) {
+                idx_t offset = base + row * cols + col;
                 {% if upper %}
                 if ((int64_t)col - (int64_t)row >= k) {
                     output_data[offset] = input_data[offset];

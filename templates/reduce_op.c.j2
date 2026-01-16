@@ -1,10 +1,10 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in output_shape %}
-for (size_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
 {{ c_type }} acc = {{ init_literal }};
 {% for dim in reduce_dims %}
-for (size_t {{ reduce_loop_vars[loop.index0] }} = 0; {{ reduce_loop_vars[loop.index0] }} < {{ dim }}; ++{{ reduce_loop_vars[loop.index0] }}) {
+for (idx_t {{ reduce_loop_vars[loop.index0] }} = 0; {{ reduce_loop_vars[loop.index0] }} < {{ dim }}; ++{{ reduce_loop_vars[loop.index0] }}) {
 {% endfor %}
 {{ update_expr }}
 {% for _ in reduce_dims %}

@@ -1,6 +1,6 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in shape %}
-for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ output_c_type }}){{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
 {% for _ in shape %}

@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -33,33 +37,33 @@
  *   num_groups: 2
  */
 static inline void node0_groupnormalization(const float input0[restrict 1][4][2][2], const float scale[restrict 4], const float bias[restrict 4], float output[restrict 1][4][2][2]) {
-    for (size_t i0 = 0; i0 < 1; ++i0) {
-        for (size_t g = 0; g < 2; ++g) {
+    for (idx_t i0 = 0; i0 < 1; ++i0) {
+        for (idx_t g = 0; g < 2; ++g) {
             float sum = 0.0f;
-            for (size_t c_in_group = 0; c_in_group < 2; ++c_in_group) {
-                size_t c = g * 2 + c_in_group;
-                for (size_t i2 = 0; i2 < 2; ++i2) {
-                    for (size_t i3 = 0; i3 < 2; ++i3) {
+            for (idx_t c_in_group = 0; c_in_group < 2; ++c_in_group) {
+                idx_t c = g * 2 + c_in_group;
+                for (idx_t i2 = 0; i2 < 2; ++i2) {
+                    for (idx_t i3 = 0; i3 < 2; ++i3) {
                         sum += input0[i0][c][i2][i3];
                     }
                 }
             }
             float mean = sum / (2 * 4);
             float var = 0.0f;
-            for (size_t c_in_group = 0; c_in_group < 2; ++c_in_group) {
-                size_t c = g * 2 + c_in_group;
-                for (size_t i2 = 0; i2 < 2; ++i2) {
-                    for (size_t i3 = 0; i3 < 2; ++i3) {
+            for (idx_t c_in_group = 0; c_in_group < 2; ++c_in_group) {
+                idx_t c = g * 2 + c_in_group;
+                for (idx_t i2 = 0; i2 < 2; ++i2) {
+                    for (idx_t i3 = 0; i3 < 2; ++i3) {
                         float diff = input0[i0][c][i2][i3] - mean;
                         var += diff * diff;
                     }
                 }
             }
             float denom = sqrtf(var / (2 * 4) + 9.99999975e-06f);
-            for (size_t c_in_group = 0; c_in_group < 2; ++c_in_group) {
-                size_t c = g * 2 + c_in_group;
-                for (size_t i2 = 0; i2 < 2; ++i2) {
-                    for (size_t i3 = 0; i3 < 2; ++i3) {
+            for (idx_t c_in_group = 0; c_in_group < 2; ++c_in_group) {
+                idx_t c = g * 2 + c_in_group;
+                for (idx_t i2 = 0; i2 < 2; ++i2) {
+                    for (idx_t i3 = 0; i3 < 2; ++i3) {
                         output[i0][c][i2][i3] =
                         (input0[i0][c][i2][i3] - mean) / denom * scale[c] + bias[c];
                     }

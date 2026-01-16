@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -57,10 +61,10 @@ static inline void node0_gridsample(const float x[restrict 1][1][2][2], const fl
     const int input_spatial[2] = { 2, 2 };
     const double border_min[2] = { -0.5, -0.5 };
     const double border_max[2] = { 1.5, 1.5 };
-    for (size_t i0 = 0; i0 < 1; ++i0) {
-        for (size_t i1 = 0; i1 < 1; ++i1) {
-            for (size_t i2 = 0; i2 < 2; ++i2) {
-                for (size_t i3 = 0; i3 < 2; ++i3) {
+    for (idx_t i0 = 0; i0 < 1; ++i0) {
+        for (idx_t i1 = 0; i1 < 1; ++i1) {
+            for (idx_t i2 = 0; i2 < 2; ++i2) {
+                for (idx_t i3 = 0; i3 < 2; ++i3) {
                     double coords[2];
                     const double grid_0 = (double)grid[i0][i2][i3][1];
                     coords[0] = ((grid_0 + 1.0) * (double)input_spatial[0] - 1.0) / 2.0;

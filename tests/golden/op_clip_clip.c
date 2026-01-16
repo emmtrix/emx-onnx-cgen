@@ -19,7 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -52,8 +56,8 @@ static const float weight2_max[1] = {
  * Attrs: n/a
  */
 static inline void node0_clip(const float input0[restrict 2][3], const float input_min[restrict 1], const float input_max[restrict 1], float output[restrict 2][3]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
             float value = input0[i0][i1];
             if (value < input_min[0]) {
                 value = input_min[0];

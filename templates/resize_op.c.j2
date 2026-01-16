@@ -5,7 +5,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if roi_input %}
     double roi[{{ rank * 2 }}];
 {% if roi_axes %}
-    for (size_t r = 0; r < {{ rank }}; ++r) {
+    for (idx_t r = 0; r < {{ rank }}; ++r) {
         roi[r] = 0.0;
         roi[r + {{ rank }}] = 1.0;
     }
@@ -14,7 +14,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     roi[{{ axis + rank }}] = (double){{ roi_input }}[{{ roi_axis_map[loop.index0] + (axes | length) }}];
 {% endfor %}
 {% else %}
-    for (size_t r = 0; r < {{ rank * 2 }}; ++r) {
+    for (idx_t r = 0; r < {{ rank * 2 }}; ++r) {
         roi[r] = (double){{ roi_input }}[r];
     }
 {% endif %}
@@ -28,7 +28,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
 {% if scales_input %}
 {% if scales_axes %}
-    for (size_t r = 0; r < {{ rank }}; ++r) {
+    for (idx_t r = 0; r < {{ rank }}; ++r) {
         scales[r] = 1.0;
     }
 {% for axis in axes %}
@@ -61,14 +61,14 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
     }
 {% endfor %}
-    for (size_t r = 0; r < {{ rank }}; ++r) {
+    for (idx_t r = 0; r < {{ rank }}; ++r) {
         scales[r] = 1.0;
     }
 {% for axis in axes %}
     scales[{{ axis }}] = scale_value;
 {% endfor %}
 {% else %}
-    for (size_t r = 0; r < {{ rank }}; ++r) {
+    for (idx_t r = 0; r < {{ rank }}; ++r) {
         scales[r] = 1.0;
     }
 {% for axis in axes %}
@@ -81,7 +81,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endfor %}
 {% endif %}
 {% for dim in output_shape %}
-for (size_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
 int use_extrapolation = 0;
 {% for dim in range(rank) %}

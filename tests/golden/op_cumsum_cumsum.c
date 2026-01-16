@@ -19,8 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -44,7 +47,7 @@ static const int64_t weight1_axis[1] = {
  *   reverse: 0
  */
 static inline void node0_cumsum(const float input0[restrict 2][3], float output[restrict 2][3]) {
-    const size_t dims[2] = { 2, 3 };
+    const idx_t dims[2] = { 2, 3 };
     int axis = 1;
     if (axis < 0) {
         axis += 2;
@@ -52,21 +55,21 @@ static inline void node0_cumsum(const float input0[restrict 2][3], float output[
     if (axis < 0 || axis >= 2) {
         return;
     }
-    size_t outer = 1;
+    idx_t outer = 1;
     for (int i = 0; i < axis; ++i) {
         outer *= dims[i];
     }
-    size_t inner = 1;
+    idx_t inner = 1;
     for (int i = axis + 1; i < 2; ++i) {
         inner *= dims[i];
     }
-    size_t axis_dim = dims[axis];
-    for (size_t outer_index = 0; outer_index < outer; ++outer_index) {
-        for (size_t inner_index = 0; inner_index < inner; ++inner_index) {
+    idx_t axis_dim = dims[axis];
+    for (idx_t outer_index = 0; outer_index < outer; ++outer_index) {
+        for (idx_t inner_index = 0; inner_index < inner; ++inner_index) {
             float acc = (float)0;
-            size_t base = (outer_index * axis_dim * inner) + inner_index;
-            for (size_t axis_index = 0; axis_index < axis_dim; ++axis_index) {
-                size_t offset = base + axis_index * inner;
+            idx_t base = (outer_index * axis_dim * inner) + inner_index;
+            for (idx_t axis_index = 0; axis_index < axis_dim; ++axis_index) {
+                idx_t offset = base + axis_index * inner;
                 acc += input0[offset];
                 output[offset] = acc;
             }

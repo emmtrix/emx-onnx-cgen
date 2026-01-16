@@ -19,7 +19,11 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -32,16 +36,16 @@
  *   beta: 1.0
  */
 static inline void node0_gemm(const float input_a[restrict 2][3], const float input_b[restrict 3][4], const float input_c[restrict 2][4], float output[restrict 2][4]) {
-    for (size_t i = 0; i < 2; ++i) {
-        for (size_t j = 0; j < 4; ++j) {
+    for (idx_t i = 0; i < 2; ++i) {
+        for (idx_t j = 0; j < 4; ++j) {
             float acc = 0.0f;
-            for (size_t k = 0; k < 3; ++k) {
+            for (idx_t k = 0; k < 3; ++k) {
                 const float a_val = input_a[i][k];
                 const float b_val = input_b[k][j];
                 acc += a_val * b_val;
             }
-            size_t c_i = i;
-            size_t c_j = j;
+            idx_t c_i = i;
+            idx_t c_j = j;
             const float bias = input_c[c_i][c_j];
             output[i][j] = acc * 1.0f + bias * 1.0f;
         }

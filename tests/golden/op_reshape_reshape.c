@@ -19,9 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:

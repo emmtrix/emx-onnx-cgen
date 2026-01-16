@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -32,20 +36,20 @@
  *   axes: [-1]
  */
 static inline void node0_meanvariancenormalization(const float input0[restrict 2][3][4], float output[restrict 2][3][4]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;
-            for (size_t i2 = 0; i2 < 4; ++i2) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
                 sum += input0[i0][i1][i2];
             }
             float mean = sum / 4;
             float var = 0.0f;
-            for (size_t i2 = 0; i2 < 4; ++i2) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
                 float diff = input0[i0][i1][i2] - mean;
                 var += diff * diff;
             }
             float denom = sqrtf(var / 4 + 1e-09f);
-            for (size_t i2 = 0; i2 < 4; ++i2) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
                 output[i0][i1][i2] = (input0[i0][i1][i2] - mean) / denom;
             }
         }

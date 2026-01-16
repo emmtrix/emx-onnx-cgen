@@ -1,13 +1,13 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    size_t axis_count = {{ axes_count }};
+    idx_t axis_count = {{ axes_count }};
     bool reduce_mask[{{ input_shape | length }}];
-    for (size_t i = 0; i < {{ input_shape | length }}; ++i) {
+    for (idx_t i = 0; i < {{ input_shape | length }}; ++i) {
         reduce_mask[i] = false;
     }
     if (axis_count == 0) {
 {% if noop_with_empty_axes %}
 {% for dim in input_shape %}
-        for (size_t {{ input_loop_vars[loop.index0] }} = 0; {{ input_loop_vars[loop.index0] }} < {{ dim }}; ++{{ input_loop_vars[loop.index0] }}) {
+        for (idx_t {{ input_loop_vars[loop.index0] }} = 0; {{ input_loop_vars[loop.index0] }} < {{ dim }}; ++{{ input_loop_vars[loop.index0] }}) {
 {% endfor %}
         {{ output }}{{ input_index_expr }} = {{ input0 }}{{ input_index_expr }};
 {% for _ in input_shape %}
@@ -15,12 +15,12 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endfor %}
         return;
 {% else %}
-        for (size_t i = 0; i < {{ input_shape | length }}; ++i) {
+        for (idx_t i = 0; i < {{ input_shape | length }}; ++i) {
             reduce_mask[i] = true;
         }
 {% endif %}
     } else {
-        for (size_t i = 0; i < axis_count; ++i) {
+        for (idx_t i = 0; i < axis_count; ++i) {
             int axis = (int){{ axes_input }}[i];
             if (axis < 0) {
                 axis += {{ input_shape | length }};
@@ -30,29 +30,29 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
         }
     }
-    size_t reduce_count = 1;
+    idx_t reduce_count = 1;
 {% for dim in input_shape %}
     if (reduce_mask[{{ loop.index0 }}]) {
         reduce_count *= {{ dim }};
     }
 {% endfor %}
 {% for dim in output_shape %}
-    for (size_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+    for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
         {{ output }}{{ output_loop_index_expr }} = {{ init_literal }};
 {% for _ in output_shape %}
     }
 {% endfor %}
 {% for dim in input_shape %}
-    for (size_t {{ input_loop_vars[loop.index0] }} = 0; {{ input_loop_vars[loop.index0] }} < {{ dim }}; ++{{ input_loop_vars[loop.index0] }}) {
+    for (idx_t {{ input_loop_vars[loop.index0] }} = 0; {{ input_loop_vars[loop.index0] }} < {{ dim }}; ++{{ input_loop_vars[loop.index0] }}) {
 {% endfor %}
-        size_t out_indices[{{ output_shape | length }}];
+        idx_t out_indices[{{ output_shape | length }}];
 {% if keepdims %}
 {% for axis in range(input_shape | length) %}
         out_indices[{{ axis }}] = reduce_mask[{{ axis }}] ? 0 : {{ input_loop_vars[axis] }};
 {% endfor %}
 {% else %}
-        size_t out_pos = 0;
+        idx_t out_pos = 0;
 {% for axis in range(input_shape | length) %}
         if (!reduce_mask[{{ axis }}]) {
             out_indices[out_pos++] = {{ input_loop_vars[axis] }};
@@ -66,7 +66,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endfor %}
 {% if post_expr %}
 {% for dim in output_shape %}
-    for (size_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+    for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
         {{ c_type }} *out_ptr = &{{ output }}{{ output_loop_index_expr }};
         {{ post_expr }}

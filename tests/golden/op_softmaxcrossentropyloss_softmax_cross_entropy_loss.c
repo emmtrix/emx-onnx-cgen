@@ -19,9 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
 #include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -37,32 +40,32 @@ static inline void node0_softmaxcrossentropyloss(const float input0[restrict 2][
     const int64_t *target_flat = (const int64_t *)target;
     float *output_flat = (float *)output;
     float *log_prob_flat = (float *)log_prob;
-    const size_t n = 2;
-    const size_t c = 3;
-    const size_t d = 1;
+    const idx_t n = 2;
+    const idx_t c = 3;
+    const idx_t d = 1;
     float loss_sum = 0.0f;
     float weight_sum = 0.0f;
-    for (size_t n_idx = 0; n_idx < n; ++n_idx) {
-        for (size_t d_idx = 0; d_idx < d; ++d_idx) {
-            size_t target_index = n_idx * d + d_idx;
+    for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
+        for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
+            idx_t target_index = n_idx * d + d_idx;
             int64_t target_value = target_flat[target_index];
-            size_t class_index = (size_t)target_value;
-            size_t base = (n_idx * c * d) + d_idx;
+            idx_t class_index = (idx_t)target_value;
+            idx_t base = (n_idx * c * d) + d_idx;
             float max_value = input_flat[base];
-            for (size_t c_idx = 1; c_idx < c; ++c_idx) {
+            for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
                 float value = input_flat[base + c_idx * d];
                 if (value > max_value) {
                     max_value = value;
                 }
             }
             float sum = 0.0f;
-            for (size_t c_idx = 0; c_idx < c; ++c_idx) {
+            for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
                 float value = input_flat[base + c_idx * d] - max_value;
                 sum += expf(value);
             }
             float logsum = logf(sum);
             float loss_value = 0.0f;
-            for (size_t c_idx = 0; c_idx < c; ++c_idx) {
+            for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
                 float log_prob_value = input_flat[base + c_idx * d] - max_value - logsum;
                 log_prob_flat[base + c_idx * d] = log_prob_value;
                 if (c_idx == class_index) {

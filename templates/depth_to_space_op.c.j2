@@ -1,22 +1,22 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
     {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
-    size_t output_index = 0;
-    for (size_t n = 0; n < {{ batch }}; ++n) {
-        for (size_t c_out = 0; c_out < {{ out_channels }}; ++c_out) {
-            for (size_t h_out = 0; h_out < {{ out_h }}; ++h_out) {
-                size_t h_in = h_out / {{ blocksize }};
-                size_t offset_h = h_out % {{ blocksize }};
-                for (size_t w_out = 0; w_out < {{ out_w }}; ++w_out) {
-                    size_t w_in = w_out / {{ blocksize }};
-                    size_t offset_w = w_out % {{ blocksize }};
-                    size_t c_in;
+    idx_t output_index = 0;
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c_out = 0; c_out < {{ out_channels }}; ++c_out) {
+            for (idx_t h_out = 0; h_out < {{ out_h }}; ++h_out) {
+                idx_t h_in = h_out / {{ blocksize }};
+                idx_t offset_h = h_out % {{ blocksize }};
+                for (idx_t w_out = 0; w_out < {{ out_w }}; ++w_out) {
+                    idx_t w_in = w_out / {{ blocksize }};
+                    idx_t offset_w = w_out % {{ blocksize }};
+                    idx_t c_in;
 {% if mode == "DCR" %}
                     c_in = (offset_h * {{ blocksize }} + offset_w) * {{ out_channels }} + c_out;
 {% else %}
                     c_in = (c_out * {{ blocksize }} + offset_h) * {{ blocksize }} + offset_w;
 {% endif %}
-                    size_t input_index = ((n * {{ in_channels }} + c_in) * {{ in_h }} + h_in) * {{ in_w }} + w_in;
+                    idx_t input_index = ((n * {{ in_channels }} + c_in) * {{ in_h }} + h_in) * {{ in_w }} + w_in;
                     output_data[output_index] = input_data[input_index];
                     output_index++;
                 }

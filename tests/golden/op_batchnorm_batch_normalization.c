@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Weight 1:
@@ -76,11 +80,11 @@ static const float weight4_var[3] = {
  *   epsilon: 9.999999747378752e-06
  */
 static inline void node0_batchnormalization(const float input0[restrict 2][3][2][2], const float scale[restrict 3], const float bias[restrict 3], const float mean[restrict 3], const float variance[restrict 3], float output[restrict 2][3][2][2]) {
-    for (size_t i0 = 0; i0 < 2; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
-            for (size_t i2 = 0; i2 < 2; ++i2) {
-                for (size_t i3 = 0; i3 < 2; ++i3) {
-                    size_t c = i1;
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 2; ++i2) {
+                for (idx_t i3 = 0; i3 < 2; ++i3) {
+                    idx_t c = i1;
                     float denom = sqrtf(variance[c] + 9.99999975e-06f);
                     output[i0][i1][i2][i3] = (input0[i0][i1][i2][i3] - mean[c]) / denom * scale[c] + bias[c];
                 }

@@ -1,22 +1,22 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const void *inputs[] = { {% for input in inputs %}{{ input }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    const size_t axis_sizes[] = { {% for axis in axis_sizes %}{{ axis }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    size_t concat_axis = 0;
-    for (size_t idx = 0; idx < {{ input_count }}; ++idx) {
+    const idx_t axis_sizes[] = { {% for axis in axis_sizes %}{{ axis }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    idx_t concat_axis = 0;
+    for (idx_t idx = 0; idx < {{ input_count }}; ++idx) {
         concat_axis += axis_sizes[idx];
     }
     if (concat_axis == 0) {
         return;
     }
-    for (size_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
-        size_t output_offset = outer_idx * concat_axis * {{ inner }};
-        size_t axis_offset = 0;
-        for (size_t input_idx = 0; input_idx < {{ input_count }}; ++input_idx) {
-            size_t axis = axis_sizes[input_idx];
-            size_t copy_elems = axis * {{ inner }};
+    for (idx_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
+        idx_t output_offset = outer_idx * concat_axis * {{ inner }};
+        idx_t axis_offset = 0;
+        for (idx_t input_idx = 0; input_idx < {{ input_count }}; ++input_idx) {
+            idx_t axis = axis_sizes[input_idx];
+            idx_t copy_elems = axis * {{ inner }};
             const unsigned char *input_bytes =
                 (const unsigned char *)inputs[input_idx];
-            size_t input_offset = outer_idx * copy_elems;
+            idx_t input_offset = outer_idx * copy_elems;
             memcpy(
                 ((unsigned char *){{ output }}) + (output_offset + axis_offset) * sizeof({{ c_type }}),
                 input_bytes + input_offset * sizeof({{ c_type }}),

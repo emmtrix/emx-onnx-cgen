@@ -19,8 +19,12 @@
  *   n/a
  */
 
-#include <stddef.h>
+#include <stdint.h>
 #include <math.h>
+
+#ifndef idx_t
+#define idx_t int32_t
+#endif
 
 /*
  * Node 0:
@@ -35,17 +39,17 @@
  *   size: 3
  */
 static inline void node0_lrn(const float input0[restrict 1][3][4][4], float output[restrict 1][3][4][4]) {
-    for (size_t i0 = 0; i0 < 1; ++i0) {
-        for (size_t i1 = 0; i1 < 3; ++i1) {
-            for (size_t i2 = 0; i2 < 4; ++i2) {
-                for (size_t i3 = 0; i3 < 4; ++i3) {
-                    size_t channel_start = i1 > 1 ? i1 - 1 : 0;
-                    size_t channel_end = i1 + 1;
+    for (idx_t i0 = 0; i0 < 1; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            for (idx_t i2 = 0; i2 < 4; ++i2) {
+                for (idx_t i3 = 0; i3 < 4; ++i3) {
+                    idx_t channel_start = i1 > 1 ? i1 - 1 : 0;
+                    idx_t channel_end = i1 + 1;
                     if (channel_end >= 3) {
                         channel_end = 3 - 1;
                     }
                     float sum = 0.0f;
-                    for (size_t c = channel_start; c <= channel_end; ++c) {
+                    for (idx_t c = channel_start; c <= channel_end; ++c) {
                         float val = input0[i0][c][i2][i3];
                         sum += val * val;
                     }
