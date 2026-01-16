@@ -35,22 +35,42 @@ int main(void) {
 {% for dim in dim_args %}
     int {{ dim.name }} = {{ dim.value }};
 {% endfor %}
+
 {% for input in inputs %}
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
-    {{ input.c_type }} *{{ input.name }}_ptr = ({{ input.c_type }} *){{ input.name }};
-    for (idx_t i = 0; i < {{ input.count }}; ++i) {
 {% if input.constant_name %}
-        {{ input.name }}_ptr[i] = {{ input.constant_name }}[i];
+{% if input.rank == 0 %}
+    {{ input.name }} = {{ input.constant_name }}[0];
 {% else %}
-        {{ input.name }}_ptr[i] = {{ input.random_expr }};
-{% endif %}
+{% for depth in range(input.rank) %}
+    for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+{% endfor %}
+        {{ input.name }}{{ input.array_index_expr }} = {{ input.constant_name }}[{{ input.index_expr }}];
+{% for depth in range(input.rank - 1, -1, -1) %}
     }
 {% endfor %}
+{% endif %}
+{% else %}
+{% if input.rank == 0 %}
+    {{ input.name }} = {{ input.random_expr }};
+{% else %}
+{% for depth in range(input.rank) %}
+    for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+{% endfor %}
+        {{ input.name }}{{ input.array_index_expr }} = {{ input.random_expr }};
+{% for depth in range(input.rank - 1, -1, -1) %}
+    }
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endfor %}
+
 {% for output in outputs %}
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
-    {{ output.c_type }} *{{ output.name }}_ptr = ({{ output.c_type }} *){{ output.name }};
 {% endfor %}
+
     {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+
     printf("{\"inputs\":{");
 {% for input in inputs %}
 {% if not loop.first %}
@@ -67,7 +87,7 @@ for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ i
     printf("[");
 {% endif %}
 {% endfor %}
-printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}_ptr[{{ input.index_expr }}]);
+printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}{{ input.array_index_expr }});
 {% for depth in range(input.rank - 1, -1, -1) %}
 {% if depth < input.rank - 1 %}
     printf("]");
@@ -76,6 +96,7 @@ printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}_ptr[{{
 {% endfor %}
     printf("]}");
 {% endfor %}
+
     printf("},\"outputs\":{");
 {% for output in outputs %}
 {% if not loop.first %}
@@ -92,7 +113,7 @@ for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{
     printf("[");
 {% endif %}
 {% endfor %}
-printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}_ptr[{{ output.index_expr }}]);
+printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ output.array_index_expr }});
 {% for depth in range(output.rank - 1, -1, -1) %}
 {% if depth < output.rank - 1 %}
     printf("]");
