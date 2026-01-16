@@ -17,6 +17,7 @@ from onnx import numpy_helper
 
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.testbench import decode_testbench_array
+from emx_onnx_cgen.verification import format_success_message, max_ulp_diff
 
 OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
     Path(__file__).resolve().parent / "official_onnx_expected_errors.json"
@@ -71,13 +72,17 @@ _LOCAL_ONNX_FILE_EXPECTATIONS = _read_onnx_file_expectations(
 )
 
 
+def _is_success_message(message: str) -> bool:
+    return message == "" or message.startswith("OK")
+
+
 def _render_onnx_file_support_table(expectations: list[tuple[str, str]]) -> list[str]:
     lines = [
         "| File | Supported | Error |",
         "| --- | --- | --- |",
     ]
     for path, error in expectations:
-        supported = "✅" if not error else "❌"
+        supported = "✅" if _is_success_message(error) else "❌"
         message = error.replace("\n", " ").strip()
         lines.append(f"| {path} | {supported} | {message} |")
     return lines
@@ -87,10 +92,14 @@ def _render_onnx_file_support_markdown(
     official_expectations: list[tuple[str, str]],
     local_expectations: list[tuple[str, str]],
 ) -> str:
-    supported_count = sum(1 for _, error in official_expectations if not error)
+    supported_count = sum(
+        1 for _, error in official_expectations if _is_success_message(error)
+    )
     total_count = len(official_expectations)
     onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
-    local_supported = sum(1 for _, error in local_expectations if not error)
+    local_supported = sum(
+        1 for _, error in local_expectations if _is_success_message(error)
+    )
     local_total = len(local_expectations)
     lines = [
         "# Official ONNX file support",
@@ -121,7 +130,11 @@ def _render_error_histogram_markdown(
     def _sanitize_error(error: str) -> str:
         return re.sub(r"'[^']*'", "'*'", error)
 
-    errors = [_sanitize_error(error) for _, error in expectations if error]
+    errors = [
+        _sanitize_error(error)
+        for _, error in expectations
+        if error and not _is_success_message(error)
+    ]
     counts = Counter(errors)
     if not counts:
         return ""
@@ -338,7 +351,8 @@ def _compile_and_run_testbench(
 
 def _assert_outputs_match(
     payload: dict[str, object], expected_outputs: dict[str, np.ndarray]
-) -> None:
+) -> int:
+    max_ulp = 0
     outputs = payload.get("outputs", {})
     for name, expected in expected_outputs.items():
         output_payload = outputs.get(name)
@@ -348,8 +362,16 @@ def _assert_outputs_match(
         output_data = output_data.reshape(expected.shape)
         if np.issubdtype(expected.dtype, np.floating):
             np.testing.assert_allclose(output_data, expected, rtol=1e-4, atol=1e-5)
+            max_ulp = max(max_ulp, max_ulp_diff(output_data, expected))
         else:
             np.testing.assert_array_equal(output_data, expected)
+    return max_ulp
+
+
+def _errors_match(actual_error: str, expected_error: str) -> bool:
+    if expected_error.startswith("OK"):
+        return actual_error.startswith("OK")
+    return actual_error == expected_error
 
 
 def test_official_onnx_files() -> None:
@@ -398,11 +420,20 @@ def test_official_onnx_expected_errors() -> None:
         except Exception as exc:
             actual_error = str(exc)
         else:
-            actual_error = ""
+            if os.getenv("UPDATE_REFS"):
+                test_data_dir = model_path.parent / "test_data_set_0"
+                inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
+                payload = _compile_and_run_testbench(model, inputs)
+                max_ulp = _assert_outputs_match(payload, expected_outputs)
+                actual_error = format_success_message(max_ulp)
+            elif expected_error.startswith("OK"):
+                actual_error = "OK"
+            else:
+                actual_error = ""
         actual_expectations.append((rel_path, actual_error))
         if os.getenv("UPDATE_REFS"):
             continue
-        assert actual_error == expected_error, (
+        assert _errors_match(actual_error, expected_error), (
             f"Unexpected result for {rel_path}. Expected: {expected_error!r}. "
             f"Got: {actual_error!r}."
         )
@@ -433,11 +464,20 @@ def test_local_onnx_expected_errors() -> None:
         except Exception as exc:
             actual_error = str(exc)
         else:
-            actual_error = ""
+            if os.getenv("UPDATE_REFS"):
+                test_data_dir = model_path.parent / "test_data_set_0"
+                inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
+                payload = _compile_and_run_testbench(model, inputs)
+                max_ulp = _assert_outputs_match(payload, expected_outputs)
+                actual_error = format_success_message(max_ulp)
+            elif expected_error.startswith("OK"):
+                actual_error = "OK"
+            else:
+                actual_error = ""
         actual_expectations.append((rel_path, actual_error))
         if os.getenv("UPDATE_REFS"):
             continue
-        assert actual_error == expected_error, (
+        assert _errors_match(actual_error, expected_error), (
             f"Unexpected result for {rel_path}. Expected: {expected_error!r}. "
             f"Got: {actual_error!r}."
         )
@@ -456,7 +496,7 @@ def test_official_onnx_test_data_matches_testbench() -> None:
     _ensure_official_onnx_files_present(data_root)
     expectations = _load_official_onnx_file_expectations()
     for rel_path, expected_error in expectations:
-        if expected_error:
+        if not _is_success_message(expected_error):
             continue
         model_path = data_root / rel_path
         model = onnx.load_model(model_path)
@@ -472,7 +512,7 @@ def test_local_onnx_test_data_matches_testbench() -> None:
     _ensure_local_onnx_files_present(data_root)
     expectations = _load_local_onnx_file_expectations()
     for rel_path, expected_error in expectations:
-        if expected_error:
+        if not _is_success_message(expected_error):
             continue
         model_path = data_root / rel_path
         model = onnx.load_model(model_path)

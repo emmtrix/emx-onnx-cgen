@@ -20,6 +20,7 @@ from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
 from .testbench import decode_testbench_array
+from .verification import format_success_message, max_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
 
@@ -314,23 +315,28 @@ def _handle_verify(args: argparse.Namespace) -> int:
         LOGGER.error("ONNX Runtime failed to run %s: %s", model_path, message)
         return 1
     payload_outputs = payload.get("outputs", {})
+    max_ulp = 0
     try:
         for value, ort_out in zip(graph.outputs, ort_outputs):
             output_payload = payload_outputs.get(value.name)
             if output_payload is None:
                 raise AssertionError(f"Missing output {value.name} in testbench data")
             info = output_dtypes[value.name]
-            output_data = decode_testbench_array(output_payload["data"], info.np_dtype)
+            output_data = decode_testbench_array(
+                output_payload["data"], info.np_dtype
+            ).astype(info.np_dtype, copy=False)
+            ort_out = ort_out.astype(info.np_dtype, copy=False)
             if np.issubdtype(info.np_dtype, np.floating):
                 np.testing.assert_allclose(
                     output_data, ort_out, rtol=1e-4, atol=1e-5
                 )
+                max_ulp = max(max_ulp, max_ulp_diff(output_data, ort_out))
             else:
                 np.testing.assert_array_equal(output_data, ort_out)
     except AssertionError as exc:
         LOGGER.error("Verification failed: %s", exc)
         return 1
-    LOGGER.info("Verification succeeded for %s", model_path)
+    LOGGER.info("%s", format_success_message(max_ulp))
     return 0
 
 
