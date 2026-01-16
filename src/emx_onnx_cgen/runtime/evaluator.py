@@ -786,6 +786,40 @@ def _eval_eye_like(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = output
 
 
+@register_evaluator("Trilu")
+def _eval_trilu(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) not in {1, 2} or len(node.outputs) != 1:
+        raise UnsupportedOpError("Trilu must have 1 or 2 inputs and 1 output")
+    value = evaluator.values[node.inputs[0]]
+    if value.ndim < 2:
+        raise UnsupportedOpError("Trilu expects input rank >= 2")
+    output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+    input_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+    if output_dtype != input_dtype:
+        raise UnsupportedOpError(
+            "Trilu expects matching input/output dtypes, "
+            f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
+        )
+    k = 0
+    if len(node.inputs) == 2 and node.inputs[1]:
+        k_value = np.array(evaluator.values[node.inputs[1]], dtype=np.int64)
+        if k_value.size != 1:
+            raise UnsupportedOpError("Trilu k input must be scalar")
+        k = int(k_value.reshape(-1)[0])
+    upper_attr = node.attrs.get("upper", 1)
+    upper = bool(int(upper_attr))
+    rows, cols = value.shape[-2], value.shape[-1]
+    batch_shape = value.shape[:-2]
+    batch_size = int(np.prod(batch_shape)) if batch_shape else 1
+    view = value.reshape(batch_size, rows, cols)
+    if upper:
+        mask = np.triu(np.ones((rows, cols), dtype=bool), k=k)
+    else:
+        mask = np.tril(np.ones((rows, cols), dtype=bool), k=k)
+    output = np.where(mask, view, np.zeros_like(view))
+    evaluator.values[node.outputs[0]] = output.reshape(value.shape)
+
+
 @register_evaluator("Tile")
 def _eval_tile(evaluator: Evaluator, node: Node) -> None:
     if len(node.inputs) != 2 or len(node.outputs) != 1:

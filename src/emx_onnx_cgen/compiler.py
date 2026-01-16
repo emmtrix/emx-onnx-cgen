@@ -118,6 +118,7 @@ from .lowering import depth_space as _depth_space  # noqa: F401
 from .lowering import eye_like as _eye_like  # noqa: F401
 from .lowering import identity as _identity  # noqa: F401
 from .lowering import tile as _tile  # noqa: F401
+from .lowering import trilu as _trilu  # noqa: F401
 from .lowering.shape import lower_shape
 from .lowering.size import lower_size
 from .lowering.softmax import lower_softmax

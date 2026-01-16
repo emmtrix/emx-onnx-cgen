@@ -1,0 +1,33 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
+    int64_t k = {{ k_value }};
+    {% if k_input %}
+    const {{ k_c_type }} *k_data = (const {{ k_c_type }} *){{ k_input }};
+    k = (int64_t)k_data[0];
+    {% endif %}
+    size_t rows = {{ rows }};
+    size_t cols = {{ cols }};
+    size_t batch_size = {{ batch_size }};
+    for (size_t batch = 0; batch < batch_size; ++batch) {
+        size_t base = batch * rows * cols;
+        for (size_t row = 0; row < rows; ++row) {
+            for (size_t col = 0; col < cols; ++col) {
+                size_t offset = base + row * cols + col;
+                {% if upper %}
+                if ((int64_t)col - (int64_t)row >= k) {
+                    output_data[offset] = input_data[offset];
+                } else {
+                    output_data[offset] = {{ zero_literal }};
+                }
+                {% else %}
+                if ((int64_t)row - (int64_t)col >= -k) {
+                    output_data[offset] = input_data[offset];
+                } else {
+                    output_data[offset] = {{ zero_literal }};
+                }
+                {% endif %}
+            }
+        }
+    }
+}

@@ -636,6 +636,21 @@ class EyeLikeOp:
 
 
 @dataclass(frozen=True)
+class TriluOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    upper: bool
+    k_value: int
+    k_input: str | None
+    k_input_shape: tuple[int, ...] | None
+    k_input_dtype: ScalarType | None
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class TileOp:
     input0: str
     output: str
@@ -963,6 +978,7 @@ class LoweredModel:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -1118,6 +1134,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -1279,6 +1296,12 @@ class CEmitter:
             return (op.input0, op.output)
         if isinstance(op, EyeLikeOp):
             return (op.input0, op.output)
+        if isinstance(op, TriluOp):
+            names = [op.input0]
+            if op.k_input is not None:
+                names.append(op.k_input)
+            names.append(op.output)
+            return tuple(names)
         if isinstance(op, TileOp):
             return (op.input0, op.output)
         if isinstance(op, PadOp):
@@ -1396,6 +1419,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -1446,6 +1470,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -1953,6 +1978,20 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, TriluOp):
+            return TriluOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                upper=op.upper,
+                k_value=op.k_value,
+                k_input=self._map_optional_name(name_map, op.k_input),
+                k_input_shape=op.k_input_shape,
+                k_input_dtype=op.k_input_dtype,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, TileOp):
             return TileOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2292,6 +2331,7 @@ class CEmitter:
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
+                "trilu": self._env.get_template("trilu_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
                 "pad": self._env.get_template("pad_op.c.j2"),
                 "depth_to_space": self._env.get_template("depth_to_space_op.c.j2"),
@@ -2387,6 +2427,7 @@ class CEmitter:
         reshape_template = templates["reshape"]
         identity_template = templates["identity"]
         eye_like_template = templates["eye_like"]
+        trilu_template = templates["trilu"]
         tile_template = templates["tile"]
         pad_template = templates["pad"]
         depth_to_space_template = templates["depth_to_space"]
@@ -2461,6 +2502,7 @@ class CEmitter:
                 reshape_template=reshape_template,
                 identity_template=identity_template,
                 eye_like_template=eye_like_template,
+                trilu_template=trilu_template,
                 tile_template=tile_template,
                 pad_template=pad_template,
                 depth_to_space_template=depth_to_space_template,
@@ -2608,6 +2650,7 @@ class CEmitter:
         reshape_template = templates["reshape"]
         identity_template = templates["identity"]
         eye_like_template = templates["eye_like"]
+        trilu_template = templates["trilu"]
         tile_template = templates["tile"]
         pad_template = templates["pad"]
         depth_to_space_template = templates["depth_to_space"]
@@ -2682,6 +2725,7 @@ class CEmitter:
                 reshape_template=reshape_template,
                 identity_template=identity_template,
                 eye_like_template=eye_like_template,
+                trilu_template=trilu_template,
                 tile_template=tile_template,
                 pad_template=pad_template,
                 depth_to_space_template=depth_to_space_template,
@@ -3056,6 +3100,7 @@ class CEmitter:
             | ReshapeOp
             | IdentityOp
             | EyeLikeOp
+            | TriluOp
             | TileOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -3120,12 +3165,18 @@ class CEmitter:
             )
             if dtype is not None
         }
+        trilu_k_dtypes = {
+            op.k_input_dtype
+            for op in resolved_ops
+            if isinstance(op, TriluOp) and op.k_input_dtype is not None
+        }
         maxpool_indices_dtypes = {
             op.indices_dtype
             for op in resolved_ops
             if isinstance(op, MaxPoolOp) and op.indices_dtype is not None
         }
         model_dtypes.update(maxpool_indices_dtypes)
+        model_dtypes.update(trilu_k_dtypes)
         nll_target_dtypes = {
             op.target_dtype
             for op in resolved_ops
@@ -3237,6 +3288,7 @@ class CEmitter:
             | ReshapeOp
             | IdentityOp
             | EyeLikeOp
+            | TriluOp
             | TileOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -3382,6 +3434,7 @@ class CEmitter:
             | ReshapeOp
             | IdentityOp
             | EyeLikeOp
+            | TriluOp
             | TileOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -3462,6 +3515,7 @@ class CEmitter:
             | ReshapeOp
             | IdentityOp
             | EyeLikeOp
+            | TriluOp
             | TileOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -3548,6 +3602,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -3862,6 +3917,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | DepthToSpaceOp
         | SpaceToDepthOp
@@ -3911,6 +3967,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | DepthToSpaceOp
         | SpaceToDepthOp
@@ -4567,6 +4624,24 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, TriluOp):
+            return TriluOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                upper=op.upper,
+                k_value=op.k_value,
+                k_input=(
+                    temp_map.get(op.k_input, op.k_input)
+                    if op.k_input is not None
+                    else None
+                ),
+                k_input_shape=op.k_input_shape,
+                k_input_dtype=op.k_input_dtype,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, TileOp):
             return TileOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4794,6 +4869,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | DepthToSpaceOp
         | SpaceToDepthOp
@@ -4849,6 +4925,7 @@ class CEmitter:
         reshape_template,
         identity_template,
         eye_like_template,
+        trilu_template,
         tile_template,
         pad_template,
         depth_to_space_template,
@@ -6716,6 +6793,61 @@ class CEmitter:
                 one_literal=f"(({c_type})1)",
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, TriluOp):
+            param_specs = [("input0", op.input0), ("output", op.output)]
+            if op.k_input is not None:
+                param_specs.append(("k_input", op.k_input))
+            params = self._shared_param_map(param_specs)
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            k_suffix = ""
+            if op.k_input is not None and op.k_input_shape is not None:
+                k_suffix = self._param_array_suffix(
+                    op.k_input_shape, _dim_names_for(op.k_input)
+                )
+            batch_dims = op.output_shape[:-2]
+            batch_size = CEmitter._element_count(batch_dims or (1,))
+            param_decls = [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+            if op.k_input is not None and op.k_input_dtype is not None:
+                param_decls.append(
+                    (
+                        params["k_input"],
+                        op.k_input_dtype.c_type,
+                        k_suffix,
+                        True,
+                    )
+                )
+            rendered = trilu_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                k_input=params.get("k_input"),
+                params=self._build_param_decls(param_decls),
+                c_type=c_type,
+                k_c_type=(
+                    op.k_input_dtype.c_type
+                    if op.k_input_dtype is not None
+                    else ScalarType.I64.c_type
+                ),
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                shape=shape,
+                batch_size=batch_size,
+                rows=op.output_shape[-2],
+                cols=op.output_shape[-1],
+                k_value=op.k_value,
+                upper=op.upper,
+                zero_literal=zero_literal,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, TileOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -7985,6 +8117,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -8039,6 +8172,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -8097,6 +8231,11 @@ class CEmitter:
             return ((op.input0, op.shape),)
         if isinstance(op, EyeLikeOp):
             return ((op.input0, op.output_shape),)
+        if isinstance(op, TriluOp):
+            inputs = [(op.input0, op.input_shape)]
+            if op.k_input is not None and op.k_input_shape is not None:
+                inputs.append((op.k_input, op.k_input_shape))
+            return tuple(inputs)
         if isinstance(op, GridSampleOp):
             return ((op.input0, op.input_shape), (op.grid, op.grid_shape))
         if isinstance(op, PadOp):
@@ -8147,6 +8286,7 @@ class CEmitter:
             | ReshapeOp
             | IdentityOp
             | EyeLikeOp
+            | TriluOp
             | TileOp
             | PadOp
             | DepthToSpaceOp
@@ -8208,6 +8348,7 @@ class CEmitter:
         | ReshapeOp
         | IdentityOp
         | EyeLikeOp
+        | TriluOp
         | TileOp
         | PadOp
         | DepthToSpaceOp
@@ -8351,6 +8492,10 @@ class CEmitter:
         | GatherOp
         | TransposeOp
         | ReshapeOp
+        | IdentityOp
+        | EyeLikeOp
+        | TriluOp
+        | TileOp
         | SliceOp
         | ResizeOp
         | GridSampleOp
@@ -8425,6 +8570,8 @@ class CEmitter:
             return op.shape
         if isinstance(op, EyeLikeOp):
             return op.output_shape
+        if isinstance(op, TriluOp):
+            return op.output_shape
         if isinstance(op, TileOp):
             return op.output_shape
         if isinstance(op, PadOp):
@@ -8488,6 +8635,10 @@ class CEmitter:
         | GatherOp
         | TransposeOp
         | ReshapeOp
+        | IdentityOp
+        | EyeLikeOp
+        | TriluOp
+        | TileOp
         | ResizeOp
         | GridSampleOp
         | ReduceOp
