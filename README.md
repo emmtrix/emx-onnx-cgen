@@ -100,6 +100,21 @@ Options:
 - `--model-name`: Override the generated model name (default: model file stem).
 - `--cc`: Explicit C compiler command for building the testbench binary.
 
+How verification works:
+
+1. **Compile with a testbench**: the compiler is invoked with `--emit-testbench`,
+   generating a C program that runs the model and prints inputs/outputs as JSON.
+2. **Build and execute**: the testbench is compiled with the selected C compiler
+   (`--cc`, `CC`, or a detected `cc/gcc/clang`) and executed in a temporary
+   directory.
+3. **Run ONNX Runtime**: the JSON inputs from the testbench are fed to ORT using
+   the same model.
+4. **Compare outputs**: floating outputs are compared with `rtol=1e-4` and
+   `atol=1e-5`; non-floating outputs must match exactly. Missing outputs or
+   mismatches are treated as failures.
+5. **ORT unsupported models**: if ORT reports `NOT_IMPLEMENTED`, verification is
+   skipped with a warning (exit code 0).
+
 ## Output
 
 By default, the compiler emits a single C source file that includes:
