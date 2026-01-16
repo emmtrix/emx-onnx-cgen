@@ -329,6 +329,56 @@ def _make_eye_like_model(
     return model
 
 
+def _make_trilu_model(
+    *,
+    input_shape: list[int],
+    dtype: int,
+    upper: bool = True,
+    k: int | None = None,
+    include_k_input: bool = False,
+    opset: int = 14,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output = helper.make_tensor_value_info("output", dtype, input_shape)
+    inputs = ["input"]
+    graph_inputs = [input_info]
+    initializers: list[onnx.TensorProto] = []
+    if include_k_input:
+        k_info = helper.make_tensor_value_info("k", TensorProto.INT64, [])
+        graph_inputs.append(k_info)
+        inputs.append("k")
+    elif k is not None:
+        k_tensor = helper.make_tensor(
+            "k",
+            TensorProto.INT64,
+            dims=[],
+            vals=[k],
+        )
+        inputs.append("k")
+        initializers.append(k_tensor)
+    node = helper.make_node(
+        "Trilu",
+        inputs=inputs,
+        outputs=[output.name],
+        upper=int(upper),
+    )
+    graph = helper.make_graph(
+        [node],
+        "trilu_graph",
+        graph_inputs,
+        [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_tile_model(
     *,
     input_shape: list[int],
@@ -2590,6 +2640,15 @@ REARRANGE_ORT_CASES = [
             attrs={"blocksize": 2},
         ),
     },
+    {
+        "name": "TriluUpperKInput",
+        "model": lambda: _make_trilu_model(
+            input_shape=[2, 3, 4],
+            dtype=TensorProto.FLOAT,
+            upper=True,
+            include_k_input=True,
+        ),
+    },
 ]
 
 REARRANGE_UNIT_CASES = [
@@ -2638,6 +2697,18 @@ REARRANGE_UNIT_CASES = [
         "input_name": "in0",
         "input_shape": (1, 2, 4, 4),
         "expected": lambda value: _space_to_depth_reference(value, blocksize=2),
+    },
+    {
+        "name": "TriluUpper",
+        "model": lambda: _make_trilu_model(
+            input_shape=[3, 4],
+            dtype=TensorProto.FLOAT,
+            upper=True,
+            k=1,
+        ),
+        "input_name": "input",
+        "input_shape": (3, 4),
+        "expected": lambda value: np.triu(value, k=1),
     },
 ]
 
@@ -2932,6 +3003,27 @@ def test_rearrange_ops_match_numpy(case: dict[str, object]) -> None:
     input_data = rng.standard_normal(case["input_shape"]).astype(np.float32)
     outputs = compiler.run(model, {case["input_name"]: input_data})
     expected = case["expected"](input_data)
+    np.testing.assert_allclose(
+        outputs[model.graph.output[0].name],
+        expected,
+        rtol=1e-5,
+        atol=1e-6,
+    )
+
+
+def test_trilu_k_input_matches_numpy() -> None:
+    model = _make_trilu_model(
+        input_shape=[2, 3],
+        dtype=TensorProto.FLOAT,
+        upper=False,
+        include_k_input=True,
+    )
+    compiler = Compiler()
+    rng = np.random.default_rng(0)
+    input_data = rng.standard_normal((2, 3)).astype(np.float32)
+    k = np.array(-1, dtype=np.int64)
+    outputs = compiler.run(model, {"input": input_data, "k": k})
+    expected = np.tril(input_data, k=int(k))
     np.testing.assert_allclose(
         outputs[model.graph.output[0].name],
         expected,

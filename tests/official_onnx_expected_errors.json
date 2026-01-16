@@ -6477,35 +6477,35 @@
   ],
   [
     "node/test_tril/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_neg/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_one_row_neg/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_out_neg/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_out_pos/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_pos/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_square/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_square_neg/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_tril_zero/model.onnx",
@@ -6513,35 +6513,35 @@
   ],
   [
     "node/test_triu/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_neg/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_one_row/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_out_neg_out/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_out_pos/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_pos/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_square/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_square_neg/model.onnx",
-    "Unsupported op Trilu"
+    ""
   ],
   [
     "node/test_triu_zero/model.onnx",
