@@ -19,6 +19,7 @@ from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
+from .testbench import decode_testbench_array
 
 LOGGER = logging.getLogger(__name__)
 
@@ -293,7 +294,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
         return 1
 
     inputs = {
-        name: np.array(value["data"], dtype=input_dtypes[name].np_dtype)
+        name: decode_testbench_array(value["data"], input_dtypes[name].np_dtype)
         for name, value in payload["inputs"].items()
     }
     sess = ort.InferenceSession(
@@ -319,7 +320,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
             if output_payload is None:
                 raise AssertionError(f"Missing output {value.name} in testbench data")
             info = output_dtypes[value.name]
-            output_data = np.array(output_payload["data"], dtype=info.np_dtype)
+            output_data = decode_testbench_array(output_payload["data"], info.np_dtype)
             if np.issubdtype(info.np_dtype, np.floating):
                 np.testing.assert_allclose(
                     output_data, ort_out, rtol=1e-4, atol=1e-5

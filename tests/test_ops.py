@@ -25,6 +25,7 @@ from emx_onnx_cgen.lowering.squeeze import lower_squeeze
 from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
 from emx_onnx_cgen.lowering.registry import get_lowering
 from emx_onnx_cgen.onnx_import import import_onnx
+from emx_onnx_cgen.testbench import decode_testbench_array
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -2169,7 +2170,9 @@ def _run_testbench_compare(model: onnx.ModelProto) -> None:
         output_payload = outputs_payload.get(output_info.name)
         if output_payload is None:
             raise AssertionError(f"Missing output {output_info.name} in testbench data")
-        output_data = np.array(output_payload["data"], dtype=ort_output.dtype)
+        output_data = decode_testbench_array(
+            output_payload["data"], ort_output.dtype
+        )
         output_data = output_data.reshape(ort_output.shape)
         if np.issubdtype(ort_output.dtype, np.floating):
             np.testing.assert_allclose(

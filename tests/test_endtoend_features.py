@@ -15,6 +15,7 @@ import pytest
 from onnx import TensorProto, helper
 
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen.testbench import decode_testbench_array
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PROJECT_ROOT / "src"
@@ -116,7 +117,9 @@ def test_initializer_weights_emitted_as_static_arrays() -> None:
     model, weights = _make_add_initializer_model()
     payload, generated = _compile_and_run_testbench(model)
     assert "static const float weight" in generated
-    output_data = np.array(payload["outputs"]["out"]["data"], dtype=np.float32)
+    output_data = decode_testbench_array(
+        payload["outputs"]["out"]["data"], np.dtype(np.float32)
+    )
     assert output_data.shape == weights.shape
     with tempfile.TemporaryDirectory() as temp_dir:
         model_path = Path(temp_dir) / "add_init.onnx"
@@ -138,5 +141,7 @@ def test_testbench_accepts_constant_inputs() -> None:
         model, compiler_options=options
     )
     assert "static const float in0_testbench_data" in generated
-    output_data = np.array(payload["outputs"]["out"]["data"], dtype=np.float32)
+    output_data = decode_testbench_array(
+        payload["outputs"]["out"]["data"], np.dtype(np.float32)
+    )
     np.testing.assert_allclose(output_data, input_values + weights)
