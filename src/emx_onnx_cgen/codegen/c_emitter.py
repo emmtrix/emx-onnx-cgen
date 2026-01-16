@@ -9872,9 +9872,15 @@ class CEmitter:
         self, value: float | int | bool, dtype: ScalarType
     ) -> str:
         if dtype == ScalarType.F16:
-            return f"(_Float16){self._format_float32_hex(float(value))}f"
+            formatted = self._format_float32_hex(float(value))
+            if formatted == "NAN" or formatted.endswith("INFINITY"):
+                return f"(_Float16){formatted}"
+            return f"(_Float16){formatted}f"
         if dtype == ScalarType.F32:
-            return f"{self._format_float32_hex(float(value))}f"
+            formatted = self._format_float32_hex(float(value))
+            if formatted == "NAN" or formatted.endswith("INFINITY"):
+                return formatted
+            return f"{formatted}f"
         if dtype == ScalarType.F64:
             return self._format_float64_hex(float(value))
         if dtype == ScalarType.BOOL:
