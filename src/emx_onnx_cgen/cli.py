@@ -11,7 +11,8 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Sequence
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Mapping, Sequence
 
 import onnx
 
@@ -23,6 +24,58 @@ from .testbench import decode_testbench_array
 from .verification import format_success_message, max_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    import numpy as np
+
+
+@dataclass(frozen=True)
+class CliResult:
+    exit_code: int
+    command_line: str
+    error: str | None = None
+    success_message: str | None = None
+    generated: str | None = None
+    data_source: str | None = None
+
+
+def run_cli_command(
+    argv: Sequence[str],
+    *,
+    testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
+) -> CliResult:
+    raw_argv = list(argv)
+    parse_argv = raw_argv
+    if raw_argv and raw_argv[0] == "emx-onnx-cgen":
+        parse_argv = raw_argv[1:]
+    parser = _build_parser()
+    args = parser.parse_args(parse_argv)
+    args.command_line = _format_command_line(raw_argv)
+
+    if args.command != "compile":
+        success_message, error = _verify_model(args)
+        return CliResult(
+            exit_code=0 if error is None else 1,
+            command_line=args.command_line,
+            error=error,
+            success_message=success_message,
+        )
+    generated, data_source, error = _compile_model(
+        args, testbench_inputs=testbench_inputs
+    )
+    if error:
+        return CliResult(
+            exit_code=1,
+            command_line=args.command_line,
+            error=error,
+        )
+    return CliResult(
+        exit_code=0,
+        command_line=args.command_line,
+        success_message="",
+        generated=generated,
+        data_source=data_source,
+    )
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -152,6 +205,29 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _handle_compile(args: argparse.Namespace) -> int:
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
+    generated, data_source, error = _compile_model(args)
+    if error:
+        LOGGER.error("Failed to compile %s: %s", model_path, error)
+        return 1
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(generated or "", encoding="utf-8")
+    LOGGER.info("Wrote C source to %s", output_path)
+    if data_source is not None:
+        data_path = output_path.with_name(
+            f"{output_path.stem}_data{output_path.suffix}"
+        )
+        data_path.write_text(data_source, encoding="utf-8")
+        LOGGER.info("Wrote data source to %s", data_path)
+    return 0
+
+
+def _compile_model(
+    args: argparse.Namespace,
+    *,
+    testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
+) -> tuple[str | None, str | None, str | None]:
+    model_path: Path = args.model
     model_name = args.model_name or "model"
     try:
         model_checksum = _model_checksum(model_path)
@@ -164,6 +240,7 @@ def _handle_compile(args: argparse.Namespace) -> int:
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
             truncate_weights_after=args.truncate_weights_after,
+            testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
         if args.emit_data_file:
@@ -172,19 +249,8 @@ def _handle_compile(args: argparse.Namespace) -> int:
             generated = compiler.compile(model)
             data_source = None
     except (OSError, CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
-        LOGGER.error("Failed to compile %s: %s", model_path, exc)
-        return 1
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(generated, encoding="utf-8")
-    LOGGER.info("Wrote C source to %s", output_path)
-    if data_source is not None:
-        data_path = output_path.with_name(
-            f"{output_path.stem}_data{output_path.suffix}"
-        )
-        data_path.write_text(data_source, encoding="utf-8")
-        LOGGER.info("Wrote data source to %s", data_path)
-    return 0
+        return None, None, str(exc)
+    return generated, data_source, None
 
 
 def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] | None:
@@ -222,13 +288,25 @@ def _handle_verify(args: argparse.Namespace) -> int:
     import numpy as np
     import onnxruntime as ort
 
+    success_message, error = _verify_model(args)
+    if error is not None:
+        LOGGER.error("Verification failed: %s", error)
+        return 1
+    if success_message:
+        LOGGER.info("%s", success_message)
+    return 0
+
+
+def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
+    import numpy as np
+    import onnxruntime as ort
+
     model_path: Path = args.model
     model_name = args.model_name or "model"
     model_checksum = _model_checksum(model_path)
     compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=False)
     if compiler_cmd is None:
-        LOGGER.error("No C compiler found (set --cc or CC environment variable).")
-        return 1
+        return None, "No C compiler found (set --cc or CC environment variable)."
     try:
         model = onnx.load_model(model_path)
         options = CompilerOptions(
@@ -243,16 +321,14 @@ def _handle_verify(args: argparse.Namespace) -> int:
         compiler = Compiler(options)
         generated = compiler.compile(model)
     except (OSError, CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
-        LOGGER.error("Failed to compile %s: %s", model_path, exc)
-        return 1
+        return None, str(exc)
 
     try:
         graph = import_onnx(model)
         output_dtypes = {value.name: value.type.dtype for value in graph.outputs}
         input_dtypes = {value.name: value.type.dtype for value in graph.inputs}
     except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
-        LOGGER.error("Failed to resolve model dtype: %s", exc)
-        return 1
+        return None, f"Failed to resolve model dtype: {exc}"
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
@@ -275,8 +351,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
                 text=True,
             )
         except subprocess.CalledProcessError as exc:
-            LOGGER.error("Failed to build testbench: %s", exc.stderr.strip())
-            return 1
+            return None, f"Failed to build testbench: {exc.stderr.strip()}"
         try:
             result = subprocess.run(
                 [str(exe_path)],
@@ -285,23 +360,21 @@ def _handle_verify(args: argparse.Namespace) -> int:
                 text=True,
             )
         except subprocess.CalledProcessError as exc:
-            LOGGER.error("Testbench execution failed: %s", exc.stderr.strip())
-            return 1
+            return None, f"Testbench execution failed: {exc.stderr.strip()}"
 
     try:
         payload = json.loads(result.stdout)
     except json.JSONDecodeError as exc:
-        LOGGER.error("Failed to parse testbench JSON: %s", exc)
-        return 1
+        return None, f"Failed to parse testbench JSON: {exc}"
 
     inputs = {
         name: decode_testbench_array(value["data"], input_dtypes[name].np_dtype)
         for name, value in payload["inputs"].items()
     }
-    sess = ort.InferenceSession(
-        model.SerializeToString(), providers=["CPUExecutionProvider"]
-    )
     try:
+        sess = ort.InferenceSession(
+            model.SerializeToString(), providers=["CPUExecutionProvider"]
+        )
         ort_outputs = sess.run(None, inputs)
     except Exception as exc:
         message = str(exc)
@@ -311,9 +384,8 @@ def _handle_verify(args: argparse.Namespace) -> int:
                 model_path,
                 message,
             )
-            return 0
-        LOGGER.error("ONNX Runtime failed to run %s: %s", model_path, message)
-        return 1
+            return "", None
+        return None, f"ONNX Runtime failed to run {model_path}: {message}"
     payload_outputs = payload.get("outputs", {})
     max_ulp = 0
     try:
@@ -326,6 +398,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
                 output_payload["data"], info.np_dtype
             ).astype(info.np_dtype, copy=False)
             ort_out = ort_out.astype(info.np_dtype, copy=False)
+            output_data = output_data.reshape(ort_out.shape)
             if np.issubdtype(info.np_dtype, np.floating):
                 np.testing.assert_allclose(
                     output_data, ort_out, rtol=1e-4, atol=1e-5
@@ -334,10 +407,8 @@ def _handle_verify(args: argparse.Namespace) -> int:
             else:
                 np.testing.assert_array_equal(output_data, ort_out)
     except AssertionError as exc:
-        LOGGER.error("Verification failed: %s", exc)
-        return 1
-    LOGGER.info("%s", format_success_message(max_ulp))
-    return 0
+        return None, str(exc)
+    return format_success_message(max_ulp), None
 
 
 def _format_command_line(argv: Sequence[str] | None) -> str:

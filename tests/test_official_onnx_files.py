@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 
 import onnx
@@ -15,7 +16,7 @@ import pytest
 
 from onnx import numpy_helper
 
-from emx_onnx_cgen.compiler import Compiler, CompilerOptions
+from emx_onnx_cgen import cli
 from emx_onnx_cgen.testbench import decode_testbench_array
 from emx_onnx_cgen.verification import format_success_message, max_ulp_diff
 
@@ -35,31 +36,85 @@ ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_
 LOCAL_ONNX_DATA_ROOT = (
     Path(__file__).resolve().parents[1] / "onnx2c-org" / "test" / "local_ops"
 )
+ONNX_FILE_LIMIT = 100
 
 
-def _load_official_onnx_file_expectations() -> list[tuple[str, str]]:
-    return list(_OFFICIAL_ONNX_FILE_EXPECTATIONS)
+@dataclass(frozen=True)
+class OnnxFileExpectation:
+    path: str
+    error: str
+    command_line: str = ""
 
 
-def _load_local_onnx_file_expectations() -> list[tuple[str, str]]:
-    return list(_LOCAL_ONNX_FILE_EXPECTATIONS)
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def _official_data_root() -> Path:
+    return _repo_root() / "onnx-org" / "onnx" / "backend" / "test" / "data"
+
+
+def _normalize_official_path(path: str) -> str:
+    repo_root = _repo_root()
+    candidate = repo_root / path
+    if candidate.exists():
+        return candidate.relative_to(repo_root).as_posix()
+    return (_official_data_root() / path).relative_to(repo_root).as_posix()
+
+
+def _load_official_onnx_file_expectations() -> list[OnnxFileExpectation]:
+    return list(_OFFICIAL_ONNX_FILE_EXPECTATIONS)[:ONNX_FILE_LIMIT]
+
+
+def _load_local_onnx_file_expectations() -> list[OnnxFileExpectation]:
+    return list(_LOCAL_ONNX_FILE_EXPECTATIONS)[:ONNX_FILE_LIMIT]
 
 
 def _official_onnx_file_paths() -> list[str]:
-    return [path for path, _ in _load_official_onnx_file_expectations()]
+    return [
+        _normalize_official_path(expectation.path)
+        for expectation in _load_official_onnx_file_expectations()
+    ]
 
 
-def _read_onnx_file_expectations(path: Path) -> list[tuple[str, str]]:
+def _read_onnx_file_expectations(path: Path) -> list[OnnxFileExpectation]:
     data = json.loads(path.read_text(encoding="utf-8"))
-    return [(path, error) for path, error in data]
+    expectations: list[OnnxFileExpectation] = []
+    for entry in data:
+        if isinstance(entry, dict):
+            expectations.append(
+                OnnxFileExpectation(
+                    path=entry["path"],
+                    error=entry["error"],
+                    command_line=entry.get("command_line", ""),
+                )
+            )
+            continue
+        if len(entry) == 2:
+            model_path, error = entry
+            command_line = ""
+        else:
+            model_path, error, command_line = entry
+        expectations.append(
+            OnnxFileExpectation(
+                path=model_path,
+                error=error,
+                command_line=command_line,
+            )
+        )
+    return expectations
 
 
-def _set_official_onnx_file_expectations(expectations: list[tuple[str, str]]) -> None:
+def _set_official_onnx_file_expectations(
+    expectations: list[OnnxFileExpectation],
+) -> None:
     global _OFFICIAL_ONNX_FILE_EXPECTATIONS
     _OFFICIAL_ONNX_FILE_EXPECTATIONS = expectations
 
 
-def _set_local_onnx_file_expectations(expectations: list[tuple[str, str]]) -> None:
+def _set_local_onnx_file_expectations(
+    expectations: list[OnnxFileExpectation],
+) -> None:
     global _LOCAL_ONNX_FILE_EXPECTATIONS
     _LOCAL_ONNX_FILE_EXPECTATIONS = expectations
 
@@ -80,29 +135,35 @@ def _format_missing_test_data_message() -> str:
     return "OK (max ULP 0; testbench unavailable)"
 
 
-def _render_onnx_file_support_table(expectations: list[tuple[str, str]]) -> list[str]:
+def _render_onnx_file_support_table(
+    expectations: list[OnnxFileExpectation],
+) -> list[str]:
     lines = [
         "| File | Supported | Error |",
         "| --- | --- | --- |",
     ]
-    for path, error in expectations:
-        supported = "✅" if _is_success_message(error) else "❌"
-        message = error.replace("\n", " ").strip()
-        lines.append(f"| {path} | {supported} | {message} |")
+    for expectation in expectations:
+        supported = "✅" if _is_success_message(expectation.error) else "❌"
+        message = expectation.error.replace("\n", " ").strip()
+        lines.append(f"| {expectation.path} | {supported} | {message} |")
     return lines
 
 
 def _render_onnx_file_support_markdown(
-    official_expectations: list[tuple[str, str]],
-    local_expectations: list[tuple[str, str]],
+    official_expectations: list[OnnxFileExpectation],
+    local_expectations: list[OnnxFileExpectation],
 ) -> str:
     supported_count = sum(
-        1 for _, error in official_expectations if _is_success_message(error)
+        1
+        for expectation in official_expectations
+        if _is_success_message(expectation.error)
     )
     total_count = len(official_expectations)
     onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
     local_supported = sum(
-        1 for _, error in local_expectations if _is_success_message(error)
+        1
+        for expectation in local_expectations
+        if _is_success_message(expectation.error)
     )
     local_total = len(local_expectations)
     lines = [
@@ -128,16 +189,16 @@ def _render_onnx_file_support_markdown(
 
 
 def _render_error_histogram_markdown(
-    expectations: list[tuple[str, str]],
+    expectations: list[OnnxFileExpectation],
     title: str = "# Error frequency",
 ) -> str:
     def _sanitize_error(error: str) -> str:
         return re.sub(r"'[^']*'", "'*'", error)
 
     errors = [
-        _sanitize_error(error)
-        for _, error in expectations
-        if error and not _is_success_message(error)
+        _sanitize_error(expectation.error)
+        for expectation in expectations
+        if expectation.error and not _is_success_message(expectation.error)
     ]
     counts = Counter(errors)
     if not counts:
@@ -164,8 +225,8 @@ def _render_error_histogram_markdown(
 
 
 def _render_support_histogram_markdown(
-    official_expectations: list[tuple[str, str]],
-    local_expectations: list[tuple[str, str]],
+    official_expectations: list[OnnxFileExpectation],
+    local_expectations: list[OnnxFileExpectation],
 ) -> str:
     official_histogram = _render_error_histogram_markdown(official_expectations)
     local_histogram = _render_error_histogram_markdown(
@@ -183,7 +244,10 @@ def _render_support_histogram_markdown(
 
 
 def _collect_onnx_files(data_root: Path) -> list[str]:
-    return sorted(p.relative_to(data_root).as_posix() for p in data_root.rglob("*.onnx"))
+    return sorted(
+        p.relative_to(data_root).as_posix()
+        for p in data_root.rglob("*.onnx")
+    )[:ONNX_FILE_LIMIT]
 
 
 def _maybe_init_onnx_org() -> None:
@@ -233,10 +297,18 @@ def _ensure_official_onnx_files_present(data_root: Path) -> None:
             "onnx-org test data is unavailable. Initialize the onnx-org submodule "
             "and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
         )
-    missing = [path for path in _official_onnx_file_paths() if not (data_root / path).exists()]
+    missing = [
+        path
+        for path in _official_onnx_file_paths()
+        if not (_repo_root() / path).exists()
+    ]
     if missing:
         _maybe_init_onnx_org()
-        missing = [path for path in _official_onnx_file_paths() if not (data_root / path).exists()]
+        missing = [
+            path
+            for path in _official_onnx_file_paths()
+            if not (_repo_root() / path).exists()
+        ]
         if not missing:
             return
         preview = ", ".join(missing[:5])
@@ -319,7 +391,7 @@ def _load_test_data_set(
 
 
 def _compile_and_run_testbench(
-    model: onnx.ModelProto,
+    model_path: Path,
     testbench_inputs: dict[str, np.ndarray],
 ) -> dict[str, object]:
     compiler_cmd = _resolve_compiler()
@@ -329,13 +401,22 @@ def _compile_and_run_testbench(
         temp_path = Path(temp_dir)
         c_path = temp_path / "model.c"
         exe_path = temp_path / "model"
-        options = CompilerOptions(
-            template_dir=Path(__file__).resolve().parents[1] / "templates",
-            emit_testbench=True,
+        repo_root = _repo_root()
+        result = cli.run_cli_command(
+            [
+                "compile",
+                str(model_path.relative_to(repo_root)),
+                "--template-dir",
+                "templates",
+                "--emit-testbench",
+            ],
             testbench_inputs=testbench_inputs,
         )
-        compiler = Compiler(options)
-        generated = compiler.compile(model)
+        if result.exit_code != 0:
+            raise AssertionError(
+                f"CLI compile failed for {model_path}: {result.error}"
+            )
+        generated = result.generated or ""
         c_path.write_text(generated, encoding="utf-8")
         subprocess.run(
             [
@@ -393,9 +474,14 @@ def _errors_match(actual_error: str, expected_error: str) -> bool:
 
 
 def test_official_onnx_files() -> None:
-    data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
+    data_root = _official_data_root()
     _ensure_official_onnx_files_present(data_root)
     actual_files = _collect_onnx_files(data_root)
+    repo_root = _repo_root()
+    data_root_relative = data_root.relative_to(repo_root).as_posix()
+    actual_files = [
+        f"{data_root_relative}/{path}" for path in actual_files
+    ]
     expected_files = sorted(_official_onnx_file_paths())
     actual_set = set(actual_files)
     expected_set = set(expected_files)
@@ -412,7 +498,7 @@ def test_local_onnx_files() -> None:
     _ensure_local_onnx_files_present(data_root)
     actual_files = _collect_onnx_files(data_root)
     expectations = _load_local_onnx_file_expectations()
-    expected_files = sorted(path for path, _ in expectations)
+    expected_files = sorted(expectation.path for expectation in expectations)
     actual_set = set(actual_files)
     expected_set = set(expected_files)
     missing = sorted(expected_set - actual_set)
@@ -425,26 +511,48 @@ def test_local_onnx_files() -> None:
 
 @pytest.mark.order(1)
 def test_official_onnx_expected_errors() -> None:
-    data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
+    data_root = _official_data_root()
     _ensure_official_onnx_files_present(data_root)
     expectations = _load_official_onnx_file_expectations()
-    compiler = Compiler()
-    actual_expectations: list[tuple[str, str]] = []
-    for rel_path, expected_error in expectations:
-        model_path = data_root / rel_path
-        model = onnx.load_model(model_path)
-        try:
-            compiler.compile(model)
-        except Exception as exc:
-            actual_error = str(exc)
+    actual_expectations: list[OnnxFileExpectation] = []
+    repo_root = _repo_root()
+    compiler_cmd = _resolve_compiler()
+    if compiler_cmd is None:
+        pytest.skip("C compiler not available (set CC or install gcc/clang)")
+    for expectation in expectations:
+        rel_path = _normalize_official_path(expectation.path)
+        expected_error = expectation.error
+        model_path = repo_root / rel_path
+        cli_result = cli.run_cli_command(
+            [
+                "emx-onnx-cgen",
+                "verify",
+                str(model_path.relative_to(repo_root)),
+                "--template-dir",
+                "templates",
+                "--cc",
+                compiler_cmd[0],
+            ]
+        )
+        if cli_result.exit_code != 0:
+            actual_error = cli_result.error or ""
         else:
             if os.getenv("UPDATE_REFS"):
-                actual_error = _format_missing_test_data_message()
+                actual_error = (
+                    cli_result.success_message
+                    or _format_missing_test_data_message()
+                )
             elif expected_error.startswith("OK"):
                 actual_error = "OK"
             else:
                 actual_error = ""
-        actual_expectations.append((rel_path, actual_error))
+        actual_expectations.append(
+            OnnxFileExpectation(
+                path=rel_path,
+                error=actual_error,
+                command_line=cli_result.command_line,
+            )
+        )
         if os.getenv("UPDATE_REFS"):
             continue
         assert _errors_match(actual_error, expected_error), (
@@ -453,7 +561,14 @@ def test_official_onnx_expected_errors() -> None:
         )
     if os.getenv("UPDATE_REFS"):
         OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH.write_text(
-            json.dumps(actual_expectations, indent=2) + "\n",
+            json.dumps(
+                [
+                    [item.path, item.error, item.command_line]
+                    for item in actual_expectations
+                ],
+                indent=2,
+            )
+            + "\n",
             encoding="utf-8",
         )
         _set_official_onnx_file_expectations(actual_expectations)
@@ -465,18 +580,32 @@ def test_local_onnx_expected_errors() -> None:
     data_root = LOCAL_ONNX_DATA_ROOT
     _ensure_local_onnx_files_present(data_root)
     expectations = _load_local_onnx_file_expectations()
-    expected_paths = [path for path, _ in expectations]
+    expected_paths = [expectation.path for expectation in expectations]
     actual_paths = _collect_onnx_files(data_root)
     assert expected_paths == actual_paths
-    compiler = Compiler()
-    actual_expectations: list[tuple[str, str]] = []
-    for rel_path, expected_error in expectations:
+    actual_expectations: list[OnnxFileExpectation] = []
+    repo_root = _repo_root()
+    compiler_cmd = _resolve_compiler()
+    if compiler_cmd is None:
+        pytest.skip("C compiler not available (set CC or install gcc/clang)")
+    for expectation in expectations:
+        rel_path = expectation.path
+        expected_error = expectation.error
         model_path = data_root / rel_path
         model = onnx.load_model(model_path)
-        try:
-            compiler.compile(model)
-        except Exception as exc:
-            actual_error = str(exc)
+        cli_result = cli.run_cli_command(
+            [
+                "emx-onnx-cgen",
+                "verify",
+                str(model_path.relative_to(repo_root)),
+                "--template-dir",
+                "templates",
+                "--cc",
+                compiler_cmd[0],
+            ]
+        )
+        if cli_result.exit_code != 0:
+            actual_error = cli_result.error or ""
         else:
             if os.getenv("UPDATE_REFS"):
                 test_data_dir = model_path.parent / "test_data_set_0"
@@ -489,14 +618,20 @@ def test_local_onnx_expected_errors() -> None:
                     actual_error = _format_missing_test_data_message()
                 else:
                     inputs, expected_outputs = test_data
-                    payload = _compile_and_run_testbench(model, inputs)
+                    payload = _compile_and_run_testbench(model_path, inputs)
                     max_ulp = _assert_outputs_match(payload, expected_outputs)
                     actual_error = format_success_message(max_ulp)
             elif expected_error.startswith("OK"):
                 actual_error = "OK"
             else:
                 actual_error = ""
-        actual_expectations.append((rel_path, actual_error))
+        actual_expectations.append(
+            OnnxFileExpectation(
+                path=rel_path,
+                error=actual_error,
+                command_line=cli_result.command_line,
+            )
+        )
         if os.getenv("UPDATE_REFS"):
             continue
         assert _errors_match(actual_error, expected_error), (
@@ -505,7 +640,14 @@ def test_local_onnx_expected_errors() -> None:
         )
     if os.getenv("UPDATE_REFS"):
         LOCAL_ONNX_FILE_EXPECTATIONS_PATH.write_text(
-            json.dumps(actual_expectations, indent=2) + "\n",
+            json.dumps(
+                [
+                    [item.path, item.error, item.command_line]
+                    for item in actual_expectations
+                ],
+                indent=2,
+            )
+            + "\n",
             encoding="utf-8",
         )
         _set_local_onnx_file_expectations(actual_expectations)
@@ -514,17 +656,18 @@ def test_local_onnx_expected_errors() -> None:
 
 @pytest.mark.order(after="test_local_onnx_expected_errors")
 def test_official_onnx_test_data_matches_testbench() -> None:
-    data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
+    data_root = _official_data_root()
     _ensure_official_onnx_files_present(data_root)
     expectations = _load_official_onnx_file_expectations()
-    for rel_path, expected_error in expectations:
-        if not _is_success_message(expected_error):
+    repo_root = _repo_root()
+    for expectation in expectations:
+        if not _is_success_message(expectation.error):
             continue
-        model_path = data_root / rel_path
+        model_path = repo_root / expectation.path
         model = onnx.load_model(model_path)
         test_data_dir = model_path.parent / "test_data_set_0"
         inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
-        payload = _compile_and_run_testbench(model, inputs)
+        payload = _compile_and_run_testbench(model_path, inputs)
         _assert_outputs_match(payload, expected_outputs)
 
 
@@ -533,14 +676,14 @@ def test_local_onnx_test_data_matches_testbench() -> None:
     data_root = LOCAL_ONNX_DATA_ROOT
     _ensure_local_onnx_files_present(data_root)
     expectations = _load_local_onnx_file_expectations()
-    for rel_path, expected_error in expectations:
-        if not _is_success_message(expected_error):
+    for expectation in expectations:
+        if not _is_success_message(expectation.error):
             continue
-        model_path = data_root / rel_path
+        model_path = data_root / expectation.path
         model = onnx.load_model(model_path)
         test_data_dir = model_path.parent / "test_data_set_0"
         inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
-        payload = _compile_and_run_testbench(model, inputs)
+        payload = _compile_and_run_testbench(model_path, inputs)
         _assert_outputs_match(payload, expected_outputs)
 
 
