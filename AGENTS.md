@@ -213,15 +213,6 @@ UPDATE_REFS=1 pytest -n auto -q
   * at least one ORT comparison test
   * edge cases (broadcasting, padding, axis, negative indices, etc.)
 
-### Numeric tolerances
-
-* Use tolerances appropriate for `float32`:
-
-  * default: `atol=1e-5`, `rtol=1e-4`
-* For ops with higher numeric drift (e.g., `Softmax`):
-
-  * loosen tolerances slightly, document why
-
 ### Test model sources
 
 * Keep test ONNX models small.
