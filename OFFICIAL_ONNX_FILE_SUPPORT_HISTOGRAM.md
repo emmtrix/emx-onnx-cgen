@@ -2,19 +2,20 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Testbench execution failed:  | 9 | ██████████████████████████████ |
-| And expects identical input/output shapes | 5 | █████████████████ |
-| Unsupported op AffineGrid | 4 | █████████████ |
-| Unsupported op If | 4 | █████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 4 | █████████████ |
-| Unsupported op Adagrad | 2 | ███████ |
-| Unsupported op Adam | 2 | ███████ |
-| Unsupported op TreeEnsemble | 2 | ███████ |
-| Out of tolerance (max ULP 4294967295) | 2 | ███████ |
-| Where output shape must be (1, 1), got (1,) | 2 | ███████ |
-| Out of tolerance (max ULP 2143208269) | 1 | ███ |
-| Unsupported op ArrayFeatureExtractor | 1 | ███ |
-| Unsupported op Binarizer | 1 | ███ |
+| Testbench execution failed:  | 5 | ██████████████████████████████ |
+| And expects identical input/output shapes | 5 | ██████████████████████████████ |
+| Testbench execution failed: exit code -11 (signal 11: SIGSEGV) | 4 | ████████████████████████ |
+| Unsupported op AffineGrid | 4 | ████████████████████████ |
+| Unsupported op If | 4 | ████████████████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 4 | ████████████████████████ |
+| Unsupported op Adagrad | 2 | ████████████ |
+| Unsupported op Adam | 2 | ████████████ |
+| Unsupported op TreeEnsemble | 2 | ████████████ |
+| Out of tolerance (max ULP 4294967295) | 2 | ████████████ |
+| Where output shape must be (1, 1), got (1,) | 2 | ████████████ |
+| Out of tolerance (max ULP 2143208269) | 1 | ██████ |
+| Unsupported op ArrayFeatureExtractor | 1 | ██████ |
+| Unsupported op Binarizer | 1 | ██████ |
 
 ## Local ONNX file support histogram
 
