@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify onnx2c-org/test/local_ops/test_maxpool_stride_2/model.onnx --template-dir templates --cc /usr/bin/cc"
+}

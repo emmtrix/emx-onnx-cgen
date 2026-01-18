@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op AffineGrid",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx --template-dir templates --cc /usr/bin/cc"
+}

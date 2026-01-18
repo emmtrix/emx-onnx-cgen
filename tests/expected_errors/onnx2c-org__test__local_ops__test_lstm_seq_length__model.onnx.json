@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 43)",
+  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_seq_length/model.onnx --template-dir templates --cc /usr/bin/cc"
+}

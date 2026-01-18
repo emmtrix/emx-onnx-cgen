@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op QLinearMul",
+  "command_line": "verify onnx2c-org/test/local_ops/test_qlinearmul_uint8/model.onnx --template-dir templates --cc /usr/bin/cc"
+}

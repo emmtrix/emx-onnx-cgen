@@ -9,6 +9,7 @@ import tempfile
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Callable
 
 import onnx
 import numpy as np
@@ -20,12 +21,9 @@ from emx_onnx_cgen import cli
 from emx_onnx_cgen.testbench import decode_testbench_array
 from emx_onnx_cgen.verification import format_success_message, max_ulp_diff
 
-OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH = (
-    Path(__file__).resolve().parent / "official_onnx_expected_errors.json"
-)
-LOCAL_ONNX_FILE_EXPECTATIONS_PATH = (
-    Path(__file__).resolve().parent / "local_onnx_expected_errors.json"
-)
+EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
+OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
+LOCAL_ONNX_PREFIX = "onnx2c-org/test/local_ops/"
 OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
     Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT.md"
 )
@@ -77,32 +75,53 @@ def _official_onnx_file_paths() -> list[str]:
     ]
 
 
-def _read_onnx_file_expectations(path: Path) -> list[OnnxFileExpectation]:
+def _encode_repo_relative_path(repo_relative_path: str) -> str:
+    return repo_relative_path.replace("/", "__")
+
+
+def _decode_repo_relative_path(encoded: str) -> str:
+    return encoded.replace("__", "/")
+
+
+def _expected_errors_path_for_repo_relative(repo_relative_path: str) -> Path:
+    encoded = _encode_repo_relative_path(repo_relative_path)
+    return EXPECTED_ERRORS_ROOT / f"{encoded}.json"
+
+
+def _repo_relative_path_from_expectation_file(path: Path) -> str:
+    encoded = path.relative_to(EXPECTED_ERRORS_ROOT).with_suffix("").as_posix()
+    return _decode_repo_relative_path(encoded)
+
+
+def _read_expectation_file(
+    path: Path,
+    *,
+    fallback_path: str,
+) -> OnnxFileExpectation:
     data = json.loads(path.read_text(encoding="utf-8"))
-    expectations: list[OnnxFileExpectation] = []
-    for entry in data:
-        if isinstance(entry, dict):
-            expectations.append(
-                OnnxFileExpectation(
-                    path=entry["path"],
-                    error=entry["error"],
-                    command_line=entry.get("command_line", ""),
-                )
-            )
-            continue
-        if len(entry) == 2:
-            model_path, error = entry
-            command_line = ""
+    error = ""
+    command_line = ""
+    if isinstance(data, dict):
+        error = data.get("error", "")
+        command_line = data.get("command_line", "")
+    elif isinstance(data, list):
+        if data and isinstance(data[0], str) and data[0].endswith(".onnx"):
+            if len(data) >= 2:
+                error = data[1]
+            if len(data) >= 3:
+                command_line = data[2]
         else:
-            model_path, error, command_line = entry
-        expectations.append(
-            OnnxFileExpectation(
-                path=model_path,
-                error=error,
-                command_line=command_line,
-            )
-        )
-    return expectations
+            if len(data) >= 1:
+                error = data[0]
+            if len(data) >= 2:
+                command_line = data[1]
+    else:
+        raise TypeError(f"Unsupported expectation data in {path}")
+    return OnnxFileExpectation(
+        path=fallback_path,
+        error=error,
+        command_line=command_line,
+    )
 
 
 def _set_official_onnx_file_expectations(
@@ -119,11 +138,66 @@ def _set_local_onnx_file_expectations(
     _LOCAL_ONNX_FILE_EXPECTATIONS = expectations
 
 
-_OFFICIAL_ONNX_FILE_EXPECTATIONS = _read_onnx_file_expectations(
-    OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH
+def _write_expectation_file(
+    expectation: OnnxFileExpectation,
+    *,
+    repo_relative_path: str,
+) -> None:
+    expectation_path = _expected_errors_path_for_repo_relative(
+        repo_relative_path
+    )
+    expectation_path.parent.mkdir(parents=True, exist_ok=True)
+    expectation_path.write_text(
+        json.dumps(
+            {
+                "error": expectation.error,
+                "command_line": expectation.command_line,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _load_expectations_from_root(
+    root: Path,
+    *,
+    path_converter: Callable[[str], str],
+    path_filter: Callable[[str], bool],
+) -> list[OnnxFileExpectation]:
+    if not root.exists():
+        raise AssertionError(
+            f"Expected errors directory {root} is missing."
+        )
+    expectations: list[OnnxFileExpectation] = []
+    for expectation_file in sorted(root.glob("*.json")):
+        repo_relative = _repo_relative_path_from_expectation_file(
+            expectation_file
+        )
+        if not path_filter(repo_relative):
+            continue
+        expectation_path = path_converter(repo_relative)
+        expectations.append(
+            _read_expectation_file(
+                expectation_file,
+                fallback_path=expectation_path,
+            )
+        )
+    return expectations
+
+
+_OFFICIAL_ONNX_FILE_EXPECTATIONS = _load_expectations_from_root(
+    EXPECTED_ERRORS_ROOT,
+    path_converter=lambda repo_relative: repo_relative,
+    path_filter=lambda repo_relative: repo_relative.startswith(OFFICIAL_ONNX_PREFIX),
 )
-_LOCAL_ONNX_FILE_EXPECTATIONS = _read_onnx_file_expectations(
-    LOCAL_ONNX_FILE_EXPECTATIONS_PATH
+_LOCAL_ONNX_FILE_EXPECTATIONS = _load_expectations_from_root(
+    EXPECTED_ERRORS_ROOT,
+    path_converter=lambda repo_relative: Path(repo_relative)
+    .relative_to(LOCAL_ONNX_DATA_ROOT.relative_to(_repo_root()))
+    .as_posix(),
+    path_filter=lambda repo_relative: repo_relative.startswith(LOCAL_ONNX_PREFIX),
 )
 
 
@@ -560,17 +634,11 @@ def test_official_onnx_expected_errors() -> None:
             f"Got: {actual_error!r}."
         )
     if os.getenv("UPDATE_REFS"):
-        OFFICIAL_ONNX_FILE_EXPECTATIONS_PATH.write_text(
-            json.dumps(
-                [
-                    [item.path, item.error, item.command_line]
-                    for item in actual_expectations
-                ],
-                indent=2,
+        for item in actual_expectations:
+            _write_expectation_file(
+                item,
+                repo_relative_path=item.path,
             )
-            + "\n",
-            encoding="utf-8",
-        )
         _set_official_onnx_file_expectations(actual_expectations)
         return
 
@@ -639,17 +707,15 @@ def test_local_onnx_expected_errors() -> None:
             f"Got: {actual_error!r}."
         )
     if os.getenv("UPDATE_REFS"):
-        LOCAL_ONNX_FILE_EXPECTATIONS_PATH.write_text(
-            json.dumps(
-                [
-                    [item.path, item.error, item.command_line]
-                    for item in actual_expectations
-                ],
-                indent=2,
+        repo_root = _repo_root()
+        for item in actual_expectations:
+            repo_relative_path = (
+                LOCAL_ONNX_DATA_ROOT / item.path
+            ).relative_to(repo_root).as_posix()
+            _write_expectation_file(
+                item,
+                repo_relative_path=repo_relative_path,
             )
-            + "\n",
-            encoding="utf-8",
-        )
         _set_local_onnx_file_expectations(actual_expectations)
         return
 

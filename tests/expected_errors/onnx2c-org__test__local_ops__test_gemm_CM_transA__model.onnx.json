@@ -1,0 +1,4 @@
+{
+  "error": "Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4)",
+  "command_line": "verify onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx --template-dir templates --cc /usr/bin/cc"
+}

@@ -1,0 +1,4 @@
+{
+  "error": "\nNot equal to tolerance rtol=0.0001, atol=1e-05\n\nnan location mismatch:\n ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,\n         nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,\n         nan, nan, nan, nan, nan, nan],...\n DESIRED: array([[[0.598068, 0.555451, 0.475542, 0.572956, 0.524081, 0.611961,\n         0.513773, 0.337044, 0.523152, 0.589548, 0.475683, 0.597341,\n         0.380195, 0.432963, 0.410573, 0.56287 , 0.731879, 0.314342,...",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx --template-dir templates --cc /usr/bin/cc"
+}

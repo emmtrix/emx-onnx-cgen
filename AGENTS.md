@@ -313,7 +313,7 @@ When adding support for a new operator:
 3. **Codegen:** add a new op dataclass + rendering path in `src/onnx2c/codegen/c_emitter.py` and a matching template in `templates/`.
 4. **Runtime evaluator:** implement the op in `src/onnx2c/runtime/evaluator.py` for verification/constant folding.
 5. **Tests:** add at least one unit test and one ORT comparison test.
-6. **Reference updates:** refresh `tests/official_onnx_expected_errors.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -n auto -q`.
+6. **Reference updates:** refresh `tests/expected_errors/**.json` and regenerate `OFFICIAL_ONNX_FILE_SUPPORT*.md` via `UPDATE_REFS=1 pytest -n auto -q`.
 
 ## Maintaining this document (AGENTS.md)
 
