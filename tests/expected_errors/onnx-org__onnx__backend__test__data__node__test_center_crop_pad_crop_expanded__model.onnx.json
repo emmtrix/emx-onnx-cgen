@@ -1,4 +1,4 @@
 {
-  "error": "Out of tolerance (max ULP 2919007646)",
+  "error": "Out of tolerance (max ULP 2134203891)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/test_data_set_0"
 }

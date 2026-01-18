@@ -1,4 +1,4 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "Out of tolerance (max ULP 62279)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled_expanded/test_data_set_0"
 }
