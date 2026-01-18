@@ -112,3 +112,7 @@ Generated: 2026-01-18T10:41:22.376763+00:00
 | 100 | 0.780 | call | `tests/test_official_onnx_files.py::test_official_onnx_expected_errors[onnx-org/onnx/backend/test/data/node/test_argmax_keepdims_random/model.onnx]` |
 
 Captured 1275 duration entries (showing top 100).
+
+## Slowest Test Note
+
+The slowest recorded test in this run was `tests/test_official_onnx_files.py::test_official_onnx_expected_errors[onnx-org/onnx/backend/test/data/light/light_densenet121.onnx]` at 25.370 seconds.

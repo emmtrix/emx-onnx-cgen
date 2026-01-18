@@ -10,6 +10,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
+import signal
 from pathlib import Path
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Mapping, Sequence
@@ -317,6 +319,20 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
     import numpy as np
     import onnxruntime as ort
 
+    def log_step(step: str, started_at: float) -> None:
+        duration = time.perf_counter() - started_at
+        LOGGER.info("verify step %s: %.3fs", step, duration)
+
+    def describe_exit_code(returncode: int) -> str:
+        if returncode >= 0:
+            return f"exit code {returncode}"
+        signal_id = -returncode
+        try:
+            signal_name = signal.Signals(signal_id).name
+        except ValueError:
+            signal_name = "unknown"
+        return f"exit code {returncode} (signal {signal_id}: {signal_name})"
+
     model_path: Path = args.model
     model_name = args.model_name or "model"
     model_checksum = _model_checksum(model_path)
@@ -337,7 +353,9 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
             testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
+        codegen_started = time.perf_counter()
         generated = compiler.compile(model)
+        log_step("codegen", codegen_started)
     except (OSError, CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         return None, str(exc)
 
@@ -350,35 +368,44 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
+        LOGGER.info("verify temp dir: %s", temp_path)
         c_path = temp_path / "model.c"
         exe_path = temp_path / "model"
         c_path.write_text(generated, encoding="utf-8")
         try:
+            compile_started = time.perf_counter()
+            compile_cmd = [
+                *compiler_cmd,
+                "-std=c99",
+                "-O2",
+                str(c_path),
+                "-o",
+                str(exe_path),
+                "-lm",
+            ]
+            LOGGER.info("verify compile command: %s", shlex.join(compile_cmd))
             subprocess.run(
-                [
-                    *compiler_cmd,
-                    "-std=c99",
-                    "-O2",
-                    str(c_path),
-                    "-o",
-                    str(exe_path),
-                    "-lm",
-                ],
+                compile_cmd,
                 check=True,
                 capture_output=True,
                 text=True,
             )
+            log_step("compile", compile_started)
         except subprocess.CalledProcessError as exc:
             return None, f"Failed to build testbench: {exc.stderr.strip()}"
         try:
+            run_started = time.perf_counter()
             result = subprocess.run(
                 [str(exe_path)],
                 check=True,
                 capture_output=True,
                 text=True,
             )
+            log_step("run", run_started)
         except subprocess.CalledProcessError as exc:
-            return None, f"Testbench execution failed: {exc.stderr.strip()}"
+            return None, (
+                "Testbench execution failed: " + describe_exit_code(exc.returncode)
+            )
 
     try:
         payload = json.loads(result.stdout)
@@ -398,11 +425,13 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
             for name, value in payload["inputs"].items()
         }
     try:
+        ort_started = time.perf_counter()
         sess = ort.InferenceSession(
             model.SerializeToString(), providers=["CPUExecutionProvider"]
         )
         ort_outputs = sess.run(None, inputs)
     except Exception as exc:
+        log_step("onnx runtime", ort_started)
         message = str(exc)
         if "NOT_IMPLEMENTED" in message:
             LOGGER.warning(
@@ -412,6 +441,7 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
             )
             return "", None
         return None, f"ONNX Runtime failed to run {model_path}: {message}"
+    log_step("onnx runtime", ort_started)
     payload_outputs = payload.get("outputs", {})
     max_ulp = 0
     try:
