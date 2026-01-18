@@ -1,0 +1,4 @@
+{
+  "error": "AveragePool expects 2D kernel_shape",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/test_data_set_0"
+}

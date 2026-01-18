@@ -1,0 +1,4 @@
+{
+  "error": "Out of tolerance (max ULP 1902013)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/test_data_set_0"
+}

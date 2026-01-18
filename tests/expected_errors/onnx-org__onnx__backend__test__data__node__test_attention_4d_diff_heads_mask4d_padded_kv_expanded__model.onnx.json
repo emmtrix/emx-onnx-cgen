@@ -1,0 +1,4 @@
+{
+  "error": "Pad value input must be a scalar",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/test_data_set_0"
+}

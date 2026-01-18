@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/test_data_set_0"
+}

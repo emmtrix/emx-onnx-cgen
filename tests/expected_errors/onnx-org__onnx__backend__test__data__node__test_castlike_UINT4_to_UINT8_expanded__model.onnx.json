@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 21 (UINT4) for tensor 'input'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_UINT8_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_UINT8_expanded/test_data_set_0"
+}

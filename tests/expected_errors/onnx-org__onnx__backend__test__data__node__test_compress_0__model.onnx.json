@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op Compress",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_compress_0/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_compress_0/test_data_set_0"
+}

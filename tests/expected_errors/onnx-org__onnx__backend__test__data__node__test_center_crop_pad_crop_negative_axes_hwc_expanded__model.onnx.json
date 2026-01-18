@@ -1,0 +1,4 @@
+{
+  "error": "Out of tolerance (max ULP 2965007219)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/test_data_set_0"
+}

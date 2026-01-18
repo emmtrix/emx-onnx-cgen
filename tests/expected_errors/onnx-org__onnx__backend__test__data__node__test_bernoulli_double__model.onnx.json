@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op Bernoulli",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bernoulli_double/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bernoulli_double/test_data_set_0"
+}

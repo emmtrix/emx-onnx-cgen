@@ -1,0 +1,4 @@
+{
+  "error": "BatchNormalization must have 5 inputs and 1 output",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_batchnorm_example_training_mode/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_batchnorm_example_training_mode/test_data_set_0"
+}

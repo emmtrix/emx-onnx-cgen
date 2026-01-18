@@ -18,7 +18,7 @@ LOCAL_ONNX_PREFIX = "onnx2c-org/test/local_ops/"
 LOCAL_ONNX_DATA_ROOT = (
     Path(__file__).resolve().parents[1] / "onnx2c-org" / "test" / "local_ops"
 )
-ONNX_FILE_LIMIT = 100
+ONNX_FILE_LIMIT = 500
 
 
 @dataclass(frozen=True)
@@ -65,6 +65,11 @@ def _list_expectation_repo_paths(
 
 
 def _official_onnx_file_paths() -> list[str]:
+    if os.getenv("UPDATE_REFS"):
+        return [
+            _normalize_official_path(path)
+            for path in _collect_onnx_files(_official_data_root())
+        ]
     return [
         _normalize_official_path(path)
         for path in _list_expectation_repo_paths(
@@ -77,6 +82,8 @@ def _official_onnx_file_paths() -> list[str]:
 
 
 def _local_onnx_file_paths() -> list[str]:
+    if os.getenv("UPDATE_REFS"):
+        return _collect_onnx_files(LOCAL_ONNX_DATA_ROOT)
     repo_relative_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(
         _repo_root()
     ).as_posix()
@@ -147,6 +154,12 @@ def _load_expectation_for_repo_relative(
         repo_relative_path
     )
     if not expectation_path.exists():
+        if os.getenv("UPDATE_REFS"):
+            return OnnxFileExpectation(
+                path=repo_relative_path,
+                error="",
+                command_line="",
+            )
         raise AssertionError(
             f"Missing expectation file for {repo_relative_path}"
         )

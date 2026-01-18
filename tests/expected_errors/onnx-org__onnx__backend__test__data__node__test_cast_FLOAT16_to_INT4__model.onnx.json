@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 22 (INT4) for tensor 'output'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_INT4/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_INT4/test_data_set_0"
+}

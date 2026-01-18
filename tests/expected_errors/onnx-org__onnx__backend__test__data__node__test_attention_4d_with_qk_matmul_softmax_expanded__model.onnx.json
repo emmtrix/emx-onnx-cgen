@@ -1,0 +1,4 @@
+{
+  "error": "Out of tolerance (max ULP 15953592)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/test_data_set_0"
+}
