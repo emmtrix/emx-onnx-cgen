@@ -18,7 +18,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | ❌ | Testbench execution failed: |
 | onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx | ❌ | Testbench execution failed: |
 | onnx-org/onnx/backend/test/data/node/test_abs/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_acos/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_acos/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_acos_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acosh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acosh_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -27,7 +27,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_adam/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_adam_multiple/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_add/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  Mismatched elements: 55 / 60 (91.7%) Max absolute difference among violations: 0.9259485 Max relative difference among violations: 1.6373023  ACTUAL: array([[[1.47981 , 1.349239, 1.24502 , 0.787559, 0.45875 ],         [0.447105, 0.008127, 0.849414, 1.100449, 1.115628],         [0.832698, 1.169886, 1.395116, 0.46017 , 0.498977],...  DESIRED: array([[[1.47981 , 1.349239, 1.24502 , 0.787559, 0.45875 ],         [1.366137, 0.759867, 1.775362, 0.893475, 0.56212 ],         [1.432659, 1.487871, 1.906305, 0.366869, 0.534841],... |
+| onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  Mismatched elements: 55 / 60 (91.7%) Max absolute difference among violations: 3.490335 Max relative difference among violations: 84.4747  ACTUAL: array([[[ 1.091592,  0.040604,  0.165592,  0.514611,  2.044984],         [-0.977278,  0.950088, -0.151357,  1.660834,  0.810756],         [ 1.122782,  3.695167,  2.628596, -0.855603,  1.393952],...  DESIRED: array([[[ 1.091592,  0.040604,  0.165592,  0.514611,  2.044984],         [-1.649738,  0.590535, -0.964504, -1.829501,  0.588025],         [-0.528417,  1.09472 , -0.052109, -1.604608,  0.621289],... |
 | onnx-org/onnx/backend/test/data/node/test_add_int16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_add_int8/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_add_uint16/model.onnx | ✅ | OK (max ULP 0) |
@@ -90,22 +90,22 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_example_select_last_index/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_random_select_last_index/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_asin/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_asin/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_asin_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_asinh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_asinh_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_atan/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_atan/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_atan_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_atanh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_atanh_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  nan location mismatch:  ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan],         [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,...  DESIRED: array([[[0.397623, 0.462622, 0.446816, 0.56216 , 0.446149, 0.602571,          0.572337, 0.521388, 0.543304, 0.57788 , 0.74103 , 0.75054 ,          0.424829, 0.643997, 0.382766, 0.392968, 0.570121, 0.342225,... |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_causal/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  nan location mismatch:  ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan],         [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,...  DESIRED: array([[[0.216069, 0.568473, 0.478865, 0.274843, 0.307853, 0.475815,          0.316015, 0.479875, 0.704013, 0.482877, 0.520319, 0.628602,          0.370084, 0.575148, 0.582313, 0.681792, 0.646259, 0.418965,... |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_causal/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  nan location mismatch:  ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan],...  DESIRED: array([[[0.598068, 0.555451, 0.475542, 0.572956, 0.524081, 0.611961,          0.513773, 0.337044, 0.523152, 0.589548, 0.475683, 0.597341,          0.380195, 0.432963, 0.410573, 0.56287 , 0.731879, 0.314342,... |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  nan location mismatch:  ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan],...  DESIRED: array([[[0.313025, 0.256659, 0.415442, 0.438531, 0.707696, 0.54395 ,          0.253743, 0.544114, 0.597431, 0.692815, 0.471582, 0.519003,          0.636791, 0.309616, 0.413838, 0.251433, 0.391316, 0.472403,... |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
 
