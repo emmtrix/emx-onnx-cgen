@@ -158,7 +158,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--top",
         type=int,
-        default=20,
+        default=100,
         help="Number of slowest tests to include in the report.",
     )
     parser.add_argument(
