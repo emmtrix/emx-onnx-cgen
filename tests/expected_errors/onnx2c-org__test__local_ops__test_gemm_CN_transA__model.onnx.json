@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify onnx2c-org/test/local_ops/test_gemm_CN_transA/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_gemm_CN_transA/test_data_set_0"
+}

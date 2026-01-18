@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 3)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask/test_data_set_0"
+}

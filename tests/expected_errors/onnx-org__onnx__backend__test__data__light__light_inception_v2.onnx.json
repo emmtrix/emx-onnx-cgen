@@ -1,0 +1,4 @@
+{
+  "error": "Testbench execution failed: ",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx --template-dir templates --cc /usr/bin/cc"
+}

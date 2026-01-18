@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op ScatterND",
+  "command_line": "verify onnx2c-org/test/local_ops/test_scatternd_indices_2x2x2/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_scatternd_indices_2x2x2/test_data_set_0"
+}

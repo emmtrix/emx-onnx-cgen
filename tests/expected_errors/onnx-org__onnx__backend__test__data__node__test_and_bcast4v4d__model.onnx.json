@@ -1,0 +1,4 @@
+{
+  "error": "And expects identical input/output shapes",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_and_bcast4v4d/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_and_bcast4v4d/test_data_set_0"
+}
