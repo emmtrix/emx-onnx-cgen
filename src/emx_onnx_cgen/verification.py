@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Iterable
-
 import numpy as np
 
 
@@ -50,14 +48,6 @@ def max_ulp_diff(actual: np.ndarray, expected: np.ndarray) -> int:
     ordered_expected = _float_to_ordered_int(expected_cast)
     deltas = ordered_actual.astype(np.int64) - ordered_expected.astype(np.int64)
     return int(np.max(np.abs(deltas)))
-
-
-def max_ulp_for_pairs(pairs: Iterable[tuple[np.ndarray, np.ndarray]]) -> int:
-    max_ulp = 0
-    for actual, expected in pairs:
-        if np.issubdtype(expected.dtype, np.floating):
-            max_ulp = max(max_ulp, max_ulp_diff(actual, expected))
-    return int(max_ulp)
 
 
 def format_success_message(max_ulp: int) -> str:
