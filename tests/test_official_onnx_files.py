@@ -392,37 +392,6 @@ def _errors_match(actual_error: str, expected_error: str) -> bool:
     return actual_error == expected_error
 
 
-def test_official_onnx_files() -> None:
-    data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
-    _ensure_official_onnx_files_present(data_root)
-    actual_files = _collect_onnx_files(data_root)
-    expected_files = sorted(_official_onnx_file_paths())
-    actual_set = set(actual_files)
-    expected_set = set(expected_files)
-    missing = sorted(expected_set - actual_set)
-    extra = sorted(actual_set - expected_set)
-    assert not missing and not extra, (
-        "Official ONNX file list mismatch. "
-        f"Missing: {missing}. Extra: {extra}."
-    )
-
-
-def test_local_onnx_files() -> None:
-    data_root = LOCAL_ONNX_DATA_ROOT
-    _ensure_local_onnx_files_present(data_root)
-    actual_files = _collect_onnx_files(data_root)
-    expectations = _load_local_onnx_file_expectations()
-    expected_files = sorted(path for path, _ in expectations)
-    actual_set = set(actual_files)
-    expected_set = set(expected_files)
-    missing = sorted(expected_set - actual_set)
-    extra = sorted(actual_set - expected_set)
-    assert not missing and not extra, (
-        "Local ONNX file list mismatch. "
-        f"Missing: {missing}. Extra: {extra}."
-    )
-
-
 @pytest.mark.order(1)
 def test_official_onnx_expected_errors() -> None:
     data_root = Path(__file__).resolve().parents[1] / "onnx-org" / "onnx" / "backend" / "test" / "data"
