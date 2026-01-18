@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import itertools
+import math
 from math import prod
 from pathlib import Path
 import re
@@ -2765,11 +2766,16 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        testbench_math_include = set()
+        if emit_testbench and self._testbench_requires_math(
+            model, testbench_inputs
+        ):
+            testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
             model,
             resolved_ops,
             emit_testbench=emit_testbench,
-            extra_includes=scalar_includes,
+            extra_includes=scalar_includes | testbench_math_include,
         )
         sections = [
             self._emit_header_comment(model.header),
@@ -3002,11 +3008,16 @@ class CEmitter:
         scalar_preamble = [
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
+        testbench_math_include = set()
+        if emit_testbench and self._testbench_requires_math(
+            model, testbench_inputs
+        ):
+            testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
             model,
             resolved_ops,
             emit_testbench=emit_testbench,
-            extra_includes=scalar_includes,
+            extra_includes=scalar_includes | testbench_math_include,
         )
         sections = [
             self._emit_header_comment(model.header),
@@ -9653,6 +9664,23 @@ class CEmitter:
         ).rstrip()
         return _format_c_indentation(rendered)
 
+    @staticmethod
+    def _testbench_requires_math(
+        model: LoweredModel,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None,
+    ) -> bool:
+        if not testbench_inputs:
+            return False
+        dtype_map = dict(zip(model.input_names, model.input_dtypes))
+        float_dtypes = {ScalarType.F16, ScalarType.F32, ScalarType.F64}
+        for name, values in testbench_inputs.items():
+            if dtype_map.get(name) not in float_dtypes:
+                continue
+            for value in values:
+                if not math.isfinite(float(value)):
+                    return True
+        return False
+
     def _emit_constant_definitions(
         self,
         constants: tuple[ConstTensor, ...],
@@ -9720,6 +9748,10 @@ class CEmitter:
 
     @staticmethod
     def _format_float(value: float) -> str:
+        if math.isnan(value):
+            return "NAN"
+        if math.isinf(value):
+            return "-INFINITY" if value < 0 else "INFINITY"
         formatted = f"{value:.9g}"
         if "e" not in formatted and "E" not in formatted and "." not in formatted:
             formatted = f"{formatted}.0"
@@ -9731,6 +9763,10 @@ class CEmitter:
 
     @staticmethod
     def _format_double(value: float) -> str:
+        if math.isnan(value):
+            return "NAN"
+        if math.isinf(value):
+            return "-INFINITY" if value < 0 else "INFINITY"
         formatted = f"{value:.17g}"
         if "e" not in formatted and "E" not in formatted and "." not in formatted:
             formatted = f"{formatted}.0"
