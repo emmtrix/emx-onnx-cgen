@@ -1,0 +1,4 @@
+{
+  "error": "Testbench execution failed: ",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx --template-dir templates --cc /usr/bin/cc"
+}

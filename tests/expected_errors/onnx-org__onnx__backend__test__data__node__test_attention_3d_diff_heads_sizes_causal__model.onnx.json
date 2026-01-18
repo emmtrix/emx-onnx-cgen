@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 2)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal/test_data_set_0"
+}
