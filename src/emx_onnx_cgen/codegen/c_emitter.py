@@ -9477,6 +9477,7 @@ class CEmitter:
         dim_names: Mapping[int, str] | None,
     ) -> tuple[str | int, ...]:
         dim_names = dim_names or {}
+        shape = CEmitter._codegen_shape(shape)
         return tuple(
             dim_names.get(index, dim) for index, dim in enumerate(shape)
         )
@@ -9623,10 +9624,13 @@ class CEmitter:
             constant_lines = None
             if constant_values is not None:
                 constant_name = f"{name}_testbench_data"
-                constant_lines = [
-                    self._format_value(value, dtype)
-                    for value in constant_values
-                ]
+                if constant_values:
+                    constant_lines = [
+                        self._format_value(value, dtype)
+                        for value in constant_values
+                    ]
+                else:
+                    constant_lines = [self._format_value(0, dtype)]
             inputs.append(
                 {
                     "name": name,
