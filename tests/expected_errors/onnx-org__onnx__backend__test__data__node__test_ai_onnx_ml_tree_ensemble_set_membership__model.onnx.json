@@ -1,4 +1,4 @@
 {
   "error": "Unsupported op TreeEnsemble",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx --template-dir templates --cc /usr/bin/cc"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/test_data_set_0"
 }

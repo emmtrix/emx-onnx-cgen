@@ -113,7 +113,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 63 / 74 local ONNX files.
+Support 61 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -142,32 +142,32 @@ Support 63 / 74 local ONNX files.
 | test_gemm_CN_transA_transB/model.onnx | ✅ | OK (max ULP 1) |
 | test_gemm_CN_transB/model.onnx | ✅ | OK (max ULP 1) |
 | test_lstm_activations/model.onnx | ✅ | OK (max ULP 0) |
-| test_lstm_all_outputs/model.onnx | ✅ | OK (max ULP 1) |
+| test_lstm_all_outputs/model.onnx | ✅ | OK (max ULP 2) |
 | test_lstm_bidirectional/model.onnx | ❌ | Unsupported LSTM direction b'bidirectional' |
-| test_lstm_clip/model.onnx | ✅ | OK (max ULP 0) |
-| test_lstm_intermediate_h/model.onnx | ✅ | OK (max ULP 1) |
+| test_lstm_clip/model.onnx | ✅ | OK (max ULP 2) |
+| test_lstm_intermediate_h/model.onnx | ✅ | OK (max ULP 2) |
 | test_lstm_missing_inputs/model.onnx | ✅ | OK (max ULP 1) |
 | test_lstm_reverse/model.onnx | ❌ | Unsupported LSTM direction b'reverse' |
-| test_lstm_seq_length/model.onnx | ✅ | OK (max ULP 43) |
+| test_lstm_seq_length/model.onnx | ✅ | OK (max ULP 591626278) |
 | test_lstm_simple/model.onnx | ✅ | OK (max ULP 0) |
-| test_lstm_with_initial_state/model.onnx | ✅ | OK (max ULP 5) |
-| test_lstm_y_c/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_1x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_1x3x4_3x4x5/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_2x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_2x3_3x4/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_2x3x3x4_1x4x5/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_2x3x4_4/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_2x3x4_4x5/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_2x3x4x5_5/model.onnx | ✅ | OK (max ULP 2) |
+| test_lstm_with_initial_state/model.onnx | ✅ | OK (max ULP 4) |
+| test_lstm_y_c/model.onnx | ✅ | OK (max ULP 2) |
+| test_matmul_1x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_1x3x4_3x4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_2x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 2) |
+| test_matmul_2x3_3x4/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_2x3x3x4_1x4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_2x3x4_4/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_2x3x4_4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_2x3x4x5_5/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3_2x3x4/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3_3/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3_3x4/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_3x4_2x4x5/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_3x4_2x4x5/model.onnx | ✅ | OK (max ULP 1) |
 | test_matmul_3x4_4/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_4x5x2x3_4x5x3x4/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_5x2x3_5x3x4/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_4x5x2x3_4x5x3x4/model.onnx | ✅ | OK (max ULP 2) |
+| test_matmul_5x2x3_5x3x4/model.onnx | ✅ | OK (max ULP 1) |
 | test_matmul_precision/model.onnx | ✅ | OK (max ULP 0) |
 | test_maxpool_stride_1/model.onnx | ✅ | OK (max ULP 0) |
 | test_maxpool_stride_2/model.onnx | ✅ | OK (max ULP 0) |
@@ -182,8 +182,8 @@ Support 63 / 74 local ONNX files.
 | test_qlinearadd_uint8/model.onnx | ❌ | Unsupported op QLinearAdd |
 | test_qlinearmul_int8/model.onnx | ❌ | Unsupported op QLinearMul |
 | test_qlinearmul_uint8/model.onnx | ❌ | Unsupported op QLinearMul |
-| test_resize_downsample_sizes_linear_1D/model.onnx | ✅ | OK (max ULP 0) |
-| test_resize_downsample_sizes_linear_1D_align/model.onnx | ✅ | OK (max ULP 1) |
+| test_resize_downsample_sizes_linear_1D/model.onnx | ❌ | ONNX Runtime failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D/model.onnx: [ONNXRuntimeError] : 10 : INVALID_GRAPH : This is an invalid model. In Node, ("sclbl-onnx-node1", Resize, "", -1) : ("X": tensor(float),"","","sizes": tensor(int64),) -> ("Y": tensor(float),) , Error Node (sclbl-onnx-node1)'s input 1 is marked single but has an empty string in the graph |
+| test_resize_downsample_sizes_linear_1D_align/model.onnx | ❌ | ONNX Runtime failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx: [ONNXRuntimeError] : 10 : INVALID_GRAPH : This is an invalid model. In Node, ("sclbl-onnx-node1", Resize, "", -1) : ("X": tensor(float),"","","sizes": tensor(int64),) -> ("Y": tensor(float),) , Error Node (sclbl-onnx-node1)'s input 1 is marked single but has an empty string in the graph |
 | test_scalar_input_to_node/model.onnx | ✅ | OK (max ULP 0) |
 | test_scatternd_indices_1x1x2/model.onnx | ❌ | Unsupported op ScatterND |
 | test_scatternd_indices_1x2x2/model.onnx | ❌ | Unsupported op ScatterND |
