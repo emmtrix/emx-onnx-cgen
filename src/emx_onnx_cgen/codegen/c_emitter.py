@@ -155,6 +155,8 @@ class BinaryOp:
     output: str
     function: ScalarFunction
     operator_kind: OperatorKind
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
     shape: tuple[int, ...]
     dtype: ScalarType
     input_dtype: ScalarType
@@ -1636,6 +1638,8 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
                 shape=op.shape,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
@@ -4308,6 +4312,8 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
                 shape=op.shape,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
@@ -5380,21 +5386,27 @@ class CEmitter:
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(op.shape, output_dim_names)
             loop_vars = CEmitter._loop_vars(op.shape)
-            array_suffix = self._param_array_suffix(op.shape, output_dim_names)
+            output_suffix = self._param_array_suffix(op.shape, output_dim_names)
+            input0_suffix = self._param_array_suffix(
+                op.input0_shape, _dim_names_for(op.input0)
+            )
+            input1_suffix = self._param_array_suffix(
+                op.input1_shape, _dim_names_for(op.input1)
+            )
             input_c_type = op.input_dtype.c_type
             output_c_type = op.dtype.c_type
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], input_c_type, array_suffix, True),
-                    (params["input1"], input_c_type, array_suffix, True),
-                    (params["output"], output_c_type, array_suffix, False),
+                    (params["input0"], input_c_type, input0_suffix, True),
+                    (params["input1"], input_c_type, input1_suffix, True),
+                    (params["output"], output_c_type, output_suffix, False),
                 ]
             )
             common = {
                 "model_name": model.name,
                 "op_name": op_name,
                 "element_count": CEmitter._element_count_expr(shape),
-                "array_suffix": array_suffix,
+                "array_suffix": output_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
                 "input_c_type": input_c_type,
@@ -5403,11 +5415,17 @@ class CEmitter:
                 "dim_args": dim_args,
                 "params": param_decls,
             }
-            left_expr = f"{params['input0']}" + "".join(
-                f"[{var}]" for var in loop_vars
+            left_expr = CEmitter._broadcast_index_expr(
+                params["input0"],
+                op.input0_shape,
+                op.shape,
+                loop_vars,
             )
-            right_expr = f"{params['input1']}" + "".join(
-                f"[{var}]" for var in loop_vars
+            right_expr = CEmitter._broadcast_index_expr(
+                params["input1"],
+                op.input1_shape,
+                op.shape,
+                loop_vars,
             )
             operator_expr = None
             operator = op_spec.operator
@@ -8815,7 +8833,10 @@ class CEmitter:
         | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         if isinstance(op, BinaryOp):
-            return ((op.input0, op.shape), (op.input1, op.shape))
+            return (
+                (op.input0, op.input0_shape),
+                (op.input1, op.input1_shape),
+            )
         if isinstance(op, MultiInputBinaryOp):
             return tuple((name, op.shape) for name in op.inputs)
         if isinstance(op, UnaryOp):
