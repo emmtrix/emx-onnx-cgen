@@ -56,7 +56,7 @@ def run_cli_command(
     args.command_line = _format_command_line(raw_argv)
 
     if args.command != "compile":
-        success_message, error = _verify_model(args)
+        success_message, error = _verify_model(args, include_build_details=False)
         return CliResult(
             exit_code=0 if error is None else 1,
             command_line=args.command_line,
@@ -306,7 +306,7 @@ def _handle_verify(args: argparse.Namespace) -> int:
     import numpy as np
     import onnxruntime as ort
 
-    success_message, error = _verify_model(args)
+    success_message, error = _verify_model(args, include_build_details=True)
     if error is not None:
         LOGGER.error("Verification failed: %s", error)
         return 1
@@ -315,7 +315,11 @@ def _handle_verify(args: argparse.Namespace) -> int:
     return 0
 
 
-def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
+def _verify_model(
+    args: argparse.Namespace,
+    *,
+    include_build_details: bool,
+) -> tuple[str | None, str | None]:
     import numpy as np
     import onnxruntime as ort
 
@@ -392,7 +396,12 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
             )
             log_step("compile", compile_started)
         except subprocess.CalledProcessError as exc:
-            return None, f"Failed to build testbench: {exc.stderr.strip()}"
+            message = "Failed to build testbench."
+            if include_build_details:
+                details = exc.stderr.strip()
+                if details:
+                    message = f"{message} {details}"
+            return None, message
         try:
             run_started = time.perf_counter()
             result = subprocess.run(
