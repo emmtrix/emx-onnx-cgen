@@ -1,4 +1,4 @@
 {
-  "error": "Testbench execution failed: ",
+  "error": "Testbench execution failed: exit code -11 (signal 11: SIGSEGV)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx --template-dir templates --cc /usr/bin/cc"
 }
