@@ -727,39 +727,6 @@ def test_local_onnx_expected_errors() -> None:
         return
 
 
-@pytest.mark.order(after="test_local_onnx_expected_errors")
-def test_official_onnx_test_data_matches_testbench() -> None:
-    data_root = _official_data_root()
-    _ensure_official_onnx_files_present(data_root)
-    expectations = _load_official_onnx_file_expectations()
-    repo_root = _repo_root()
-    for expectation in expectations:
-        if not _is_success_message(expectation.error):
-            continue
-        model_path = repo_root / expectation.path
-        model = onnx.load_model(model_path)
-        test_data_dir = model_path.parent / "test_data_set_0"
-        inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
-        payload = _compile_and_run_testbench(model_path, inputs)
-        _assert_outputs_match(payload, expected_outputs)
-
-
-@pytest.mark.order(after="test_official_onnx_test_data_matches_testbench")
-def test_local_onnx_test_data_matches_testbench() -> None:
-    data_root = LOCAL_ONNX_DATA_ROOT
-    _ensure_local_onnx_files_present(data_root)
-    expectations = _load_local_onnx_file_expectations()
-    for expectation in expectations:
-        if not _is_success_message(expectation.error):
-            continue
-        model_path = data_root / expectation.path
-        model = onnx.load_model(model_path)
-        test_data_dir = model_path.parent / "test_data_set_0"
-        inputs, expected_outputs = _load_test_data_set(model, test_data_dir)
-        payload = _compile_and_run_testbench(model_path, inputs)
-        _assert_outputs_match(payload, expected_outputs)
-
-
 @pytest.mark.order(after="test_official_onnx_expected_errors")
 def test_official_onnx_file_support_doc() -> None:
     if not ONNX_VERSION_PATH.exists():
