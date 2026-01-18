@@ -86,8 +86,9 @@ UPDATE_REFS=1 pytest -n auto -q
 ### Test execution policy
 
 Prefer running targeted single tests while working (e.g., a specific test module or
-test case) to keep iteration fast. At the end of every change, run the full test
-suite with reference updates enabled:
+test case) to keep iteration fast. Run the full test suite with reference updates
+enabled when changes impact code generation or test expectations, but it is not
+required for every change:
 
 ```bash
 UPDATE_REFS=1 pytest -n auto -q
