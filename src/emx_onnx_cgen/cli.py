@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Mapping, Sequence
 
 import onnx
+from onnx import numpy_helper
 
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
@@ -184,6 +185,15 @@ def _build_parser() -> argparse.ArgumentParser:
             "\"...\" placeholders (default: no truncation)"
         ),
     )
+    verify_parser.add_argument(
+        "--test-data-dir",
+        type=Path,
+        default=None,
+        help=(
+            "Directory containing input_*.pb files to seed verification inputs "
+            "(default: use random testbench inputs)"
+        ),
+    )
     add_restrict_flags(verify_parser)
     return parser
 
@@ -309,6 +319,7 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
         return None, "No C compiler found (set --cc or CC environment variable)."
     try:
         model = onnx.load_model(model_path)
+        testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
         options = CompilerOptions(
             template_dir=args.template_dir,
             model_name=model_name,
@@ -317,6 +328,7 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
             truncate_weights_after=args.truncate_weights_after,
+            testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
         generated = compiler.compile(model)
@@ -367,10 +379,18 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
     except json.JSONDecodeError as exc:
         return None, f"Failed to parse testbench JSON: {exc}"
 
-    inputs = {
-        name: decode_testbench_array(value["data"], input_dtypes[name].np_dtype)
-        for name, value in payload["inputs"].items()
-    }
+    if testbench_inputs:
+        inputs = {
+            name: values.astype(input_dtypes[name].np_dtype, copy=False)
+            for name, values in testbench_inputs.items()
+        }
+    else:
+        inputs = {
+            name: decode_testbench_array(
+                value["data"], input_dtypes[name].np_dtype
+            )
+            for name, value in payload["inputs"].items()
+        }
     try:
         sess = ort.InferenceSession(
             model.SerializeToString(), providers=["CPUExecutionProvider"]
@@ -409,6 +429,32 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
     except AssertionError as exc:
         return None, str(exc)
     return format_success_message(max_ulp), None
+
+
+def _load_test_data_inputs(
+    model: onnx.ModelProto, data_dir: Path | None
+) -> dict[str, "np.ndarray"] | None:
+    if data_dir is None:
+        return None
+    if not data_dir.exists():
+        raise CodegenError(f"Test data directory not found: {data_dir}")
+    input_files = sorted(
+        data_dir.glob("input_*.pb"),
+        key=lambda path: int(path.stem.split("_")[-1]),
+    )
+    if not input_files:
+        raise CodegenError(f"No input_*.pb files found in {data_dir}")
+    if len(input_files) != len(model.graph.input):
+        raise CodegenError(
+            "Test data input count does not match model inputs: "
+            f"{len(input_files)} vs {len(model.graph.input)}."
+        )
+    inputs: dict[str, np.ndarray] = {}
+    for index, path in enumerate(input_files):
+        tensor = onnx.TensorProto()
+        tensor.ParseFromString(path.read_bytes())
+        inputs[model.graph.input[index].name] = numpy_helper.to_array(tensor)
+    return inputs
 
 
 def _format_command_line(argv: Sequence[str] | None) -> str:
