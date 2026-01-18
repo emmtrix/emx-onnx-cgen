@@ -18,7 +18,7 @@ LOCAL_ONNX_PREFIX = "onnx2c-org/test/local_ops/"
 LOCAL_ONNX_DATA_ROOT = (
     Path(__file__).resolve().parents[1] / "onnx2c-org" / "test" / "local_ops"
 )
-ONNX_FILE_LIMIT = 100
+ONNX_FILE_LIMIT = 500
 
 
 @dataclass(frozen=True)

@@ -9,11 +9,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | File | Supported | Error |
 | --- | --- | --- |
 | onnx-org/onnx/backend/test/data/light/light_bvlc_alexnet.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
-| onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | ❌ | Testbench execution failed: |
-| onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx | ❌ | Testbench execution failed: |
-| onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | ❌ | Testbench execution failed: |
-| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Testbench execution failed: |
-| onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ❌ | Testbench execution failed: |
+| onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
+| onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
+| onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
+| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
+| onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
 | onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
 | onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx | ❌ | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) |
