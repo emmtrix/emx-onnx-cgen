@@ -1,4 +1,4 @@
 {
-  "error": "\nNot equal to tolerance rtol=0.0001, atol=1e-05\n\nnan location mismatch:\n ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,\n         nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,\n         nan, nan, nan, nan, nan, nan],...\n DESIRED: array([[[0.313025, 0.256659, 0.415442, 0.438531, 0.707696, 0.54395 ,\n         0.253743, 0.544114, 0.597431, 0.692815, 0.471582, 0.519003,\n         0.636791, 0.309616, 0.413838, 0.251433, 0.391316, 0.472403,...",
+  "error": "Out of tolerance (max ULP 4294967295)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/test_data_set_0"
 }

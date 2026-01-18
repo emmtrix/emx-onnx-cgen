@@ -1,4 +1,4 @@
 {
-  "error": "\nNot equal to tolerance rtol=0.0001, atol=1e-05\n\nMismatched elements: 55 / 60 (91.7%)\nMax absolute difference among violations: 3.490335\nMax relative difference among violations: 84.4747\n ACTUAL: array([[[ 1.091592,  0.040604,  0.165592,  0.514611,  2.044984],\n        [-0.977278,  0.950088, -0.151357,  1.660834,  0.810756],\n        [ 1.122782,  3.695167,  2.628596, -0.855603,  1.393952],...\n DESIRED: array([[[ 1.091592,  0.040604,  0.165592,  0.514611,  2.044984],\n        [-1.649738,  0.590535, -0.964504, -1.829501,  0.588025],\n        [-0.528417,  1.09472 , -0.052109, -1.604608,  0.621289],...",
+  "error": "Out of tolerance (max ULP 2143208269)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_bcast/test_data_set_0"
 }

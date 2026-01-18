@@ -27,7 +27,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_adam/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_adam_multiple/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_add/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  Mismatched elements: 55 / 60 (91.7%) Max absolute difference among violations: 3.490335 Max relative difference among violations: 84.4747  ACTUAL: array([[[ 1.091592,  0.040604,  0.165592,  0.514611,  2.044984],         [-0.977278,  0.950088, -0.151357,  1.660834,  0.810756],         [ 1.122782,  3.695167,  2.628596, -0.855603,  1.393952],...  DESIRED: array([[[ 1.091592,  0.040604,  0.165592,  0.514611,  2.044984],         [-1.649738,  0.590535, -0.964504, -1.829501,  0.588025],         [-0.528417,  1.09472 , -0.052109, -1.604608,  0.621289],... |
+| onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx | ❌ | Out of tolerance (max ULP 2143208269) |
 | onnx-org/onnx/backend/test/data/node/test_add_int16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_add_int8/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_add_uint16/model.onnx | ✅ | OK (max ULP 0) |
@@ -100,12 +100,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_atanh_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  nan location mismatch:  ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan],         [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,...  DESIRED: array([[[0.216069, 0.568473, 0.478865, 0.274843, 0.307853, 0.475815,          0.316015, 0.479875, 0.704013, 0.482877, 0.520319, 0.628602,          0.370084, 0.575148, 0.582313, 0.681792, 0.646259, 0.418965,... |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_causal/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Not equal to tolerance rtol=0.0001, atol=1e-05  nan location mismatch:  ACTUAL: array([[[nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan,          nan, nan, nan, nan, nan, nan],...  DESIRED: array([[[0.313025, 0.256659, 0.415442, 0.438531, 0.707696, 0.54395 ,          0.253743, 0.544114, 0.597431, 0.692815, 0.471582, 0.519003,          0.636791, 0.309616, 0.413838, 0.251433, 0.391316, 0.472403,... |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
 
@@ -113,7 +113,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 61 / 74 local ONNX files.
+Support 60 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -148,7 +148,7 @@ Support 61 / 74 local ONNX files.
 | test_lstm_intermediate_h/model.onnx | ✅ | OK (max ULP 2) |
 | test_lstm_missing_inputs/model.onnx | ✅ | OK (max ULP 1) |
 | test_lstm_reverse/model.onnx | ❌ | Unsupported LSTM direction b'reverse' |
-| test_lstm_seq_length/model.onnx | ✅ | OK (max ULP 591626278) |
+| test_lstm_seq_length/model.onnx | ❌ | Out of tolerance (max ULP 591626278) |
 | test_lstm_simple/model.onnx | ✅ | OK (max ULP 0) |
 | test_lstm_with_initial_state/model.onnx | ✅ | OK (max ULP 4) |
 | test_lstm_y_c/model.onnx | ✅ | OK (max ULP 2) |

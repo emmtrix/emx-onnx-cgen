@@ -194,6 +194,12 @@ def _build_parser() -> argparse.ArgumentParser:
             "(default: use random testbench inputs)"
         ),
     )
+    verify_parser.add_argument(
+        "--max-ulp",
+        type=int,
+        default=100,
+        help="Maximum allowed ULP difference for floating outputs (default: 100)",
+    )
     add_restrict_flags(verify_parser)
     return parser
 
@@ -420,14 +426,13 @@ def _verify_model(args: argparse.Namespace) -> tuple[str | None, str | None]:
             ort_out = ort_out.astype(info.np_dtype, copy=False)
             output_data = output_data.reshape(ort_out.shape)
             if np.issubdtype(info.np_dtype, np.floating):
-                np.testing.assert_allclose(
-                    output_data, ort_out, rtol=1e-4, atol=1e-5
-                )
                 max_ulp = max(max_ulp, max_ulp_diff(output_data, ort_out))
             else:
                 np.testing.assert_array_equal(output_data, ort_out)
     except AssertionError as exc:
         return None, str(exc)
+    if max_ulp > args.max_ulp:
+        return None, f"Out of tolerance (max ULP {max_ulp})"
     return format_success_message(max_ulp), None
 
 
