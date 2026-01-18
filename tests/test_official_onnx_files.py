@@ -4,20 +4,13 @@ import json
 import os
 import shutil
 import subprocess
-import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
-import onnx
-import numpy as np
 import pytest
 
-from onnx import numpy_helper
-
 from emx_onnx_cgen import cli
-from emx_onnx_cgen.testbench import decode_testbench_array
-from emx_onnx_cgen.verification import max_ulp_diff
 
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
@@ -283,55 +276,6 @@ def _resolve_compiler() -> list[str] | None:
     return None
 
 
-def _load_test_data_set(
-    model: onnx.ModelProto,
-    data_dir: Path,
-    *,
-    allow_missing: bool = False,
-) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]] | None:
-    if not data_dir.exists():
-        if allow_missing:
-            return None
-        pytest.skip(
-            f"Missing test data directory {data_dir}. Ensure LFS data is available."
-        )
-    input_files = sorted(
-        data_dir.glob("input_*.pb"),
-        key=lambda path: int(path.stem.split("_")[-1]),
-    )
-    output_files = sorted(
-        data_dir.glob("output_*.pb"),
-        key=lambda path: int(path.stem.split("_")[-1]),
-    )
-    if not input_files or not output_files:
-        if allow_missing:
-            return None
-        pytest.skip(
-            f"Missing test data files in {data_dir}. Ensure LFS data is available."
-        )
-    if len(input_files) != len(model.graph.input):
-        raise AssertionError(
-            "Test data input count does not match model inputs: "
-            f"{len(input_files)} vs {len(model.graph.input)}."
-        )
-    if len(output_files) != len(model.graph.output):
-        raise AssertionError(
-            "Test data output count does not match model outputs: "
-            f"{len(output_files)} vs {len(model.graph.output)}."
-        )
-    inputs: dict[str, np.ndarray] = {}
-    for index, path in enumerate(input_files):
-        tensor = onnx.TensorProto()
-        tensor.ParseFromString(path.read_bytes())
-        inputs[model.graph.input[index].name] = numpy_helper.to_array(tensor)
-    outputs: dict[str, np.ndarray] = {}
-    for index, path in enumerate(output_files):
-        tensor = onnx.TensorProto()
-        tensor.ParseFromString(path.read_bytes())
-        outputs[model.graph.output[index].name] = numpy_helper.to_array(tensor)
-    return inputs, outputs
-
-
 def _find_test_data_dir(model_path: Path) -> Path | None:
     test_data_dir = model_path.parent / "test_data_set_0"
     if not test_data_dir.exists():
@@ -339,83 +283,6 @@ def _find_test_data_dir(model_path: Path) -> Path | None:
     if not list(test_data_dir.glob("input_*.pb")):
         return None
     return test_data_dir
-
-
-def _compile_and_run_testbench(
-    model_path: Path,
-    testbench_inputs: dict[str, np.ndarray],
-) -> dict[str, object]:
-    compiler_cmd = _resolve_compiler()
-    if compiler_cmd is None:
-        pytest.skip("C compiler not available (set CC or install gcc/clang)")
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_path = Path(temp_dir)
-        c_path = temp_path / "model.c"
-        exe_path = temp_path / "model"
-        repo_root = _repo_root()
-        result = cli.run_cli_command(
-            [
-                "compile",
-                str(model_path.relative_to(repo_root)),
-                "--template-dir",
-                "templates",
-                "--emit-testbench",
-            ],
-            testbench_inputs=testbench_inputs,
-        )
-        if result.exit_code != 0:
-            raise AssertionError(
-                f"CLI compile failed for {model_path}: {result.error}"
-            )
-        generated = result.generated or ""
-        c_path.write_text(generated, encoding="utf-8")
-        subprocess.run(
-            [
-                *compiler_cmd,
-                "-std=c99",
-                "-O2",
-                str(c_path),
-                "-o",
-                str(exe_path),
-                "-lm",
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        result = subprocess.run(
-            [str(exe_path)],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-    return json.loads(result.stdout)
-
-
-def _assert_outputs_match(
-    payload: dict[str, object],
-    expected_outputs: dict[str, np.ndarray],
-    *,
-    require_allclose: bool = True,
-) -> int:
-    max_ulp = 0
-    outputs = payload.get("outputs", {})
-    for name, expected in expected_outputs.items():
-        output_payload = outputs.get(name)
-        if output_payload is None:
-            raise AssertionError(f"Missing output {name} in testbench data")
-        output_data = decode_testbench_array(output_payload["data"], expected.dtype)
-        output_data = output_data.reshape(expected.shape)
-        if np.issubdtype(expected.dtype, np.floating):
-            if require_allclose:
-                np.testing.assert_allclose(
-                    output_data, expected, rtol=1e-4, atol=1e-5
-                )
-            max_ulp = max(max_ulp, max_ulp_diff(output_data, expected))
-        else:
-            if require_allclose:
-                np.testing.assert_array_equal(output_data, expected)
-    return max_ulp
 
 
 def _errors_match(actual_error: str, expected_error: str) -> bool:
