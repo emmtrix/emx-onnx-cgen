@@ -19,7 +19,7 @@ from onnx import numpy_helper
 
 from emx_onnx_cgen import cli
 from emx_onnx_cgen.testbench import decode_testbench_array
-from emx_onnx_cgen.verification import format_success_message, max_ulp_diff
+from emx_onnx_cgen.verification import max_ulp_diff
 
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
@@ -203,10 +203,6 @@ _LOCAL_ONNX_FILE_EXPECTATIONS = _load_expectations_from_root(
 
 def _is_success_message(message: str) -> bool:
     return message == "" or message.startswith("OK")
-
-
-def _format_missing_test_data_message() -> str:
-    return "OK (max ULP 0; testbench unavailable)"
 
 
 def _render_onnx_file_support_table(
@@ -464,6 +460,15 @@ def _load_test_data_set(
     return inputs, outputs
 
 
+def _find_test_data_dir(model_path: Path) -> Path | None:
+    test_data_dir = model_path.parent / "test_data_set_0"
+    if not test_data_dir.exists():
+        return None
+    if not list(test_data_dir.glob("input_*.pb")):
+        return None
+    return test_data_dir
+
+
 def _compile_and_run_testbench(
     model_path: Path,
     testbench_inputs: dict[str, np.ndarray],
@@ -597,25 +602,31 @@ def test_official_onnx_expected_errors() -> None:
         rel_path = _normalize_official_path(expectation.path)
         expected_error = expectation.error
         model_path = repo_root / rel_path
+        test_data_dir = _find_test_data_dir(model_path)
+        verify_args = [
+            "emx-onnx-cgen",
+            "verify",
+            str(model_path.relative_to(repo_root)),
+            "--template-dir",
+            "templates",
+            "--cc",
+            compiler_cmd[0],
+        ]
+        if test_data_dir is not None:
+            verify_args.extend(
+                [
+                    "--test-data-dir",
+                    str(test_data_dir.relative_to(repo_root)),
+                ]
+            )
         cli_result = cli.run_cli_command(
-            [
-                "emx-onnx-cgen",
-                "verify",
-                str(model_path.relative_to(repo_root)),
-                "--template-dir",
-                "templates",
-                "--cc",
-                compiler_cmd[0],
-            ]
+            verify_args
         )
         if cli_result.exit_code != 0:
             actual_error = cli_result.error or ""
         else:
             if os.getenv("UPDATE_REFS"):
-                actual_error = (
-                    cli_result.success_message
-                    or _format_missing_test_data_message()
-                )
+                actual_error = cli_result.success_message or ""
             elif expected_error.startswith("OK"):
                 actual_error = "OK"
             else:
@@ -660,35 +671,31 @@ def test_local_onnx_expected_errors() -> None:
         rel_path = expectation.path
         expected_error = expectation.error
         model_path = data_root / rel_path
-        model = onnx.load_model(model_path)
+        test_data_dir = _find_test_data_dir(model_path)
+        verify_args = [
+            "emx-onnx-cgen",
+            "verify",
+            str(model_path.relative_to(repo_root)),
+            "--template-dir",
+            "templates",
+            "--cc",
+            compiler_cmd[0],
+        ]
+        if test_data_dir is not None:
+            verify_args.extend(
+                [
+                    "--test-data-dir",
+                    str(test_data_dir.relative_to(repo_root)),
+                ]
+            )
         cli_result = cli.run_cli_command(
-            [
-                "emx-onnx-cgen",
-                "verify",
-                str(model_path.relative_to(repo_root)),
-                "--template-dir",
-                "templates",
-                "--cc",
-                compiler_cmd[0],
-            ]
+            verify_args
         )
         if cli_result.exit_code != 0:
             actual_error = cli_result.error or ""
         else:
             if os.getenv("UPDATE_REFS"):
-                test_data_dir = model_path.parent / "test_data_set_0"
-                test_data = _load_test_data_set(
-                    model,
-                    test_data_dir,
-                    allow_missing=True,
-                )
-                if test_data is None:
-                    actual_error = _format_missing_test_data_message()
-                else:
-                    inputs, expected_outputs = test_data
-                    payload = _compile_and_run_testbench(model_path, inputs)
-                    max_ulp = _assert_outputs_match(payload, expected_outputs)
-                    actual_error = format_success_message(max_ulp)
+                actual_error = cli_result.success_message or ""
             elif expected_error.startswith("OK"):
                 actual_error = "OK"
             else:
