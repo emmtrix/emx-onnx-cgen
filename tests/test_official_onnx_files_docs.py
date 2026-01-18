@@ -8,10 +8,13 @@ from pathlib import Path
 import pytest
 
 from test_official_onnx_files import (
+    LOCAL_ONNX_DATA_ROOT,
     OnnxFileExpectation,
-    _load_local_onnx_file_expectations,
-    _load_official_onnx_file_expectations,
+    _load_expectation_for_repo_relative,
+    _local_onnx_file_paths,
     _maybe_init_onnx_org,
+    _official_onnx_file_paths,
+    _repo_root,
 )
 
 OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
@@ -144,8 +147,25 @@ def test_official_onnx_file_support_doc() -> None:
             "onnx-org version metadata is unavailable. Initialize the onnx-org "
             "submodule and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
         )
-    official_expectations = _load_official_onnx_file_expectations()
-    local_expectations = _load_local_onnx_file_expectations()
+    official_expectations = [
+        _load_expectation_for_repo_relative(path)
+        for path in _official_onnx_file_paths()
+    ]
+    repo_root = _repo_root()
+    local_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(
+        repo_root
+    ).as_posix()
+    local_expectations: list[OnnxFileExpectation] = []
+    for local_path in _local_onnx_file_paths():
+        repo_relative = f"{local_prefix}/{local_path}"
+        expectation = _load_expectation_for_repo_relative(repo_relative)
+        local_expectations.append(
+            OnnxFileExpectation(
+                path=local_path,
+                error=expectation.error,
+                command_line=expectation.command_line,
+            )
+        )
     expected_markdown = _render_onnx_file_support_markdown(
         official_expectations,
         local_expectations,
