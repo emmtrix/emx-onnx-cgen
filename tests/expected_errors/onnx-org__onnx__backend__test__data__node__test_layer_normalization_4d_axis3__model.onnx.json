@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 32)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3/test_data_set_0"
+}

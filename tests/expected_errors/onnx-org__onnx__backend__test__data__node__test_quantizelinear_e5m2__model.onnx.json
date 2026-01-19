@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_quantizelinear_e5m2/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_e5m2/test_data_set_0"
+}

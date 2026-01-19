@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 8 (STRING) for tensor 'X'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_regex_full_match_empty/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_regex_full_match_empty/test_data_set_0"
+}

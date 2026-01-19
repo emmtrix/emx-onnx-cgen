@@ -1,0 +1,4 @@
+{
+  "error": "Max must have at least 2 inputs",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_max_one_input/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_max_one_input/test_data_set_0"
+}

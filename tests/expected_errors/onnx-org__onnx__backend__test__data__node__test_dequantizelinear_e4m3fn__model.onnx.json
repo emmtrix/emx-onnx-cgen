@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn/test_data_set_0"
+}

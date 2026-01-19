@@ -1,0 +1,4 @@
+{
+  "error": "Dropout supports only the data input and 1 or 2 outputs",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_training_dropout/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_training_dropout/test_data_set_0"
+}

@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_linear_antialias/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_linear_antialias/test_data_set_0"
+}

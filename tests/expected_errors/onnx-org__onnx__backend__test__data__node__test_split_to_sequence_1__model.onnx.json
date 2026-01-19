@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported value type 'sequence_type' for 'seq'. Hint: export the model with tensor inputs/outputs.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_to_sequence_1/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_1/test_data_set_0"
+}

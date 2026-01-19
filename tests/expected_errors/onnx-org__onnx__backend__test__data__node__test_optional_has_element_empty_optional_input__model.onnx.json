@@ -1,0 +1,4 @@
+{
+  "error": "The element type in the input tensor is UNDEFINED.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/test_data_set_0"
+}

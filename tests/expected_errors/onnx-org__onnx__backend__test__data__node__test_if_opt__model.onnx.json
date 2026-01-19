@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported value type 'optional_type' for 'sequence'. Hint: export the model with tensor inputs/outputs.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_if_opt/test_data_set_0"
+}

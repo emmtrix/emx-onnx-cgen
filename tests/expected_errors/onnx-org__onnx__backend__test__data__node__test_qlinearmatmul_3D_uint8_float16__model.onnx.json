@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op QLinearMatMul",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float16/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float16/test_data_set_0"
+}
