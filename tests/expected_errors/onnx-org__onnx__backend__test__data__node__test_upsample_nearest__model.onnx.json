@@ -1,4 +1,7 @@
 {
   "error": "Unsupported op Upsample",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_upsample_nearest/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_upsample_nearest/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_upsample_nearest/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_upsample_nearest/test_data_set_0",
+  "operators": [
+    "Upsample"
+  ]
 }

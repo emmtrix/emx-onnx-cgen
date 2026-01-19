@@ -1,4 +1,9 @@
 {
   "error": "Missing output 5 in testbench data",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/test_data_set_0",
+  "operators": [
+    "Constant",
+    "Reshape",
+    "Transpose"
+  ]
 }

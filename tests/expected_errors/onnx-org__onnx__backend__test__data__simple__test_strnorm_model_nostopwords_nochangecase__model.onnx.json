@@ -1,4 +1,7 @@
 {
   "error": "Unsupported elem_type 8 (STRING) for tensor 'x'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/test_data_set_0",
+  "operators": [
+    "StringNormalizer"
+  ]
 }

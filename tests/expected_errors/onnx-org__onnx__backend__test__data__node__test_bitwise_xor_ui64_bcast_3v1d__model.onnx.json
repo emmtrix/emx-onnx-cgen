@@ -1,4 +1,7 @@
 {
   "error": "BitwiseXor expects identical input/output shapes",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/test_data_set_0",
+  "operators": [
+    "BitwiseXor"
+  ]
 }

@@ -1,4 +1,7 @@
 {
   "error": "And expects identical input/output shapes",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_and_bcast3v2d/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_and_bcast3v2d/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_and_bcast3v2d/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_and_bcast3v2d/test_data_set_0",
+  "operators": [
+    "And"
+  ]
 }

@@ -1,4 +1,7 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_matmul_3x4_2x4x5/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_matmul_3x4_2x4x5/test_data_set_0"
+  "command_line": "verify onnx2c-org/test/local_ops/test_matmul_3x4_2x4x5/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_matmul_3x4_2x4x5/test_data_set_0",
+  "operators": [
+    "MatMul"
+  ]
 }

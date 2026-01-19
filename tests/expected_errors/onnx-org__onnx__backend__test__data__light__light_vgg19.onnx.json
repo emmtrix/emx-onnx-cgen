@@ -1,4 +1,14 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_vgg19.onnx --template-dir templates --cc /usr/bin/cc"
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_vgg19.onnx --template-dir templates --cc /usr/bin/cc",
+  "operators": [
+    "ConstantOfShape",
+    "Conv",
+    "Relu",
+    "MaxPool",
+    "Reshape",
+    "Gemm",
+    "Dropout",
+    "Softmax"
+  ]
 }

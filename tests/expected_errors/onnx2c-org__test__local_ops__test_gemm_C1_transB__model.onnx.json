@@ -1,4 +1,7 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_gemm_C1_transB/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_gemm_C1_transB/test_data_set_0"
+  "command_line": "verify onnx2c-org/test/local_ops/test_gemm_C1_transB/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_gemm_C1_transB/test_data_set_0",
+  "operators": [
+    "Gemm"
+  ]
 }

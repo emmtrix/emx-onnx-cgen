@@ -1,4 +1,31 @@
 {
   "error": "OK (max ULP 3)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/test_data_set_0",
+  "operators": [
+    "Shape",
+    "Identity",
+    "Cast",
+    "Sqrt",
+    "Constant",
+    "Div",
+    "Concat",
+    "ConstantOfShape",
+    "Squeeze",
+    "Gather",
+    "Range",
+    "Unsqueeze",
+    "Add",
+    "Less",
+    "Where",
+    "Equal",
+    "Not",
+    "Mod",
+    "And",
+    "Expand",
+    "Reshape",
+    "Transpose",
+    "Mul",
+    "MatMul",
+    "Softmax"
+  ]
 }

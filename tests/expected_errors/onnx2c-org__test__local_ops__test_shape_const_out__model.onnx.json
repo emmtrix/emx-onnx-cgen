@@ -1,4 +1,8 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_shape_const_out/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_shape_const_out/test_data_set_0"
+  "command_line": "verify onnx2c-org/test/local_ops/test_shape_const_out/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_shape_const_out/test_data_set_0",
+  "operators": [
+    "Shape",
+    "Expand"
+  ]
 }

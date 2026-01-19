@@ -1,4 +1,8 @@
 {
   "error": "Test data input count does not match model inputs: 1 vs 2.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_sequence_model7/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model7/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_sequence_model7/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model7/test_data_set_0",
+  "operators": [
+    "SplitToSequence",
+    "SequenceAt"
+  ]
 }

@@ -1,4 +1,14 @@
 {
   "error": "OK (max ULP 8)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/test_data_set_0",
+  "operators": [
+    "Constant",
+    "Cast",
+    "Sub",
+    "Mul",
+    "Add",
+    "Div",
+    "Range",
+    "Cos"
+  ]
 }

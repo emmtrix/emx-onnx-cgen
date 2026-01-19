@@ -1,4 +1,7 @@
 {
   "error": "Unsupported op Col2Im",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_col2im_pads/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_col2im_pads/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_col2im_pads/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_col2im_pads/test_data_set_0",
+  "operators": [
+    "Col2Im"
+  ]
 }

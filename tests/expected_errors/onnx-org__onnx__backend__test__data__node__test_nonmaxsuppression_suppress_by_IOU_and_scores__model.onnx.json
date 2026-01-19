@@ -1,4 +1,7 @@
 {
   "error": "Unsupported op NonMaxSuppression",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/test_data_set_0",
+  "operators": [
+    "NonMaxSuppression"
+  ]
 }

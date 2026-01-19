@@ -1,4 +1,7 @@
 {
   "error": "Unsupported op ScatterElements",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_duplicate_indices/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_duplicate_indices/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_duplicate_indices/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_duplicate_indices/test_data_set_0",
+  "operators": [
+    "ScatterElements"
+  ]
 }

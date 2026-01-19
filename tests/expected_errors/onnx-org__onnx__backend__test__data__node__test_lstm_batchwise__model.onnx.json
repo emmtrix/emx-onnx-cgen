@@ -1,4 +1,7 @@
 {
   "error": "ONNX Runtime failed to run onnx-org/onnx/backend/test/data/node/test_lstm_batchwise/model.onnx: [ONNXRuntimeError] : 6 : RUNTIME_EXCEPTION : Exception during initialization: /onnxruntime_src/onnxruntime/core/providers/cpu/rnn/lstm_base.h:52 onnxruntime::LSTMBase::LSTMBase(const onnxruntime::OpKernelInfo&) layout_ == 0 was false. Batchwise recurrent operations (layout == 1) are not supported. If you need support create a github issue with justification.\n",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lstm_batchwise/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_lstm_batchwise/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lstm_batchwise/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_lstm_batchwise/test_data_set_0",
+  "operators": [
+    "LSTM"
+  ]
 }
