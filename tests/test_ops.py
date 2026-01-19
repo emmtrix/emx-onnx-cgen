@@ -2138,6 +2138,68 @@ def _make_gather_model(
     return model
 
 
+def _make_gathernd_model(
+    *,
+    data_shape: list[int],
+    indices_shape: list[int],
+    batch_dims: int = 0,
+    data_dtype: int = TensorProto.FLOAT,
+    indices_dtype: int = TensorProto.INT64,
+    indices_values: np.ndarray | None = None,
+    indices_as_initializer: bool = False,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    data_input = helper.make_tensor_value_info("data", data_dtype, data_shape)
+    inputs = [data_input]
+    initializers = []
+    value_infos = []
+    if indices_as_initializer:
+        if indices_values is None:
+            raise ValueError("indices_values is required for initializer inputs")
+        indices_tensor = helper.make_tensor(
+            "indices",
+            indices_dtype,
+            dims=indices_shape,
+            vals=indices_values.flatten().tolist(),
+        )
+        initializers.append(indices_tensor)
+        value_infos.append(
+            helper.make_tensor_value_info("indices", indices_dtype, indices_shape)
+        )
+    else:
+        inputs.append(
+            helper.make_tensor_value_info("indices", indices_dtype, indices_shape)
+        )
+    index_depth = indices_shape[-1]
+    output_shape = indices_shape[:-1] + data_shape[batch_dims + index_depth :]
+    output = helper.make_tensor_value_info("out", data_dtype, output_shape)
+    attrs = {}
+    if batch_dims:
+        attrs["batch_dims"] = batch_dims
+    node = helper.make_node(
+        "GatherND",
+        inputs=["data", "indices"],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "gathernd_graph",
+        inputs,
+        [output],
+        initializer=initializers,
+        value_info=value_infos,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _average_pool_output_shape(
     input_shape: list[int],
     kernel_shape: list[int],
@@ -2194,6 +2256,32 @@ def _make_random_array(
     if np.issubdtype(dtype, np.signedinteger):
         return rng.integers(-5, 5, size=shape, dtype=np.int64).astype(dtype)
     raise ValueError(f"Unsupported dtype {dtype}")
+
+
+def _gathernd_numpy(
+    data: np.ndarray, indices: np.ndarray, *, batch_dims: int = 0
+) -> np.ndarray:
+    index_depth = indices.shape[-1]
+    tail_shape = data.shape[batch_dims + index_depth :]
+    output = np.empty(indices.shape[:-1] + tail_shape, dtype=data.dtype)
+    prefix_shape = indices.shape[:-1]
+    prefix_iter = np.ndindex(*prefix_shape) if prefix_shape else [()]
+    for prefix in prefix_iter:
+        raw_index = indices[prefix]
+        if index_depth == 1:
+            index_values = [int(np.asarray(raw_index).item())]
+        else:
+            index_values = [int(value) for value in raw_index]
+        for dim_index, value in enumerate(index_values):
+            if value < 0:
+                index_values[dim_index] = value + data.shape[
+                    batch_dims + dim_index
+                ]
+        data_index = list(prefix[:batch_dims]) + index_values
+        data_index.extend([slice(None)] * len(tail_shape))
+        output_index = prefix + (slice(None),) * len(tail_shape)
+        output[output_index] = data[tuple(data_index)]
+    return output
 
 
 def _run_ort_compare(model: onnx.ModelProto) -> None:
@@ -3616,6 +3704,17 @@ def test_gather_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+def test_gathernd_matches_onnxruntime() -> None:
+    indices_values = np.array([[0, 1], [1, 0]], dtype=np.int64)
+    model = _make_gathernd_model(
+        data_shape=[2, 2, 2],
+        indices_shape=[2, 2],
+        indices_values=indices_values,
+        indices_as_initializer=True,
+    )
+    _run_ort_compare(model)
+
+
 def test_scatternd_matches_onnxruntime() -> None:
     indices_values = np.array([[0, 1], [2, 2]], dtype=np.int64)
     model = _make_scatternd_model(
@@ -3808,6 +3907,20 @@ def test_gather_run_matches_numpy() -> None:
     indices = np.array([[1], [-1]], dtype=np.int64)
     outputs = compiler.run(model, {"data": data, "indices": indices})
     expected = np.take(data, indices, axis=2)
+    np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_gathernd_run_matches_numpy() -> None:
+    model = _make_gathernd_model(
+        data_shape=[2, 3, 4],
+        indices_shape=[2, 2, 1],
+        batch_dims=1,
+    )
+    compiler = Compiler()
+    data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
+    indices = np.array([[[0], [2]], [[-1], [1]]], dtype=np.int64)
+    outputs = compiler.run(model, {"data": data, "indices": indices})
+    expected = _gathernd_numpy(data, indices, batch_dims=1)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
 
 

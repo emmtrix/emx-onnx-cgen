@@ -702,6 +702,19 @@ class GatherOp:
 
 
 @dataclass(frozen=True)
+class GatherNDOp:
+    data: str
+    indices: str
+    output: str
+    batch_dims: int
+    data_shape: tuple[int, ...]
+    indices_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    dtype: ScalarType
+    indices_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class ScatterNDOp:
     data: str
     indices: str
@@ -1125,6 +1138,7 @@ class LoweredModel:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -1299,6 +1313,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -1456,6 +1471,8 @@ class CEmitter:
             return (op.data, op.indices, op.output)
         if isinstance(op, GatherOp):
             return (op.data, op.indices, op.output)
+        if isinstance(op, GatherNDOp):
+            return (op.data, op.indices, op.output)
         if isinstance(op, ScatterNDOp):
             return (op.data, op.indices, op.updates, op.output)
         if isinstance(op, ConcatOp):
@@ -1611,6 +1628,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -1669,6 +1687,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -2214,6 +2233,18 @@ class CEmitter:
                 dtype=op.dtype,
                 indices_dtype=op.indices_dtype,
             )
+        if isinstance(op, GatherNDOp):
+            return GatherNDOp(
+                data=name_map.get(op.data, op.data),
+                indices=name_map.get(op.indices, op.indices),
+                output=name_map.get(op.output, op.output),
+                batch_dims=op.batch_dims,
+                data_shape=op.data_shape,
+                indices_shape=op.indices_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                indices_dtype=op.indices_dtype,
+            )
         if isinstance(op, ScatterNDOp):
             return ScatterNDOp(
                 data=name_map.get(op.data, op.data),
@@ -2645,6 +2676,7 @@ class CEmitter:
                 "concat": self._env.get_template("concat_op.c.j2"),
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "gather": self._env.get_template("gather_op.c.j2"),
+                "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
                 "scatter_nd": self._env.get_template("scatter_nd_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
@@ -2748,6 +2780,7 @@ class CEmitter:
         concat_template = templates["concat"]
         gather_elements_template = templates["gather_elements"]
         gather_template = templates["gather"]
+        gather_nd_template = templates["gather_nd"]
         scatter_nd_template = templates["scatter_nd"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
@@ -2830,6 +2863,7 @@ class CEmitter:
                 concat_template=concat_template,
                 gather_elements_template=gather_elements_template,
                 gather_template=gather_template,
+                gather_nd_template=gather_nd_template,
                 scatter_nd_template=scatter_nd_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
@@ -2996,6 +3030,7 @@ class CEmitter:
         concat_template = templates["concat"]
         gather_elements_template = templates["gather_elements"]
         gather_template = templates["gather"]
+        gather_nd_template = templates["gather_nd"]
         scatter_nd_template = templates["scatter_nd"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
@@ -3076,6 +3111,7 @@ class CEmitter:
                 concat_template=concat_template,
                 gather_elements_template=gather_elements_template,
                 gather_template=gather_template,
+                gather_nd_template=gather_nd_template,
                 scatter_nd_template=scatter_nd_template,
                 transpose_template=transpose_template,
                 reshape_template=reshape_template,
@@ -3469,6 +3505,7 @@ class CEmitter:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | GatherNDOp
             | ScatterNDOp
             | TransposeOp
             | ReshapeOp
@@ -3695,6 +3732,7 @@ class CEmitter:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | GatherNDOp
             | ScatterNDOp
             | TransposeOp
             | ReshapeOp
@@ -3853,6 +3891,7 @@ class CEmitter:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | GatherNDOp
             | TransposeOp
             | ReshapeOp
             | IdentityOp
@@ -3945,6 +3984,7 @@ class CEmitter:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | GatherNDOp
             | TransposeOp
             | ReshapeOp
             | IdentityOp
@@ -4051,6 +4091,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -4236,6 +4277,9 @@ class CEmitter:
         if isinstance(op, GatherOp):
             args.extend([op.data, op.indices, op.output])
             return ", ".join(args)
+        if isinstance(op, GatherNDOp):
+            args.extend([op.data, op.indices, op.output])
+            return ", ".join(args)
         if isinstance(op, ScatterNDOp):
             args.extend([op.data, op.indices, op.updates, op.output])
             return ", ".join(args)
@@ -4410,6 +4454,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -4467,6 +4512,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -5078,6 +5124,18 @@ class CEmitter:
                 dtype=op.dtype,
                 indices_dtype=op.indices_dtype,
             )
+        if isinstance(op, GatherNDOp):
+            return GatherNDOp(
+                data=temp_map.get(op.data, op.data),
+                indices=temp_map.get(op.indices, op.indices),
+                output=temp_map.get(op.output, op.output),
+                batch_dims=op.batch_dims,
+                data_shape=op.data_shape,
+                indices_shape=op.indices_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                indices_dtype=op.indices_dtype,
+            )
         if isinstance(op, ScatterNDOp):
             return ScatterNDOp(
                 data=temp_map.get(op.data, op.data),
@@ -5484,6 +5542,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -5547,6 +5606,7 @@ class CEmitter:
         concat_template,
         gather_elements_template,
         gather_template,
+        gather_nd_template,
         scatter_nd_template,
         transpose_template,
         reshape_template,
@@ -7497,6 +7557,85 @@ class CEmitter:
                 axis_dim=op.data_shape[op.axis],
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, GatherNDOp):
+            params = self._shared_param_map(
+                [
+                    ("data", op.data),
+                    ("indices", op.indices),
+                    ("output", op.output),
+                ]
+            )
+            indices_dim_names = _dim_names_for(op.indices)
+            data_dim_names = _dim_names_for(op.data)
+            data_shape = CEmitter._shape_dim_exprs(op.data_shape, data_dim_names)
+            indices_shape = CEmitter._shape_dim_exprs(
+                op.indices_shape, indices_dim_names
+            )
+            indices_prefix_shape = indices_shape[:-1]
+            indices_prefix_loop_vars = (
+                CEmitter._loop_vars(op.indices_shape[:-1])
+                if op.indices_shape[:-1]
+                else ()
+            )
+            index_depth = op.indices_shape[-1]
+            tail_shape = data_shape[op.batch_dims + index_depth :]
+            tail_loop_vars = (
+                tuple(f"t{index}" for index in range(len(tail_shape)))
+                if tail_shape
+                else ()
+            )
+            output_loop_vars = (*indices_prefix_loop_vars, *tail_loop_vars)
+            if output_loop_vars:
+                output_index_expr = params["output"] + "".join(
+                    f"[{var}]" for var in output_loop_vars
+                )
+            else:
+                output_index_expr = f"{params['output']}[0]"
+            data_index_vars = (
+                *indices_prefix_loop_vars[: op.batch_dims],
+                *tuple(f"index{idx}" for idx in range(index_depth)),
+                *tail_loop_vars,
+            )
+            data_index_expr = params["data"] + "".join(
+                f"[{var}]" for var in data_index_vars
+            )
+            data_suffix = self._param_array_suffix(op.data_shape)
+            indices_suffix = self._param_array_suffix(op.indices_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["indices"],
+                        op.indices_dtype.c_type,
+                        indices_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = gather_nd_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                data_suffix=data_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
+                indices_prefix_shape=indices_prefix_shape,
+                indices_prefix_loop_vars=indices_prefix_loop_vars,
+                index_depth=index_depth,
+                tail_shape=tail_shape,
+                tail_loop_vars=tail_loop_vars,
+                output_index_expr=output_index_expr,
+                data_index_expr=data_index_expr,
+                batch_dims=op.batch_dims,
+                data_shape=data_shape,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ScatterNDOp):
             params = self._shared_param_map(
                 [
@@ -9263,6 +9402,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -9326,6 +9466,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -9465,6 +9606,7 @@ class CEmitter:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | GatherNDOp
             | TransposeOp
             | ReshapeOp
             | IdentityOp
@@ -9533,6 +9675,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | ScatterNDOp
         | TransposeOp
         | ReshapeOp
@@ -9696,6 +9839,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -9777,6 +9921,8 @@ class CEmitter:
         if isinstance(op, GatherElementsOp):
             return op.output_shape
         if isinstance(op, GatherOp):
+            return op.output_shape
+        if isinstance(op, GatherNDOp):
             return op.output_shape
         if isinstance(op, ScatterNDOp):
             return op.output_shape
@@ -9860,6 +10006,7 @@ class CEmitter:
         | ConcatOp
         | GatherElementsOp
         | GatherOp
+        | GatherNDOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp

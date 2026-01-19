@@ -1011,6 +1011,73 @@ def _eval_gather(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = np.take(data, indices, axis=axis)
 
 
+@register_evaluator("GatherND")
+def _eval_gather_nd(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("GatherND must have 2 inputs and 1 output")
+    data = evaluator.values[node.inputs[0]]
+    indices = evaluator.values[node.inputs[1]]
+    if indices.dtype.type not in {np.int32, np.int64}:
+        raise UnsupportedOpError(
+            f"GatherND indices must be int32 or int64, got {indices.dtype}"
+        )
+    if indices.ndim < 1:
+        raise UnsupportedOpError("GatherND indices must have rank >= 1")
+    batch_dims = int(node.attrs.get("batch_dims", 0))
+    if batch_dims < 0:
+        raise UnsupportedOpError(
+            f"GatherND batch_dims must be >= 0, got {batch_dims}"
+        )
+    if batch_dims > indices.ndim - 1:
+        raise UnsupportedOpError(
+            "GatherND batch_dims must be <= indices rank - 1, "
+            f"got {batch_dims} vs {indices.ndim - 1}"
+        )
+    if batch_dims > data.ndim:
+        raise UnsupportedOpError(
+            "GatherND batch_dims must be <= data rank, "
+            f"got {batch_dims} vs {data.ndim}"
+        )
+    if tuple(data.shape[:batch_dims]) != tuple(indices.shape[:batch_dims]):
+        raise UnsupportedOpError(
+            "GatherND batch_dims must match on data/indices, "
+            f"got {data.shape} vs {indices.shape}"
+        )
+    index_depth = indices.shape[-1]
+    if index_depth <= 0:
+        raise UnsupportedOpError(
+            "GatherND indices final dimension must be >= 1"
+        )
+    if index_depth > data.ndim - batch_dims:
+        raise UnsupportedOpError(
+            "GatherND indices final dimension must be <= data rank - "
+            f"batch_dims, got {index_depth} vs {data.ndim - batch_dims}"
+        )
+    tail_shape = data.shape[batch_dims + index_depth :]
+    output_shape = indices.shape[:-1] + tail_shape
+    output = np.empty(output_shape, dtype=data.dtype)
+    indices_prefix_shape = indices.shape[:-1]
+    prefix_iter = (
+        np.ndindex(*indices_prefix_shape) if indices_prefix_shape else [()]
+    )
+    for prefix in prefix_iter:
+        raw_index = indices[prefix]
+        if index_depth == 1:
+            index_values = [int(np.asarray(raw_index).item())]
+        else:
+            index_values = [int(value) for value in raw_index]
+        for dim_index, value in enumerate(index_values):
+            if value < 0:
+                index_values[dim_index] = value + data.shape[
+                    batch_dims + dim_index
+                ]
+        data_index = list(prefix[:batch_dims]) + index_values
+        data_index.extend([slice(None)] * len(tail_shape))
+        output_index = prefix + (slice(None),) * len(tail_shape)
+        output[output_index] = data[tuple(data_index)]
+    evaluator.values[node.outputs[0]] = output
+
+
 @register_evaluator("Slice")
 def _eval_slice(evaluator: Evaluator, node: Node) -> None:
     input_value = evaluator.values[node.inputs[0]]
