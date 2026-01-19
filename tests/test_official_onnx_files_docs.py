@@ -23,6 +23,7 @@ OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
 OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
     Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md"
 )
+SUPPORT_OPS_PATH = Path(__file__).resolve().parents[1] / "SUPPORT_OPS.md"
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
 
 
@@ -145,6 +146,39 @@ def _render_support_histogram_markdown(
     ).strip() + "\n"
 
 
+def _render_supported_ops_markdown(
+    official_expectations: list[OnnxFileExpectation],
+    local_expectations: list[OnnxFileExpectation],
+) -> str:
+    supported_ops: set[str] = set()
+    all_ops: set[str] = set()
+    for expectation in (*official_expectations, *local_expectations):
+        if not expectation.operators:
+            continue
+        all_ops.update(expectation.operators)
+        if _is_success_message(expectation.error):
+            supported_ops.update(expectation.operators)
+    sorted_ops = sorted(all_ops)
+    lines = [
+        "# Supported operators",
+        "",
+        (
+            "Operators are marked supported when they appear in an ONNX file "
+            "with a successful verify result."
+        ),
+        "",
+        f"Supported operators: {len(supported_ops)} / {len(sorted_ops)}",
+        "",
+        "| Operator | Supported |",
+        "| --- | --- |",
+    ]
+    for op in sorted_ops:
+        marker = "✅" if op in supported_ops else "❌"
+        lines.append(f"| {op} | {marker} |")
+    lines.append("")
+    return "\n".join(lines)
+
+
 @pytest.mark.order(after="test_official_onnx_expected_errors")
 def test_official_onnx_file_support_doc() -> None:
     if not ONNX_VERSION_PATH.exists():
@@ -181,6 +215,10 @@ def test_official_onnx_file_support_doc() -> None:
         official_expectations,
         local_expectations,
     )
+    expected_support_ops = _render_supported_ops_markdown(
+        official_expectations,
+        local_expectations,
+    )
     if os.getenv("UPDATE_REFS"):
         OFFICIAL_ONNX_FILE_SUPPORT_PATH.write_text(
             expected_markdown,
@@ -190,10 +228,16 @@ def test_official_onnx_file_support_doc() -> None:
             expected_histogram,
             encoding="utf-8",
         )
+        SUPPORT_OPS_PATH.write_text(
+            expected_support_ops,
+            encoding="utf-8",
+        )
         return
     actual_markdown = OFFICIAL_ONNX_FILE_SUPPORT_PATH.read_text(encoding="utf-8")
     actual_histogram = OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH.read_text(
         encoding="utf-8"
     )
+    actual_support_ops = SUPPORT_OPS_PATH.read_text(encoding="utf-8")
     assert actual_markdown == expected_markdown
     assert actual_histogram == expected_histogram
+    assert actual_support_ops == expected_support_ops
