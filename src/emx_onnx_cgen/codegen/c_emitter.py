@@ -9190,7 +9190,7 @@ class CEmitter:
         if isinstance(op, CastOp):
             return op.shape
         if isinstance(op, MatMulOp):
-            return (op.m, op.n)
+            return op.output_shape
         if isinstance(op, GemmOp):
             return (op.m, op.n)
         if isinstance(op, ConvOp):
