@@ -161,6 +161,15 @@ def _build_parser() -> argparse.ArgumentParser:
             "\"...\" placeholders (default: no truncation)"
         ),
     )
+    compile_parser.add_argument(
+        "--large-temp-threshold-bytes",
+        type=int,
+        default=1024,
+        help=(
+            "Mark temporary buffers larger than this threshold as static "
+            "(default: 1024)"
+        ),
+    )
     add_restrict_flags(compile_parser)
 
     verify_parser = subparsers.add_parser(
@@ -193,6 +202,15 @@ def _build_parser() -> argparse.ArgumentParser:
         help=(
             "Truncate inline weight initializers after N values and insert "
             "\"...\" placeholders (default: no truncation)"
+        ),
+    )
+    verify_parser.add_argument(
+        "--large-temp-threshold-bytes",
+        type=int,
+        default=1024,
+        help=(
+            "Mark temporary buffers larger than this threshold as static "
+            "(default: 1024)"
         ),
     )
     verify_parser.add_argument(
@@ -266,6 +284,7 @@ def _compile_model(
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
             truncate_weights_after=args.truncate_weights_after,
+            large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
@@ -362,6 +381,7 @@ def _verify_model(
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
             truncate_weights_after=args.truncate_weights_after,
+            large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
