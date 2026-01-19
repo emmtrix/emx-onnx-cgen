@@ -1,0 +1,55 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if kind == "reduce_all" %}
+    {{ acc_type }} acc = {{ zero_literal }};
+{% for var in input_loop_vars %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ var }} = 0; {{ var }} < {{ input_loop_bounds[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+        {% for indent in range(input_loop_vars | length) %}    {% endfor %}acc += {{ input_expr }};
+{% for _ in input_loop_vars | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+    {{ output_expr }} = acc;
+{% elif kind == "sum_j" %}
+    for (idx_t {{ output_loop_vars[0] }} = 0; {{ output_loop_vars[0] }} < {{ output_loop_bounds[0] }}; ++{{ output_loop_vars[0] }}) {
+        {{ acc_type }} acc = {{ zero_literal }};
+        for (idx_t {{ reduce_loop_var }} = 0; {{ reduce_loop_var }} < {{ reduce_loop_bound }}; ++{{ reduce_loop_var }}) {
+            acc += {{ input_expr }};
+        }
+        {{ output_expr }} = acc;
+    }
+{% elif kind == "transpose" %}
+{% for var in output_loop_vars %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ var }} = 0; {{ var }} < {{ output_loop_bounds[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_expr }} = {{ input_expr }};
+{% for _ in output_loop_vars | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+{% elif kind == "dot" %}
+    {{ acc_type }} acc = {{ zero_literal }};
+    for (idx_t {{ reduce_loop_var }} = 0; {{ reduce_loop_var }} < {{ reduce_loop_bound }}; ++{{ reduce_loop_var }}) {
+        acc += {{ input0_expr }} * {{ input1_expr }};
+    }
+    {{ output_expr }} = acc;
+{% elif kind == "batch_matmul" %}
+{% for var in output_loop_vars %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ var }} = 0; {{ var }} < {{ output_loop_bounds[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ acc_type }} acc = {{ zero_literal }};
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (idx_t {{ reduce_loop_var }} = 0; {{ reduce_loop_var }} < {{ reduce_loop_bound }}; ++{{ reduce_loop_var }}) {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += {{ input0_expr }} * {{ input1_expr }};
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_expr }} = acc;
+{% for _ in output_loop_vars | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+{% elif kind == "batch_diagonal" %}
+{% for var in output_loop_vars %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ var }} = 0; {{ var }} < {{ output_loop_bounds[loop.index0] }}; ++{{ var }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_expr }} = {{ input_expr }};
+{% for _ in output_loop_vars | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+{% endif %}
+}

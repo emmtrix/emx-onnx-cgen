@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Einsum",
+  "error": "Failed to build testbench.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_einsum_inner_prod/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_einsum_inner_prod/test_data_set_0",
   "operators": [
     "Einsum"

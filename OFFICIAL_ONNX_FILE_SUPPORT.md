@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1085 / 1802 official ONNX files.
+Support 1089 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -200,11 +200,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ | OK (max ULP 5) |
@@ -601,12 +601,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_edge_pad/model.onnx | ❌ | ONNX Runtime failed to run onnx-org/onnx/backend/test/data/node/test_edge_pad/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:181 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 13, max supported IR version: 11 |
-| onnx-org/onnx/backend/test/data/node/test_einsum_batch_diagonal/model.onnx | ❌ | Unsupported op Einsum |
-| onnx-org/onnx/backend/test/data/node/test_einsum_batch_matmul/model.onnx | ❌ | Unsupported op Einsum |
-| onnx-org/onnx/backend/test/data/node/test_einsum_inner_prod/model.onnx | ❌ | Unsupported op Einsum |
-| onnx-org/onnx/backend/test/data/node/test_einsum_scalar/model.onnx | ❌ | Unsupported op Einsum |
-| onnx-org/onnx/backend/test/data/node/test_einsum_sum/model.onnx | ❌ | Unsupported op Einsum |
-| onnx-org/onnx/backend/test/data/node/test_einsum_transpose/model.onnx | ❌ | Unsupported op Einsum |
+| onnx-org/onnx/backend/test/data/node/test_einsum_batch_diagonal/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_einsum_batch_matmul/model.onnx | ✅ | OK (max ULP 12) |
+| onnx-org/onnx/backend/test/data/node/test_einsum_inner_prod/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_einsum_scalar/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_einsum_sum/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_einsum_transpose/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_elu/model.onnx | ❌ | Elu only supports alpha=1.0 |
 | onnx-org/onnx/backend/test/data/node/test_elu_default/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_elu_default_expanded_ver18/model.onnx | ✅ | OK (max ULP 4) |
