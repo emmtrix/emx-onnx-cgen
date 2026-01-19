@@ -1,0 +1,50 @@
+static inline int {{ op_name }}_better({{ input_c_type }} a, {{ output_indices_c_type }} ai, {{ input_c_type }} b, {{ output_indices_c_type }} bi) {
+    return {{ compare_expr }};
+}
+
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in outer_shape %}
+for (idx_t {{ outer_loop_vars[loop.index0] }} = 0; {{ outer_loop_vars[loop.index0] }} < {{ dim }}; ++{{ outer_loop_vars[loop.index0] }}) {
+{% endfor %}
+{{ input_c_type }} best_values[{{ k }}];
+{{ output_indices_c_type }} best_indices[{{ k }}];
+for (idx_t {{ reduce_var }} = 0; {{ reduce_var }} < {{ k }}; ++{{ reduce_var }}) {
+    best_values[{{ reduce_var }}] = {{ input0 }}{{ input_index_expr }};
+    best_indices[{{ reduce_var }}] = ({{ output_indices_c_type }}){{ reduce_var }};
+}
+for (idx_t i = 1; i < {{ k }}; ++i) {
+    idx_t j = i;
+    while (j > 0
+        && {{ op_name }}_better(best_values[j], best_indices[j], best_values[j - 1], best_indices[j - 1])) {
+        {{ input_c_type }} temp_value = best_values[j - 1];
+        {{ output_indices_c_type }} temp_index = best_indices[j - 1];
+        best_values[j - 1] = best_values[j];
+        best_indices[j - 1] = best_indices[j];
+        best_values[j] = temp_value;
+        best_indices[j] = temp_index;
+        --j;
+    }
+}
+for (idx_t {{ reduce_var }} = {{ k }}; {{ reduce_var }} < {{ axis_dim }}; ++{{ reduce_var }}) {
+    {{ input_c_type }} candidate = {{ input0 }}{{ input_index_expr }};
+    {{ output_indices_c_type }} candidate_index = ({{ output_indices_c_type }}){{ reduce_var }};
+    if ({{ op_name }}_better(candidate, candidate_index, best_values[{{ k - 1 }}], best_indices[{{ k - 1 }}])) {
+        idx_t pos = {{ k - 1 }};
+        while (pos > 0
+            && {{ op_name }}_better(candidate, candidate_index, best_values[pos - 1], best_indices[pos - 1])) {
+            best_values[pos] = best_values[pos - 1];
+            best_indices[pos] = best_indices[pos - 1];
+            --pos;
+        }
+        best_values[pos] = candidate;
+        best_indices[pos] = candidate_index;
+    }
+}
+for (idx_t {{ k_var }} = 0; {{ k_var }} < {{ k }}; ++{{ k_var }}) {
+    {{ output_values }}{{ output_index_expr }} = best_values[{{ k_var }}];
+    {{ output_indices }}{{ output_index_expr }} = best_indices[{{ k_var }}];
+}
+{% for _ in outer_shape %}
+}
+{% endfor %}
+}

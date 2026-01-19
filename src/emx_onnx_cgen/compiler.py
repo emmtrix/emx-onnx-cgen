@@ -121,6 +121,7 @@ from .lowering.reduce import (
     REDUCE_OUTPUTS_FLOAT_ONLY,
 )
 from .lowering import arg_reduce as _arg_reduce  # noqa: F401
+from .lowering import topk as _topk  # noqa: F401
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.grid_sample import lower_grid_sample
