@@ -34,6 +34,7 @@ from .codegen.c_emitter import (
     GemmOp,
     GatherOp,
     GatherElementsOp,
+    ScatterNDOp,
     ExpandOp,
     RangeOp,
     LpPoolOp,
@@ -91,6 +92,7 @@ from .lowering import cumsum as _cumsum  # noqa: F401
 from .lowering.flatten import lower_flatten
 from .lowering.gather import lower_gather
 from .lowering.gather_elements import lower_gather_elements
+from .lowering import scatter_nd as _scatter_nd  # noqa: F401
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
@@ -457,6 +459,7 @@ class Compiler:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | ScatterNDOp
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
