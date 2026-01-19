@@ -1,0 +1,25 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    (void){{ depth }};
+    const {{ c_type }} off_value = {{ values }}[0];
+    const {{ c_type }} on_value = {{ values }}[1];
+    const int64_t depth_value = (int64_t){{ depth_dim }};
+{% for dim in output_shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+    int64_t index_value = (int64_t){{ indices }}{% for idx in indices_indices %}[{{ idx }}]{% endfor %};
+    int64_t adjusted = index_value;
+    if (index_value < 0) {
+        adjusted = index_value + depth_value;
+    }
+    {{ output }}{% for idx in loop_vars %}[{{ idx }}]{% endfor %} = off_value;
+    if (
+        index_value >= -depth_value
+        && index_value < depth_value
+        && (int64_t){{ axis_index }} == adjusted
+    ) {
+        {{ output }}{% for idx in loop_vars %}[{{ idx }}]{% endfor %} = on_value;
+    }
+{% for _ in output_shape %}
+    }
+{% endfor %}
+}

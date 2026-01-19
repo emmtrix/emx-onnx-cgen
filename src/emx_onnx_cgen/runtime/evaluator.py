@@ -38,6 +38,7 @@ from ..lowering.nonzero import lower_nonzero
 from ..lowering.pad import lower_pad
 from ..lowering.expand import lower_expand
 from ..lowering.range import lower_range
+from ..lowering.one_hot import lower_onehot
 from ..lowering.split import lower_split
 from ..lowering.softmax_cross_entropy_loss import (
     lower_softmax_cross_entropy_loss,
@@ -1691,6 +1692,45 @@ def _eval_range(evaluator: Evaluator, node: Node) -> None:
     delta_value = evaluator.values[op.delta].reshape(-1)[0]
     indices = np.arange(op.length, dtype=op.dtype.np_dtype)
     output = start_value + indices * delta_value
+    evaluator.values[op.output] = output
+
+
+@register_evaluator("OneHot")
+def _eval_onehot(evaluator: Evaluator, node: Node) -> None:
+    op = lower_onehot(evaluator.graph, node)
+    indices = evaluator.values[op.indices].astype(np.int64, copy=False)
+    depth_values = evaluator.values[op.depth].reshape(-1)
+    if depth_values.size != 1:
+        raise UnsupportedOpError("OneHot depth input must be a scalar")
+    depth_value = int(depth_values[0])
+    if depth_value < 0:
+        raise UnsupportedOpError("OneHot depth must be non-negative")
+    values = evaluator.values[op.values].reshape(-1)
+    if values.size != 2:
+        raise UnsupportedOpError("OneHot values input must have 2 elements")
+    off_value, on_value = values[0], values[1]
+    if depth_value == 0:
+        evaluator.values[op.output] = np.full(
+            op.output_shape, off_value, dtype=values.dtype
+        )
+        return
+    axis = op.axis
+    rank = indices.ndim
+    if axis < 0:
+        axis += rank + 1
+    depth_range = np.arange(depth_value, dtype=np.int64)
+    new_shape = (1,) * axis + (depth_value,) + (1,) * (rank - axis)
+    targets = depth_range.reshape(new_shape)
+    adjusted = np.mod(indices, depth_value) if depth_value > 0 else indices
+    values_reshaped = np.reshape(
+        adjusted, indices.shape[:axis] + (1,) + indices.shape[axis:]
+    )
+    valid_mask = (indices >= -depth_value) & (indices < depth_value)
+    valid_mask = np.reshape(
+        valid_mask, indices.shape[:axis] + (1,) + indices.shape[axis:]
+    )
+    one_hot = (targets == values_reshaped) & valid_mask
+    output = np.where(one_hot, on_value, off_value).astype(values.dtype)
     evaluator.values[op.output] = output
 
 
