@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op ReverseSequence",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reversesequence_time/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reversesequence_time/test_data_set_0"
+}

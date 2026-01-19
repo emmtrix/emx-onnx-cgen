@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op RoiAlign",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/test_data_set_0"
+}

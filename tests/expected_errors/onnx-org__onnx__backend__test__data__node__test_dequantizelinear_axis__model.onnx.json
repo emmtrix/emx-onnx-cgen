@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op DequantizeLinear",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dequantizelinear_axis/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_axis/test_data_set_0"
+}

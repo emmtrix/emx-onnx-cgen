@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_quantizelinear_int4/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_int4/test_data_set_0"
+}

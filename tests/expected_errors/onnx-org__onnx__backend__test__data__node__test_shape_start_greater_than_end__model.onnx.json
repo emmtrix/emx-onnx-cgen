@@ -1,0 +1,4 @@
+{
+  "error": "Output shape must be fully defined",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/test_data_set_0"
+}

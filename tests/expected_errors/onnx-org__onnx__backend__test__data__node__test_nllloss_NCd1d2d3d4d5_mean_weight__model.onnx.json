@@ -1,0 +1,4 @@
+{
+  "error": "Out of tolerance (max ULP 389)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/test_data_set_0"
+}

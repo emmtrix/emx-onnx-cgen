@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op HammingWindow",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric/test_data_set_0"
+}

@@ -1,0 +1,4 @@
+{
+  "error": "Pow expects matching dtypes, got float, int64",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_pow_types_float32_int64/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_pow_types_float32_int64/test_data_set_0"
+}

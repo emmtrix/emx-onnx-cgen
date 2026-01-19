@@ -1,0 +1,4 @@
+{
+  "error": "Missing output 3 in testbench data",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested/test_data_set_0"
+}

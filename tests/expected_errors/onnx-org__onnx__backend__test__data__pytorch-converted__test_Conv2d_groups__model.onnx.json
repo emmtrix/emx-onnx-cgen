@@ -1,0 +1,4 @@
+{
+  "error": "Test data input count does not match model inputs: 1 vs 3.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/test_data_set_0"
+}

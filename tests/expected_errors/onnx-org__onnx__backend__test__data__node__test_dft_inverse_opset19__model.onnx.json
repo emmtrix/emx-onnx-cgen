@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op DFT",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19/test_data_set_0"
+}
