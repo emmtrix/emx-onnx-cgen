@@ -4,16 +4,16 @@ const {{ c_type }} *{{ input0_flat }} = (const {{ c_type }} *){{ input0 }};
 {% if pads_values %}
 const {{ pads_c_type }} pad_values[] = { {% for value in pads_values %}{{ value }}{{ ", " if not loop.last else "" }}{% endfor %} };
 {% endif %}
-ptrdiff_t pad_begin[{{ output_shape|length }}];
+idx_t pad_begin[{{ output_shape|length }}];
 for (idx_t pad_index = 0; pad_index < {{ output_shape|length }}; ++pad_index) {
     pad_begin[pad_index] = 0;
 }
 for (idx_t axis_index = 0; axis_index < {{ axes_length }}; ++axis_index) {
-    ptrdiff_t axis = (ptrdiff_t){{ axes_input }}[axis_index];
+    idx_t axis = (idx_t){{ axes_input }}[axis_index];
     if (axis < 0) {
         axis += {{ output_shape|length }};
     }
-    if (axis >= 0 && axis < (ptrdiff_t){{ output_shape|length }}) {
+    if (axis >= 0 && axis < {{ output_shape|length }}) {
         pad_begin[axis] = {% if pads_input %}{{ pads_input }}[axis_index]{% else %}pad_values[axis_index]{% endif %};
     }
 }
@@ -28,35 +28,35 @@ for (idx_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }
 {% for dim in output_shape %}
 for (idx_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
 {% endfor %}
-ptrdiff_t {{ base_index }} = 0;
+idx_t {{ base_index }} = 0;
 int pad_in_bounds = 1;
 {% for index in range(output_shape|length) %}
-ptrdiff_t {{ idx_vars[index] }} = (ptrdiff_t){{ out_loop_vars[index] }} - (ptrdiff_t)({{ pad_begin_exprs[index] }});
+    idx_t {{ idx_vars[index] }} = {{ out_loop_vars[index] }} - (idx_t)({{ pad_begin_exprs[index] }});
 if ({{ input_shape[index] }} == 0) {
     pad_in_bounds = 0;
 }
 {% if mode == "constant" %}
-if (pad_in_bounds && ({{ idx_vars[index] }} < 0 || {{ idx_vars[index] }} >= (ptrdiff_t){{ input_shape[index] }})) {
+if (pad_in_bounds && ({{ idx_vars[index] }} < 0 || {{ idx_vars[index] }} >= {{ input_shape[index] }})) {
     pad_in_bounds = 0;
 }
 {% elif mode == "edge" %}
 if (pad_in_bounds && {{ idx_vars[index] }} < 0) {
     {{ idx_vars[index] }} = 0;
-} else if (pad_in_bounds && {{ idx_vars[index] }} >= (ptrdiff_t){{ input_shape[index] }}) {
-    {{ idx_vars[index] }} = (ptrdiff_t){{ input_shape[index] }} - 1;
+} else if (pad_in_bounds && {{ idx_vars[index] }} >= {{ input_shape[index] }}) {
+    {{ idx_vars[index] }} = {{ input_shape[index] }} - 1;
 }
 {% elif mode == "wrap" %}
 if (pad_in_bounds) {
-    {{ idx_vars[index] }} %= (ptrdiff_t){{ input_shape[index] }};
+    {{ idx_vars[index] }} %= {{ input_shape[index] }};
     if ({{ idx_vars[index] }} < 0) {
-        {{ idx_vars[index] }} += (ptrdiff_t){{ input_shape[index] }};
+        {{ idx_vars[index] }} += {{ input_shape[index] }};
     }
 }
 {% elif mode == "reflect" %}
 if (pad_in_bounds && {{ input_shape[index] }} == 1) {
     {{ idx_vars[index] }} = 0;
 } else if (pad_in_bounds) {
-    ptrdiff_t {{ reflect_vars[index] }} = (ptrdiff_t){{ input_shape[index] }} - 1;
+    idx_t {{ reflect_vars[index] }} = {{ input_shape[index] }} - 1;
     {{ idx_vars[index] }} %= (2 * {{ reflect_vars[index] }});
     if ({{ idx_vars[index] }} < 0) {
         {{ idx_vars[index] }} += 2 * {{ reflect_vars[index] }};
