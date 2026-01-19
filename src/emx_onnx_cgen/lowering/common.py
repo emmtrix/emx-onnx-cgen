@@ -39,6 +39,10 @@ def value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int,
         resolved = _resolve_value_shape(graph, name, node)
         if resolved is not None:
             return resolved
+        op_type = node.op_type if node is not None else "unknown"
+        raise ShapeInferenceError(
+            f"Dynamic dims are not supported for op {op_type}."
+        )
     return value.type.shape
 
 

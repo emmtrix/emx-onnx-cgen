@@ -463,7 +463,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2827146620) |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw/model.onnx | ❌ | Unsupported op CenterCropPad |
-| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2162567595) |
+| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Dynamic dims are not supported for op Pad. |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2260728201) |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2134203891) |
