@@ -48,18 +48,18 @@ static inline void node0_averagepool(const float input0[restrict 1][1][4][4], fl
                             if (0) {
                                 count += 2;
                             }
-                            continue;
-                        }
-                        for (idx_t kw = 0; kw < 2; ++kw) {
-                            const idx_t iw = ow * 2 + kw - 0;
-                            if (iw < 0 || iw >= 4) {
-                                if (0) {
+                        } else {
+                            for (idx_t kw = 0; kw < 2; ++kw) {
+                                const idx_t iw = ow * 2 + kw - 0;
+                                if (iw < 0 || iw >= 4) {
+                                    if (0) {
+                                        count += 1;
+                                    }
+                                } else {
+                                    acc += input0[n][c][ih][iw];
                                     count += 1;
                                 }
-                                continue;
                             }
-                            acc += input0[n][c][ih][iw];
-                            count += 1;
                         }
                     }
                     output[n][c][oh][ow] = count ? acc / (float)count : 0.0f;

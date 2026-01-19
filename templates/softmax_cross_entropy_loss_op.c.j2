@@ -41,43 +41,49 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     loss_value = -log_prob_value;
                 }
             }
+{% if use_ignore_index %}
+            if (ignored) {
+{% if reduction == "none" %}
+                output_flat[target_index] = {{ zero_literal }};
+{% endif %}
+            }
+{% endif %}
 {% else %}
+            {{ acc_type }} loss_value = {{ acc_zero_literal }};
 {% if use_ignore_index %}
             if (ignored) {
 {% if reduction == "none" %}
                 output_flat[target_index] = {{ zero_literal }};
 {% endif %}
-                continue;
+            } else {
+{% endif %}
+                {{ acc_type }} log_prob_value = ({{ acc_type }})input_flat[base + class_index * d] - max_value - logsum;
+                loss_value = -log_prob_value;
+{% if use_ignore_index %}
             }
 {% endif %}
-            {{ acc_type }} log_prob_value = ({{ acc_type }})input_flat[base + class_index * d] - max_value - logsum;
-            {{ acc_type }} loss_value = -log_prob_value;
 {% endif %}
 {% if use_ignore_index %}
-{% if log_prob %}
-            if (ignored) {
-{% if reduction == "none" %}
-                output_flat[target_index] = {{ zero_literal }};
-{% endif %}
-                continue;
-            }
-{% endif %}
+            if (!ignored) {
 {% endif %}
 {% if weight %}
-            {{ acc_type }} sample_weight = {{ weight }}[class_index];
-            loss_value *= sample_weight;
+                {{ acc_type }} sample_weight = {{ weight }}[class_index];
+                loss_value *= sample_weight;
 {% else %}
-            {{ acc_type }} sample_weight = {{ acc_one_literal }};
+                {{ acc_type }} sample_weight = {{ acc_one_literal }};
 {% endif %}
 {% if reduction == "none" %}
-            output_flat[target_index] = loss_value;
+                output_flat[target_index] = loss_value;
 {% else %}
-            loss_sum += loss_value;
+                loss_sum += loss_value;
 {% if reduction == "mean" %}
 {% if weight or use_ignore_index %}
-            weight_sum += sample_weight;
+                weight_sum += sample_weight;
 {% endif %}
 {% endif %}
+{% endif %}
+{% if use_ignore_index %}
+            }
 {% endif %}
         }
     }

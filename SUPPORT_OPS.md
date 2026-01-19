@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 133 / 198
+Supported operators: 136 / 198
 
 | Operator | Supported |
 | --- | --- |
@@ -114,7 +114,7 @@ Supported operators: 133 / 198
 | NonMaxSuppression | ❌ |
 | NonZero | ✅ |
 | Not | ✅ |
-| OneHot | ❌ |
+| OneHot | ✅ |
 | OptionalGetElement | ❌ |
 | OptionalHasElement | ❌ |
 | Or | ✅ |
@@ -188,7 +188,7 @@ Supported operators: 133 / 198
 | TfIdfVectorizer | ❌ |
 | ThresholdedRelu | ✅ |
 | Tile | ❌ |
-| TopK | ✅ |
+| TopK | ❌ |
 | Transpose | ✅ |
 | Trilu | ✅ |
 | Unique | ❌ |

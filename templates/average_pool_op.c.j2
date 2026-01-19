@@ -11,18 +11,18 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             if ({{ count_include_pad }}) {
                                 count += {{ kernel_w }};
                             }
-                            continue;
-                        }
-                        for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
-                            const idx_t iw = ow * {{ stride_w }} + kw - {{ pad_left }};
-                            if (iw < 0 || iw >= {{ in_w }}) {
-                                if ({{ count_include_pad }}) {
+                        } else {
+                            for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
+                                const idx_t iw = ow * {{ stride_w }} + kw - {{ pad_left }};
+                                if (iw < 0 || iw >= {{ in_w }}) {
+                                    if ({{ count_include_pad }}) {
+                                        count += 1;
+                                    }
+                                } else {
+                                    acc += {{ input0 }}[n][c][ih][iw];
                                     count += 1;
                                 }
-                                continue;
                             }
-                            acc += {{ input0 }}[n][c][ih][iw];
-                            count += 1;
                         }
                     }
                     {{ output }}[n][c][oh][ow] = count ? acc / ({{ c_type }})count : {{ zero_literal }};

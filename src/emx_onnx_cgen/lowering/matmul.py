@@ -87,13 +87,12 @@ def _broadcast_batch_shapes(
     right_padded = (1,) * (max_rank - len(right)) + right
     broadcast_shape = []
     for left_dim, right_dim in zip(left_padded, right_padded):
-        if left_dim == right_dim or left_dim == 1 or right_dim == 1:
-            broadcast_shape.append(max(left_dim, right_dim))
-            continue
-        raise ShapeInferenceError(
-            "MatMul batch dimensions must be broadcastable, "
-            f"got {left} x {right}"
-        )
+        if not (left_dim == right_dim or left_dim == 1 or right_dim == 1):
+            raise ShapeInferenceError(
+                "MatMul batch dimensions must be broadcastable, "
+                f"got {left} x {right}"
+            )
+        broadcast_shape.append(max(left_dim, right_dim))
     return tuple(broadcast_shape), left_padded, right_padded
 
 
