@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1085 / 1802 official ONNX files.
+Support 1092 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1607,13 +1607,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tile/model.onnx | ❌ | Tile repeats input must be a constant initializer |
 | onnx-org/onnx/backend/test/data/node/test_tile_precomputed/model.onnx | ❌ | Tile repeats input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_negative_axis/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_largest/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_smallest/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_uint64/model.onnx | ❌ | Unsupported op TopK |
+| onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_negative_axis/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_largest/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_smallest/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_uint64/model.onnx | ✅ |  |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout_default/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout_default_mask/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |

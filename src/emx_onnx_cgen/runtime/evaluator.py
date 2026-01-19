@@ -42,6 +42,7 @@ from ..lowering.softmax_cross_entropy_loss import (
     lower_softmax_cross_entropy_loss,
 )
 from ..lowering.arg_reduce import lower_arg_reduce
+from ..lowering.topk import lower_topk
 from ..lowering.lstm import ACTIVATION_KIND_BY_NAME, resolve_lstm_spec
 from ..lowering.lrn import resolve_lrn_spec
 from ..lowering.matmul import lower_matmul
@@ -1735,6 +1736,39 @@ def _eval_arg_reduce(evaluator: Evaluator, node: Node) -> None:
     if op.keepdims:
         indices = np.expand_dims(indices, axis=op.axis)
     evaluator.values[op.output] = indices.astype(op.output_dtype.np_dtype)
+
+
+@register_evaluator("TopK")
+def _eval_topk(evaluator: Evaluator, node: Node) -> None:
+    op = lower_topk(evaluator.graph, node)
+    value = evaluator.values[op.input0]
+    moved = np.moveaxis(value, op.axis, -1)
+    axis_dim = moved.shape[-1]
+    flat = moved.reshape(-1, axis_dim)
+    values_out = np.empty((flat.shape[0], op.k), dtype=value.dtype)
+    indices_out = np.empty((flat.shape[0], op.k), dtype=np.int64)
+    for row_index in range(flat.shape[0]):
+        row = flat[row_index]
+        order = sorted(
+            range(axis_dim),
+            key=lambda idx: (
+                -row[idx].item() if op.largest else row[idx].item(),
+                idx,
+            ),
+        )
+        topk = order[: op.k]
+        indices_out[row_index] = topk
+        values_out[row_index] = row[topk]
+    values_out = values_out.reshape(moved.shape[:-1] + (op.k,))
+    indices_out = indices_out.reshape(moved.shape[:-1] + (op.k,))
+    values_out = np.moveaxis(values_out, -1, op.axis)
+    indices_out = np.moveaxis(indices_out, -1, op.axis)
+    evaluator.values[op.output_values] = values_out.astype(
+        op.output_values_dtype.np_dtype
+    )
+    evaluator.values[op.output_indices] = indices_out.astype(
+        op.output_indices_dtype.np_dtype
+    )
 
 
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:

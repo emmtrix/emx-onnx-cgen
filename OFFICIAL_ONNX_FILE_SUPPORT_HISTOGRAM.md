@@ -25,7 +25,6 @@
 | Unsupported op RotaryEmbedding | 8 | ███ |
 | tuple index out of range | 8 | ███ |
 | Unsupported op TfIdfVectorizer | 7 | ██ |
-| Unsupported op TopK | 7 | ██ |
 | AveragePool has unsupported attributes | 6 | ██ |
 | Missing output 2 in testbench data | 6 | ██ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ██ |
