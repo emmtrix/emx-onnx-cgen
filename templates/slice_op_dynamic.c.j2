@@ -3,9 +3,6 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const idx_t input_dims[] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
     idx_t start_indices[{{ input_rank }}];
     idx_t step_values[{{ input_rank }}];
-{% if ends_input %}
-    (void){{ ends_input }};
-{% endif %}
     for (idx_t idx = 0; idx < input_rank; ++idx) {
         start_indices[idx] = 0;
         step_values[idx] = 1;
@@ -22,19 +19,44 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         idx_t axis = axis_value;
         idx_t dim = input_dims[axis];
         idx_t start_value = {{ starts_input }}[i];
-        if (start_value < 0) {
-            start_value += dim;
-        }
-        if (start_value < 0) {
-            start_value = 0;
-        }
-        if (start_value > dim) {
-            start_value = dim;
-        }
         idx_t step_value = 1;
 {% if steps_input %}
         step_value = {{ steps_input }}[i];
 {% endif %}
+        idx_t end_value = {{ ends_input }}[i];
+        if (start_value < 0) {
+            start_value += dim;
+        }
+        if (end_value < 0) {
+            end_value += dim;
+        }
+        if (step_value > 0) {
+            if (start_value < 0) {
+                start_value = 0;
+            }
+            if (start_value > dim) {
+                start_value = dim;
+            }
+            if (end_value < 0) {
+                end_value = 0;
+            }
+            if (end_value > dim) {
+                end_value = dim;
+            }
+        } else {
+            if (start_value < 0) {
+                start_value = -1;
+            }
+            if (start_value >= dim) {
+                start_value = dim - 1;
+            }
+            if (end_value < -1) {
+                end_value = -1;
+            }
+            if (end_value >= dim) {
+                end_value = dim - 1;
+            }
+        }
         start_indices[axis] = start_value;
         step_values[axis] = step_value;
     }

@@ -1073,7 +1073,7 @@ def _float_sign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _float_round(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    return _float_unary_math(dtype_info, "round", "round")
+    return _float_unary_math(dtype_info, "round", "rint")
 
 
 def _float_trunc(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:

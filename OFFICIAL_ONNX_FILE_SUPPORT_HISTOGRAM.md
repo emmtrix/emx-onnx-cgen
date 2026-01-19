@@ -4,9 +4,9 @@
 | --- | --- | --- |
 | ONNX Runtime failed to run | 81 | ██████████████████████████████ |
 | Missing output 1 in testbench data | 36 | █████████████ |
+| Failed to build testbench. | 34 | █████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ████████████ |
 | Test data input count does not match model inputs: 1 vs 3. | 27 | ██████████ |
-| Out of tolerance | 24 | █████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████ |
 | Currently not supporting loading segments. | 19 | ███████ |
@@ -17,8 +17,8 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████ |
-| Failed to build testbench. | 16 | ██████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████ |
+| Out of tolerance | 13 | █████ |
 | Output shape must be fully defined | 9 | ███ |
 | Testbench execution failed: exit code -11 (signal 11: SIGSEGV) | 9 | ███ |
 | Unsupported op ImageDecoder | 9 | ███ |
