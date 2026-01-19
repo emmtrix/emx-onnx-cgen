@@ -88,6 +88,10 @@ def _render_error_histogram_markdown(
     title: str = "# Error frequency",
 ) -> str:
     def _sanitize_error(error: str) -> str:
+        if error.startswith("Out of tolerance"):
+            return "Out of tolerance"
+        if error.startswith("ONNX Runtime failed to run"):
+            return "ONNX Runtime failed to run"
         return re.sub(r"'[^']*'", "'*'", error)
 
     errors = [
