@@ -66,23 +66,23 @@ static inline void node0_pad(const float input[restrict 2][3], float output[rest
     }
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 5; ++i1) {
-            ptrdiff_t pad_index = 0;
+            idx_t pad_index = 0;
             int pad_in_bounds = 1;
-            ptrdiff_t pad_idx0 = (ptrdiff_t)i0 - (ptrdiff_t)(0);
+            idx_t pad_idx0 = i0 - (idx_t)(0);
             if (2 == 0) {
                 pad_in_bounds = 0;
             }
-            if (pad_in_bounds && (pad_idx0 < 0 || pad_idx0 >= (ptrdiff_t)2)) {
+            if (pad_in_bounds && (pad_idx0 < 0 || pad_idx0 >= 2)) {
                 pad_in_bounds = 0;
             }
             if (pad_in_bounds) {
                 pad_index += pad_idx0 * 3;
             }
-            ptrdiff_t pad_idx1 = (ptrdiff_t)i1 - (ptrdiff_t)(1);
+            idx_t pad_idx1 = i1 - (idx_t)(1);
             if (3 == 0) {
                 pad_in_bounds = 0;
             }
-            if (pad_in_bounds && (pad_idx1 < 0 || pad_idx1 >= (ptrdiff_t)3)) {
+            if (pad_in_bounds && (pad_idx1 < 0 || pad_idx1 >= 3)) {
                 pad_in_bounds = 0;
             }
             if (pad_in_bounds) {
