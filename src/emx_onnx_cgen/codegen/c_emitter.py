@@ -4172,6 +4172,12 @@ class CEmitter:
             call_parts.append(op.output)
             args.extend(call_parts)
             return ", ".join(args)
+        if isinstance(op, TriluOp):
+            call_parts = [op.input0, op.output]
+            if op.k_input is not None:
+                call_parts.append(op.k_input)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, GridSampleOp):
             args.extend([op.input0, op.grid, op.output])
             return ", ".join(args)
@@ -9432,7 +9438,7 @@ class CEmitter:
     def _codegen_shape(shape: tuple[int, ...]) -> tuple[int, ...]:
         if not shape:
             return (1,)
-        return shape
+        return tuple(max(1, dim) if isinstance(dim, int) else dim for dim in shape)
 
     @staticmethod
     def _array_suffix(shape: tuple[int, ...]) -> str:
@@ -9571,7 +9577,8 @@ class CEmitter:
         dim_names: Mapping[int, str] | None,
     ) -> tuple[str | int, ...]:
         dim_names = dim_names or {}
-        shape = CEmitter._codegen_shape(shape)
+        if not shape:
+            shape = (1,)
         return tuple(
             dim_names.get(index, dim) for index, dim in enumerate(shape)
         )
@@ -9626,7 +9633,8 @@ class CEmitter:
 
     @staticmethod
     def _element_count(shape: tuple[int, ...]) -> int:
-        shape = CEmitter._codegen_shape(shape)
+        if not shape:
+            return 1
         count = 1
         for dim in shape:
             if dim < 0:
@@ -9704,7 +9712,8 @@ class CEmitter:
             model.input_names, model.input_shapes, input_counts, model.input_dtypes
         ):
             codegen_shape = self._codegen_shape(shape)
-            loop_vars = self._loop_vars(codegen_shape)
+            loop_shape = (1,) if not shape else shape
+            loop_vars = self._loop_vars(loop_shape)
             if dtype in {ScalarType.F16, ScalarType.F32}:
                 random_expr = "rng_next_float()"
             elif dtype == ScalarType.F64:
@@ -9728,7 +9737,7 @@ class CEmitter:
             inputs.append(
                 {
                     "name": name,
-                    "shape": codegen_shape,
+                    "shape": loop_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": count,
                     "array_suffix": self._array_suffix(codegen_shape),
@@ -9736,8 +9745,8 @@ class CEmitter:
                         f"[{var}]" for var in loop_vars
                     ),
                     "loop_vars": loop_vars,
-                    "rank": len(codegen_shape),
-                    "index_expr": self._index_expr(codegen_shape, loop_vars),
+                    "rank": len(loop_shape),
+                    "index_expr": self._index_expr(loop_shape, loop_vars),
                     "dtype": dtype,
                     "c_type": dtype.c_type,
                     "random_expr": random_expr,
@@ -9752,20 +9761,21 @@ class CEmitter:
             model.output_names, model.output_shapes, model.output_dtypes
         ):
             codegen_shape = self._codegen_shape(shape)
-            output_loop_vars = self._loop_vars(codegen_shape)
+            loop_shape = (1,) if not shape else shape
+            output_loop_vars = self._loop_vars(loop_shape)
             outputs.append(
                 {
                     "name": name,
-                    "shape": codegen_shape,
+                    "shape": loop_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
-                    "count": self._element_count(codegen_shape),
+                    "count": self._element_count(shape),
                     "array_suffix": self._array_suffix(codegen_shape),
                     "array_index_expr": "".join(
                         f"[{var}]" for var in output_loop_vars
                     ),
                     "loop_vars": output_loop_vars,
-                    "rank": len(codegen_shape),
-                    "index_expr": self._index_expr(codegen_shape, output_loop_vars),
+                    "rank": len(loop_shape),
+                    "index_expr": self._index_expr(loop_shape, output_loop_vars),
                     "dtype": dtype,
                     "c_type": dtype.c_type,
                     "print_format": self._print_format(dtype),
