@@ -5,8 +5,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const idx_t n = {{ n }};
     const idx_t c = {{ c }};
     const idx_t d = {{ d }};
-    {{ c_type }} loss_sum = {{ zero_literal }};
-    {{ c_type }} weight_sum = {{ zero_literal }};
+    {{ acc_type }} loss_sum = {{ acc_zero_literal }};
+    {{ acc_type }} weight_sum = {{ acc_zero_literal }};
     for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
         for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
             idx_t target_index = n_idx * d + d_idx;
@@ -19,12 +19,12 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
             idx_t class_index = (idx_t)target_value;
             idx_t input_index = (n_idx * c + class_index) * d + d_idx;
-            {{ c_type }} value = -input_flat[input_index];
+            {{ acc_type }} value = -({{ acc_type }})input_flat[input_index];
 {% if weight %}
-            {{ c_type }} sample_weight = {{ weight }}[class_index];
+            {{ acc_type }} sample_weight = {{ weight }}[class_index];
             value *= sample_weight;
 {% else %}
-            {{ c_type }} sample_weight = {{ one_literal }};
+            {{ acc_type }} sample_weight = {{ acc_one_literal }};
 {% endif %}
 {% if reduction == "none" %}
             output_flat[target_index] = value;
@@ -37,7 +37,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         }
     }
 {% if reduction == "mean" %}
-    if (weight_sum == {{ zero_literal }}) {
+    if (weight_sum == {{ acc_zero_literal }}) {
         output_flat[0] = {{ zero_literal }};
     } else {
         output_flat[0] = loss_sum / weight_sum;

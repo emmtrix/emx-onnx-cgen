@@ -50,8 +50,13 @@ static inline void node0_reducemean(const float input0[restrict 2][3][4], float 
         for (idx_t i1 = 0; i1 < 1; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
                 float acc = 0.0f;
+                float acc_comp = 0.0f;
                 for (idx_t r0 = 0; r0 < 3; ++r0) {
-                    acc += input0[i0][r0][i2];
+                    float kahan_value = input0[i0][r0][i2];
+                    float kahan_y = kahan_value - acc_comp;
+                    float kahan_t = acc + kahan_y;
+                    acc_comp = (kahan_t - acc) - kahan_y;
+                    acc = kahan_t;
                 }
                 output[i0][i1][i2] = acc / 3.0f;
             }

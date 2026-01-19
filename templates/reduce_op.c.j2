@@ -3,10 +3,21 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
 {{ c_type }} acc = {{ init_literal }};
+{% if use_kahan %}
+{{ c_type }} acc_comp = {{ zero_literal }};
+{% endif %}
 {% for dim in reduce_dims %}
 for (idx_t {{ reduce_loop_vars[loop.index0] }} = 0; {{ reduce_loop_vars[loop.index0] }} < {{ dim }}; ++{{ reduce_loop_vars[loop.index0] }}) {
 {% endfor %}
+{% if use_kahan %}
+{{ c_type }} kahan_value = {{ kahan_value_expr }};
+{{ c_type }} kahan_y = kahan_value - acc_comp;
+{{ c_type }} kahan_t = acc + kahan_y;
+acc_comp = (kahan_t - acc) - kahan_y;
+acc = kahan_t;
+{% else %}
 {{ update_expr }}
+{% endif %}
 {% for _ in reduce_dims %}
 }
 {% endfor %}
