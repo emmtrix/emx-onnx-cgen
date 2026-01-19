@@ -1,0 +1,4 @@
+{
+  "error": "Currently not supporting loading segments.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/test_data_set_0"
+}

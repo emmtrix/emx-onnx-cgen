@@ -1,0 +1,4 @@
+{
+  "error": "",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_singleton_broadcast/test_data_set_0"
+}

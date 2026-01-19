@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op TensorScatter",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular/test_data_set_0"
+}

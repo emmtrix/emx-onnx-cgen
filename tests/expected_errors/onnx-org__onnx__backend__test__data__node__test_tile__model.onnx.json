@@ -1,0 +1,4 @@
+{
+  "error": "Tile repeats input must be a constant initializer",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tile/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_tile/test_data_set_0"
+}

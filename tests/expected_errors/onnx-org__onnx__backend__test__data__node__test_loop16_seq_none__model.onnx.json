@@ -1,0 +1,4 @@
+{
+  "error": "cannot reshape array of size 12 into shape (111,112,116,95,115,101,113)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/test_data_set_0"
+}

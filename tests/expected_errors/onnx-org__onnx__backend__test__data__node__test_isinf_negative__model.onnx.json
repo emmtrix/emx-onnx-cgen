@@ -1,0 +1,4 @@
+{
+  "error": "\nArrays are not equal\n\nMismatched elements: 2 / 6 (33.3%)\n ACTUAL: array([False, False,  True, False,  True,  True])\n DESIRED: array([False, False, False, False,  True, False])",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isinf_negative/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_isinf_negative/test_data_set_0"
+}

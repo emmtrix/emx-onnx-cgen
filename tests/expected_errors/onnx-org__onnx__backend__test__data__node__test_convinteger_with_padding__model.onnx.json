@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op ConvInteger",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_convinteger_with_padding/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_convinteger_with_padding/test_data_set_0"
+}

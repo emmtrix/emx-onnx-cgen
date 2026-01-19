@@ -55,30 +55,38 @@ def run_cli_command(
     args = parser.parse_args(parse_argv)
     args.command_line = _format_command_line(raw_argv)
 
-    if args.command != "compile":
-        success_message, error = _verify_model(args, include_build_details=False)
-        return CliResult(
-            exit_code=0 if error is None else 1,
-            command_line=args.command_line,
-            error=error,
-            success_message=success_message,
+    try:
+        if args.command != "compile":
+            success_message, error = _verify_model(args, include_build_details=False)
+            return CliResult(
+                exit_code=0 if error is None else 1,
+                command_line=args.command_line,
+                error=error,
+                success_message=success_message,
+            )
+        generated, data_source, error = _compile_model(
+            args, testbench_inputs=testbench_inputs
         )
-    generated, data_source, error = _compile_model(
-        args, testbench_inputs=testbench_inputs
-    )
-    if error:
+        if error:
+            return CliResult(
+                exit_code=1,
+                command_line=args.command_line,
+                error=error,
+            )
+        return CliResult(
+            exit_code=0,
+            command_line=args.command_line,
+            success_message="",
+            generated=generated,
+            data_source=data_source,
+        )
+    except Exception as exc:  # pragma: no cover - defensive reporting
+        LOGGER.exception("Unhandled exception while running CLI command.")
         return CliResult(
             exit_code=1,
             command_line=args.command_line,
-            error=error,
+            error=str(exc),
         )
-    return CliResult(
-        exit_code=0,
-        command_line=args.command_line,
-        success_message="",
-        generated=generated,
-        data_source=data_source,
-    )
 
 
 def _build_parser() -> argparse.ArgumentParser:

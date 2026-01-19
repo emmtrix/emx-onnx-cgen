@@ -1,0 +1,4 @@
+{
+  "error": "LeakyRelu only supports alpha=0.01",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_leakyrelu/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu/test_data_set_0"
+}

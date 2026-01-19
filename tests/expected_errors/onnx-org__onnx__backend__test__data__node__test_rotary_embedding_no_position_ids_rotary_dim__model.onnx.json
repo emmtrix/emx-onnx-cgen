@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported op RotaryEmbedding",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/test_data_set_0"
+}

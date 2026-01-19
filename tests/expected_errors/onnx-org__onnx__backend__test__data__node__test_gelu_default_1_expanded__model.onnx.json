@@ -1,0 +1,4 @@
+{
+  "error": "Sum expects identical input/output shapes",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/test_data_set_0"
+}

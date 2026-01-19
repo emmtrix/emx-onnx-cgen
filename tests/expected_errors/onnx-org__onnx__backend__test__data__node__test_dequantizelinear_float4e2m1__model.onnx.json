@@ -1,0 +1,4 @@
+{
+  "error": "Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dequantizelinear_float4e2m1/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_float4e2m1/test_data_set_0"
+}

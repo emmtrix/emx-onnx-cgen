@@ -1,0 +1,4 @@
+{
+  "error": "Out of tolerance (max ULP 2634425077)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/test_data_set_0"
+}

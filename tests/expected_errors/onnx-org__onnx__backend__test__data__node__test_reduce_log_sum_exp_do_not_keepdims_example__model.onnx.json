@@ -1,0 +1,4 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example/test_data_set_0"
+}
