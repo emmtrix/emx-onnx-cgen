@@ -2,22 +2,21 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| ONNX Runtime failed to run | 81 | ██████████████████████████████ |
+| ONNX Runtime failed to run | 84 | ██████████████████████████████ |
 | Missing output 1 in testbench data | 36 | █████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████ |
 | Test data input count does not match model inputs: 1 vs 3. | 27 | ██████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████ |
 | Currently not supporting loading segments. | 19 | ███████ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ███████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████ |
 | Test data input count does not match model inputs: 1 vs 2. | 17 | ██████ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████ |
-| Output shape must be fully defined | 9 | ███ |
 | Unsupported op ImageDecoder | 9 | ███ |
 | Unsupported op NonMaxSuppression | 9 | ███ |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 9 | ███ |
@@ -25,8 +24,8 @@
 | Unsupported op QLinearMatMul | 8 | ███ |
 | Unsupported op RotaryEmbedding | 8 | ███ |
 | tuple index out of range | 8 | ███ |
-| Unsupported op TfIdfVectorizer | 7 | ███ |
-| Unsupported op TopK | 7 | ███ |
+| Unsupported op TfIdfVectorizer | 7 | ██ |
+| Unsupported op TopK | 7 | ██ |
 | AveragePool has unsupported attributes | 6 | ██ |
 | Missing output 2 in testbench data | 6 | ██ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ██ |
@@ -54,6 +53,7 @@
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |
 | Unsupported op RNN | 4 | █ |
+| zero-size array to reduction operation maximum which has no identity | 4 | █ |
 | '*' | 3 | █ |
 | AveragePool supports auto_pad=NOTSET only | 3 | █ |
 | Elu only supports alpha=1.0 | 3 | █ |
