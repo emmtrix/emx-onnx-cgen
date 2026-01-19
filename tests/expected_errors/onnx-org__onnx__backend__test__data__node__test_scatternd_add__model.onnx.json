@@ -1,4 +1,4 @@
 {
-  "error": "Unsupported op ScatterND",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_scatternd_add/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_scatternd_add/test_data_set_0"
 }
