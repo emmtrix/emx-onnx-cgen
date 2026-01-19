@@ -38,6 +38,7 @@ from .codegen.c_emitter import (
     ScatterNDOp,
     ExpandOp,
     RangeOp,
+    OneHotOp,
     LpPoolOp,
     QuantizeLinearOp,
     LrnOp,
@@ -109,6 +110,7 @@ from .lowering.negative_log_likelihood_loss import (
 )
 from .lowering.expand import lower_expand
 from .lowering.range import lower_range
+from .lowering import one_hot as _one_hot  # noqa: F401
 from .lowering.split import lower_split
 from .lowering.softmax_cross_entropy_loss import (
     lower_softmax_cross_entropy_loss,
@@ -476,6 +478,7 @@ class Compiler:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | OneHotOp
             | SplitOp
         ],
         list[NodeInfo],
@@ -524,6 +527,7 @@ class Compiler:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | OneHotOp
             | SplitOp
             | WhereOp
         ] = []

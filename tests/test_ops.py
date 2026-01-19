@@ -21,6 +21,7 @@ from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.errors import UnsupportedOpError
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
+from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
 from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
@@ -295,6 +296,62 @@ def _make_range_model(
         [],
         [output],
         initializer=[start_tensor, limit_tensor, delta_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_onehot_model(
+    *,
+    indices_shape: list[int],
+    depth: int,
+    axis: int,
+    indices_dtype: int,
+    values_dtype: int,
+    off_value: float | int = 0,
+    on_value: float | int = 1,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    indices_info = helper.make_tensor_value_info(
+        "indices", indices_dtype, indices_shape
+    )
+    depth_tensor = helper.make_tensor(
+        "depth",
+        TensorProto.INT64,
+        dims=[],
+        vals=[depth],
+    )
+    values_tensor = helper.make_tensor(
+        "values",
+        values_dtype,
+        dims=[2],
+        vals=[off_value, on_value],
+    )
+    axis_norm = axis
+    if axis_norm < 0:
+        axis_norm += len(indices_shape) + 1
+    output_shape = (
+        indices_shape[:axis_norm] + [depth] + indices_shape[axis_norm:]
+    )
+    output = helper.make_tensor_value_info("output", values_dtype, output_shape)
+    node = helper.make_node(
+        "OneHot",
+        inputs=["indices", "depth", "values"],
+        outputs=[output.name],
+        axis=axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "onehot_graph",
+        [indices_info],
+        [output],
+        initializer=[depth_tensor, values_tensor],
     )
     model = helper.make_model(
         graph,
@@ -2932,6 +2989,21 @@ def test_lower_flatten_negative_axis() -> None:
     assert op.output_shape == (6, 4)
 
 
+def test_lower_onehot_axis_normalization() -> None:
+    model = _make_onehot_model(
+        indices_shape=[2, 3],
+        depth=4,
+        axis=-1,
+        indices_dtype=TensorProto.INT64,
+        values_dtype=TensorProto.FLOAT,
+    )
+    graph = import_onnx(model)
+    op = lower_onehot(graph, graph.nodes[0])
+    assert op.axis == 2
+    assert op.output_shape == (2, 3, 4)
+    assert op.depth_dim == 4
+
+
 def test_lower_pad_dynamic_axes_input() -> None:
     input_info = helper.make_tensor_value_info(
         "input", TensorProto.FLOAT, [2, 3]
@@ -3185,6 +3257,17 @@ def test_range_matches_onnxruntime() -> None:
         limit=7,
         delta=2,
         dtype=TensorProto.INT32,
+    )
+    _run_ort_compare(model)
+
+
+def test_onehot_matches_onnxruntime() -> None:
+    model = _make_onehot_model(
+        indices_shape=[2, 3],
+        depth=4,
+        axis=1,
+        indices_dtype=TensorProto.INT64,
+        values_dtype=TensorProto.FLOAT,
     )
     _run_ort_compare(model)
 
