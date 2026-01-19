@@ -66,7 +66,7 @@ from .codegen.c_emitter import (
 )
 from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
-from .ir.model import Graph, Value
+from .ir.model import Graph, TensorType, Value
 from .lowering.attention import AttentionSpec, resolve_attention_spec
 from .lowering.average_pool import (
     lower_average_pool,
@@ -171,6 +171,13 @@ class CompilerOptions:
     truncate_weights_after: int | None = None
 
 
+def _onnx_elem_type(dtype: np.dtype) -> int:
+    for elem_type, info in onnx._mapping.TENSOR_TYPE_MAP.items():
+        if info.np_dtype == dtype:
+            return elem_type
+    raise UnsupportedOpError(f"Unsupported dtype {dtype} for ONNX output")
+
+
 class Compiler:
     def __init__(self, options: CompilerOptions | None = None) -> None:
         if options is None:
@@ -184,6 +191,7 @@ class Compiler:
 
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)
+        graph = self._concretize_graph_shapes(model, graph)
         testbench_inputs = self._resolve_testbench_inputs(graph)
         variable_dim_inputs, variable_dim_outputs = self._collect_variable_dims(
             graph
@@ -199,6 +207,7 @@ class Compiler:
 
     def compile_with_data_file(self, model: onnx.ModelProto) -> tuple[str, str]:
         graph = import_onnx(model)
+        graph = self._concretize_graph_shapes(model, graph)
         testbench_inputs = self._resolve_testbench_inputs(graph)
         variable_dim_inputs, variable_dim_outputs = self._collect_variable_dims(
             graph
@@ -295,6 +304,83 @@ class Compiler:
             array = array.reshape(expected_shape)
             resolved[name] = tuple(array.ravel().tolist())
         return resolved
+
+    def _concretize_graph_shapes(
+        self, model: onnx.ModelProto, graph: Graph
+    ) -> Graph:
+        if not self._options.testbench_inputs:
+            return graph
+        if not any(value.type.dim_params for value in graph.values):
+            if not any(value.type.dim_params for value in graph.inputs):
+                if not any(value.type.dim_params for value in graph.outputs):
+                    return graph
+        try:
+            import onnxruntime as ort
+        except Exception:
+            return graph
+        try:
+            model_with_outputs = onnx.ModelProto()
+            model_with_outputs.CopyFrom(model)
+            existing_outputs = {
+                output.name for output in model_with_outputs.graph.output
+            }
+            value_info_by_name = {
+                value_info.name: value_info
+                for value_info in model_with_outputs.graph.value_info
+            }
+            for value in graph.values:
+                if value.name in existing_outputs:
+                    continue
+                value_info = value_info_by_name.get(value.name)
+                if value_info is None:
+                    dims: list[int | str | None] = []
+                    for index, dim in enumerate(value.type.shape):
+                        dim_param = None
+                        if index < len(value.type.dim_params):
+                            dim_param = value.type.dim_params[index]
+                        dims.append(dim_param if dim_param else None)
+                    elem_type = _onnx_elem_type(value.type.dtype.np_dtype)
+                    value_info = onnx.helper.make_tensor_value_info(
+                        value.name, elem_type, dims
+                    )
+                model_with_outputs.graph.output.append(value_info)
+                existing_outputs.add(value.name)
+            output_names = [output.name for output in model_with_outputs.graph.output]
+            sess = ort.InferenceSession(
+                model_with_outputs.SerializeToString(),
+                providers=["CPUExecutionProvider"],
+            )
+            output_arrays = sess.run(None, self._options.testbench_inputs)
+        except Exception:
+            return graph
+
+        shapes_by_name: dict[str, tuple[int, ...]] = {
+            name: tuple(int(dim) for dim in array.shape)
+            for name, array in zip(output_names, output_arrays)
+        }
+        for name, array in self._options.testbench_inputs.items():
+            shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
+
+        def concretize_value(value: Value) -> Value:
+            shape = shapes_by_name.get(value.name)
+            if shape is None:
+                return value
+            return Value(
+                name=value.name,
+                type=TensorType(
+                    dtype=value.type.dtype,
+                    shape=shape,
+                    dim_params=(None,) * len(shape),
+                ),
+            )
+
+        return Graph(
+            inputs=tuple(concretize_value(value) for value in graph.inputs),
+            outputs=tuple(concretize_value(value) for value in graph.outputs),
+            nodes=graph.nodes,
+            initializers=graph.initializers,
+            values=tuple(concretize_value(value) for value in graph.values),
+        )
 
     def _validate_graph(self, graph: Graph) -> None:
         if not graph.outputs:
