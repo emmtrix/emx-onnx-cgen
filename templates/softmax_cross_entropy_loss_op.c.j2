@@ -15,12 +15,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             idx_t target_index = n_idx * d + d_idx;
             {{ target_c_type }} target_value = target_flat[target_index];
 {% if use_ignore_index %}
-            if ((int64_t)target_value == {{ ignore_index }}) {
-{% if reduction == "none" %}
-                output_flat[target_index] = {{ zero_literal }};
-{% endif %}
-                continue;
-            }
+            bool ignored = ((int64_t)target_value == {{ ignore_index }});
 {% endif %}
             idx_t class_index = (idx_t)target_value;
             idx_t base = (n_idx * c * d) + d_idx;
@@ -47,8 +42,26 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 }
             }
 {% else %}
+{% if use_ignore_index %}
+            if (ignored) {
+{% if reduction == "none" %}
+                output_flat[target_index] = {{ zero_literal }};
+{% endif %}
+                continue;
+            }
+{% endif %}
             {{ c_type }} log_prob_value = input_flat[base + class_index * d] - max_value - logsum;
             {{ c_type }} loss_value = -log_prob_value;
+{% endif %}
+{% if use_ignore_index %}
+{% if log_prob %}
+            if (ignored) {
+{% if reduction == "none" %}
+                output_flat[target_index] = {{ zero_literal }};
+{% endif %}
+                continue;
+            }
+{% endif %}
 {% endif %}
 {% if weight %}
             {{ c_type }} sample_weight = {{ weight }}[class_index];
@@ -70,7 +83,11 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     }
 {% if reduction == "mean" %}
 {% if weight or use_ignore_index %}
-    output_flat[0] = loss_sum / weight_sum;
+    if (weight_sum == {{ zero_literal }}) {
+        output_flat[0] = {{ zero_literal }};
+    } else {
+        output_flat[0] = loss_sum / weight_sum;
+    }
 {% else %}
     output_flat[0] = loss_sum / ({{ n }} * {{ d }});
 {% endif %}
