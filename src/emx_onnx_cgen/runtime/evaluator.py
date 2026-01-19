@@ -53,6 +53,7 @@ from ..lowering.reduce import (
     resolve_reduce_axes,
 )
 from ..lowering.reshape import lower_reshape
+from ..lowering.scatter_nd import lower_scatternd
 from ..lowering.slice import _normalize_slices
 from ..lowering.shape import lower_shape
 from ..lowering.size import lower_size
@@ -273,6 +274,53 @@ def _eval_pad(evaluator: Evaluator, node: Node) -> None:
         mode=op.mode,
         **pad_kwargs,
     )
+
+
+@register_evaluator("ScatterND")
+def _eval_scatternd(evaluator: Evaluator, node: Node) -> None:
+    op = lower_scatternd(evaluator.graph, node)
+    data = evaluator.values[op.data]
+    indices = evaluator.values[op.indices]
+    updates = evaluator.values[op.updates]
+    output = np.array(data, copy=True)
+    index_depth = op.indices_shape[-1]
+    update_indices_shape = op.indices_shape[:-1]
+    update_count = int(np.prod(update_indices_shape)) if update_indices_shape else 1
+    flat_indices = indices.astype(np.int64, copy=False).reshape(
+        update_count, index_depth
+    )
+    tail_shape = op.data_shape[index_depth:]
+    updates_reshaped = updates.reshape((update_count,) + tail_shape)
+    for index, index_values in enumerate(flat_indices):
+        output_index: list[int | slice] = []
+        for axis, value in enumerate(index_values):
+            axis_size = op.data_shape[axis]
+            idx = int(value)
+            if idx < 0:
+                idx += axis_size
+            if idx < 0 or idx >= axis_size:
+                raise UnsupportedOpError(
+                    "ScatterND indices must be within data bounds"
+                )
+            output_index.append(idx)
+        output_index.extend([slice(None)] * len(tail_shape))
+        target = tuple(output_index)
+        update_value = updates_reshaped[index]
+        if op.reduction == "none":
+            output[target] = update_value
+        elif op.reduction == "add":
+            output[target] = output[target] + update_value
+        elif op.reduction == "mul":
+            output[target] = output[target] * update_value
+        elif op.reduction == "min":
+            output[target] = np.minimum(output[target], update_value)
+        elif op.reduction == "max":
+            output[target] = np.maximum(output[target], update_value)
+        else:
+            raise UnsupportedOpError(
+                f"Unsupported ScatterND reduction {op.reduction}"
+            )
+    evaluator.values[op.output] = output
 
 
 @register_evaluator("Celu")

@@ -42,7 +42,6 @@
 | Unsupported op Col2Im | 5 | ██ |
 | Unsupported op DequantizeLinear | 5 | ██ |
 | Unsupported op If | 5 | ██ |
-| Unsupported op ScatterND | 5 | ██ |
 | Xor expects identical input/output shapes | 5 | ██ |
 | Sum expects identical input/output shapes | 4 | █ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | █ |
@@ -156,9 +155,8 @@ Mismatched elements: 2 / 6 (33.3%)
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Unsupported op ScatterND | 4 | ██████████████████████████████ |
-| ONNX Runtime failed to run | 2 | ███████████████ |
-| Unsupported LSTM direction b'*' | 2 | ███████████████ |
-| Unsupported op QLinearAdd | 2 | ███████████████ |
-| Unsupported op QLinearMul | 2 | ███████████████ |
-| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | ████████ |
+| ONNX Runtime failed to run | 2 | ██████████████████████████████ |
+| Unsupported LSTM direction b'*' | 2 | ██████████████████████████████ |
+| Unsupported op QLinearAdd | 2 | ██████████████████████████████ |
+| Unsupported op QLinearMul | 2 | ██████████████████████████████ |
+| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | ███████████████ |

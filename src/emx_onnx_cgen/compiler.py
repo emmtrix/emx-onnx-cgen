@@ -10,6 +10,7 @@ import onnx
 
 from shared.scalar_types import ScalarType
 
+from .onnxruntime_utils import make_deterministic_session_options
 from .codegen.c_emitter import (
     AttentionOp,
     AveragePoolOp,
@@ -34,6 +35,7 @@ from .codegen.c_emitter import (
     GemmOp,
     GatherOp,
     GatherElementsOp,
+    ScatterNDOp,
     ExpandOp,
     RangeOp,
     LpPoolOp,
@@ -91,6 +93,7 @@ from .lowering import cumsum as _cumsum  # noqa: F401
 from .lowering.flatten import lower_flatten
 from .lowering.gather import lower_gather
 from .lowering.gather_elements import lower_gather_elements
+from .lowering import scatter_nd as _scatter_nd  # noqa: F401
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
@@ -348,8 +351,10 @@ class Compiler:
                 model_with_outputs.graph.output.append(value_info)
                 existing_outputs.add(value.name)
             output_names = [output.name for output in model_with_outputs.graph.output]
+            sess_options = make_deterministic_session_options(ort)
             sess = ort.InferenceSession(
                 model_with_outputs.SerializeToString(),
+                sess_options=sess_options,
                 providers=["CPUExecutionProvider"],
             )
             output_arrays = sess.run(None, self._options.testbench_inputs)
@@ -457,6 +462,7 @@ class Compiler:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | ScatterNDOp
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
