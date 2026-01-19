@@ -74,6 +74,20 @@ pytest -n auto -q
 
 When reporting executed tests, include the test duration in your feedback.
 
+### Verification (single ONNX model)
+
+To reproduce verification for an ONNX model, use the expectation entry as the
+source of truth for CLI arguments:
+
+1. Locate the model's expected error JSON in `tests/expected_errors/` (file
+   names are the repo-relative path with `/` replaced by `__`).
+2. Read the `command_line` field to capture the exact CLI arguments.
+3. Run verification by invoking the CLI with the recorded command line:
+
+```bash
+PYTHONPATH=src python -m emx_onnx_cgen.cli <command_line from JSON>
+```
+
 ### Golden reference updates
 
 Golden tests compare generated code against reference files. To refresh references
