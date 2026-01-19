@@ -66,7 +66,7 @@ Supported operators: 133 / 198
 | GRU | ❌ |
 | Gather | ✅ |
 | GatherElements | ✅ |
-| GatherND | ❌ |
+| GatherND | ✅ |
 | Gelu | ✅ |
 | Gemm | ✅ |
 | GlobalAveragePool | ✅ |

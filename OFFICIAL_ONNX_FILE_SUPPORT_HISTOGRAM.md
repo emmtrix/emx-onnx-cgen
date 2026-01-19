@@ -60,7 +60,6 @@
 | Min expects identical input/output shapes | 3 | █ |
 | Unsupported op Bernoulli | 3 | █ |
 | Unsupported op DynamicQuantizeLinear | 3 | █ |
-| Unsupported op GatherND | 3 | █ |
 | Unsupported op Loop | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
 | Unsupported op RandomUniformLike | 3 | █ |
