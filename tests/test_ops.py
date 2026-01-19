@@ -1251,6 +1251,36 @@ def _make_size_model(*, input_shape: list[int], opset: int = 13) -> onnx.ModelPr
     return model
 
 
+def _make_nonzero_model(
+    *,
+    input_shape: list[int],
+    output_shape: list[int],
+    input_dtype: int,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "input", input_dtype, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "output", TensorProto.INT64, output_shape
+    )
+    node = helper.make_node("NonZero", inputs=["input"], outputs=[output.name])
+    graph = helper.make_graph(
+        [node],
+        "nonzero_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_slice_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     output_shape = [2, 3, 1]
@@ -3293,6 +3323,21 @@ def test_size_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+def test_nonzero_matches_onnxruntime() -> None:
+    model = _make_nonzero_model(
+        input_shape=[2, 2],
+        output_shape=[2, 3],
+        input_dtype=TensorProto.FLOAT,
+    )
+    inputs = {"input": np.array([[1.0, 0.0], [2.0, 3.0]], dtype=np.float32)}
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_output = session.run(None, inputs)[0]
+    compiled = Compiler().run(model, inputs)["output"]
+    np.testing.assert_array_equal(compiled, ort_output)
+
+
 def test_expand_matches_onnxruntime() -> None:
     model = _make_expand_model(
         input_shape=[3, 1],
@@ -3433,6 +3478,19 @@ def test_size_run() -> None:
     outputs = compiler.run(model, {"in0": data})
     expected = np.array(data.size, dtype=np.int64)
     np.testing.assert_array_equal(outputs["out"], expected)
+
+
+def test_nonzero_run_matches_numpy() -> None:
+    model = _make_nonzero_model(
+        input_shape=[2, 2],
+        output_shape=[2, 3],
+        input_dtype=TensorProto.FLOAT,
+    )
+    compiler = Compiler()
+    data = np.array([[1.0, 0.0], [2.0, 3.0]], dtype=np.float32)
+    outputs = compiler.run(model, {"input": data})
+    expected = np.stack(np.nonzero(data), axis=0).astype(np.int64)
+    np.testing.assert_array_equal(outputs["output"], expected)
 
 
 def test_constant_of_shape_run() -> None:

@@ -112,7 +112,7 @@ Supported operators: 133 / 198
 | Neg | ✅ |
 | NegativeLogLikelihoodLoss | ✅ |
 | NonMaxSuppression | ❌ |
-| NonZero | ❌ |
+| NonZero | ✅ |
 | Not | ✅ |
 | OneHot | ❌ |
 | OptionalGetElement | ❌ |

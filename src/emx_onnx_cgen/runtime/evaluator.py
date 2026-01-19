@@ -34,6 +34,7 @@ from ..lowering.global_max_pool import lower_global_max_pool
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from ..lowering.nonzero import lower_nonzero
 from ..lowering.pad import lower_pad
 from ..lowering.expand import lower_expand
 from ..lowering.range import lower_range
@@ -1595,6 +1596,16 @@ def _eval_shape(evaluator: Evaluator, node: Node) -> None:
 def _eval_size(evaluator: Evaluator, node: Node) -> None:
     op = lower_size(evaluator.graph, node)
     evaluator.values[op.output] = np.array(op.value, dtype=np.int64)
+
+
+@register_evaluator("NonZero")
+def _eval_nonzero(evaluator: Evaluator, node: Node) -> None:
+    op = lower_nonzero(evaluator.graph, node)
+    values = evaluator.values[op.input0]
+    indices = np.nonzero(values)
+    evaluator.values[op.output] = np.stack(indices, axis=0).astype(
+        np.int64, copy=False
+    )
 
 
 @register_evaluator("Expand")

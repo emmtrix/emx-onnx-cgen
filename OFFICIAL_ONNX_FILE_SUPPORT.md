@@ -1042,7 +1042,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_batches/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_classes/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonzero_example/model.onnx | ❌ | Unsupported op NonZero |
+| onnx-org/onnx/backend/test/data/node/test_nonzero_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_4d/model.onnx | ✅ | OK (max ULP 0) |

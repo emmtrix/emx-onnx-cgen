@@ -139,7 +139,6 @@ Mismatched elements: 2 / 6 (33.3%)
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
-| Unsupported op NonZero | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
 | Unsupported op QLinearConv | 1 | █ |
 | Unsupported op Upsample | 1 | █ |

@@ -986,6 +986,16 @@ class SizeOp:
 
 
 @dataclass(frozen=True)
+class NonZeroOp:
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class ExpandOp:
     input0: str
     output: str
@@ -1134,6 +1144,7 @@ class LoweredModel:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -1307,6 +1318,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -1453,6 +1465,8 @@ class CEmitter:
         if isinstance(op, ShapeOp):
             return (op.input0, op.output)
         if isinstance(op, SizeOp):
+            return (op.input0, op.output)
+        if isinstance(op, NonZeroOp):
             return (op.input0, op.output)
         if isinstance(op, ExpandOp):
             return (op.input0, op.output)
@@ -1616,6 +1630,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -1673,6 +1688,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -2463,6 +2479,15 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, NonZeroOp):
+            return NonZeroOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, ExpandOp):
             return ExpandOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2647,6 +2672,7 @@ class CEmitter:
                 ),
                 "shape": self._env.get_template("shape_op.c.j2"),
                 "size": self._env.get_template("size_op.c.j2"),
+                "nonzero": self._env.get_template("nonzero_op.c.j2"),
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
@@ -2743,6 +2769,7 @@ class CEmitter:
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         size_template = templates["size"]
+        nonzero_template = templates["nonzero"]
         expand_template = templates["expand"]
         cumsum_template = templates["cumsum"]
         range_template = templates["range"]
@@ -2824,6 +2851,7 @@ class CEmitter:
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
+                nonzero_template=nonzero_template,
                 expand_template=expand_template,
                 cumsum_template=cumsum_template,
                 range_template=range_template,
@@ -3459,6 +3487,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | NonZeroOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -3684,6 +3713,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | NonZeroOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -3840,6 +3870,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | NonZeroOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -3931,6 +3962,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | NonZeroOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -4038,6 +4070,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -4218,6 +4251,9 @@ class CEmitter:
         if isinstance(op, SizeOp):
             args.extend([op.input0, op.output])
             return ", ".join(args)
+        if isinstance(op, NonZeroOp):
+            args.extend([op.input0, op.output])
+            return ", ".join(args)
         if isinstance(op, ExpandOp):
             args.extend([op.input0, op.output])
             return ", ".join(args)
@@ -4392,6 +4428,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -4448,6 +4485,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -5093,6 +5131,15 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, NonZeroOp):
+            return NonZeroOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, ExpandOp):
             return ExpandOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5455,6 +5502,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -5520,6 +5568,7 @@ class CEmitter:
         constant_of_shape_template,
         shape_template,
         size_template,
+        nonzero_template,
         expand_template,
         cumsum_template,
         range_template,
@@ -8709,6 +8758,47 @@ class CEmitter:
                 value=CEmitter._format_literal(op.dtype, op.value),
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, NonZeroOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_dim_names = _dim_names_for(op.input0)
+            output_dim_names = _dim_names_for(op.output)
+            input_shape = CEmitter._shape_dim_exprs(
+                op.input_shape, input_dim_names
+            )
+            loop_vars = CEmitter._loop_vars(op.input_shape)
+            input_suffix = self._param_array_suffix(
+                op.input_shape, input_dim_names
+            )
+            output_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            input_expr = f"{params['input0']}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            rendered = nonzero_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=op.input_dtype.c_type,
+                output_c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                input_shape=input_shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                zero_literal=op.input_dtype.zero_literal,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ExpandOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -9300,6 +9390,8 @@ class CEmitter:
             return tuple(inputs)
         if isinstance(op, CastOp):
             return ((op.input0, op.shape),)
+        if isinstance(op, NonZeroOp):
+            return ((op.input0, op.input_shape),)
         if isinstance(op, QuantizeLinearOp):
             scale_shape = (
                 ()
@@ -9390,6 +9482,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | NonZeroOp
             | ExpandOp
             | RangeOp
             | SplitOp
@@ -9458,6 +9551,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | RangeOp
         | SplitOp,
@@ -9617,6 +9711,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -9721,6 +9816,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, SizeOp):
             return op.output_shape
+        if isinstance(op, NonZeroOp):
+            return op.output_shape
         if isinstance(op, ExpandOp):
             return op.output_shape
         if isinstance(op, CumSumOp):
@@ -9776,6 +9873,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | NonZeroOp
         | ExpandOp
         | CumSumOp
         | RangeOp
