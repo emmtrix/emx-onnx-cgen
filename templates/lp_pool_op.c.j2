@@ -10,11 +10,10 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
                             const idx_t in_h = h_start + kh;
                             const idx_t in_w = w_start + kw;
-                            if (in_h < 0 || in_h >= {{ in_h }} || in_w < 0 || in_w >= {{ in_w }}) {
-                                continue;
+                            if (in_h >= 0 && in_h < {{ in_h }} && in_w >= 0 && in_w < {{ in_w }}) {
+                                {{ c_type }} value = {{ input0 }}[n][c][in_h][in_w];
+                                acc += {{ pow_fn }}({{ abs_fn }}(value), ({{ c_type }}){{ p }});
                             }
-                            {{ c_type }} value = {{ input0 }}[n][c][in_h][in_w];
-                            acc += {{ pow_fn }}({{ abs_fn }}(value), ({{ c_type }}){{ p }});
                         }
                     }
                     {{ output }}[n][c][oh][ow] = {{ pow_fn }}(acc, ({{ c_type }})1.0 / ({{ c_type }}){{ p }});

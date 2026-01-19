@@ -267,10 +267,11 @@ def _eval_pad(evaluator: Evaluator, node: Node) -> None:
             pads_begin = np.zeros(rank, dtype=np.int64)
             pads_end = np.zeros(rank, dtype=np.int64)
             for axis, pad_index in enumerate(op.pads_axis_map):
-                if pad_index is None:
-                    continue
-                pads_begin[axis] = int(pads_values[pad_index])
-                pads_end[axis] = int(pads_values[pad_index + axis_count])
+                if pad_index is not None:
+                    pads_begin[axis] = int(pads_values[pad_index])
+                    pads_end[axis] = int(
+                        pads_values[pad_index + axis_count]
+                    )
             pad_width = tuple(
                 (int(pads_begin[index]), int(pads_end[index]))
                 for index in range(rank)
@@ -1346,12 +1347,12 @@ def _eval_lp_pool(evaluator: Evaluator, node: Node) -> None:
                         for kw in range(op.kernel_w):
                             in_h = h_start + kh
                             in_w = w_start + kw
-                            if in_h < 0 or in_h >= op.in_h:
-                                continue
-                            if in_w < 0 or in_w >= op.in_w:
-                                continue
-                            value = data[(n, c, in_h, in_w)]
-                            acc += abs(value) ** op.p
+                            if (
+                                0 <= in_h < op.in_h
+                                and 0 <= in_w < op.in_w
+                            ):
+                                value = data[(n, c, in_h, in_w)]
+                                acc += abs(value) ** op.p
                     output[(n, c, out_h, out_w)] = acc ** (1.0 / op.p)
     evaluator.values[op.output] = output
 
@@ -2026,9 +2027,8 @@ def _matmul_batch_broadcastable(
     left_padded = (1,) * (max_rank - len(left)) + left
     right_padded = (1,) * (max_rank - len(right)) + right
     for left_dim, right_dim in zip(left_padded, right_padded):
-        if left_dim == right_dim or left_dim == 1 or right_dim == 1:
-            continue
-        return False
+        if not (left_dim == right_dim or left_dim == 1 or right_dim == 1):
+            return False
     return True
 
 
@@ -2315,11 +2315,10 @@ def _apply_conv(
                                     valid = False
                                     break
                                 in_index.append(in_dim)
-                            if not valid:
-                                continue
-                            acc += data[(n, ic_global, *in_index)] * weights[
-                                (oc_global, ic, *kernel_index)
-                            ]
+                            if valid:
+                                acc += data[(n, ic_global, *in_index)] * weights[
+                                    (oc_global, ic, *kernel_index)
+                                ]
                     output[(n, oc_global, *out_index)] = acc
     return output
 
@@ -2370,11 +2369,10 @@ def _apply_conv_transpose(
                                     valid = False
                                     break
                                 out_index.append(out_dim)
-                            if not valid:
-                                continue
-                            output[(n, oc_global, *out_index)] += value * weights[
-                                (ic_global, oc, *kernel_index)
-                            ]
+                            if valid:
+                                output[(n, oc_global, *out_index)] += (
+                                    value * weights[(ic_global, oc, *kernel_index)]
+                                )
     return output
 
 
@@ -2413,15 +2411,15 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                         if ih < 0 or ih >= op.in_h:
                             if op.count_include_pad:
                                 count += op.kernel_w
-                            continue
-                        for kw in range(op.kernel_w):
-                            iw = ow * op.stride_w + kw - op.pad_left
-                            if iw < 0 or iw >= op.in_w:
-                                if op.count_include_pad:
+                        else:
+                            for kw in range(op.kernel_w):
+                                iw = ow * op.stride_w + kw - op.pad_left
+                                if iw < 0 or iw >= op.in_w:
+                                    if op.count_include_pad:
+                                        count += 1
+                                else:
+                                    acc += data[n, c, ih, iw]
                                     count += 1
-                                continue
-                            acc += data[n, c, ih, iw]
-                            count += 1
                     output[n, c, oh, ow] = 0.0 if count == 0 else acc / float(count)
     return output
 
@@ -2470,25 +2468,30 @@ def _apply_maxpool(
                             valid = False
                             break
                         in_index.append(idx)
-                    if not valid:
-                        continue
-                    value = data[(n, c, *in_index)]
-                    if value > max_value or not has_value:
-                        max_value = value
-                        has_value = True
-                        if return_indices:
-                            linear_index = n * spec.channels + c
-                            if spec.storage_order == 0:
-                                for idx, size in zip(in_index, spec.in_spatial):
-                                    linear_index = linear_index * size + idx
-                            else:
-                                spatial_index = 0
-                                spatial_stride = 1
-                                for idx, size in zip(in_index, spec.in_spatial):
-                                    spatial_index += idx * spatial_stride
-                                    spatial_stride *= size
-                                linear_index = linear_index * spatial_stride + spatial_index
-                            max_index = linear_index
+                    if valid:
+                        value = data[(n, c, *in_index)]
+                        if value > max_value or not has_value:
+                            max_value = value
+                            has_value = True
+                            if return_indices:
+                                linear_index = n * spec.channels + c
+                                if spec.storage_order == 0:
+                                    for idx, size in zip(
+                                        in_index, spec.in_spatial
+                                    ):
+                                        linear_index = linear_index * size + idx
+                                else:
+                                    spatial_index = 0
+                                    spatial_stride = 1
+                                    for idx, size in zip(
+                                        in_index, spec.in_spatial
+                                    ):
+                                        spatial_index += idx * spatial_stride
+                                        spatial_stride *= size
+                                    linear_index = (
+                                        linear_index * spatial_stride + spatial_index
+                                    )
+                                max_index = linear_index
                 output[(n, c, *out_index)] = max_value
                 if return_indices and indices is not None:
                     indices[(n, c, *out_index)] = max_index

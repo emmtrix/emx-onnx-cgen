@@ -131,11 +131,11 @@ def lower_unsqueeze(graph: Graph, node: Node) -> ReshapeOp:
         for dim in output_shape:
             if input_index < len(input_shape) and dim == input_shape[input_index]:
                 input_index += 1
-                continue
-            if dim != 1:
-                raise ShapeInferenceError(
-                    "Unsqueeze output shape must insert ones only"
-                )
+            else:
+                if dim != 1:
+                    raise ShapeInferenceError(
+                        "Unsqueeze output shape must insert ones only"
+                    )
         if input_index != len(input_shape):
             raise ShapeInferenceError(
                 "Unsqueeze output shape must contain input shape in order"

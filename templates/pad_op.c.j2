@@ -13,10 +13,9 @@ for (idx_t axis_index = 0; axis_index < {{ axes_length }}; ++axis_index) {
     if (axis < 0) {
         axis += {{ output_shape|length }};
     }
-    if (axis < 0 || axis >= (ptrdiff_t){{ output_shape|length }}) {
-        continue;
+    if (axis >= 0 && axis < (ptrdiff_t){{ output_shape|length }}) {
+        pad_begin[axis] = {% if pads_input %}{{ pads_input }}[axis_index]{% else %}pad_values[axis_index]{% endif %};
     }
-    pad_begin[axis] = {% if pads_input %}{{ pads_input }}[axis_index]{% else %}pad_values[axis_index]{% endif %};
 }
 {% endif %}
 {% for dim in output_shape %}
@@ -72,9 +71,9 @@ if (pad_in_bounds) {
 }
 {% endfor %}
 if (!pad_in_bounds) {
-    continue;
+} else {
+    {{ output }}{% for var in out_loop_vars %}[{{ var }}]{% endfor %} = {{ input0_flat }}[{{ base_index }}];
 }
-{{ output }}{% for var in out_loop_vars %}[{{ var }}]{% endfor %} = {{ input0_flat }}[{{ base_index }}];
 {% for _ in output_shape %}
 }
 {% endfor %}

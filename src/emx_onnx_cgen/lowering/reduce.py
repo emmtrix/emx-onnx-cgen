@@ -261,13 +261,12 @@ def _infer_axes_from_shapes(
             if out_dim == in_dim:
                 if in_dim == 1:
                     return None
-                continue
-            if out_dim == 1 and in_dim != 1:
+            elif out_dim == 1 and in_dim != 1:
                 axes.append(axis)
-                continue
-            raise ShapeInferenceError(
-                f"{node.op_type} output shape does not match input shape"
-            )
+            else:
+                raise ShapeInferenceError(
+                    f"{node.op_type} output shape does not match input shape"
+                )
         return tuple(axes)
     if len(output_shape) > len(input_shape):
         return None
