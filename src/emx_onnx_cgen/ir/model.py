@@ -44,6 +44,7 @@ class Graph:
     nodes: tuple[Node, ...]
     initializers: tuple[Initializer, ...]
     values: tuple[Value, ...] = ()
+    opset_imports: tuple[tuple[str, int], ...] = ()
 
     def find_value(self, name: str) -> Value:
         for value in self.inputs + self.outputs + self.values:

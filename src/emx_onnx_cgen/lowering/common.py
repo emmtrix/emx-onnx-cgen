@@ -14,6 +14,17 @@ def ensure_supported_dtype(dtype: ScalarType) -> ScalarType:
     return dtype
 
 
+def onnx_opset_version(graph: Graph, domain: str = "") -> int | None:
+    if domain in {"", "ai.onnx"}:
+        domains = {"", "ai.onnx"}
+    else:
+        domains = {domain}
+    for opset_domain, version in graph.opset_imports:
+        if opset_domain in domains:
+            return int(version)
+    return None
+
+
 def value_dtype(graph: Graph, name: str, node: Node | None = None) -> ScalarType:
     try:
         value = graph.find_value(name)

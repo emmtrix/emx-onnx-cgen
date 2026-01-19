@@ -382,6 +382,7 @@ class Compiler:
             nodes=graph.nodes,
             initializers=graph.initializers,
             values=tuple(concretize_value(value) for value in graph.values),
+            opset_imports=graph.opset_imports,
         )
 
     def _validate_graph(self, graph: Graph) -> None:

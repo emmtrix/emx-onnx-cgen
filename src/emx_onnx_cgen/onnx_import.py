@@ -212,6 +212,9 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)
     )
+    opset_imports = tuple(
+        (opset.domain, opset.version) for opset in model.opset_import
+    )
     try:
         model = shape_inference.infer_shapes(model, data_prop=True)
     except Exception as exc:  # pragma: no cover - onnx inference errors
@@ -258,4 +261,5 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
         nodes=nodes,
         initializers=initializers,
         values=values,
+        opset_imports=opset_imports,
     )

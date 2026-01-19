@@ -6,6 +6,7 @@ from ..codegen.c_emitter import HardmaxOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype as _node_dtype
+from .common import onnx_opset_version as _onnx_opset_version
 from .common import shape_product as _shape_product
 from .common import value_shape as _value_shape
 from .registry import register_lowering
@@ -25,8 +26,11 @@ def lower_hardmax(graph: Graph, node: Node) -> HardmaxOp:
     input_shape = _value_shape(graph, node.inputs[0], node)
     output_shape = _value_shape(graph, node.outputs[0], node)
     ensure_output_shape_matches_input(node, input_shape, output_shape)
+    opset_version = _onnx_opset_version(graph)
+    default_axis = 1 if opset_version is not None and opset_version < 13 else -1
+    axis_attr = node.attrs.get("axis", default_axis)
     axis = _normalize_axis(
-        int(node.attrs.get("axis", -1)),
+        int(axis_attr),
         input_shape,
         node,
     )
