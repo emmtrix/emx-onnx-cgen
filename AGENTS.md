@@ -353,3 +353,4 @@ Agents:
   * filesystem I/O
   * network I/O
   * dynamic loading
+  * `memset` or `memcpy`
