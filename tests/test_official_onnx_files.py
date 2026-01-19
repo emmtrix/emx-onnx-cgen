@@ -26,6 +26,7 @@ class OnnxFileExpectation:
     path: str
     error: str
     command_line: str = ""
+    operators: list[str] | None = None
 
 
 def _repo_root() -> Path:
@@ -124,9 +125,11 @@ def _read_expectation_file(
     data = json.loads(path.read_text(encoding="utf-8"))
     error = ""
     command_line = ""
+    operators: list[str] | None = None
     if isinstance(data, dict):
         error = data.get("error", "")
         command_line = data.get("command_line", "")
+        operators = data.get("operators")
     elif isinstance(data, list):
         if data and isinstance(data[0], str) and data[0].endswith(".onnx"):
             if len(data) >= 2:
@@ -144,6 +147,7 @@ def _read_expectation_file(
         path=fallback_path,
         error=error,
         command_line=command_line,
+        operators=operators,
     )
 
 
@@ -178,12 +182,15 @@ def _write_expectation_file(
         repo_relative_path
     )
     expectation_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "error": expectation.error,
+        "command_line": expectation.command_line,
+    }
+    if expectation.operators is not None:
+        payload["operators"] = expectation.operators
     expectation_path.write_text(
         json.dumps(
-            {
-                "error": expectation.error,
-                "command_line": expectation.command_line,
-            },
+            payload,
             indent=2,
         )
         + "\n",
@@ -355,6 +362,7 @@ def test_official_onnx_expected_errors(
         path=rel_path,
         error=actual_error,
         command_line=cli_result.command_line,
+        operators=cli_result.operators,
     )
     if os.getenv("UPDATE_REFS"):
         _write_expectation_file(
@@ -424,6 +432,7 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         path=rel_path.as_posix(),
         error=actual_error,
         command_line=cli_result.command_line,
+        operators=cli_result.operators,
     )
     if os.getenv("UPDATE_REFS"):
         _write_expectation_file(
