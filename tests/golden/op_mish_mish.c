@@ -20,10 +20,24 @@
  */
 
 #include <stdint.h>
+#include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+
+static inline float ref_scalar_f32_mish(float a) {
+    if (a > 20.0f) {
+        return a;
+    }
+    if (a < -20.0f) {
+        float exp_a = expf(a);
+        return a * exp_a;
+    }
+    float softplus = log1pf(expf(a));
+    return a * tanhf(softplus);
+}
 
 /*
  * Node 0:
@@ -36,7 +50,7 @@
 static inline void node0_mish(const float input0[restrict 2][3], float output[restrict 2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
-            output[i0][i1] = mish(input0[i0][i1]);
+            output[i0][i1] = ref_scalar_f32_mish(input0[i0][i1]);
         }
     }
 }

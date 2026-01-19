@@ -47,6 +47,8 @@ static const int64_t weight1_axis[1] = {
  *   reverse: 0
  */
 static inline void node0_cumsum(const float input0[restrict 2][3], float output[restrict 2][3]) {
+    const float *input_data = (const float *)input0;
+    float *output_data = (float *)output;
     const idx_t dims[2] = { 2, 3 };
     int axis = 1;
     if (axis < 0) {
@@ -70,8 +72,8 @@ static inline void node0_cumsum(const float input0[restrict 2][3], float output[
             idx_t base = (outer_index * axis_dim * inner) + inner_index;
             for (idx_t axis_index = 0; axis_index < axis_dim; ++axis_index) {
                 idx_t offset = base + axis_index * inner;
-                acc += input0[offset];
-                output[offset] = acc;
+                acc += input_data[offset];
+                output_data[offset] = acc;
             }
         }
     }

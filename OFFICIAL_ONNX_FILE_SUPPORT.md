@@ -1,7 +1,6 @@
 # Official ONNX file support
 
-Support 1038 / 1802 official ONNX files.
-Support 1035 / 1802 official ONNX files.
+Support 1077 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -550,10 +549,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_cumsum_1d_int32_exclusive/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cumsum_1d_reverse/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cumsum_1d_reverse_exclusive/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_axis_0/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_axis_1/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_int32/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_negative_axis/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_axis_0/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_axis_1/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_int32/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cumsum_2d_negative_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_deform_conv_with_mask_bias/model.onnx | ❌ | Unsupported op DeformConv |
 | onnx-org/onnx/backend/test/data/node/test_deform_conv_with_multiple_offset_groups/model.onnx | ❌ | Unsupported op DeformConv |
 | onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -966,7 +965,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_min_uint32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_uint64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_uint8/model.onnx | ✅ |  |
-| onnx-org/onnx/backend/test/data/node/test_mish/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_mish/model.onnx | ✅ | OK (max ULP 7) |
 | onnx-org/onnx/backend/test/data/node/test_mish_expanded/model.onnx | ✅ | OK (max ULP 7) |
 | onnx-org/onnx/backend/test/data/node/test_mod_broadcast/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mod_int64_fmod/model.onnx | ✅ | OK (max ULP 0) |
@@ -1376,17 +1375,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_scatternd_max/model.onnx | ❌ | Unsupported op ScatterND |
 | onnx-org/onnx/backend/test/data/node/test_scatternd_min/model.onnx | ❌ | Unsupported op ScatterND |
 | onnx-org/onnx/backend/test/data/node/test_scatternd_multiply/model.onnx | ❌ | Unsupported op ScatterND |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii_log_prob_expanded/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob_expanded/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ | OK (max ULP 24) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ✅ | OK (max ULP 24) |
@@ -1404,31 +1403,31 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_log_prob_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_3d/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_3d_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_3d_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_3d_log_prob_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_4d/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_4d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_4d_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_4d_log_prob/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_4d_log_prob_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_no_weight_ii_log_prob_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_3d/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_3d_expanded/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_3d_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_3d_log_prob_expanded/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_4d/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_4d/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_4d_expanded/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_4d_log_prob/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_4d_log_prob_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_log_prob/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_log_prob_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_log_prob_expanded/model.onnx | ✅ | OK (max ULP 0) |
@@ -1629,22 +1628,22 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_transpose_all_permutations_5/model.onnx | ❌ | ONNX Runtime failed to run onnx-org/onnx/backend/test/data/node/test_transpose_all_permutations_5/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:181 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 13, max supported IR version: 11 |
 | onnx-org/onnx/backend/test/data/node/test_transpose_default/model.onnx | ❌ | ONNX Runtime failed to run onnx-org/onnx/backend/test/data/node/test_transpose_default/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:181 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 13, max supported IR version: 11 |
 | onnx-org/onnx/backend/test/data/node/test_tril/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tril_neg/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_tril_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tril_one_row_neg/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tril_out_neg/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_tril_out_pos/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_tril_pos/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_tril_out_neg/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_tril_out_pos/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_tril_pos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tril_square/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tril_square_neg/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_tril_square_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tril_zero/model.onnx | ❌ | Output shape must be fully defined |
 | onnx-org/onnx/backend/test/data/node/test_triu/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_triu_neg/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_triu_one_row/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_triu_out_neg_out/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_triu_out_pos/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_triu_pos/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_triu_neg/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_triu_one_row/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_triu_out_neg_out/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_triu_out_pos/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_triu_pos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_square/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_triu_square_neg/model.onnx | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_triu_square_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx | ❌ | Output shape must be fully defined |
 | onnx-org/onnx/backend/test/data/node/test_unique_length_1/model.onnx | ❌ | Unsupported op Unique |
 | onnx-org/onnx/backend/test/data/node/test_unique_not_sorted_without_axis/model.onnx | ❌ | Unsupported op Unique |
