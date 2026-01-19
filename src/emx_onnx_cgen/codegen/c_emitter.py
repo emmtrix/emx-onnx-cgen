@@ -1118,6 +1118,7 @@ class CEmitter:
         *,
         restrict_arrays: bool = True,
         truncate_weights_after: int | None = None,
+        large_temp_threshold_bytes: int = 1024,
     ) -> None:
         self._env = Environment(
             loader=FileSystemLoader(str(template_dir)),
@@ -1129,6 +1130,9 @@ class CEmitter:
         if truncate_weights_after is not None and truncate_weights_after < 1:
             raise CodegenError("truncate_weights_after must be >= 1")
         self._truncate_weights_after = truncate_weights_after
+        if large_temp_threshold_bytes < 0:
+            raise CodegenError("large_temp_threshold_bytes must be >= 0")
+        self._large_temp_threshold_bytes = large_temp_threshold_bytes
 
     @staticmethod
     def _sanitize_identifier(name: str) -> str:
@@ -3852,8 +3856,14 @@ class CEmitter:
         lines = [f"void {model.name}({signature}) {{"]
         for temp in temp_buffers:
             c_type = temp.dtype.c_type
+            storage = (
+                "static "
+                if self._temp_buffer_size_bytes(temp)
+                > self._large_temp_threshold_bytes
+                else ""
+            )
             lines.append(
-                f"    {c_type} {temp.name}{self._array_suffix(temp.shape)};"
+                f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape)};"
             )
         for index, op in enumerate(resolved_ops):
             op_name = self._op_function_name(model, index)
@@ -3861,6 +3871,13 @@ class CEmitter:
             lines.append(f"    {op_name}({call});")
         lines.append("}")
         return "\n".join(lines)
+
+    @staticmethod
+    def _temp_buffer_size_bytes(temp: TempBuffer) -> int:
+        element_count = 1
+        for dim in temp.shape:
+            element_count *= dim
+        return element_count * temp.dtype.np_dtype.itemsize
 
     @staticmethod
     def _build_op_call(

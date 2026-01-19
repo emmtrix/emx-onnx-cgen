@@ -131,6 +131,29 @@ def _make_mul_add_relu_model() -> onnx.ModelProto:
     return model
 
 
+def _make_large_temp_model() -> onnx.ModelProto:
+    shape = [1, 257]
+    input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, shape)
+    input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, shape)
+    add_node = helper.make_node("Add", inputs=["a", "b"], outputs=["tmp"])
+    relu_node = helper.make_node("Relu", inputs=["tmp"], outputs=["out"])
+    graph = helper.make_graph(
+        [add_node, relu_node],
+        "large_temp_graph",
+        [input_a, input_b],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_tanh_model() -> onnx.ModelProto:
     input_x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3])
     output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
@@ -400,6 +423,21 @@ def test_codegen_golden_mul_add_relu() -> None:
     compiler = Compiler()
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "mul_add_relu_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_large_temp_static() -> None:
+    model = _make_large_temp_model()
+    compiler = Compiler(
+        CompilerOptions(
+            template_dir=Path("templates"),
+            model_name="large_temp_static_model",
+        )
+    )
+    generated = compiler.compile(model)
+    golden_path = (
+        Path(__file__).parent / "golden" / "large_temp_static_model.c"
+    )
     assert_golden(generated, golden_path)
 
 

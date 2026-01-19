@@ -1,4 +1,4 @@
 {
-  "error": "Testbench execution failed: exit code -11 (signal 11: SIGSEGV)",
+  "error": "'gpu_0_data_0'",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx --template-dir templates --cc /usr/bin/cc"
 }

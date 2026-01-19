@@ -169,6 +169,7 @@ class CompilerOptions:
     restrict_arrays: bool = True
     testbench_inputs: Mapping[str, np.ndarray] | None = None
     truncate_weights_after: int | None = None
+    large_temp_threshold_bytes: int = 1024
 
 
 def _onnx_elem_type(dtype: np.dtype) -> int:
@@ -187,6 +188,7 @@ class Compiler:
             options.template_dir,
             restrict_arrays=options.restrict_arrays,
             truncate_weights_after=options.truncate_weights_after,
+            large_temp_threshold_bytes=options.large_temp_threshold_bytes,
         )
 
     def compile(self, model: onnx.ModelProto) -> str:
