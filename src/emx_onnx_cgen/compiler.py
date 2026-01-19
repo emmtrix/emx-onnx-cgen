@@ -537,6 +537,8 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
         op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
         if op_spec is None:
             raise UnsupportedOpError("Unsupported op BitShift")
+        input0_shape = value_shape(graph, node.inputs[0], node)
+        input1_shape = value_shape(graph, node.inputs[1], node)
         output_shape = value_shape(graph, node.outputs[0], node)
         return BinaryOp(
             input0=node.inputs[0],
@@ -544,6 +546,8 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
             shape=output_shape,
             dtype=op_dtype,
             input_dtype=op_dtype,
@@ -577,6 +581,8 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             raise UnsupportedOpError(
                 f"{node.op_type} expects bool output, got {output_dtype.onnx_name}"
             )
+        input0_shape = value_shape(graph, node.inputs[0], node)
+        input1_shape = value_shape(graph, node.inputs[1], node)
         output_shape = value_shape(graph, node.outputs[0], node)
         return BinaryOp(
             input0=node.inputs[0],
@@ -584,6 +590,8 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
             shape=output_shape,
             dtype=output_dtype,
             input_dtype=input_dtype,
@@ -598,6 +606,8 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             raise UnsupportedOpError(
                 f"{node.op_type} must have 2 inputs and 1 output"
             )
+        input0_shape = value_shape(graph, node.inputs[0], node)
+        input1_shape = value_shape(graph, node.inputs[1], node)
         output_shape = value_shape(graph, node.outputs[0], node)
         return BinaryOp(
             input0=node.inputs[0],
@@ -605,6 +615,8 @@ def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
             shape=output_shape,
             dtype=op_dtype,
             input_dtype=op_dtype,
