@@ -2357,8 +2357,12 @@ def _apply_lstm(
         beta_g = spec.activation_betas[act_offset + 1]
         beta_h = spec.activation_betas[act_offset + 2]
         for step in range(seq_length):
-            t_index = step if dir_kind == "forward" else seq_length - 1 - step
-            x_t = x[t_index]
+            if dir_kind == "forward":
+                x_t = x[step]
+            else:
+                t_indices = sequence_lens - 1 - step
+                t_indices = np.clip(t_indices, 0, seq_length - 1)
+                x_t = x[t_indices, np.arange(batch_size)]
             gates = x_t @ w_dir.T + h_prev @ r_dir.T + bias
             if spec.clip is not None and spec.clip > 0:
                 gates = np.clip(gates, -spec.clip, spec.clip)

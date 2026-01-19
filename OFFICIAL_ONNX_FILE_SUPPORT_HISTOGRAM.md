@@ -2,7 +2,7 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Out of tolerance | 25 | ██████████████████████████████ |
+| Out of tolerance | 24 | █████████████████████████████ |
 | ONNX Runtime failed to run | 19 | ███████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 18 | ██████████████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████████████ |
@@ -55,4 +55,3 @@
 | Unsupported op QLinearMul | 2 | ███████████████ |
 | ONNX Runtime failed to run | 2 | ███████████████ |
 | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | ████████ |
-| Out of tolerance | 1 | ████████ |

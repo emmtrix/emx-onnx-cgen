@@ -42,7 +42,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
             {% endif %}
             for (int step = 0; step < seq_limit; ++step) {
-                int t = reverse ? ({{ seq_length }} - 1 - step) : step;
+                int t = reverse ? (seq_limit - 1 - step) : step;
                 {{ c_type }} H_next[{{ hidden_size }}];
                 {{ c_type }} C_next[{{ hidden_size }}];
                 for (int h = 0; h < {{ hidden_size }}; ++h) {

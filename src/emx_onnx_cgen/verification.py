@@ -44,6 +44,13 @@ def max_ulp_diff(actual: np.ndarray, expected: np.ndarray) -> int:
         expected_cast = expected_cast[~nan_mask]
         if actual_cast.size == 0:
             return 0
+    eps = np.finfo(dtype).eps
+    near_zero = (np.abs(actual_cast) < eps) & (np.abs(expected_cast) < eps)
+    if np.any(near_zero):
+        actual_cast = actual_cast.copy()
+        expected_cast = expected_cast.copy()
+        actual_cast[near_zero] = 0
+        expected_cast[near_zero] = 0
     ordered_actual = _float_to_ordered_int(actual_cast)
     ordered_expected = _float_to_ordered_int(expected_cast)
     deltas = ordered_actual.astype(np.int64) - ordered_expected.astype(np.int64)

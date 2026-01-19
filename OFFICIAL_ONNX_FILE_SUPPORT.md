@@ -548,7 +548,7 @@ Support 60 / 74 local ONNX files.
 | test_lstm_intermediate_h/model.onnx | ✅ | OK (max ULP 2) |
 | test_lstm_missing_inputs/model.onnx | ✅ | OK (max ULP 1) |
 | test_lstm_reverse/model.onnx | ❌ | Unsupported LSTM direction b'reverse' |
-| test_lstm_seq_length/model.onnx | ❌ | Out of tolerance (max ULP 591626278) |
+| test_lstm_seq_length/model.onnx | ✅ | OK (max ULP 3) |
 | test_lstm_simple/model.onnx | ✅ | OK (max ULP 0) |
 | test_lstm_with_initial_state/model.onnx | ✅ | OK (max ULP 4) |
 | test_lstm_y_c/model.onnx | ✅ | OK (max ULP 2) |
