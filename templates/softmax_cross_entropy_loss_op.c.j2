@@ -8,8 +8,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const idx_t n = {{ n }};
     const idx_t c = {{ c }};
     const idx_t d = {{ d }};
-    {{ c_type }} loss_sum = {{ zero_literal }};
-    {{ c_type }} weight_sum = {{ zero_literal }};
+    {{ acc_type }} loss_sum = {{ acc_zero_literal }};
+    {{ acc_type }} weight_sum = {{ acc_zero_literal }};
     for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
         for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
             idx_t target_index = n_idx * d + d_idx;
@@ -19,24 +19,24 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
             idx_t class_index = (idx_t)target_value;
             idx_t base = (n_idx * c * d) + d_idx;
-            {{ c_type }} max_value = input_flat[base];
+            {{ acc_type }} max_value = ({{ acc_type }})input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
-                {{ c_type }} value = input_flat[base + c_idx * d];
+                {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d];
                 if (value > max_value) {
                     max_value = value;
                 }
             }
-            {{ c_type }} sum = {{ zero_literal }};
+            {{ acc_type }} sum = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                {{ c_type }} value = input_flat[base + c_idx * d] - max_value;
-                sum += {{ exp_fn }}(value);
+                {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d] - max_value;
+                sum += {{ acc_exp_fn }}(value);
             }
-            {{ c_type }} logsum = {{ log_fn }}(sum);
+            {{ acc_type }} logsum = {{ acc_log_fn }}(sum);
 {% if log_prob %}
-            {{ c_type }} loss_value = {{ zero_literal }};
+            {{ acc_type }} loss_value = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                {{ c_type }} log_prob_value = input_flat[base + c_idx * d] - max_value - logsum;
-                log_prob_flat[base + c_idx * d] = log_prob_value;
+                {{ acc_type }} log_prob_value = ({{ acc_type }})input_flat[base + c_idx * d] - max_value - logsum;
+                log_prob_flat[base + c_idx * d] = ({{ c_type }})log_prob_value;
                 if (c_idx == class_index) {
                     loss_value = -log_prob_value;
                 }
@@ -50,8 +50,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 continue;
             }
 {% endif %}
-            {{ c_type }} log_prob_value = input_flat[base + class_index * d] - max_value - logsum;
-            {{ c_type }} loss_value = -log_prob_value;
+            {{ acc_type }} log_prob_value = ({{ acc_type }})input_flat[base + class_index * d] - max_value - logsum;
+            {{ acc_type }} loss_value = -log_prob_value;
 {% endif %}
 {% if use_ignore_index %}
 {% if log_prob %}
@@ -64,10 +64,10 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
 {% endif %}
 {% if weight %}
-            {{ c_type }} sample_weight = {{ weight }}[class_index];
+            {{ acc_type }} sample_weight = {{ weight }}[class_index];
             loss_value *= sample_weight;
 {% else %}
-            {{ c_type }} sample_weight = {{ one_literal }};
+            {{ acc_type }} sample_weight = {{ acc_one_literal }};
 {% endif %}
 {% if reduction == "none" %}
             output_flat[target_index] = loss_value;
@@ -83,7 +83,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     }
 {% if reduction == "mean" %}
 {% if weight or use_ignore_index %}
-    if (weight_sum == {{ zero_literal }}) {
+    if (weight_sum == {{ acc_zero_literal }}) {
         output_flat[0] = {{ zero_literal }};
     } else {
         output_flat[0] = loss_sum / weight_sum;

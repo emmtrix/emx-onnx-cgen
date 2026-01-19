@@ -2,26 +2,48 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in prefix_shape %}
 for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
 {% endfor %}
-    {{ c_type }} sum = {{ zero_literal }};
+    {{ acc_type }} sum = {{ acc_zero_literal }};
+{% if use_kahan %}
+    {{ acc_type }} sum_comp = {{ acc_zero_literal }};
+{% endif %}
 {% for dim in norm_shape %}
     for (idx_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
 {% endfor %}
-        sum += {{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %};
+{% if use_kahan %}
+        {{ acc_type }} kahan_value = ({{ acc_type }}){{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %};
+        {{ acc_type }} kahan_y = kahan_value - sum_comp;
+        {{ acc_type }} kahan_t = sum + kahan_y;
+        sum_comp = (kahan_t - sum) - kahan_y;
+        sum = kahan_t;
+{% else %}
+        sum += ({{ acc_type }}){{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %};
+{% endif %}
 {% for _ in norm_shape %}
     }
 {% endfor %}
-    {{ c_type }} mean = sum / {{ inner }};
-    {{ c_type }} var = {{ zero_literal }};
+    {{ acc_type }} mean = sum / {{ inner }};
+    {{ acc_type }} var = {{ acc_zero_literal }};
+{% if use_kahan %}
+    {{ acc_type }} var_comp = {{ acc_zero_literal }};
+{% endif %}
 {% for dim in norm_shape %}
     for (idx_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
 {% endfor %}
-        {{ c_type }} diff = {{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} - mean;
+        {{ acc_type }} diff = ({{ acc_type }}){{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} - mean;
+{% if use_kahan %}
+        {{ acc_type }} kahan_value = diff * diff;
+        {{ acc_type }} kahan_y = kahan_value - var_comp;
+        {{ acc_type }} kahan_t = var + kahan_y;
+        var_comp = (kahan_t - var) - kahan_y;
+        var = kahan_t;
+{% else %}
         var += diff * diff;
+{% endif %}
 {% for _ in norm_shape %}
     }
 {% endfor %}
     var = var / {{ inner }};
-    {{ c_type }} inv_std = (({{ c_type }})1) / {{ sqrt_fn }}(var + {{ epsilon_literal }});
+    {{ acc_type }} inv_std = {{ acc_one_literal }} / {{ acc_sqrt_fn }}(var + {{ acc_epsilon_literal }});
 {% if mean_output %}
     {{ mean_output }}{% for var in mean_index_vars %}[{{ var }}]{% endfor %} = mean;
 {% endif %}
@@ -31,7 +53,7 @@ for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.ind
 {% for dim in norm_shape %}
     for (idx_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
 {% endfor %}
-        {{ c_type }} value = ({{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} - mean) * inv_std;
+        {{ acc_type }} value = (({{ acc_type }}){{ input0 }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} - mean) * inv_std;
         value = value * {{ scale }}{% for var in scale_index_vars %}[{{ var }}]{% endfor %}{% if bias %} + {{ bias }}{% for var in bias_index_vars %}[{{ var }}]{% endfor %}{% endif %};
         {{ output }}{% for var in prefix_loop_vars %}[{{ var }}]{% endfor %}{% for var in norm_loop_vars %}[{{ var }}]{% endfor %} = value;
 {% for _ in norm_shape %}

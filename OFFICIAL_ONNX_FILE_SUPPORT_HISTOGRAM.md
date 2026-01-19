@@ -40,6 +40,7 @@
 | And expects identical input/output shapes | 5 | ██ |
 | AveragePool expects 2D kernel_shape | 5 | ██ |
 | Or expects identical input/output shapes | 5 | ██ |
+| Out of tolerance | 5 | ██ |
 | Test data input count does not match model inputs: 1 vs 5. | 5 | ██ |
 | Unsupported op Col2Im | 5 | ██ |
 | Unsupported op DequantizeLinear | 5 | ██ |

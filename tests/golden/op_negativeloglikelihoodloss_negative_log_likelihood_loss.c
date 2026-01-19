@@ -41,8 +41,8 @@ static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2
     const idx_t n = 2;
     const idx_t c = 3;
     const idx_t d = 1;
-    float loss_sum = 0.0f;
-    float weight_sum = 0.0f;
+    double loss_sum = 0.0;
+    double weight_sum = 0.0;
     for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
         for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
             idx_t target_index = n_idx * d + d_idx;
@@ -52,13 +52,13 @@ static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2
             }
             idx_t class_index = (idx_t)target_value;
             idx_t input_index = (n_idx * c + class_index) * d + d_idx;
-            float value = -input_flat[input_index];
-            float sample_weight = 1.0f;
+            double value = -(double)input_flat[input_index];
+            double sample_weight = 1.0;
             loss_sum += value;
             weight_sum += sample_weight;
         }
     }
-    if (weight_sum == 0.0f) {
+    if (weight_sum == 0.0) {
         output_flat[0] = 0.0f;
     } else {
         output_flat[0] = loss_sum / weight_sum;

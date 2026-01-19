@@ -43,36 +43,36 @@ static inline void node0_softmaxcrossentropyloss(const float input0[restrict 2][
     const idx_t n = 2;
     const idx_t c = 3;
     const idx_t d = 1;
-    float loss_sum = 0.0f;
-    float weight_sum = 0.0f;
+    double loss_sum = 0.0;
+    double weight_sum = 0.0;
     for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
         for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
             idx_t target_index = n_idx * d + d_idx;
             int64_t target_value = target_flat[target_index];
             idx_t class_index = (idx_t)target_value;
             idx_t base = (n_idx * c * d) + d_idx;
-            float max_value = input_flat[base];
+            double max_value = (double)input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
-                float value = input_flat[base + c_idx * d];
+                double value = (double)input_flat[base + c_idx * d];
                 if (value > max_value) {
                     max_value = value;
                 }
             }
-            float sum = 0.0f;
+            double sum = 0.0;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                float value = input_flat[base + c_idx * d] - max_value;
-                sum += expf(value);
+                double value = (double)input_flat[base + c_idx * d] - max_value;
+                sum += exp(value);
             }
-            float logsum = logf(sum);
-            float loss_value = 0.0f;
+            double logsum = log(sum);
+            double loss_value = 0.0;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                float log_prob_value = input_flat[base + c_idx * d] - max_value - logsum;
-                log_prob_flat[base + c_idx * d] = log_prob_value;
+                double log_prob_value = (double)input_flat[base + c_idx * d] - max_value - logsum;
+                log_prob_flat[base + c_idx * d] = (float)log_prob_value;
                 if (c_idx == class_index) {
                     loss_value = -log_prob_value;
                 }
             }
-            float sample_weight = 1.0f;
+            double sample_weight = 1.0;
             loss_sum += loss_value;
         }
     }
