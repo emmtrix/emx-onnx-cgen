@@ -24,6 +24,7 @@
 | Unsupported op QLinearMatMul | 8 | ███ |
 | Unsupported op RotaryEmbedding | 8 | ███ |
 | tuple index out of range | 8 | ███ |
+| TopK k input must be a constant initializer | 7 | ██ |
 | Unsupported op TfIdfVectorizer | 7 | ██ |
 | AveragePool has unsupported attributes | 6 | ██ |
 | Missing output 2 in testbench data | 6 | ██ |
@@ -47,7 +48,6 @@
 | Unsupported op Compress | 4 | █ |
 | Unsupported op DeformConv | 4 | █ |
 | Unsupported op GRU | 4 | █ |
-| Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |
 | Unsupported op RNN | 4 | █ |
 | zero-size array to reduction operation maximum which has no identity | 4 | █ |
