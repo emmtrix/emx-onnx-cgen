@@ -37,7 +37,7 @@ def _render_onnx_file_support_table(
         "| File | Supported | Error |",
         "| --- | --- | --- |",
     ]
-    for expectation in expectations:
+    for expectation in sorted(expectations, key=lambda item: item.path):
         supported = "✅" if _is_success_message(expectation.error) else "❌"
         message = expectation.error.replace("\n", " ").strip()
         lines.append(f"| {expectation.path} | {supported} | {message} |")
@@ -117,7 +117,10 @@ def _render_error_histogram_markdown(
         "| Error message | Count | Histogram |",
         "| --- | --- | --- |",
     ]
-    for error, count in counts.most_common():
+    for error, count in sorted(
+        counts.items(),
+        key=lambda item: (-item[1], item[0]),
+    ):
         lines.append(f"| {error} | {count} | {bar(count)} |")
     lines.append("")
     return "\n".join(lines)
