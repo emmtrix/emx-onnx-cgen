@@ -1,4 +1,4 @@
 {
-  "error": "Testbench execution failed: exit code -11 (signal 11: SIGSEGV)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_bvlc_alexnet.onnx --template-dir templates --cc /usr/bin/cc"
 }

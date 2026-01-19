@@ -17,10 +17,9 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████ |
+| Out of tolerance | 14 | █████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████ |
-| Out of tolerance | 13 | █████ |
 | Output shape must be fully defined | 9 | ███ |
-| Testbench execution failed: exit code -11 (signal 11: SIGSEGV) | 9 | ███ |
 | Unsupported op ImageDecoder | 9 | ███ |
 | Unsupported op NonMaxSuppression | 9 | ███ |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 9 | ███ |
@@ -56,6 +55,7 @@
 | Unsupported op OneHot | 4 | █ |
 | Unsupported op OptionalHasElement | 4 | █ |
 | Unsupported op RNN | 4 | █ |
+| '*' | 3 | █ |
 | AveragePool supports auto_pad=NOTSET only | 3 | █ |
 | Elu only supports alpha=1.0 | 3 | █ |
 | HardSigmoid only supports alpha=0.2 | 3 | █ |
