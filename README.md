@@ -132,6 +132,7 @@ contains the constant definitions.
 ## Official ONNX test coverage
 
 See [`OFFICIAL_ONNX_FILE_SUPPORT.md`](OFFICIAL_ONNX_FILE_SUPPORT.md) for the generated support matrix.
+See [`SUPPORT_OPS.md`](SUPPORT_OPS.md) for operator-level support derived from the expectation JSON files.
 
 ## Maintained by
 
