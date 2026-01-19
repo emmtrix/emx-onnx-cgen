@@ -10,6 +10,7 @@ import onnx
 
 from shared.scalar_types import ScalarType
 
+from .onnxruntime_utils import make_deterministic_session_options
 from .codegen.c_emitter import (
     AttentionOp,
     AveragePoolOp,
@@ -350,8 +351,10 @@ class Compiler:
                 model_with_outputs.graph.output.append(value_info)
                 existing_outputs.add(value.name)
             output_names = [output.name for output in model_with_outputs.graph.output]
+            sess_options = make_deterministic_session_options(ort)
             sess = ort.InferenceSession(
                 model_with_outputs.SerializeToString(),
+                sess_options=sess_options,
                 providers=["CPUExecutionProvider"],
             )
             output_arrays = sess.run(None, self._options.testbench_inputs)

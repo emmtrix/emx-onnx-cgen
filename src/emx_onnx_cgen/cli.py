@@ -23,6 +23,7 @@ from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
+from .onnxruntime_utils import make_deterministic_session_options
 from .testbench import decode_testbench_array
 from .verification import format_success_message, max_ulp_diff
 
@@ -463,8 +464,11 @@ def _verify_model(
         }
     try:
         ort_started = time.perf_counter()
+        sess_options = make_deterministic_session_options(ort)
         sess = ort.InferenceSession(
-            model.SerializeToString(), providers=["CPUExecutionProvider"]
+            model.SerializeToString(),
+            sess_options=sess_options,
+            providers=["CPUExecutionProvider"],
         )
         ort_outputs = sess.run(None, inputs)
     except Exception as exc:
