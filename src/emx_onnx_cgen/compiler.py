@@ -391,9 +391,7 @@ class Compiler:
         if not graph.nodes:
             raise UnsupportedOpError("Graph must contain at least one node")
         for value in graph.outputs:
-            element_count = shape_product(value.type.shape)
-            if element_count <= 0:
-                raise ShapeInferenceError("Output shape must be fully defined")
+            shape_product(value.type.shape)
 
     def _collect_io_specs(
         self, graph: Graph
