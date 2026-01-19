@@ -123,7 +123,6 @@ By default, the compiler emits a single C source file that includes:
 
 - A generated entry point that mirrors the ONNX graph inputs/outputs.
 - Tensor buffers for constants and temporaries.
-- A lightweight runtime implemented via templates in `templates/`.
 
 When `--emit-data-file` is enabled, the main C source declares constant arrays
 as `extern`, and a second file named like the output with a `_data` suffix
