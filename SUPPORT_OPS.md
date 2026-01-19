@@ -54,7 +54,7 @@ Supported operators: 133 / 198
 | Div | ✅ |
 | Dropout | ✅ |
 | DynamicQuantizeLinear | ❌ |
-| Einsum | ❌ |
+| Einsum | ✅ |
 | Elu | ✅ |
 | Equal | ✅ |
 | Erf | ✅ |

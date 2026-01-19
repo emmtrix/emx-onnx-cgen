@@ -93,6 +93,7 @@ from .lowering import conv_transpose as _conv_transpose  # noqa: F401
 from .lowering.constant_of_shape import lower_constant_of_shape
 from .lowering.dropout import lower_dropout
 from .lowering import cumsum as _cumsum  # noqa: F401
+from .lowering import einsum as _einsum  # noqa: F401
 from .lowering.flatten import lower_flatten
 from .lowering.gather import lower_gather
 from .lowering.gather_elements import lower_gather_elements

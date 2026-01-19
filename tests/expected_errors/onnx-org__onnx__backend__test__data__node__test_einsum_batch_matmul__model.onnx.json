@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Einsum",
+  "error": "OK (max ULP 12)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_einsum_batch_matmul/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_einsum_batch_matmul/test_data_set_0",
   "operators": [
     "Einsum"

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 import itertools
 import math
 from math import prod
@@ -247,6 +248,26 @@ class MatMulOp:
     left_vector: bool
     right_vector: bool
     dtype: ScalarType
+
+
+class EinsumKind(str, Enum):
+    REDUCE_ALL = "reduce_all"
+    SUM_J = "sum_j"
+    TRANSPOSE = "transpose"
+    DOT = "dot"
+    BATCH_MATMUL = "batch_matmul"
+    BATCH_DIAGONAL = "batch_diagonal"
+
+
+@dataclass(frozen=True)
+class EinsumOp:
+    inputs: tuple[str, ...]
+    output: str
+    kind: EinsumKind
+    input_shapes: tuple[tuple[int, ...], ...]
+    output_shape: tuple[int, ...]
+    dtype: ScalarType
+    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -1130,6 +1151,7 @@ class LoweredModel:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -1308,6 +1330,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -1383,6 +1406,8 @@ class CEmitter:
             return tuple(names)
         if isinstance(op, MatMulOp):
             return (op.input0, op.input1, op.output)
+        if isinstance(op, EinsumOp):
+            return (*op.inputs, op.output)
         if isinstance(op, GemmOp):
             names = [op.input_a, op.input_b]
             if op.input_c is not None:
@@ -1624,6 +1649,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -1684,6 +1710,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -1829,6 +1856,16 @@ class CEmitter:
                 left_vector=op.left_vector,
                 right_vector=op.right_vector,
                 dtype=op.dtype,
+            )
+        if isinstance(op, EinsumOp):
+            return EinsumOp(
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
+                output=name_map.get(op.output, op.output),
+                kind=op.kind,
+                input_shapes=op.input_shapes,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, GemmOp):
             return GemmOp(
@@ -2675,6 +2712,7 @@ class CEmitter:
                     "quantize_linear_op.c.j2"
                 ),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
+                "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
@@ -2794,6 +2832,7 @@ class CEmitter:
         cast_template = templates["cast"]
         quantize_linear_template = templates["quantize_linear"]
         matmul_template = templates["matmul"]
+        einsum_template = templates["einsum"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
         conv_template = templates["conv"]
@@ -2878,6 +2917,7 @@ class CEmitter:
                 cast_template=cast_template,
                 quantize_linear_template=quantize_linear_template,
                 matmul_template=matmul_template,
+                einsum_template=einsum_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
                 conv_template=conv_template,
@@ -3046,6 +3086,7 @@ class CEmitter:
         cast_template = templates["cast"]
         quantize_linear_template = templates["quantize_linear"]
         matmul_template = templates["matmul"]
+        einsum_template = templates["einsum"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
         conv_template = templates["conv"]
@@ -3128,6 +3169,7 @@ class CEmitter:
                 cast_template=cast_template,
                 quantize_linear_template=quantize_linear_template,
                 matmul_template=matmul_template,
+                einsum_template=einsum_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
                 conv_template=conv_template,
@@ -3523,6 +3565,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | MatMulOp
+            | EinsumOp
             | GemmOp
             | AttentionOp
             | ConvOp
@@ -3751,6 +3794,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | MatMulOp
+            | EinsumOp
             | GemmOp
             | AttentionOp
             | ConvOp
@@ -3911,6 +3955,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | MatMulOp
+            | EinsumOp
             | GemmOp
             | AttentionOp
             | ConvOp
@@ -4005,6 +4050,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | MatMulOp
+            | EinsumOp
             | GemmOp
             | AttentionOp
             | ConvOp
@@ -4113,6 +4159,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -4179,6 +4226,9 @@ class CEmitter:
             return ", ".join(args)
         if isinstance(op, MatMulOp):
             args.extend([op.input0, op.input1, op.output])
+            return ", ".join(args)
+        if isinstance(op, EinsumOp):
+            args.extend([*op.inputs, op.output])
             return ", ".join(args)
         if isinstance(op, GemmOp):
             if op.input_c is None:
@@ -4480,6 +4530,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -4539,6 +4590,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -4667,6 +4719,16 @@ class CEmitter:
                 left_vector=op.left_vector,
                 right_vector=op.right_vector,
                 dtype=op.dtype,
+            )
+        if isinstance(op, EinsumOp):
+            return EinsumOp(
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
+                output=temp_map.get(op.output, op.output),
+                kind=op.kind,
+                input_shapes=op.input_shapes,
+                output_shape=op.output_shape,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
             )
         if isinstance(op, CastOp):
             return CastOp(
@@ -5585,6 +5647,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -5650,6 +5713,7 @@ class CEmitter:
         cast_template,
         quantize_linear_template,
         matmul_template,
+        einsum_template,
         gemm_template,
         attention_template,
         conv_template,
@@ -6047,6 +6111,137 @@ class CEmitter:
                 m=op.m,
                 n=op.n,
                 k=op.k,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, EinsumOp):
+            params = self._shared_param_map(
+                [
+                    *(
+                        (f"input{idx}", name)
+                        for idx, name in enumerate(op.inputs)
+                    ),
+                    ("output", op.output),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            output_shape = CEmitter._shape_dim_exprs(
+                op.output_shape, output_dim_names
+            )
+            output_loop_vars = CEmitter._loop_vars(op.output_shape)
+            if output_loop_vars:
+                output_expr = f"{params['output']}" + "".join(
+                    f"[{var}]" for var in output_loop_vars
+                )
+            else:
+                output_expr = f"{params['output']}[0]"
+            input_shapes = op.input_shapes
+            input_dim_names = [
+                _dim_names_for(name) for name in op.inputs
+            ]
+            input_suffixes = [
+                self._param_array_suffix(shape, dim_names)
+                for shape, dim_names in zip(input_shapes, input_dim_names)
+            ]
+            param_decls = self._build_param_decls(
+                [
+                    *(
+                        (
+                            params[f"input{idx}"],
+                            op.input_dtype.c_type,
+                            input_suffixes[idx],
+                            True,
+                        )
+                        for idx in range(len(op.inputs))
+                    ),
+                    (
+                        params["output"],
+                        op.dtype.c_type,
+                        self._param_array_suffix(op.output_shape, output_dim_names),
+                        False,
+                    ),
+                ]
+            )
+            input_loop_vars: tuple[str, ...] = ()
+            input_loop_bounds: tuple[str | int, ...] = ()
+            reduce_loop_var = "k"
+            reduce_loop_bound: str | int | None = None
+            input_expr = None
+            input0_expr = None
+            input1_expr = None
+            if op.kind == EinsumKind.REDUCE_ALL:
+                input_loop_vars = CEmitter._loop_vars(input_shapes[0])
+                input_loop_bounds = tuple(
+                    CEmitter._shape_dim_exprs(
+                        input_shapes[0], input_dim_names[0]
+                    )
+                )
+                if input_loop_vars:
+                    input_expr = f"{params['input0']}" + "".join(
+                        f"[{var}]" for var in input_loop_vars
+                    )
+                else:
+                    input_expr = f"{params['input0']}[0]"
+            elif op.kind == EinsumKind.SUM_J:
+                input_shape_exprs = CEmitter._shape_dim_exprs(
+                    input_shapes[0], input_dim_names[0]
+                )
+                reduce_loop_bound = input_shape_exprs[1]
+                input_expr = (
+                    f"{params['input0']}"
+                    f"[{output_loop_vars[0]}][{reduce_loop_var}]"
+                )
+            elif op.kind == EinsumKind.TRANSPOSE:
+                input_expr = (
+                    f"{params['input0']}"
+                    f"[{output_loop_vars[1]}][{output_loop_vars[0]}]"
+                )
+            elif op.kind == EinsumKind.DOT:
+                input_shape_exprs = CEmitter._shape_dim_exprs(
+                    input_shapes[0], input_dim_names[0]
+                )
+                reduce_loop_bound = input_shape_exprs[0]
+                input0_expr = f"{params['input0']}[{reduce_loop_var}]"
+                input1_expr = f"{params['input1']}[{reduce_loop_var}]"
+            elif op.kind == EinsumKind.BATCH_MATMUL:
+                input_shape_exprs = CEmitter._shape_dim_exprs(
+                    input_shapes[0], input_dim_names[0]
+                )
+                reduce_loop_bound = input_shape_exprs[2]
+                input0_expr = (
+                    f"{params['input0']}"
+                    f"[{output_loop_vars[0]}]"
+                    f"[{output_loop_vars[1]}][{reduce_loop_var}]"
+                )
+                input1_expr = (
+                    f"{params['input1']}"
+                    f"[{output_loop_vars[0]}]"
+                    f"[{reduce_loop_var}][{output_loop_vars[2]}]"
+                )
+            elif op.kind == EinsumKind.BATCH_DIAGONAL:
+                diag_var = output_loop_vars[-1]
+                prefix_vars = output_loop_vars[:-1]
+                input_expr = f"{params['input0']}" + "".join(
+                    f"[{var}]" for var in prefix_vars
+                )
+                input_expr += f"[{diag_var}][{diag_var}]"
+            rendered = einsum_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                kind=op.kind.value,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_expr=output_expr,
+                acc_type=op.dtype.c_type,
+                zero_literal=zero_literal,
+                input_loop_vars=input_loop_vars,
+                input_loop_bounds=input_loop_bounds,
+                reduce_loop_var=reduce_loop_var,
+                reduce_loop_bound=reduce_loop_bound,
+                input_expr=input_expr,
+                input0_expr=input0_expr,
+                input1_expr=input1_expr,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GemmOp):
@@ -9515,6 +9710,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -9580,6 +9776,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -9636,6 +9833,11 @@ class CEmitter:
             )
         if isinstance(op, MultiInputBinaryOp):
             return tuple((name, op.shape) for name in op.inputs)
+        if isinstance(op, EinsumOp):
+            return tuple(
+                (name, shape)
+                for name, shape in zip(op.inputs, op.input_shapes)
+            )
         if isinstance(op, UnaryOp):
             return ((op.input0, op.shape),)
         if isinstance(op, LpNormalizationOp):
@@ -9731,6 +9933,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | MatMulOp
+            | EinsumOp
             | GemmOp
             | AttentionOp
             | ConvOp
@@ -9801,6 +10004,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -9968,6 +10172,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp
@@ -10029,6 +10234,8 @@ class CEmitter:
         if isinstance(op, CastOp):
             return op.shape
         if isinstance(op, MatMulOp):
+            return op.output_shape
+        if isinstance(op, EinsumOp):
             return op.output_shape
         if isinstance(op, GemmOp):
             return (op.m, op.n)
@@ -10138,6 +10345,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | MatMulOp
+        | EinsumOp
         | GemmOp
         | AttentionOp
         | ConvOp

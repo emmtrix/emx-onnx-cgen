@@ -30,7 +30,6 @@
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ██ |
 | Unsupported op CenterCropPad | 6 | ██ |
 | Unsupported op DFT | 6 | ██ |
-| Unsupported op Einsum | 6 | ██ |
 | Unsupported op ScatterElements | 6 | ██ |
 | Unsupported op Unique | 6 | ██ |
 | And expects identical input/output shapes | 5 | ██ |
@@ -70,6 +69,7 @@
 | BitwiseAnd expects identical input/output shapes | 2 | █ |
 | BitwiseOr expects identical input/output shapes | 2 | █ |
 | BitwiseXor expects identical input/output shapes | 2 | █ |
+| Failed to build testbench. | 2 | █ |
 | Gelu only supports approximate=none | 2 | █ |
 | LpPool expects 2D kernel_shape | 2 | █ |
 | LpPool supports auto_pad=NOTSET only | 2 | █ |

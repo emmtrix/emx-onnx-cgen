@@ -16,7 +16,11 @@ from onnx import TensorProto, helper, numpy_helper
 
 from shared.scalar_types import ScalarType
 
-from emx_onnx_cgen.codegen.c_emitter import MultiInputBinaryOp
+from emx_onnx_cgen.codegen.c_emitter import (
+    EinsumKind,
+    EinsumOp,
+    MultiInputBinaryOp,
+)
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.errors import UnsupportedOpError
 from emx_onnx_cgen.lowering.flatten import lower_flatten
@@ -2665,6 +2669,54 @@ OPERATOR_CASES = [
         "attrs": {},
     },
     {
+        "name": "EinsumReduceAll",
+        "op_type": "Einsum",
+        "input_shapes": [[]],
+        "output_shape": [],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"equation": "->"},
+    },
+    {
+        "name": "EinsumSumJ",
+        "op_type": "Einsum",
+        "input_shapes": [[3, 4]],
+        "output_shape": [3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"equation": "ij->i"},
+    },
+    {
+        "name": "EinsumTranspose",
+        "op_type": "Einsum",
+        "input_shapes": [[3, 4]],
+        "output_shape": [4, 3],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"equation": "ij->ji"},
+    },
+    {
+        "name": "EinsumDot",
+        "op_type": "Einsum",
+        "input_shapes": [[5], [5]],
+        "output_shape": [],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"equation": "i,i"},
+    },
+    {
+        "name": "EinsumBatchMatMul",
+        "op_type": "Einsum",
+        "input_shapes": [[2, 3, 4], [2, 4, 5]],
+        "output_shape": [2, 3, 5],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"equation": "bij,bjk->bik"},
+    },
+    {
+        "name": "EinsumBatchDiagonal",
+        "op_type": "Einsum",
+        "input_shapes": [[3, 5, 5]],
+        "output_shape": [3, 5],
+        "dtype": TensorProto.FLOAT,
+        "attrs": {"equation": "...ii->...i"},
+    },
+    {
         "name": "Gemm",
         "op_type": "Gemm",
         "input_shapes": [[2, 3], [3, 4]],
@@ -3306,6 +3358,23 @@ def test_lower_variadic_sum_uses_multi_input_op() -> None:
     op = lowering(graph, graph.nodes[0])
     assert isinstance(op, MultiInputBinaryOp)
     assert op.inputs == ("in0", "in1", "in2")
+
+
+def test_lower_einsum_transpose() -> None:
+    model = _make_operator_model(
+        op_type="Einsum",
+        input_shapes=[[2, 3]],
+        output_shape=[3, 2],
+        dtype=TensorProto.FLOAT,
+        attrs={"equation": "ij->ji"},
+    )
+    graph = import_onnx(model)
+    lowering = get_lowering("Einsum")
+    assert lowering is not None
+    op = lowering(graph, graph.nodes[0])
+    assert isinstance(op, EinsumOp)
+    assert op.kind == EinsumKind.TRANSPOSE
+    assert op.output_shape == (3, 2)
 
 
 @pytest.mark.parametrize("case", OPERATOR_CASES, ids=lambda case: case["name"])

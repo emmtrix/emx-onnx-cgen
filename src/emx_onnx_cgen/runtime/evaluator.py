@@ -17,6 +17,7 @@ from ..lowering.conv import resolve_conv_spec
 from ..lowering.conv_transpose import resolve_conv_transpose_spec
 from ..lowering.dropout import lower_dropout
 from ..lowering.cumsum import lower_cumsum
+from ..lowering.einsum import lower_einsum
 from ..lowering.flatten import lower_flatten
 from ..lowering.gemm import resolve_gemm_spec
 from ..lowering.logsoftmax import lower_logsoftmax
@@ -140,6 +141,21 @@ def _eval_matmul(evaluator: Evaluator, node: Node) -> None:
     left = evaluator.values[node.inputs[0]]
     right = evaluator.values[node.inputs[1]]
     evaluator.values[node.outputs[0]] = _apply_matmul(left, right)
+
+
+@register_evaluator("Einsum")
+def _eval_einsum(evaluator: Evaluator, node: Node) -> None:
+    lower_einsum(evaluator.graph, node)
+    equation_value = node.attrs.get("equation")
+    if equation_value is None:
+        raise UnsupportedOpError("Einsum equation attribute is required")
+    equation = (
+        equation_value.decode()
+        if isinstance(equation_value, (bytes, bytearray))
+        else str(equation_value)
+    )
+    inputs = [evaluator.values[name] for name in node.inputs]
+    evaluator.values[node.outputs[0]] = np.einsum(equation, *inputs)
 
 
 @register_evaluator("Clip")
