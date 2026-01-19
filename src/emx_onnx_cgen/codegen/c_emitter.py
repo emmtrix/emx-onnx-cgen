@@ -7342,6 +7342,7 @@ class CEmitter:
                 [("input0", op.input0), ("output", op.output)]
             )
             input_suffix = self._param_array_suffix(op.input_shape)
+            output_shape = CEmitter._codegen_shape(op.output_shape)
             output_suffix = self._param_array_suffix(op.output_shape)
             param_decls = self._build_param_decls(
                 [
@@ -7349,6 +7350,7 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            loop_vars = CEmitter._loop_vars(op.output_shape)
             rendered = reshape_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -7359,6 +7361,8 @@ class CEmitter:
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 element_count=CEmitter._element_count(op.output_shape),
+                output_shape=output_shape,
+                loop_vars=loop_vars,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, IdentityOp):

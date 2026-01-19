@@ -1,3 +1,14 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    memcpy({{ output }}, {{ input0 }}, sizeof({{ c_type }}) * {{ element_count }});
+    const {{ c_type }} *input0_data = (const {{ c_type }} *){{ input0 }};
+{% for dim in output_shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+    idx_t linear_idx = 0;
+{% for dim in output_shape %}
+    linear_idx = linear_idx * {{ dim }} + {{ loop_vars[loop.index0] }};
+{% endfor %}
+    {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = input0_data[linear_idx];
+{% for _ in output_shape %}
+    }
+{% endfor %}
 }

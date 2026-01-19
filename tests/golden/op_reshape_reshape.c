@@ -46,7 +46,15 @@ static const int64_t weight1_shape[2] = {
  * Attrs: n/a
  */
 static inline void node0_reshape(const float input0[restrict 2][3][4], float output[restrict 2][12]) {
-    memcpy(output, input0, sizeof(float) * 24);
+    const float *input0_data = (const float *)input0;
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 12; ++i1) {
+            idx_t linear_idx = 0;
+            linear_idx = linear_idx * 2 + i0;
+            linear_idx = linear_idx * 12 + i1;
+            output[i0][i1] = input0_data[linear_idx];
+        }
+    }
 }
 
 void model(const float in0[restrict 2][3][4], float out[restrict 2][12]) {
