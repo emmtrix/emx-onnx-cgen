@@ -1,4 +1,13 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mvn_expanded/test_data_set_0"
+  "error": "OK (max ULP 3)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mvn_expanded/test_data_set_0",
+  "operators": [
+    "Constant",
+    "ReduceMean",
+    "Pow",
+    "Sub",
+    "Sqrt",
+    "Add",
+    "Div"
+  ]
 }

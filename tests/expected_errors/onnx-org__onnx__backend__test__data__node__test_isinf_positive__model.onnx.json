@@ -1,4 +1,7 @@
 {
   "error": "\nArrays are not equal\n\nMismatched elements: 1 / 6 (16.7%)\n ACTUAL: array([False, False,  True, False,  True,  True])\n DESIRED: array([False, False,  True, False, False,  True])",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isinf_positive/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_isinf_positive/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isinf_positive/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_isinf_positive/test_data_set_0",
+  "operators": [
+    "IsInf"
+  ]
 }

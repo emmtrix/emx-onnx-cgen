@@ -1,4 +1,7 @@
 {
   "error": "Missing output 1 in testbench data",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/test_data_set_0",
+  "operators": [
+    "ReduceSum"
+  ]
 }

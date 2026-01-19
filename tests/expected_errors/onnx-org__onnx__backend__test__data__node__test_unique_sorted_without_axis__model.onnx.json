@@ -1,4 +1,7 @@
 {
   "error": "Unsupported op Unique",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_unique_sorted_without_axis/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_unique_sorted_without_axis/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_unique_sorted_without_axis/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_unique_sorted_without_axis/test_data_set_0",
+  "operators": [
+    "Unique"
+  ]
 }

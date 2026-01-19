@@ -1,4 +1,9 @@
 {
   "error": "",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/test_data_set_0",
+  "operators": [
+    "Unsqueeze",
+    "AveragePool",
+    "Squeeze"
+  ]
 }

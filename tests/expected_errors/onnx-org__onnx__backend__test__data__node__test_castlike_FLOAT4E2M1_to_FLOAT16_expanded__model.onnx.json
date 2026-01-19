@@ -1,4 +1,7 @@
 {
   "error": "Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/test_data_set_0",
+  "operators": [
+    "Cast"
+  ]
 }

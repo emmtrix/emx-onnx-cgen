@@ -1,4 +1,7 @@
 {
   "error": "Missing output 2 in testbench data",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_min/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_min/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_min/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_min/test_data_set_0",
+  "operators": [
+    "Min"
+  ]
 }

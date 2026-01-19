@@ -1,4 +1,19 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_ii_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_ii_expanded/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_ii_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_ii_expanded/test_data_set_0",
+  "operators": [
+    "Constant",
+    "Unsqueeze",
+    "Sub",
+    "Cast",
+    "Equal",
+    "Where",
+    "GatherElements",
+    "Neg",
+    "Slice",
+    "Squeeze",
+    "Mul",
+    "ReduceSum",
+    "Div"
+  ]
 }

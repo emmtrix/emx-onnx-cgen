@@ -1,4 +1,7 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_convtranspose_autopad_same/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_convtranspose_autopad_same/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_convtranspose_autopad_same/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_convtranspose_autopad_same/test_data_set_0",
+  "operators": [
+    "ConvTranspose"
+  ]
 }
