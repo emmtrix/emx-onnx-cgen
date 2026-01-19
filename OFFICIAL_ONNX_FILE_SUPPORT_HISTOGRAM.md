@@ -4,7 +4,6 @@
 | --- | --- | --- |
 | ONNX Runtime failed to run | 81 | ██████████████████████████████ |
 | Missing output 1 in testbench data | 36 | █████████████ |
-| Failed to build testbench. | 34 | █████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ████████████ |
 | Test data input count does not match model inputs: 1 vs 3. | 27 | ██████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████ |
@@ -17,7 +16,6 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████ |
-| Out of tolerance | 14 | █████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████ |
 | Output shape must be fully defined | 9 | ███ |
 | Unsupported op ImageDecoder | 9 | ███ |
@@ -31,6 +29,7 @@
 | Unsupported op TopK | 7 | ███ |
 | AveragePool has unsupported attributes | 6 | ██ |
 | Missing output 2 in testbench data | 6 | ██ |
+| Out of tolerance | 6 | ██ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ██ |
 | Unsupported op CenterCropPad | 6 | ██ |
 | Unsupported op DFT | 6 | ██ |
@@ -40,7 +39,6 @@
 | And expects identical input/output shapes | 5 | ██ |
 | AveragePool expects 2D kernel_shape | 5 | ██ |
 | Or expects identical input/output shapes | 5 | ██ |
-| Out of tolerance | 5 | ██ |
 | Test data input count does not match model inputs: 1 vs 5. | 5 | ██ |
 | Unsupported op Col2Im | 5 | ██ |
 | Unsupported op DequantizeLinear | 5 | ██ |

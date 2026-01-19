@@ -3248,6 +3248,7 @@ class CEmitter:
             ScalarFunction.FMOD,
             ScalarFunction.REMAINDER,
             ScalarFunction.LEAKY_RELU,
+            ScalarFunction.MISH,
             ScalarFunction.MUL,
             ScalarFunction.NEG,
             ScalarFunction.LOGICAL_NOT,
@@ -3460,6 +3461,12 @@ class CEmitter:
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, ReduceOp) and op.axes_input is not None
+            for op in resolved_ops
+        ):
+            includes.add("#include <stdbool.h>")
+        if any(
+            isinstance(op, SoftmaxCrossEntropyLossOp)
+            and op.ignore_index is not None
             for op in resolved_ops
         ):
             includes.add("#include <stdbool.h>")
@@ -4108,6 +4115,12 @@ class CEmitter:
             return ", ".join(args)
         if isinstance(op, ExpandOp):
             args.extend([op.input0, op.output])
+            return ", ".join(args)
+        if isinstance(op, TriluOp):
+            call_parts = [op.input0, op.output]
+            if op.k_input is not None:
+                call_parts.append(op.k_input)
+            args.extend(call_parts)
             return ", ".join(args)
         if isinstance(op, CumSumOp):
             args.append(op.input0)
