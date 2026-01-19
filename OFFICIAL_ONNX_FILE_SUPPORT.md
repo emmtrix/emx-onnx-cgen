@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1080 / 1802 official ONNX files.
+Support 1085 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -992,8 +992,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_mul_uint64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mul_uint8/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mvn/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_mvn_expanded_ver18/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_mvn_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_neg_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nesterov_momentum/model.onnx | ❌ | Unsupported op Momentum |
@@ -1370,11 +1370,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_without_axis/model.onnx | ❌ | Unsupported op ScatterElements |
 | onnx-org/onnx/backend/test/data/node/test_scatter_with_axis/model.onnx | ❌ | Unsupported op Scatter |
 | onnx-org/onnx/backend/test/data/node/test_scatter_without_axis/model.onnx | ❌ | Unsupported op Scatter |
-| onnx-org/onnx/backend/test/data/node/test_scatternd/model.onnx | ❌ | Unsupported op ScatterND |
-| onnx-org/onnx/backend/test/data/node/test_scatternd_add/model.onnx | ❌ | Unsupported op ScatterND |
-| onnx-org/onnx/backend/test/data/node/test_scatternd_max/model.onnx | ❌ | Unsupported op ScatterND |
-| onnx-org/onnx/backend/test/data/node/test_scatternd_min/model.onnx | ❌ | Unsupported op ScatterND |
-| onnx-org/onnx/backend/test/data/node/test_scatternd_multiply/model.onnx | ❌ | Unsupported op ScatterND |
+| onnx-org/onnx/backend/test/data/node/test_scatternd/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_scatternd_add/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_scatternd_max/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_scatternd_min/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_scatternd_multiply/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii_log_prob/model.onnx | ✅ | OK (max ULP 1) |
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 61 / 74 local ONNX files.
+Support 65 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -1887,9 +1887,9 @@ Support 61 / 74 local ONNX files.
 | test_resize_downsample_sizes_linear_1D/model.onnx | ❌ | ONNX Runtime failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D/model.onnx: [ONNXRuntimeError] : 10 : INVALID_GRAPH : This is an invalid model. In Node, ("sclbl-onnx-node1", Resize, "", -1) : ("X": tensor(float),"","","sizes": tensor(int64),) -> ("Y": tensor(float),) , Error Node (sclbl-onnx-node1)'s input 1 is marked single but has an empty string in the graph |
 | test_resize_downsample_sizes_linear_1D_align/model.onnx | ❌ | ONNX Runtime failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx: [ONNXRuntimeError] : 10 : INVALID_GRAPH : This is an invalid model. In Node, ("sclbl-onnx-node1", Resize, "", -1) : ("X": tensor(float),"","","sizes": tensor(int64),) -> ("Y": tensor(float),) , Error Node (sclbl-onnx-node1)'s input 1 is marked single but has an empty string in the graph |
 | test_scalar_input_to_node/model.onnx | ✅ | OK (max ULP 0) |
-| test_scatternd_indices_1x1x2/model.onnx | ❌ | Unsupported op ScatterND |
-| test_scatternd_indices_1x2x2/model.onnx | ❌ | Unsupported op ScatterND |
-| test_scatternd_indices_2x2x2/model.onnx | ❌ | Unsupported op ScatterND |
-| test_scatternd_indices_3x2/model.onnx | ❌ | Unsupported op ScatterND |
+| test_scatternd_indices_1x1x2/model.onnx | ✅ | OK (max ULP 0) |
+| test_scatternd_indices_1x2x2/model.onnx | ✅ | OK (max ULP 0) |
+| test_scatternd_indices_2x2x2/model.onnx | ✅ | OK (max ULP 0) |
+| test_scatternd_indices_3x2/model.onnx | ✅ | OK (max ULP 0) |
 | test_shape_const_out/model.onnx | ✅ | OK (max ULP 0) |
 | test_slice_end_INT64_MAX/model.onnx | ✅ | OK (max ULP 0) |

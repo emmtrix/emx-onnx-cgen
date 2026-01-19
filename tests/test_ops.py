@@ -21,6 +21,7 @@ from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.errors import UnsupportedOpError
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
+from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
 from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
 from emx_onnx_cgen.lowering.registry import get_lowering
@@ -199,6 +200,50 @@ def _make_expand_model(
         [input_info],
         [output],
         initializer=[shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_scatternd_model(
+    *,
+    data_shape: list[int],
+    indices: np.ndarray,
+    updates_shape: list[int],
+    dtype: int,
+    reduction: str = "none",
+    opset: int = 18,
+) -> onnx.ModelProto:
+    data_info = helper.make_tensor_value_info("data", dtype, data_shape)
+    updates_info = helper.make_tensor_value_info("updates", dtype, updates_shape)
+    output = helper.make_tensor_value_info("output", dtype, data_shape)
+    indices_tensor = helper.make_tensor(
+        "indices",
+        TensorProto.INT64,
+        dims=list(indices.shape),
+        vals=indices.astype(np.int64).ravel().tolist(),
+    )
+    attrs = {}
+    if reduction != "none":
+        attrs["reduction"] = reduction
+    node = helper.make_node(
+        "ScatterND",
+        inputs=["data", "indices", "updates"],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "scatternd_graph",
+        [data_info, updates_info],
+        [output],
+        initializer=[indices_tensor],
     )
     model = helper.make_model(
         graph,
@@ -2925,6 +2970,24 @@ def test_lower_pad_dynamic_axes_input() -> None:
     assert op.pads_end is None
 
 
+def test_lower_scatternd_shapes() -> None:
+    indices = np.array([[0, 1], [1, 2]], dtype=np.int64)
+    model = _make_scatternd_model(
+        data_shape=[3, 3],
+        indices=indices,
+        updates_shape=[2],
+        dtype=TensorProto.FLOAT,
+        reduction="add",
+    )
+    graph = import_onnx(model)
+    op = lower_scatternd(graph, graph.nodes[0])
+    assert op.data_shape == (3, 3)
+    assert op.indices_shape == (2, 2)
+    assert op.updates_shape == (2,)
+    assert op.output_shape == (3, 3)
+    assert op.reduction == "add"
+
+
 def test_lower_squeeze_axes_input() -> None:
     model = _make_squeeze_lowering_model(
         [1, 3, 1, 5],
@@ -3368,6 +3431,18 @@ def test_gather_matches_onnxruntime() -> None:
         axis=1,
         indices_values=indices_values,
         indices_as_initializer=True,
+    )
+    _run_ort_compare(model)
+
+
+def test_scatternd_matches_onnxruntime() -> None:
+    indices_values = np.array([[0, 1], [2, 2]], dtype=np.int64)
+    model = _make_scatternd_model(
+        data_shape=[3, 3],
+        indices=indices_values,
+        updates_shape=[2],
+        dtype=TensorProto.FLOAT,
+        reduction="add",
     )
     _run_ort_compare(model)
 
