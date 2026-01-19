@@ -1,0 +1,29 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if indices_prefix_shape %}
+{% for dim in indices_prefix_shape %}
+for (idx_t {{ indices_prefix_loop_vars[loop.index0] }} = 0; {{ indices_prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ indices_prefix_loop_vars[loop.index0] }}) {
+{% endfor %}
+{% endif %}
+{% for idx in range(index_depth) %}
+    idx_t index{{ idx }} = {{ indices }}{% for var in indices_prefix_loop_vars %}[{{ var }}]{% endfor %}[{{ idx }}];
+    if (index{{ idx }} < 0) {
+        index{{ idx }} += {{ data_shape[batch_dims + idx] }};
+    }
+{% endfor %}
+{% if tail_shape %}
+{% for dim in tail_shape %}
+    for (idx_t {{ tail_loop_vars[loop.index0] }} = 0; {{ tail_loop_vars[loop.index0] }} < {{ dim }}; ++{{ tail_loop_vars[loop.index0] }}) {
+{% endfor %}
+{% endif %}
+    {{ output_index_expr }} = {{ data_index_expr }};
+{% if tail_shape %}
+{% for _ in tail_shape %}
+    }
+{% endfor %}
+{% endif %}
+{% if indices_prefix_shape %}
+{% for _ in indices_prefix_shape %}
+}
+{% endfor %}
+{% endif %}
+}

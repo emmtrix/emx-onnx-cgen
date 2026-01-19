@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 132 / 198
+Supported operators: 133 / 198
 
 | Operator | Supported |
 | --- | --- |
@@ -66,7 +66,7 @@ Supported operators: 132 / 198
 | GRU | ❌ |
 | Gather | ✅ |
 | GatherElements | ✅ |
-| GatherND | ❌ |
+| GatherND | ✅ |
 | Gelu | ✅ |
 | Gemm | ✅ |
 | GlobalAveragePool | ✅ |
@@ -112,7 +112,7 @@ Supported operators: 132 / 198
 | Neg | ✅ |
 | NegativeLogLikelihoodLoss | ✅ |
 | NonMaxSuppression | ❌ |
-| NonZero | ❌ |
+| NonZero | ✅ |
 | Not | ✅ |
 | OneHot | ❌ |
 | OptionalGetElement | ❌ |
@@ -188,7 +188,7 @@ Supported operators: 132 / 198
 | TfIdfVectorizer | ❌ |
 | ThresholdedRelu | ✅ |
 | Tile | ❌ |
-| TopK | ❌ |
+| TopK | ✅ |
 | Transpose | ✅ |
 | Trilu | ✅ |
 | Unique | ❌ |

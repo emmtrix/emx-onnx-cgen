@@ -1,6 +1,7 @@
 # Official ONNX file support
 
-Support 1085 / 1802 official ONNX files.
+Support 1088 / 1802 official ONNX files.
+Support 1092 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -200,11 +201,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ | OK (max ULP 5) |
@@ -649,9 +650,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_gather_elements_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gather_elements_negative_indices/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gather_negative_indices/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gathernd_example_float32/model.onnx | ❌ | Unsupported op GatherND |
-| onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/model.onnx | ❌ | Unsupported op GatherND |
-| onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32_batch_dim1/model.onnx | ❌ | Unsupported op GatherND |
+| onnx-org/onnx/backend/test/data/node/test_gathernd_example_float32/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32_batch_dim1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_default_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
 | onnx-org/onnx/backend/test/data/node/test_gelu_default_2/model.onnx | ✅ | OK (max ULP 1) |
@@ -1042,7 +1043,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_batches/model.onnx | ❌ | Unsupported op NonMaxSuppression |
 | onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_classes/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonzero_example/model.onnx | ❌ | Unsupported op NonZero |
+| onnx-org/onnx/backend/test/data/node/test_nonzero_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_4d/model.onnx | ✅ | OK (max ULP 0) |
@@ -1607,13 +1608,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tile/model.onnx | ❌ | Tile repeats input must be a constant initializer |
 | onnx-org/onnx/backend/test/data/node/test_tile_precomputed/model.onnx | ❌ | Tile repeats input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_negative_axis/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_largest/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_smallest/model.onnx | ❌ | Unsupported op TopK |
-| onnx-org/onnx/backend/test/data/node/test_top_k_uint64/model.onnx | ❌ | Unsupported op TopK |
+| onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_negative_axis/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_largest/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_smallest/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_top_k_uint64/model.onnx | ✅ |  |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout_default/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout_default_mask/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |

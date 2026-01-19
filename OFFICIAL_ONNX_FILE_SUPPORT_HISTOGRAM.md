@@ -25,7 +25,6 @@
 | Unsupported op RotaryEmbedding | 8 | ███ |
 | tuple index out of range | 8 | ███ |
 | Unsupported op TfIdfVectorizer | 7 | ██ |
-| Unsupported op TopK | 7 | ██ |
 | AveragePool has unsupported attributes | 6 | ██ |
 | Missing output 2 in testbench data | 6 | ██ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ██ |
@@ -61,7 +60,6 @@
 | Min expects identical input/output shapes | 3 | █ |
 | Unsupported op Bernoulli | 3 | █ |
 | Unsupported op DynamicQuantizeLinear | 3 | █ |
-| Unsupported op GatherND | 3 | █ |
 | Unsupported op Loop | 3 | █ |
 | Unsupported op Momentum | 3 | █ |
 | Unsupported op RandomUniformLike | 3 | █ |
@@ -140,7 +138,6 @@ Mismatched elements: 2 / 6 (33.3%)
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
-| Unsupported op NonZero | 1 | █ |
 | Unsupported op OptionalGetElement | 1 | █ |
 | Unsupported op QLinearConv | 1 | █ |
 | Unsupported op Upsample | 1 | █ |

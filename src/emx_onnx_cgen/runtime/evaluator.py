@@ -34,6 +34,7 @@ from ..lowering.global_max_pool import lower_global_max_pool
 from ..lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from ..lowering.nonzero import lower_nonzero
 from ..lowering.pad import lower_pad
 from ..lowering.expand import lower_expand
 from ..lowering.range import lower_range
@@ -43,6 +44,7 @@ from ..lowering.softmax_cross_entropy_loss import (
     lower_softmax_cross_entropy_loss,
 )
 from ..lowering.arg_reduce import lower_arg_reduce
+from ..lowering.topk import lower_topk
 from ..lowering.lstm import ACTIVATION_KIND_BY_NAME, resolve_lstm_spec
 from ..lowering.lrn import resolve_lrn_spec
 from ..lowering.matmul import lower_matmul
@@ -1010,6 +1012,73 @@ def _eval_gather(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = np.take(data, indices, axis=axis)
 
 
+@register_evaluator("GatherND")
+def _eval_gather_nd(evaluator: Evaluator, node: Node) -> None:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("GatherND must have 2 inputs and 1 output")
+    data = evaluator.values[node.inputs[0]]
+    indices = evaluator.values[node.inputs[1]]
+    if indices.dtype.type not in {np.int32, np.int64}:
+        raise UnsupportedOpError(
+            f"GatherND indices must be int32 or int64, got {indices.dtype}"
+        )
+    if indices.ndim < 1:
+        raise UnsupportedOpError("GatherND indices must have rank >= 1")
+    batch_dims = int(node.attrs.get("batch_dims", 0))
+    if batch_dims < 0:
+        raise UnsupportedOpError(
+            f"GatherND batch_dims must be >= 0, got {batch_dims}"
+        )
+    if batch_dims > indices.ndim - 1:
+        raise UnsupportedOpError(
+            "GatherND batch_dims must be <= indices rank - 1, "
+            f"got {batch_dims} vs {indices.ndim - 1}"
+        )
+    if batch_dims > data.ndim:
+        raise UnsupportedOpError(
+            "GatherND batch_dims must be <= data rank, "
+            f"got {batch_dims} vs {data.ndim}"
+        )
+    if tuple(data.shape[:batch_dims]) != tuple(indices.shape[:batch_dims]):
+        raise UnsupportedOpError(
+            "GatherND batch_dims must match on data/indices, "
+            f"got {data.shape} vs {indices.shape}"
+        )
+    index_depth = indices.shape[-1]
+    if index_depth <= 0:
+        raise UnsupportedOpError(
+            "GatherND indices final dimension must be >= 1"
+        )
+    if index_depth > data.ndim - batch_dims:
+        raise UnsupportedOpError(
+            "GatherND indices final dimension must be <= data rank - "
+            f"batch_dims, got {index_depth} vs {data.ndim - batch_dims}"
+        )
+    tail_shape = data.shape[batch_dims + index_depth :]
+    output_shape = indices.shape[:-1] + tail_shape
+    output = np.empty(output_shape, dtype=data.dtype)
+    indices_prefix_shape = indices.shape[:-1]
+    prefix_iter = (
+        np.ndindex(*indices_prefix_shape) if indices_prefix_shape else [()]
+    )
+    for prefix in prefix_iter:
+        raw_index = indices[prefix]
+        if index_depth == 1:
+            index_values = [int(np.asarray(raw_index).item())]
+        else:
+            index_values = [int(value) for value in raw_index]
+        for dim_index, value in enumerate(index_values):
+            if value < 0:
+                index_values[dim_index] = value + data.shape[
+                    batch_dims + dim_index
+                ]
+        data_index = list(prefix[:batch_dims]) + index_values
+        data_index.extend([slice(None)] * len(tail_shape))
+        output_index = prefix + (slice(None),) * len(tail_shape)
+        output[output_index] = data[tuple(data_index)]
+    evaluator.values[node.outputs[0]] = output
+
+
 @register_evaluator("Slice")
 def _eval_slice(evaluator: Evaluator, node: Node) -> None:
     input_value = evaluator.values[node.inputs[0]]
@@ -1597,6 +1666,16 @@ def _eval_size(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[op.output] = np.array(op.value, dtype=np.int64)
 
 
+@register_evaluator("NonZero")
+def _eval_nonzero(evaluator: Evaluator, node: Node) -> None:
+    op = lower_nonzero(evaluator.graph, node)
+    values = evaluator.values[op.input0]
+    indices = np.nonzero(values)
+    evaluator.values[op.output] = np.stack(indices, axis=0).astype(
+        np.int64, copy=False
+    )
+
+
 @register_evaluator("Expand")
 def _eval_expand(evaluator: Evaluator, node: Node) -> None:
     op = lower_expand(evaluator.graph, node)
@@ -1775,6 +1854,39 @@ def _eval_arg_reduce(evaluator: Evaluator, node: Node) -> None:
     if op.keepdims:
         indices = np.expand_dims(indices, axis=op.axis)
     evaluator.values[op.output] = indices.astype(op.output_dtype.np_dtype)
+
+
+@register_evaluator("TopK")
+def _eval_topk(evaluator: Evaluator, node: Node) -> None:
+    op = lower_topk(evaluator.graph, node)
+    value = evaluator.values[op.input0]
+    moved = np.moveaxis(value, op.axis, -1)
+    axis_dim = moved.shape[-1]
+    flat = moved.reshape(-1, axis_dim)
+    values_out = np.empty((flat.shape[0], op.k), dtype=value.dtype)
+    indices_out = np.empty((flat.shape[0], op.k), dtype=np.int64)
+    for row_index in range(flat.shape[0]):
+        row = flat[row_index]
+        order = sorted(
+            range(axis_dim),
+            key=lambda idx: (
+                -row[idx].item() if op.largest else row[idx].item(),
+                idx,
+            ),
+        )
+        topk = order[: op.k]
+        indices_out[row_index] = topk
+        values_out[row_index] = row[topk]
+    values_out = values_out.reshape(moved.shape[:-1] + (op.k,))
+    indices_out = indices_out.reshape(moved.shape[:-1] + (op.k,))
+    values_out = np.moveaxis(values_out, -1, op.axis)
+    indices_out = np.moveaxis(indices_out, -1, op.axis)
+    evaluator.values[op.output_values] = values_out.astype(
+        op.output_values_dtype.np_dtype
+    )
+    evaluator.values[op.output_indices] = indices_out.astype(
+        op.output_indices_dtype.np_dtype
+    )
 
 
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:

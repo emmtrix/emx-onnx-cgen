@@ -35,6 +35,7 @@ from .codegen.c_emitter import (
     GemmOp,
     GatherOp,
     GatherElementsOp,
+    GatherNDOp,
     ScatterNDOp,
     ExpandOp,
     RangeOp,
@@ -46,6 +47,7 @@ from .codegen.c_emitter import (
     LogSoftmaxOp,
     HardmaxOp,
     NegativeLogLikelihoodLossOp,
+    NonZeroOp,
     NodeInfo,
     PadOp,
     SplitOp,
@@ -94,6 +96,7 @@ from .lowering import cumsum as _cumsum  # noqa: F401
 from .lowering.flatten import lower_flatten
 from .lowering.gather import lower_gather
 from .lowering.gather_elements import lower_gather_elements
+from .lowering.gather_nd import lower_gather_nd
 from .lowering import scatter_nd as _scatter_nd  # noqa: F401
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
@@ -108,6 +111,7 @@ from .lowering import mean_variance_normalization as _mean_variance_normalizatio
 from .lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
+from .lowering import nonzero as _nonzero  # noqa: F401
 from .lowering.expand import lower_expand
 from .lowering.range import lower_range
 from .lowering import one_hot as _one_hot  # noqa: F401
@@ -123,6 +127,7 @@ from .lowering.reduce import (
     REDUCE_OUTPUTS_FLOAT_ONLY,
 )
 from .lowering import arg_reduce as _arg_reduce  # noqa: F401
+from .lowering import topk as _topk  # noqa: F401
 from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.grid_sample import lower_grid_sample
@@ -464,6 +469,7 @@ class Compiler:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | GatherNDOp
             | ScatterNDOp
             | TransposeOp
             | ConstantOfShapeOp
@@ -475,6 +481,7 @@ class Compiler:
             | ArgReduceOp
             | ShapeOp
             | PadOp
+            | NonZeroOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -515,6 +522,7 @@ class Compiler:
             | ConcatOp
             | GatherElementsOp
             | GatherOp
+            | GatherNDOp
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
@@ -524,6 +532,7 @@ class Compiler:
             | ArgReduceOp
             | ShapeOp
             | PadOp
+            | NonZeroOp
             | ExpandOp
             | CumSumOp
             | RangeOp
