@@ -1,4 +1,4 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_triu_out_neg_out/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_triu_out_neg_out/test_data_set_0"
 }

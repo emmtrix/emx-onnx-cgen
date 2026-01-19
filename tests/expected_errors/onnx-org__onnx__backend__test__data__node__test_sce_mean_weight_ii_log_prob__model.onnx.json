@@ -1,4 +1,4 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_log_prob/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sce_mean_weight_ii_log_prob/test_data_set_0"
 }
