@@ -60,7 +60,7 @@ static inline void node0_lstm(const float input_x[restrict 1][1][2], const float
         for (int b = 0; b < 1; ++b) {
             int seq_limit = 1;
             for (int step = 0; step < seq_limit; ++step) {
-                int t = reverse ? (1 - 1 - step) : step;
+                int t = reverse ? (seq_limit - 1 - step) : step;
                 float H_next[3];
                 float C_next[3];
                 for (int h = 0; h < 3; ++h) {

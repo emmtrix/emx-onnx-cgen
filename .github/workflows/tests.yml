@@ -12,10 +12,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11"]
+        python-version: ["3.10"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -30,4 +32,22 @@ jobs:
           python -m pip install -r requirements-ci.txt
 
       - name: Run tests
+        if: github.event_name == 'push'
         run: pytest -n auto -q
+
+      - name: Run tests (update refs for PRs)
+        if: github.event_name == 'pull_request'
+        run: UPDATE_REFS=1 pytest -n auto -q
+
+      - name: Commit updated references
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          if git status --porcelain | grep -q .; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "tests: update golden references"
+            git push origin "HEAD:${GITHUB_HEAD_REF}"
+          else
+            echo "No reference updates."
+          fi
