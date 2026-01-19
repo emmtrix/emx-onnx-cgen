@@ -43,18 +43,18 @@ def _resolve_target_shape(
                 raise ShapeInferenceError("Reshape allows only one -1 dimension")
             unknown_index = index
             output_dims.append(-1)
-            continue
-        if dim == 0:
-            if allowzero == 0:
-                if index >= len(input_shape):
-                    raise ShapeInferenceError(
-                        "Reshape zero dim must index into input shape"
-                    )
-                dim = input_shape[index]
-        if dim < 0:
-            raise ShapeInferenceError("Reshape dims must be >= -1")
-        output_dims.append(dim)
-        known_product *= dim
+        else:
+            if dim == 0:
+                if allowzero == 0:
+                    if index >= len(input_shape):
+                        raise ShapeInferenceError(
+                            "Reshape zero dim must index into input shape"
+                        )
+                    dim = input_shape[index]
+            if dim < 0:
+                raise ShapeInferenceError("Reshape dims must be >= -1")
+            output_dims.append(dim)
+            known_product *= dim
     input_product = _shape_product(input_shape)
     if unknown_index is not None:
         if known_product == 0 or input_product % known_product != 0:

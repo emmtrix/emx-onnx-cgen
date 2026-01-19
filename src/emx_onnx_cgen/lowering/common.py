@@ -332,17 +332,17 @@ def _resolve_value_shape(
                         return None
                     unknown_index = len(output_dims)
                     output_dims.append(-1)
-                    continue
-                if dim == 0:
-                    contains_zero = True
-                    if allowzero == 0:
-                        if index >= len(input_shape):
-                            return None
-                        dim = input_shape[index]
-                if dim < 0:
-                    return None
-                output_dims.append(dim)
-                known_product *= dim
+                else:
+                    if dim == 0:
+                        contains_zero = True
+                        if allowzero == 0:
+                            if index >= len(input_shape):
+                                return None
+                            dim = input_shape[index]
+                    if dim < 0:
+                        return None
+                    output_dims.append(dim)
+                    known_product *= dim
             if allowzero == 1 and contains_zero and unknown_index is not None:
                 return None
             input_product = shape_product(input_shape)

@@ -15,25 +15,25 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if reduction == "none" %}
                 output_flat[target_index] = {{ zero_literal }};
 {% endif %}
-                continue;
-            }
-            idx_t class_index = (idx_t)target_value;
-            idx_t input_index = (n_idx * c + class_index) * d + d_idx;
-            {{ acc_type }} value = -({{ acc_type }})input_flat[input_index];
+            } else {
+                idx_t class_index = (idx_t)target_value;
+                idx_t input_index = (n_idx * c + class_index) * d + d_idx;
+                {{ acc_type }} value = -({{ acc_type }})input_flat[input_index];
 {% if weight %}
-            {{ acc_type }} sample_weight = {{ weight }}[class_index];
-            value *= sample_weight;
+                {{ acc_type }} sample_weight = {{ weight }}[class_index];
+                value *= sample_weight;
 {% else %}
-            {{ acc_type }} sample_weight = {{ acc_one_literal }};
+                {{ acc_type }} sample_weight = {{ acc_one_literal }};
 {% endif %}
 {% if reduction == "none" %}
-            output_flat[target_index] = value;
+                output_flat[target_index] = value;
 {% else %}
-            loss_sum += value;
+                loss_sum += value;
 {% if reduction == "mean" %}
-            weight_sum += sample_weight;
+                weight_sum += sample_weight;
 {% endif %}
 {% endif %}
+            }
         }
     }
 {% if reduction == "mean" %}

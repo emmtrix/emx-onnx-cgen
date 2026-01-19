@@ -83,10 +83,9 @@ static inline void node0_conv(const float input0[restrict 1][1][4][4], const flo
                                 for (idx_t kd1 = 0; kd1 < 3; ++kd1) {
                                     const idx_t id0 = od0 * 1 + kd0 * 1 - 1;
                                     const idx_t id1 = od1 * 1 + kd1 * 1 - 1;
-                                    if (id0 < 0 || id0 >= 4 || id1 < 0 || id1 >= 4) {
-                                        continue;
+                                    if (id0 >= 0 && id0 < 4 && id1 >= 0 && id1 < 4) {
+                                        acc += input0[n][ic_global][id0][id1] * weights[oc_global][ic][kd0][kd1];
                                     }
-                                    acc += input0[n][ic_global][id0][id1] * weights[oc_global][ic][kd0][kd1];
                                 }
                             }
                         }

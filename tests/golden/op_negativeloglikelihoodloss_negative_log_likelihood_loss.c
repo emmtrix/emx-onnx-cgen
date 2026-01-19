@@ -48,14 +48,14 @@ static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2
             idx_t target_index = n_idx * d + d_idx;
             int64_t target_value = target_flat[target_index];
             if ((int64_t)target_value == -1) {
-                continue;
+            } else {
+                idx_t class_index = (idx_t)target_value;
+                idx_t input_index = (n_idx * c + class_index) * d + d_idx;
+                double value = -(double)input_flat[input_index];
+                double sample_weight = 1.0;
+                loss_sum += value;
+                weight_sum += sample_weight;
             }
-            idx_t class_index = (idx_t)target_value;
-            idx_t input_index = (n_idx * c + class_index) * d + d_idx;
-            double value = -(double)input_flat[input_index];
-            double sample_weight = 1.0;
-            loss_sum += value;
-            weight_sum += sample_weight;
         }
     }
     if (weight_sum == 0.0) {

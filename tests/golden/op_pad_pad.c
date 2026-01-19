@@ -89,9 +89,9 @@ static inline void node0_pad(const float input[restrict 2][3], float output[rest
                 pad_index += pad_idx1 * 1;
             }
             if (!pad_in_bounds) {
-                continue;
+            } else {
+                output[i0][i1] = input_flat[pad_index];
             }
-            output[i0][i1] = input_flat[pad_index];
         }
     }
 }

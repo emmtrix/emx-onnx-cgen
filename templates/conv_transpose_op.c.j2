@@ -26,10 +26,9 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             {% for dim in range(spatial_rank) %}
                             const idx_t {{ out_indices[dim] }} = {{ in_indices[dim] }} * {{ strides[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }} - {{ pads_begin[dim] }};
                             {% endfor %}
-                            if ({% for dim in range(spatial_rank) %}{{ out_indices[dim] }} < 0 || {{ out_indices[dim] }} >= {{ out_spatial[dim] }}{% if not loop.last %} || {% endif %}{% endfor %}) {
-                                continue;
+                            if ({% for dim in range(spatial_rank) %}{{ out_indices[dim] }} >= 0 && {{ out_indices[dim] }} < {{ out_spatial[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
+                                {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} += value * {{ weights }}[ic_global][oc]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %};
                             }
-                            {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} += value * {{ weights }}[ic_global][oc]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %};
                         {% for dim in range(spatial_rank) %}
                         }
                         {% endfor %}

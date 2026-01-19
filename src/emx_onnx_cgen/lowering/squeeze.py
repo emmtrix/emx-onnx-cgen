@@ -95,11 +95,11 @@ def _validate_output_shape_for_unknown_axes(
     for dim in input_shape:
         if output_index < len(output_shape) and dim == output_shape[output_index]:
             output_index += 1
-            continue
-        if dim != 1:
-            raise ShapeInferenceError(
-                "Squeeze output shape must remove only dimensions of size 1"
-            )
+        else:
+            if dim != 1:
+                raise ShapeInferenceError(
+                    "Squeeze output shape must remove only dimensions of size 1"
+                )
     if output_index != len(output_shape):
         raise ShapeInferenceError(
             "Squeeze output shape must preserve input order while removing size-1 axes"

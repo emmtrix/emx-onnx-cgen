@@ -9,19 +9,18 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
                 for (idx_t kx = 0; kx < {{ kernel_shape[0] }}; ++kx) {
                     const idx_t ix = ox * {{ strides[0] }} + kx * {{ dilations[0] }} - {{ pads[0] }};
-                    if (ix < 0 || ix >= {{ in_spatial[0] }}) {
-                        continue;
-                    }
-                    {{ c_type }} val = {{ input0 }}[n][c][ix];
-                    if (val > max_value) {
-                        max_value = val;
+                    if (ix >= 0 && ix < {{ in_spatial[0] }}) {
+                        {{ c_type }} val = {{ input0 }}[n][c][ix];
+                        if (val > max_value) {
+                            max_value = val;
 {% if indices %}
 {% if storage_order == 0 %}
-                        max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix);
+                            max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix);
 {% else %}
-                        max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix);
+                            max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix);
 {% endif %}
 {% endif %}
+                        }
                     }
                 }
                 {{ output }}[n][c][ox] = max_value;
@@ -38,24 +37,22 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
                     for (idx_t kh = 0; kh < {{ kernel_shape[0] }}; ++kh) {
                         const idx_t ih = oh * {{ strides[0] }} + kh * {{ dilations[0] }} - {{ pads[0] }};
-                        if (ih < 0 || ih >= {{ in_spatial[0] }}) {
-                            continue;
-                        }
-                        for (idx_t kw = 0; kw < {{ kernel_shape[1] }}; ++kw) {
-                            const idx_t iw = ow * {{ strides[1] }} + kw * {{ dilations[1] }} - {{ pads[1] }};
-                            if (iw < 0 || iw >= {{ in_spatial[1] }}) {
-                                continue;
-                            }
-                            {{ c_type }} val = {{ input0 }}[n][c][ih][iw];
-                            if (val > max_value) {
-                                max_value = val;
+                        if (ih >= 0 && ih < {{ in_spatial[0] }}) {
+                            for (idx_t kw = 0; kw < {{ kernel_shape[1] }}; ++kw) {
+                                const idx_t iw = ow * {{ strides[1] }} + kw * {{ dilations[1] }} - {{ pads[1] }};
+                                if (iw >= 0 && iw < {{ in_spatial[1] }}) {
+                                    {{ c_type }} val = {{ input0 }}[n][c][ih][iw];
+                                    if (val > max_value) {
+                                        max_value = val;
 {% if indices %}
 {% if storage_order == 0 %}
-                                max_index = ({{ indices_c_type }})((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})ih) * {{ in_spatial[1] }}) + ({{ indices_c_type }})iw);
+                                        max_index = ({{ indices_c_type }})((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})ih) * {{ in_spatial[1] }}) + ({{ indices_c_type }})iw);
 {% else %}
-                                max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }}) + ({{ indices_c_type }})ih + ({{ indices_c_type }})iw * {{ in_spatial[0] }});
+                                        max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }}) + ({{ indices_c_type }})ih + ({{ indices_c_type }})iw * {{ in_spatial[0] }});
 {% endif %}
 {% endif %}
+                                    }
+                                }
                             }
                         }
                     }
@@ -75,29 +72,26 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
                         for (idx_t kd = 0; kd < {{ kernel_shape[0] }}; ++kd) {
                             const idx_t id = od * {{ strides[0] }} + kd * {{ dilations[0] }} - {{ pads[0] }};
-                            if (id < 0 || id >= {{ in_spatial[0] }}) {
-                                continue;
-                            }
-                            for (idx_t kh = 0; kh < {{ kernel_shape[1] }}; ++kh) {
-                                const idx_t ih = oh * {{ strides[1] }} + kh * {{ dilations[1] }} - {{ pads[1] }};
-                                if (ih < 0 || ih >= {{ in_spatial[1] }}) {
-                                    continue;
-                                }
-                                for (idx_t kw = 0; kw < {{ kernel_shape[2] }}; ++kw) {
-                                    const idx_t iw = ow * {{ strides[2] }} + kw * {{ dilations[2] }} - {{ pads[2] }};
-                                    if (iw < 0 || iw >= {{ in_spatial[2] }}) {
-                                        continue;
-                                    }
-                                    {{ c_type }} val = {{ input0 }}[n][c][id][ih][iw];
-                                    if (val > max_value) {
-                                        max_value = val;
+                            if (id >= 0 && id < {{ in_spatial[0] }}) {
+                                for (idx_t kh = 0; kh < {{ kernel_shape[1] }}; ++kh) {
+                                    const idx_t ih = oh * {{ strides[1] }} + kh * {{ dilations[1] }} - {{ pads[1] }};
+                                    if (ih >= 0 && ih < {{ in_spatial[1] }}) {
+                                        for (idx_t kw = 0; kw < {{ kernel_shape[2] }}; ++kw) {
+                                            const idx_t iw = ow * {{ strides[2] }} + kw * {{ dilations[2] }} - {{ pads[2] }};
+                                            if (iw >= 0 && iw < {{ in_spatial[2] }}) {
+                                                {{ c_type }} val = {{ input0 }}[n][c][id][ih][iw];
+                                                if (val > max_value) {
+                                                    max_value = val;
 {% if indices %}
 {% if storage_order == 0 %}
-                                        max_index = ({{ indices_c_type }})(((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})id) * {{ in_spatial[1] }} + ({{ indices_c_type }})ih) * {{ in_spatial[2] }}) + ({{ indices_c_type }})iw);
+                                                    max_index = ({{ indices_c_type }})(((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})id) * {{ in_spatial[1] }} + ({{ indices_c_type }})ih) * {{ in_spatial[2] }}) + ({{ indices_c_type }})iw);
 {% else %}
-                                        max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }} * {{ in_spatial[2] }}) + ({{ indices_c_type }})id + ({{ indices_c_type }})ih * {{ in_spatial[0] }} + ({{ indices_c_type }})iw * {{ in_spatial[0] }} * {{ in_spatial[1] }});
+                                                    max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }} * {{ in_spatial[2] }}) + ({{ indices_c_type }})id + ({{ indices_c_type }})ih * {{ in_spatial[0] }} + ({{ indices_c_type }})iw * {{ in_spatial[0] }} * {{ in_spatial[1] }});
 {% endif %}
 {% endif %}
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
