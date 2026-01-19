@@ -3129,9 +3129,11 @@ class CEmitter:
         reduce_template = templates["reduce"]
         reduce_dynamic_template = templates["reduce_dynamic"]
         arg_reduce_template = templates["arg_reduce"]
+        topk_template = templates["topk"]
         constant_of_shape_template = templates["constant_of_shape"]
         shape_template = templates["shape"]
         size_template = templates["size"]
+        nonzero_template = templates["nonzero"]
         expand_template = templates["expand"]
         cumsum_template = templates["cumsum"]
         range_template = templates["range"]
@@ -3216,6 +3218,7 @@ class CEmitter:
                 constant_of_shape_template=constant_of_shape_template,
                 shape_template=shape_template,
                 size_template=size_template,
+                nonzero_template=nonzero_template,
                 expand_template=expand_template,
                 cumsum_template=cumsum_template,
                 range_template=range_template,
