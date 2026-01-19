@@ -1,4 +1,4 @@
 {
-  "error": "Cast input and output shapes must match",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/test_data_set_0"
 }

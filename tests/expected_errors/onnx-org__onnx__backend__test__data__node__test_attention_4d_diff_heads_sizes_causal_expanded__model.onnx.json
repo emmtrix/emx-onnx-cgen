@@ -1,4 +1,4 @@
 {
-  "error": "Where output shape must be (1, 1), got (1,)",
+  "error": "Out of tolerance (max ULP 2485323)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded/test_data_set_0"
 }

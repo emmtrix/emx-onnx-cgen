@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 167 / 500 official ONNX files.
+Support 219 / 500 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -27,7 +27,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_adam/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_adam_multiple/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_add/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx | ❌ | Out of tolerance (max ULP 2143208269) |
+| onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_add_int16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_add_int8/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_add_uint16/model.onnx | ✅ | OK (max ULP 0) |
@@ -100,128 +100,128 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_atanh_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2687518) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_causal_expanded/model.onnx | ❌ | Out of tolerance (max ULP 6196633) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1996849) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2367254) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1993303) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 54812) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1833014) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2557716) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_with_past_and_present/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_scaled/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 79888) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2436080) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification_expanded/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present/model.onnx | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ | OK (max ULP 6) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2986210) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2044718) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_4d/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1818802) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1818802) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4617623) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2645975) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2946491) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_causal_expanded/model.onnx | ❌ | Out of tolerance (max ULP 3942617) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ❌ | ONNX Runtime failed to run onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:181 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 12, max supported IR version: 11 |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Pad value input must be a scalar |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 3668711) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2304394) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2004067) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2485323) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2246145) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 62279) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 70687) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1813037) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2460850) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2363933) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1556056) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1818802) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2645975) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx | ❌ | Out of tolerance (max ULP 222) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 6539519) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_expanded/model.onnx | ❌ | Out of tolerance (max ULP 3777733) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 6562330) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ❌ | Out of tolerance (max ULP 3042080) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 7) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ❌ | Out of tolerance (max ULP 300) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 74574) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx | ❌ | Out of tolerance (max ULP 85177) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2077807) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1902013) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1071538375) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ❌ | Where output shape must be (1, 1), got (1,) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ❌ | Out of tolerance (max ULP 85699935) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1073227119) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1067548513) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1072671123) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1068382978) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ❌ | Out of tolerance (max ULP 9163003) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ❌ | Out of tolerance (max ULP 15309573) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ❌ | Out of tolerance (max ULP 7917190) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Out of tolerance (max ULP 15953592) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ❌ | Out of tolerance (max ULP 11061934) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
@@ -280,9 +280,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ❌ | BitwiseXor expects identical input/output shapes |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ❌ | BitwiseXor expects identical input/output shapes |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx | ❌ | Cast input and output shapes must match |
+| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx | ✅ | OK (max ULP 8) |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Cast input and output shapes must match |
+| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT/model.onnx | ❌ | ONNX Runtime failed to run onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:181 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 13, max supported IR version: 11 |
 | onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ❌ | ONNX Runtime failed to run onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT16/model.onnx: [ONNXRuntimeError] : 1 : FAIL : /onnxruntime_src/onnxruntime/core/graph/model.cc:181 onnxruntime::Model::Model(onnx::ModelProto&&, const onnxruntime::PathString&, const onnxruntime::IOnnxRuntimeOpSchemaRegistryList*, const onnxruntime::logging::Logger&, const onnxruntime::ModelOptions&) Unsupported model IR version: 13, max supported IR version: 11 |
@@ -458,19 +458,19 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_ceil/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_ceil_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_celu/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_celu_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_celu_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop/model.onnx | ❌ | Unsupported op CenterCropPad |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2827146620) |
+| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw/model.onnx | ❌ | Unsupported op CenterCropPad |
-| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2162567595) |
+| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2260728201) |
-| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2134203891) |
+| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | ❌ | Unsupported op CenterCropPad |
-| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ❌ | Out of tolerance (max ULP 3159500101) |
+| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad/model.onnx | ❌ | Unsupported op CenterCropPad |
-| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2553782455) |
+| onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_default_inbounds/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_default_inbounds_expanded/model.onnx | ✅ | OK (max ULP 0) |
@@ -481,20 +481,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_clip_default_int8_min/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_default_int8_min_expanded/model.onnx | ✅ |  |
 | onnx-org/onnx/backend/test/data/node/test_clip_default_max/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_clip_default_max_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1069384066) |
+| onnx-org/onnx/backend/test/data/node/test_clip_default_max_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_default_min/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_clip_default_min_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1072630820) |
+| onnx-org/onnx/backend/test/data/node/test_clip_default_min_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_clip_example_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1065353216) |
-| onnx-org/onnx/backend/test/data/node/test_clip_expanded/model.onnx | ❌ | Out of tolerance (max ULP 2130706433) |
+| onnx-org/onnx/backend/test/data/node/test_clip_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_clip_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_inbounds/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_clip_inbounds_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1084227585) |
+| onnx-org/onnx/backend/test/data/node/test_clip_inbounds_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_min_greater_than_max/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_min_greater_than_max_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_outbounds/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_clip_outbounds_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1084227584) |
+| onnx-org/onnx/backend/test/data/node/test_clip_outbounds_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_clip_splitbounds/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_clip_splitbounds_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1084227585) |
+| onnx-org/onnx/backend/test/data/node/test_clip_splitbounds_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_col2im/model.onnx | ❌ | Unsupported op Col2Im |
 | onnx-org/onnx/backend/test/data/node/test_col2im_5d/model.onnx | ❌ | Unsupported op Col2Im |
 | onnx-org/onnx/backend/test/data/node/test_col2im_dilations/model.onnx | ❌ | Unsupported op Col2Im |

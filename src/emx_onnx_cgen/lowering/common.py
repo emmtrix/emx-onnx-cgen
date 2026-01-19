@@ -39,6 +39,7 @@ def value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int,
         resolved = _resolve_value_shape(graph, name, node)
         if resolved is not None:
             return resolved
+        return value.type.shape
     return value.type.shape
 
 
