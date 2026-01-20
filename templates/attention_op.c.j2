@@ -135,9 +135,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     }
                     {% endif %}
                     scores[ki] = score_softcap;
-                    if (score_softcap > max_score) {
-                        max_score = score_softcap;
-                    }
+                    max_score = {{ max_fn }}(max_score, score_softcap);
                 }
                 {{ c_type }} weights[{{ total_seq }}];
                 {{ c_type }} sum = {{ zero_literal }};

@@ -10,9 +10,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {{ c_type }} max_value = input_flat[base];
             for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
                 {{ c_type }} value = input_flat[base + axis_idx * inner];
-                if (value > max_value) {
-                    max_value = value;
-                }
+                max_value = {{ max_fn }}(max_value, value);
             }
             {{ c_type }} sum = 0;
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {

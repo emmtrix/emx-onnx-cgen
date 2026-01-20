@@ -21,10 +21,15 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+
+static inline double ref_scalar_f64_fmax(double a, double b) {
+    return fmax(a, b);
+}
 
 /*
  * Node 0:
@@ -54,9 +59,7 @@ static inline void node0_softmaxcrossentropyloss(const float input0[restrict 2][
             double max_value = (double)input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
                 double value = (double)input_flat[base + c_idx * d];
-                if (value > max_value) {
-                    max_value = value;
-                }
+                max_value = ref_scalar_f64_fmax(max_value, value);
             }
             double sum = 0.0;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {

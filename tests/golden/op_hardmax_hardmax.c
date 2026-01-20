@@ -20,10 +20,16 @@
  */
 
 #include <stdint.h>
+#include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+
+static inline float ref_scalar_f32_fmax(float a, float b) {
+    return fmaxf(a, b);
+}
 
 /*
  * Node 0:
@@ -47,10 +53,9 @@ static inline void node0_hardmax(const float input0[restrict 2][3], float output
             idx_t max_index = 0;
             for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
                 float value = input_flat[base + axis_idx * inner];
-                if (value > max_value) {
-                    max_value = value;
-                    max_index = axis_idx;
-                }
+                const float prev_max = max_value;
+                max_value = ref_scalar_f32_fmax(max_value, value);
+                max_index = (value > prev_max) ? axis_idx : max_index;
             }
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 output_flat[base + axis_idx * inner] =

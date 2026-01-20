@@ -21,10 +21,15 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+
+static inline float ref_scalar_f32_fmax(float a, float b) {
+    return fmaxf(a, b);
+}
 
 /*
  * Node 0:
@@ -64,9 +69,7 @@ static inline void node0_attention(const float input_q[restrict 1][2][3][4], con
                         score_softcap = softcap * tanhf(score_bias / softcap);
                     }
                     scores[ki] = score_softcap;
-                    if (score_softcap > max_score) {
-                        max_score = score_softcap;
-                    }
+                    max_score = ref_scalar_f32_fmax(max_score, score_softcap);
                 }
                 float weights[5];
                 float sum = 0.0f;
