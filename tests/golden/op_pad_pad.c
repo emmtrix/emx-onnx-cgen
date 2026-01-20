@@ -96,6 +96,11 @@ static inline void node0_pad(const float input[restrict 2][3], float output[rest
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 2][3], float output[restrict 2][5]) {
     node0_pad(input, output);
 }

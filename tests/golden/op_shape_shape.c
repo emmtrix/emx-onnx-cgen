@@ -40,6 +40,11 @@ static inline void node0_shape(const float input0[restrict 2][3][4], int64_t out
     output[2] = 4LL;
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3][4], int64_t out[restrict 3]) {
     node0_shape(in0, out);
 }

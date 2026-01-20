@@ -11,6 +11,7 @@ import struct
 from typing import Mapping, Sequence
 
 from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
+import numpy as np
 
 from ..errors import CodegenError
 from ..ops import (
@@ -1216,6 +1217,7 @@ class CEmitter:
         restrict_arrays: bool = True,
         truncate_weights_after: int | None = None,
         large_temp_threshold_bytes: int = 1024,
+        large_weight_threshold: int = 1024,
     ) -> None:
         self._env = Environment(
             loader=FileSystemLoader(str(template_dir)),
@@ -1230,6 +1232,9 @@ class CEmitter:
         if large_temp_threshold_bytes < 0:
             raise CodegenError("large_temp_threshold_bytes must be >= 0")
         self._large_temp_threshold_bytes = large_temp_threshold_bytes
+        if large_weight_threshold < 0:
+            raise CodegenError("large_weight_threshold must be >= 0")
+        self._large_weight_threshold = large_weight_threshold
 
     @staticmethod
     def _sanitize_identifier(name: str) -> str:
@@ -2805,6 +2810,9 @@ class CEmitter:
         testbench_inputs = self._sanitize_testbench_inputs(
             testbench_inputs, name_map
         )
+        inline_constants, large_constants = self._partition_constants(
+            model.constants
+        )
         (
             dim_order,
             input_dim_names,
@@ -3004,6 +3012,7 @@ class CEmitter:
             resolved_ops,
             emit_testbench=emit_testbench,
             extra_includes=scalar_includes | testbench_math_include,
+            needs_weight_loader=bool(large_constants),
         )
         sections = [
             self._emit_header_comment(model.header),
@@ -3015,14 +3024,22 @@ class CEmitter:
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
         sections.append("")
-        constants_section = self._emit_constant_definitions(model.constants)
+        constants_section = self._emit_constant_definitions(inline_constants)
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
+        large_constants_section = self._emit_constant_storage_definitions(
+            large_constants
+        )
+        if large_constants_section:
+            sections.extend((large_constants_section.rstrip(), ""))
         if scalar_functions:
             sections.extend(("\n".join(scalar_functions), ""))
+        weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
                 operator_fns.rstrip(),
+                "",
+                weight_loader.rstrip(),
                 "",
                 wrapper_fn,
             )
@@ -3037,6 +3054,7 @@ class CEmitter:
                         testbench_inputs=testbench_inputs,
                         dim_order=dim_order,
                         dim_values=dim_values,
+                        weight_data_filename=self._weight_data_filename(model),
                     ),
                 )
             )
@@ -3059,6 +3077,9 @@ class CEmitter:
         testbench_inputs = self._sanitize_testbench_inputs(
             testbench_inputs, name_map
         )
+        inline_constants, large_constants = self._partition_constants(
+            model.constants
+        )
         (
             dim_order,
             input_dim_names,
@@ -3258,6 +3279,7 @@ class CEmitter:
             resolved_ops,
             emit_testbench=emit_testbench,
             extra_includes=scalar_includes | testbench_math_include,
+            needs_weight_loader=bool(large_constants),
         )
         sections = [
             self._emit_header_comment(model.header),
@@ -3269,14 +3291,22 @@ class CEmitter:
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
         sections.append("")
-        constants_section = self._emit_constant_declarations(model.constants)
+        constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
+        large_constants_section = self._emit_constant_storage_definitions(
+            large_constants
+        )
+        if large_constants_section:
+            sections.extend((large_constants_section.rstrip(), ""))
         if scalar_functions:
             sections.extend(("\n".join(scalar_functions), ""))
+        weight_loader = self._emit_weight_loader(model, large_constants)
         sections.extend(
             (
                 operator_fns.rstrip(),
+                "",
+                weight_loader.rstrip(),
                 "",
                 wrapper_fn,
             )
@@ -3291,6 +3321,7 @@ class CEmitter:
                         testbench_inputs=testbench_inputs,
                         dim_order=dim_order,
                         dim_values=dim_values,
+                        weight_data_filename=self._weight_data_filename(model),
                     ),
                 )
             )
@@ -3298,14 +3329,14 @@ class CEmitter:
         main_rendered = "\n".join(sections)
         if not main_rendered.endswith("\n"):
             main_rendered += "\n"
-        data_includes = self._collect_constant_includes(model.constants)
+        data_includes = self._collect_constant_includes(inline_constants)
         data_sections = [self._emit_header_comment(model.header), ""]
         if data_includes:
             data_sections.extend((*data_includes, ""))
         else:
             data_sections.append("")
         data_constants = self._emit_constant_definitions(
-            model.constants, storage_prefix="const"
+            inline_constants, storage_prefix="const"
         )
         if data_constants:
             data_sections.append(data_constants.rstrip())
@@ -3622,9 +3653,12 @@ class CEmitter:
         *,
         emit_testbench: bool,
         extra_includes: set[str] | None = None,
+        needs_weight_loader: bool = False,
     ) -> list[str]:
         includes: set[str] = {"#include <stdint.h>"}
         if emit_testbench:
+            includes.add("#include <stdio.h>")
+        if needs_weight_loader:
             includes.add("#include <stdio.h>")
         if extra_includes:
             includes.update(extra_includes)
@@ -10667,6 +10701,7 @@ class CEmitter:
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
         dim_order: Sequence[str],
         dim_values: Mapping[str, int],
+        weight_data_filename: str,
     ) -> str:
         input_counts = tuple(
             self._element_count(shape) for shape in model.input_shapes
@@ -10755,6 +10790,7 @@ class CEmitter:
             ],
             inputs=inputs,
             outputs=outputs,
+            weight_data_filename=weight_data_filename,
         ).rstrip()
         return _format_c_indentation(rendered)
 
@@ -10774,6 +10810,66 @@ class CEmitter:
                 if not math.isfinite(float(value)):
                     return True
         return False
+
+    def _partition_constants(
+        self, constants: tuple[ConstTensor, ...]
+    ) -> tuple[tuple[ConstTensor, ...], tuple[ConstTensor, ...]]:
+        if self._large_weight_threshold <= 0:
+            return (), constants
+        inline: list[ConstTensor] = []
+        large: list[ConstTensor] = []
+        for const in constants:
+            if self._element_count(const.shape) > self._large_weight_threshold:
+                large.append(const)
+            else:
+                inline.append(const)
+        return tuple(inline), tuple(large)
+
+    @staticmethod
+    def _weight_data_filename(model: LoweredModel) -> str:
+        return f"{model.name}.bin"
+
+    def _emit_weight_loader(
+        self, model: LoweredModel, large_constants: tuple[ConstTensor, ...]
+    ) -> str:
+        lines = [f"_Bool {model.name}_load(const char *path) {{"]
+        if not large_constants:
+            lines.append("    (void)path;")
+            lines.append("    return 1;")
+            lines.append("}")
+            return _format_c_indentation("\n".join(lines))
+        lines.append("    FILE *file = fopen(path, \"rb\");")
+        lines.append("    if (!file) {")
+        lines.append("        return 0;")
+        lines.append("    }")
+        lines.append(
+            f"    _Bool ok = {model.name}_load_file(file);"
+        )
+        lines.append("    fclose(file);")
+        lines.append("    return ok;")
+        lines.append("}")
+        lines.append("")
+        lines.append(f"static _Bool {model.name}_load_file(FILE *file) {{")
+        for const in large_constants:
+            shape = self._codegen_shape(const.shape)
+            loop_vars = self._loop_vars(shape)
+            for depth, var in enumerate(loop_vars):
+                lines.append(
+                    f"    for (idx_t {var} = 0; {var} < {shape[depth]}; ++{var}) {{"
+                )
+            index_expr = "".join(f"[{var}]" for var in loop_vars)
+            zero_index = "[0]" * len(shape)
+            lines.append(
+                f"        if (fread(&{const.name}{index_expr}, "
+                f"sizeof({const.name}{zero_index}), 1, file) != 1) {{"
+            )
+            lines.append("            return 0;")
+            lines.append("        }")
+            for _ in loop_vars[::-1]:
+                lines.append("    }")
+        lines.append("    return 1;")
+        lines.append("}")
+        return _format_c_indentation("\n".join(lines))
 
     def _emit_constant_definitions(
         self,
@@ -10827,6 +10923,37 @@ class CEmitter:
             array_suffix = self._array_suffix(const.shape)
             lines.append(f"extern const {c_type} {const.name}{array_suffix};")
         return "\n".join(lines)
+
+    def _emit_constant_storage_definitions(
+        self,
+        constants: tuple[ConstTensor, ...],
+        *,
+        storage_prefix: str = "static",
+    ) -> str:
+        if not constants:
+            return ""
+        lines: list[str] = []
+        for index, const in enumerate(constants, start=1):
+            lines.append(self._emit_constant_comment(const, index))
+            c_type = const.dtype.c_type
+            array_suffix = self._array_suffix(const.shape)
+            lines.append(f"{storage_prefix} {c_type} {const.name}{array_suffix};")
+            lines.append("")
+        if lines and not lines[-1]:
+            lines.pop()
+        return "\n".join(lines)
+
+    def collect_weight_data(
+        self, constants: tuple[ConstTensor, ...]
+    ) -> bytes | None:
+        _, large_constants = self._partition_constants(constants)
+        if not large_constants:
+            return None
+        chunks: list[bytes] = []
+        for const in large_constants:
+            array = np.asarray(const.data, dtype=const.dtype.np_dtype)
+            chunks.append(array.tobytes(order="C"))
+        return b"".join(chunks)
 
     @staticmethod
     def _index_expr(shape: tuple[int, ...], loop_vars: tuple[str, ...]) -> str:

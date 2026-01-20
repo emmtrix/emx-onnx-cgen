@@ -42,6 +42,11 @@ static inline void node0_where(const bool condition[restrict 2][3], const float 
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const bool condition[restrict 2][3], const float x[restrict 2][3], const float y[restrict 2][3], float out[restrict 2][3]) {
     node0_where(condition, x, y, out);
 }

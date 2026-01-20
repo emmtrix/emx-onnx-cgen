@@ -58,6 +58,11 @@ static inline void node0_depthtospace(const float input0[restrict 1][4][2][2], f
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][4][2][2], float out[restrict 1][1][4][4]) {
     node0_depthtospace(in0, out);
 }

@@ -47,6 +47,11 @@ static inline void node0_mul(const float input0[restrict 2][3], const float inpu
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3], const float in1[restrict 2][3], float out[restrict 2][3]) {
     node0_mul(in0, in1, out);
 }

@@ -175,6 +175,15 @@ def _build_parser() -> argparse.ArgumentParser:
             "(default: 1024)"
         ),
     )
+    compile_parser.add_argument(
+        "--large-weight-threshold",
+        type=int,
+        default=1024,
+        help=(
+            "Store weights larger than this element count in a binary file "
+            "(default: 1024)"
+        ),
+    )
     add_restrict_flags(compile_parser)
 
     verify_parser = subparsers.add_parser(
@@ -219,6 +228,15 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     verify_parser.add_argument(
+        "--large-weight-threshold",
+        type=int,
+        default=1024,
+        help=(
+            "Store weights larger than this element count in a binary file "
+            "(default: 1024)"
+        ),
+    )
+    verify_parser.add_argument(
         "--test-data-dir",
         type=Path,
         default=None,
@@ -254,7 +272,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _handle_compile(args: argparse.Namespace) -> int:
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
-    generated, data_source, error = _compile_model(args)
+    model_name = args.model_name or "model"
+    generated, data_source, weight_data, error = _compile_model(args)
     if error:
         LOGGER.error("Failed to compile %s: %s", model_path, error)
         return 1
@@ -268,6 +287,10 @@ def _handle_compile(args: argparse.Namespace) -> int:
         )
         data_path.write_text(data_source, encoding="utf-8")
         LOGGER.info("Wrote data source to %s", data_path)
+    if weight_data is not None:
+        weights_path = output_path.with_name(f"{model_name}.bin")
+        weights_path.write_bytes(weight_data)
+        LOGGER.info("Wrote weights binary to %s", weights_path)
     return 0
 
 
@@ -275,7 +298,7 @@ def _compile_model(
     args: argparse.Namespace,
     *,
     testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
-) -> tuple[str | None, str | None, str | None]:
+) -> tuple[str | None, str | None, bytes | None, str | None]:
     model_path: Path = args.model
     model_name = args.model_name or "model"
     try:
@@ -290,17 +313,20 @@ def _compile_model(
             restrict_arrays=args.restrict_arrays,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
+            large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
         if args.emit_data_file:
-            generated, data_source = compiler.compile_with_data_file(model)
+            generated, data_source, weight_data = (
+                compiler.compile_with_data_file_and_weight_data(model)
+            )
         else:
-            generated = compiler.compile(model)
+            generated, weight_data = compiler.compile_with_weight_data(model)
             data_source = None
     except (OSError, CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
-        return None, None, str(exc)
-    return generated, data_source, None
+        return None, None, None, str(exc)
+    return generated, data_source, weight_data, None
 
 
 def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] | None:
@@ -401,11 +427,12 @@ def _verify_model(
             restrict_arrays=args.restrict_arrays,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
+            large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
         codegen_started = time.perf_counter()
-        generated = compiler.compile(model)
+        generated, weight_data = compiler.compile_with_weight_data(model)
         log_step("codegen", codegen_started)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         return None, str(exc), operators
@@ -421,8 +448,11 @@ def _verify_model(
         temp_path = Path(temp_dir)
         LOGGER.info("verify temp dir: %s", temp_path)
         c_path = temp_path / "model.c"
+        weights_path = temp_path / f"{model_name}.bin"
         exe_path = temp_path / "model"
         c_path.write_text(generated, encoding="utf-8")
+        if weight_data is not None:
+            weights_path.write_bytes(weight_data)
         try:
             compile_started = time.perf_counter()
             compile_cmd = [
@@ -456,6 +486,7 @@ def _verify_model(
                 check=True,
                 capture_output=True,
                 text=True,
+                cwd=temp_path,
             )
             log_step("run", run_started)
         except subprocess.CalledProcessError as exc:

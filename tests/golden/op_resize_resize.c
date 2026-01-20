@@ -125,6 +125,11 @@ static inline void node0_resize(const float input0[restrict 1][1][2][2], const i
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][1][2][2], float out[restrict 1][1][4][4]) {
     node0_resize(in0, weight1_sizes, out);
 }

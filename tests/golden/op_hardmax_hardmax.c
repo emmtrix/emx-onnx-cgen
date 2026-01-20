@@ -60,6 +60,11 @@ static inline void node0_hardmax(const float input0[restrict 2][3], float output
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
     node0_hardmax(in0, out);
 }

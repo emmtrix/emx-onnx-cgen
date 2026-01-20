@@ -92,6 +92,11 @@ static inline void node0_attention(const float input_q[restrict 1][2][3][4], con
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][2][3][4], const float in1[restrict 1][2][5][4], const float in2[restrict 1][2][5][4], float out[restrict 1][2][3][4]) {
     node0_attention(in0, in1, in2, out);
 }

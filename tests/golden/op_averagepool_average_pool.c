@@ -69,6 +69,11 @@ static inline void node0_averagepool(const float input0[restrict 1][1][4][4], fl
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
     node0_averagepool(input, output);
 }

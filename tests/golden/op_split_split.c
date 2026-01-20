@@ -65,6 +65,11 @@ static inline void node0_split(const float input0[restrict 2][6], float output_0
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 2][6], float output_0[restrict 2][2], float output_1[restrict 2][2], float output_2[restrict 2][2]) {
     node0_split(input, output_0, output_1, output_2);
 }

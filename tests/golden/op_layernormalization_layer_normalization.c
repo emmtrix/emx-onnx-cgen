@@ -74,6 +74,11 @@ static inline void node0_layernormalization(const float input0[restrict 2][3][4]
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3][4], const float in1[restrict 3][4], const float in2[restrict 3][4], float out[restrict 2][3][4]) {
     node0_layernormalization(in0, in1, in2, out);
 }

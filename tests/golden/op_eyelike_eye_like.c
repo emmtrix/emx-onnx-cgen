@@ -62,6 +62,11 @@ static inline void node0_eyelike(const float input0[restrict 3][3], float output
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 3][3], float output[restrict 3][3]) {
     node0_eyelike(input, output);
 }

@@ -70,6 +70,11 @@ static inline void node0_clip(const float input0[restrict 2][3], const float inp
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 2][3], float output[restrict 2][3]) {
     node0_clip(input, weight1_min, weight2_max, output);
 }

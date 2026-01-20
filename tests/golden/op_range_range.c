@@ -75,6 +75,11 @@ static inline void node0_range(const int64_t start[restrict 1], const int64_t li
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(int64_t output[restrict 4]) {
     node0_range(weight1_start, weight2_limit, weight3_delta, output);
 }

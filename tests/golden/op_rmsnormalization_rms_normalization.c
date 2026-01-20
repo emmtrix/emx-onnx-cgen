@@ -55,6 +55,11 @@ static inline void node0_rmsnormalization(const float input0[restrict 2][3][4], 
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3][4], const float in1[restrict 4], float out[restrict 2][3][4]) {
     node0_rmsnormalization(in0, in1, out);
 }
