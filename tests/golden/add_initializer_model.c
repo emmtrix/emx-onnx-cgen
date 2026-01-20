@@ -63,6 +63,11 @@ static inline void node0_add(const float input0[restrict 2][3], const float inpu
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
     node0_add(in0, weight1_weight, out);
 }

@@ -181,6 +181,7 @@ class CompilerOptions:
     testbench_inputs: Mapping[str, np.ndarray] | None = None
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
+    large_weight_threshold: int = 1024
 
 
 def _onnx_elem_type(dtype: np.dtype) -> int:
@@ -200,6 +201,7 @@ class Compiler:
             restrict_arrays=options.restrict_arrays,
             truncate_weights_after=options.truncate_weights_after,
             large_temp_threshold_bytes=options.large_temp_threshold_bytes,
+            large_weight_threshold=options.large_weight_threshold,
         )
 
     def compile(self, model: onnx.ModelProto) -> str:
@@ -233,6 +235,46 @@ class Compiler:
             variable_dim_inputs=variable_dim_inputs,
             variable_dim_outputs=variable_dim_outputs,
         )
+
+    def compile_with_weight_data(
+        self, model: onnx.ModelProto
+    ) -> tuple[str, bytes | None]:
+        graph = import_onnx(model)
+        graph = self._concretize_graph_shapes(model, graph)
+        testbench_inputs = self._resolve_testbench_inputs(graph)
+        variable_dim_inputs, variable_dim_outputs = self._collect_variable_dims(
+            graph
+        )
+        lowered = self._lower_model(model, graph)
+        generated = self._emitter.emit_model(
+            lowered,
+            emit_testbench=self._options.emit_testbench,
+            testbench_inputs=testbench_inputs,
+            variable_dim_inputs=variable_dim_inputs,
+            variable_dim_outputs=variable_dim_outputs,
+        )
+        weight_data = self._emitter.collect_weight_data(lowered.constants)
+        return generated, weight_data
+
+    def compile_with_data_file_and_weight_data(
+        self, model: onnx.ModelProto
+    ) -> tuple[str, str, bytes | None]:
+        graph = import_onnx(model)
+        graph = self._concretize_graph_shapes(model, graph)
+        testbench_inputs = self._resolve_testbench_inputs(graph)
+        variable_dim_inputs, variable_dim_outputs = self._collect_variable_dims(
+            graph
+        )
+        lowered = self._lower_model(model, graph)
+        generated, data_source = self._emitter.emit_model_with_data_file(
+            lowered,
+            emit_testbench=self._options.emit_testbench,
+            testbench_inputs=testbench_inputs,
+            variable_dim_inputs=variable_dim_inputs,
+            variable_dim_outputs=variable_dim_outputs,
+        )
+        weight_data = self._emitter.collect_weight_data(lowered.constants)
+        return generated, data_source, weight_data
 
     @staticmethod
     def _collect_variable_dims(

@@ -229,6 +229,39 @@ def _make_add_initializer_model() -> onnx.ModelProto:
     return model
 
 
+def _make_large_weight_initializer_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, [2, 3])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
+    weight_values = np.linspace(0.1, 0.6, num=6, dtype=np.float32).reshape(2, 3)
+    weight_initializer = helper.make_tensor(
+        "weight_large",
+        TensorProto.FLOAT,
+        dims=[2, 3],
+        vals=weight_values.flatten().tolist(),
+    )
+    weight_info = helper.make_tensor_value_info(
+        "weight_large", TensorProto.FLOAT, [2, 3]
+    )
+    node = helper.make_node(
+        "Add", inputs=["in0", "weight_large"], outputs=["out"]
+    )
+    graph = helper.make_graph(
+        [node],
+        "add_large_init_graph",
+        [input_info, weight_info],
+        [output],
+        initializer=[weight_initializer],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _mark_dynamic_dims(
     model: onnx.ModelProto,
     *,
@@ -332,6 +365,23 @@ def test_codegen_golden_add_initializer() -> None:
     compiler = Compiler()
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "add_initializer_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_large_weight_loader() -> None:
+    model = _make_large_weight_initializer_model()
+    compiler = Compiler(
+        CompilerOptions(
+            template_dir=Path("templates"),
+            model_name="large_weight_model",
+            large_weight_threshold=4,
+            emit_testbench=True,
+        )
+    )
+    generated = compiler.compile(model)
+    golden_path = (
+        Path(__file__).parent / "golden" / "large_weight_model_testbench.c"
+    )
     assert_golden(generated, golden_path)
 
 
