@@ -2,14 +2,14 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx-cgen.svg)](https://pypi.org/project/emx-onnx-cgen)
 
-`emx-onnx-cgen` compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating systems, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
+`emx-onnx-cgen` compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating-system services, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
 
 Key characteristics:
 
 - **No dynamic memory allocation** (`malloc`, `free`, heap usage)
 - **Static, compile-time known memory layout** for parameters, activations, and temporaries
 - **Deterministic control flow** (explicit loops, no hidden dispatch or callbacks)
-- **No OS or libc dependencies** beyond basic C
+- **No OS dependencies**, using only standard C headers (for example, `stdint.h` and `stddef.h`)
 - **Single-threaded execution model**
 - **Bitwise-stable code generation** for reproducible builds
 - **Readable, auditable C code** suitable for certification and code reviews
@@ -40,7 +40,7 @@ Key characteristics:
   - `float`, `double`, `float16`
   - `int8_t`, `uint8_t`, `int16_t`, `uint16_t`, `int32_t`, `uint32_t`, `int64_t`, `uint64_t`
   - `bool`
-- Supporting dynamic dimensions by utilizing C99 variable-length arrays (VLAs).
+- Optional support for dynamic dimensions using C99 variable-length arrays (VLAs), when the target compiler supports them.
 
 ## Installation
 
@@ -103,6 +103,7 @@ Options:
 - `--cc`: Explicit C compiler command for building the testbench binary.
 - `--large-weight-threshold`: Store weights larger than this element count in a binary file (default: `1024`).
 - `--large-temp-threshold-bytes`: Mark temporary buffers larger than this threshold as static (default: `1024`).
+- `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 
 How verification works:
 
@@ -113,9 +114,10 @@ How verification works:
    directory.
 3. **Run ONNX Runtime**: the JSON inputs from the testbench are fed to ORT using
    the same model.
-4. **Compare outputs**: floating outputs are compared with `rtol=1e-4` and
-   `atol=1e-5`; non-floating outputs must match exactly. Missing outputs or
-   mismatches are treated as failures.
+4. **Compare outputs**: floating outputs are compared by maximum ULP distance
+   (see https://www.emmtrix.com/wiki/ULP_Difference_of_Float_Numbers for the
+   ULP definition and algorithm); non-floating outputs must match exactly.
+   Missing outputs or mismatches are treated as failures.
 5. **ORT unsupported models**: if ORT reports `NOT_IMPLEMENTED`, verification is
    skipped with a warning (exit code 0).
 
