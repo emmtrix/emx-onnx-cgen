@@ -87,6 +87,11 @@ static inline void node0_slice(const float input0[restrict 2][3][4], float outpu
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3][4], float out[restrict 2][3][1]) {
     node0_slice(in0, out);
 }

@@ -63,6 +63,11 @@ static inline void node0_instancenormalization(const float input0[restrict 1][3]
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][3][2][2], const float in1[restrict 3], const float in2[restrict 3], float out[restrict 1][3][2][2]) {
     node0_instancenormalization(in0, in1, in2, out);
 }

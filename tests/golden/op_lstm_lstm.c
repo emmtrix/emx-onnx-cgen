@@ -116,6 +116,11 @@ static inline void node0_lstm(const float input_x[restrict 1][1][2], const float
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float X[restrict 1][1][2], const float W[restrict 1][12][2], const float R[restrict 1][12][3], float Y[restrict 1][1][1][3], float Y_h[restrict 1][1][3], float Y_c[restrict 1][1][3]) {
     node0_lstm(X, W, R, Y, Y_h, Y_c);
 }

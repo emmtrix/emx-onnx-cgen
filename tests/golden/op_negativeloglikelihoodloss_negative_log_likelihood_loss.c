@@ -65,6 +65,11 @@ static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 2][3], const int64_t target[restrict 2], float loss[restrict 1]) {
     node0_negativeloglikelihoodloss(input, target, loss);
 }

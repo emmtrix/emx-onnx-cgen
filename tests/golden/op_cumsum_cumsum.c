@@ -79,6 +79,11 @@ static inline void node0_cumsum(const float input0[restrict 2][3], float output[
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 2][3], float output[restrict 2][3]) {
     node0_cumsum(input, output);
 }
