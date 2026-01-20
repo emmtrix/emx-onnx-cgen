@@ -11,16 +11,13 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     const idx_t ix = ox * {{ strides[0] }} + kx * {{ dilations[0] }} - {{ pads[0] }};
                     if (ix >= 0 && ix < {{ in_spatial[0] }}) {
                         {{ c_type }} val = {{ input0 }}[n][c][ix];
-                        if (val > max_value) {
-                            max_value = val;
+                        const {{ c_type }} prev_max = max_value;
+                        max_value = {{ max_fn }}(max_value, val);
 {% if indices %}
-{% if storage_order == 0 %}
-                            max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix);
-{% else %}
-                            max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix);
+                        max_index = (val > prev_max)
+                            ? ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix)
+                            : max_index;
 {% endif %}
-{% endif %}
-                        }
                     }
                 }
                 {{ output }}[n][c][ox] = max_value;
@@ -42,16 +39,19 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                 const idx_t iw = ow * {{ strides[1] }} + kw * {{ dilations[1] }} - {{ pads[1] }};
                                 if (iw >= 0 && iw < {{ in_spatial[1] }}) {
                                     {{ c_type }} val = {{ input0 }}[n][c][ih][iw];
-                                    if (val > max_value) {
-                                        max_value = val;
+                                    const {{ c_type }} prev_max = max_value;
+                                    max_value = {{ max_fn }}(max_value, val);
 {% if indices %}
+                                    max_index = (val > prev_max)
+                                        ? (
 {% if storage_order == 0 %}
-                                        max_index = ({{ indices_c_type }})((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})ih) * {{ in_spatial[1] }}) + ({{ indices_c_type }})iw);
+                                            ({{ indices_c_type }})((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})ih) * {{ in_spatial[1] }}) + ({{ indices_c_type }})iw)
 {% else %}
-                                        max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }}) + ({{ indices_c_type }})ih + ({{ indices_c_type }})iw * {{ in_spatial[0] }});
+                                            ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }}) + ({{ indices_c_type }})ih + ({{ indices_c_type }})iw * {{ in_spatial[0] }})
 {% endif %}
+                                        )
+                                        : max_index;
 {% endif %}
-                                    }
                                 }
                             }
                         }
@@ -80,16 +80,19 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                             const idx_t iw = ow * {{ strides[2] }} + kw * {{ dilations[2] }} - {{ pads[2] }};
                                             if (iw >= 0 && iw < {{ in_spatial[2] }}) {
                                                 {{ c_type }} val = {{ input0 }}[n][c][id][ih][iw];
-                                                if (val > max_value) {
-                                                    max_value = val;
+                                                const {{ c_type }} prev_max = max_value;
+                                                max_value = {{ max_fn }}(max_value, val);
 {% if indices %}
+                                                max_index = (val > prev_max)
+                                                    ? (
 {% if storage_order == 0 %}
-                                                    max_index = ({{ indices_c_type }})(((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})id) * {{ in_spatial[1] }} + ({{ indices_c_type }})ih) * {{ in_spatial[2] }}) + ({{ indices_c_type }})iw);
+                                                        ({{ indices_c_type }})(((((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} + ({{ indices_c_type }})id) * {{ in_spatial[1] }} + ({{ indices_c_type }})ih) * {{ in_spatial[2] }}) + ({{ indices_c_type }})iw)
 {% else %}
-                                                    max_index = ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }} * {{ in_spatial[2] }}) + ({{ indices_c_type }})id + ({{ indices_c_type }})ih * {{ in_spatial[0] }} + ({{ indices_c_type }})iw * {{ in_spatial[0] }} * {{ in_spatial[1] }});
+                                                        ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }} * {{ in_spatial[1] }} * {{ in_spatial[2] }}) + ({{ indices_c_type }})id + ({{ indices_c_type }})ih * {{ in_spatial[0] }} + ({{ indices_c_type }})iw * {{ in_spatial[0] }} * {{ in_spatial[1] }})
 {% endif %}
+                                                    )
+                                                    : max_index;
 {% endif %}
-                                                }
                                             }
                                         }
                                     }
