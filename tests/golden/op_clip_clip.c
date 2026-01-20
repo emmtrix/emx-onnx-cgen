@@ -20,6 +20,8 @@
  */
 
 #include <stdint.h>
+#include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -47,6 +49,14 @@ static const float weight2_max[1] = {
     0x1.800000p+2f
 };
 
+static inline float ref_scalar_f32_fmin(float a, float b) {
+    return fminf(a, b);
+}
+
+static inline float ref_scalar_f32_fmax(float a, float b) {
+    return fmaxf(a, b);
+}
+
 /*
  * Node 0:
  * OpType: Clip
@@ -59,12 +69,10 @@ static inline void node0_clip(const float input0[restrict 2][3], const float inp
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             float value = input0[i0][i1];
-            if (value < input_min[0]) {
-                value = input_min[0];
-            }
-            if (value > input_max[0]) {
-                value = input_max[0];
-            }
+            const float min_value = input_min[0];
+            const float max_value = input_max[0];
+            value = ref_scalar_f32_fmax(value, min_value);
+            value = ref_scalar_f32_fmin(value, max_value);
             output[i0][i1] = value;
         }
     }

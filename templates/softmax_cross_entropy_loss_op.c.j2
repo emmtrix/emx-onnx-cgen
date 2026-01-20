@@ -22,9 +22,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {{ acc_type }} max_value = ({{ acc_type }})input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
                 {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d];
-                if (value > max_value) {
-                    max_value = value;
-                }
+                max_value = {{ max_fn }}(max_value, value);
             }
             {{ acc_type }} sum = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {

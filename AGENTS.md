@@ -308,6 +308,8 @@ When acting as an agent in this repo:
     * `onnx-org/onnx/defs/**/defs.cc` or `onnx-org/onnx/defs/**/old.cc` for the
       schema source and historical documentation strings.
     * Use ripgrep (`rg -n "<OpName>" onnx-org`) to locate the relevant sections.
+12. When implementing min/max selection in templates, use scalar min/max helpers
+    from the scalar function registry instead of `if`-based comparisons.
 
 ## Adding an operator (checklist)
 

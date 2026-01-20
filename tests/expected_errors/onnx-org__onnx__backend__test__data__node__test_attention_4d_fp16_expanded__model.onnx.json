@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "Failed to resolve scalar maximum function for Softmax.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/test_data_set_0",
   "operators": [
     "Shape",

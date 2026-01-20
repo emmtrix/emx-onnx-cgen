@@ -6363,6 +6363,17 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AttentionOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Attention codegen."
+                )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
+            )
+            if max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar maximum function for Attention."
+                )
             params = self._shared_param_map(
                 [
                     ("input_q", op.input_q),
@@ -6543,6 +6554,7 @@ class CEmitter:
                 scale_literal=CEmitter._format_floating(op.scale, op.dtype),
                 softcap_literal=CEmitter._format_floating(op.softcap, op.dtype),
                 one_literal=CEmitter._format_literal(op.dtype, 1),
+                max_fn=max_fn,
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
                 tanh_fn=CEmitter._math_fn(op.dtype, "tanhf", "tanh"),
                 is_causal=int(op.is_causal),
@@ -7433,6 +7445,17 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Softmax rendering."
+                )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
+            )
+            if max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar maximum function for Softmax."
+                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -7454,10 +7477,22 @@ class CEmitter:
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
+                max_fn=max_fn,
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LogSoftmaxOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for LogSoftmax rendering."
+                )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
+            )
+            if max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar maximum function for LogSoftmax."
+                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -7479,11 +7514,23 @@ class CEmitter:
                 outer=op.outer,
                 axis_size=op.axis_size,
                 inner=op.inner,
+                max_fn=max_fn,
                 exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
                 log_fn=CEmitter._math_fn(op.dtype, "logf", "log"),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HardmaxOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Hardmax rendering."
+                )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
+            )
+            if max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar maximum function for Hardmax."
+                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -7507,6 +7554,7 @@ class CEmitter:
                 inner=op.inner,
                 zero_literal=zero_literal,
                 one_literal=CEmitter._format_literal(op.dtype, 1),
+                max_fn=max_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
@@ -7576,6 +7624,17 @@ class CEmitter:
                 if op.dtype in {ScalarType.F16, ScalarType.F32}
                 else op.dtype
             )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for SoftmaxCrossEntropyLoss."
+                )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, acc_dtype, scalar_registry
+            )
+            if max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar maximum function for SoftmaxCrossEntropyLoss."
+                )
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
@@ -7652,6 +7711,7 @@ class CEmitter:
                 acc_one_literal=acc_one_literal,
                 acc_exp_fn=acc_exp_fn,
                 acc_log_fn=acc_log_fn,
+                max_fn=max_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MaxPoolOp):
@@ -9516,6 +9576,10 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QuantizeLinearOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for QuantizeLinear."
+                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9557,6 +9621,21 @@ class CEmitter:
                 ]
             )
             compute_type = "double" if op.input_dtype == ScalarType.F64 else "float"
+            compute_dtype = (
+                ScalarType.F64
+                if compute_type == "double"
+                else ScalarType.F32
+            )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
+            )
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
+            )
+            if max_fn is None or min_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for QuantizeLinear."
+                )
             round_fn = CEmitter._math_fn(
                 op.input_dtype, "nearbyintf", "nearbyint"
             )
@@ -9592,10 +9671,26 @@ class CEmitter:
                 round_fn=round_fn,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
+                min_fn=min_fn,
+                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ClipOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Clip rendering."
+                )
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, op.dtype, scalar_registry
+            )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
+            )
+            if min_fn is None or max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for Clip."
+                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9696,6 +9791,8 @@ class CEmitter:
                 input_expr=input_expr,
                 min_expr=min_expr,
                 max_expr=max_expr,
+                min_fn=min_fn,
+                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
