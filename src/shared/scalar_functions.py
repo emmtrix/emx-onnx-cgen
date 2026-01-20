@@ -2059,6 +2059,17 @@ def _bool_from_ops(name: str) -> _GeneratedScalar:
 
 
 _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
+    ScalarType.F16: _ScalarTypeInfo(
+        scalar_type=ScalarType.F16,
+        c_type="_Float16",
+        prefix="ref_scalar_f16_",
+        suffix="f16",
+        is_float=True,
+        is_bool=False,
+        is_signed=True,
+        is_small_int=False,
+        bits=None,
+    ),
     ScalarType.F32: _ScalarTypeInfo(
         scalar_type=ScalarType.F32,
         c_type="float",

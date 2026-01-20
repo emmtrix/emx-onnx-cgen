@@ -70,8 +70,6 @@
 | BitwiseOr expects identical input/output shapes | 2 | █ |
 | BitwiseXor expects identical input/output shapes | 2 | █ |
 | Failed to build testbench. | 2 | █ |
-| Failed to resolve scalar maximum function for Attention. | 2 | █ |
-| Failed to resolve scalar maximum function for Softmax. | 2 | █ |
 | Gelu only supports approximate=none | 2 | █ |
 | LpPool expects 2D kernel_shape | 2 | █ |
 | LpPool supports auto_pad=NOTSET only | 2 | █ |
