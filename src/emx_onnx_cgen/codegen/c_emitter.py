@@ -7655,6 +7655,17 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MaxPoolOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for MaxPool rendering."
+                )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
+            )
+            if max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar maximum function for MaxPool."
+                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -7699,6 +7710,7 @@ class CEmitter:
                 output_suffix=output_suffix,
                 indices_suffix=indices_suffix,
                 indices_c_type=indices_c_type,
+                max_fn=max_fn,
                 batch=op.batch,
                 channels=op.channels,
                 spatial_rank=op.spatial_rank,
