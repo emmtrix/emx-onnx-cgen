@@ -38,6 +38,11 @@ static inline void node0_size(const float input0[restrict 2][3][4], int64_t outp
     output[0] = 24LL;
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3][4], int64_t out[restrict 1]) {
     node0_size(in0, out);
 }

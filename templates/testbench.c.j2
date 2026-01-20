@@ -69,6 +69,9 @@ int main(void) {
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
 {% endfor %}
 
+    if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
+        return 1;
+    }
     {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
 
     printf("{\"inputs\":{");

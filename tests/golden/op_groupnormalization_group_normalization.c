@@ -73,6 +73,11 @@ static inline void node0_groupnormalization(const float input0[restrict 1][4][2]
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][4][2][2], const float in1[restrict 4], const float in2[restrict 4], float out[restrict 1][4][2][2]) {
     node0_groupnormalization(in0, in1, in2, out);
 }

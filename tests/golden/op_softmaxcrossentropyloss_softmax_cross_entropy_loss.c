@@ -79,6 +79,11 @@ static inline void node0_softmaxcrossentropyloss(const float input0[restrict 2][
     output_flat[0] = loss_sum / (2 * 1);
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float scores[restrict 2][3], const int64_t labels[restrict 2], float loss[restrict 1], float log_prob[restrict 2][3]) {
     node0_softmaxcrossentropyloss(scores, labels, loss, log_prob);
 }

@@ -86,6 +86,7 @@ Options:
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
+- `--large-weight-threshold`: Store weights larger than this element count in a binary file (default: `1024`).
 - `--large-temp-threshold-bytes`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 
@@ -100,6 +101,7 @@ Options:
 - `--template-dir`: Directory containing the C templates (default: `templates`).
 - `--model-name`: Override the generated model name (default: model file stem).
 - `--cc`: Explicit C compiler command for building the testbench binary.
+- `--large-weight-threshold`: Store weights larger than this element count in a binary file (default: `1024`).
 - `--large-temp-threshold-bytes`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 
 How verification works:
@@ -127,6 +129,11 @@ By default, the compiler emits a single C source file that includes:
 When `--emit-data-file` is enabled, the main C source declares constant arrays
 as `extern`, and a second file named like the output with a `_data` suffix
 contains the constant definitions.
+
+When `--large-weight-threshold` is set and a weight exceeds the threshold, the
+compiler emits a `<model>.bin` file with weights packed contiguously and
+generates a `<model>_load` helper that loads weights from the binary file at
+runtime.
 
 ## Official ONNX test coverage
 

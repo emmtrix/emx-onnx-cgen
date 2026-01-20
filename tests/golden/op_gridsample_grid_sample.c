@@ -158,6 +158,11 @@ static inline void node0_gridsample(const float x[restrict 1][1][2][2], const fl
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float x[restrict 1][1][2][2], const float grid[restrict 1][2][2][2], float y[restrict 1][1][2][2]) {
     node0_gridsample(x, grid, y);
 }

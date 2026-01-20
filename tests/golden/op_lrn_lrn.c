@@ -61,6 +61,11 @@ static inline void node0_lrn(const float input0[restrict 1][3][4][4], float outp
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][3][4][4], float out[restrict 1][3][4][4]) {
     node0_lrn(in0, out);
 }

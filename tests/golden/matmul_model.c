@@ -45,6 +45,11 @@ static inline void node0_matmul(const float input0[restrict 2][3], const float i
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float a[restrict 2][3], const float b[restrict 3][4], float out[restrict 2][4]) {
     node0_matmul(a, b, out);
 }

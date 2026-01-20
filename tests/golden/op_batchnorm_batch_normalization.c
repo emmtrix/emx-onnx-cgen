@@ -93,6 +93,11 @@ static inline void node0_batchnormalization(const float input0[restrict 2][3][2]
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3][2][2], float out[restrict 2][3][2][2]) {
     node0_batchnormalization(in0, weight1_scale, weight2_bias, weight3_mean, weight4_var, out);
 }

@@ -49,6 +49,11 @@ static inline void node0_add(const float input0[2][3][4], const float input1[2][
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float a[2][3][4], const float b[2][3][4], float out[2][3][4]) {
     node0_add(a, b, out);
 }

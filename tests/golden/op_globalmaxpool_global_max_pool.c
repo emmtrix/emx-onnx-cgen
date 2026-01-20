@@ -52,6 +52,11 @@ static inline void node0_globalmaxpool(const float input0[restrict 1][2][4][3], 
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][2][4][3], float out[restrict 1][2][1][1]) {
     node0_globalmaxpool(in0, out);
 }

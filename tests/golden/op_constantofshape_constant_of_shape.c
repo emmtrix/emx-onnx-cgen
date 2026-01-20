@@ -60,6 +60,11 @@ static inline void node0_constantofshape(const int64_t input0[restrict 3], float
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(float out[restrict 2][3][4]) {
     node0_constantofshape(weight1_shape, out);
 }

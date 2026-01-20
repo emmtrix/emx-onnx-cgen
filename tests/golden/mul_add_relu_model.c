@@ -87,6 +87,11 @@ static inline void node2_relu(const float input0[restrict 2][3], float output[re
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float a[restrict 2][3], const float b[restrict 2][3], const float c[restrict 2][3], float out[restrict 2][3]) {
     float tmp0_mul_out[2][3];
     float tmp1_add_out[2][3];

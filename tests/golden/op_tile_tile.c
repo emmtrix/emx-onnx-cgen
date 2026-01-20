@@ -57,6 +57,11 @@ static inline void node0_tile(const float input0[restrict 2][3], float output[re
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float input[restrict 2][3], float output[restrict 4][3]) {
     node0_tile(input, output);
 }

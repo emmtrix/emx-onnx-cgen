@@ -64,6 +64,11 @@ static inline void node0_softmax(const float input0[restrict 2][3], float output
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
     node0_softmax(in0, out);
 }

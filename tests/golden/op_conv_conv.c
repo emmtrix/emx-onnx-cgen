@@ -97,6 +97,11 @@ static inline void node0_conv(const float input0[restrict 1][1][4][4], const flo
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][1][4][4], float out[restrict 1][1][4][4]) {
     node0_conv(in0, weight1_weight, weight2_bias, out);
 }

@@ -52,6 +52,11 @@ static inline void node0_gemm(const float input_a[restrict 2][3], const float in
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3], const float in1[restrict 3][4], const float in2[restrict 2][4], float out[restrict 2][4]) {
     node0_gemm(in0, in1, in2, out);
 }

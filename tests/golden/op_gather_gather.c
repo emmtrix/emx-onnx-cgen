@@ -46,6 +46,11 @@ static inline void node0_gather(const float data[restrict 3][2], const int64_t i
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float data[restrict 3][2], const int64_t indices[restrict 2], float out[restrict 2][2]) {
     node0_gather(data, indices, out);
 }

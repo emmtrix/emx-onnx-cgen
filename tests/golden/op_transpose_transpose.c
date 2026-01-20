@@ -44,6 +44,11 @@ static inline void node0_transpose(const float input0[restrict 2][3][4], float o
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3][4], float out[restrict 4][2][3]) {
     node0_transpose(in0, out);
 }

@@ -57,6 +57,11 @@ static inline void node0_lpnormalization(const float input0[restrict 2][3], floa
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 2][3], float out[restrict 2][3]) {
     node0_lpnormalization(in0, out);
 }

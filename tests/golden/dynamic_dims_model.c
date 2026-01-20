@@ -47,6 +47,11 @@ static inline void node0_relu(int N, int C, const float input0[restrict N][C], f
     }
 }
 
+_Bool dynamic_dims_model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void dynamic_dims_model(int N, int C, const float x[restrict N][C], float out[restrict N][C]) {
     node0_relu(N, C, x, out);
 }

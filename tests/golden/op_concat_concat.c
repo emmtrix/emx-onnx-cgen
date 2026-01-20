@@ -64,6 +64,11 @@ static inline void node0_concat(const float input_0[restrict 1][2][3], const flo
     }
 }
 
+_Bool model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void model(const float in0[restrict 1][2][3], const float in1[restrict 1][2][1], float out[restrict 1][2][4]) {
     node0_concat(in0, in1, out);
 }

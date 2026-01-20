@@ -67,6 +67,11 @@ static inline void node1_relu(const float input0[restrict 1][257], float output[
     }
 }
 
+_Bool large_temp_static_model_load(const char *path) {
+    (void)path;
+    return 1;
+}
+
 void large_temp_static_model(const float a[restrict 1][257], const float b[restrict 1][257], float out[restrict 1][257]) {
     static float tmp0_tmp[1][257];
     node0_add(a, b, tmp0_tmp);
