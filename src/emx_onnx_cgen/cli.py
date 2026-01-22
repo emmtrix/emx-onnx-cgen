@@ -251,6 +251,15 @@ def _build_parser() -> argparse.ArgumentParser:
         default=100,
         help="Maximum allowed ULP difference for floating outputs (default: 100)",
     )
+    verify_parser.add_argument(
+        "--runtime",
+        choices=("onnxruntime", "onnx-reference"),
+        default="onnxruntime",
+        help=(
+            "Runtime backend for verification (default: onnxruntime; "
+            "options: onnxruntime, onnx-reference)"
+        ),
+    )
     add_restrict_flags(verify_parser)
     return parser
 
@@ -361,9 +370,6 @@ def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] 
 
 
 def _handle_verify(args: argparse.Namespace) -> int:
-    import numpy as np
-    import onnxruntime as ort
-
     success_message, error, _operators = _verify_model(
         args, include_build_details=True
     )
@@ -381,7 +387,6 @@ def _verify_model(
     include_build_details: bool,
 ) -> tuple[str | None, str | None, list[str]]:
     import numpy as np
-    import onnxruntime as ort
 
     def log_step(step: str, started_at: float) -> None:
         duration = time.perf_counter() - started_at
@@ -511,31 +516,44 @@ def _verify_model(
             )
             for name, value in payload["inputs"].items()
         }
+    runtime_name = args.runtime
+    runtime_started = time.perf_counter()
     try:
-        ort_started = time.perf_counter()
-        sess_options = make_deterministic_session_options(ort)
-        sess = ort.InferenceSession(
-            model.SerializeToString(),
-            sess_options=sess_options,
-            providers=["CPUExecutionProvider"],
-        )
-        ort_outputs = sess.run(None, inputs)
+        if runtime_name == "onnxruntime":
+            import onnxruntime as ort
+
+            sess_options = make_deterministic_session_options(ort)
+            sess = ort.InferenceSession(
+                model.SerializeToString(),
+                sess_options=sess_options,
+                providers=["CPUExecutionProvider"],
+            )
+            runtime_outputs = sess.run(None, inputs)
+        else:
+            from onnx.reference import ReferenceEvaluator
+
+            evaluator = ReferenceEvaluator(model)
+            runtime_outputs = evaluator.run(None, inputs)
     except Exception as exc:
-        log_step("onnx runtime", ort_started)
+        log_step(runtime_name, runtime_started)
         message = str(exc)
-        if "NOT_IMPLEMENTED" in message:
+        if runtime_name == "onnxruntime" and "NOT_IMPLEMENTED" in message:
             LOGGER.warning(
                 "Skipping verification for %s: ONNX Runtime does not support the model (%s)",
                 model_path,
                 message,
             )
             return "", None, operators
-        return None, f"ONNX Runtime failed to run {model_path}: {message}", operators
-    log_step("onnx runtime", ort_started)
+        return (
+            None,
+            f"{runtime_name} failed to run {model_path}: {message}",
+            operators,
+        )
+    log_step(runtime_name, runtime_started)
     payload_outputs = payload.get("outputs", {})
     max_ulp = 0
     try:
-        for value, ort_out in zip(graph.outputs, ort_outputs):
+        for value, runtime_out in zip(graph.outputs, runtime_outputs):
             output_payload = payload_outputs.get(value.name)
             if output_payload is None:
                 raise AssertionError(f"Missing output {value.name} in testbench data")
@@ -543,12 +561,12 @@ def _verify_model(
             output_data = decode_testbench_array(
                 output_payload["data"], info.np_dtype
             ).astype(info.np_dtype, copy=False)
-            ort_out = ort_out.astype(info.np_dtype, copy=False)
-            output_data = output_data.reshape(ort_out.shape)
+            runtime_out = runtime_out.astype(info.np_dtype, copy=False)
+            output_data = output_data.reshape(runtime_out.shape)
             if np.issubdtype(info.np_dtype, np.floating):
-                max_ulp = max(max_ulp, max_ulp_diff(output_data, ort_out))
+                max_ulp = max(max_ulp, max_ulp_diff(output_data, runtime_out))
             else:
-                np.testing.assert_array_equal(output_data, ort_out)
+                np.testing.assert_array_equal(output_data, runtime_out)
     except AssertionError as exc:
         return None, str(exc), operators
     if max_ulp > args.max_ulp:
