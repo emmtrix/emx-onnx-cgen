@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 49)",
+  "error": "OK (max ULP 41)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic_align_corners_1_additional_1/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic_align_corners_1_additional_1/test_data_set_0",
   "operators": [
     "GridSample"

@@ -106,7 +106,7 @@ Supported operators: 136 / 198
 | MeanVarianceNormalization | ✅ |
 | MelWeightMatrix | ❌ |
 | Min | ✅ |
-| Mish | ✅ |
+| Mish | ❌ |
 | Mod | ✅ |
 | Mul | ✅ |
 | Neg | ✅ |
@@ -181,7 +181,7 @@ Supported operators: 136 / 198
 | StringSplit | ❌ |
 | Sub | ✅ |
 | Sum | ✅ |
-| Swish | ❌ |
+| Swish | ✅ |
 | Tan | ✅ |
 | Tanh | ✅ |
 | TensorScatter | ❌ |
