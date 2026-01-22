@@ -12,70 +12,18 @@ from shared.scalar_types import ScalarType
 
 from .onnxruntime_utils import make_deterministic_session_options
 from .codegen.c_emitter import (
-    AttentionOp,
-    AveragePoolOp,
-    BatchNormOp,
-    LpNormalizationOp,
-    InstanceNormalizationOp,
-    GroupNormalizationOp,
-    LayerNormalizationOp,
-    MeanVarianceNormalizationOp,
-    RMSNormalizationOp,
     BinaryOp,
-    MultiInputBinaryOp,
-    CastOp,
-    ClipOp,
     CEmitter,
     ConstTensor,
-    ConvOp,
-    ConvTransposeOp,
-    ConcatOp,
-    ConstantOfShapeOp,
-    CumSumOp,
-    GemmOp,
-    GatherOp,
-    GatherElementsOp,
-    GatherNDOp,
-    ScatterNDOp,
-    TensorScatterOp,
-    ExpandOp,
-    RangeOp,
-    OneHotOp,
-    LpPoolOp,
-    QuantizeLinearOp,
-    LrnOp,
-    LstmOp,
-    AdagradOp,
-    LogSoftmaxOp,
-    HardmaxOp,
-    NegativeLogLikelihoodLossOp,
-    NonZeroOp,
-    NonMaxSuppressionOp,
     NodeInfo,
-    PadOp,
-    SplitOp,
-    SoftmaxCrossEntropyLossOp,
     LoweredModel,
     ModelHeader,
-    MatMulOp,
-    QLinearMatMulOp,
-    MaxPoolOp,
-    ReduceOp,
-    ArgReduceOp,
-    ReshapeOp,
-    ResizeOp,
-    GridSampleOp,
-    HardmaxOp,
-    SoftmaxOp,
-    ShapeOp,
-    SliceOp,
-    TransposeOp,
     UnaryOp,
-    WhereOp,
 )
 from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.model import Graph, TensorType, Value
+from .ir.op import OpBase, WrapperOp
 from .lowering.attention import AttentionSpec, resolve_attention_spec
 from .lowering.average_pool import (
     lower_average_pool,
@@ -317,6 +265,7 @@ class Compiler:
             output_dtypes,
         ) = self._collect_io_specs(graph)
         ops, node_infos = self._lower_nodes(graph)
+        legacy_ops = tuple(_unwrap_lowered_op(op) for op in ops)
         header = self._build_header(model, graph)
         return LoweredModel(
             name=self._options.model_name,
@@ -327,7 +276,7 @@ class Compiler:
             output_shapes=output_shapes,
             output_dtypes=output_dtypes,
             constants=constants,
-            ops=tuple(ops),
+            ops=legacy_ops,
             node_infos=tuple(node_infos),
             header=header,
         )
@@ -488,118 +437,8 @@ class Compiler:
 
     def _lower_nodes(
         self, graph: Graph
-    ) -> tuple[
-        list[
-            BinaryOp
-            | MultiInputBinaryOp
-            | UnaryOp
-            | ClipOp
-            | CastOp
-            | QuantizeLinearOp
-            | QLinearMatMulOp
-            | MatMulOp
-            | GemmOp
-            | AttentionOp
-            | ConvOp
-            | ConvTransposeOp
-            | AveragePoolOp
-            | LpPoolOp
-            | BatchNormOp
-            | LpNormalizationOp
-            | InstanceNormalizationOp
-            | GroupNormalizationOp
-            | LayerNormalizationOp
-            | MeanVarianceNormalizationOp
-            | RMSNormalizationOp
-            | LrnOp
-            | LstmOp
-            | AdagradOp
-            | SoftmaxOp
-            | LogSoftmaxOp
-            | HardmaxOp
-            | NegativeLogLikelihoodLossOp
-            | SoftmaxCrossEntropyLossOp
-            | MaxPoolOp
-            | ConcatOp
-            | GatherElementsOp
-            | GatherOp
-            | GatherNDOp
-            | ScatterNDOp
-            | TensorScatterOp
-            | TransposeOp
-            | ConstantOfShapeOp
-            | ReshapeOp
-            | SliceOp
-            | ResizeOp
-            | GridSampleOp
-            | ReduceOp
-            | ArgReduceOp
-            | ShapeOp
-            | PadOp
-            | NonZeroOp
-            | NonMaxSuppressionOp
-            | ExpandOp
-            | CumSumOp
-            | RangeOp
-            | OneHotOp
-            | SplitOp
-        ],
-        list[NodeInfo],
-    ]:
-        ops: list[
-            BinaryOp
-            | MultiInputBinaryOp
-            | UnaryOp
-            | ClipOp
-            | CastOp
-            | QuantizeLinearOp
-            | QLinearMatMulOp
-            | MatMulOp
-            | GemmOp
-            | AttentionOp
-            | ConvOp
-            | ConvTransposeOp
-            | AveragePoolOp
-            | LpPoolOp
-            | BatchNormOp
-            | LpNormalizationOp
-            | InstanceNormalizationOp
-            | GroupNormalizationOp
-            | LayerNormalizationOp
-            | MeanVarianceNormalizationOp
-            | RMSNormalizationOp
-            | LrnOp
-            | LstmOp
-            | SoftmaxOp
-            | LogSoftmaxOp
-            | HardmaxOp
-            | NegativeLogLikelihoodLossOp
-            | SoftmaxCrossEntropyLossOp
-            | MaxPoolOp
-            | ConcatOp
-            | GatherElementsOp
-            | GatherOp
-            | GatherNDOp
-            | ScatterNDOp
-            | TensorScatterOp
-            | TransposeOp
-            | ConstantOfShapeOp
-            | ReshapeOp
-            | SliceOp
-            | ResizeOp
-            | ReduceOp
-            | ArgReduceOp
-            | ShapeOp
-            | PadOp
-            | NonZeroOp
-            | NonMaxSuppressionOp
-            | ExpandOp
-            | CumSumOp
-            | RangeOp
-            | OneHotOp
-            | SplitOp
-            | WhereOp
-        ] = []
+    ) -> tuple[list[OpBase], list[NodeInfo]]:
+        ops: list[OpBase] = []
         node_infos: list[NodeInfo] = []
         for node in graph.nodes:
             lowering = resolve_dispatch(
@@ -610,16 +449,17 @@ class Compiler:
                 binary_fallback=lambda: _lower_binary_unary,
                 unary_fallback=lambda: _lower_binary_unary,
             )
-            ops.append(lowering(graph, node))
-            node_infos.append(
-                NodeInfo(
-                    op_type=node.op_type,
-                    name=node.name,
-                    inputs=tuple(node.inputs),
-                    outputs=tuple(node.outputs),
-                    attrs=dict(node.attrs),
-                )
+            lowered = lowering(graph, node)
+            wrapped_ops = _wrap_lowered_ops(lowered)
+            node_info = NodeInfo(
+                op_type=node.op_type,
+                name=node.name,
+                inputs=tuple(node.inputs),
+                outputs=tuple(node.outputs),
+                attrs=dict(node.attrs),
             )
+            ops.extend(wrapped_ops)
+            node_infos.extend([node_info] * len(wrapped_ops))
         return ops, node_infos
 
     def _build_header(self, model: onnx.ModelProto, graph: Graph) -> ModelHeader:
@@ -659,6 +499,24 @@ class Compiler:
         graph = import_onnx(model)
         evaluator = Evaluator(graph)
         return evaluator.run(feeds)
+
+
+def _wrap_lowered_ops(lowered: object) -> list[OpBase]:
+    if isinstance(lowered, OpBase):
+        return [lowered]
+    if isinstance(lowered, (list, tuple)):
+        return [_wrap_lowered_op(item) for item in lowered]
+    return [_wrap_lowered_op(lowered)]
+
+
+def _wrap_lowered_op(op: object) -> OpBase:
+    if isinstance(op, OpBase):
+        return op
+    return WrapperOp(op)
+
+
+def _unwrap_lowered_op(op: OpBase) -> object:
+    return op.as_inner()
 
 
 def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
