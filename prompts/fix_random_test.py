@@ -29,7 +29,11 @@ def load_failing_entries() -> list[dict[str, str]]:
     )
     for repo_relative in repo_paths:
         expectation = _load_expectation_for_repo_relative(repo_relative)
-        if expectation.error.startswith("OK") or expectation.error == "":
+        if (
+            expectation.error.startswith("OK")
+            or expectation.error == ""
+            or "Unsupported elem_type" in expectation.error
+        ):
             continue
         json_path = _expected_errors_path_for_repo_relative(repo_relative)
         reproduction_cmd = ""
