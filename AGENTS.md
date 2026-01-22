@@ -72,9 +72,9 @@ When making architectural decisions, prefer clean and maintainable design even i
 pytest -n auto -q
 ```
 
-When reporting executed tests, include the test duration in your feedback.
-Prefer running only targeted tests known to be affected by your changes.
-Skip running tests for documentation-only changes unless explicitly requested.
+- When reporting executed tests, include the test duration (if known) in your feedback.
+- Prefer running only targeted tests known to be affected by your changes.
+- Skip running tests for documentation-only changes unless explicitly requested.
 
 ### Verification (single ONNX model)
 
