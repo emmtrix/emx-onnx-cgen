@@ -10,6 +10,7 @@ from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..lowering.attention import resolve_attention_spec
 from ..lowering.average_pool import lower_average_pool, lower_global_average_pool
+from ..lowering.adagrad import lower_adagrad
 from ..lowering.batch_normalization import lower_batch_normalization
 from ..lowering.concat import lower_concat
 from ..lowering.constant_of_shape import lower_constant_of_shape
@@ -158,6 +159,37 @@ def _eval_einsum(evaluator: Evaluator, node: Node) -> None:
     )
     inputs = [evaluator.values[name] for name in node.inputs]
     evaluator.values[node.outputs[0]] = np.einsum(equation, *inputs)
+
+
+@register_evaluator("Adagrad")
+def _eval_adagrad(evaluator: Evaluator, node: Node) -> None:
+    op = lower_adagrad(evaluator.graph, node)
+    rate = evaluator.values[op.rate]
+    timestep = evaluator.values[op.timestep]
+    rate_value = (
+        np.array(rate, dtype=op.dtype.np_dtype).reshape(-1)[0].item()
+    )
+    timestep_value = (
+        np.array(timestep, dtype=np.int64).reshape(-1)[0].item()
+    )
+    r = op.dtype.np_dtype.type(
+        rate_value / (1.0 + float(timestep_value) * op.decay_factor)
+    )
+    for x_name, g_name, h_name, out_name, h_out_name in zip(
+        op.inputs,
+        op.gradients,
+        op.accumulators,
+        op.outputs,
+        op.accumulator_outputs,
+    ):
+        x = evaluator.values[x_name]
+        g = evaluator.values[g_name]
+        h = evaluator.values[h_name]
+        g_regularized = op.norm_coefficient * x + g
+        h_new = h + g_regularized * g_regularized
+        h_adaptive = np.sqrt(h_new) + op.epsilon
+        evaluator.values[out_name] = x - r * g_regularized / h_adaptive
+        evaluator.values[h_out_name] = h_new
 
 
 @register_evaluator("Clip")

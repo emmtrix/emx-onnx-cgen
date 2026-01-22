@@ -691,6 +691,27 @@ class LstmOp:
 
 
 @dataclass(frozen=True)
+class AdagradOp:
+    rate: str
+    timestep: str
+    inputs: tuple[str, ...]
+    gradients: tuple[str, ...]
+    accumulators: tuple[str, ...]
+    outputs: tuple[str, ...]
+    accumulator_outputs: tuple[str, ...]
+    rate_shape: tuple[int, ...]
+    timestep_shape: tuple[int, ...]
+    tensor_shapes: tuple[tuple[int, ...], ...]
+    output_shapes: tuple[tuple[int, ...], ...]
+    dtype: ScalarType
+    rate_dtype: ScalarType
+    timestep_dtype: ScalarType
+    norm_coefficient: float
+    epsilon: float
+    decay_factor: float
+
+
+@dataclass(frozen=True)
 class MaxPoolOp:
     input0: str
     output: str
@@ -1208,6 +1229,7 @@ class LoweredModel:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -1391,6 +1413,7 @@ class CEmitter:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -1543,6 +1566,16 @@ class CEmitter:
             if op.output_y_c is not None:
                 names.append(op.output_y_c)
             return tuple(names)
+        if isinstance(op, AdagradOp):
+            return (
+                op.rate,
+                op.timestep,
+                *op.inputs,
+                *op.gradients,
+                *op.accumulators,
+                *op.outputs,
+                *op.accumulator_outputs,
+            )
         if isinstance(op, (SoftmaxOp, LogSoftmaxOp, HardmaxOp)):
             return (op.input0, op.output)
         if isinstance(op, NegativeLogLikelihoodLossOp):
@@ -1726,6 +1759,7 @@ class CEmitter:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -1789,6 +1823,7 @@ class CEmitter:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -2250,6 +2285,33 @@ class CEmitter:
                 activation_betas=op.activation_betas,
                 dtype=op.dtype,
                 sequence_lens_dtype=op.sequence_lens_dtype,
+            )
+        if isinstance(op, AdagradOp):
+            return AdagradOp(
+                rate=name_map.get(op.rate, op.rate),
+                timestep=name_map.get(op.timestep, op.timestep),
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
+                gradients=tuple(
+                    name_map.get(name, name) for name in op.gradients
+                ),
+                accumulators=tuple(
+                    name_map.get(name, name) for name in op.accumulators
+                ),
+                outputs=tuple(name_map.get(name, name) for name in op.outputs),
+                accumulator_outputs=tuple(
+                    name_map.get(name, name)
+                    for name in op.accumulator_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                epsilon=op.epsilon,
+                decay_factor=op.decay_factor,
             )
         if isinstance(op, SoftmaxOp):
             return SoftmaxOp(
@@ -2848,6 +2910,7 @@ class CEmitter:
                 "rms_norm": self._env.get_template("rms_normalization_op.c.j2"),
                 "lrn": self._env.get_template("lrn_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
+                "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "softmax": self._env.get_template("softmax_op.c.j2"),
                 "logsoftmax": self._env.get_template("logsoftmax_op.c.j2"),
                 "hardmax": self._env.get_template("hardmax_op.c.j2"),
@@ -2965,6 +3028,7 @@ class CEmitter:
         rms_norm_template = templates["rms_norm"]
         lrn_template = templates["lrn"]
         lstm_template = templates["lstm"]
+        adagrad_template = templates["adagrad"]
         softmax_template = templates["softmax"]
         logsoftmax_template = templates["logsoftmax"]
         hardmax_template = templates["hardmax"]
@@ -3052,6 +3116,7 @@ class CEmitter:
                 rms_norm_template=rms_norm_template,
                 lrn_template=lrn_template,
                 lstm_template=lstm_template,
+                adagrad_template=adagrad_template,
                 softmax_template=softmax_template,
                 logsoftmax_template=logsoftmax_template,
                 hardmax_template=hardmax_template,
@@ -3235,6 +3300,7 @@ class CEmitter:
         rms_norm_template = templates["rms_norm"]
         lrn_template = templates["lrn"]
         lstm_template = templates["lstm"]
+        adagrad_template = templates["adagrad"]
         softmax_template = templates["softmax"]
         logsoftmax_template = templates["logsoftmax"]
         hardmax_template = templates["hardmax"]
@@ -3322,6 +3388,7 @@ class CEmitter:
                 rms_norm_template=rms_norm_template,
                 lrn_template=lrn_template,
                 lstm_template=lstm_template,
+                adagrad_template=adagrad_template,
                 softmax_template=softmax_template,
                 logsoftmax_template=logsoftmax_template,
                 hardmax_template=hardmax_template,
@@ -3729,6 +3796,7 @@ class CEmitter:
             | RMSNormalizationOp
             | LrnOp
             | LstmOp
+            | AdagradOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -3962,6 +4030,7 @@ class CEmitter:
             | RMSNormalizationOp
             | LrnOp
             | LstmOp
+            | AdagradOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -4064,6 +4133,7 @@ class CEmitter:
                     RMSNormalizationOp,
                     LrnOp,
                     LstmOp,
+                    AdagradOp,
                     SoftmaxOp,
                     LogSoftmaxOp,
                     SoftmaxCrossEntropyLossOp,
@@ -4329,6 +4399,7 @@ class CEmitter:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -4497,6 +4568,19 @@ class CEmitter:
             if op.output_y_c is not None:
                 call_parts.append(op.output_y_c)
             args.extend(call_parts)
+            return ", ".join(args)
+        if isinstance(op, AdagradOp):
+            args.extend(
+                [
+                    op.rate,
+                    op.timestep,
+                    *op.inputs,
+                    *op.gradients,
+                    *op.accumulators,
+                    *op.outputs,
+                    *op.accumulator_outputs,
+                ]
+            )
             return ", ".join(args)
         if isinstance(op, (SoftmaxOp, LogSoftmaxOp, HardmaxOp)):
             args.extend([op.input0, op.output])
@@ -4708,6 +4792,7 @@ class CEmitter:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -4769,6 +4854,7 @@ class CEmitter:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -5097,6 +5183,33 @@ class CEmitter:
                 activation_betas=op.activation_betas,
                 dtype=op.dtype,
                 sequence_lens_dtype=op.sequence_lens_dtype,
+            )
+        if isinstance(op, AdagradOp):
+            return AdagradOp(
+                rate=temp_map.get(op.rate, op.rate),
+                timestep=temp_map.get(op.timestep, op.timestep),
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
+                gradients=tuple(
+                    temp_map.get(name, name) for name in op.gradients
+                ),
+                accumulators=tuple(
+                    temp_map.get(name, name) for name in op.accumulators
+                ),
+                outputs=tuple(temp_map.get(name, name) for name in op.outputs),
+                accumulator_outputs=tuple(
+                    temp_map.get(name, name)
+                    for name in op.accumulator_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                epsilon=op.epsilon,
+                decay_factor=op.decay_factor,
             )
         if isinstance(op, ConvOp):
             return ConvOp(
@@ -5872,6 +5985,7 @@ class CEmitter:
         | RMSNormalizationOp
         | LrnOp
         | LstmOp
+        | AdagradOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -5940,6 +6054,7 @@ class CEmitter:
         rms_norm_template,
         lrn_template,
         lstm_template,
+        adagrad_template,
         softmax_template,
         logsoftmax_template,
         hardmax_template,
@@ -7681,6 +7796,117 @@ class CEmitter:
                 direction=op.direction,
                 input_forget=op.input_forget,
                 activation_functions=activation_functions,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, AdagradOp):
+            params = self._shared_param_map(
+                [
+                    ("rate", op.rate),
+                    ("timestep", op.timestep),
+                    *(
+                        (f"input{idx}", name)
+                        for idx, name in enumerate(op.inputs)
+                    ),
+                    *(
+                        (f"grad{idx}", name)
+                        for idx, name in enumerate(op.gradients)
+                    ),
+                    *(
+                        (f"acc{idx}", name)
+                        for idx, name in enumerate(op.accumulators)
+                    ),
+                    *(
+                        (f"output{idx}", name)
+                        for idx, name in enumerate(op.outputs)
+                    ),
+                    *(
+                        (f"acc_output{idx}", name)
+                        for idx, name in enumerate(op.accumulator_outputs)
+                    ),
+                ]
+            )
+            rate_suffix = self._param_array_suffix(
+                op.rate_shape, _dim_names_for(op.rate)
+            )
+            timestep_suffix = self._param_array_suffix(
+                op.timestep_shape, _dim_names_for(op.timestep)
+            )
+            param_specs = [
+                (params["rate"], op.rate_dtype.c_type, rate_suffix, True),
+                (
+                    params["timestep"],
+                    op.timestep_dtype.c_type,
+                    timestep_suffix,
+                    True,
+                ),
+            ]
+            tensor_specs = []
+            for idx, shape in enumerate(op.output_shapes):
+                input_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.inputs[idx])
+                )
+                grad_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.gradients[idx])
+                )
+                acc_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.accumulators[idx])
+                )
+                output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx], _dim_names_for(op.outputs[idx])
+                )
+                acc_output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx],
+                    _dim_names_for(op.accumulator_outputs[idx]),
+                )
+                param_specs.extend(
+                    [
+                        (params[f"input{idx}"], c_type, input_suffix, True),
+                        (params[f"grad{idx}"], c_type, grad_suffix, True),
+                        (params[f"acc{idx}"], c_type, acc_suffix, True),
+                        (params[f"output{idx}"], c_type, output_suffix, False),
+                        (
+                            params[f"acc_output{idx}"],
+                            c_type,
+                            acc_output_suffix,
+                            False,
+                        ),
+                    ]
+                )
+                output_dim_names = _dim_names_for(op.outputs[idx])
+                shape_exprs = CEmitter._shape_dim_exprs(
+                    shape, output_dim_names
+                )
+                loop_vars = CEmitter._loop_vars(shape)
+                index_suffix = "".join(f"[{var}]" for var in loop_vars)
+                tensor_specs.append(
+                    {
+                        "shape": shape_exprs,
+                        "loop_vars": loop_vars,
+                        "input_expr": f"{params[f'input{idx}']}{index_suffix}",
+                        "grad_expr": f"{params[f'grad{idx}']}{index_suffix}",
+                        "acc_expr": f"{params[f'acc{idx}']}{index_suffix}",
+                        "output_expr": f"{params[f'output{idx}']}{index_suffix}",
+                        "acc_output_expr": f"{params[f'acc_output{idx}']}{index_suffix}",
+                    }
+                )
+            param_decls = self._build_param_decls(param_specs)
+            rendered = adagrad_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                rate=params["rate"],
+                timestep=params["timestep"],
+                params=param_decls,
+                c_type=c_type,
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+                decay_factor_literal=CEmitter._format_floating(
+                    op.decay_factor, op.dtype
+                ),
+                norm_coefficient_literal=CEmitter._format_floating(
+                    op.norm_coefficient, op.dtype
+                ),
+                epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
+                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                tensors=tensor_specs,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
@@ -10624,6 +10850,18 @@ class CEmitter:
                     )
                 )
             return tuple(outputs)
+        if isinstance(op, AdagradOp):
+            outputs = [
+                (name, shape, op.dtype)
+                for name, shape in zip(op.outputs, op.output_shapes)
+            ]
+            outputs.extend(
+                (name, shape, op.dtype)
+                for name, shape in zip(
+                    op.accumulator_outputs, op.output_shapes
+                )
+            )
+            return tuple(outputs)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             outputs = [(op.output, op.output_shape, op.dtype)]
             if op.log_prob is not None and op.log_prob_shape is not None:
@@ -10870,6 +11108,7 @@ class CEmitter:
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
+        | AdagradOp
         | NegativeLogLikelihoodLossOp
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
