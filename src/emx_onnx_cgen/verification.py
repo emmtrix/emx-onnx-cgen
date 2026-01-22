@@ -2,24 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-
-def _float_uint_dtype(values: np.ndarray) -> type[np.unsignedinteger]:
-    if values.dtype == np.float16:
-        return np.uint16
-    if values.dtype == np.float32:
-        return np.uint32
-    if values.dtype == np.float64:
-        return np.uint64
-    raise ValueError(f"Unsupported floating dtype for ULP calculation: {values.dtype}")
-
-
-def _float_to_ordered_int(values: np.ndarray) -> np.ndarray:
-    uint_dtype = _float_uint_dtype(values)
-    bits = np.dtype(uint_dtype).itemsize * 8
-    sign_mask = np.array(1 << (bits - 1), dtype=uint_dtype)
-    as_uint = values.view(uint_dtype)
-    ordered = np.where(as_uint & sign_mask, ~as_uint, as_uint | sign_mask)
-    return ordered.astype(np.uint64, copy=False)
+from shared.ulp import ulp_intdiff_float
 
 
 def max_ulp_diff(actual: np.ndarray, expected: np.ndarray) -> int:
@@ -34,27 +17,14 @@ def max_ulp_diff(actual: np.ndarray, expected: np.ndarray) -> int:
         raise ValueError(f"Unsupported floating dtype for ULP calculation: {dtype}")
     actual_cast = actual.astype(dtype, copy=False)
     expected_cast = expected.astype(dtype, copy=False)
-    nan_mask = np.isnan(actual_cast) | np.isnan(expected_cast)
-    if nan_mask.any():
-        both_nan = np.isnan(actual_cast) & np.isnan(expected_cast)
-        if np.any(nan_mask & ~both_nan):
-            uint_dtype = _float_uint_dtype(expected_cast)
-            return int(np.iinfo(uint_dtype).max)
-        actual_cast = actual_cast[~nan_mask]
-        expected_cast = expected_cast[~nan_mask]
-        if actual_cast.size == 0:
-            return 0
-    eps = np.finfo(dtype).eps
-    near_zero = (np.abs(actual_cast) < eps) & (np.abs(expected_cast) < eps)
-    if np.any(near_zero):
-        actual_cast = actual_cast.copy()
-        expected_cast = expected_cast.copy()
-        actual_cast[near_zero] = 0
-        expected_cast[near_zero] = 0
-    ordered_actual = _float_to_ordered_int(actual_cast)
-    ordered_expected = _float_to_ordered_int(expected_cast)
-    deltas = ordered_actual.astype(np.int64) - ordered_expected.astype(np.int64)
-    return int(np.max(np.abs(deltas)))
+    max_diff = 0
+    for actual_value, expected_value in np.nditer(
+        [actual_cast, expected_cast], flags=["refs_ok"]
+    ):
+        diff = ulp_intdiff_float(actual_value[()], expected_value[()])
+        if diff > max_diff:
+            max_diff = diff
+    return max_diff
 
 
 def format_success_message(max_ulp: int) -> str:
