@@ -60,6 +60,18 @@ def _normalize_num_outputs(node: Node, output_count: int) -> int:
     return num_outputs
 
 
+def _ensure_output_shapes_for_axis(
+    output_shapes: list[tuple[int, ...]],
+    axis: int,
+    node: Node,
+) -> None:
+    for index, shape in enumerate(output_shapes):
+        if len(shape) <= axis:
+            raise ShapeInferenceError(
+                f"{node.op_type} output {index} is missing axis {axis} in shape"
+            )
+
+
 @register_lowering("Split")
 def lower_split(graph: Graph, node: Node) -> SplitOp:
     if len(node.inputs) < 1 or len(node.outputs) < 1:
@@ -107,6 +119,7 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
                 raise ShapeInferenceError(
                     f"Split expects {len(node.outputs)} outputs, got {split_shape[0]}"
                 )
+            _ensure_output_shapes_for_axis(output_shapes, axis, node)
             split_sizes = [shape[axis] for shape in output_shapes]
         if len(split_sizes) != len(node.outputs):
             raise ShapeInferenceError(
