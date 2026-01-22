@@ -1,0 +1,66 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if input_rank == 3 %}
+for (idx_t b = 0; b < {{ batch }}; ++b) {
+    for (idx_t s = 0; s < {{ seq_len }}; ++s) {
+        for (idx_t h = 0; h < {{ num_heads }}; ++h) {
+            idx_t head_offset = h * {{ head_size }};
+            for (idx_t d = 0; d < {{ rotary_dim_half }}; ++d) {
+{% if interleaved %}
+                idx_t idx1 = 2 * d;
+                idx_t idx2 = 2 * d + 1;
+{% else %}
+                idx_t idx1 = d;
+                idx_t idx2 = d + {{ rotary_dim_half }};
+{% endif %}
+{% if has_position_ids %}
+                idx_t pos = (idx_t){{ position_ids }}[b][s];
+                {{ c_type }} cos_val = {{ cos_cache }}[pos][d];
+                {{ c_type }} sin_val = {{ sin_cache }}[pos][d];
+{% else %}
+                {{ c_type }} cos_val = {{ cos_cache }}[b][s][d];
+                {{ c_type }} sin_val = {{ sin_cache }}[b][s][d];
+{% endif %}
+                {{ c_type }} x1 = {{ input0 }}[b][s][head_offset + idx1];
+                {{ c_type }} x2 = {{ input0 }}[b][s][head_offset + idx2];
+                {{ output }}[b][s][head_offset + idx1] = (cos_val * x1) - (sin_val * x2);
+                {{ output }}[b][s][head_offset + idx2] = (sin_val * x1) + (cos_val * x2);
+            }
+            for (idx_t d = {{ rotary_dim }}; d < {{ head_size }}; ++d) {
+                {{ output }}[b][s][head_offset + d] = {{ input0 }}[b][s][head_offset + d];
+            }
+        }
+    }
+}
+{% else %}
+for (idx_t b = 0; b < {{ batch }}; ++b) {
+    for (idx_t h = 0; h < {{ num_heads }}; ++h) {
+        for (idx_t s = 0; s < {{ seq_len }}; ++s) {
+            for (idx_t d = 0; d < {{ rotary_dim_half }}; ++d) {
+{% if interleaved %}
+                idx_t idx1 = 2 * d;
+                idx_t idx2 = 2 * d + 1;
+{% else %}
+                idx_t idx1 = d;
+                idx_t idx2 = d + {{ rotary_dim_half }};
+{% endif %}
+{% if has_position_ids %}
+                idx_t pos = (idx_t){{ position_ids }}[b][s];
+                {{ c_type }} cos_val = {{ cos_cache }}[pos][d];
+                {{ c_type }} sin_val = {{ sin_cache }}[pos][d];
+{% else %}
+                {{ c_type }} cos_val = {{ cos_cache }}[b][s][d];
+                {{ c_type }} sin_val = {{ sin_cache }}[b][s][d];
+{% endif %}
+                {{ c_type }} x1 = {{ input0 }}[b][h][s][idx1];
+                {{ c_type }} x2 = {{ input0 }}[b][h][s][idx2];
+                {{ output }}[b][h][s][idx1] = (cos_val * x1) - (sin_val * x2);
+                {{ output }}[b][h][s][idx2] = (sin_val * x1) + (cos_val * x2);
+            }
+            for (idx_t d = {{ rotary_dim }}; d < {{ head_size }}; ++d) {
+                {{ output }}[b][h][s][d] = {{ input0 }}[b][h][s][d];
+            }
+        }
+    }
+}
+{% endif %}
+}

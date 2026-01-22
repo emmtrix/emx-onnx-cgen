@@ -158,6 +158,7 @@ from .lowering.elementwise import (
 )
 from .lowering import variadic as _variadic  # noqa: F401
 from .lowering import rms_normalization as _rms_normalization  # noqa: F401
+from .lowering import rotary_embedding as _rotary_embedding  # noqa: F401
 from .lowering.registry import get_lowering_registry, resolve_dispatch
 from .onnx_import import import_onnx
 from .ops import (

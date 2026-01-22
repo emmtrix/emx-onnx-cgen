@@ -64,6 +64,7 @@ from ..lowering.shape import lower_shape
 from ..lowering.size import lower_size
 from ..lowering.softmax import lower_softmax
 from ..lowering.rms_normalization import lower_rms_normalization
+from ..lowering.rotary_embedding import lower_rotary_embedding
 from ..lowering.squeeze import lower_squeeze
 from ..lowering.transpose import lower_transpose
 from ..lowering.unsqueeze import lower_unsqueeze
@@ -1212,6 +1213,49 @@ def _eval_attention(evaluator: Evaluator, node: Node) -> None:
         evaluator.values[present_value_name] = present_value
     if qk_matmul_output_name is not None:
         evaluator.values[qk_matmul_output_name] = qk_output
+
+
+@register_evaluator("RotaryEmbedding")
+def _eval_rotary_embedding(evaluator: Evaluator, node: Node) -> None:
+    op = lower_rotary_embedding(evaluator.graph, node)
+    x = evaluator.values[op.input0]
+    cos_cache = evaluator.values[op.cos_cache]
+    sin_cache = evaluator.values[op.sin_cache]
+    position_ids = (
+        evaluator.values[op.position_ids] if op.position_ids else None
+    )
+    original_shape = x.shape
+    if op.input_rank == 4:
+        x = np.transpose(x, (0, 2, 1, 3))
+    else:
+        x = x.reshape(op.batch, op.seq_len, op.num_heads, op.head_size)
+    x_rotate = x[..., : op.rotary_dim]
+    x_not_rotate = x[..., op.rotary_dim :]
+    if position_ids is not None:
+        cos_cache = cos_cache[position_ids]
+        sin_cache = sin_cache[position_ids]
+    cos_cache = np.expand_dims(cos_cache, axis=2)
+    sin_cache = np.expand_dims(sin_cache, axis=2)
+    if op.interleaved:
+        x1 = x_rotate[..., 0::2]
+        x2 = x_rotate[..., 1::2]
+    else:
+        x1, x2 = np.split(x_rotate, 2, axis=-1)
+    real = (cos_cache * x1) - (sin_cache * x2)
+    imag = (sin_cache * x1) + (cos_cache * x2)
+    if op.interleaved:
+        real = np.expand_dims(real, axis=-1)
+        imag = np.expand_dims(imag, axis=-1)
+        x_rotate_concat = np.concatenate((real, imag), axis=-1)
+        x_rotate = np.reshape(x_rotate_concat, x_rotate.shape)
+    else:
+        x_rotate = np.concatenate((real, imag), axis=-1)
+    output = np.concatenate((x_rotate, x_not_rotate), axis=-1)
+    if op.input_rank == 4:
+        output = np.transpose(output, (0, 2, 1, 3))
+    else:
+        output = output.reshape(original_shape)
+    evaluator.values[node.outputs[0]] = output
 
 
 def _apply_lstm_activation(

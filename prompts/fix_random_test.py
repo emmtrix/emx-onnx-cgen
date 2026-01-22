@@ -73,6 +73,12 @@ def main() -> None:
         "onnx-org/onnx/reference/ops/op_<op>.py for numpy reference behavior, "
         "and onnx-org/onnx/backend/test/case/node for test inputs."
     )
+    prompt_lines.append(
+        "Implementation map: add/adjust lowering in src/emx_onnx_cgen/lowering/, "
+        "wire codegen in src/emx_onnx_cgen/codegen/c_emitter.py with a matching "
+        "templates/*_op.c.j2 file, update runtime/evaluator.py for numpy checks, "
+        "and refresh tests/expected_errors entries when support status changes."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "

@@ -334,6 +334,29 @@ class AttentionOp:
 
 
 @dataclass(frozen=True)
+class RotaryEmbeddingOp:
+    input0: str
+    cos_cache: str
+    sin_cache: str
+    position_ids: str | None
+    output: str
+    input_shape: tuple[int, ...]
+    cos_shape: tuple[int, ...]
+    sin_shape: tuple[int, ...]
+    position_ids_shape: tuple[int, ...] | None
+    dtype: ScalarType
+    position_ids_dtype: ScalarType | None
+    rotary_dim: int
+    rotary_dim_half: int
+    head_size: int
+    num_heads: int
+    seq_len: int
+    batch: int
+    input_rank: int
+    interleaved: bool
+
+
+@dataclass(frozen=True)
 class ConvOp:
     input0: str
     weights: str
@@ -1171,6 +1194,7 @@ class LoweredModel:
         | EinsumOp
         | GemmOp
         | AttentionOp
+        | RotaryEmbeddingOp
         | ConvOp
         | ConvTransposeOp
         | AveragePoolOp
@@ -1355,6 +1379,7 @@ class CEmitter:
         | EinsumOp
         | GemmOp
         | AttentionOp
+        | RotaryEmbeddingOp
         | ConvOp
         | AveragePoolOp
         | BatchNormOp
@@ -1454,6 +1479,12 @@ class CEmitter:
                 names.append(op.output_present_value)
             if op.output_qk_matmul is not None:
                 names.append(op.output_qk_matmul)
+            return tuple(names)
+        if isinstance(op, RotaryEmbeddingOp):
+            names = [op.input0, op.cos_cache, op.sin_cache]
+            if op.position_ids is not None:
+                names.append(op.position_ids)
+            names.append(op.output)
             return tuple(names)
         if isinstance(op, ConvOp):
             names = [op.input0, op.weights]
@@ -1681,6 +1712,7 @@ class CEmitter:
         | EinsumOp
         | GemmOp
         | AttentionOp
+        | RotaryEmbeddingOp
         | ConvOp
         | ConvTransposeOp
         | AveragePoolOp
@@ -1743,6 +1775,7 @@ class CEmitter:
         | EinsumOp
         | GemmOp
         | AttentionOp
+        | RotaryEmbeddingOp
         | ConvOp
         | ConvTransposeOp
         | AveragePoolOp
@@ -1971,6 +2004,30 @@ class CEmitter:
                 mask_kv_seq=op.mask_kv_seq,
                 head_group_size=op.head_group_size,
                 dtype=op.dtype,
+            )
+        if isinstance(op, RotaryEmbeddingOp):
+            return RotaryEmbeddingOp(
+                input0=name_map.get(op.input0, op.input0),
+                cos_cache=name_map.get(op.cos_cache, op.cos_cache),
+                sin_cache=name_map.get(op.sin_cache, op.sin_cache),
+                position_ids=self._map_optional_name(
+                    name_map, op.position_ids
+                ),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                cos_shape=op.cos_shape,
+                sin_shape=op.sin_shape,
+                position_ids_shape=op.position_ids_shape,
+                dtype=op.dtype,
+                position_ids_dtype=op.position_ids_dtype,
+                rotary_dim=op.rotary_dim,
+                rotary_dim_half=op.rotary_dim_half,
+                head_size=op.head_size,
+                num_heads=op.num_heads,
+                seq_len=op.seq_len,
+                batch=op.batch,
+                input_rank=op.input_rank,
+                interleaved=op.interleaved,
             )
         if isinstance(op, ConvOp):
             return ConvOp(
@@ -2765,6 +2822,9 @@ class CEmitter:
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
+                "rotary_embedding": self._env.get_template(
+                    "rotary_embedding_op.c.j2"
+                ),
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_transpose": self._env.get_template(
                     "conv_transpose_op.c.j2"
@@ -2891,6 +2951,7 @@ class CEmitter:
         einsum_template = templates["einsum"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
+        rotary_embedding_template = templates["rotary_embedding"]
         conv_template = templates["conv"]
         conv_transpose_template = templates["conv_transpose"]
         avg_pool_template = templates["avg_pool"]
@@ -2977,6 +3038,7 @@ class CEmitter:
                 einsum_template=einsum_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
+                rotary_embedding_template=rotary_embedding_template,
                 conv_template=conv_template,
                 conv_transpose_template=conv_transpose_template,
                 avg_pool_template=avg_pool_template,
@@ -3159,6 +3221,7 @@ class CEmitter:
         einsum_template = templates["einsum"]
         gemm_template = templates["gemm"]
         attention_template = templates["attention"]
+        rotary_embedding_template = templates["rotary_embedding"]
         conv_template = templates["conv"]
         conv_transpose_template = templates["conv_transpose"]
         avg_pool_template = templates["avg_pool"]
@@ -3245,6 +3308,7 @@ class CEmitter:
                 einsum_template=einsum_template,
                 gemm_template=gemm_template,
                 attention_template=attention_template,
+                rotary_embedding_template=rotary_embedding_template,
                 conv_template=conv_template,
                 conv_transpose_template=conv_transpose_template,
                 avg_pool_template=avg_pool_template,
@@ -4251,6 +4315,7 @@ class CEmitter:
         | EinsumOp
         | GemmOp
         | AttentionOp
+        | RotaryEmbeddingOp
         | ConvOp
         | ConvTransposeOp
         | AveragePoolOp
@@ -4629,6 +4694,7 @@ class CEmitter:
         | EinsumOp
         | GemmOp
         | AttentionOp
+        | RotaryEmbeddingOp
         | ConvOp
         | ConvTransposeOp
         | AveragePoolOp
@@ -4945,6 +5011,32 @@ class CEmitter:
                 mask_kv_seq=op.mask_kv_seq,
                 head_group_size=op.head_group_size,
                 dtype=op.dtype,
+            )
+        if isinstance(op, RotaryEmbeddingOp):
+            return RotaryEmbeddingOp(
+                input0=temp_map.get(op.input0, op.input0),
+                cos_cache=temp_map.get(op.cos_cache, op.cos_cache),
+                sin_cache=temp_map.get(op.sin_cache, op.sin_cache),
+                position_ids=(
+                    temp_map.get(op.position_ids, op.position_ids)
+                    if op.position_ids is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                cos_shape=op.cos_shape,
+                sin_shape=op.sin_shape,
+                position_ids_shape=op.position_ids_shape,
+                dtype=op.dtype,
+                position_ids_dtype=op.position_ids_dtype,
+                rotary_dim=op.rotary_dim,
+                rotary_dim_half=op.rotary_dim_half,
+                head_size=op.head_size,
+                num_heads=op.num_heads,
+                seq_len=op.seq_len,
+                batch=op.batch,
+                input_rank=op.input_rank,
+                interleaved=op.interleaved,
             )
         if isinstance(op, LstmOp):
             return LstmOp(
@@ -5834,6 +5926,7 @@ class CEmitter:
         einsum_template,
         gemm_template,
         attention_template,
+        rotary_embedding_template,
         conv_template,
         conv_transpose_template,
         avg_pool_template,
@@ -6676,6 +6769,71 @@ class CEmitter:
                 output_present_key_suffix=output_present_key_suffix,
                 output_present_value_suffix=output_present_value_suffix,
                 output_qk_matmul_suffix=output_qk_matmul_suffix,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, RotaryEmbeddingOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("cos_cache", op.cos_cache),
+                    ("sin_cache", op.sin_cache),
+                    ("position_ids", op.position_ids),
+                    ("output", op.output),
+                ]
+            )
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            cos_suffix = self._param_array_suffix(op.cos_shape)
+            sin_suffix = self._param_array_suffix(op.sin_shape)
+            position_suffix = (
+                self._param_array_suffix(op.position_ids_shape)
+                if op.position_ids_shape is not None
+                else ""
+            )
+            output_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.output)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["cos_cache"], c_type, cos_suffix, True),
+                    (params["sin_cache"], c_type, sin_suffix, True),
+                    (
+                        params["position_ids"],
+                        op.position_ids_dtype.c_type,
+                        position_suffix,
+                        True,
+                    )
+                    if params["position_ids"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = rotary_embedding_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                cos_cache=params["cos_cache"],
+                sin_cache=params["sin_cache"],
+                position_ids=params["position_ids"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                cos_suffix=cos_suffix,
+                sin_suffix=sin_suffix,
+                position_suffix=position_suffix,
+                output_suffix=output_suffix,
+                batch=op.batch,
+                seq_len=op.seq_len,
+                num_heads=op.num_heads,
+                head_size=op.head_size,
+                rotary_dim=op.rotary_dim,
+                rotary_dim_half=op.rotary_dim_half,
+                input_rank=op.input_rank,
+                interleaved=int(op.interleaved),
+                has_position_ids=int(op.position_ids is not None),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvOp):
