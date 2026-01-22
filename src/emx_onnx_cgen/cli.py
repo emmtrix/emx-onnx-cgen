@@ -254,9 +254,9 @@ def _build_parser() -> argparse.ArgumentParser:
     verify_parser.add_argument(
         "--runtime",
         choices=("onnxruntime", "onnx-reference"),
-        default="onnxruntime",
+        default="onnx-reference",
         help=(
-            "Runtime backend for verification (default: onnxruntime; "
+            "Runtime backend for verification (default: onnx-reference; "
             "options: onnxruntime, onnx-reference)"
         ),
     )
