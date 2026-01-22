@@ -73,6 +73,8 @@ pytest -n auto -q
 ```
 
 When reporting executed tests, include the test duration in your feedback.
+Prefer running only targeted tests known to be affected by your changes.
+Skip running tests for documentation-only changes unless explicitly requested.
 
 ### Verification (single ONNX model)
 
@@ -345,6 +347,9 @@ Rules for updating:
 Agents:
 - If you encounter ambiguity not covered by this document, propose an update to `AGENTS.md`.
 - If your change introduces new conventions, update this file in the same PR.
+- If you need the operator reference implementation or schema details, look in
+  `onnx-org/onnx/defs/**/defs.cc` or `onnx-org/onnx/defs/**/old.cc`, and use
+  `rg -n "<OpName>" onnx-org` to locate the relevant operator definition.
 
 ## Security / Safety
 
