@@ -251,6 +251,42 @@ class MatMulOp:
     dtype: ScalarType
 
 
+@dataclass(frozen=True)
+class QLinearMatMulOp:
+    input0: str
+    input0_scale: str
+    input0_zero_point: str
+    input1: str
+    input1_scale: str
+    input1_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    output: str
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    batch_shape: tuple[int, ...]
+    input0_batch_shape: tuple[int, ...]
+    input1_batch_shape: tuple[int, ...]
+    m: int
+    n: int
+    k: int
+    left_vector: bool
+    right_vector: bool
+    input0_dtype: ScalarType
+    input1_dtype: ScalarType
+    dtype: ScalarType
+    input0_scale_dtype: ScalarType
+    input1_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input0_scale_shape: tuple[int, ...]
+    input1_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input0_zero_shape: tuple[int, ...]
+    input1_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
+
+
 class EinsumKind(str, Enum):
     REDUCE_ALL = "reduce_all"
     SUM_J = "sum_j"
@@ -1190,6 +1226,7 @@ class LoweredModel:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -1375,6 +1412,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -1452,6 +1490,18 @@ class CEmitter:
                 names.append(op.zero_point)
             names.append(op.output)
             return tuple(names)
+        if isinstance(op, QLinearMatMulOp):
+            return (
+                op.input0,
+                op.input0_scale,
+                op.input0_zero_point,
+                op.input1,
+                op.input1_scale,
+                op.input1_zero_point,
+                op.output_scale,
+                op.output_zero_point,
+                op.output,
+            )
         if isinstance(op, MatMulOp):
             return (op.input0, op.input1, op.output)
         if isinstance(op, EinsumOp):
@@ -1708,6 +1758,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -1771,6 +1822,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -1902,6 +1954,47 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 scale_dtype=op.scale_dtype,
+            )
+        if isinstance(op, QLinearMatMulOp):
+            return QLinearMatMulOp(
+                input0=name_map.get(op.input0, op.input0),
+                input0_scale=name_map.get(op.input0_scale, op.input0_scale),
+                input0_zero_point=name_map.get(
+                    op.input0_zero_point, op.input0_zero_point
+                ),
+                input1=name_map.get(op.input1, op.input1),
+                input1_scale=name_map.get(op.input1_scale, op.input1_scale),
+                input1_zero_point=name_map.get(
+                    op.input1_zero_point, op.input1_zero_point
+                ),
+                output_scale=name_map.get(op.output_scale, op.output_scale),
+                output_zero_point=name_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                output=name_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_scale_dtype=op.input0_scale_dtype,
+                input1_scale_dtype=op.input1_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input0_scale_shape=op.input0_scale_shape,
+                input1_scale_shape=op.input1_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
+                output_zero_shape=op.output_zero_shape,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -2818,6 +2911,9 @@ class CEmitter:
                 "quantize_linear": self._env.get_template(
                     "quantize_linear_op.c.j2"
                 ),
+                "qlinear_matmul": self._env.get_template(
+                    "qlinear_matmul_op.c.j2"
+                ),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
@@ -2947,6 +3043,7 @@ class CEmitter:
         clip_template = templates["clip"]
         cast_template = templates["cast"]
         quantize_linear_template = templates["quantize_linear"]
+        qlinear_matmul_template = templates["qlinear_matmul"]
         matmul_template = templates["matmul"]
         einsum_template = templates["einsum"]
         gemm_template = templates["gemm"]
@@ -3034,6 +3131,7 @@ class CEmitter:
                 clip_template=clip_template,
                 cast_template=cast_template,
                 quantize_linear_template=quantize_linear_template,
+                qlinear_matmul_template=qlinear_matmul_template,
                 matmul_template=matmul_template,
                 einsum_template=einsum_template,
                 gemm_template=gemm_template,
@@ -3217,6 +3315,7 @@ class CEmitter:
         clip_template = templates["clip"]
         cast_template = templates["cast"]
         quantize_linear_template = templates["quantize_linear"]
+        qlinear_matmul_template = templates["qlinear_matmul"]
         matmul_template = templates["matmul"]
         einsum_template = templates["einsum"]
         gemm_template = templates["gemm"]
@@ -3304,6 +3403,7 @@ class CEmitter:
                 clip_template=clip_template,
                 cast_template=cast_template,
                 quantize_linear_template=quantize_linear_template,
+                qlinear_matmul_template=qlinear_matmul_template,
                 matmul_template=matmul_template,
                 einsum_template=einsum_template,
                 gemm_template=gemm_template,
@@ -3712,6 +3812,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3945,6 +4046,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -4093,7 +4195,7 @@ class CEmitter:
         ):
             return True
         if any(
-            isinstance(op, (LpPoolOp, QuantizeLinearOp))
+            isinstance(op, (LpPoolOp, QuantizeLinearOp, QLinearMatMulOp))
             for op in resolved_ops
         ):
             return True
@@ -4107,6 +4209,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -4186,7 +4289,8 @@ class CEmitter:
         ):
             return True
         if any(
-            isinstance(op, QuantizeLinearOp) and op.dtype.is_integer
+            isinstance(op, (QuantizeLinearOp, QLinearMatMulOp))
+            and op.dtype.is_integer
             for op in resolved_ops
         ):
             return True
@@ -4202,6 +4306,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -4311,6 +4416,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -4378,6 +4484,21 @@ class CEmitter:
             return ", ".join(args)
         if isinstance(op, WhereOp):
             args.extend([op.condition, op.input_x, op.input_y, op.output])
+            return ", ".join(args)
+        if isinstance(op, QLinearMatMulOp):
+            args.extend(
+                [
+                    op.input0,
+                    op.input0_scale,
+                    op.input0_zero_point,
+                    op.input1,
+                    op.input1_scale,
+                    op.input1_zero_point,
+                    op.output_scale,
+                    op.output_zero_point,
+                    op.output,
+                ]
+            )
             return ", ".join(args)
         if isinstance(op, MatMulOp):
             args.extend([op.input0, op.input1, op.output])
@@ -4690,6 +4811,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -4752,6 +4874,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -4917,6 +5040,47 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 scale_dtype=op.scale_dtype,
+            )
+        if isinstance(op, QLinearMatMulOp):
+            return QLinearMatMulOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input0_scale=temp_map.get(op.input0_scale, op.input0_scale),
+                input0_zero_point=temp_map.get(
+                    op.input0_zero_point, op.input0_zero_point
+                ),
+                input1=temp_map.get(op.input1, op.input1),
+                input1_scale=temp_map.get(op.input1_scale, op.input1_scale),
+                input1_zero_point=temp_map.get(
+                    op.input1_zero_point, op.input1_zero_point
+                ),
+                output_scale=temp_map.get(op.output_scale, op.output_scale),
+                output_zero_point=temp_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                output=temp_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_scale_dtype=op.input0_scale_dtype,
+                input1_scale_dtype=op.input1_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input0_scale_shape=op.input0_scale_shape,
+                input1_scale_shape=op.input1_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
+                output_zero_shape=op.output_zero_shape,
             )
         if isinstance(op, GemmOp):
             return GemmOp(
@@ -5855,6 +6019,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -5922,6 +6087,7 @@ class CEmitter:
         clip_template,
         cast_template,
         quantize_linear_template,
+        qlinear_matmul_template,
         matmul_template,
         einsum_template,
         gemm_template,
@@ -10025,6 +10191,187 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, QLinearMatMulOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for QLinearMatMul."
+                )
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input0_scale", op.input0_scale),
+                    ("input0_zero_point", op.input0_zero_point),
+                    ("input1", op.input1),
+                    ("input1_scale", op.input1_scale),
+                    ("input1_zero_point", op.input1_zero_point),
+                    ("output_scale", op.output_scale),
+                    ("output_zero_point", op.output_zero_point),
+                    ("output", op.output),
+                ]
+            )
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            output_index_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            batch_rank = len(op.batch_shape)
+            batch_vars = output_loop_vars[:batch_rank]
+            if op.left_vector and op.right_vector:
+                row_var = None
+                col_var = None
+            elif op.left_vector:
+                row_var = None
+                col_var = output_loop_vars[-1]
+            elif op.right_vector:
+                row_var = output_loop_vars[-1]
+                col_var = None
+            else:
+                row_var = output_loop_vars[-2]
+                col_var = output_loop_vars[-1]
+            input0_index_expr, input1_index_expr = CEmitter._matmul_index_exprs(
+                op,
+                batch_vars,
+                row_var,
+                col_var,
+                batch_rank,
+                input0=params["input0"],
+                input1=params["input1"],
+            )
+            input0_suffix = self._param_array_suffix(op.input0_shape)
+            input1_suffix = self._param_array_suffix(op.input1_shape)
+            input0_scale_suffix = self._param_array_suffix(
+                op.input0_scale_shape
+            )
+            input1_scale_suffix = self._param_array_suffix(
+                op.input1_scale_shape
+            )
+            output_scale_suffix = self._param_array_suffix(
+                op.output_scale_shape
+            )
+            input0_zero_suffix = self._param_array_suffix(op.input0_zero_shape)
+            input1_zero_suffix = self._param_array_suffix(op.input1_zero_shape)
+            output_zero_suffix = self._param_array_suffix(op.output_zero_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input0"],
+                        op.input0_dtype.c_type,
+                        input0_suffix,
+                        True,
+                    ),
+                    (
+                        params["input0_scale"],
+                        op.input0_scale_dtype.c_type,
+                        input0_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["input0_zero_point"],
+                        op.input0_dtype.c_type,
+                        input0_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["input1"],
+                        op.input1_dtype.c_type,
+                        input1_suffix,
+                        True,
+                    ),
+                    (
+                        params["input1_scale"],
+                        op.input1_scale_dtype.c_type,
+                        input1_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["input1_zero_point"],
+                        op.input1_dtype.c_type,
+                        input1_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_scale"],
+                        op.output_scale_dtype.c_type,
+                        output_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_zero_point"],
+                        op.dtype.c_type,
+                        output_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["output"],
+                        op.dtype.c_type,
+                        output_suffix,
+                        False,
+                    ),
+                ]
+            )
+            compute_dtype = (
+                ScalarType.F64
+                if ScalarType.F64
+                in {
+                    op.input0_scale_dtype,
+                    op.input1_scale_dtype,
+                    op.output_scale_dtype,
+                }
+                else ScalarType.F32
+            )
+            compute_type = (
+                "double" if compute_dtype == ScalarType.F64 else "float"
+            )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
+            )
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
+            )
+            if max_fn is None or min_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for QLinearMatMul."
+                )
+            round_fn = CEmitter._math_fn(
+                compute_dtype, "nearbyintf", "nearbyint"
+            )
+            scale_index = "0"
+            rendered = qlinear_matmul_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                input0_scale=params["input0_scale"],
+                input0_zero_point=params["input0_zero_point"],
+                input1_scale=params["input1_scale"],
+                input1_zero_point=params["input1_zero_point"],
+                output_scale=params["output_scale"],
+                output_zero_point=params["output_zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=op.dtype.c_type,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
+                input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
+                output_scale_expr=f"{params['output_scale']}[{scale_index}]",
+                input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
+                input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
+                output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                k=op.k,
+                round_fn=round_fn,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
+                min_fn=min_fn,
+                max_fn=max_fn,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ClipOp):
             if scalar_registry is None:
                 raise CodegenError(
@@ -10677,6 +11024,8 @@ class CEmitter:
         | UnaryOp
         | ClipOp
         | CastOp
+        | QuantizeLinearOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -10739,6 +11088,8 @@ class CEmitter:
             return op.input_shape
         if isinstance(op, CastOp):
             return op.shape
+        if isinstance(op, QLinearMatMulOp):
+            return op.output_shape
         if isinstance(op, MatMulOp):
             return op.output_shape
         if isinstance(op, EinsumOp):

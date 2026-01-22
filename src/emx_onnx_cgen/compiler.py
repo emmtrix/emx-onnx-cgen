@@ -56,6 +56,7 @@ from .codegen.c_emitter import (
     LoweredModel,
     ModelHeader,
     MatMulOp,
+    QLinearMatMulOp,
     MaxPoolOp,
     ReduceOp,
     ArgReduceOp,
@@ -135,6 +136,7 @@ from .lowering.reshape import lower_reshape
 from .lowering.resize import lower_resize
 from .lowering.grid_sample import lower_grid_sample
 from .lowering import quantize_linear as _quantize_linear  # noqa: F401
+from .lowering import qlinear_matmul as _qlinear_matmul  # noqa: F401
 from .lowering.slice import lower_slice
 from .lowering.squeeze import lower_squeeze
 from .lowering import depth_space as _depth_space  # noqa: F401
@@ -490,6 +492,7 @@ class Compiler:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMatMulOp
             | MatMulOp
             | GemmOp
             | AttentionOp
@@ -544,6 +547,7 @@ class Compiler:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMatMulOp
             | MatMulOp
             | GemmOp
             | AttentionOp

@@ -84,6 +84,11 @@ def main() -> None:
         "TopK's k), check the model's input/output shapes via onnx.load(...) to "
         "see if the value can be inferred from value_info or output shapes."
     )
+    prompt_lines.append(
+        "Quantized op hint: check onnx-org/onnx/reference/ops/op_qlinear*.py and "
+        "note scale/zero_point constraints (often scalar shapes and int8/uint8 "
+        "dtypes) to guide lowering validation and codegen math."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "
