@@ -45,6 +45,7 @@ from .codegen.c_emitter import (
     QuantizeLinearOp,
     LrnOp,
     LstmOp,
+    AdagradOp,
     LogSoftmaxOp,
     HardmaxOp,
     NegativeLogLikelihoodLossOp,
@@ -105,6 +106,7 @@ from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
 from .lowering import hardmax as _hardmax  # noqa: F401
+from .lowering import adagrad as _adagrad  # noqa: F401
 from .lowering import group_normalization as _group_normalization  # noqa: F401
 from .lowering import instance_normalization as _instance_normalization  # noqa: F401
 from .lowering import layer_normalization as _layer_normalization  # noqa: F401
@@ -506,6 +508,7 @@ class Compiler:
             | RMSNormalizationOp
             | LrnOp
             | LstmOp
+            | AdagradOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
