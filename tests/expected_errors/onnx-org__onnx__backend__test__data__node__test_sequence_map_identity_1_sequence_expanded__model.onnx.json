@@ -1,4 +1,4 @@
 {
-  "error": "Currently not supporting loading segments.",
+  "error": "Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/test_data_set_0"
 }

@@ -84,11 +84,6 @@ def main() -> None:
         "TopK's k), check the model's input/output shapes via onnx.load(...) to "
         "see if the value can be inferred from value_info or output shapes."
     )
-    prompt_lines.append(
-        "Optimizer op hint: training optimizers (e.g., Adagrad) group variadic "
-        "inputs as parameters, gradients, and accumulators; outputs mirror the "
-        "parameter order followed by updated accumulators."
-    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "
