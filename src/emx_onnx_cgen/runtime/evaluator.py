@@ -28,6 +28,7 @@ from ..lowering.grid_sample import lower_grid_sample
 from ..lowering.instance_normalization import lower_instance_normalization
 from ..lowering.group_normalization import lower_group_normalization
 from ..lowering.layer_normalization import lower_layer_normalization
+from ..lowering.non_max_suppression import lower_non_max_suppression
 from ..lowering.mean_variance_normalization import (
     lower_mean_variance_normalization,
 )
@@ -190,6 +191,79 @@ def _eval_clip(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = np.clip(x, min_val, max_val)
 
 
+def _max_min(lhs: float, rhs: float) -> tuple[float, float]:
+    if lhs >= rhs:
+        return rhs, lhs
+    return lhs, rhs
+
+
+def _suppress_by_iou(
+    boxes: np.ndarray,
+    box_index1: int,
+    box_index2: int,
+    *,
+    center_point_box: int,
+    iou_threshold: float,
+) -> bool:
+    box1 = boxes[box_index1]
+    box2 = boxes[box_index2]
+    if center_point_box == 0:
+        x1_min, x1_max = _max_min(float(box1[1]), float(box1[3]))
+        x2_min, x2_max = _max_min(float(box2[1]), float(box2[3]))
+        intersection_x_min = max(x1_min, x2_min)
+        intersection_x_max = min(x1_max, x2_max)
+        if intersection_x_max <= intersection_x_min:
+            return False
+
+        y1_min, y1_max = _max_min(float(box1[0]), float(box1[2]))
+        y2_min, y2_max = _max_min(float(box2[0]), float(box2[2]))
+        intersection_y_min = max(y1_min, y2_min)
+        intersection_y_max = min(y1_max, y2_max)
+        if intersection_y_max <= intersection_y_min:
+            return False
+    else:
+        box1_width_half = float(box1[2]) / 2.0
+        box1_height_half = float(box1[3]) / 2.0
+        box2_width_half = float(box2[2]) / 2.0
+        box2_height_half = float(box2[3]) / 2.0
+
+        x1_min = float(box1[0]) - box1_width_half
+        x1_max = float(box1[0]) + box1_width_half
+        x2_min = float(box2[0]) - box2_width_half
+        x2_max = float(box2[0]) + box2_width_half
+
+        y1_min = float(box1[1]) - box1_height_half
+        y1_max = float(box1[1]) + box1_height_half
+        y2_min = float(box2[1]) - box2_height_half
+        y2_max = float(box2[1]) + box2_height_half
+
+        intersection_x_min = max(x1_min, x2_min)
+        intersection_x_max = min(x1_max, x2_max)
+        if intersection_x_max <= intersection_x_min:
+            return False
+
+        intersection_y_min = max(y1_min, y2_min)
+        intersection_y_max = min(y1_max, y2_max)
+        if intersection_y_max <= intersection_y_min:
+            return False
+
+    intersection_area = (intersection_x_max - intersection_x_min) * (
+        intersection_y_max - intersection_y_min
+    )
+    if intersection_area <= 0:
+        return False
+
+    area1 = (x1_max - x1_min) * (y1_max - y1_min)
+    area2 = (x2_max - x2_min) * (y2_max - y2_min)
+    union_area = area1 + area2 - intersection_area
+
+    if area1 <= 0 or area2 <= 0 or union_area <= 0:
+        return False
+
+    intersection_over_union = intersection_area / union_area
+    return intersection_over_union > iou_threshold
+
+
 def _exclusive_cumsum(data: np.ndarray, axis: int) -> np.ndarray:
     result = np.zeros_like(data)
     if data.shape[axis] == 0:
@@ -221,6 +295,100 @@ def _eval_cumsum(evaluator: Evaluator, node: Node) -> None:
         result = np.cumsum(data, axis=axis, dtype=data.dtype)
     if op.reverse:
         result = np.flip(result, axis=axis)
+    evaluator.values[op.output] = result
+
+
+@register_evaluator("NonMaxSuppression")
+def _eval_nonmax_suppression(evaluator: Evaluator, node: Node) -> None:
+    op = lower_non_max_suppression(evaluator.graph, node)
+    boxes = evaluator.values[op.boxes]
+    scores = evaluator.values[op.scores]
+
+    max_output_boxes_per_class = 0
+    if op.max_output_boxes_per_class is not None:
+        max_output_values = evaluator.values[
+            op.max_output_boxes_per_class
+        ].astype(np.int64, copy=False)
+        max_output_values = max_output_values.reshape(-1)
+        if max_output_values.size != 1:
+            raise UnsupportedOpError(
+                "NonMaxSuppression max_output_boxes_per_class must be scalar"
+            )
+        max_output_boxes_per_class = max(int(max_output_values[0]), 0)
+
+    iou_threshold = 0.0
+    if op.iou_threshold is not None:
+        iou_values = evaluator.values[op.iou_threshold].reshape(-1)
+        if iou_values.size != 1:
+            raise UnsupportedOpError(
+                "NonMaxSuppression iou_threshold must be scalar"
+            )
+        iou_threshold = float(iou_values[0])
+
+    score_threshold = 0.0
+    score_threshold_enabled = op.score_threshold is not None
+    if op.score_threshold is not None:
+        score_values = evaluator.values[op.score_threshold].reshape(-1)
+        if score_values.size != 1:
+            raise UnsupportedOpError(
+                "NonMaxSuppression score_threshold must be scalar"
+            )
+        score_threshold = float(score_values[0])
+
+    if max_output_boxes_per_class == 0:
+        evaluator.values[op.output] = np.empty((0, 3), dtype=np.int64)
+        return
+
+    num_batches = boxes.shape[0]
+    num_boxes = boxes.shape[1]
+    num_classes = scores.shape[1]
+
+    selected_indices: list[tuple[int, int, int]] = []
+    for batch_index in range(num_batches):
+        batch_boxes = boxes[batch_index]
+        for class_index in range(num_classes):
+            class_scores = scores[batch_index, class_index]
+            candidates: list[tuple[float, int]] = []
+            if score_threshold_enabled:
+                for box_index in range(num_boxes):
+                    score = float(class_scores[box_index])
+                    if score > score_threshold:
+                        candidates.append((score, box_index))
+            else:
+                for box_index in range(num_boxes):
+                    candidates.append(
+                        (float(class_scores[box_index]), box_index)
+                    )
+            candidates.sort(key=lambda item: (item[0], -item[1]))
+            selected_boxes: list[int] = []
+            while (
+                candidates
+                and len(selected_boxes) < max_output_boxes_per_class
+            ):
+                _, box_index = candidates.pop()
+                if any(
+                    _suppress_by_iou(
+                        batch_boxes,
+                        box_index,
+                        selected_index,
+                        center_point_box=op.center_point_box,
+                        iou_threshold=iou_threshold,
+                    )
+                    for selected_index in selected_boxes
+                ):
+                    continue
+                selected_boxes.append(box_index)
+                selected_indices.append(
+                    (batch_index, class_index, box_index)
+                )
+
+    result = np.empty((len(selected_indices), 3), dtype=np.int64)
+    for idx, (batch_index, class_index, box_index) in enumerate(
+        selected_indices
+    ):
+        result[idx, 0] = batch_index
+        result[idx, 1] = class_index
+        result[idx, 2] = box_index
     evaluator.values[op.output] = result
 
 
