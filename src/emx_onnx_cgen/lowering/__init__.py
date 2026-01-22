@@ -1,3 +1,81 @@
+from __future__ import annotations
+
+import importlib
+
 from .registry import get_lowering, register_lowering
 
-__all__ = ["get_lowering", "register_lowering"]
+_LOWERING_MODULES = [
+    "adagrad",
+    "arg_reduce",
+    "attention",
+    "average_pool",
+    "batch_normalization",
+    "cast",
+    "concat",
+    "constant_of_shape",
+    "conv",
+    "conv_transpose",
+    "cumsum",
+    "depth_space",
+    "dropout",
+    "einsum",
+    "elementwise",
+    "expand",
+    "eye_like",
+    "flatten",
+    "gather",
+    "gather_elements",
+    "gather_nd",
+    "gemm",
+    "global_max_pool",
+    "grid_sample",
+    "group_normalization",
+    "hardmax",
+    "identity",
+    "instance_normalization",
+    "layer_normalization",
+    "logsoftmax",
+    "lp_normalization",
+    "lp_pool",
+    "lrn",
+    "lstm",
+    "matmul",
+    "maxpool",
+    "mean_variance_normalization",
+    "negative_log_likelihood_loss",
+    "non_max_suppression",
+    "nonzero",
+    "one_hot",
+    "pad",
+    "qlinear_matmul",
+    "quantize_linear",
+    "range",
+    "reduce",
+    "reshape",
+    "resize",
+    "rms_normalization",
+    "rotary_embedding",
+    "scatter_nd",
+    "shape",
+    "size",
+    "slice",
+    "softmax",
+    "softmax_cross_entropy_loss",
+    "split",
+    "squeeze",
+    "tensor_scatter",
+    "tile",
+    "topk",
+    "transpose",
+    "trilu",
+    "unsqueeze",
+    "variadic",
+    "where",
+]
+
+
+def load_lowering_registry() -> None:
+    for module_name in _LOWERING_MODULES:
+        importlib.import_module(f"{__name__}.{module_name}")
+
+__all__ = ["get_lowering", "register_lowering", "load_lowering_registry"]

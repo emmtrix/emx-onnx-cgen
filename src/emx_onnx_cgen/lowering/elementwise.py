@@ -1,13 +1,23 @@
 from __future__ import annotations
 
-from shared.scalar_functions import ScalarFunction
+from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import ClipOp, UnaryOp
+from ..codegen.c_emitter import BinaryOp, ClipOp, UnaryOp
 from ..errors import UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
 from ..lowering.common import node_dtype, optional_name, value_dtype, value_shape
-from ..lowering.registry import register_lowering
+from ..lowering.registry import register_lowering, register_lowering_if_missing
+from ..ops import (
+    BINARY_OP_TYPES,
+    COMPARE_FUNCTIONS,
+    UNARY_OP_TYPES,
+    binary_op_symbol,
+    unary_op_symbol,
+    validate_unary_attrs,
+)
+from ..lowering.variadic import VARIADIC_OP_FUNCTIONS
 
 
 @register_lowering("Clip")
@@ -118,6 +128,138 @@ def lower_shrink(graph: Graph, node: Node) -> UnaryOp:
         input_dtype=dtype,
         params=(bias, lambd),
     )
+
+
+def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | UnaryOp:
+    if node.op_type == "BitShift":
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError("BitShift must have 2 inputs and 1 output")
+        direction_attr = node.attrs.get("direction", "LEFT")
+        if isinstance(direction_attr, bytes):
+            direction = direction_attr.decode()
+        else:
+            direction = str(direction_attr)
+        if direction not in {"LEFT", "RIGHT"}:
+            raise UnsupportedOpError(
+                "BitShift direction must be LEFT or RIGHT"
+            )
+        op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+        if not op_dtype.is_integer:
+            raise UnsupportedOpError("BitShift expects integer inputs")
+        function = (
+            ScalarFunction.BITWISE_LEFT_SHIFT
+            if direction == "LEFT"
+            else ScalarFunction.BITWISE_RIGHT_SHIFT
+        )
+        op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
+        if op_spec is None:
+            raise UnsupportedOpError("Unsupported op BitShift")
+        input0_shape = value_shape(graph, node.inputs[0], node)
+        input1_shape = value_shape(graph, node.inputs[1], node)
+        output_shape = value_shape(graph, node.outputs[0], node)
+        return BinaryOp(
+            input0=node.inputs[0],
+            input1=node.inputs[1],
+            output=node.outputs[0],
+            function=function,
+            operator_kind=op_spec.kind,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
+            shape=output_shape,
+            dtype=op_dtype,
+            input_dtype=op_dtype,
+        )
+    if node.op_type == "Mod":
+        fmod = int(node.attrs.get("fmod", 0))
+        if fmod not in {0, 1}:
+            raise UnsupportedOpError("Mod only supports fmod=0 or fmod=1")
+        function = (
+            ScalarFunction.FMOD if fmod == 1 else ScalarFunction.REMAINDER
+        )
+    else:
+        try:
+            function = ScalarFunction.from_onnx_op(node.op_type)
+        except ScalarFunctionError as exc:
+            raise UnsupportedOpError(
+                f"Unsupported op {node.op_type}"
+            ) from exc
+    validate_unary_attrs(node.op_type, node.attrs)
+    if function in COMPARE_FUNCTIONS:
+        input_dtype = node_dtype(graph, node, *node.inputs)
+        output_dtype = value_dtype(graph, node.outputs[0], node)
+        op_spec = binary_op_symbol(function, node.attrs, dtype=input_dtype)
+        if op_spec is None:
+            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node.op_type} must have 2 inputs and 1 output"
+            )
+        if output_dtype != ScalarType.BOOL:
+            raise UnsupportedOpError(
+                f"{node.op_type} expects bool output, got {output_dtype.onnx_name}"
+            )
+        input0_shape = value_shape(graph, node.inputs[0], node)
+        input1_shape = value_shape(graph, node.inputs[1], node)
+        output_shape = value_shape(graph, node.outputs[0], node)
+        return BinaryOp(
+            input0=node.inputs[0],
+            input1=node.inputs[1],
+            output=node.outputs[0],
+            function=function,
+            operator_kind=op_spec.kind,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
+            shape=output_shape,
+            dtype=output_dtype,
+            input_dtype=input_dtype,
+        )
+    op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
+    unary_symbol = unary_op_symbol(function, dtype=op_dtype)
+    if op_spec is None and unary_symbol is None:
+        raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+    if op_spec is not None:
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError(
+                f"{node.op_type} must have 2 inputs and 1 output"
+            )
+        input0_shape = value_shape(graph, node.inputs[0], node)
+        input1_shape = value_shape(graph, node.inputs[1], node)
+        output_shape = value_shape(graph, node.outputs[0], node)
+        return BinaryOp(
+            input0=node.inputs[0],
+            input1=node.inputs[1],
+            output=node.outputs[0],
+            function=function,
+            operator_kind=op_spec.kind,
+            input0_shape=input0_shape,
+            input1_shape=input1_shape,
+            shape=output_shape,
+            dtype=op_dtype,
+            input_dtype=op_dtype,
+        )
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError(
+            f"{node.op_type} must have 1 input and 1 output"
+        )
+    output_shape = value_shape(graph, node.outputs[0], node)
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=function,
+        shape=output_shape,
+        dtype=op_dtype,
+        input_dtype=op_dtype,
+        params=(),
+    )
+
+
+_DEFAULT_ELEMENTWISE_TYPES = (
+    BINARY_OP_TYPES.union(UNARY_OP_TYPES) - set(VARIADIC_OP_FUNCTIONS.keys())
+)
+
+for _op_type in _DEFAULT_ELEMENTWISE_TYPES:
+    register_lowering_if_missing(_op_type)(_lower_binary_unary)
 
 
 @register_lowering("IsInf")

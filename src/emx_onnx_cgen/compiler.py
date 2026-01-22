@@ -12,170 +12,21 @@ from shared.scalar_types import ScalarType
 
 from .onnxruntime_utils import make_deterministic_session_options
 from .codegen.c_emitter import (
-    AttentionOp,
-    AveragePoolOp,
-    BatchNormOp,
-    LpNormalizationOp,
-    InstanceNormalizationOp,
-    GroupNormalizationOp,
-    LayerNormalizationOp,
-    MeanVarianceNormalizationOp,
-    RMSNormalizationOp,
-    BinaryOp,
-    MultiInputBinaryOp,
-    CastOp,
-    ClipOp,
     CEmitter,
     ConstTensor,
-    ConvOp,
-    ConvTransposeOp,
-    ConcatOp,
-    ConstantOfShapeOp,
-    CumSumOp,
-    GemmOp,
-    GatherOp,
-    GatherElementsOp,
-    GatherNDOp,
-    ScatterNDOp,
-    TensorScatterOp,
-    ExpandOp,
-    RangeOp,
-    OneHotOp,
-    LpPoolOp,
-    QuantizeLinearOp,
-    LrnOp,
-    LstmOp,
-    AdagradOp,
-    LogSoftmaxOp,
-    HardmaxOp,
-    NegativeLogLikelihoodLossOp,
-    NonZeroOp,
-    NonMaxSuppressionOp,
-    NodeInfo,
-    PadOp,
-    SplitOp,
-    SoftmaxCrossEntropyLossOp,
     LoweredModel,
     ModelHeader,
-    MatMulOp,
-    QLinearMatMulOp,
-    MaxPoolOp,
-    ReduceOp,
-    ArgReduceOp,
-    ReshapeOp,
-    ResizeOp,
-    GridSampleOp,
-    HardmaxOp,
-    SoftmaxOp,
-    ShapeOp,
-    SliceOp,
-    TransposeOp,
-    UnaryOp,
-    WhereOp,
+    NodeInfo,
 )
 from .dtypes import dtype_info
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
+from .ir.context import GraphContext
 from .ir.model import Graph, TensorType, Value
-from .lowering.attention import AttentionSpec, resolve_attention_spec
-from .lowering.average_pool import (
-    lower_average_pool,
-    lower_global_average_pool,
-)
-from .lowering import global_max_pool as _global_max_pool  # noqa: F401
-from .lowering.batch_normalization import lower_batch_normalization
-from .lowering.cast import lower_cast
-from .lowering.concat import lower_concat
-from .lowering.common import (
-    ensure_supported_dtype,
-    node_dtype,
-    shape_product,
-    value_dtype,
-    value_shape,
-)
-from .lowering.conv import ConvSpec, resolve_conv_spec
-from .lowering import conv_transpose as _conv_transpose  # noqa: F401
-from .lowering.constant_of_shape import lower_constant_of_shape
-from .lowering.dropout import lower_dropout
-from .lowering import cumsum as _cumsum  # noqa: F401
-from .lowering import einsum as _einsum  # noqa: F401
-from .lowering.flatten import lower_flatten
-from .lowering.gather import lower_gather
-from .lowering.gather_elements import lower_gather_elements
-from .lowering.gather_nd import lower_gather_nd
-from .lowering import scatter_nd as _scatter_nd  # noqa: F401
-from .lowering import tensor_scatter as _tensor_scatter  # noqa: F401
-from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
-from .lowering.lrn import LrnSpec, resolve_lrn_spec
-from .lowering.logsoftmax import lower_logsoftmax
-from .lowering import hardmax as _hardmax  # noqa: F401
-from .lowering import adagrad as _adagrad  # noqa: F401
-from .lowering import group_normalization as _group_normalization  # noqa: F401
-from .lowering import instance_normalization as _instance_normalization  # noqa: F401
-from .lowering import layer_normalization as _layer_normalization  # noqa: F401
-from .lowering import lp_normalization as _lp_normalization  # noqa: F401
-from .lowering import lp_pool as _lp_pool  # noqa: F401
-from .lowering import mean_variance_normalization as _mean_variance_normalization  # noqa: F401
-from .lowering.negative_log_likelihood_loss import (
-    lower_negative_log_likelihood_loss,
-)
-from .lowering import nonzero as _nonzero  # noqa: F401
-from .lowering import non_max_suppression as _non_max_suppression  # noqa: F401
-from .lowering.expand import lower_expand
-from .lowering.range import lower_range
-from .lowering import one_hot as _one_hot  # noqa: F401
-from .lowering.split import lower_split
-from .lowering.softmax_cross_entropy_loss import (
-    lower_softmax_cross_entropy_loss,
-)
-from .lowering.matmul import lower_matmul
-from .lowering.maxpool import MaxPoolSpec, resolve_maxpool_spec
-from .lowering import pad as _pad  # noqa: F401
-from .lowering.reduce import (
-    REDUCE_KIND_BY_OP,
-    REDUCE_OUTPUTS_FLOAT_ONLY,
-)
-from .lowering import arg_reduce as _arg_reduce  # noqa: F401
-from .lowering import topk as _topk  # noqa: F401
-from .lowering.reshape import lower_reshape
-from .lowering.resize import lower_resize
-from .lowering.grid_sample import lower_grid_sample
-from .lowering import quantize_linear as _quantize_linear  # noqa: F401
-from .lowering import qlinear_matmul as _qlinear_matmul  # noqa: F401
-from .lowering.slice import lower_slice
-from .lowering.squeeze import lower_squeeze
-from .lowering import depth_space as _depth_space  # noqa: F401
-from .lowering import eye_like as _eye_like  # noqa: F401
-from .lowering import identity as _identity  # noqa: F401
-from .lowering import tile as _tile  # noqa: F401
-from .lowering import trilu as _trilu  # noqa: F401
-from .lowering.shape import lower_shape
-from .lowering.size import lower_size
-from .lowering.softmax import lower_softmax
-from .lowering.transpose import lower_transpose
-from .lowering.unsqueeze import lower_unsqueeze
-from .lowering.where import lower_where
-from .lowering.elementwise import (
-    lower_celu,
-    lower_clip,
-    lower_isinf,
-    lower_isnan,
-    lower_shrink,
-    lower_swish,
-)
-from .lowering import variadic as _variadic  # noqa: F401
-from .lowering import rms_normalization as _rms_normalization  # noqa: F401
-from .lowering import rotary_embedding as _rotary_embedding  # noqa: F401
-from .lowering.registry import get_lowering_registry, resolve_dispatch
+from .ir.op_base import OpBase
+from .lowering import load_lowering_registry
+from .lowering.common import ensure_supported_dtype, shape_product, value_dtype
+from .lowering.registry import get_lowering_registry
 from .onnx_import import import_onnx
-from .ops import (
-    BINARY_OP_TYPES,
-    COMPARE_FUNCTIONS,
-    UNARY_OP_TYPES,
-    binary_op_symbol,
-    unary_op_symbol,
-    validate_unary_attrs,
-)
-from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from .runtime.evaluator import Evaluator
 
 
@@ -212,6 +63,7 @@ class Compiler:
             large_temp_threshold_bytes=options.large_temp_threshold_bytes,
             large_weight_threshold=options.large_weight_threshold,
         )
+        load_lowering_registry()
 
     def compile(self, model: onnx.ModelProto) -> str:
         graph = import_onnx(model)
@@ -306,7 +158,8 @@ class Compiler:
         return collect(graph.inputs), collect(graph.outputs)
 
     def _lower_model(self, model: onnx.ModelProto, graph: Graph) -> LoweredModel:
-        constants = _lowered_constants(graph)
+        ctx = GraphContext(graph)
+        constants = _lowered_constants(ctx)
         self._validate_graph(graph)
         (
             input_names,
@@ -316,7 +169,7 @@ class Compiler:
             output_shapes,
             output_dtypes,
         ) = self._collect_io_specs(graph)
-        ops, node_infos = self._lower_nodes(graph)
+        ops, node_infos = self._lower_nodes(ctx)
         header = self._build_header(model, graph)
         return LoweredModel(
             name=self._options.model_name,
@@ -487,130 +340,16 @@ class Compiler:
         )
 
     def _lower_nodes(
-        self, graph: Graph
-    ) -> tuple[
-        list[
-            BinaryOp
-            | MultiInputBinaryOp
-            | UnaryOp
-            | ClipOp
-            | CastOp
-            | QuantizeLinearOp
-            | QLinearMatMulOp
-            | MatMulOp
-            | GemmOp
-            | AttentionOp
-            | ConvOp
-            | ConvTransposeOp
-            | AveragePoolOp
-            | LpPoolOp
-            | BatchNormOp
-            | LpNormalizationOp
-            | InstanceNormalizationOp
-            | GroupNormalizationOp
-            | LayerNormalizationOp
-            | MeanVarianceNormalizationOp
-            | RMSNormalizationOp
-            | LrnOp
-            | LstmOp
-            | AdagradOp
-            | SoftmaxOp
-            | LogSoftmaxOp
-            | HardmaxOp
-            | NegativeLogLikelihoodLossOp
-            | SoftmaxCrossEntropyLossOp
-            | MaxPoolOp
-            | ConcatOp
-            | GatherElementsOp
-            | GatherOp
-            | GatherNDOp
-            | ScatterNDOp
-            | TensorScatterOp
-            | TransposeOp
-            | ConstantOfShapeOp
-            | ReshapeOp
-            | SliceOp
-            | ResizeOp
-            | GridSampleOp
-            | ReduceOp
-            | ArgReduceOp
-            | ShapeOp
-            | PadOp
-            | NonZeroOp
-            | NonMaxSuppressionOp
-            | ExpandOp
-            | CumSumOp
-            | RangeOp
-            | OneHotOp
-            | SplitOp
-        ],
-        list[NodeInfo],
-    ]:
-        ops: list[
-            BinaryOp
-            | MultiInputBinaryOp
-            | UnaryOp
-            | ClipOp
-            | CastOp
-            | QuantizeLinearOp
-            | QLinearMatMulOp
-            | MatMulOp
-            | GemmOp
-            | AttentionOp
-            | ConvOp
-            | ConvTransposeOp
-            | AveragePoolOp
-            | LpPoolOp
-            | BatchNormOp
-            | LpNormalizationOp
-            | InstanceNormalizationOp
-            | GroupNormalizationOp
-            | LayerNormalizationOp
-            | MeanVarianceNormalizationOp
-            | RMSNormalizationOp
-            | LrnOp
-            | LstmOp
-            | SoftmaxOp
-            | LogSoftmaxOp
-            | HardmaxOp
-            | NegativeLogLikelihoodLossOp
-            | SoftmaxCrossEntropyLossOp
-            | MaxPoolOp
-            | ConcatOp
-            | GatherElementsOp
-            | GatherOp
-            | GatherNDOp
-            | ScatterNDOp
-            | TensorScatterOp
-            | TransposeOp
-            | ConstantOfShapeOp
-            | ReshapeOp
-            | SliceOp
-            | ResizeOp
-            | ReduceOp
-            | ArgReduceOp
-            | ShapeOp
-            | PadOp
-            | NonZeroOp
-            | NonMaxSuppressionOp
-            | ExpandOp
-            | CumSumOp
-            | RangeOp
-            | OneHotOp
-            | SplitOp
-            | WhereOp
-        ] = []
+        self, ctx: GraphContext
+    ) -> tuple[list[OpBase], list[NodeInfo]]:
+        ops: list[OpBase] = []
         node_infos: list[NodeInfo] = []
-        for node in graph.nodes:
-            lowering = resolve_dispatch(
-                node.op_type,
-                get_lowering_registry(),
-                binary_types=BINARY_OP_TYPES,
-                unary_types=UNARY_OP_TYPES,
-                binary_fallback=lambda: _lower_binary_unary,
-                unary_fallback=lambda: _lower_binary_unary,
-            )
-            ops.append(lowering(graph, node))
+        registry = get_lowering_registry()
+        for node in ctx.nodes:
+            lowering = registry.get(node.op_type)
+            if lowering is None:
+                raise UnsupportedOpError(f"Unsupported op {node.op_type}")
+            ops.append(lowering(ctx, node))
             node_infos.append(
                 NodeInfo(
                     op_type=node.op_type,
@@ -661,7 +400,7 @@ class Compiler:
         return evaluator.run(feeds)
 
 
-def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
+def _lowered_constants(graph: Graph | GraphContext) -> tuple[ConstTensor, ...]:
     constants: list[ConstTensor] = []
     for initializer in graph.initializers:
         dtype = ensure_supported_dtype(initializer.type.dtype)
@@ -678,124 +417,3 @@ def _lowered_constants(graph: Graph) -> tuple[ConstTensor, ...]:
         )
     return tuple(constants)
 
-
-def _lower_binary_unary(graph: Graph, node: Node) -> BinaryOp | UnaryOp:
-    if node.op_type == "BitShift":
-        if len(node.inputs) != 2 or len(node.outputs) != 1:
-            raise UnsupportedOpError("BitShift must have 2 inputs and 1 output")
-        direction_attr = node.attrs.get("direction", "LEFT")
-        if isinstance(direction_attr, bytes):
-            direction = direction_attr.decode()
-        else:
-            direction = str(direction_attr)
-        if direction not in {"LEFT", "RIGHT"}:
-            raise UnsupportedOpError(
-                "BitShift direction must be LEFT or RIGHT"
-            )
-        op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
-        if not op_dtype.is_integer:
-            raise UnsupportedOpError("BitShift expects integer inputs")
-        function = (
-            ScalarFunction.BITWISE_LEFT_SHIFT
-            if direction == "LEFT"
-            else ScalarFunction.BITWISE_RIGHT_SHIFT
-        )
-        op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
-        if op_spec is None:
-            raise UnsupportedOpError("Unsupported op BitShift")
-        input0_shape = value_shape(graph, node.inputs[0], node)
-        input1_shape = value_shape(graph, node.inputs[1], node)
-        output_shape = value_shape(graph, node.outputs[0], node)
-        return BinaryOp(
-            input0=node.inputs[0],
-            input1=node.inputs[1],
-            output=node.outputs[0],
-            function=function,
-            operator_kind=op_spec.kind,
-            input0_shape=input0_shape,
-            input1_shape=input1_shape,
-            shape=output_shape,
-            dtype=op_dtype,
-            input_dtype=op_dtype,
-        )
-    if node.op_type == "Mod":
-        fmod = int(node.attrs.get("fmod", 0))
-        if fmod not in {0, 1}:
-            raise UnsupportedOpError("Mod only supports fmod=0 or fmod=1")
-        function = (
-            ScalarFunction.FMOD if fmod == 1 else ScalarFunction.REMAINDER
-        )
-    else:
-        try:
-            function = ScalarFunction.from_onnx_op(node.op_type)
-        except ScalarFunctionError as exc:
-            raise UnsupportedOpError(
-                f"Unsupported op {node.op_type}"
-            ) from exc
-    validate_unary_attrs(node.op_type, node.attrs)
-    if function in COMPARE_FUNCTIONS:
-        input_dtype = node_dtype(graph, node, *node.inputs)
-        output_dtype = value_dtype(graph, node.outputs[0], node)
-        op_spec = binary_op_symbol(function, node.attrs, dtype=input_dtype)
-        if op_spec is None:
-            raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-        if len(node.inputs) != 2 or len(node.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node.op_type} must have 2 inputs and 1 output"
-            )
-        if output_dtype != ScalarType.BOOL:
-            raise UnsupportedOpError(
-                f"{node.op_type} expects bool output, got {output_dtype.onnx_name}"
-            )
-        input0_shape = value_shape(graph, node.inputs[0], node)
-        input1_shape = value_shape(graph, node.inputs[1], node)
-        output_shape = value_shape(graph, node.outputs[0], node)
-        return BinaryOp(
-            input0=node.inputs[0],
-            input1=node.inputs[1],
-            output=node.outputs[0],
-            function=function,
-            operator_kind=op_spec.kind,
-            input0_shape=input0_shape,
-            input1_shape=input1_shape,
-            shape=output_shape,
-            dtype=output_dtype,
-            input_dtype=input_dtype,
-        )
-    op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
-    op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
-    unary_symbol = unary_op_symbol(function, dtype=op_dtype)
-    if op_spec is None and unary_symbol is None:
-        raise UnsupportedOpError(f"Unsupported op {node.op_type}")
-    if op_spec is not None:
-        if len(node.inputs) != 2 or len(node.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node.op_type} must have 2 inputs and 1 output"
-            )
-        input0_shape = value_shape(graph, node.inputs[0], node)
-        input1_shape = value_shape(graph, node.inputs[1], node)
-        output_shape = value_shape(graph, node.outputs[0], node)
-        return BinaryOp(
-            input0=node.inputs[0],
-            input1=node.inputs[1],
-            output=node.outputs[0],
-            function=function,
-            operator_kind=op_spec.kind,
-            input0_shape=input0_shape,
-            input1_shape=input1_shape,
-            shape=output_shape,
-            dtype=op_dtype,
-            input_dtype=op_dtype,
-        )
-    if len(node.inputs) != 1 or len(node.outputs) != 1:
-        raise UnsupportedOpError(f"{node.op_type} must have 1 input and 1 output")
-    output_shape = value_shape(graph, node.outputs[0], node)
-    return UnaryOp(
-        input0=node.inputs[0],
-        output=node.outputs[0],
-        function=function,
-        shape=output_shape,
-        dtype=op_dtype,
-        input_dtype=op_dtype,
-        params=(),
-    )
