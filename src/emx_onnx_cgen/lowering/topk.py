@@ -19,12 +19,10 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _read_k(graph: Graph, name: str, node: Node) -> int:
+def _read_k(graph: Graph, name: str, node: Node) -> int | None:
     initializer = _find_initializer(graph, name)
     if initializer is None:
-        raise UnsupportedOpError(
-            f"{node.op_type} k input must be a constant initializer"
-        )
+        return None
     if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
             f"{node.op_type} k input must be int64 or int32"
@@ -63,6 +61,28 @@ def lower_topk(graph: Graph, node: Node) -> TopKOp:
     axis = normalize_axis(axis, input_shape, node)
     k = _read_k(graph, k_name, node)
     axis_dim = input_shape[axis]
+    values_shape = value_shape(graph, output_values, node)
+    indices_shape = value_shape(graph, output_indices, node)
+    if values_shape != indices_shape:
+        raise ShapeInferenceError(
+            f"{node.op_type} values and indices output shapes must match, "
+            f"got {values_shape} and {indices_shape}"
+        )
+    if k is None:
+        k_shape = value_shape(graph, k_name, node)
+        if len(k_shape) != 1 or k_shape[0] != 1:
+            raise ShapeInferenceError(
+                f"{node.op_type} k input must be a 1-element tensor"
+            )
+        if axis >= len(values_shape):
+            raise ShapeInferenceError(
+                f"{node.op_type} axis {axis} exceeds output rank {len(values_shape)}"
+            )
+        k = values_shape[axis]
+        if k <= 0:
+            raise ShapeInferenceError(
+                f"{node.op_type} k must be a positive value, got {k}"
+            )
     if k > axis_dim:
         raise ShapeInferenceError(
             f"{node.op_type} k {k} exceeds axis dimension {axis_dim}"
@@ -70,12 +90,10 @@ def lower_topk(graph: Graph, node: Node) -> TopKOp:
     output_shape_expected = list(input_shape)
     output_shape_expected[axis] = k
     output_shape = tuple(output_shape_expected)
-    values_shape = value_shape(graph, output_values, node)
     if values_shape != output_shape:
         raise ShapeInferenceError(
             f"{node.op_type} values output shape must be {output_shape}, got {values_shape}"
         )
-    indices_shape = value_shape(graph, output_indices, node)
     if indices_shape != output_shape:
         raise ShapeInferenceError(
             f"{node.op_type} indices output shape must be {output_shape}, got {indices_shape}"
