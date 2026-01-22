@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1128 / 1802 official ONNX files.
+Support 1154 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1343,21 +1343,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_mode_max/model.onnx | ❌ | Unsupported op RoiAlign |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding/model.onnx | ❌ | Unsupported op RotaryEmbedding |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input/model.onnx | ❌ | Unsupported op RotaryEmbedding |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input_expanded/model.onnx | ❌ | tuple index out of range |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved/model.onnx | ❌ | Unsupported op RotaryEmbedding |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids/model.onnx | ❌ | Unsupported op RotaryEmbedding |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ❌ | Unsupported op RotaryEmbedding |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | Unsupported op RotaryEmbedding |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
 | onnx-org/onnx/backend/test/data/node/test_round/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scan9_sum/model.onnx | ❌ | Unsupported op Scan |
@@ -1589,9 +1589,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_tan_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tanh/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_tanh_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tensorscatter/model.onnx | ❌ | Unsupported op TensorScatter |
-| onnx-org/onnx/backend/test/data/node/test_tensorscatter_3d/model.onnx | ❌ | Unsupported op TensorScatter |
-| onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular/model.onnx | ❌ | Unsupported op TensorScatter |
+| onnx-org/onnx/backend/test/data/node/test_tensorscatter/model.onnx | ❌ | name 'tensor_scatter_template' is not defined |
+| onnx-org/onnx/backend/test/data/node/test_tensorscatter_3d/model.onnx | ❌ | name 'tensor_scatter_template' is not defined |
+| onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular/model.onnx | ❌ | name 'tensor_scatter_template' is not defined |
 | onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_batch_onlybigrams_skip0/model.onnx | ❌ | Unsupported op TfIdfVectorizer |
 | onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_batch_onlybigrams_skip5/model.onnx | ❌ | Unsupported op TfIdfVectorizer |
 | onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_batch_uniandbigrams_skip5/model.onnx | ❌ | Unsupported op TfIdfVectorizer |
@@ -1607,13 +1607,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tile/model.onnx | ❌ | Tile repeats input must be a constant initializer |
 | onnx-org/onnx/backend/test/data/node/test_tile_precomputed/model.onnx | ❌ | Tile repeats input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx | ❌ | TopK k input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k_negative_axis/model.onnx | ❌ | TopK k input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values/model.onnx | ❌ | TopK k input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/model.onnx | ❌ | TopK k input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_largest/model.onnx | ❌ | TopK k input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k_smallest/model.onnx | ❌ | TopK k input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_top_k_uint64/model.onnx | ❌ | TopK k input must be a constant initializer |
+| onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_top_k_negative_axis/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_top_k_same_values_largest/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_top_k_smallest/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_top_k_uint64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout_default/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_training_dropout_default_mask/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |

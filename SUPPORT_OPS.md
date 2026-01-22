@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 136 / 198
+Supported operators: 137 / 196
 
 | Operator | Supported |
 | --- | --- |
@@ -145,7 +145,6 @@ Supported operators: 136 / 198
 | Resize | ✅ |
 | ReverseSequence | ❌ |
 | RoiAlign | ❌ |
-| RotaryEmbedding | ❌ |
 | Round | ✅ |
 | STFT | ❌ |
 | Scan | ❌ |
@@ -184,11 +183,10 @@ Supported operators: 136 / 198
 | Swish | ✅ |
 | Tan | ✅ |
 | Tanh | ✅ |
-| TensorScatter | ❌ |
 | TfIdfVectorizer | ❌ |
 | ThresholdedRelu | ✅ |
 | Tile | ❌ |
-| TopK | ❌ |
+| TopK | ✅ |
 | Transpose | ✅ |
 | Trilu | ✅ |
 | Unique | ❌ |

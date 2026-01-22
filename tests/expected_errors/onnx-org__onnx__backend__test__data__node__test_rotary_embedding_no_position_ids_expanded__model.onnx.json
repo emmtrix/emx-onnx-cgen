@@ -1,4 +1,4 @@
 {
-  "error": "OK",
+  "error": "tuple index out of range",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_expanded/test_data_set_0"
 }

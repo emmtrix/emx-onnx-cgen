@@ -2,12 +2,12 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Out of tolerance | 22 | ██████████████████ |
-| Missing output 1 in testbench data | 38 | █████████████████████████████ |
+| Missing output 1 in testbench data | 38 | ██████████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
 | Test data input count does not match model inputs: 1 vs 3. | 27 | █████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████████████ |
+| Out of tolerance | 20 | ████████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
 | Currently not supporting loading segments. | 19 | ███████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
@@ -21,12 +21,11 @@
 | Unsupported op ImageDecoder | 9 | ███████ |
 | Unsupported op NonMaxSuppression | 9 | ███████ |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 9 | ███████ |
+| '*' object has no attribute '*' | 8 | ██████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
 | Unsupported op QLinearMatMul | 8 | ██████ |
-| Unsupported op RotaryEmbedding | 8 | ██████ |
 | tuple index out of range | 8 | ██████ |
-| TopK k input must be a constant initializer | 7 | █████ |
-| Unsupported op TfIdfVectorizer | 7 | █████ |
+| Unsupported op TfIdfVectorizer | 7 | ██████ |
 | AveragePool has unsupported attributes | 6 | █████ |
 | Missing output 4 in testbench data | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
@@ -64,7 +63,7 @@
 | Unsupported op Momentum | 3 | ██ |
 | Unsupported op RandomUniformLike | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
-| Unsupported op TensorScatter | 3 | ██ |
+| name '*' is not defined | 3 | ██ |
 | AveragePool supports ceil_mode=0 only | 2 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
 | BitwiseAnd expects identical input/output shapes | 2 | ██ |
