@@ -1,0 +1,21 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ compute_type }} scale = (({{ compute_type }}){{ input0_scale_expr }}) * (({{ compute_type }}){{ input1_scale_expr }}) / (({{ compute_type }}){{ output_scale_expr }});
+    const int32_t input0_zero = (int32_t){{ input0_zero_expr }};
+    const int32_t input1_zero = (int32_t){{ input1_zero_expr }};
+    const {{ compute_type }} output_zero = ({{ compute_type }}){{ output_zero_expr }};
+{% for idx in range(output_loop_vars | length) %}
+    {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
+{% endfor %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}int32_t acc = 0;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (idx_t k = 0; k < {{ k }}; ++k) {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += ((int32_t){{ input0_index_expr }} - input0_zero) * ((int32_t){{ input1_index_expr }} - input1_zero);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} scaled = (({{ compute_type }})acc) * scale + output_zero;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} rounded = {{ round_fn }}(scaled);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})rounded;
+{% for idx in range(output_loop_vars | length) | reverse %}
+    {% for indent in range(loop.index0) %}    {% endfor %}}
+{% endfor %}
+}

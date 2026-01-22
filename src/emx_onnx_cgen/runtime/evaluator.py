@@ -50,6 +50,7 @@ from ..lowering.topk import lower_topk
 from ..lowering.lstm import ACTIVATION_KIND_BY_NAME, resolve_lstm_spec
 from ..lowering.lrn import resolve_lrn_spec
 from ..lowering.matmul import lower_matmul
+from ..lowering.qlinear_matmul import lower_qlinear_matmul
 from ..lowering.maxpool import resolve_maxpool_spec
 from ..lowering.reduce import (
     REDUCE_KIND_BY_OP,
@@ -1487,6 +1488,41 @@ def _eval_quantize_linear(evaluator: Evaluator, node: Node) -> None:
     evaluator.values[node.outputs[0]] = clipped.astype(
         spec.output_dtype.np_dtype, copy=False
     )
+
+
+@register_evaluator("QLinearMatMul")
+def _eval_qlinear_matmul(evaluator: Evaluator, node: Node) -> None:
+    op = lower_qlinear_matmul(evaluator.graph, node)
+    input0 = evaluator.values[op.input0]
+    input1 = evaluator.values[op.input1]
+    input0_scale = evaluator.values[op.input0_scale]
+    input1_scale = evaluator.values[op.input1_scale]
+    output_scale = evaluator.values[op.output_scale]
+    input0_zero_point = evaluator.values[op.input0_zero_point]
+    input1_zero_point = evaluator.values[op.input1_zero_point]
+    output_zero_point = evaluator.values[op.output_zero_point]
+
+    def _scalar_value(array: np.ndarray) -> float:
+        return float(np.asarray(array).reshape(-1)[0])
+
+    def _scalar_int(array: np.ndarray) -> int:
+        return int(np.asarray(array).reshape(-1)[0])
+
+    input0_zero = _scalar_int(input0_zero_point)
+    input1_zero = _scalar_int(input1_zero_point)
+    output_zero = _scalar_int(output_zero_point)
+    scale = _scalar_value(input0_scale) * _scalar_value(
+        input1_scale
+    ) / _scalar_value(output_scale)
+    acc = _apply_matmul(
+        input0.astype(np.int32) - input0_zero,
+        input1.astype(np.int32) - input1_zero,
+    )
+    scaled = acc.astype(np.float64) * scale + output_zero
+    rounded = np.rint(scaled)
+    info = np.iinfo(op.dtype.np_dtype)
+    clipped = np.clip(rounded, info.min, info.max)
+    evaluator.values[op.output] = clipped.astype(op.dtype.np_dtype)
 
 @register_evaluator("InstanceNormalization")
 def _eval_instance_normalization(evaluator: Evaluator, node: Node) -> None:

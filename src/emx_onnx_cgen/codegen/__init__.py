@@ -7,6 +7,7 @@ from .c_emitter import (
     GemmOp,
     LoweredModel,
     MatMulOp,
+    QLinearMatMulOp,
     ShapeOp,
     UnaryOp,
 )
@@ -20,6 +21,7 @@ __all__ = [
     "GemmOp",
     "LoweredModel",
     "MatMulOp",
+    "QLinearMatMulOp",
     "ShapeOp",
     "UnaryOp",
 ]
