@@ -1,0 +1,179 @@
+static inline int {{ op_name }}_suppress_by_iou(
+    const {{ input_c_type }} boxes[][4],
+    idx_t box_index1,
+    idx_t box_index2,
+    int center_point_box,
+    {{ compute_type }} iou_threshold
+) {
+    {{ compute_type }} box1_0 = ({{ compute_type }})boxes[box_index1][0];
+    {{ compute_type }} box1_1 = ({{ compute_type }})boxes[box_index1][1];
+    {{ compute_type }} box1_2 = ({{ compute_type }})boxes[box_index1][2];
+    {{ compute_type }} box1_3 = ({{ compute_type }})boxes[box_index1][3];
+    {{ compute_type }} box2_0 = ({{ compute_type }})boxes[box_index2][0];
+    {{ compute_type }} box2_1 = ({{ compute_type }})boxes[box_index2][1];
+    {{ compute_type }} box2_2 = ({{ compute_type }})boxes[box_index2][2];
+    {{ compute_type }} box2_3 = ({{ compute_type }})boxes[box_index2][3];
+    {{ compute_type }} x1_min;
+    {{ compute_type }} x1_max;
+    {{ compute_type }} x2_min;
+    {{ compute_type }} x2_max;
+    {{ compute_type }} y1_min;
+    {{ compute_type }} y1_max;
+    {{ compute_type }} y2_min;
+    {{ compute_type }} y2_max;
+
+    if (center_point_box == 0) {
+        x1_min = {{ min_fn }}(box1_1, box1_3);
+        x1_max = {{ max_fn }}(box1_1, box1_3);
+        x2_min = {{ min_fn }}(box2_1, box2_3);
+        x2_max = {{ max_fn }}(box2_1, box2_3);
+
+        y1_min = {{ min_fn }}(box1_0, box1_2);
+        y1_max = {{ max_fn }}(box1_0, box1_2);
+        y2_min = {{ min_fn }}(box2_0, box2_2);
+        y2_max = {{ max_fn }}(box2_0, box2_2);
+    } else {
+        {{ compute_type }} box1_width_half = box1_2 / ({{ compute_type }})2;
+        {{ compute_type }} box1_height_half = box1_3 / ({{ compute_type }})2;
+        {{ compute_type }} box2_width_half = box2_2 / ({{ compute_type }})2;
+        {{ compute_type }} box2_height_half = box2_3 / ({{ compute_type }})2;
+
+        x1_min = box1_0 - box1_width_half;
+        x1_max = box1_0 + box1_width_half;
+        x2_min = box2_0 - box2_width_half;
+        x2_max = box2_0 + box2_width_half;
+
+        y1_min = box1_1 - box1_height_half;
+        y1_max = box1_1 + box1_height_half;
+        y2_min = box2_1 - box2_height_half;
+        y2_max = box2_1 + box2_height_half;
+    }
+
+    {{ compute_type }} intersection_x_min = {{ max_fn }}(x1_min, x2_min);
+    {{ compute_type }} intersection_x_max = {{ min_fn }}(x1_max, x2_max);
+    if (intersection_x_max <= intersection_x_min) {
+        return 0;
+    }
+
+    {{ compute_type }} intersection_y_min = {{ max_fn }}(y1_min, y2_min);
+    {{ compute_type }} intersection_y_max = {{ min_fn }}(y1_max, y2_max);
+    if (intersection_y_max <= intersection_y_min) {
+        return 0;
+    }
+
+    {{ compute_type }} intersection_area =
+        (intersection_x_max - intersection_x_min)
+        * (intersection_y_max - intersection_y_min);
+    if (intersection_area <= ({{ compute_type }})0) {
+        return 0;
+    }
+
+    {{ compute_type }} area1 = (x1_max - x1_min) * (y1_max - y1_min);
+    {{ compute_type }} area2 = (x2_max - x2_min) * (y2_max - y2_min);
+    {{ compute_type }} union_area = area1 + area2 - intersection_area;
+    if (area1 <= ({{ compute_type }})0
+        || area2 <= ({{ compute_type }})0
+        || union_area <= ({{ compute_type }})0) {
+        return 0;
+    }
+
+    {{ compute_type }} intersection_over_union = intersection_area / union_area;
+    return intersection_over_union > iou_threshold;
+}
+
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    idx_t output_index = 0;
+    const idx_t output_capacity = {{ output_capacity }};
+    int64_t max_output_boxes_per_class = 0;
+    {{ compute_type }} iou_threshold_value = {{ iou_threshold_default }};
+    {{ compute_type }} score_threshold_value = {{ score_threshold_default }};
+{% if max_output_boxes_per_class %}
+    max_output_boxes_per_class =
+        (int64_t){{ max_output_boxes_per_class }}[0];
+    if (max_output_boxes_per_class < 0) {
+        max_output_boxes_per_class = 0;
+    }
+{% endif %}
+{% if iou_threshold %}
+    iou_threshold_value = ({{ compute_type }}){{ iou_threshold }}[0];
+{% endif %}
+{% if score_threshold %}
+    score_threshold_value = ({{ compute_type }}){{ score_threshold }}[0];
+{% endif %}
+    if (output_capacity == 0 || max_output_boxes_per_class == 0) {
+        for (idx_t idx = 0; idx < output_capacity; ++idx) {
+            {{ output }}[idx][0] = 0;
+            {{ output }}[idx][1] = 0;
+            {{ output }}[idx][2] = 0;
+        }
+        return;
+    }
+
+    for (idx_t batch_index = 0; batch_index < {{ num_batches }}; ++batch_index) {
+        for (idx_t class_index = 0; class_index < {{ num_classes }}; ++class_index) {
+            {{ compute_type }} candidate_scores[{{ num_boxes }}];
+            idx_t candidate_indices[{{ num_boxes }}];
+            idx_t selected_indices[{{ num_boxes }}];
+            idx_t candidate_count = 0;
+            idx_t selected_count = 0;
+            for (idx_t box_index = 0; box_index < {{ num_boxes }}; ++box_index) {
+                {{ compute_type }} score = ({{ compute_type }})
+                    {{ scores }}[batch_index][class_index][box_index];
+{% if score_threshold_enabled %}
+                if (score <= score_threshold_value) {
+                    continue;
+                }
+{% endif %}
+                candidate_scores[candidate_count] = score;
+                candidate_indices[candidate_count] = box_index;
+                ++candidate_count;
+            }
+
+            for (idx_t i = 1; i < candidate_count; ++i) {
+                {{ compute_type }} candidate_score = candidate_scores[i];
+                idx_t candidate_index = candidate_indices[i];
+                idx_t j = i;
+                while (j > 0
+                    && (candidate_scores[j - 1] > candidate_score
+                        || (candidate_scores[j - 1] == candidate_score
+                            && candidate_indices[j - 1] < candidate_index))) {
+                    candidate_scores[j] = candidate_scores[j - 1];
+                    candidate_indices[j] = candidate_indices[j - 1];
+                    --j;
+                }
+                candidate_scores[j] = candidate_score;
+                candidate_indices[j] = candidate_index;
+            }
+
+            for (idx_t candidate_pos = candidate_count; candidate_pos > 0; --candidate_pos) {
+                if (selected_count >= (idx_t)max_output_boxes_per_class) {
+                    break;
+                }
+                idx_t candidate_index = candidate_indices[candidate_pos - 1];
+                int selected = 1;
+                for (idx_t selected_idx = 0; selected_idx < selected_count; ++selected_idx) {
+                    if ({{ op_name }}_suppress_by_iou(
+                        {{ boxes }}[batch_index],
+                        candidate_index,
+                        selected_indices[selected_idx],
+                        {{ center_point_box }},
+                        iou_threshold_value)) {
+                        selected = 0;
+                        break;
+                    }
+                }
+                if (selected) {
+                    selected_indices[selected_count] = candidate_index;
+                    if (output_index >= output_capacity) {
+                        return;
+                    }
+                    {{ output }}[output_index][0] = ({{ output_c_type }})batch_index;
+                    {{ output }}[output_index][1] = ({{ output_c_type }})class_index;
+                    {{ output }}[output_index][2] = ({{ output_c_type }})candidate_index;
+                    ++output_index;
+                    ++selected_count;
+                }
+            }
+        }
+    }
+}

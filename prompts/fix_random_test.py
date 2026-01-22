@@ -85,9 +85,9 @@ def main() -> None:
         "see if the value can be inferred from value_info or output shapes."
     )
     prompt_lines.append(
-        "Quantized op hint: check onnx-org/onnx/reference/ops/op_qlinear*.py and "
-        "note scale/zero_point constraints (often scalar shapes and int8/uint8 "
-        "dtypes) to guide lowering validation and codegen math."
+        "Operator behavior hint: consult the ONNX reference op implementation to "
+        "capture tie-break rules, optional input defaults, and output ordering so "
+        "codegen/runtime match the backend tests."
     )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(

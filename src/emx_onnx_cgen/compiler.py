@@ -50,6 +50,7 @@ from .codegen.c_emitter import (
     HardmaxOp,
     NegativeLogLikelihoodLossOp,
     NonZeroOp,
+    NonMaxSuppressionOp,
     NodeInfo,
     PadOp,
     SplitOp,
@@ -118,6 +119,7 @@ from .lowering.negative_log_likelihood_loss import (
     lower_negative_log_likelihood_loss,
 )
 from .lowering import nonzero as _nonzero  # noqa: F401
+from .lowering import non_max_suppression as _non_max_suppression  # noqa: F401
 from .lowering.expand import lower_expand
 from .lowering.range import lower_range
 from .lowering import one_hot as _one_hot  # noqa: F401
@@ -535,6 +537,7 @@ class Compiler:
             | ShapeOp
             | PadOp
             | NonZeroOp
+            | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -589,6 +592,7 @@ class Compiler:
             | ShapeOp
             | PadOp
             | NonZeroOp
+            | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
             | RangeOp
