@@ -2345,6 +2345,44 @@ def _gathernd_numpy(
     return output
 
 
+def _rotary_embedding_numpy(
+    input_value: np.ndarray,
+    cos_cache: np.ndarray,
+    sin_cache: np.ndarray,
+    *,
+    interleaved: bool = False,
+    rotary_embedding_dim: int = 0,
+) -> np.ndarray:
+    original_shape = input_value.shape
+    if input_value.ndim == 4:
+        input_value = np.transpose(input_value, (0, 2, 1, 3))
+    head_size = input_value.shape[-1]
+    if rotary_embedding_dim == 0:
+        rotary_embedding_dim = head_size
+    x_rotate = input_value[..., :rotary_embedding_dim]
+    x_not_rotate = input_value[..., rotary_embedding_dim:]
+    cos_cache = np.expand_dims(cos_cache, axis=2)
+    sin_cache = np.expand_dims(sin_cache, axis=2)
+    if interleaved:
+        x1 = x_rotate[..., 0::2]
+        x2 = x_rotate[..., 1::2]
+    else:
+        x1, x2 = np.split(x_rotate, 2, axis=-1)
+    real = (cos_cache * x1) - (sin_cache * x2)
+    imag = (sin_cache * x1) + (cos_cache * x2)
+    if interleaved:
+        real = np.expand_dims(real, axis=-1)
+        imag = np.expand_dims(imag, axis=-1)
+        x_rotate_concat = np.concatenate((real, imag), axis=-1)
+        x_rotate = np.reshape(x_rotate_concat, x_rotate.shape)
+    else:
+        x_rotate = np.concatenate((real, imag), axis=-1)
+    output = np.concatenate((x_rotate, x_not_rotate), axis=-1)
+    if len(original_shape) == 4:
+        output = np.transpose(output, (0, 2, 1, 3))
+    return output
+
+
 def _run_ort_compare(model: onnx.ModelProto) -> None:
     initializer_names = {init.name for init in model.graph.initializer}
     rng = np.random.default_rng(0)
@@ -2375,6 +2413,45 @@ def _run_ort_compare(model: onnx.ModelProto) -> None:
             )
         else:
             np.testing.assert_array_equal(compiled_output, ort_output)
+
+
+def test_rotary_embedding_numpy_match() -> None:
+    model = _make_operator_model(
+        op_type="RotaryEmbedding",
+        input_shapes=[[1, 2, 3, 4], [1, 3, 2], [1, 3, 2]],
+        output_shape=[1, 2, 3, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={},
+        opset=23,
+    )
+    rng = np.random.default_rng(0)
+    inputs = {
+        "in0": rng.normal(size=(1, 2, 3, 4)).astype(np.float32),
+        "in1": rng.normal(size=(1, 3, 2)).astype(np.float32),
+        "in2": rng.normal(size=(1, 3, 2)).astype(np.float32),
+    }
+    compiled = Compiler().run(model, inputs)["out"]
+    expected = _rotary_embedding_numpy(
+        inputs["in0"],
+        inputs["in1"],
+        inputs["in2"],
+    )
+    np.testing.assert_allclose(compiled, expected, rtol=1e-4, atol=1e-5)
+
+
+def test_rotary_embedding_ort_compare() -> None:
+    model = _make_operator_model(
+        op_type="RotaryEmbedding",
+        input_shapes=[[1, 2, 3, 4], [1, 3, 2], [1, 3, 2]],
+        output_shape=[1, 2, 3, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={},
+        opset=23,
+    )
+    _run_ort_compare_or_skip(
+        model,
+        skip_substrings=("NOT_IMPLEMENTED", "RotaryEmbedding"),
+    )
 
 
 def _run_ort_compare_or_skip(
