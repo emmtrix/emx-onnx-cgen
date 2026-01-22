@@ -284,10 +284,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
-| onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ❌ | Out of tolerance (max ULP 65535) |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_DOUBLE/model.onnx | ❌ | Out of tolerance (max ULP 18446744073709551615) |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_DOUBLE/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
@@ -308,8 +308,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_BFLOAT16/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_DOUBLE/model.onnx | ❌ | Out of tolerance (max ULP 18446744073709551615) |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT16/model.onnx | ❌ | Out of tolerance (max ULP 65535) |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_DOUBLE/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
@@ -345,13 +345,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_BFLOAT16_to_FLOAT_expanded/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT16/model.onnx | ❌ | Out of tolerance (max ULP 65535) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx | ❌ | Out of tolerance (max ULP 65535) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_DOUBLE/model.onnx | ❌ | Out of tolerance (max ULP 18446744073709551615) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx | ❌ | Out of tolerance (max ULP 18446744073709551615) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT16/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT16_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_DOUBLE/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
@@ -362,7 +362,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT_expanded/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT2/model.onnx | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT2_expanded/model.onnx | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT4/model.onnx | ❌ | Unsupported elem_type 22 (INT4) for tensor 'like'. |
@@ -393,10 +393,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE/model.onnx | ❌ | Out of tolerance (max ULP 18446744073709551615) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | ❌ | Out of tolerance (max ULP 18446744073709551615) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16/model.onnx | ❌ | Out of tolerance (max ULP 65535) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx | ❌ | Out of tolerance (max ULP 65535) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FN/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
@@ -774,7 +774,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_last/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx | ❌ | Out of tolerance (max ULP 4294967295) |
+| onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx | ✅ | OK (max ULP 0) |

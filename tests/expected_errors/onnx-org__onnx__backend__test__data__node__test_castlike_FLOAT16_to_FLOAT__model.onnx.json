@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 4294967295)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT/test_data_set_0",
   "operators": [
     "CastLike"
