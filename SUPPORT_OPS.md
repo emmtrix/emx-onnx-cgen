@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 138 / 195
+Supported operators: 139 / 196
 
 | Operator | Supported |
 | --- | --- |
@@ -198,6 +198,7 @@ Supported operators: 138 / 195
 | ai.onnx.ml::Binarizer | ❌ |
 | ai.onnx.ml::LabelEncoder | ❌ |
 | ai.onnx.ml::TreeEnsemble | ❌ |
+| ai.onnx.preview.training::Adagrad | ✅ |
 | ai.onnx.preview.training::Adam | ❌ |
 | ai.onnx.preview.training::Gradient | ❌ |
 | ai.onnx.preview.training::Momentum | ❌ |
