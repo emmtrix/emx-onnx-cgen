@@ -58,6 +58,7 @@ from ..lowering.reduce import (
 )
 from ..lowering.reshape import lower_reshape
 from ..lowering.scatter_nd import lower_scatternd
+from ..lowering.tensor_scatter import lower_tensor_scatter
 from ..lowering.slice import _normalize_slices
 from ..lowering.shape import lower_shape
 from ..lowering.size import lower_size
@@ -340,6 +341,35 @@ def _eval_scatternd(evaluator: Evaluator, node: Node) -> None:
             raise UnsupportedOpError(
                 f"Unsupported ScatterND reduction {op.reduction}"
             )
+    evaluator.values[op.output] = output
+
+
+@register_evaluator("TensorScatter")
+def _eval_tensor_scatter(evaluator: Evaluator, node: Node) -> None:
+    op = lower_tensor_scatter(evaluator.graph, node)
+    past_cache = evaluator.values[op.past_cache]
+    update = evaluator.values[op.update]
+    if op.write_indices is None:
+        write_indices = np.zeros((past_cache.shape[0],), dtype=np.int64)
+    else:
+        write_indices = evaluator.values[op.write_indices].astype(
+            np.int64, copy=False
+        )
+    axis = op.axis
+    max_sequence_length = past_cache.shape[axis]
+    sequence_length = update.shape[axis]
+    output = np.array(past_cache, copy=True)
+    for prefix_idx in np.ndindex(past_cache.shape[:axis]):
+        batch_idx = prefix_idx[0]
+        base_index = int(write_indices[batch_idx])
+        for sequence_idx in range(sequence_length):
+            cache_idx = (*prefix_idx, base_index + sequence_idx)
+            if op.mode == "circular":
+                cache_idx = tuple(
+                    np.mod(np.asarray(cache_idx), max_sequence_length)
+                )
+            update_idx = (*prefix_idx, sequence_idx)
+            output[cache_idx] = update[update_idx]
     evaluator.values[op.output] = output
 
 

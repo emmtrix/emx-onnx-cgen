@@ -68,6 +68,11 @@ def main() -> None:
         prompt_lines.append(f"Operator(s): {selection['operators']}")
     if selection["command_line"]:
         prompt_lines.append(f"Reproduction: {selection['command_line']}")
+    prompt_lines.append(
+        "Helpful references: onnx-org/docs/Operators.md for operator specs, "
+        "onnx-org/onnx/reference/ops/op_<op>.py for numpy reference behavior, "
+        "and onnx-org/onnx/backend/test/case/node for test inputs."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "

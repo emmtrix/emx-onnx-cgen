@@ -1,0 +1,44 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in output_shape %}
+for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+{% endfor %}
+    {{ output }}{% for var in output_loop_vars %}[{{ var }}]{% endfor %} = {{ past_cache }}{% for var in output_loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in output_shape %}
+}
+{% endfor %}
+
+{% if prefix_shape %}
+{% for dim in prefix_shape %}
+for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ prefix_loop_vars[loop.index0] }}) {
+{% endfor %}
+{% endif %}
+    idx_t {{ write_index_var }} = 0;
+{% if write_indices_present %}
+    {{ write_index_var }} = (idx_t){{ write_indices }}[{{ batch_index_var }}];
+{% endif %}
+    for (idx_t {{ sequence_loop_var }} = 0; {{ sequence_loop_var }} < {{ sequence_dim }}; ++{{ sequence_loop_var }}) {
+        idx_t {{ cache_index_var }} = {{ write_index_var }} + {{ sequence_loop_var }};
+{% if circular %}
+        {{ cache_index_var }} = {{ cache_index_var }} % {{ max_sequence_length }};
+        if ({{ cache_index_var }} < 0) {
+            {{ cache_index_var }} += {{ max_sequence_length }};
+        }
+{% endif %}
+{% if tail_shape %}
+{% for dim in tail_shape %}
+        for (idx_t {{ tail_loop_vars[loop.index0] }} = 0; {{ tail_loop_vars[loop.index0] }} < {{ dim }}; ++{{ tail_loop_vars[loop.index0] }}) {
+{% endfor %}
+{% endif %}
+        {{ output_index_expr }} = {{ update_index_expr }};
+{% if tail_shape %}
+{% for _ in tail_shape %}
+        }
+{% endfor %}
+{% endif %}
+    }
+{% if prefix_shape %}
+{% for _ in prefix_shape %}
+}
+{% endfor %}
+{% endif %}
+}

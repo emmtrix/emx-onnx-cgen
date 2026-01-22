@@ -37,6 +37,7 @@ from .codegen.c_emitter import (
     GatherElementsOp,
     GatherNDOp,
     ScatterNDOp,
+    TensorScatterOp,
     ExpandOp,
     RangeOp,
     OneHotOp,
@@ -99,6 +100,7 @@ from .lowering.gather import lower_gather
 from .lowering.gather_elements import lower_gather_elements
 from .lowering.gather_nd import lower_gather_nd
 from .lowering import scatter_nd as _scatter_nd  # noqa: F401
+from .lowering import tensor_scatter as _tensor_scatter  # noqa: F401
 from .lowering.gemm import resolve_gemm_spec, validate_gemm_bias_shape
 from .lowering.lrn import LrnSpec, resolve_lrn_spec
 from .lowering.logsoftmax import lower_logsoftmax
@@ -514,6 +516,7 @@ class Compiler:
             | GatherOp
             | GatherNDOp
             | ScatterNDOp
+            | TensorScatterOp
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp
@@ -566,6 +569,8 @@ class Compiler:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterNDOp
+            | TensorScatterOp
             | TransposeOp
             | ConstantOfShapeOp
             | ReshapeOp

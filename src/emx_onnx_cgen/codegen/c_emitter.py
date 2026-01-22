@@ -752,6 +752,22 @@ class ScatterNDOp:
 
 
 @dataclass(frozen=True)
+class TensorScatterOp:
+    past_cache: str
+    update: str
+    write_indices: str | None
+    output: str
+    past_cache_shape: tuple[int, ...]
+    update_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    write_indices_shape: tuple[int, ...] | None
+    axis: int
+    mode: str
+    dtype: ScalarType
+    write_indices_dtype: ScalarType | None
+
+
+@dataclass(frozen=True)
 class TransposeOp:
     input0: str
     output: str
@@ -1179,6 +1195,7 @@ class LoweredModel:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -1360,6 +1377,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -1523,6 +1541,12 @@ class CEmitter:
             return (op.data, op.indices, op.output)
         if isinstance(op, ScatterNDOp):
             return (op.data, op.indices, op.updates, op.output)
+        if isinstance(op, TensorScatterOp):
+            names = [op.past_cache, op.update]
+            if op.write_indices is not None:
+                names.append(op.write_indices)
+            names.append(op.output)
+            return tuple(names)
         if isinstance(op, ConcatOp):
             return (*op.inputs, op.output)
         if isinstance(op, ConstantOfShapeOp):
@@ -1681,6 +1705,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -1742,6 +1767,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -2323,6 +2349,25 @@ class CEmitter:
                 dtype=op.dtype,
                 indices_dtype=op.indices_dtype,
             )
+        if isinstance(op, TensorScatterOp):
+            return TensorScatterOp(
+                past_cache=name_map.get(op.past_cache, op.past_cache),
+                update=name_map.get(op.update, op.update),
+                write_indices=(
+                    name_map.get(op.write_indices, op.write_indices)
+                    if op.write_indices is not None
+                    else None
+                ),
+                output=name_map.get(op.output, op.output),
+                past_cache_shape=op.past_cache_shape,
+                update_shape=op.update_shape,
+                output_shape=op.output_shape,
+                write_indices_shape=op.write_indices_shape,
+                axis=op.axis,
+                mode=op.mode,
+                dtype=op.dtype,
+                write_indices_dtype=op.write_indices_dtype,
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2758,6 +2803,9 @@ class CEmitter:
                 "gather": self._env.get_template("gather_op.c.j2"),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
                 "scatter_nd": self._env.get_template("scatter_nd_op.c.j2"),
+                "tensor_scatter": self._env.get_template(
+                    "tensor_scatter_op.c.j2"
+                ),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
@@ -2867,6 +2915,7 @@ class CEmitter:
         gather_template = templates["gather"]
         gather_nd_template = templates["gather_nd"]
         scatter_nd_template = templates["scatter_nd"]
+        tensor_scatter_template = templates["tensor_scatter"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         identity_template = templates["identity"]
@@ -3134,6 +3183,7 @@ class CEmitter:
         gather_template = templates["gather"]
         gather_nd_template = templates["gather_nd"]
         scatter_nd_template = templates["scatter_nd"]
+        tensor_scatter_template = templates["tensor_scatter"]
         transpose_template = templates["transpose"]
         reshape_template = templates["reshape"]
         identity_template = templates["identity"]
@@ -3626,6 +3676,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterNDOp
+            | TensorScatterOp
             | TransposeOp
             | ReshapeOp
             | IdentityOp
@@ -3858,6 +3909,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterNDOp
+            | TensorScatterOp
             | TransposeOp
             | ReshapeOp
             | IdentityOp
@@ -4223,6 +4275,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -4417,6 +4470,12 @@ class CEmitter:
         if isinstance(op, ScatterNDOp):
             args.extend([op.data, op.indices, op.updates, op.output])
             return ", ".join(args)
+        if isinstance(op, TensorScatterOp):
+            args.extend([op.past_cache, op.update])
+            if op.write_indices is not None:
+                args.append(op.write_indices)
+            args.append(op.output)
+            return ", ".join(args)
         if isinstance(op, ConcatOp):
             args.extend([*op.inputs, op.output])
             return ", ".join(args)
@@ -4594,6 +4653,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -4654,6 +4714,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -5301,6 +5362,25 @@ class CEmitter:
                 dtype=op.dtype,
                 indices_dtype=op.indices_dtype,
             )
+        if isinstance(op, TensorScatterOp):
+            return TensorScatterOp(
+                past_cache=temp_map.get(op.past_cache, op.past_cache),
+                update=temp_map.get(op.update, op.update),
+                write_indices=(
+                    temp_map.get(op.write_indices, op.write_indices)
+                    if op.write_indices is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                past_cache_shape=op.past_cache_shape,
+                update_shape=op.update_shape,
+                output_shape=op.output_shape,
+                write_indices_shape=op.write_indices_shape,
+                axis=op.axis,
+                mode=op.mode,
+                dtype=op.dtype,
+                write_indices_dtype=op.write_indices_dtype,
+            )
         if isinstance(op, ConcatOp):
             return ConcatOp(
                 inputs=tuple(temp_map.get(name, name) for name in op.inputs),
@@ -5711,6 +5791,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -8104,6 +8185,116 @@ class CEmitter:
                 reduction=op.reduction,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, TensorScatterOp):
+            param_pairs = [
+                ("past_cache", op.past_cache),
+                ("update", op.update),
+                ("output", op.output),
+            ]
+            if op.write_indices is not None:
+                param_pairs.insert(2, ("write_indices", op.write_indices))
+            params = self._shared_param_map(param_pairs)
+            output_dim_names = _dim_names_for(op.output)
+            update_dim_names = _dim_names_for(op.update)
+            past_dim_names = _dim_names_for(op.past_cache)
+            write_indices_dim_names = (
+                _dim_names_for(op.write_indices) if op.write_indices else None
+            )
+            output_shape = CEmitter._shape_dim_exprs(
+                op.output_shape, output_dim_names
+            )
+            update_shape = CEmitter._shape_dim_exprs(
+                op.update_shape, update_dim_names
+            )
+            prefix_shape = output_shape[: op.axis]
+            prefix_loop_vars = (
+                CEmitter._loop_vars(op.output_shape[: op.axis])
+                if op.output_shape[: op.axis]
+                else ()
+            )
+            tail_shape = output_shape[op.axis + 1 :]
+            tail_loop_vars = (
+                tuple(
+                    f"t{index}"
+                    for index in range(len(op.output_shape[op.axis + 1 :]))
+                )
+                if op.output_shape[op.axis + 1 :]
+                else ()
+            )
+            output_loop_vars = CEmitter._loop_vars(op.output_shape)
+            sequence_loop_var = "seq"
+            cache_index_var = "cache_index"
+            write_index_var = "write_index"
+            index_vars = (*prefix_loop_vars, cache_index_var, *tail_loop_vars)
+            output_index_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in index_vars
+            )
+            update_index_vars = (
+                *prefix_loop_vars,
+                sequence_loop_var,
+                *tail_loop_vars,
+            )
+            update_index_expr = f"{params['update']}" + "".join(
+                f"[{var}]" for var in update_index_vars
+            )
+            past_suffix = self._param_array_suffix(
+                op.past_cache_shape, past_dim_names
+            )
+            update_suffix = self._param_array_suffix(
+                op.update_shape, update_dim_names
+            )
+            output_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            param_decls = [
+                (params["past_cache"], c_type, past_suffix, True),
+                (params["update"], c_type, update_suffix, True),
+            ]
+            if op.write_indices is not None and op.write_indices_dtype is not None:
+                write_indices_suffix = self._param_array_suffix(
+                    op.write_indices_shape or (), write_indices_dim_names
+                )
+                param_decls.append(
+                    (
+                        params["write_indices"],
+                        op.write_indices_dtype.c_type,
+                        write_indices_suffix,
+                        True,
+                    )
+                )
+            param_decls.append((params["output"], c_type, output_suffix, False))
+            param_decls_rendered = self._build_param_decls(param_decls)
+            rendered = tensor_scatter_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                past_cache=params["past_cache"],
+                update=params["update"],
+                write_indices=(
+                    params.get("write_indices") if op.write_indices else None
+                ),
+                output=params["output"],
+                params=param_decls_rendered,
+                c_type=c_type,
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                prefix_shape=prefix_shape,
+                prefix_loop_vars=prefix_loop_vars,
+                sequence_dim=update_shape[op.axis],
+                sequence_loop_var=sequence_loop_var,
+                tail_shape=tail_shape,
+                tail_loop_vars=tail_loop_vars,
+                output_index_expr=output_index_expr,
+                update_index_expr=update_index_expr,
+                max_sequence_length=output_shape[op.axis],
+                write_indices_present=op.write_indices is not None,
+                batch_index_var=prefix_loop_vars[0]
+                if prefix_loop_vars
+                else "0",
+                write_index_var=write_index_var,
+                cache_index_var=cache_index_var,
+                circular=op.mode == "circular",
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, TransposeOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -9883,6 +10074,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -9949,6 +10141,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -10052,6 +10245,14 @@ class CEmitter:
             return tuple(inputs)
         if isinstance(op, ScatterNDOp):
             return ((op.data, op.data_shape),)
+        if isinstance(op, TensorScatterOp):
+            inputs = [
+                (op.past_cache, op.past_cache_shape),
+                (op.update, op.update_shape),
+            ]
+            if op.write_indices is not None and op.write_indices_shape is not None:
+                inputs.append((op.write_indices, op.write_indices_shape))
+            return tuple(inputs)
         if isinstance(op, CumSumOp):
             return ((op.input0, op.input_shape),)
         if isinstance(op, RangeOp):
@@ -10177,6 +10378,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterNDOp
+        | TensorScatterOp
         | TransposeOp
         | ReshapeOp
         | IdentityOp
@@ -10430,6 +10632,8 @@ class CEmitter:
         if isinstance(op, GatherNDOp):
             return op.output_shape
         if isinstance(op, ScatterNDOp):
+            return op.output_shape
+        if isinstance(op, TensorScatterOp):
             return op.output_shape
         if isinstance(op, TransposeOp):
             return op.output_shape
