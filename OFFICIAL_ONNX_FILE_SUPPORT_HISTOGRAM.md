@@ -2,7 +2,7 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Out of tolerance | 39 | ██████████████████████████████ |
+| Out of tolerance | 22 | ██████████████████ |
 | Missing output 1 in testbench data | 38 | █████████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
 | Test data input count does not match model inputs: 1 vs 3. | 27 | █████████████████████ |

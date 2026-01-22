@@ -37,7 +37,7 @@ def max_ulp_diff(actual: np.ndarray, expected: np.ndarray) -> int:
     nan_mask = np.isnan(actual_cast) | np.isnan(expected_cast)
     if nan_mask.any():
         both_nan = np.isnan(actual_cast) & np.isnan(expected_cast)
-        if not np.all(both_nan):
+        if np.any(nan_mask & ~both_nan):
             uint_dtype = _float_uint_dtype(expected_cast)
             return int(np.iinfo(uint_dtype).max)
         actual_cast = actual_cast[~nan_mask]
