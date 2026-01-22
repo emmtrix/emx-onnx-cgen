@@ -3887,6 +3887,8 @@ class CEmitter:
             ScalarFunction.SCALED_TANH,
             ScalarFunction.THRESHOLDED_RELU,
             ScalarFunction.LOGICAL_XOR,
+            ScalarFunction.ISNEGINF,
+            ScalarFunction.ISPOSINF,
         }
         if function in {ScalarFunction.MAXIMUM, ScalarFunction.MINIMUM}:
             if dtype in {ScalarType.F32, ScalarType.F64}:
@@ -10980,7 +10982,19 @@ class CEmitter:
                 ]
             )
             operator_symbol = unary_op_symbol(op.function, dtype=op.dtype)
-            if op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}:
+            if op.function == ScalarFunction.ISINF and len(op.params) == 2:
+                detect_negative, detect_positive = op.params
+                detect_negative = int(detect_negative)
+                detect_positive = int(detect_positive)
+                if detect_negative and detect_positive:
+                    operator_symbol = "isinf"
+                elif detect_negative:
+                    operator_symbol = "isneginf"
+                elif detect_positive:
+                    operator_symbol = "isposinf"
+                else:
+                    operator_symbol = "zero"
+            elif op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}:
                 operator_symbol = (
                     "isinf" if op.function == ScalarFunction.ISINF else "isnan"
                 )

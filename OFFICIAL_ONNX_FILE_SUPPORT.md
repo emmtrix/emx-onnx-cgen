@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1159 / 1802 official ONNX files.
+Support 1161 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -767,8 +767,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_instancenorm_example/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_isinf/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_isinf_float16/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_isinf_negative/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 2 / 6 (33.3%)  ACTUAL: array([False, False,  True, False,  True,  True])  DESIRED: array([False, False, False, False,  True, False]) |
-| onnx-org/onnx/backend/test/data/node/test_isinf_positive/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 1 / 6 (16.7%)  ACTUAL: array([False, False,  True, False,  True,  True])  DESIRED: array([False, False,  True, False, False,  True]) |
+| onnx-org/onnx/backend/test/data/node/test_isinf_negative/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_isinf_positive/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_isnan/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_isnan_float16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_0/model.onnx | ✅ | OK (max ULP 0) |

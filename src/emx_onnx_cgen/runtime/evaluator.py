@@ -981,8 +981,22 @@ def _eval_isinf(evaluator: Evaluator, node: Node) -> None:
     output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
     if output_dtype != ScalarType.BOOL:
         raise UnsupportedOpError("IsInf output must be bool")
+    detect_negative = int(node.attrs.get("detect_negative", 1))
+    detect_positive = int(node.attrs.get("detect_positive", 1))
+    if detect_negative not in {0, 1} or detect_positive not in {0, 1}:
+        raise UnsupportedOpError(
+            "IsInf detect_negative and detect_positive must be 0 or 1"
+        )
     x = evaluator.values[node.inputs[0]]
-    evaluator.values[node.outputs[0]] = np.isinf(x)
+    if detect_negative and detect_positive:
+        result = np.isinf(x)
+    elif detect_negative:
+        result = np.isneginf(x)
+    elif detect_positive:
+        result = np.isposinf(x)
+    else:
+        result = np.zeros(x.shape, dtype=bool)
+    evaluator.values[node.outputs[0]] = result
 
 
 @register_evaluator("IsNaN")
