@@ -86,7 +86,7 @@ Options:
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
-- `--large-weight-threshold`: Store weights larger than this element count in a binary file (default: `1024`).
+- `--large-weight-threshold`: Store weights larger than this element count in a binary file (default: `1048576`; set to `0` to disable).
 - `--large-temp-threshold-bytes`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 

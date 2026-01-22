@@ -11128,7 +11128,7 @@ class CEmitter:
         self, constants: tuple[ConstTensor, ...]
     ) -> tuple[tuple[ConstTensor, ...], tuple[ConstTensor, ...]]:
         if self._large_weight_threshold <= 0:
-            return (), constants
+            return constants, ()
         inline: list[ConstTensor] = []
         large: list[ConstTensor] = []
         for const in constants:
