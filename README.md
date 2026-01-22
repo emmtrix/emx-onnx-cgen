@@ -64,7 +64,7 @@ Compile an ONNX model into a C source file:
 emx-onnx-cgen compile path/to/model.onnx build/model.c
 ```
 
-Verify an ONNX model end-to-end against ONNX Runtime:
+Verify an ONNX model end-to-end against ONNX Runtime (default):
 
 ```bash
 emx-onnx-cgen verify path/to/model.onnx
@@ -104,6 +104,7 @@ Options:
 - `--large-weight-threshold`: Store weights larger than this element count in a binary file (default: `1024`).
 - `--large-temp-threshold-bytes`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
+- `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
 
 How verification works:
 
@@ -112,14 +113,14 @@ How verification works:
 2. **Build and execute**: the testbench is compiled with the selected C compiler
    (`--cc`, `CC`, or a detected `cc/gcc/clang`) and executed in a temporary
    directory.
-3. **Run ONNX Runtime**: the JSON inputs from the testbench are fed to ORT using
-   the same model.
+3. **Run runtime backend**: the JSON inputs from the testbench are fed to the
+   selected runtime (`onnxruntime` or `onnx-reference`) using the same model.
 4. **Compare outputs**: floating outputs are compared by maximum ULP distance
    (see https://www.emmtrix.com/wiki/ULP_Difference_of_Float_Numbers for the
    ULP definition and algorithm); non-floating outputs must match exactly.
    Missing outputs or mismatches are treated as failures.
-5. **ORT unsupported models**: if ORT reports `NOT_IMPLEMENTED`, verification is
-   skipped with a warning (exit code 0).
+5. **ORT unsupported models**: when using `onnxruntime`, if ORT reports
+   `NOT_IMPLEMENTED`, verification is skipped with a warning (exit code 0).
 
 ## Output
 
