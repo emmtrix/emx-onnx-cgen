@@ -7,7 +7,7 @@
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
 | Test data input count does not match model inputs: 1 vs 3. | 27 | █████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████ |
-| Out of tolerance | 20 | ████████████████ |
+| Out of tolerance | 21 | █████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |

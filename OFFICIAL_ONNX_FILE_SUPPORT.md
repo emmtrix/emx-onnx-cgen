@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1160 / 1802 official ONNX files.
+Support 1159 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -18,12 +18,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx | ❌ | 'gpu_0_data_0' |
 | onnx-org/onnx/backend/test/data/node/test_abs/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_acos/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_acos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acos_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_acosh/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_acosh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acosh_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx | ✅ |  |
-| onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx | ❌ | Out of tolerance (max ULP 1074139703) |
 | onnx-org/onnx/backend/test/data/node/test_adam/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_adam_multiple/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_add/model.onnx | ✅ | OK (max ULP 0) |
@@ -90,13 +90,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_example_select_last_index/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_random_select_last_index/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_asin/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_asin/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_asin_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_asinh/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_asinh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_asinh_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_atan/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_atan/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_atan_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_atanh/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_atanh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_atanh_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_attn_mask/model.onnx | ✅ | OK (max ULP 2) |
@@ -135,15 +135,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d/model.onnx | ✅ | OK (max ULP 4) |
@@ -174,7 +174,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 6) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ | OK (max ULP 4) |
@@ -193,7 +193,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 7) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled/model.onnx | ✅ | OK (max ULP 2) |
@@ -206,12 +206,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ | OK (max ULP 7) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul/model.onnx | ✅ | OK (max ULP 3) |
@@ -542,8 +542,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_convtranspose_pads/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cos/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_cos_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_cosh/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_cosh_example/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_cosh/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_cosh_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cumsum_1d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cumsum_1d_exclusive/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cumsum_1d_int32_exclusive/model.onnx | ✅ | OK (max ULP 0) |
@@ -774,7 +774,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_last/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx | ✅ | OK (max ULP 0) |
@@ -899,7 +899,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_strides/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_3d_default/model.onnx | ❌ | LpPool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_lrn/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_lrn_default/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_lrn_default/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lstm_batchwise/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_lstm_defaults/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_lstm_with_initial_bias/model.onnx | ✅ | OK (max ULP 1) |
@@ -1069,7 +1069,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_or_bcast4v2d/model.onnx | ❌ | Or expects identical input/output shapes |
 | onnx-org/onnx/backend/test/data/node/test_or_bcast4v3d/model.onnx | ❌ | Or expects identical input/output shapes |
 | onnx-org/onnx/backend/test/data/node/test_or_bcast4v4d/model.onnx | ❌ | Or expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_pow/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_pow/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_bcast_array/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_bcast_scalar/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -1486,7 +1486,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_simple_rnn_with_initial_bias/model.onnx | ❌ | Unsupported op RNN |
 | onnx-org/onnx/backend/test/data/node/test_sin/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sin_example/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_sinh/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_sinh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sinh_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_size/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_size_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -1585,7 +1585,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_sum_two_inputs/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_swish/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_swish_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tan/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_tan/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tan_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tanh/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_tanh_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -1862,10 +1862,10 @@ Support 52 / 74 local ONNX files.
 | test_matmul_2x3x3x4_1x4x5/model.onnx | ✅ | OK (max ULP 1) |
 | test_matmul_2x3x4_4/model.onnx | ✅ | OK (max ULP 1) |
 | test_matmul_2x3x4_4x5/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_2x3x4x5_5/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_3_2x3x4/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_2x3x4x5_5/model.onnx | ✅ | OK (max ULP 2) |
+| test_matmul_3_2x3x4/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3_3/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_3_3x4/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_3_3x4/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3x4_2x4x5/model.onnx | ✅ | OK (max ULP 1) |
 | test_matmul_3x4_4/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_4x5x2x3_4x5x3x4/model.onnx | ✅ | OK (max ULP 2) |
