@@ -57,6 +57,10 @@ def test_ulp_intdiff_examples(dtype: np.dtype) -> None:
     max_val = finfo.max
     if dtype == np.dtype("float16"):
         cases = [
+            (dtype.type(np.nan), dtype.type(123.0), 65535),
+            (dtype.type(123.0), dtype.type(np.nan), 65535),
+            (dtype.type(np.nan), dtype.type(np.nan), 0),
+            (dtype.type(-np.nan), dtype.type(np.nan), 0),
             (np.float16(1.0), np.float16(1.0) + eps, 1),
             (np.float16(1.0), np.float16(1.0) - eps, 2),
             (min_sub, np.float16(0.0), 1),
@@ -72,6 +76,10 @@ def test_ulp_intdiff_examples(dtype: np.dtype) -> None:
         ]
     elif dtype == np.dtype("float32"):
         cases = [
+            (dtype.type(np.nan), dtype.type(123.0), 4294967295),
+            (dtype.type(123.0), dtype.type(np.nan), 4294967295),
+            (dtype.type(np.nan), dtype.type(np.nan), 0),
+            (dtype.type(-np.nan), dtype.type(np.nan), 0),
             (np.float32(1.0), np.float32(1.0) + eps, 1),
             (np.float32(1.0), np.float32(1.0) - eps, 2),
             (min_sub, np.float32(0.0), 1),
@@ -87,6 +95,10 @@ def test_ulp_intdiff_examples(dtype: np.dtype) -> None:
         ]
     elif dtype == np.dtype("float64"):
         cases = [
+            (dtype.type(np.nan), dtype.type(123.0), 18446744073709551615),
+            (dtype.type(123.0), dtype.type(np.nan), 18446744073709551615),
+            (dtype.type(np.nan), dtype.type(np.nan), 0),
+            (dtype.type(-np.nan), dtype.type(np.nan), 0),
             (np.float64(1.0), np.float64(1.0) + eps, 1),
             (np.float64(1.0), np.float64(1.0) - eps, 2),
             (min_sub, np.float64(0.0), 1),

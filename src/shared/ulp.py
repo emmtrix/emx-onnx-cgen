@@ -36,6 +36,12 @@ def ulp_intdiff_float(f1: object, f2: object) -> int:
 
     f1_scalar = _coerce_float_scalar(f1, dtype)
     f2_scalar = _coerce_float_scalar(f2, dtype)
+    f1_nan = bool(np.isnan(f1_scalar))
+    f2_nan = bool(np.isnan(f2_scalar))
+    if f1_nan and f2_nan:
+        return 0
+    if f1_nan or f2_nan:
+        return max_ulp_value(dtype)
 
     if np.signbit(f1_scalar) != np.signbit(f2_scalar):
         zero = _coerce_float_scalar(0.0, dtype)
@@ -46,3 +52,14 @@ def ulp_intdiff_float(f1: object, f2: object) -> int:
         )
 
     return _ulp_intdiff_same_sign(f1_scalar, f2_scalar, uint_dtype)
+
+
+def max_ulp_value(dtype: np.dtype) -> int:
+    dtype = np.dtype(dtype)
+    try:
+        uint_dtype = _FLOAT_TO_UINT[dtype]
+    except KeyError as exc:
+        raise ScalarFunctionError(
+            f"unsupported dtype for ULP diff: {dtype}"
+        ) from exc
+    return int(np.iinfo(uint_dtype).max)
