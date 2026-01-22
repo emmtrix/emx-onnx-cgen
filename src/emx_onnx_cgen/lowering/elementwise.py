@@ -130,6 +130,12 @@ def lower_isinf(graph: Graph, node: Node) -> UnaryOp:
         raise UnsupportedOpError("IsInf only supports floating-point inputs")
     if output_dtype != ScalarType.BOOL:
         raise UnsupportedOpError("IsInf output must be bool")
+    detect_negative = int(node.attrs.get("detect_negative", 1))
+    detect_positive = int(node.attrs.get("detect_positive", 1))
+    if detect_negative not in {0, 1} or detect_positive not in {0, 1}:
+        raise UnsupportedOpError(
+            "IsInf detect_negative and detect_positive must be 0 or 1"
+        )
     output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
@@ -138,7 +144,7 @@ def lower_isinf(graph: Graph, node: Node) -> UnaryOp:
         shape=output_shape,
         dtype=output_dtype,
         input_dtype=input_dtype,
-        params=(),
+        params=(float(detect_negative), float(detect_positive)),
     )
 
 
