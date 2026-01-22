@@ -2,12 +2,12 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Missing output 1 in testbench data | 38 | ██████████████████████████████ |
-| Out of tolerance | 38 | ██████████████████████████████ |
+| Out of tolerance | 39 | ██████████████████████████████ |
+| Missing output 1 in testbench data | 38 | █████████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
 | Test data input count does not match model inputs: 1 vs 3. | 27 | █████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████████████ |
 | Currently not supporting loading segments. | 19 | ███████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
@@ -25,8 +25,8 @@
 | Unsupported op QLinearMatMul | 8 | ██████ |
 | Unsupported op RotaryEmbedding | 8 | ██████ |
 | tuple index out of range | 8 | ██████ |
-| TopK k input must be a constant initializer | 7 | ██████ |
-| Unsupported op TfIdfVectorizer | 7 | ██████ |
+| TopK k input must be a constant initializer | 7 | █████ |
+| Unsupported op TfIdfVectorizer | 7 | █████ |
 | AveragePool has unsupported attributes | 6 | █████ |
 | Missing output 4 in testbench data | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
