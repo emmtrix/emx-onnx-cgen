@@ -750,7 +750,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_hardswish_expanded/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | onnx-org/onnx/backend/test/data/node/test_identity/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | ❌ | cannot reshape array of size 27 into shape (111,112,116,95,105,110) |
-| onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | ❌ | Currently not supporting loading segments. |
+| onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_if/model.onnx | ❌ | Unsupported op If |
 | onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | ❌ | Unsupported value type 'optional_type' for 'sequence'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'res'. Hint: export the model with tensor inputs/outputs. |
@@ -1051,16 +1051,16 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_negative_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_without_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | ❌ | cannot reshape array of size 26 into shape (111,112,116,105,111,110,97,108,95,105,110,112,117,116) |
-| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_tensor/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence/model.onnx | ❌ | Currently not supporting loading segments. |
+| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_tensor/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_tensor/model.onnx | ❌ | Unsupported op OptionalGetElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_optional_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx | ❌ | The element type in the input tensor is UNDEFINED. |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_optional_input/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_tensor_input/model.onnx | ❌ | Currently not supporting loading segments. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_optional_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_tensor_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_or2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_or3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_or4d/model.onnx | ✅ | OK (max ULP 0) |
@@ -1449,20 +1449,20 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_selu_example/model.onnx | ❌ | Selu only supports alpha=1.6732632423543772 |
 | onnx-org/onnx/backend/test/data/node/test_selu_example_expanded_ver18/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_selu_expanded_ver18/model.onnx | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx | ❌ | Currently not supporting loading segments. |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | ❌ | Currently not supporting loading segments. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'sequence'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'sequence'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'in_seq'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'in_seq'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_shape/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_end/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_start/model.onnx | ✅ | OK (max ULP 0) |

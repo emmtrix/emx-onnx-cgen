@@ -84,6 +84,12 @@ def main() -> None:
         "TopK's k), check the model's input/output shapes via onnx.load(...) to "
         "see if the value can be inferred from value_info or output shapes."
     )
+    prompt_lines.append(
+        "Test data hint: input_*.pb files are not always TensorProto. If the model "
+        "input type is sequence_type or optional_type, parse the test data with "
+        "onnx.SequenceProto or onnx.OptionalProto based on "
+        "value_info.type.WhichOneof('value')."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "

@@ -592,6 +592,15 @@ def _load_test_data_inputs(
             "Test data input count does not match model inputs: "
             f"{len(input_files)} vs {len(model.graph.input)}."
         )
+    for value_info in model.graph.input:
+        value_kind = value_info.type.WhichOneof("value")
+        if value_kind != "tensor_type":
+            LOGGER.warning(
+                "Skipping test data load for non-tensor input %s (type %s).",
+                value_info.name,
+                value_kind or "unknown",
+            )
+            return None
     inputs: dict[str, np.ndarray] = {}
     for index, path in enumerate(input_files):
         tensor = onnx.TensorProto()
