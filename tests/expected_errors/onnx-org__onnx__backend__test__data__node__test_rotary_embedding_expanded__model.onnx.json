@@ -1,4 +1,21 @@
 {
-  "error": "tuple index out of range",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/test_data_set_0"
+  "error": "Split output 0 is missing axis 3 in shape",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/test_data_set_0",
+  "operators": [
+    "Constant",
+    "Transpose",
+    "Shape",
+    "Identity",
+    "Sub",
+    "Concat",
+    "Split",
+    "Gather",
+    "Div",
+    "Cast",
+    "Slice",
+    "Unsqueeze",
+    "Mul",
+    "Add",
+    "Reshape"
+  ]
 }

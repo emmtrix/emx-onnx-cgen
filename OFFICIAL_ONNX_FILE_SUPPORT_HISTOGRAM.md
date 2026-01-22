@@ -23,8 +23,8 @@
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 9 | ███████ |
 | '*' object has no attribute '*' | 8 | ██████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
+| Split output 0 is missing axis 3 in shape | 8 | ██████ |
 | Unsupported op QLinearMatMul | 8 | ██████ |
-| tuple index out of range | 8 | ██████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | AveragePool has unsupported attributes | 6 | █████ |
 | Missing output 4 in testbench data | 6 | █████ |
@@ -35,13 +35,13 @@
 | Unsupported op Unique | 6 | █████ |
 | And expects identical input/output shapes | 5 | ████ |
 | AveragePool expects 2D kernel_shape | 5 | ████ |
+| Iteration of zero-sized operands is not enabled | 5 | ████ |
 | Or expects identical input/output shapes | 5 | ████ |
 | Test data input count does not match model inputs: 1 vs 5. | 5 | ████ |
 | Unsupported op Col2Im | 5 | ████ |
 | Unsupported op DequantizeLinear | 5 | ████ |
 | Unsupported op If | 5 | ████ |
 | Xor expects identical input/output shapes | 5 | ████ |
-| zero-size array to reduction operation maximum which has no identity | 5 | ████ |
 | Missing output 3 in testbench data | 4 | ███ |
 | Sum expects identical input/output shapes | 4 | ███ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |

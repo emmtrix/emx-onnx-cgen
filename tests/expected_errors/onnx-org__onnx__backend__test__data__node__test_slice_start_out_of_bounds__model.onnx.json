@@ -1,4 +1,4 @@
 {
-  "error": "zero-size array to reduction operation maximum which has no identity",
+  "error": "Iteration of zero-sized operands is not enabled",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/test_data_set_0"
 }

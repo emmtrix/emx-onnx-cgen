@@ -1,4 +1,20 @@
 {
   "error": "Split output 0 is missing axis 3 in shape",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/test_data_set_0",
+  "operators": [
+    "Constant",
+    "Transpose",
+    "Shape",
+    "Identity",
+    "Sub",
+    "Concat",
+    "Split",
+    "Div",
+    "Cast",
+    "Slice",
+    "Unsqueeze",
+    "Add",
+    "Mul",
+    "Reshape"
+  ]
 }
