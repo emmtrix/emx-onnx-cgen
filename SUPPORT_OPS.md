@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 137 / 196
+Supported operators: 138 / 195
 
 | Operator | Supported |
 | --- | --- |
@@ -111,7 +111,6 @@ Supported operators: 137 / 196
 | Mul | ✅ |
 | Neg | ✅ |
 | NegativeLogLikelihoodLoss | ✅ |
-| NonMaxSuppression | ❌ |
 | NonZero | ✅ |
 | Not | ✅ |
 | OneHot | ✅ |
@@ -122,7 +121,7 @@ Supported operators: 137 / 196
 | Pad | ✅ |
 | Pow | ✅ |
 | QLinearConv | ❌ |
-| QLinearMatMul | ❌ |
+| QLinearMatMul | ✅ |
 | QuantizeLinear | ✅ |
 | RMSNormalization | ✅ |
 | RNN | ❌ |
@@ -158,6 +157,7 @@ Supported operators: 137 / 196
 | SequenceErase | ❌ |
 | SequenceInsert | ❌ |
 | SequenceLength | ❌ |
+| SequenceMap | ❌ |
 | Shape | ✅ |
 | Shrink | ✅ |
 | Sigmoid | ✅ |
@@ -198,7 +198,6 @@ Supported operators: 137 / 196
 | ai.onnx.ml::Binarizer | ❌ |
 | ai.onnx.ml::LabelEncoder | ❌ |
 | ai.onnx.ml::TreeEnsemble | ❌ |
-| ai.onnx.preview.training::Adagrad | ❌ |
 | ai.onnx.preview.training::Adam | ❌ |
 | ai.onnx.preview.training::Gradient | ❌ |
 | ai.onnx.preview.training::Momentum | ❌ |

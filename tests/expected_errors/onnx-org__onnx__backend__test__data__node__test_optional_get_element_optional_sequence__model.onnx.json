@@ -1,4 +1,7 @@
 {
-  "error": "cannot reshape array of size 26 into shape (111,112,116,105,111,110,97,108,95,105,110,112,117,116)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/test_data_set_0"
+  "error": "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/test_data_set_0",
+  "operators": [
+    "OptionalGetElement"
+  ]
 }

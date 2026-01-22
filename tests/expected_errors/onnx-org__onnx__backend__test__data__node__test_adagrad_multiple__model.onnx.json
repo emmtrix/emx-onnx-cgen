@@ -1,0 +1,7 @@
+{
+  "error": "Out of tolerance (max ULP 1074139703)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/test_data_set_0",
+  "operators": [
+    "ai.onnx.preview.training::Adagrad"
+  ]
+}

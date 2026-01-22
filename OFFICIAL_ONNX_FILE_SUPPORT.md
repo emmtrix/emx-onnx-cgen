@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1154 / 1802 official ONNX files.
+Support 1160 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -22,8 +22,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_acos_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acosh/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_acosh_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx | ❌ | Unsupported op Adagrad |
-| onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx | ❌ | Unsupported op Adagrad |
+| onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx | ✅ |  |
+| onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx | ✅ |  |
 | onnx-org/onnx/backend/test/data/node/test_adam/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_adam_multiple/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_add/model.onnx | ✅ | OK (max ULP 0) |
@@ -749,7 +749,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_hardswish/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_hardswish_expanded/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | onnx-org/onnx/backend/test/data/node/test_identity/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | ❌ | cannot reshape array of size 27 into shape (111,112,116,95,105,110) |
+| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_in'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_if/model.onnx | ❌ | Unsupported op If |
 | onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | ❌ | Unsupported value type 'optional_type' for 'sequence'. Hint: export the model with tensor inputs/outputs. |
@@ -887,8 +887,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | ❌ | Unsupported op Loop |
-| onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | ❌ | cannot reshape array of size 0 into shape (115,101,113,95,101,109,112,116,121) |
-| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | ❌ | cannot reshape array of size 12 into shape (111,112,116,95,115,101,113) |
+| onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_empty'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_seq'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | ❌ | LpPool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | ✅ | OK (max ULP 1) |
@@ -1033,15 +1033,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_center_point_box_format/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_flipped_coordinates/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_identical_boxes/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_single_box/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_batches/model.onnx | ❌ | Unsupported op NonMaxSuppression |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_classes/model.onnx | ❌ | Unsupported op NonMaxSuppression |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_center_point_box_format/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_flipped_coordinates/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_identical_boxes/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_single_box/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_batches/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_classes/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
 | onnx-org/onnx/backend/test/data/node/test_nonzero_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_3d/model.onnx | ✅ | OK (max ULP 0) |
@@ -1050,7 +1050,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_negative_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_without_axis/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | ❌ | cannot reshape array of size 26 into shape (111,112,116,105,111,110,97,108,95,105,110,112,117,116) |
+| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_tensor/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_tensor/model.onnx | ❌ | Unsupported op OptionalGetElement |
@@ -1058,7 +1058,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_optional_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx | ❌ | The element type in the input tensor is UNDEFINED. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_optional_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_has_element_tensor_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_or2d/model.onnx | ✅ | OK (max ULP 0) |
@@ -1086,14 +1086,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_prelu_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_prelu_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearconv/model.onnx | ❌ | Unsupported op QLinearConv |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float16/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float16/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float16/model.onnx | ❌ | Unsupported op QLinearMatMul |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float32/model.onnx | ❌ | Unsupported op QLinearMatMul |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 1 / 6 (16.7%) Max absolute difference among violations: 108 Max relative difference among violations: 5.4  ACTUAL: array([[  41,  -12,   -9],        [   1,  -75, -128]], dtype=int8)  DESIRED: array([[ 41, -12,  -9],        [  1, -75,  20]], dtype=int8) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 1 / 6 (16.7%) Max absolute difference among violations: 108 Max relative difference among violations: 5.4  ACTUAL: array([[  41,  -12,   -9],        [   1,  -75, -128]], dtype=int8)  DESIRED: array([[ 41, -12,  -9],        [  1, -75,  20]], dtype=int8) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float16/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float32/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float16/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 4 / 12 (33.3%) Max absolute difference among violations: 12 Max relative difference among violations: 0.10344828  ACTUAL: array([[[ -86, -128, -128],         [ 115,   39, -121]], ...  DESIRED: array([[[ -86,  116,  119],         [ 115,   39, -121]], ... |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float32/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 4 / 12 (33.3%) Max absolute difference among violations: 11 Max relative difference among violations: 0.09401709  ACTUAL: array([[[ -86, -128, -128],         [ 115,   39, -121]], ...  DESIRED: array([[[ -86,  117,  120],         [ 115,   39, -121]], ... |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float16/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_asymmetric/model.onnx | ❌ | QuantizeLinear block_size is not supported |
@@ -1221,7 +1221,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx | ❌ | zero-size array to reduction operation maximum which has no identity |
+| onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_keepdims_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_negative_axes_keepdims_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -1250,7 +1250,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_regex_full_match_empty/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | onnx-org/onnx/backend/test/data/node/test_relu/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/model.onnx | ❌ | Max expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx | ❌ | zero-size array to reduction operation maximum which has no identity |
+| onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_reshape_extended_dims/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_negative_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_negative_extended_dims/model.onnx | ✅ | OK (max ULP 0) |
@@ -1497,7 +1497,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_slice_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_slice_negative_axes/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx | ❌ | zero-size array to reduction operation maximum which has no identity |
+| onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0_expanded_ver18/model.onnx | ✅ | OK (max ULP 3) |
@@ -1546,8 +1546,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_2d_opset18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset13/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset18/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx | ❌ | zero-size array to reduction operation maximum which has no identity |
-| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset18/model.onnx | ❌ | zero-size array to reduction operation maximum which has no identity |
+| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset18/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_sqrt/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sqrt_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_squeeze/model.onnx | ✅ | OK (max ULP 0) |
@@ -1850,7 +1850,7 @@ Support 52 / 74 local ONNX files.
 | test_lstm_intermediate_h/model.onnx | ✅ | OK (max ULP 1) |
 | test_lstm_missing_inputs/model.onnx | ✅ | OK (max ULP 0) |
 | test_lstm_reverse/model.onnx | ❌ | Unsupported LSTM direction b'reverse' |
-| test_lstm_seq_length/model.onnx | ✅ | OK (max ULP 1) |
+| test_lstm_seq_length/model.onnx | ✅ | OK (max ULP 43) |
 | test_lstm_simple/model.onnx | ✅ | OK (max ULP 0) |
 | test_lstm_with_initial_state/model.onnx | ✅ | OK (max ULP 2) |
 | test_lstm_y_c/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_lstm_y_c/model.onnx: Unable to find output name 'Y_c' in ['', 'R', 'W', 'X', 'Y_h'], proto is ir_version: 5 producer_name: "backend-test" graph {   node {     input: "X"     input: "W"     input: "R"     output: "Y_h"     output: ""     output: "Y_c"     op_type: "LSTM"     attribute {       name: "hidden_size"       i: 4       type: INT     }   }   name: "test_lstm_y_c"   input {     name: "X"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 2           }           dim {             dim_value: 3           }           dim {             dim_value: 3           }         }       }     }   }   input {     name: "W"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 16           }           dim {             dim_value: 3           }         }       }     }   }   input {     name: "R"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 16           }           dim {             dim_value: 4           }         }       }     }   }   output {     name: "Y_h"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 2           }           dim {             dim_value: 1           }           dim {             dim_value: 3           }           dim {             dim_value: 4           }         }       }     }   }   output {     name: "Y_c"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 3           }           dim {             dim_value: 4           }         }       }     }   } } opset_import {   version: 11 } |

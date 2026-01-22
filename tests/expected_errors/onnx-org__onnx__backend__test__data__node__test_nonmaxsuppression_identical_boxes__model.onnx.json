@@ -1,0 +1,4 @@
+{
+  "error": "'NonMaxSuppressionOp' object has no attribute 'dtype'",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_identical_boxes/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_identical_boxes/test_data_set_0"
+}

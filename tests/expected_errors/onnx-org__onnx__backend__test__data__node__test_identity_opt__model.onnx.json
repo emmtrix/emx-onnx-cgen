@@ -1,4 +1,7 @@
 {
-  "error": "cannot reshape array of size 27 into shape (111,112,116,95,105,110)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_identity_opt/test_data_set_0"
+  "error": "Unsupported value type 'optional_type' for 'opt_in'. Hint: export the model with tensor inputs/outputs.",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_identity_opt/test_data_set_0",
+  "operators": [
+    "Identity"
+  ]
 }
