@@ -178,10 +178,10 @@ def _build_parser() -> argparse.ArgumentParser:
     compile_parser.add_argument(
         "--large-weight-threshold",
         type=int,
-        default=1024,
+        default=1024 * 1024,
         help=(
             "Store weights larger than this element count in a binary file "
-            "(default: 1024)"
+            "(default: 1048576; set to 0 to disable)"
         ),
     )
     add_restrict_flags(compile_parser)
