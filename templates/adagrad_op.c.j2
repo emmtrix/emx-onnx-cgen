@@ -1,0 +1,16 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} r = {{ rate }}[0] / ({{ one_literal }} + ({{ c_type }}){{ timestep }}[0] * {{ decay_factor_literal }});
+{% for tensor in tensors %}
+{% for dim in tensor.shape %}
+    for (idx_t {{ tensor.loop_vars[loop.index0] }} = 0; {{ tensor.loop_vars[loop.index0] }} < {{ dim }}; ++{{ tensor.loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ c_type }} g_regularized = {{ norm_coefficient_literal }} * {{ tensor.input_expr }} + {{ tensor.grad_expr }};
+        {{ c_type }} h_new = {{ tensor.acc_expr }} + g_regularized * g_regularized;
+        {{ tensor.acc_output_expr }} = h_new;
+        {{ c_type }} h_adaptive = {{ sqrt_fn }}(h_new) + {{ epsilon_literal }};
+        {{ tensor.output_expr }} = {{ tensor.input_expr }} - r * g_regularized / h_adaptive;
+{% for _ in tensor.shape %}
+    }
+{% endfor %}
+{% endfor %}
+}
