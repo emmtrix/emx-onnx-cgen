@@ -5,27 +5,8 @@ from shared.scalar_types import ScalarType
 from ..codegen.c_emitter import ShapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
+from .common import value_dtype, value_shape
 from .registry import register_lowering
-
-
-def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
-    try:
-        return graph.find_value(name).type.shape
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
-
-
-def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
-    try:
-        return graph.find_value(name).type.dtype
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing dtype for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
 
 
 def _normalize_slice_bounds(
@@ -46,14 +27,14 @@ def _normalize_slice_bounds(
 def lower_shape(graph: Graph, node: Node) -> ShapeOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Shape must have 1 input and 1 output")
-    input_shape = _value_shape(graph, node.inputs[0], node)
-    output_shape = _value_shape(graph, node.outputs[0], node)
+    input_shape = value_shape(graph, node.inputs[0], node)
+    output_shape = value_shape(graph, node.outputs[0], node)
     if len(output_shape) != 1:
         raise ShapeInferenceError("Shape output must be 1D")
     if output_shape[0] < 0:
         raise ShapeInferenceError("Shape output length must be non-negative")
-    input_dtype = _value_dtype(graph, node.inputs[0], node)
-    output_dtype = _value_dtype(graph, node.outputs[0], node)
+    input_dtype = value_dtype(graph, node.inputs[0], node)
+    output_dtype = value_dtype(graph, node.outputs[0], node)
     if output_dtype != ScalarType.I64:
         raise UnsupportedOpError("Shape output dtype must be int64")
     start = node.attrs.get("start")

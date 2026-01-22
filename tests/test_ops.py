@@ -22,11 +22,13 @@ from emx_onnx_cgen.codegen.c_emitter import (
     MultiInputBinaryOp,
 )
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
-from emx_onnx_cgen.errors import UnsupportedOpError
+from emx_onnx_cgen.errors import ShapeInferenceError, UnsupportedOpError
+from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
+from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
 from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
 from emx_onnx_cgen.lowering.registry import get_lowering
@@ -1289,6 +1291,47 @@ def _make_shape_model(
         graph,
         producer_name="onnx2c",
         opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_shape_dim_param_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, [2, 3]
+    )
+    reshape_output = helper.make_tensor_value_info(
+        "reshaped", TensorProto.FLOAT, ["N"]
+    )
+    shape_output = helper.make_tensor_value_info(
+        "out", TensorProto.INT64, [1]
+    )
+    reshape_shape = numpy_helper.from_array(
+        np.array([6], dtype=np.int64), name="shape"
+    )
+    reshape_node = helper.make_node(
+        "Reshape",
+        inputs=["in0", "shape"],
+        outputs=["reshaped"],
+    )
+    shape_node = helper.make_node(
+        "Shape",
+        inputs=["reshaped"],
+        outputs=[shape_output.name],
+    )
+    graph = helper.make_graph(
+        [reshape_node, shape_node],
+        "shape_dim_param_graph",
+        [input_info],
+        [shape_output],
+        initializer=[reshape_shape],
+        value_info=[reshape_output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -3452,6 +3495,45 @@ def test_lower_einsum_transpose() -> None:
     assert isinstance(op, EinsumOp)
     assert op.kind == EinsumKind.TRANSPOSE
     assert op.output_shape == (3, 2)
+
+
+def test_lower_shape_resolves_dim_params() -> None:
+    model = _make_shape_dim_param_model()
+    graph = import_onnx(model)
+    op = lower_shape(graph, graph.nodes[1])
+    assert op.input_shape == (6,)
+    assert op.output_shape == (1,)
+    assert op.values == (6,)
+    assert op.input_dtype == ScalarType.F32
+    assert op.dtype == ScalarType.I64
+
+
+def test_lower_shape_missing_value() -> None:
+    output_value = Value(
+        name="out",
+        type=TensorType(
+            dtype=ScalarType.I64,
+            shape=(1,),
+            dim_params=(None,),
+        ),
+    )
+    node = Node(
+        op_type="Shape",
+        name=None,
+        inputs=("missing",),
+        outputs=("out",),
+        attrs={},
+    )
+    graph = Graph(
+        inputs=(),
+        outputs=(output_value,),
+        nodes=(node,),
+        initializers=(),
+    )
+    with pytest.raises(
+        ShapeInferenceError, match="Missing shape for value 'missing'"
+    ):
+        lower_shape(graph, node)
 
 
 @pytest.mark.parametrize("case", OPERATOR_CASES, ids=lambda case: case["name"])
