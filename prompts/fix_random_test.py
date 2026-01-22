@@ -79,6 +79,11 @@ def main() -> None:
         "templates/*_op.c.j2 file, update runtime/evaluator.py for numpy checks, "
         "and refresh tests/expected_errors entries when support status changes."
     )
+    prompt_lines.append(
+        "Model inspection hint: when an input is dynamic (e.g., scalar tensors like "
+        "TopK's k), check the model's input/output shapes via onnx.load(...) to "
+        "see if the value can be inferred from value_info or output shapes."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "
