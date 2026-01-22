@@ -84,6 +84,11 @@ def main() -> None:
         "TopK's k), check the model's input/output shapes via onnx.load(...) to "
         "see if the value can be inferred from value_info or output shapes."
     )
+    prompt_lines.append(
+        "Debugging hint: if the reproduction command only shows a generic error, "
+        "invoke emx_onnx_cgen.cli.run_cli_command(...) in a small Python snippet "
+        "to surface the full stack trace and pinpoint the failing lowering pass."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "
