@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from shared.scalar_types import ScalarType
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
 
 
@@ -14,7 +15,9 @@ def ensure_supported_dtype(dtype: ScalarType) -> ScalarType:
     return dtype
 
 
-def onnx_opset_version(graph: Graph, domain: str = "") -> int | None:
+def onnx_opset_version(graph: Graph | GraphContext, domain: str = "") -> int | None:
+    if isinstance(graph, GraphContext):
+        return graph.opset_version(domain)
     if domain in {"", "ai.onnx"}:
         domains = {"", "ai.onnx"}
     else:
@@ -25,7 +28,11 @@ def onnx_opset_version(graph: Graph, domain: str = "") -> int | None:
     return None
 
 
-def value_dtype(graph: Graph, name: str, node: Node | None = None) -> ScalarType:
+def value_dtype(
+    graph: Graph | GraphContext, name: str, node: Node | None = None
+) -> ScalarType:
+    if isinstance(graph, GraphContext):
+        return graph.dtype(name, node)
     try:
         value = graph.find_value(name)
     except KeyError as exc:
@@ -37,31 +44,42 @@ def value_dtype(graph: Graph, name: str, node: Node | None = None) -> ScalarType
     return ensure_supported_dtype(value.type.dtype)
 
 
-def value_shape(graph: Graph, name: str, node: Node | None = None) -> tuple[int, ...]:
-    try:
+def value_shape(
+    graph: Graph | GraphContext, name: str, node: Node | None = None
+) -> tuple[int, ...]:
+    if isinstance(graph, GraphContext):
+        shape = graph.shape(name, node)
         value = graph.find_value(name)
-    except KeyError as exc:
-        op_type = node.op_type if node is not None else "unknown"
-        raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
+    else:
+        try:
+            value = graph.find_value(name)
+        except KeyError as exc:
+            op_type = node.op_type if node is not None else "unknown"
+            raise ShapeInferenceError(
+                f"Missing shape for value '{name}' in op {op_type}. "
+                "Hint: run ONNX shape inference or export with static shapes."
+            ) from exc
+        shape = value.type.shape
     if any(value.type.dim_params):
         resolved = _resolve_value_shape(graph, name, node)
         if resolved is not None:
             return resolved
         return value.type.shape
-    return value.type.shape
+    return shape
 
 
-def _find_initializer(graph: Graph, name: str) -> Initializer | None:
+def _find_initializer(graph: Graph | GraphContext, name: str) -> Initializer | None:
+    if isinstance(graph, GraphContext):
+        return graph.initializer(name)
     for initializer in graph.initializers:
         if initializer.name == name:
             return initializer
     return None
 
 
-def _find_node_by_output(graph: Graph, name: str) -> Node | None:
+def _find_node_by_output(graph: Graph | GraphContext, name: str) -> Node | None:
+    if isinstance(graph, GraphContext):
+        return graph.producer(name)
     for node in graph.nodes:
         if name in node.outputs:
             return node
@@ -69,7 +87,7 @@ def _find_node_by_output(graph: Graph, name: str) -> Node | None:
 
 
 def _shape_values_from_shape_node(
-    graph: Graph, shape_node: Node, node: Node | None
+    graph: Graph | GraphContext, shape_node: Node, node: Node | None
 ) -> list[int]:
     if len(shape_node.inputs) != 1 or len(shape_node.outputs) != 1:
         raise UnsupportedOpError("Shape must have 1 input and 1 output")
@@ -88,7 +106,7 @@ def _shape_values_from_shape_node(
 
 
 def _shape_values_from_initializer(
-    graph: Graph,
+    graph: Graph | GraphContext,
     name: str,
 ) -> list[int] | None:
     initializer = _find_initializer(graph, name)
@@ -103,7 +121,7 @@ def _shape_values_from_initializer(
 
 
 def _shape_values_from_input(
-    graph: Graph,
+    graph: Graph | GraphContext,
     name: str,
     node: Node | None,
     *,
@@ -277,7 +295,7 @@ def _broadcast_shapes(
 
 
 def _resolve_value_shape(
-    graph: Graph,
+    graph: Graph | GraphContext,
     name: str,
     node: Node | None,
     *,
@@ -414,7 +432,7 @@ def _resolve_value_shape(
         _visited.remove(name)
 
 
-def node_dtype(graph: Graph, node: Node, *names: str) -> ScalarType:
+def node_dtype(graph: Graph | GraphContext, node: Node, *names: str) -> ScalarType:
     filtered = [name for name in names if name]
     if not filtered:
         raise UnsupportedOpError(

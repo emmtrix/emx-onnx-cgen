@@ -20,6 +20,17 @@ from ..ops import (
     binary_op_symbol,
     unary_op_symbol,
 )
+from ..ir.op_base import (
+    BroadcastingOpBase,
+    ConvLikeOpBase,
+    ElementwiseOpBase,
+    GemmLikeOpBase,
+    MatMulLikeOpBase,
+    ReduceOpBase,
+    RenderableOpBase,
+    OpBase,
+    EmitContext,
+)
 from shared.scalar_functions import (
     ScalarFunction,
     ScalarFunctionKey,
@@ -151,7 +162,7 @@ _C_KEYWORDS = {
 }
 
 @dataclass(frozen=True)
-class BinaryOp:
+class BinaryOp(ElementwiseOpBase):
     input0: str
     input1: str
     output: str
@@ -165,7 +176,7 @@ class BinaryOp:
 
 
 @dataclass(frozen=True)
-class MultiInputBinaryOp:
+class MultiInputBinaryOp(ElementwiseOpBase):
     inputs: tuple[str, ...]
     output: str
     function: ScalarFunction
@@ -176,7 +187,7 @@ class MultiInputBinaryOp:
 
 
 @dataclass(frozen=True)
-class WhereOp:
+class WhereOp(ElementwiseOpBase):
     condition: str
     input_x: str
     input_y: str
@@ -198,7 +209,7 @@ class NodeInfo:
 
 
 @dataclass(frozen=True)
-class UnaryOp:
+class UnaryOp(ElementwiseOpBase):
     input0: str
     output: str
     function: ScalarFunction
@@ -209,7 +220,7 @@ class UnaryOp:
 
 
 @dataclass(frozen=True)
-class ClipOp:
+class ClipOp(ElementwiseOpBase):
     input0: str
     input_min: str | None
     input_max: str | None
@@ -224,7 +235,7 @@ class ClipOp:
 
 
 @dataclass(frozen=True)
-class CastOp:
+class CastOp(RenderableOpBase):
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -233,7 +244,7 @@ class CastOp:
 
 
 @dataclass(frozen=True)
-class MatMulOp:
+class MatMulOp(MatMulLikeOpBase):
     input0: str
     input1: str
     output: str
@@ -252,7 +263,7 @@ class MatMulOp:
 
 
 @dataclass(frozen=True)
-class QLinearMatMulOp:
+class QLinearMatMulOp(MatMulLikeOpBase):
     input0: str
     input0_scale: str
     input0_zero_point: str
@@ -297,7 +308,7 @@ class EinsumKind(str, Enum):
 
 
 @dataclass(frozen=True)
-class EinsumOp:
+class EinsumOp(MatMulLikeOpBase):
     inputs: tuple[str, ...]
     output: str
     kind: EinsumKind
@@ -308,7 +319,7 @@ class EinsumOp:
 
 
 @dataclass(frozen=True)
-class GemmOp:
+class GemmOp(GemmLikeOpBase):
     input_a: str
     input_b: str
     input_c: str | None
@@ -325,7 +336,7 @@ class GemmOp:
 
 
 @dataclass(frozen=True)
-class AttentionOp:
+class AttentionOp(RenderableOpBase):
     input_q: str
     input_k: str
     input_v: str
@@ -370,7 +381,7 @@ class AttentionOp:
 
 
 @dataclass(frozen=True)
-class RotaryEmbeddingOp:
+class RotaryEmbeddingOp(RenderableOpBase):
     input0: str
     cos_cache: str
     sin_cache: str
@@ -393,7 +404,7 @@ class RotaryEmbeddingOp:
 
 
 @dataclass(frozen=True)
-class ConvOp:
+class ConvOp(ConvLikeOpBase):
     input0: str
     weights: str
     bias: str | None
@@ -425,7 +436,7 @@ class ConvOp:
 
 
 @dataclass(frozen=True)
-class ConvTransposeOp:
+class ConvTransposeOp(ConvLikeOpBase):
     input0: str
     weights: str
     bias: str | None
@@ -446,7 +457,7 @@ class ConvTransposeOp:
 
 
 @dataclass(frozen=True)
-class AveragePoolOp:
+class AveragePoolOp(RenderableOpBase):
     input0: str
     output: str
     batch: int
@@ -468,7 +479,7 @@ class AveragePoolOp:
 
 
 @dataclass(frozen=True)
-class LpPoolOp:
+class LpPoolOp(RenderableOpBase):
     input0: str
     output: str
     batch: int
@@ -490,7 +501,7 @@ class LpPoolOp:
 
 
 @dataclass(frozen=True)
-class QuantizeLinearOp:
+class QuantizeLinearOp(RenderableOpBase):
     input0: str
     scale: str
     zero_point: str | None
@@ -503,7 +514,7 @@ class QuantizeLinearOp:
 
 
 @dataclass(frozen=True)
-class SoftmaxOp:
+class SoftmaxOp(RenderableOpBase):
     input0: str
     output: str
     outer: int
@@ -515,7 +526,7 @@ class SoftmaxOp:
 
 
 @dataclass(frozen=True)
-class LogSoftmaxOp:
+class LogSoftmaxOp(RenderableOpBase):
     input0: str
     output: str
     outer: int
@@ -527,7 +538,7 @@ class LogSoftmaxOp:
 
 
 @dataclass(frozen=True)
-class HardmaxOp:
+class HardmaxOp(RenderableOpBase):
     input0: str
     output: str
     outer: int
@@ -539,7 +550,7 @@ class HardmaxOp:
 
 
 @dataclass(frozen=True)
-class NegativeLogLikelihoodLossOp:
+class NegativeLogLikelihoodLossOp(RenderableOpBase):
     input0: str
     target: str
     weight: str | None
@@ -560,7 +571,7 @@ class NegativeLogLikelihoodLossOp:
 
 
 @dataclass(frozen=True)
-class SoftmaxCrossEntropyLossOp:
+class SoftmaxCrossEntropyLossOp(RenderableOpBase):
     input0: str
     target: str
     weight: str | None
@@ -583,7 +594,7 @@ class SoftmaxCrossEntropyLossOp:
 
 
 @dataclass(frozen=True)
-class BatchNormOp:
+class BatchNormOp(RenderableOpBase):
     input0: str
     scale: str
     bias: str
@@ -597,7 +608,7 @@ class BatchNormOp:
 
 
 @dataclass(frozen=True)
-class LpNormalizationOp:
+class LpNormalizationOp(RenderableOpBase):
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -610,7 +621,7 @@ class LpNormalizationOp:
 
 
 @dataclass(frozen=True)
-class InstanceNormalizationOp:
+class InstanceNormalizationOp(RenderableOpBase):
     input0: str
     scale: str
     bias: str
@@ -623,7 +634,7 @@ class InstanceNormalizationOp:
 
 
 @dataclass(frozen=True)
-class GroupNormalizationOp:
+class GroupNormalizationOp(RenderableOpBase):
     input0: str
     scale: str
     bias: str
@@ -638,7 +649,7 @@ class GroupNormalizationOp:
 
 
 @dataclass(frozen=True)
-class LayerNormalizationOp:
+class LayerNormalizationOp(RenderableOpBase):
     input0: str
     scale: str
     bias: str | None
@@ -657,7 +668,7 @@ class LayerNormalizationOp:
 
 
 @dataclass(frozen=True)
-class MeanVarianceNormalizationOp:
+class MeanVarianceNormalizationOp(RenderableOpBase):
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -669,7 +680,7 @@ class MeanVarianceNormalizationOp:
 
 
 @dataclass(frozen=True)
-class RMSNormalizationOp:
+class RMSNormalizationOp(RenderableOpBase):
     input0: str
     scale: str
     output: str
@@ -684,7 +695,7 @@ class RMSNormalizationOp:
 
 
 @dataclass(frozen=True)
-class LrnOp:
+class LrnOp(RenderableOpBase):
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -698,7 +709,7 @@ class LrnOp:
 
 
 @dataclass(frozen=True)
-class LstmOp:
+class LstmOp(RenderableOpBase):
     input_x: str
     input_w: str
     input_r: str
@@ -727,7 +738,7 @@ class LstmOp:
 
 
 @dataclass(frozen=True)
-class AdagradOp:
+class AdagradOp(RenderableOpBase):
     rate: str
     timestep: str
     inputs: tuple[str, ...]
@@ -748,7 +759,7 @@ class AdagradOp:
 
 
 @dataclass(frozen=True)
-class MaxPoolOp:
+class MaxPoolOp(RenderableOpBase):
     input0: str
     output: str
     indices: str | None
@@ -768,7 +779,7 @@ class MaxPoolOp:
 
 
 @dataclass(frozen=True)
-class ConcatOp:
+class ConcatOp(RenderableOpBase):
     inputs: tuple[str, ...]
     output: str
     axis: int
@@ -778,7 +789,7 @@ class ConcatOp:
 
 
 @dataclass(frozen=True)
-class GatherElementsOp:
+class GatherElementsOp(RenderableOpBase):
     data: str
     indices: str
     output: str
@@ -791,7 +802,7 @@ class GatherElementsOp:
 
 
 @dataclass(frozen=True)
-class GatherOp:
+class GatherOp(RenderableOpBase):
     data: str
     indices: str
     output: str
@@ -804,7 +815,7 @@ class GatherOp:
 
 
 @dataclass(frozen=True)
-class GatherNDOp:
+class GatherNDOp(RenderableOpBase):
     data: str
     indices: str
     output: str
@@ -817,7 +828,7 @@ class GatherNDOp:
 
 
 @dataclass(frozen=True)
-class ScatterNDOp:
+class ScatterNDOp(RenderableOpBase):
     data: str
     indices: str
     updates: str
@@ -832,7 +843,7 @@ class ScatterNDOp:
 
 
 @dataclass(frozen=True)
-class TensorScatterOp:
+class TensorScatterOp(RenderableOpBase):
     past_cache: str
     update: str
     write_indices: str | None
@@ -848,7 +859,7 @@ class TensorScatterOp:
 
 
 @dataclass(frozen=True)
-class TransposeOp:
+class TransposeOp(RenderableOpBase):
     input0: str
     output: str
     perm: tuple[int, ...]
@@ -859,7 +870,7 @@ class TransposeOp:
 
 
 @dataclass(frozen=True)
-class ReshapeOp:
+class ReshapeOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -869,7 +880,7 @@ class ReshapeOp:
 
 
 @dataclass(frozen=True)
-class IdentityOp:
+class IdentityOp(ElementwiseOpBase):
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -878,7 +889,7 @@ class IdentityOp:
 
 
 @dataclass(frozen=True)
-class EyeLikeOp:
+class EyeLikeOp(RenderableOpBase):
     input0: str
     output: str
     output_shape: tuple[int, ...]
@@ -888,7 +899,7 @@ class EyeLikeOp:
 
 
 @dataclass(frozen=True)
-class TriluOp:
+class TriluOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -903,7 +914,7 @@ class TriluOp:
 
 
 @dataclass(frozen=True)
-class TileOp:
+class TileOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -915,7 +926,7 @@ class TileOp:
 
 
 @dataclass(frozen=True)
-class PadOp:
+class PadOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -940,7 +951,7 @@ class PadOp:
 
 
 @dataclass(frozen=True)
-class DepthToSpaceOp:
+class DepthToSpaceOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -952,7 +963,7 @@ class DepthToSpaceOp:
 
 
 @dataclass(frozen=True)
-class SpaceToDepthOp:
+class SpaceToDepthOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -963,7 +974,7 @@ class SpaceToDepthOp:
 
 
 @dataclass(frozen=True)
-class SliceOp:
+class SliceOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -988,7 +999,7 @@ class SliceOp:
 
 
 @dataclass(frozen=True)
-class ResizeOp:
+class ResizeOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1019,7 +1030,7 @@ class ResizeOp:
 
 
 @dataclass(frozen=True)
-class GridSampleOp:
+class GridSampleOp(RenderableOpBase):
     input0: str
     grid: str
     output: str
@@ -1037,7 +1048,7 @@ class GridSampleOp:
 
 
 @dataclass(frozen=True)
-class ReduceOp:
+class ReduceOp(ReduceOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1054,7 +1065,7 @@ class ReduceOp:
 
 
 @dataclass(frozen=True)
-class ArgReduceOp:
+class ArgReduceOp(ReduceOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1068,7 +1079,7 @@ class ArgReduceOp:
 
 
 @dataclass(frozen=True)
-class TopKOp:
+class TopKOp(ReduceOpBase):
     input0: str
     output_values: str
     output_indices: str
@@ -1084,7 +1095,7 @@ class TopKOp:
 
 
 @dataclass(frozen=True)
-class ConstantOfShapeOp:
+class ConstantOfShapeOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1095,7 +1106,7 @@ class ConstantOfShapeOp:
 
 
 @dataclass(frozen=True)
-class ShapeOp:
+class ShapeOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1106,7 +1117,7 @@ class ShapeOp:
 
 
 @dataclass(frozen=True)
-class SizeOp:
+class SizeOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1117,7 +1128,7 @@ class SizeOp:
 
 
 @dataclass(frozen=True)
-class NonZeroOp:
+class NonZeroOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1127,7 +1138,7 @@ class NonZeroOp:
 
 
 @dataclass(frozen=True)
-class NonMaxSuppressionOp:
+class NonMaxSuppressionOp(RenderableOpBase):
     boxes: str
     scores: str
     max_output_boxes_per_class: str | None
@@ -1149,7 +1160,7 @@ class NonMaxSuppressionOp:
 
 
 @dataclass(frozen=True)
-class ExpandOp:
+class ExpandOp(BroadcastingOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -1161,7 +1172,7 @@ class ExpandOp:
 
 
 @dataclass(frozen=True)
-class CumSumOp:
+class CumSumOp(RenderableOpBase):
     input0: str
     axis_input: str | None
     axis_input_dtype: ScalarType | None
@@ -1175,7 +1186,7 @@ class CumSumOp:
 
 
 @dataclass(frozen=True)
-class RangeOp:
+class RangeOp(RenderableOpBase):
     start: str
     limit: str
     delta: str
@@ -1187,7 +1198,7 @@ class RangeOp:
 
 
 @dataclass(frozen=True)
-class OneHotOp:
+class OneHotOp(RenderableOpBase):
     indices: str
     depth: str
     values: str
@@ -1203,7 +1214,7 @@ class OneHotOp:
 
 
 @dataclass(frozen=True)
-class SplitOp:
+class SplitOp(RenderableOpBase):
     input0: str
     outputs: tuple[str, ...]
     input_shape: tuple[int, ...]
@@ -1261,75 +1272,18 @@ class LoweredModel:
     output_shapes: tuple[tuple[int, ...], ...]
     output_dtypes: tuple[ScalarType, ...]
     constants: tuple[ConstTensor, ...]
-    ops: tuple[
-        BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | RotaryEmbeddingOp
-        | ConvOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | LstmOp
-        | AdagradOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | PadOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | SliceOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | OneHotOp
-        | SplitOp,
-        ...,
-    ]
+    ops: tuple[OpBase, ...]
     node_infos: tuple[NodeInfo, ...]
     header: ModelHeader
+
+
+@dataclass
+class _EmitState:
+    model: LoweredModel
+    templates: dict[str, Template]
+    scalar_registry: ScalarFunctionRegistry
+    dim_args: str
+    tensor_dim_names: Mapping[str, Mapping[int, str]]
 
 
 class CEmitter:
@@ -1358,6 +1312,7 @@ class CEmitter:
         if large_weight_threshold < 0:
             raise CodegenError("large_weight_threshold must be >= 0")
         self._large_weight_threshold = large_weight_threshold
+        self._emit_state: _EmitState | None = None
 
     @staticmethod
     def _sanitize_identifier(name: str) -> str:
@@ -3165,72 +3120,6 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
-        binary_template = templates["binary"]
-        multi_input_template = templates["multi_input"]
-        where_template = templates["where"]
-        unary_template = templates["unary"]
-        clip_template = templates["clip"]
-        cast_template = templates["cast"]
-        quantize_linear_template = templates["quantize_linear"]
-        qlinear_matmul_template = templates["qlinear_matmul"]
-        matmul_template = templates["matmul"]
-        einsum_template = templates["einsum"]
-        gemm_template = templates["gemm"]
-        attention_template = templates["attention"]
-        rotary_embedding_template = templates["rotary_embedding"]
-        conv_template = templates["conv"]
-        conv_transpose_template = templates["conv_transpose"]
-        avg_pool_template = templates["avg_pool"]
-        lp_pool_template = templates["lp_pool"]
-        batch_norm_template = templates["batch_norm"]
-        lp_norm_template = templates["lp_norm"]
-        instance_norm_template = templates["instance_norm"]
-        group_norm_template = templates["group_norm"]
-        layer_norm_template = templates["layer_norm"]
-        mean_variance_norm_template = templates["mean_variance_norm"]
-        rms_norm_template = templates["rms_norm"]
-        lrn_template = templates["lrn"]
-        lstm_template = templates["lstm"]
-        adagrad_template = templates["adagrad"]
-        softmax_template = templates["softmax"]
-        logsoftmax_template = templates["logsoftmax"]
-        hardmax_template = templates["hardmax"]
-        nllloss_template = templates["nllloss"]
-        softmax_cross_entropy_loss_template = templates["softmax_cross_entropy_loss"]
-        maxpool_template = templates["maxpool"]
-        concat_template = templates["concat"]
-        gather_elements_template = templates["gather_elements"]
-        gather_template = templates["gather"]
-        gather_nd_template = templates["gather_nd"]
-        scatter_nd_template = templates["scatter_nd"]
-        tensor_scatter_template = templates["tensor_scatter"]
-        transpose_template = templates["transpose"]
-        reshape_template = templates["reshape"]
-        identity_template = templates["identity"]
-        eye_like_template = templates["eye_like"]
-        trilu_template = templates["trilu"]
-        tile_template = templates["tile"]
-        pad_template = templates["pad"]
-        depth_to_space_template = templates["depth_to_space"]
-        space_to_depth_template = templates["space_to_depth"]
-        slice_template = templates["slice"]
-        slice_dynamic_template = templates["slice_dynamic"]
-        resize_template = templates["resize"]
-        grid_sample_template = templates["grid_sample"]
-        reduce_template = templates["reduce"]
-        reduce_dynamic_template = templates["reduce_dynamic"]
-        arg_reduce_template = templates["arg_reduce"]
-        topk_template = templates["topk"]
-        constant_of_shape_template = templates["constant_of_shape"]
-        shape_template = templates["shape"]
-        size_template = templates["size"]
-        nonzero_template = templates["nonzero"]
-        nonmax_suppression_template = templates["nonmax_suppression"]
-        expand_template = templates["expand"]
-        cumsum_template = templates["cumsum"]
-        range_template = templates["range"]
-        one_hot_template = templates["one_hot"]
-        split_template = templates["split"]
         testbench_template = templates.get("testbench")
         reserved_names = {
             model.name,
@@ -3244,86 +3133,15 @@ class CEmitter:
         }
         resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
         self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
+        self._emit_state = _EmitState(
+            model=model,
+            templates=templates,
+            scalar_registry=scalar_registry,
+            dim_args=dim_args,
+            tensor_dim_names=tensor_dim_names,
+        )
         operator_fns = "\n\n".join(
-            self._render_op(
-                model,
-                op,
-                index,
-                array_suffix="",
-                loop_vars=(),
-                c_type=self._op_output_dtype(op).c_type,
-                zero_literal=self._op_output_dtype(op).zero_literal,
-                min_literal=self._op_output_dtype(op).min_literal,
-                max_literal=self._op_output_dtype(op).max_literal,
-                binary_template=binary_template,
-                multi_input_template=multi_input_template,
-                where_template=where_template,
-                unary_template=unary_template,
-                clip_template=clip_template,
-                cast_template=cast_template,
-                quantize_linear_template=quantize_linear_template,
-                qlinear_matmul_template=qlinear_matmul_template,
-                matmul_template=matmul_template,
-                einsum_template=einsum_template,
-                gemm_template=gemm_template,
-                attention_template=attention_template,
-                rotary_embedding_template=rotary_embedding_template,
-                conv_template=conv_template,
-                conv_transpose_template=conv_transpose_template,
-                avg_pool_template=avg_pool_template,
-                lp_pool_template=lp_pool_template,
-                batch_norm_template=batch_norm_template,
-                lp_norm_template=lp_norm_template,
-                instance_norm_template=instance_norm_template,
-                group_norm_template=group_norm_template,
-                layer_norm_template=layer_norm_template,
-                mean_variance_norm_template=mean_variance_norm_template,
-                rms_norm_template=rms_norm_template,
-                lrn_template=lrn_template,
-                lstm_template=lstm_template,
-                adagrad_template=adagrad_template,
-                softmax_template=softmax_template,
-                logsoftmax_template=logsoftmax_template,
-                hardmax_template=hardmax_template,
-                nllloss_template=nllloss_template,
-                softmax_cross_entropy_loss_template=softmax_cross_entropy_loss_template,
-                maxpool_template=maxpool_template,
-                concat_template=concat_template,
-                gather_elements_template=gather_elements_template,
-                gather_template=gather_template,
-                gather_nd_template=gather_nd_template,
-                scatter_nd_template=scatter_nd_template,
-                transpose_template=transpose_template,
-                reshape_template=reshape_template,
-                identity_template=identity_template,
-                eye_like_template=eye_like_template,
-                trilu_template=trilu_template,
-                tile_template=tile_template,
-                pad_template=pad_template,
-                depth_to_space_template=depth_to_space_template,
-                space_to_depth_template=space_to_depth_template,
-                slice_template=slice_template,
-                slice_dynamic_template=slice_dynamic_template,
-                resize_template=resize_template,
-                grid_sample_template=grid_sample_template,
-                reduce_template=reduce_template,
-                reduce_dynamic_template=reduce_dynamic_template,
-                arg_reduce_template=arg_reduce_template,
-                topk_template=topk_template,
-                constant_of_shape_template=constant_of_shape_template,
-                shape_template=shape_template,
-                size_template=size_template,
-                nonzero_template=nonzero_template,
-                nonmax_suppression_template=nonmax_suppression_template,
-                expand_template=expand_template,
-                cumsum_template=cumsum_template,
-                range_template=range_template,
-                one_hot_template=one_hot_template,
-                split_template=split_template,
-                scalar_registry=scalar_registry,
-                dim_args=dim_args,
-                tensor_dim_names=tensor_dim_names,
-            )
+            op.emit(self, EmitContext(op_index=index))
             for index, op in enumerate(resolved_ops)
         )
         wrapper_fn = self._emit_model_wrapper(
@@ -3441,72 +3259,6 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
-        binary_template = templates["binary"]
-        multi_input_template = templates["multi_input"]
-        where_template = templates["where"]
-        unary_template = templates["unary"]
-        clip_template = templates["clip"]
-        cast_template = templates["cast"]
-        quantize_linear_template = templates["quantize_linear"]
-        qlinear_matmul_template = templates["qlinear_matmul"]
-        matmul_template = templates["matmul"]
-        einsum_template = templates["einsum"]
-        gemm_template = templates["gemm"]
-        attention_template = templates["attention"]
-        rotary_embedding_template = templates["rotary_embedding"]
-        conv_template = templates["conv"]
-        conv_transpose_template = templates["conv_transpose"]
-        avg_pool_template = templates["avg_pool"]
-        lp_pool_template = templates["lp_pool"]
-        batch_norm_template = templates["batch_norm"]
-        lp_norm_template = templates["lp_norm"]
-        instance_norm_template = templates["instance_norm"]
-        group_norm_template = templates["group_norm"]
-        layer_norm_template = templates["layer_norm"]
-        mean_variance_norm_template = templates["mean_variance_norm"]
-        rms_norm_template = templates["rms_norm"]
-        lrn_template = templates["lrn"]
-        lstm_template = templates["lstm"]
-        adagrad_template = templates["adagrad"]
-        softmax_template = templates["softmax"]
-        logsoftmax_template = templates["logsoftmax"]
-        hardmax_template = templates["hardmax"]
-        nllloss_template = templates["nllloss"]
-        softmax_cross_entropy_loss_template = templates["softmax_cross_entropy_loss"]
-        maxpool_template = templates["maxpool"]
-        concat_template = templates["concat"]
-        gather_elements_template = templates["gather_elements"]
-        gather_template = templates["gather"]
-        gather_nd_template = templates["gather_nd"]
-        scatter_nd_template = templates["scatter_nd"]
-        tensor_scatter_template = templates["tensor_scatter"]
-        transpose_template = templates["transpose"]
-        reshape_template = templates["reshape"]
-        identity_template = templates["identity"]
-        eye_like_template = templates["eye_like"]
-        trilu_template = templates["trilu"]
-        tile_template = templates["tile"]
-        pad_template = templates["pad"]
-        depth_to_space_template = templates["depth_to_space"]
-        space_to_depth_template = templates["space_to_depth"]
-        slice_template = templates["slice"]
-        slice_dynamic_template = templates["slice_dynamic"]
-        resize_template = templates["resize"]
-        grid_sample_template = templates["grid_sample"]
-        reduce_template = templates["reduce"]
-        reduce_dynamic_template = templates["reduce_dynamic"]
-        arg_reduce_template = templates["arg_reduce"]
-        topk_template = templates["topk"]
-        constant_of_shape_template = templates["constant_of_shape"]
-        shape_template = templates["shape"]
-        size_template = templates["size"]
-        nonzero_template = templates["nonzero"]
-        nonmax_suppression_template = templates["nonmax_suppression"]
-        expand_template = templates["expand"]
-        cumsum_template = templates["cumsum"]
-        range_template = templates["range"]
-        one_hot_template = templates["one_hot"]
-        split_template = templates["split"]
         testbench_template = templates.get("testbench")
         reserved_names = {
             model.name,
@@ -3520,86 +3272,15 @@ class CEmitter:
         }
         resolved_ops = [self._resolve_op(op, temp_name_map) for op in model.ops]
         self._propagate_tensor_dim_names(resolved_ops, tensor_dim_names)
+        self._emit_state = _EmitState(
+            model=model,
+            templates=templates,
+            scalar_registry=scalar_registry,
+            dim_args=dim_args,
+            tensor_dim_names=tensor_dim_names,
+        )
         operator_fns = "\n\n".join(
-            self._render_op(
-                model,
-                op,
-                index,
-                array_suffix="",
-                loop_vars=(),
-                c_type=self._op_output_dtype(op).c_type,
-                zero_literal=self._op_output_dtype(op).zero_literal,
-                min_literal=self._op_output_dtype(op).min_literal,
-                max_literal=self._op_output_dtype(op).max_literal,
-                binary_template=binary_template,
-                multi_input_template=multi_input_template,
-                where_template=where_template,
-                unary_template=unary_template,
-                clip_template=clip_template,
-                cast_template=cast_template,
-                quantize_linear_template=quantize_linear_template,
-                qlinear_matmul_template=qlinear_matmul_template,
-                matmul_template=matmul_template,
-                einsum_template=einsum_template,
-                gemm_template=gemm_template,
-                attention_template=attention_template,
-                rotary_embedding_template=rotary_embedding_template,
-                conv_template=conv_template,
-                conv_transpose_template=conv_transpose_template,
-                avg_pool_template=avg_pool_template,
-                lp_pool_template=lp_pool_template,
-                batch_norm_template=batch_norm_template,
-                lp_norm_template=lp_norm_template,
-                instance_norm_template=instance_norm_template,
-                group_norm_template=group_norm_template,
-                layer_norm_template=layer_norm_template,
-                mean_variance_norm_template=mean_variance_norm_template,
-                rms_norm_template=rms_norm_template,
-                lrn_template=lrn_template,
-                lstm_template=lstm_template,
-                adagrad_template=adagrad_template,
-                softmax_template=softmax_template,
-                logsoftmax_template=logsoftmax_template,
-                hardmax_template=hardmax_template,
-                nllloss_template=nllloss_template,
-                softmax_cross_entropy_loss_template=softmax_cross_entropy_loss_template,
-                maxpool_template=maxpool_template,
-                concat_template=concat_template,
-                gather_elements_template=gather_elements_template,
-                gather_template=gather_template,
-                gather_nd_template=gather_nd_template,
-                scatter_nd_template=scatter_nd_template,
-                transpose_template=transpose_template,
-                reshape_template=reshape_template,
-                identity_template=identity_template,
-                eye_like_template=eye_like_template,
-                trilu_template=trilu_template,
-                tile_template=tile_template,
-                pad_template=pad_template,
-                depth_to_space_template=depth_to_space_template,
-                space_to_depth_template=space_to_depth_template,
-                slice_template=slice_template,
-                slice_dynamic_template=slice_dynamic_template,
-                resize_template=resize_template,
-                grid_sample_template=grid_sample_template,
-                reduce_template=reduce_template,
-                reduce_dynamic_template=reduce_dynamic_template,
-                arg_reduce_template=arg_reduce_template,
-                topk_template=topk_template,
-                constant_of_shape_template=constant_of_shape_template,
-                shape_template=shape_template,
-                size_template=size_template,
-                nonzero_template=nonzero_template,
-                nonmax_suppression_template=nonmax_suppression_template,
-                expand_template=expand_template,
-                cumsum_template=cumsum_template,
-                range_template=range_template,
-                one_hot_template=one_hot_template,
-                split_template=split_template,
-                scalar_registry=scalar_registry,
-                dim_args=dim_args,
-                tensor_dim_names=tensor_dim_names,
-            )
+            op.emit(self, EmitContext(op_index=index))
             for index, op in enumerate(resolved_ops)
         )
         wrapper_fn = self._emit_model_wrapper(
@@ -6241,71 +5922,98 @@ class CEmitter:
             dtype=op.dtype,
         )
 
+    def render_op(self, op: OpBase, ctx: EmitContext) -> str:
+        if self._emit_state is None:
+            raise CodegenError("Emitter state not initialized")
+        state = self._emit_state
+        dtype = self._op_output_dtype(op)
+        templates = state.templates
+        return self._render_op(
+            state.model,
+            op,
+            ctx.op_index,
+            array_suffix="",
+            loop_vars=(),
+            c_type=dtype.c_type,
+            zero_literal=dtype.zero_literal,
+            min_literal=dtype.min_literal,
+            max_literal=dtype.max_literal,
+            binary_template=templates["binary"],
+            multi_input_template=templates["multi_input"],
+            where_template=templates["where"],
+            unary_template=templates["unary"],
+            clip_template=templates["clip"],
+            cast_template=templates["cast"],
+            quantize_linear_template=templates["quantize_linear"],
+            qlinear_matmul_template=templates["qlinear_matmul"],
+            matmul_template=templates["matmul"],
+            einsum_template=templates["einsum"],
+            gemm_template=templates["gemm"],
+            attention_template=templates["attention"],
+            rotary_embedding_template=templates["rotary_embedding"],
+            conv_template=templates["conv"],
+            conv_transpose_template=templates["conv_transpose"],
+            avg_pool_template=templates["avg_pool"],
+            lp_pool_template=templates["lp_pool"],
+            batch_norm_template=templates["batch_norm"],
+            lp_norm_template=templates["lp_norm"],
+            instance_norm_template=templates["instance_norm"],
+            group_norm_template=templates["group_norm"],
+            layer_norm_template=templates["layer_norm"],
+            mean_variance_norm_template=templates["mean_variance_norm"],
+            rms_norm_template=templates["rms_norm"],
+            lrn_template=templates["lrn"],
+            lstm_template=templates["lstm"],
+            adagrad_template=templates["adagrad"],
+            softmax_template=templates["softmax"],
+            logsoftmax_template=templates["logsoftmax"],
+            hardmax_template=templates["hardmax"],
+            nllloss_template=templates["nllloss"],
+            softmax_cross_entropy_loss_template=templates[
+                "softmax_cross_entropy_loss"
+            ],
+            maxpool_template=templates["maxpool"],
+            concat_template=templates["concat"],
+            gather_elements_template=templates["gather_elements"],
+            gather_template=templates["gather"],
+            gather_nd_template=templates["gather_nd"],
+            scatter_nd_template=templates["scatter_nd"],
+            transpose_template=templates["transpose"],
+            reshape_template=templates["reshape"],
+            identity_template=templates["identity"],
+            eye_like_template=templates["eye_like"],
+            trilu_template=templates["trilu"],
+            tile_template=templates["tile"],
+            pad_template=templates["pad"],
+            depth_to_space_template=templates["depth_to_space"],
+            space_to_depth_template=templates["space_to_depth"],
+            slice_template=templates["slice"],
+            slice_dynamic_template=templates["slice_dynamic"],
+            resize_template=templates["resize"],
+            grid_sample_template=templates["grid_sample"],
+            reduce_template=templates["reduce"],
+            reduce_dynamic_template=templates["reduce_dynamic"],
+            arg_reduce_template=templates["arg_reduce"],
+            topk_template=templates["topk"],
+            constant_of_shape_template=templates["constant_of_shape"],
+            shape_template=templates["shape"],
+            size_template=templates["size"],
+            nonzero_template=templates["nonzero"],
+            nonmax_suppression_template=templates["nonmax_suppression"],
+            expand_template=templates["expand"],
+            cumsum_template=templates["cumsum"],
+            range_template=templates["range"],
+            one_hot_template=templates["one_hot"],
+            split_template=templates["split"],
+            scalar_registry=state.scalar_registry,
+            dim_args=state.dim_args,
+            tensor_dim_names=state.tensor_dim_names,
+        )
+
     def _render_op(
         self,
         model: LoweredModel,
-        op: BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | ConvOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | LstmOp
-        | AdagradOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | SliceOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | OneHotOp
-        | SplitOp,
+        op: OpBase,
         index: int,
         *,
         array_suffix: str,
