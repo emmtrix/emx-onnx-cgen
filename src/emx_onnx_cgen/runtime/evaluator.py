@@ -2764,7 +2764,49 @@ def _apply_lrn(spec, data: np.ndarray) -> np.ndarray:
 
 
 def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
-    output = np.zeros((op.batch, op.channels, op.out_h, op.out_w), dtype=data.dtype)
+    if op.spatial_rank == 3:
+        output = np.zeros(
+            (op.batch, op.channels, op.out_d, op.out_h, op.out_w),
+            dtype=data.dtype,
+        )
+        for n in range(op.batch):
+            for c in range(op.channels):
+                for od in range(op.out_d):
+                    for oh in range(op.out_h):
+                        for ow in range(op.out_w):
+                            acc = 0.0
+                            count = 0
+                            for kd in range(op.kernel_d):
+                                id_ = od * op.stride_d + kd - op.pad_front
+                                if id_ < 0 or id_ >= op.in_d:
+                                    if op.count_include_pad:
+                                        count += op.kernel_h * op.kernel_w
+                                else:
+                                    for kh in range(op.kernel_h):
+                                        ih = oh * op.stride_h + kh - op.pad_top
+                                        if ih < 0 or ih >= op.in_h:
+                                            if op.count_include_pad:
+                                                count += op.kernel_w
+                                        else:
+                                            for kw in range(op.kernel_w):
+                                                iw = (
+                                                    ow * op.stride_w
+                                                    + kw
+                                                    - op.pad_left
+                                                )
+                                                if iw < 0 or iw >= op.in_w:
+                                                    if op.count_include_pad:
+                                                        count += 1
+                                                else:
+                                                    acc += data[n, c, id_, ih, iw]
+                                                    count += 1
+                            output[n, c, od, oh, ow] = (
+                                0.0 if count == 0 else acc / float(count)
+                            )
+        return output
+    output = np.zeros(
+        (op.batch, op.channels, op.out_h, op.out_w), dtype=data.dtype
+    )
     for n in range(op.batch):
         for c in range(op.channels):
             for oh in range(op.out_h):
@@ -2785,7 +2827,9 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                                 else:
                                     acc += data[n, c, ih, iw]
                                     count += 1
-                    output[n, c, oh, ow] = 0.0 if count == 0 else acc / float(count)
+                    output[n, c, oh, ow] = (
+                        0.0 if count == 0 else acc / float(count)
+                    )
     return output
 
 

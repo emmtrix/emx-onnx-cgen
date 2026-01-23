@@ -1203,16 +1203,23 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 batch=op.batch,
                 channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
                 in_h=op.in_h,
                 in_w=op.in_w,
+                out_d=op.out_d,
                 out_h=op.out_h,
                 out_w=op.out_w,
+                kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
+                pad_front=op.pad_front,
                 pad_top=op.pad_top,
                 pad_left=op.pad_left,
+                pad_back=op.pad_back,
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
@@ -4221,16 +4228,23 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 batch=op.batch,
                 channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
                 in_h=op.in_h,
                 in_w=op.in_w,
+                out_d=op.out_d,
                 out_h=op.out_h,
                 out_w=op.out_w,
+                kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
+                pad_front=op.pad_front,
                 pad_top=op.pad_top,
                 pad_left=op.pad_left,
+                pad_back=op.pad_back,
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
@@ -6144,8 +6158,24 @@ class CEmitter:
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            input_shape = (op.batch, op.channels, op.in_h, op.in_w)
-            output_shape = (op.batch, op.channels, op.out_h, op.out_w)
+            if op.spatial_rank == 3:
+                input_shape = (
+                    op.batch,
+                    op.channels,
+                    op.in_d,
+                    op.in_h,
+                    op.in_w,
+                )
+                output_shape = (
+                    op.batch,
+                    op.channels,
+                    op.out_d,
+                    op.out_h,
+                    op.out_w,
+                )
+            else:
+                input_shape = (op.batch, op.channels, op.in_h, op.in_w)
+                output_shape = (op.batch, op.channels, op.out_h, op.out_w)
             input_suffix = self._param_array_suffix(input_shape)
             output_suffix = self._param_array_suffix(output_shape)
             param_decls = self._build_param_decls(
@@ -6166,16 +6196,23 @@ class CEmitter:
                 output_suffix=output_suffix,
                 batch=op.batch,
                 channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
                 in_h=op.in_h,
                 in_w=op.in_w,
+                out_d=op.out_d,
                 out_h=op.out_h,
                 out_w=op.out_w,
+                kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
+                pad_front=op.pad_front,
                 pad_top=op.pad_top,
                 pad_left=op.pad_left,
+                pad_back=op.pad_back,
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=int(op.count_include_pad),
@@ -10512,6 +10549,8 @@ class CEmitter:
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, AveragePoolOp):
+            if op.spatial_rank == 3:
+                return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
             return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, LpPoolOp):
             return (op.batch, op.channels, op.out_h, op.out_w)
