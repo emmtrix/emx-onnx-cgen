@@ -3498,17 +3498,18 @@ class CEmitter:
             args.extend(call_parts)
             return ", ".join(args)
         if isinstance(op, AdagradOp):
-            args.extend(
-                [
-                    op.rate,
-                    op.timestep,
-                    *op.inputs,
-                    *op.gradients,
-                    *op.accumulators,
-                    *op.outputs,
-                    *op.accumulator_outputs,
-                ]
-            )
+            args.append(op.rate)
+            args.append(op.timestep)
+            for index in range(len(op.inputs)):
+                args.extend(
+                    [
+                        op.inputs[index],
+                        op.gradients[index],
+                        op.accumulators[index],
+                        op.outputs[index],
+                        op.accumulator_outputs[index],
+                    ]
+                )
             return ", ".join(args)
         if isinstance(op, (SoftmaxOp, LogSoftmaxOp, HardmaxOp)):
             args.extend([op.input0, op.output])
@@ -7823,6 +7824,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
+            input_c_type = op.input_dtype.c_type
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -7836,7 +7838,7 @@ class CEmitter:
             batch_size = CEmitter._element_count(batch_dims or (1,))
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], c_type, input_suffix, True),
+                    (params["input0"], input_c_type, input_suffix, True),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
