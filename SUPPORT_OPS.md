@@ -199,7 +199,7 @@ Supported operators: 141 / 197
 | ai.onnx.ml::Binarizer | ❌ |
 | ai.onnx.ml::LabelEncoder | ❌ |
 | ai.onnx.ml::TreeEnsemble | ❌ |
-| ai.onnx.preview.training::Adagrad | ✅ |
+| ai.onnx.preview.training::Adagrad | ❌ |
 | ai.onnx.preview.training::Adam | ❌ |
 | ai.onnx.preview.training::Gradient | ❌ |
 | ai.onnx.preview.training::Momentum | ❌ |
