@@ -89,6 +89,12 @@ def main() -> None:
         "capture tie-break rules, optional input defaults, and output ordering so "
         "codegen/runtime match the backend tests."
     )
+    prompt_lines.append(
+        "Verification hint: if the failure reports a missing output by name, "
+        "compare the model's graph output names against any testbench JSON keys "
+        "or sanitized C identifiers; mismatches can occur when output names are "
+        "not valid C identifiers."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "

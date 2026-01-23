@@ -87,7 +87,7 @@ int main(void) {
 {% if not loop.first %}
     printf(",");
 {% endif %}
-    printf("\"{{ input.name }}\":{\"shape\":[{{ input.shape_literal }}],\"data\":");
+    printf("\"{{ input.json_name }}\":{\"shape\":[{{ input.shape_literal }}],\"data\":");
     printf("[");
 {% for depth in range(input.rank) %}
 for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
@@ -113,7 +113,7 @@ printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}{{ inpu
 {% if not loop.first %}
     printf(",");
 {% endif %}
-    printf("\"{{ output.name }}\":{\"shape\":[{{ output.shape_literal }}],\"data\":");
+    printf("\"{{ output.json_name }}\":{\"shape\":[{{ output.shape_literal }}],\"data\":");
     printf("[");
 {% for depth in range(output.rank) %}
 for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
