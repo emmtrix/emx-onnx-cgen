@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 83684753)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx --cc /usr/bin/cc",
   "operators": [
     "ConstantOfShape",
@@ -12,5 +12,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "10926de774cd034f7b87ee3b10bd9e29ec3992c5df3a432d188400331b20bdf9"
+  "generated_checksum": "87ca857ee1fe8629f577af1915c053a87bc8070a3995e1100b4a499b8c8235f4"
 }

@@ -39,7 +39,7 @@ def load_failing_entries() -> list[dict[str, str]]:
         reproduction_cmd = ""
         if expectation.command_line:
             reproduction_cmd = (
-                f"PYTHONPATH=src python -m emx_onnx_cgen.cli {expectation.command_line}"
+                f"PYTHONPATH=src python -m emx_onnx_cgen {expectation.command_line}"
             )
         entries.append(
             {
@@ -88,6 +88,10 @@ def main() -> None:
         "Operator behavior hint: consult the ONNX reference op implementation to "
         "capture tie-break rules, optional input defaults, and output ordering so "
         "codegen/runtime match the backend tests."
+    )
+    prompt_lines.append(
+        "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
+        "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
