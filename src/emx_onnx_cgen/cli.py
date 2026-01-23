@@ -258,6 +258,15 @@ def _build_parser() -> argparse.ArgumentParser:
             "options: onnxruntime, onnx-reference)"
         ),
     )
+    verify_parser.add_argument(
+        "--expected-checksum",
+        type=str,
+        default=None,
+        help=(
+            "Expected generated C checksum (sha256). When it matches the "
+            "computed checksum, verification exits early with OK CHECKSUM."
+        ),
+    )
     add_restrict_flags(verify_parser)
     return parser
 
@@ -446,6 +455,10 @@ def _verify_model(
         log_step("codegen", codegen_started)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         return None, str(exc), operators, opset_version, None
+    generated_checksum = _generated_checksum(generated)
+    expected_checksum = args.expected_checksum
+    if expected_checksum and expected_checksum == generated_checksum:
+        return "OK CHECKSUM", None, operators, opset_version, generated_checksum
 
     try:
         graph = import_onnx(model)
@@ -466,7 +479,6 @@ def _verify_model(
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
         exe_path = temp_path / "model"
-        generated_checksum = _generated_checksum(generated)
         c_path.write_text(generated, encoding="utf-8")
         if weight_data is not None:
             weights_path.write_bytes(weight_data)
@@ -648,7 +660,21 @@ def _format_command_line(argv: Sequence[str] | None) -> str:
     args = [str(arg) for arg in argv[1:]]
     if not args:
         return ""
-    return shlex.join(args)
+    filtered: list[str] = []
+    skip_next = False
+    for arg in args:
+        if skip_next:
+            skip_next = False
+            continue
+        if arg == "--expected-checksum":
+            skip_next = True
+            continue
+        if arg.startswith("--expected-checksum="):
+            continue
+        filtered.append(arg)
+    if not filtered:
+        return ""
+    return shlex.join(filtered)
 
 
 def _model_checksum(model_path: Path) -> str:
