@@ -5331,7 +5331,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MultiInputBinaryOp):
-            output_shape = self._ctx_shape(op.output)
+            output_shape_raw = self._ctx_shape(op.output)
             input_dtype = self._ctx_dtype(op.inputs[0])
             output_dtype = self._ctx_dtype(op.output)
             params = self._shared_param_map(
@@ -5360,27 +5360,47 @@ class CEmitter:
                     f"{op.function.value}"
                 )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
-            loop_vars = CEmitter._loop_vars(output_shape)
-            array_suffix = self._param_array_suffix(
-                output_shape, output_dim_names
+            shape = CEmitter._shape_dim_exprs(
+                output_shape_raw, output_dim_names
+            )
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_array_suffix = self._param_array_suffix(
+                output_shape_raw, output_dim_names
             )
             input_c_type = input_dtype.c_type
             output_c_type = output_dtype.c_type
             input_names = [
                 params[f"input{idx}"] for idx in range(len(op.inputs))
             ]
+            input_shapes = [self._ctx_shape(name) for name in op.inputs]
+            input_dim_names = [
+                _dim_names_for(name) for name in op.inputs
+            ]
+            input_array_suffixes = [
+                self._param_array_suffix(shape, dim_names)
+                for shape, dim_names in zip(input_shapes, input_dim_names)
+            ]
             param_decls = self._build_param_decls(
                 [
-                    *( (name, input_c_type, array_suffix, True) for name in input_names ),
-                    (params["output"], output_c_type, array_suffix, False),
+                    *(
+                        (name, input_c_type, array_suffix, True)
+                        for name, array_suffix in zip(
+                            input_names, input_array_suffixes
+                        )
+                    ),
+                    (
+                        params["output"],
+                        output_c_type,
+                        output_array_suffix,
+                        False,
+                    ),
                 ]
             )
             common = {
                 "model_name": model.name,
                 "op_name": op_name,
                 "element_count": CEmitter._element_count_expr(shape),
-                "array_suffix": array_suffix,
+                "array_suffix": output_array_suffix,
                 "shape": shape,
                 "loop_vars": loop_vars,
                 "input_c_type": input_c_type,
@@ -5390,8 +5410,10 @@ class CEmitter:
                 "params": param_decls,
             }
             input_exprs = [
-                f"{name}" + "".join(f"[{var}]" for var in loop_vars)
-                for name in input_names
+                CEmitter._broadcast_index_expr(
+                    name, shape, output_shape_raw, loop_vars
+                )
+                for name, shape in zip(input_names, input_shapes)
             ]
             output_expr = f"{params['output']}" + "".join(
                 f"[{var}]" for var in loop_vars

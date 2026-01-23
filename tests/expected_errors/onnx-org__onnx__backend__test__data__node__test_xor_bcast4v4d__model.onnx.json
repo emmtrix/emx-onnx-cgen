@@ -1,8 +1,9 @@
 {
-  "error": "Xor expects identical input/output shapes",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_xor_bcast4v4d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_xor_bcast4v4d/test_data_set_0",
   "operators": [
     "Xor"
   ],
-  "opset_version": 7
+  "opset_version": 7,
+  "generated_checksum": "609d8c1c7fa1c1a0a63dfd2c3bab7b9755e82eb9b0003672f5689e3333230983"
 }

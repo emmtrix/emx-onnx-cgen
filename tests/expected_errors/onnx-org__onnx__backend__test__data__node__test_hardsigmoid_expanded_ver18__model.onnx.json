@@ -1,5 +1,5 @@
 {
-  "error": "Min expects identical input/output shapes",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
@@ -9,5 +9,6 @@
     "Min",
     "Max"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "e4854e3d40a13f47e7f780450c22adb388499e4c65483873cc906427ff4cf778"
 }

@@ -9,6 +9,7 @@ from shared.scalar_types import ScalarType
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
+from ..ir.op_base import BroadcastingOpBase
 from ..ir.op_context import OpContext
 from ..lowering.attention import resolve_attention_spec
 from ..lowering.average_pool import lower_average_pool, lower_global_average_pool
@@ -914,12 +915,20 @@ def _validate_variadic_inputs(
             f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     output_shape = value_shape(evaluator.graph, node.outputs[0], node)
-    for name in node.inputs:
-        input_shape = value_shape(evaluator.graph, name, node)
-        if input_shape != output_shape:
-            raise UnsupportedOpError(
-                f"{node.op_type} expects identical input/output shapes"
-            )
+    input_shapes = tuple(
+        value_shape(evaluator.graph, name, node) for name in node.inputs
+    )
+    try:
+        broadcast_shape = BroadcastingOpBase.broadcast_shapes(*input_shapes)
+    except ShapeInferenceError as exc:
+        raise UnsupportedOpError(
+            f"{node.op_type} expects broadcastable input shapes"
+        ) from exc
+    if broadcast_shape != output_shape:
+        raise UnsupportedOpError(
+            f"{node.op_type} output shape must be {broadcast_shape}, "
+            f"got {output_shape}"
+        )
     if function in {
         ScalarFunction.LOGICAL_AND,
         ScalarFunction.LOGICAL_OR,

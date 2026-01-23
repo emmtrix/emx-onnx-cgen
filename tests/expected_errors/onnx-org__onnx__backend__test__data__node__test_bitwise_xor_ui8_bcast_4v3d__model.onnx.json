@@ -1,8 +1,9 @@
 {
-  "error": "BitwiseXor expects identical input/output shapes",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/test_data_set_0",
   "operators": [
     "BitwiseXor"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "a7d3f35d713b60e278d419003698a4448bf9c6db9e618efb812604267fe704a3"
 }

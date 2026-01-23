@@ -414,19 +414,20 @@ class VariadicLikeOpBase(RenderableOpBase):
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shapes = tuple(ctx.shape(name) for name in self._variadic_inputs())
-        output_shape = BroadcastingOpBase.broadcast_shapes(*input_shapes)
-        for shape in input_shapes:
-            if shape != output_shape:
-                raise UnsupportedOpError(
-                    f"{self._variadic_kind()} expects identical input/output shapes"
-                )
+        try:
+            output_shape = BroadcastingOpBase.broadcast_shapes(*input_shapes)
+        except ShapeInferenceError as exc:
+            raise UnsupportedOpError(
+                f"{self._variadic_kind()} expects broadcastable input shapes"
+            ) from exc
         try:
             expected = ctx.shape(self._variadic_output())
         except ShapeInferenceError:
             expected = None
         if expected is not None and expected != output_shape:
             raise UnsupportedOpError(
-                f"{self._variadic_kind()} expects identical input/output shapes"
+                f"{self._variadic_kind()} output shape must be {output_shape}, "
+                f"got {expected}"
             )
         ctx.set_shape(self._variadic_output(), output_shape)
 

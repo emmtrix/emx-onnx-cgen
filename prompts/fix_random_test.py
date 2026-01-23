@@ -101,9 +101,10 @@ def main() -> None:
         "codegen/runtime match the backend tests."
     )
     prompt_lines.append(
-        "Implementation hint: if the failing op is a spatial operator, look for an "
-        "existing spatial_rank-aware implementation (e.g., MaxPool) to mirror how "
-        "it handles shape validation, output shape math, and templated loops."
+        "Broadcasting hint: variadic/elementwise ops often follow ONNX "
+        "broadcasting rules, so confirm shape inference, evaluator, and codegen "
+        "all agree (e.g., multi-input emitters should use broadcast-aware "
+        "indexing and per-input array suffixes)."
     )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(

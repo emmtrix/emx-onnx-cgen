@@ -30,14 +30,13 @@
 | Unsupported op DFT | 6 | █████ |
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
-| And expects identical input/output shapes | 5 | ████ |
+| AveragePool expects 2D kernel_shape | 5 | ████ |
 | Iteration of zero-sized operands is not enabled | 5 | ████ |
-| Or expects identical input/output shapes | 5 | ████ |
+| Test data input count does not match model inputs: 1 vs 5. | 5 | ████ |
 | Unsupported op Col2Im | 5 | ████ |
 | Unsupported op DequantizeLinear | 5 | ████ |
 | Unsupported op If | 5 | ████ |
-| Xor expects identical input/output shapes | 5 | ████ |
-| Sum expects identical input/output shapes | 4 | ███ |
+| Missing output 3 in testbench data | 4 | ███ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
 | Unsupported op AffineGrid | 4 | ███ |
 | Unsupported op Compress | 4 | ███ |
@@ -51,7 +50,6 @@
 | Failed to build testbench. | 3 | ██ |
 | HardSigmoid only supports alpha=0.2 | 3 | ██ |
 | LeakyRelu only supports alpha=0.01 | 3 | ██ |
-| Min expects identical input/output shapes | 3 | ██ |
 | Unsupported op Bernoulli | 3 | ██ |
 | Unsupported op DynamicQuantizeLinear | 3 | ██ |
 | Unsupported op Loop | 3 | ██ |
@@ -71,9 +69,7 @@ Max relative difference among violations: 5.4
        [  1, -75,  20]], dtype=int8) | 2 | ██ |
 | AveragePool supports ceil_mode=0 only | 2 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
-| BitwiseAnd expects identical input/output shapes | 2 | ██ |
-| BitwiseOr expects identical input/output shapes | 2 | ██ |
-| BitwiseXor expects identical input/output shapes | 2 | ██ |
+| Failed to build testbench. | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
 | LpPool expects 2D kernel_shape | 2 | ██ |
 | LpPool supports auto_pad=NOTSET only | 2 | ██ |
@@ -148,7 +144,6 @@ Max relative difference among violations: 0.10344828
 | Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | LpPool supports dilations=1 only | 1 | █ |
-| Max expects identical input/output shapes | 1 | █ |
 | Max must have at least 2 inputs | 1 | █ |
 | Mean must have at least 2 inputs | 1 | █ |
 | Min must have at least 2 inputs | 1 | █ |

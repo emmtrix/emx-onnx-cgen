@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1169 / 1802 official ONNX files.
+Support 1200 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -53,11 +53,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_and2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_and3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_and4d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_and_bcast3v1d/model.onnx | ❌ | And expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_and_bcast3v2d/model.onnx | ❌ | And expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_and_bcast4v2d/model.onnx | ❌ | And expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_and_bcast4v3d/model.onnx | ❌ | And expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_and_bcast4v4d/model.onnx | ❌ | And expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_and_bcast3v1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_and_bcast3v2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_and_bcast4v2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_and_bcast4v3d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_and_bcast4v4d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_argmax_default_axis_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_argmax_default_axis_example_select_last_index/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_argmax_default_axis_random/model.onnx | ✅ | OK (max ULP 0) |
@@ -266,19 +266,19 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_bitshift_right_uint8/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_and_i16_3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_and_i32_2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ❌ | BitwiseAnd expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ❌ | BitwiseAnd expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_not_2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_not_3d/model.onnx | ❌ | Unsupported op BitwiseNot |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_not_4d/model.onnx | ❌ | Unsupported op BitwiseNot |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_or_i16_4d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_or_i32_2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ❌ | BitwiseOr expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ❌ | BitwiseOr expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_i16_3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_i32_2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ❌ | BitwiseXor expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ❌ | BitwiseXor expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
@@ -653,13 +653,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32_batch_dim1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_default_1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_default_2/model.onnx | ✅ | OK (max ULP 7) |
-| onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1/model.onnx | ❌ | Gelu only supports approximate=none |
-| onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2/model.onnx | ❌ | Gelu only supports approximate=none |
-| onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2_expanded/model.onnx | ❌ | Sum expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_all_attributes/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_alpha/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_beta/model.onnx | ✅ | OK (max ULP 1) |
@@ -742,10 +742,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_hardmax_one_hot/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hardsigmoid/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | onnx-org/onnx/backend/test/data/node/test_hardsigmoid_default/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_hardsigmoid_default_expanded_ver18/model.onnx | ❌ | Min expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_hardsigmoid_default_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hardsigmoid_example/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
-| onnx-org/onnx/backend/test/data/node/test_hardsigmoid_example_expanded_ver18/model.onnx | ❌ | Min expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/model.onnx | ❌ | Min expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_hardsigmoid_example_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hardswish/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_hardswish_expanded/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | onnx-org/onnx/backend/test/data/node/test_identity/model.onnx | ✅ | OK (max ULP 0) |
@@ -1064,11 +1064,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_or2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_or3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_or4d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_or_bcast3v1d/model.onnx | ❌ | Or expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_or_bcast3v2d/model.onnx | ❌ | Or expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_or_bcast4v2d/model.onnx | ❌ | Or expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_or_bcast4v3d/model.onnx | ❌ | Or expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_or_bcast4v4d/model.onnx | ❌ | Or expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_or_bcast3v1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_or_bcast3v2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_or_bcast4v2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_or_bcast4v3d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_or_bcast4v4d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_bcast_array/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_bcast_scalar/model.onnx | ✅ | OK (max ULP 0) |
@@ -1249,7 +1249,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_regex_full_match_email_domain/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | onnx-org/onnx/backend/test/data/node/test_regex_full_match_empty/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | onnx-org/onnx/backend/test/data/node/test_relu/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/model.onnx | ❌ | Max expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_reshape_extended_dims/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_negative_dim/model.onnx | ✅ | OK (max ULP 0) |
@@ -1665,11 +1665,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_xor2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_xor3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_xor4d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v1d/model.onnx | ❌ | Xor expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v2d/model.onnx | ❌ | Xor expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v2d/model.onnx | ❌ | Xor expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v3d/model.onnx | ❌ | Xor expects identical input/output shapes |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v4d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v3d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v4d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/model.onnx | ❌ | Missing output 3 in testbench data |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx | ❌ | Missing output 3 in testbench data |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d/model.onnx | ❌ | Missing output 1 in testbench data |
