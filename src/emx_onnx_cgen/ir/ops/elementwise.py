@@ -6,7 +6,7 @@ from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ...ops import COMPARE_FUNCTIONS, OperatorKind, binary_op_symbol
-from ..op_base import ElementwiseOpBase, VariadicLikeOpBase
+from ..op_base import ElementwiseOpBase, RenderableOpBase, VariadicLikeOpBase
 from ..op_context import OpContext
 
 
@@ -144,3 +144,31 @@ class IdentityOp(ElementwiseOpBase):
     def validate(self, ctx: OpContext) -> None:
         super().validate(ctx)
         return None
+
+
+@dataclass(frozen=True)
+class QLinearMulOp(RenderableOpBase):
+    input0: str
+    input0_scale: str
+    input0_zero_point: str
+    input1: str
+    input1_scale: str
+    input1_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    output: str
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    input0_dtype: ScalarType
+    input1_dtype: ScalarType
+    dtype: ScalarType
+    input0_scale_dtype: ScalarType
+    input1_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input0_scale_shape: tuple[int, ...]
+    input1_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input0_zero_shape: tuple[int, ...]
+    input1_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]

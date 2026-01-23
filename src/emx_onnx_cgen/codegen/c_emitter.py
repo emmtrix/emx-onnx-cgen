@@ -75,6 +75,7 @@ from ..ir.ops import (
     OneHotOp,
     PadOp,
     QuantizeLinearOp,
+    QLinearMulOp,
     QLinearMatMulOp,
     RangeOp,
     ReduceOp,
@@ -452,6 +453,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
@@ -532,6 +534,18 @@ class CEmitter:
                 names.append(op.zero_point)
             names.append(op.output)
             return tuple(names)
+        if isinstance(op, QLinearMulOp):
+            return (
+                op.input0,
+                op.input0_scale,
+                op.input0_zero_point,
+                op.input1,
+                op.input1_scale,
+                op.input1_zero_point,
+                op.output_scale,
+                op.output_zero_point,
+                op.output,
+            )
         if isinstance(op, QLinearMatMulOp):
             return (
                 op.input0,
@@ -825,6 +839,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
@@ -891,6 +906,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
@@ -1007,6 +1023,39 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 scale_dtype=op.scale_dtype,
+            )
+        if isinstance(op, QLinearMulOp):
+            return QLinearMulOp(
+                input0=name_map.get(op.input0, op.input0),
+                input0_scale=name_map.get(op.input0_scale, op.input0_scale),
+                input0_zero_point=name_map.get(
+                    op.input0_zero_point, op.input0_zero_point
+                ),
+                input1=name_map.get(op.input1, op.input1),
+                input1_scale=name_map.get(op.input1_scale, op.input1_scale),
+                input1_zero_point=name_map.get(
+                    op.input1_zero_point, op.input1_zero_point
+                ),
+                output_scale=name_map.get(op.output_scale, op.output_scale),
+                output_zero_point=name_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                output=name_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_scale_dtype=op.input0_scale_dtype,
+                input1_scale_dtype=op.input1_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input0_scale_shape=op.input0_scale_shape,
+                input1_scale_shape=op.input1_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
+                output_zero_shape=op.output_zero_shape,
             )
         if isinstance(op, QLinearMatMulOp):
             return QLinearMatMulOp(
@@ -1203,16 +1252,23 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 batch=op.batch,
                 channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
                 in_h=op.in_h,
                 in_w=op.in_w,
+                out_d=op.out_d,
                 out_h=op.out_h,
                 out_w=op.out_w,
+                kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
+                pad_front=op.pad_front,
                 pad_top=op.pad_top,
                 pad_left=op.pad_left,
+                pad_back=op.pad_back,
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
@@ -1997,6 +2053,7 @@ class CEmitter:
                 "quantize_linear": self._env.get_template(
                     "quantize_linear_op.c.j2"
                 ),
+                "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template(
                     "qlinear_matmul_op.c.j2"
                 ),
@@ -2655,6 +2712,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
@@ -2922,6 +2980,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
@@ -3080,7 +3139,15 @@ class CEmitter:
         ):
             return True
         if any(
-            isinstance(op, (LpPoolOp, QuantizeLinearOp, QLinearMatMulOp))
+            isinstance(
+                op,
+                (
+                    LpPoolOp,
+                    QuantizeLinearOp,
+                    QLinearMulOp,
+                    QLinearMatMulOp,
+                ),
+            )
             for op in resolved_ops
         ):
             return True
@@ -3094,6 +3161,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
@@ -3177,7 +3245,7 @@ class CEmitter:
         ):
             return True
         if any(
-            isinstance(op, (QuantizeLinearOp, QLinearMatMulOp))
+            isinstance(op, (QuantizeLinearOp, QLinearMulOp, QLinearMatMulOp))
             and op.dtype.is_integer
             for op in resolved_ops
         ):
@@ -3196,6 +3264,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
             | EinsumOp
@@ -3307,6 +3376,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
@@ -3377,6 +3447,21 @@ class CEmitter:
             return ", ".join(args)
         if isinstance(op, WhereOp):
             args.extend([op.condition, op.input_x, op.input_y, op.output])
+            return ", ".join(args)
+        if isinstance(op, QLinearMulOp):
+            args.extend(
+                [
+                    op.input0,
+                    op.input0_scale,
+                    op.input0_zero_point,
+                    op.input1,
+                    op.input1_scale,
+                    op.input1_zero_point,
+                    op.output_scale,
+                    op.output_zero_point,
+                    op.output,
+                ]
+            )
             return ", ".join(args)
         if isinstance(op, QLinearMatMulOp):
             args.extend(
@@ -3729,6 +3814,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
@@ -3794,6 +3880,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
@@ -3932,6 +4019,39 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 scale_dtype=op.scale_dtype,
+            )
+        if isinstance(op, QLinearMulOp):
+            return QLinearMulOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input0_scale=temp_map.get(op.input0_scale, op.input0_scale),
+                input0_zero_point=temp_map.get(
+                    op.input0_zero_point, op.input0_zero_point
+                ),
+                input1=temp_map.get(op.input1, op.input1),
+                input1_scale=temp_map.get(op.input1_scale, op.input1_scale),
+                input1_zero_point=temp_map.get(
+                    op.input1_zero_point, op.input1_zero_point
+                ),
+                output_scale=temp_map.get(op.output_scale, op.output_scale),
+                output_zero_point=temp_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                output=temp_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_scale_dtype=op.input0_scale_dtype,
+                input1_scale_dtype=op.input1_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input0_scale_shape=op.input0_scale_shape,
+                input1_scale_shape=op.input1_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
+                output_zero_shape=op.output_zero_shape,
             )
         if isinstance(op, QLinearMatMulOp):
             return QLinearMatMulOp(
@@ -4221,16 +4341,23 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 batch=op.batch,
                 channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
                 in_h=op.in_h,
                 in_w=op.in_w,
+                out_d=op.out_d,
                 out_h=op.out_h,
                 out_w=op.out_w,
+                kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
+                pad_front=op.pad_front,
                 pad_top=op.pad_top,
                 pad_left=op.pad_left,
+                pad_back=op.pad_back,
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=op.count_include_pad,
@@ -4946,6 +5073,7 @@ class CEmitter:
             clip_template=templates["clip"],
             cast_template=templates["cast"],
             quantize_linear_template=templates["quantize_linear"],
+            qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
             matmul_template=templates["matmul"],
             einsum_template=templates["einsum"],
@@ -5030,6 +5158,7 @@ class CEmitter:
         clip_template,
         cast_template,
         quantize_linear_template,
+        qlinear_mul_template,
         qlinear_matmul_template,
         matmul_template,
         einsum_template,
@@ -6166,8 +6295,24 @@ class CEmitter:
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            input_shape = (op.batch, op.channels, op.in_h, op.in_w)
-            output_shape = (op.batch, op.channels, op.out_h, op.out_w)
+            if op.spatial_rank == 3:
+                input_shape = (
+                    op.batch,
+                    op.channels,
+                    op.in_d,
+                    op.in_h,
+                    op.in_w,
+                )
+                output_shape = (
+                    op.batch,
+                    op.channels,
+                    op.out_d,
+                    op.out_h,
+                    op.out_w,
+                )
+            else:
+                input_shape = (op.batch, op.channels, op.in_h, op.in_w)
+                output_shape = (op.batch, op.channels, op.out_h, op.out_w)
             input_suffix = self._param_array_suffix(input_shape)
             output_suffix = self._param_array_suffix(output_shape)
             param_decls = self._build_param_decls(
@@ -6188,16 +6333,23 @@ class CEmitter:
                 output_suffix=output_suffix,
                 batch=op.batch,
                 channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
                 in_h=op.in_h,
                 in_w=op.in_w,
+                out_d=op.out_d,
                 out_h=op.out_h,
                 out_w=op.out_w,
+                kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
+                pad_front=op.pad_front,
                 pad_top=op.pad_top,
                 pad_left=op.pad_left,
+                pad_back=op.pad_back,
                 pad_bottom=op.pad_bottom,
                 pad_right=op.pad_right,
                 count_include_pad=int(op.count_include_pad),
@@ -9496,6 +9648,175 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, QLinearMulOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for QLinearMul."
+                )
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input0_scale", op.input0_scale),
+                    ("input0_zero_point", op.input0_zero_point),
+                    ("input1", op.input1),
+                    ("input1_scale", op.input1_scale),
+                    ("input1_zero_point", op.input1_zero_point),
+                    ("output_scale", op.output_scale),
+                    ("output_zero_point", op.output_zero_point),
+                    ("output", op.output),
+                ]
+            )
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_loop_vars = CEmitter._loop_vars(op.output_shape)
+            output_index_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            input0_index_expr = CEmitter._broadcast_index_expr(
+                params["input0"],
+                op.input0_shape,
+                op.output_shape,
+                output_loop_vars,
+            )
+            input1_index_expr = CEmitter._broadcast_index_expr(
+                params["input1"],
+                op.input1_shape,
+                op.output_shape,
+                output_loop_vars,
+            )
+            input0_suffix = self._param_array_suffix(op.input0_shape)
+            input1_suffix = self._param_array_suffix(op.input1_shape)
+            input0_scale_suffix = self._param_array_suffix(
+                op.input0_scale_shape
+            )
+            input1_scale_suffix = self._param_array_suffix(
+                op.input1_scale_shape
+            )
+            output_scale_suffix = self._param_array_suffix(
+                op.output_scale_shape
+            )
+            input0_zero_suffix = self._param_array_suffix(op.input0_zero_shape)
+            input1_zero_suffix = self._param_array_suffix(op.input1_zero_shape)
+            output_zero_suffix = self._param_array_suffix(op.output_zero_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input0"],
+                        op.input0_dtype.c_type,
+                        input0_suffix,
+                        True,
+                    ),
+                    (
+                        params["input0_scale"],
+                        op.input0_scale_dtype.c_type,
+                        input0_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["input0_zero_point"],
+                        op.input0_dtype.c_type,
+                        input0_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["input1"],
+                        op.input1_dtype.c_type,
+                        input1_suffix,
+                        True,
+                    ),
+                    (
+                        params["input1_scale"],
+                        op.input1_scale_dtype.c_type,
+                        input1_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["input1_zero_point"],
+                        op.input1_dtype.c_type,
+                        input1_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_scale"],
+                        op.output_scale_dtype.c_type,
+                        output_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_zero_point"],
+                        op.dtype.c_type,
+                        output_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["output"],
+                        op.dtype.c_type,
+                        output_suffix,
+                        False,
+                    ),
+                ]
+            )
+            compute_dtype = (
+                ScalarType.F64
+                if ScalarType.F64
+                in {
+                    op.input0_scale_dtype,
+                    op.input1_scale_dtype,
+                    op.output_scale_dtype,
+                }
+                else ScalarType.F32
+            )
+            compute_type = (
+                "double" if compute_dtype == ScalarType.F64 else "float"
+            )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
+            )
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
+            )
+            if max_fn is None or min_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for QLinearMul."
+                )
+            round_fn = CEmitter._math_fn(
+                compute_dtype, "nearbyintf", "nearbyint"
+            )
+            scale_index = "0"
+            rendered = qlinear_mul_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                input0_scale=params["input0_scale"],
+                input0_zero_point=params["input0_zero_point"],
+                input1_scale=params["input1_scale"],
+                input1_zero_point=params["input1_zero_point"],
+                output_scale=params["output_scale"],
+                output_zero_point=params["output_zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=op.dtype.c_type,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                input0_scale_expr=f"{params['input0_scale']}[{scale_index}]",
+                input1_scale_expr=f"{params['input1_scale']}[{scale_index}]",
+                output_scale_expr=f"{params['output_scale']}[{scale_index}]",
+                input0_zero_expr=f"{params['input0_zero_point']}[{scale_index}]",
+                input1_zero_expr=f"{params['input1_zero_point']}[{scale_index}]",
+                output_zero_expr=f"{params['output_zero_point']}[{scale_index}]",
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                round_fn=round_fn,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
+                min_fn=min_fn,
+                max_fn=max_fn,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, QLinearMatMulOp):
             if scalar_registry is None:
                 raise CodegenError(
@@ -9894,6 +10215,8 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | QLinearMulOp
+        | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -10521,6 +10844,8 @@ class CEmitter:
             return op.input_shape
         if isinstance(op, CastOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, QLinearMulOp):
+            return op.output_shape
         if isinstance(op, QLinearMatMulOp):
             return op.output_shape
         if isinstance(op, MatMulOp):
@@ -10534,6 +10859,8 @@ class CEmitter:
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, AveragePoolOp):
+            if op.spatial_rank == 3:
+                return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
             return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, LpPoolOp):
             return (op.batch, op.channels, op.out_h, op.out_w)

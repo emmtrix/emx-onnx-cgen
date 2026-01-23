@@ -1,7 +1,8 @@
 {
-  "error": "Unsupported op QLinearMul",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_qlinearmul_uint8/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_qlinearmul_uint8/test_data_set_0",
   "operators": [
     "com.microsoft::QLinearMul"
-  ]
+  ],
+  "generated_checksum": "bb41fc4457df90ba69c07a6b2b3f5d841475ddb1e9d701935b83a5bd2b9420cf"
 }

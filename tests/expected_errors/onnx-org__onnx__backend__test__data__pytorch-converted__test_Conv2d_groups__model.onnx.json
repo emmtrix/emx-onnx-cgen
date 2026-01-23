@@ -1,8 +1,9 @@
 {
-  "error": "Test data input count does not match model inputs: 1 vs 3.",
+  "error": "Missing output 3 in testbench data",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/test_data_set_0",
   "operators": [
     "Conv"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "a7cffcec35173e468d0889b6ea23db072b6e44de912286883ed5d7bc615bc9b4"
 }

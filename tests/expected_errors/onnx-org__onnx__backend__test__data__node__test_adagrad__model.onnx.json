@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "onnxruntime failed to run onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx: [ONNXRuntimeError] : 1 : FAIL : Fatal error: ai.onnx.preview.training:Adagrad(-1) is not a registered function/op",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_adagrad/test_data_set_0",
   "operators": [
     "ai.onnx.preview.training::Adagrad"
