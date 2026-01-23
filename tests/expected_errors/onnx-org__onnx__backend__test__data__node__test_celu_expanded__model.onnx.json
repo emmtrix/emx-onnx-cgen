@@ -6,5 +6,6 @@
     "Div",
     "Elu",
     "Mul"
-  ]
+  ],
+  "opset_version": 12
 }

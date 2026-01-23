@@ -7,5 +7,6 @@
     "Cast",
     "Sqrt",
     "CastLike"
-  ]
+  ],
+  "opset_version": 18
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_convtranspose_pad/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_convtranspose_pad/test_data_set_0",
   "operators": [
     "ConvTranspose"
-  ]
+  ],
+  "opset_version": 22
 }

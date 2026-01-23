@@ -3,5 +3,6 @@
   "command_line": "verify onnx2c-org/test/local_ops/test_matmul_3_3/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_matmul_3_3/test_data_set_0",
   "operators": [
     "MatMul"
-  ]
+  ],
+  "opset_version": 22
 }

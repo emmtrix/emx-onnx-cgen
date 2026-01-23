@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted/test_data_set_0",
   "operators": [
     "DynamicQuantizeLinear"
-  ]
+  ],
+  "opset_version": 11
 }

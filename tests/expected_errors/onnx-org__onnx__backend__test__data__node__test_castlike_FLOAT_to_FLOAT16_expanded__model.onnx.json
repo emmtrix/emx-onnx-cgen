@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16_expanded/test_data_set_0",
   "operators": [
     "Cast"
-  ]
+  ],
+  "opset_version": 25
 }

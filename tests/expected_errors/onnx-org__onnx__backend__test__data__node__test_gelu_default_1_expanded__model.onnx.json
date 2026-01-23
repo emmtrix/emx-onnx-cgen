@@ -9,5 +9,6 @@
     "Erf",
     "Sum",
     "Mul"
-  ]
+  ],
+  "opset_version": 20
 }

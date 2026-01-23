@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/test_data_set_0",
   "operators": [
     "StringNormalizer"
-  ]
+  ],
+  "opset_version": 10
 }

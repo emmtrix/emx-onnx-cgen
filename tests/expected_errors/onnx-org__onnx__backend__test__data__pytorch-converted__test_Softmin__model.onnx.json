@@ -4,5 +4,6 @@
   "operators": [
     "Neg",
     "Softmax"
-  ]
+  ],
+  "opset_version": 6
 }

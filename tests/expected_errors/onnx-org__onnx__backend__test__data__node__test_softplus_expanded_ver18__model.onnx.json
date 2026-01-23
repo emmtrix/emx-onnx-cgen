@@ -7,5 +7,6 @@
     "CastLike",
     "Add",
     "Log"
-  ]
+  ],
+  "opset_version": 18
 }

@@ -10,5 +10,6 @@
     "Gather",
     "Squeeze",
     "Mul"
-  ]
+  ],
+  "opset_version": 22
 }

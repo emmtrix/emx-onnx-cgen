@@ -6,5 +6,6 @@
     "Exp",
     "Mul",
     "Sub"
-  ]
+  ],
+  "opset_version": 6
 }

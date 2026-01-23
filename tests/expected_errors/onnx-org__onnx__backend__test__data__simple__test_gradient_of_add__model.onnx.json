@@ -4,5 +4,6 @@
   "operators": [
     "Add",
     "ai.onnx.preview.training::Gradient"
-  ]
+  ],
+  "opset_version": 12
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Resize",
     "Constant"
-  ]
+  ],
+  "opset_version": 12
 }

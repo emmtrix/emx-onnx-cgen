@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/test_data_set_0",
   "operators": [
     "Conv"
-  ]
+  ],
+  "opset_version": 6
 }

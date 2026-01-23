@@ -13,5 +13,6 @@
     "Sub",
     "Add",
     "Sqrt"
-  ]
+  ],
+  "opset_version": 21
 }

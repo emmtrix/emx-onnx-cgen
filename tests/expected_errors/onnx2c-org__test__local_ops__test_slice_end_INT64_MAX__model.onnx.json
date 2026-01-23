@@ -4,5 +4,6 @@
   "operators": [
     "Slice",
     "Constant"
-  ]
+  ],
+  "opset_version": 12
 }

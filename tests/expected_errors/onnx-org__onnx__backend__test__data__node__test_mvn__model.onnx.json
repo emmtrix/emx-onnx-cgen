@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mvn/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mvn/test_data_set_0",
   "operators": [
     "MeanVarianceNormalization"
-  ]
+  ],
+  "opset_version": 13
 }

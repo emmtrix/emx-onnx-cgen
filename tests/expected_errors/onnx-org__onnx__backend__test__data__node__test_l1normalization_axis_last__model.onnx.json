@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_last/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_last/test_data_set_0",
   "operators": [
     "LpNormalization"
-  ]
+  ],
+  "opset_version": 22
 }

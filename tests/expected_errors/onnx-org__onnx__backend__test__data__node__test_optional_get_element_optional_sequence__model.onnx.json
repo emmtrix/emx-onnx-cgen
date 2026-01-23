@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/test_data_set_0",
   "operators": [
     "OptionalGetElement"
-  ]
+  ],
+  "opset_version": 18
 }

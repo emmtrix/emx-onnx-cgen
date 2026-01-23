@@ -4,5 +4,6 @@
   "operators": [
     "Less",
     "Where"
-  ]
+  ],
+  "opset_version": 13
 }

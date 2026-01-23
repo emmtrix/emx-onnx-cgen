@@ -13,5 +13,6 @@
     "Add",
     "Sqrt",
     "Div"
-  ]
+  ],
+  "opset_version": 23
 }

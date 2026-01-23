@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_or_i16_4d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_or_i16_4d/test_data_set_0",
   "operators": [
     "BitwiseOr"
-  ]
+  ],
+  "opset_version": 18
 }

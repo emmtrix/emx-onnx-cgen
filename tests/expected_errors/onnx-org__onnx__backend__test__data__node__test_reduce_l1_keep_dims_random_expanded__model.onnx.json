@@ -4,5 +4,6 @@
   "operators": [
     "Abs",
     "ReduceSum"
-  ]
+  ],
+  "opset_version": 18
 }

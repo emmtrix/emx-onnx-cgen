@@ -4,5 +4,6 @@
   "operators": [
     "SequenceConstruct",
     "ConcatFromSequence"
-  ]
+  ],
+  "opset_version": 12
 }

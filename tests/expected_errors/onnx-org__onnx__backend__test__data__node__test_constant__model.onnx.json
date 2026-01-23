@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constant/model.onnx --cc /usr/bin/cc",
   "operators": [
     "Constant"
-  ]
+  ],
+  "opset_version": 25
 }

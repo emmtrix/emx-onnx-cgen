@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ReflectionPad2d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ReflectionPad2d/test_data_set_0",
   "operators": [
     "Pad"
-  ]
+  ],
+  "opset_version": 6
 }

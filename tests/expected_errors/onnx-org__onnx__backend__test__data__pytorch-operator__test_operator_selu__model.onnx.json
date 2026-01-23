@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/test_data_set_0",
   "operators": [
     "Selu"
-  ]
+  ],
+  "opset_version": 6
 }

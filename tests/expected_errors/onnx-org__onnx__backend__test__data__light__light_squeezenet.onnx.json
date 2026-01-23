@@ -10,5 +10,6 @@
     "Dropout",
     "GlobalAveragePool",
     "Softmax"
-  ]
+  ],
+  "opset_version": 9
 }

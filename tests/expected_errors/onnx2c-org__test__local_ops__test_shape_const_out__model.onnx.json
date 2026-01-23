@@ -4,5 +4,6 @@
   "operators": [
     "Shape",
     "Expand"
-  ]
+  ],
+  "opset_version": 12
 }

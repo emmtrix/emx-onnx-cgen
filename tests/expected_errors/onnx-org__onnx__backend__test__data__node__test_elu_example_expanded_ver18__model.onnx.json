@@ -9,5 +9,6 @@
     "Sub",
     "Mul",
     "Where"
-  ]
+  ],
+  "opset_version": 18
 }

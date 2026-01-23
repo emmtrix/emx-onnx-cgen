@@ -7,5 +7,6 @@
     "Abs",
     "Add",
     "Div"
-  ]
+  ],
+  "opset_version": 18
 }

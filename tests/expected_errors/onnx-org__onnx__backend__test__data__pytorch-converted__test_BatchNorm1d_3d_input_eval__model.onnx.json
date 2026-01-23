@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/test_data_set_0",
   "operators": [
     "BatchNormalization"
-  ]
+  ],
+  "opset_version": 6
 }

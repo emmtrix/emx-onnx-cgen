@@ -10,5 +10,6 @@
     "Div",
     "Range",
     "Cos"
-  ]
+  ],
+  "opset_version": 17
 }

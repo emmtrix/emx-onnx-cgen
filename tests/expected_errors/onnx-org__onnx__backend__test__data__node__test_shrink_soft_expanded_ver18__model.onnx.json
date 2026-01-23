@@ -9,5 +9,6 @@
     "Add",
     "Sub",
     "Where"
-  ]
+  ],
+  "opset_version": 18
 }

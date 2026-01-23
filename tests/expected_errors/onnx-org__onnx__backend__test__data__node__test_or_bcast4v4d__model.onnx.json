@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_or_bcast4v4d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_or_bcast4v4d/test_data_set_0",
   "operators": [
     "Or"
-  ]
+  ],
+  "opset_version": 7
 }

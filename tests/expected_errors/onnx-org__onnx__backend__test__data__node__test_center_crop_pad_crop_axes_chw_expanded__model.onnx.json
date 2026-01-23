@@ -12,5 +12,6 @@
     "Pad",
     "Add",
     "Slice"
-  ]
+  ],
+  "opset_version": 18
 }

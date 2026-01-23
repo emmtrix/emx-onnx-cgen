@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/test_data_set_0",
   "operators": [
     "ConstantOfShape"
-  ]
+  ],
+  "opset_version": 25
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Constant",
     "Gemm"
-  ]
+  ],
+  "opset_version": 6
 }

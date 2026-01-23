@@ -22,5 +22,6 @@
     "MatMul",
     "Add",
     "Softmax"
-  ]
+  ],
+  "opset_version": 23
 }

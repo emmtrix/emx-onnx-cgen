@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_pow_types_int32_float32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_pow_types_int32_float32/test_data_set_0",
   "operators": [
     "Pow"
-  ]
+  ],
+  "opset_version": 15
 }

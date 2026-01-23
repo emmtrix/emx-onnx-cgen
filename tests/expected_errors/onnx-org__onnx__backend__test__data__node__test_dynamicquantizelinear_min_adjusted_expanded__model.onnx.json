@@ -14,5 +14,6 @@
     "Cast",
     "Identity",
     "QuantizeLinear"
-  ]
+  ],
+  "opset_version": 11
 }

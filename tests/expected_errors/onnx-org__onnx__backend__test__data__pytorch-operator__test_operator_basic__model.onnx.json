@@ -7,5 +7,6 @@
     "Tanh",
     "Sigmoid",
     "Neg"
-  ]
+  ],
+  "opset_version": 6
 }

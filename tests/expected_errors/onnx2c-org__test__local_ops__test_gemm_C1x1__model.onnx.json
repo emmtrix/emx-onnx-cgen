@@ -3,5 +3,6 @@
   "command_line": "verify onnx2c-org/test/local_ops/test_gemm_C1x1/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_gemm_C1x1/test_data_set_0",
   "operators": [
     "Gemm"
-  ]
+  ],
+  "opset_version": 12
 }

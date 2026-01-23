@@ -9,5 +9,6 @@
     "Mul",
     "Sum",
     "Tanh"
-  ]
+  ],
+  "opset_version": 20
 }

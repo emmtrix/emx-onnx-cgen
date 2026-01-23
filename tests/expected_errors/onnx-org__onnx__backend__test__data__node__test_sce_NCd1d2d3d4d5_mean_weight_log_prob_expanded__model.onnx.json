@@ -9,5 +9,6 @@
     "Shape",
     "Identity",
     "NegativeLogLikelihoodLoss"
-  ]
+  ],
+  "opset_version": 13
 }

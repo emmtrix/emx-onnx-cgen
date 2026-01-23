@@ -7,5 +7,6 @@
     "ReduceSum",
     "Log",
     "CastLike"
-  ]
+  ],
+  "opset_version": 18
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/test_data_set_0",
   "operators": [
     "SequenceMap"
-  ]
+  ],
+  "opset_version": 17
 }

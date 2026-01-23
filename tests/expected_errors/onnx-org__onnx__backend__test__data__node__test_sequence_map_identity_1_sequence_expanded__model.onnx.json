@@ -6,5 +6,6 @@
     "Constant",
     "SequenceEmpty",
     "Loop"
-  ]
+  ],
+  "opset_version": 17
 }

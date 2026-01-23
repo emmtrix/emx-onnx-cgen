@@ -8,5 +8,6 @@
     "LogSoftmax",
     "Shape",
     "NegativeLogLikelihoodLoss"
-  ]
+  ],
+  "opset_version": 13
 }
