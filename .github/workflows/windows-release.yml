@@ -27,7 +27,7 @@ jobs:
 
       - name: Build PyInstaller bundle
         run: |
-          pyinstaller --clean --noconfirm --onedir --name emx-onnx-cgen --paths src src/emx_onnx_cgen/cli.py
+          bash tools/pyinstaller_build.sh
 
       - name: Zip bundle
         run: |
