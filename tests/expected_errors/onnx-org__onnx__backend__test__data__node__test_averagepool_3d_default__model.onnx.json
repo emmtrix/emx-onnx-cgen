@@ -1,8 +1,9 @@
 {
-  "error": "AveragePool expects 2D kernel_shape",
+  "error": "Out of tolerance (max ULP 28928)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "90f6b9b1a1ad84a2bdb0cc18afe746562a081506f76441f6e22eb93816eae047"
 }

@@ -463,6 +463,13 @@ class AveragePoolOp(RenderableOpBase):
     pad_right: int
     count_include_pad: bool
     dtype: ScalarType
+    spatial_rank: int = 2
+    in_d: int = 1
+    out_d: int = 1
+    kernel_d: int = 1
+    stride_d: int = 1
+    pad_front: int = 0
+    pad_back: int = 0
 
 @dataclass(frozen=True)
 class LpPoolOp(RenderableOpBase):
