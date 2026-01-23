@@ -24,11 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
           python -m pip install pyinstaller
-          python -m pip install .
 
       - name: Build PyInstaller bundle
         run: |
-          pyinstaller --clean --noconfirm --onedir --name emx-onnx-cgen -m emx_onnx_cgen.cli
+          pyinstaller --clean --noconfirm --onedir --name emx-onnx-cgen --paths src -m emx_onnx_cgen.cli
 
       - name: Zip bundle
         run: |
