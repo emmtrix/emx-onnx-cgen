@@ -25,8 +25,7 @@ class ReduceOp(ReduceOpBase):
     dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
-        dtype = ctx.dtype(self.output)
-        object.__setattr__(self, "dtype", dtype)
+        ctx.dtype(self.output)
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
@@ -39,9 +38,7 @@ class ReduceOp(ReduceOpBase):
             axes = self.axes
             output_shape = ctx.shape(self.output)
         ctx.set_shape(self.output, output_shape)
-        object.__setattr__(self, "input_shape", input_shape)
-        object.__setattr__(self, "output_shape", output_shape)
-        object.__setattr__(self, "axes", axes)
+        ctx.set_derived(self, "axes", axes)
 
 
 @dataclass(frozen=True)
@@ -58,8 +55,8 @@ class ArgReduceOp(ReduceOpBase):
     output_dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
-        object.__setattr__(self, "input_dtype", ctx.dtype(self.input0))
-        object.__setattr__(self, "output_dtype", ctx.dtype(self.output))
+        ctx.dtype(self.input0)
+        ctx.dtype(self.output)
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
@@ -68,9 +65,7 @@ class ArgReduceOp(ReduceOpBase):
             input_shape, axes, keepdims=self.keepdims
         )
         ctx.set_shape(self.output, output_shape)
-        object.__setattr__(self, "input_shape", input_shape)
-        object.__setattr__(self, "output_shape", output_shape)
-        object.__setattr__(self, "axis", axes[0])
+        ctx.set_derived(self, "axis", axes[0])
 
 
 @dataclass(frozen=True)
@@ -89,14 +84,12 @@ class TopKOp(ReduceOpBase):
     output_indices_dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
-        object.__setattr__(self, "input_dtype", ctx.dtype(self.input0))
-        object.__setattr__(self, "output_values_dtype", ctx.dtype(self.output_values))
-        object.__setattr__(self, "output_indices_dtype", ctx.dtype(self.output_indices))
+        ctx.dtype(self.input0)
+        ctx.dtype(self.output_values)
+        ctx.dtype(self.output_indices)
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         output_shape = ctx.shape(self.output_values)
-        object.__setattr__(self, "input_shape", input_shape)
-        object.__setattr__(self, "output_shape", output_shape)
         ctx.set_shape(self.output_values, output_shape)
         ctx.set_shape(self.output_indices, ctx.shape(self.output_indices))

@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
-from ...errors import UnsupportedOpError
 from ...ops import COMPARE_FUNCTIONS, OperatorKind
 from ..op_base import ElementwiseOpBase
 from ..op_context import OpContext
@@ -30,27 +29,8 @@ class BinaryOp(ElementwiseOpBase):
     def _elementwise_output(self) -> str:
         return self.output
 
-    def _store_elementwise_dtypes(
-        self,
-        input_dtypes: tuple[ScalarType, ...],
-        output_dtype: ScalarType,
-    ) -> None:
-        input_dtype = input_dtypes[0]
-        if self.function in COMPARE_FUNCTIONS and output_dtype != ScalarType.BOOL:
-            raise UnsupportedOpError(
-                f"{self.function.value} expects bool output"
-            )
-        object.__setattr__(self, "input_dtype", input_dtype)
-        object.__setattr__(self, "dtype", output_dtype)
-
-    def _store_elementwise_shapes(
-        self,
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        object.__setattr__(self, "input0_shape", input_shapes[0])
-        object.__setattr__(self, "input1_shape", input_shapes[1])
-        object.__setattr__(self, "shape", output_shape)
+    def _elementwise_compare(self) -> bool:
+        return self.function in COMPARE_FUNCTIONS
 
 
 @dataclass(frozen=True)
@@ -69,20 +49,8 @@ class MultiInputBinaryOp(ElementwiseOpBase):
     def _elementwise_output(self) -> str:
         return self.output
 
-    def _store_elementwise_dtypes(
-        self,
-        input_dtypes: tuple[ScalarType, ...],
-        output_dtype: ScalarType,
-    ) -> None:
-        object.__setattr__(self, "input_dtype", input_dtypes[0])
-        object.__setattr__(self, "dtype", output_dtype)
-
-    def _store_elementwise_shapes(
-        self,
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        object.__setattr__(self, "shape", output_shape)
+    def _elementwise_compare(self) -> bool:
+        return self.function in COMPARE_FUNCTIONS
 
 
 @dataclass(frozen=True)
@@ -103,37 +71,8 @@ class WhereOp(ElementwiseOpBase):
     def _elementwise_output(self) -> str:
         return self.output
 
-    def validate(self, ctx: OpContext) -> None:
-        condition_dtype = ctx.dtype(self.condition)
-        if condition_dtype != ScalarType.BOOL:
-            raise UnsupportedOpError(
-                f"Where expects bool condition, got {condition_dtype.onnx_name}"
-            )
-        x_dtype = ctx.dtype(self.input_x)
-        y_dtype = ctx.dtype(self.input_y)
-        output_dtype = ctx.dtype(self.output)
-        if x_dtype != y_dtype or output_dtype != x_dtype:
-            raise UnsupportedOpError(
-                "Where expects matching input/output dtypes, "
-                f"got {x_dtype.onnx_name}, {y_dtype.onnx_name}, {output_dtype.onnx_name}"
-            )
-
-    def _store_elementwise_dtypes(
-        self,
-        input_dtypes: tuple[ScalarType, ...],
-        output_dtype: ScalarType,
-    ) -> None:
-        object.__setattr__(self, "dtype", output_dtype)
-
-    def _store_elementwise_shapes(
-        self,
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        object.__setattr__(self, "condition_shape", input_shapes[0])
-        object.__setattr__(self, "x_shape", input_shapes[1])
-        object.__setattr__(self, "y_shape", input_shapes[2])
-        object.__setattr__(self, "output_shape", output_shape)
+    def _elementwise_condition_inputs(self) -> tuple[str, ...]:
+        return (self.condition,)
 
 
 @dataclass(frozen=True)
@@ -152,20 +91,12 @@ class UnaryOp(ElementwiseOpBase):
     def _elementwise_output(self) -> str:
         return self.output
 
-    def _store_elementwise_dtypes(
-        self,
-        input_dtypes: tuple[ScalarType, ...],
-        output_dtype: ScalarType,
-    ) -> None:
-        object.__setattr__(self, "input_dtype", input_dtypes[0])
-        object.__setattr__(self, "dtype", output_dtype)
+    def validate(self, ctx: OpContext) -> None:
+        super().validate(ctx)
+        return None
 
-    def _store_elementwise_shapes(
-        self,
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        object.__setattr__(self, "shape", output_shape)
+    def _elementwise_compare(self) -> bool:
+        return self.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}
 
 
 @dataclass(frozen=True)
@@ -192,49 +123,8 @@ class ClipOp(ElementwiseOpBase):
         return self.output
 
     def validate(self, ctx: OpContext) -> None:
-        input_dtype = ctx.dtype(self.input0)
-        output_dtype = ctx.dtype(self.output)
-        if input_dtype != output_dtype:
-            raise UnsupportedOpError(
-                "Clip expects matching input/output dtypes, "
-                f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
-            )
-        if self.input_min is not None:
-            min_dtype = ctx.dtype(self.input_min)
-            if min_dtype != input_dtype:
-                raise UnsupportedOpError(
-                    "Clip min dtype must match input dtype, "
-                    f"got {min_dtype.onnx_name}"
-                )
-        if self.input_max is not None:
-            max_dtype = ctx.dtype(self.input_max)
-            if max_dtype != input_dtype:
-                raise UnsupportedOpError(
-                    "Clip max dtype must match input dtype, "
-                    f"got {max_dtype.onnx_name}"
-                )
-
-    def _store_elementwise_dtypes(
-        self,
-        input_dtypes: tuple[ScalarType, ...],
-        output_dtype: ScalarType,
-    ) -> None:
-        object.__setattr__(self, "dtype", output_dtype)
-
-    def _store_elementwise_shapes(
-        self,
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        object.__setattr__(self, "input_shape", input_shapes[0])
-        min_shape = input_shapes[1] if self.input_min is not None else None
-        max_shape = None
-        if self.input_max is not None:
-            index = 2 if self.input_min is not None else 1
-            max_shape = input_shapes[index]
-        object.__setattr__(self, "min_shape", min_shape)
-        object.__setattr__(self, "max_shape", max_shape)
-        object.__setattr__(self, "output_shape", output_shape)
+        super().validate(ctx)
+        return None
 
 
 @dataclass(frozen=True)
@@ -251,17 +141,6 @@ class IdentityOp(ElementwiseOpBase):
     def _elementwise_output(self) -> str:
         return self.output
 
-    def _store_elementwise_dtypes(
-        self,
-        input_dtypes: tuple[ScalarType, ...],
-        output_dtype: ScalarType,
-    ) -> None:
-        object.__setattr__(self, "dtype", output_dtype)
-        object.__setattr__(self, "input_dtype", input_dtypes[0])
-
-    def _store_elementwise_shapes(
-        self,
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
-        object.__setattr__(self, "shape", output_shape)
+    def validate(self, ctx: OpContext) -> None:
+        super().validate(ctx)
+        return None

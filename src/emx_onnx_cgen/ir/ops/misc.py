@@ -18,13 +18,12 @@ class CastOp(RenderableOpBase):
     dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
-        object.__setattr__(self, "input_dtype", ctx.dtype(self.input0))
-        object.__setattr__(self, "dtype", ctx.dtype(self.output))
+        ctx.dtype(self.input0)
+        ctx.dtype(self.output)
 
     def infer_shapes(self, ctx: OpContext) -> None:
         shape = ctx.shape(self.input0)
         ctx.set_shape(self.output, shape)
-        object.__setattr__(self, "shape", shape)
 
 @dataclass(frozen=True)
 class QuantizeLinearOp(RenderableOpBase):
@@ -131,24 +130,24 @@ class TransposeOp(RenderableOpBase):
             )
         output_shape = tuple(input_shape[axis] for axis in self.perm)
         ctx.set_shape(self.output, output_shape)
-        object.__setattr__(self, "input_shape", input_shape)
-        object.__setattr__(self, "output_shape", output_shape)
 
 @dataclass(frozen=True)
 class ReshapeOp(RenderableOpBase):
     input0: str
     output: str
     input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
+    output_shape: tuple[int, ...] | None
     dtype: ScalarType
     input_dtype: ScalarType
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
-        output_shape = self.output_shape or ctx.shape(self.output)
+        output_shape = (
+            self.output_shape
+            if self.output_shape is not None
+            else ctx.shape(self.output)
+        )
         ctx.set_shape(self.output, output_shape)
-        object.__setattr__(self, "input_shape", input_shape)
-        object.__setattr__(self, "output_shape", output_shape)
 
 @dataclass(frozen=True)
 class EyeLikeOp(RenderableOpBase):

@@ -191,6 +191,7 @@ class Compiler:
             ops=tuple(ops),
             node_infos=tuple(node_infos),
             header=header,
+            op_context=op_ctx,
         )
 
     def _resolve_testbench_inputs(
