@@ -1049,18 +1049,6 @@ class CEmitter:
                 input0=name_map.get(op.input0, op.input0),
                 input1=name_map.get(op.input1, op.input1),
                 output=name_map.get(op.output, op.output),
-                input0_shape=op.input0_shape,
-                input1_shape=op.input1_shape,
-                output_shape=op.output_shape,
-                batch_shape=op.batch_shape,
-                input0_batch_shape=op.input0_batch_shape,
-                input1_batch_shape=op.input1_batch_shape,
-                m=op.m,
-                n=op.n,
-                k=op.k,
-                left_vector=op.left_vector,
-                right_vector=op.right_vector,
-                dtype=op.dtype,
             )
         if isinstance(op, EinsumOp):
             return EinsumOp(
@@ -1078,15 +1066,10 @@ class CEmitter:
                 input_b=name_map.get(op.input_b, op.input_b),
                 input_c=self._map_optional_name(name_map, op.input_c),
                 output=name_map.get(op.output, op.output),
-                m=op.m,
-                n=op.n,
-                k=op.k,
                 trans_a=op.trans_a,
                 trans_b=op.trans_b,
                 alpha=op.alpha,
                 beta=op.beta,
-                c_shape=op.c_shape,
-                dtype=op.dtype,
             )
         if isinstance(op, AttentionOp):
             return AttentionOp(
@@ -3894,18 +3877,6 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 input1=temp_map.get(op.input1, op.input1),
                 output=temp_map.get(op.output, op.output),
-                input0_shape=op.input0_shape,
-                input1_shape=op.input1_shape,
-                output_shape=op.output_shape,
-                batch_shape=op.batch_shape,
-                input0_batch_shape=op.input0_batch_shape,
-                input1_batch_shape=op.input1_batch_shape,
-                m=op.m,
-                n=op.n,
-                k=op.k,
-                left_vector=op.left_vector,
-                right_vector=op.right_vector,
-                dtype=op.dtype,
             )
         if isinstance(op, EinsumOp):
             return EinsumOp(
@@ -3992,15 +3963,10 @@ class CEmitter:
                     else None
                 ),
                 output=temp_map.get(op.output, op.output),
-                m=op.m,
-                n=op.n,
-                k=op.k,
                 trans_a=op.trans_a,
                 trans_b=op.trans_b,
                 alpha=op.alpha,
                 beta=op.beta,
-                c_shape=op.c_shape,
-                dtype=op.dtype,
             )
         if isinstance(op, AttentionOp):
             return AttentionOp(
@@ -5404,37 +5370,49 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_shape = CEmitter._codegen_shape(self._ctx_shape(op.output))
             output_loop_vars = CEmitter._loop_vars(output_shape)
             output_index_expr = f"{params['output']}" + "".join(
                 f"[{var}]" for var in output_loop_vars
             )
-            batch_rank = len(op.batch_shape)
+            batch_shape = self._derived(op, "batch_shape")
+            batch_rank = len(batch_shape)
             batch_vars = output_loop_vars[:batch_rank]
-            if op.left_vector and op.right_vector:
+            left_vector = bool(self._derived(op, "left_vector"))
+            right_vector = bool(self._derived(op, "right_vector"))
+            if left_vector and right_vector:
                 row_var = None
                 col_var = None
-            elif op.left_vector:
+            elif left_vector:
                 row_var = None
                 col_var = output_loop_vars[-1]
-            elif op.right_vector:
+            elif right_vector:
                 row_var = output_loop_vars[-1]
                 col_var = None
             else:
                 row_var = output_loop_vars[-2]
                 col_var = output_loop_vars[-1]
+            input0_shape = self._ctx_shape(op.input0)
+            input1_shape = self._ctx_shape(op.input1)
+            input0_batch_shape = self._derived(op, "input0_batch_shape")
+            input1_batch_shape = self._derived(op, "input1_batch_shape")
             input0_index_expr, input1_index_expr = CEmitter._matmul_index_exprs(
-                op,
                 batch_vars,
                 row_var,
                 col_var,
                 batch_rank,
                 input0=params["input0"],
                 input1=params["input1"],
+                left_vector=left_vector,
+                right_vector=right_vector,
+                input0_shape=input0_shape,
+                input1_shape=input1_shape,
+                input0_batch_shape=input0_batch_shape,
+                input1_batch_shape=input1_batch_shape,
             )
-            input0_suffix = self._param_array_suffix(op.input0_shape)
-            input1_suffix = self._param_array_suffix(op.input1_shape)
-            output_suffix = self._param_array_suffix(op.output_shape)
+            input0_suffix = self._param_array_suffix(input0_shape)
+            input1_suffix = self._param_array_suffix(input1_shape)
+            output_suffix = self._param_array_suffix(self._ctx_shape(op.output))
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], c_type, input0_suffix, True),
@@ -5442,6 +5420,9 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            m = int(self._derived(op, "m"))
+            n = int(self._derived(op, "n"))
+            k = int(self._derived(op, "k"))
             rendered = matmul_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -5460,9 +5441,9 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 input0_index_expr=input0_index_expr,
                 input1_index_expr=input1_index_expr,
-                m=op.m,
-                n=op.n,
-                k=op.k,
+                m=m,
+                n=n,
+                k=k,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EinsumOp):
@@ -5605,14 +5586,20 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            input_a_shape = (op.k, op.m) if op.trans_a else (op.m, op.k)
-            input_b_shape = (op.n, op.k) if op.trans_b else (op.k, op.n)
+            m = int(self._derived(op, "m"))
+            n = int(self._derived(op, "n"))
+            k = int(self._derived(op, "k"))
+            trans_a = bool(self._derived(op, "trans_a"))
+            trans_b = bool(self._derived(op, "trans_b"))
+            c_shape = self._derived(op, "c_shape")
+            input_a_shape = (k, m) if trans_a else (m, k)
+            input_b_shape = (n, k) if trans_b else (k, n)
             input_a_suffix = self._param_array_suffix(input_a_shape)
             input_b_suffix = self._param_array_suffix(input_b_shape)
-            output_suffix = self._param_array_suffix((op.m, op.n))
+            output_suffix = self._param_array_suffix((m, n))
             c_suffix = (
-                self._param_array_suffix(op.c_shape)
-                if op.c_shape is not None
+                self._param_array_suffix(c_shape)
+                if c_shape is not None
                 else ""
             )
             param_decls = self._build_param_decls(
@@ -5630,24 +5617,29 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
-            alpha_literal = CEmitter._format_literal(op.dtype, op.alpha)
-            beta_literal = CEmitter._format_literal(op.dtype, op.beta)
-            if op.c_shape is None:
+            dtype = self._ctx_dtype(op.output)
+            alpha_literal = CEmitter._format_literal(
+                dtype, self._derived(op, "alpha")
+            )
+            beta_literal = CEmitter._format_literal(
+                dtype, self._derived(op, "beta")
+            )
+            if c_shape is None:
                 c_rank = 0
                 c_dim0 = 0
                 c_dim1 = 0
-            elif len(op.c_shape) == 0:
+            elif len(c_shape) == 0:
                 c_rank = 0
                 c_dim0 = 0
                 c_dim1 = 0
-            elif len(op.c_shape) == 1:
+            elif len(c_shape) == 1:
                 c_rank = 1
                 c_dim0 = 1
-                c_dim1 = op.c_shape[0]
+                c_dim1 = c_shape[0]
             else:
                 c_rank = 2
-                c_dim0 = op.c_shape[0]
-                c_dim1 = op.c_shape[1]
+                c_dim0 = c_shape[0]
+                c_dim1 = c_shape[1]
             rendered = gemm_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -5656,21 +5648,21 @@ class CEmitter:
                 input_c=params["input_c"],
                 output=params["output"],
                 params=param_decls,
-                c_type=c_type,
-                acc_type=c_type,
+                c_type=dtype.c_type,
+                acc_type=dtype.c_type,
                 zero_literal=zero_literal,
                 alpha_literal=alpha_literal,
                 beta_literal=beta_literal,
-                trans_a=int(op.trans_a),
-                trans_b=int(op.trans_b),
-                m=op.m,
-                n=op.n,
-                k=op.k,
+                trans_a=int(trans_a),
+                trans_b=int(trans_b),
+                m=m,
+                n=n,
+                k=k,
                 input_a_suffix=input_a_suffix,
                 input_b_suffix=input_b_suffix,
                 output_suffix=output_suffix,
                 c_suffix=(
-                    c_suffix if op.c_shape is not None else None
+                    c_suffix if c_shape is not None else None
                 ),
                 c_rank=c_rank,
                 c_dim0=c_dim0,
@@ -9498,13 +9490,18 @@ class CEmitter:
                 row_var = output_loop_vars[-2]
                 col_var = output_loop_vars[-1]
             input0_index_expr, input1_index_expr = CEmitter._matmul_index_exprs(
-                op,
                 batch_vars,
                 row_var,
                 col_var,
                 batch_rank,
                 input0=params["input0"],
                 input1=params["input1"],
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
             )
             input0_suffix = self._param_array_suffix(op.input0_shape)
             input1_suffix = self._param_array_suffix(op.input1_shape)
@@ -10483,11 +10480,11 @@ class CEmitter:
         if isinstance(op, QLinearMatMulOp):
             return op.output_shape
         if isinstance(op, MatMulOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, EinsumOp):
             return op.output_shape
         if isinstance(op, GemmOp):
-            return (op.m, op.n)
+            return self._ctx_shape(op.output)
         if isinstance(op, ConvOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, ConvTransposeOp):
@@ -10663,6 +10660,8 @@ class CEmitter:
                 SoftmaxOp,
                 LogSoftmaxOp,
                 HardmaxOp,
+                MatMulOp,
+                GemmOp,
                 GatherOp,
                 TransposeOp,
                 ReshapeOp,
@@ -10886,14 +10885,19 @@ class CEmitter:
 
     @staticmethod
     def _matmul_index_exprs(
-        op: MatMulOp,
         batch_vars: tuple[str, ...],
         row_var: str | None,
         col_var: str | None,
         batch_rank: int,
         *,
-        input0: str | None = None,
-        input1: str | None = None,
+        input0: str,
+        input1: str,
+        left_vector: bool,
+        right_vector: bool,
+        input0_shape: tuple[int, ...],
+        input1_shape: tuple[int, ...],
+        input0_batch_shape: tuple[int, ...],
+        input1_batch_shape: tuple[int, ...],
     ) -> tuple[str, str]:
         def batch_indices(
             batch_shape: tuple[int, ...], actual_rank: int
@@ -10908,28 +10912,28 @@ class CEmitter:
                 indices.append("0" if dim == 1 else var)
             return indices
 
-        if op.left_vector:
+        if left_vector:
             input0_indices = ["k"]
         else:
-            input0_batch_rank = len(op.input0_shape) - 2
+            input0_batch_rank = len(input0_shape) - 2
             input0_indices = batch_indices(
-                op.input0_batch_shape, input0_batch_rank
+                input0_batch_shape, input0_batch_rank
             )
             input0_indices.append(row_var if row_var is not None else "0")
             input0_indices.append("k")
-        if op.right_vector:
+        if right_vector:
             input1_indices = ["k"]
         else:
-            input1_batch_rank = len(op.input1_shape) - 2
+            input1_batch_rank = len(input1_shape) - 2
             input1_indices = batch_indices(
-                op.input1_batch_shape, input1_batch_rank
+                input1_batch_shape, input1_batch_rank
             )
             input1_indices.append("k")
             input1_indices.append(col_var if col_var is not None else "0")
-        input0_index_expr = f"{input0 or op.input0}" + "".join(
+        input0_index_expr = f"{input0}" + "".join(
             f"[{index}]" for index in input0_indices
         )
-        input1_index_expr = f"{input1 or op.input1}" + "".join(
+        input1_index_expr = f"{input1}" + "".join(
             f"[{index}]" for index in input1_indices
         )
         return input0_index_expr, input1_index_expr
