@@ -71,7 +71,7 @@ When making architectural decisions, prefer clean and maintainable design even i
 ### Unit tests
 
 ```bash
-pytest -n auto -q
+pytest -n auto -q --maxfail=10
 ```
 
 - When reporting executed tests, include the test duration (if known) in your feedback.
@@ -98,7 +98,7 @@ Golden tests compare generated code against reference files. To refresh referenc
 after intentional changes, set `UPDATE_REFS=1` when running tests:
 
 ```bash
-UPDATE_REFS=1 pytest -n auto -q
+UPDATE_REFS=1 pytest -n auto -q --maxfail=10
 ```
 
 ### Test execution policy
@@ -110,10 +110,10 @@ required for every change:
 
 * Run tests only when files under `src/` or `tests/` change.
 * Prefer targeted tests over `pytest -q` for routine validation.
-* `pytest -n auto -q` alone takes over 5 minutes; avoid running general tests without `-n auto`.
+* `pytest -n auto -q --maxfail=10` alone takes over 5 minutes; avoid running general tests without `-n auto`.
 
 ```bash
-UPDATE_REFS=1 pytest -n auto -q
+UPDATE_REFS=1 pytest -n auto -q --maxfail=10
 ```
 
 ## Compiler Pipeline (conceptual)
