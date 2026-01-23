@@ -295,10 +295,9 @@ class SoftmaxOp(RenderableOpBase):
             else 1
         )
         ctx.set_shape(self.output, input_shape)
-        object.__setattr__(self, "shape", input_shape)
-        object.__setattr__(self, "outer", outer)
-        object.__setattr__(self, "axis_size", axis_size)
-        object.__setattr__(self, "inner", inner)
+        ctx.set_derived(self, "outer", outer)
+        ctx.set_derived(self, "axis_size", axis_size)
+        ctx.set_derived(self, "inner", inner)
 
 @dataclass(frozen=True)
 class LogSoftmaxOp(RenderableOpBase):
@@ -328,10 +327,9 @@ class LogSoftmaxOp(RenderableOpBase):
             else 1
         )
         ctx.set_shape(self.output, input_shape)
-        object.__setattr__(self, "shape", input_shape)
-        object.__setattr__(self, "outer", outer)
-        object.__setattr__(self, "axis_size", axis_size)
-        object.__setattr__(self, "inner", inner)
+        ctx.set_derived(self, "outer", outer)
+        ctx.set_derived(self, "axis_size", axis_size)
+        ctx.set_derived(self, "inner", inner)
 
 @dataclass(frozen=True)
 class HardmaxOp(RenderableOpBase):
@@ -361,10 +359,9 @@ class HardmaxOp(RenderableOpBase):
             else 1
         )
         ctx.set_shape(self.output, input_shape)
-        object.__setattr__(self, "shape", input_shape)
-        object.__setattr__(self, "outer", outer)
-        object.__setattr__(self, "axis_size", axis_size)
-        object.__setattr__(self, "inner", inner)
+        ctx.set_derived(self, "outer", outer)
+        ctx.set_derived(self, "axis_size", axis_size)
+        ctx.set_derived(self, "inner", inner)
 
 @dataclass(frozen=True)
 class NegativeLogLikelihoodLossOp(RenderableOpBase):

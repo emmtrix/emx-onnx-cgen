@@ -6,7 +6,7 @@ from typing import Protocol
 
 from shared.scalar_types import ScalarType
 
-from ..errors import ShapeInferenceError
+from ..errors import ShapeInferenceError, UnsupportedOpError
 from .op_context import OpContext
 
 
@@ -21,6 +21,7 @@ class EmitContext:
 
 
 class OpBase(ABC):
+    """Ops should not mutate themselves; store derived values in OpContext."""
     inputs: tuple[str, ...]
     outputs: tuple[str, ...]
 
@@ -51,34 +52,62 @@ class RenderableOpBase(OpBase):
 
 
 class ElementwiseOpBase(RenderableOpBase):
+    """Elementwise ops should validate against OpContext and store no derived state."""
+
     def _elementwise_inputs(self) -> tuple[str, ...]:
         raise NotImplementedError
 
     def _elementwise_output(self) -> str:
         raise NotImplementedError
 
-    def _store_elementwise_dtypes(
-        self,
-        input_dtypes: tuple[ScalarType, ...],
-        output_dtype: ScalarType,
-    ) -> None:
-        return None
+    def _elementwise_condition_inputs(self) -> tuple[str, ...]:
+        return ()
 
-    def _store_elementwise_shapes(
-        self,
-        input_shapes: tuple[tuple[int, ...], ...],
-        output_shape: tuple[int, ...],
-    ) -> None:
+    def _elementwise_compare(self) -> bool:
+        return False
+
+    def _elementwise_data_inputs(self) -> tuple[str, ...]:
+        inputs = self._elementwise_inputs()
+        condition_inputs = set(self._elementwise_condition_inputs())
+        return tuple(name for name in inputs if name not in condition_inputs)
+
+    def validate(self, ctx: OpContext) -> None:
+        condition_inputs = self._elementwise_condition_inputs()
+        for name in condition_inputs:
+            dtype = ctx.dtype(name)
+            if dtype != ScalarType.BOOL:
+                raise UnsupportedOpError(
+                    f"{self.kind} expects bool condition, got {dtype.onnx_name}"
+                )
+        data_inputs = self._elementwise_data_inputs()
+        if not data_inputs:
+            return None
+        data_dtypes = tuple(ctx.dtype(name) for name in data_inputs)
+        if any(dtype != data_dtypes[0] for dtype in data_dtypes[1:]):
+            dtype_names = ", ".join(dtype.onnx_name for dtype in data_dtypes)
+            raise UnsupportedOpError(
+                f"{self.kind} expects matching input dtypes, got {dtype_names}"
+            )
+        output_dtype = ctx.dtype(self._elementwise_output())
+        if self._elementwise_compare():
+            if output_dtype != ScalarType.BOOL:
+                raise UnsupportedOpError(
+                    f"{self.kind} expects bool output, got {output_dtype.onnx_name}"
+                )
+            return None
+        if output_dtype != data_dtypes[0]:
+            raise UnsupportedOpError(
+                f"{self.kind} expects output dtype {data_dtypes[0].onnx_name}, "
+                f"got {output_dtype.onnx_name}"
+            )
         return None
 
     def infer_types(self, ctx: OpContext) -> None:
         input_names = self._elementwise_inputs()
         output_name = self._elementwise_output()
-        input_dtypes = tuple(ctx.dtype(name) for name in input_names)
-        # Elementwise ops must read the output dtype from the graph context.
-        # Do not infer output dtypes from inputs here.
-        output_dtype = ctx.dtype(output_name)
-        self._store_elementwise_dtypes(input_dtypes, output_dtype)
+        for name in input_names:
+            ctx.dtype(name)
+        ctx.dtype(output_name)
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_names = self._elementwise_inputs()
@@ -89,7 +118,7 @@ class ElementwiseOpBase(RenderableOpBase):
         else:
             output_shape = BroadcastingOpBase.broadcast_shapes(*input_shapes)
         ctx.set_shape(output_name, output_shape)
-        self._store_elementwise_shapes(input_shapes, output_shape)
+        return None
 
 
 class ReduceOpBase(RenderableOpBase):
