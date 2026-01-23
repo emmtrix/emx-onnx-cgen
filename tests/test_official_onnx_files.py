@@ -27,6 +27,7 @@ class OnnxFileExpectation:
     error: str
     command_line: str = ""
     operators: list[str] | None = None
+    opset_version: int | None = None
 
 
 def _repo_root() -> Path:
@@ -126,10 +127,12 @@ def _read_expectation_file(
     error = ""
     command_line = ""
     operators: list[str] | None = None
+    opset_version: int | None = None
     if isinstance(data, dict):
         error = data.get("error", "")
         command_line = data.get("command_line", "")
         operators = data.get("operators")
+        opset_version = data.get("opset_version")
     elif isinstance(data, list):
         if data and isinstance(data[0], str) and data[0].endswith(".onnx"):
             if len(data) >= 2:
@@ -148,6 +151,7 @@ def _read_expectation_file(
         error=error,
         command_line=command_line,
         operators=operators,
+        opset_version=opset_version,
     )
 
 
@@ -188,6 +192,8 @@ def _write_expectation_file(
     }
     if expectation.operators is not None:
         payload["operators"] = expectation.operators
+    if expectation.opset_version is not None:
+        payload["opset_version"] = expectation.opset_version
     expectation_path.write_text(
         json.dumps(
             payload,
@@ -361,6 +367,7 @@ def test_official_onnx_expected_errors(
         error=actual_error,
         command_line=cli_result.command_line,
         operators=cli_result.operators,
+        opset_version=cli_result.opset_version,
     )
     if os.getenv("UPDATE_REFS"):
         _write_expectation_file(
@@ -429,6 +436,7 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         error=actual_error,
         command_line=cli_result.command_line,
         operators=cli_result.operators,
+        opset_version=cli_result.opset_version,
     )
     if os.getenv("UPDATE_REFS"):
         _write_expectation_file(
