@@ -3,21 +3,20 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Missing output 1 in testbench data | 38 | ██████████████████████████████ |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 33 | ██████████████████████████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ████████████████████████████ |
+| Missing output 3 in testbench data | 33 | ██████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
-| Test data input count does not match model inputs: 1 vs 3. | 27 | █████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████ |
+| Missing output 2 in testbench data | 21 | █████████████████ |
 | Out of tolerance | 20 | ████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
-| Test data input count does not match model inputs: 1 vs 2. | 17 | █████████████ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | █████████████ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | █████████████ |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | █████████████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | █████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███████████ |
-| Missing output 2 in testbench data | 12 | █████████ |
 | Unsupported op ImageDecoder | 9 | ███████ |
 | '*' object has no attribute '*' | 8 | ██████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
@@ -25,6 +24,7 @@
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | AveragePool has unsupported attributes | 6 | █████ |
 | Missing output 4 in testbench data | 6 | █████ |
+| Missing output 5 in testbench data | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
 | Unsupported op CenterCropPad | 6 | █████ |
 | Unsupported op DFT | 6 | █████ |
@@ -34,12 +34,10 @@
 | AveragePool expects 2D kernel_shape | 5 | ████ |
 | Iteration of zero-sized operands is not enabled | 5 | ████ |
 | Or expects identical input/output shapes | 5 | ████ |
-| Test data input count does not match model inputs: 1 vs 5. | 5 | ████ |
 | Unsupported op Col2Im | 5 | ████ |
 | Unsupported op DequantizeLinear | 5 | ████ |
 | Unsupported op If | 5 | ████ |
 | Xor expects identical input/output shapes | 5 | ████ |
-| Missing output 3 in testbench data | 4 | ███ |
 | Sum expects identical input/output shapes | 4 | ███ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
 | Unsupported op AffineGrid | 4 | ███ |
@@ -51,6 +49,7 @@
 | '*' | 3 | ██ |
 | AveragePool supports auto_pad=NOTSET only | 3 | ██ |
 | Elu only supports alpha=1.0 | 3 | ██ |
+| Failed to build testbench. | 3 | ██ |
 | HardSigmoid only supports alpha=0.2 | 3 | ██ |
 | LeakyRelu only supports alpha=0.01 | 3 | ██ |
 | Min expects identical input/output shapes | 3 | ██ |
@@ -76,15 +75,14 @@ Max relative difference among violations: 5.4
 | BitwiseAnd expects identical input/output shapes | 2 | ██ |
 | BitwiseOr expects identical input/output shapes | 2 | ██ |
 | BitwiseXor expects identical input/output shapes | 2 | ██ |
-| Failed to build testbench. | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
 | LpPool expects 2D kernel_shape | 2 | ██ |
 | LpPool supports auto_pad=NOTSET only | 2 | ██ |
+| Missing output 6 in testbench data | 2 | ██ |
 | Pow expects matching dtypes, got float, int32 | 2 | ██ |
 | Pow expects matching dtypes, got float, int64 | 2 | ██ |
 | QuantizeLinear block_size is not supported | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
-| Test data input count does not match model inputs: 3 vs 5. | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
 | Tile repeats input must be a constant initializer | 2 | ██ |
 | Unsupported op Adam | 2 | ██ |
@@ -143,23 +141,24 @@ Max relative difference among violations: 0.10344828
  DESIRED: array([[[ -86,  116,  119],
         [ 115,   39, -121]],
 ... | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4, 5, 6), (3,) | 1 | █ |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
+| Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | LpPool supports dilations=1 only | 1 | █ |
 | Max expects identical input/output shapes | 1 | █ |
 | Max must have at least 2 inputs | 1 | █ |
 | Mean must have at least 2 inputs | 1 | █ |
 | Min must have at least 2 inputs | 1 | █ |
-| Missing output 5 in testbench data | 1 | █ |
-| Missing output 6 in testbench data | 1 | █ |
 | Pad value input must be a scalar | 1 | █ |
 | Pow expects matching dtypes, got float, uint32 | 1 | █ |
 | Pow expects matching dtypes, got float, uint64 | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
 | Sum must have at least 2 inputs | 1 | █ |
-| Test data input count does not match model inputs: 3 vs 6. | 1 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |

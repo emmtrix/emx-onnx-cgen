@@ -1,8 +1,9 @@
 {
-  "error": "Test data input count does not match model inputs: 1 vs 2.",
+  "error": "Failed to build testbench.",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/test_data_set_0",
   "operators": [
     "Conv"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "dd7ecdc7539853199d15e2d87496036936f547254e670343523f7ef5404d5458"
 }

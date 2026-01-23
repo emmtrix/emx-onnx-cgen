@@ -1,8 +1,9 @@
 {
-  "error": "Test data input count does not match model inputs: 1 vs 5.",
+  "error": "Missing output 5 in testbench data",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval/test_data_set_0",
   "operators": [
     "BatchNormalization"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "4f665cc879017f1fbef5d5df9442ba04939f2df0cbdc4cc9d3b007b353e67e96"
 }
