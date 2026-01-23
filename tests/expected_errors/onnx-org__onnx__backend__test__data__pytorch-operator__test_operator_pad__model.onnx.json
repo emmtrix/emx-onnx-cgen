@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pad/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pad/test_data_set_0",
   "operators": [
     "Pad"
   ],
   "opset_version": 6,
-  "generated_checksum": "0135d52cff868c1034971172e93a10f1620111f0895caa0119278dfaac8a4a50"
+  "generated_checksum": "94530ea43bc3a1ac6cc0f0e79848be9a471dd254ec3bba93d6d01ed14657e0e5"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/test_data_set_0",
   "operators": [
     "LogSoftmax"
   ],
   "opset_version": 6,
-  "generated_checksum": "16652623b3d0d23306e63eca17768692c8fc2b4bb40e75c18c91a757ed6ff426"
+  "generated_checksum": "0a11604f8386d68ae11531e78e48066028c003daa9ff203b2e143f7514b415fb"
 }

@@ -101,10 +101,10 @@ def main() -> None:
         "codegen/runtime match the backend tests."
     )
     prompt_lines.append(
-        "Broadcasting hint: variadic/elementwise ops often follow ONNX "
-        "broadcasting rules, so confirm shape inference, evaluator, and codegen "
-        "all agree (e.g., multi-input emitters should use broadcast-aware "
-        "indexing and per-input array suffixes)."
+        "Verification hint: if the failure reports a missing output by name, "
+        "compare the model's graph output names against any testbench JSON keys "
+        "or sanitized C identifiers; mismatches can occur when output names are "
+        "not valid C identifiers."
     )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(

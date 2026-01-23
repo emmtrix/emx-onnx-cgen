@@ -11333,6 +11333,7 @@ class CEmitter:
         for name, shape, count, dtype in zip(
             model.input_names, model.input_shapes, input_counts, model.input_dtypes
         ):
+            json_name = self._ctx_name(name)
             codegen_shape = self._codegen_shape(shape)
             loop_shape = (1,) if not shape else shape
             loop_vars = self._loop_vars(loop_shape)
@@ -11386,12 +11387,14 @@ class CEmitter:
                     "print_cast": self._print_cast(dtype),
                     "constant_name": constant_name,
                     "constant_lines": constant_lines,
+                    "json_name": json_name,
                 }
             )
         outputs = []
         for name, shape, dtype in zip(
             model.output_names, model.output_shapes, model.output_dtypes
         ):
+            json_name = self._ctx_name(name)
             codegen_shape = self._codegen_shape(shape)
             loop_shape = (1,) if not shape else shape
             output_loop_vars = self._loop_vars(loop_shape)
@@ -11412,6 +11415,7 @@ class CEmitter:
                     "c_type": dtype.c_type,
                     "print_format": self._print_format(dtype),
                     "print_cast": self._print_cast(dtype),
+                    "json_name": json_name,
                 }
             )
         rendered = testbench_template.render(

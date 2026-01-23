@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "Out of tolerance (max ULP 17525756)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/test_data_set_0",
   "operators": [
     "Clip"
   ],
   "opset_version": 6,
-  "generated_checksum": "d2ab0cd17620d662d90c41937fc961a0ca2c06de46a0a502403742485d1c159b"
+  "generated_checksum": "97d10dbfaf77b0df7db6b440eeaf8972023381162a047b63e31bb7ea6dfc5ecd"
 }

@@ -1,5 +1,5 @@
 {
-  "error": "Missing output 4 in testbench data",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim/test_data_set_0",
   "operators": [
     "Split",
@@ -7,5 +7,5 @@
     "Mul"
   ],
   "opset_version": 6,
-  "generated_checksum": "64edc96e838cbce8c7fcfb626d1d6ea8299899d25259e09688625000f8ed816e"
+  "generated_checksum": "2572a268470f3ed0ed9aa9d09ba3e0c03bcb4d587f701a70a99fb9469e22342c"
 }

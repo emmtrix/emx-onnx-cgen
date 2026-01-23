@@ -1,5 +1,5 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/test_data_set_0",
   "operators": [
     "Unsqueeze",
@@ -7,5 +7,5 @@
     "Squeeze"
   ],
   "opset_version": 6,
-  "generated_checksum": "0044948df9cc995d39832d3fd5f0c0d9afc94d3b4fac4a55a1d05be98a79e45c"
+  "generated_checksum": "98ea4efd62f2fa08c9169b3f9e37ead4d149340bdcba6b1cb64a6c208b787b0c"
 }

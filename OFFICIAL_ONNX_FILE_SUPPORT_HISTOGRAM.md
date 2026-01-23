@@ -2,61 +2,60 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Missing output 1 in testbench data | 38 | ██████████████████████████████ |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ████████████████████████████ |
-| Missing output 3 in testbench data | 33 | ██████████████████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████ |
-| Missing output 2 in testbench data | 21 | █████████████████ |
-| Out of tolerance | 20 | ████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███████████ |
-| Unsupported op ImageDecoder | 9 | ███████ |
-| '*' object has no attribute '*' | 8 | ██████ |
-| Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
-| tuple index out of range | 8 | ██████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 33 | ██████████████████████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████████ |
+| Test data input count does not match model inputs: 1 vs 3. | 27 | █████████████████████████ |
+| Out of tolerance | 23 | █████████████████████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ██████████████████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ████████████████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ████████████████ |
+| Test data input count does not match model inputs: 1 vs 2. | 17 | ███████████████ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████████████ |
+| Unsupported op ImageDecoder | 9 | ████████ |
+| '*' object has no attribute '*' | 8 | ███████ |
+| Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
+| tuple index out of range | 8 | ███████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | AveragePool has unsupported attributes | 6 | █████ |
-| Missing output 4 in testbench data | 6 | █████ |
-| Missing output 5 in testbench data | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
 | Unsupported op CenterCropPad | 6 | █████ |
 | Unsupported op DFT | 6 | █████ |
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
-| AveragePool expects 2D kernel_shape | 5 | ████ |
-| Iteration of zero-sized operands is not enabled | 5 | ████ |
-| Test data input count does not match model inputs: 1 vs 5. | 5 | ████ |
-| Unsupported op Col2Im | 5 | ████ |
-| Unsupported op DequantizeLinear | 5 | ████ |
-| Unsupported op If | 5 | ████ |
-| Missing output 3 in testbench data | 4 | ███ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
-| Unsupported op AffineGrid | 4 | ███ |
-| Unsupported op Compress | 4 | ███ |
-| Unsupported op DeformConv | 4 | ███ |
-| Unsupported op GRU | 4 | ███ |
-| Unsupported op OptionalHasElement | 4 | ███ |
-| Unsupported op RNN | 4 | ███ |
-| '*' | 3 | ██ |
-| AveragePool supports auto_pad=NOTSET only | 3 | ██ |
-| Elu only supports alpha=1.0 | 3 | ██ |
-| Failed to build testbench. | 3 | ██ |
-| HardSigmoid only supports alpha=0.2 | 3 | ██ |
-| LeakyRelu only supports alpha=0.01 | 3 | ██ |
-| Unsupported op Bernoulli | 3 | ██ |
-| Unsupported op DynamicQuantizeLinear | 3 | ██ |
-| Unsupported op Loop | 3 | ██ |
-| Unsupported op Momentum | 3 | ██ |
-| Unsupported op RandomUniformLike | 3 | ██ |
-| Unsupported op RoiAlign | 3 | ██ |
-| name '*' is not defined | 3 | ██ |
+| And expects identical input/output shapes | 5 | █████ |
+| AveragePool expects 2D kernel_shape | 5 | █████ |
+| Iteration of zero-sized operands is not enabled | 5 | █████ |
+| Or expects identical input/output shapes | 5 | █████ |
+| Test data input count does not match model inputs: 1 vs 5. | 5 | █████ |
+| Unsupported op Col2Im | 5 | █████ |
+| Unsupported op DequantizeLinear | 5 | █████ |
+| Unsupported op If | 5 | █████ |
+| Xor expects identical input/output shapes | 5 | █████ |
+| Sum expects identical input/output shapes | 4 | ████ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ████ |
+| Unsupported op AffineGrid | 4 | ████ |
+| Unsupported op Compress | 4 | ████ |
+| Unsupported op DeformConv | 4 | ████ |
+| Unsupported op GRU | 4 | ████ |
+| Unsupported op OptionalHasElement | 4 | ████ |
+| Unsupported op RNN | 4 | ████ |
+| AveragePool supports auto_pad=NOTSET only | 3 | ███ |
+| Elu only supports alpha=1.0 | 3 | ███ |
+| HardSigmoid only supports alpha=0.2 | 3 | ███ |
+| LeakyRelu only supports alpha=0.01 | 3 | ███ |
+| Min expects identical input/output shapes | 3 | ███ |
+| Unsupported op Bernoulli | 3 | ███ |
+| Unsupported op DynamicQuantizeLinear | 3 | ███ |
+| Unsupported op Loop | 3 | ███ |
+| Unsupported op Momentum | 3 | ███ |
+| Unsupported op RandomUniformLike | 3 | ███ |
+| Unsupported op RoiAlign | 3 | ███ |
+| name '*' is not defined | 3 | ███ |
 | 
 Arrays are not equal
 

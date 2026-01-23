@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/test_data_set_0",
   "operators": [
     "Transpose"
   ],
   "opset_version": 6,
-  "generated_checksum": "2087ea25d84fba577b29a7189523881286aa192a6598cb77b4b6365d04ff7c25"
+  "generated_checksum": "ea095c55e3d062f2391252138632b293744539e321e7f3e6e278c5563ca2ac7e"
 }

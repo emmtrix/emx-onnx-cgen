@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1200 / 1802 official ONNX files.
+Support 1233 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -12,11 +12,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | ❌ | Out of tolerance (max ULP 50389) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | 'gpu_0_data_0' |
-| onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ❌ | 'gpu_0_data_0' |
+| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Out of tolerance (max ULP 553) |
+| onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ✅ | OK (max ULP 10) |
 | onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | ❌ | Out of tolerance (max ULP 83684753) |
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | ❌ | Out of tolerance (max ULP 981668463) |
-| onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx | ❌ | 'gpu_0_data_0' |
+| onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/node/test_abs/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acos_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -1665,128 +1665,128 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_xor2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_xor3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_xor4d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v1d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v3d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v4d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d_stride/model.onnx | ❌ | Missing output 1 in testbench data |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v1d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast3v2d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v2d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v3d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/node/test_xor_bcast4v4d/model.onnx | ❌ | Xor expects identical input/output shapes |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d_stride/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx | ❌ | Missing output 5 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_eval/model.onnx | ❌ | Missing output 5 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx | ❌ | Missing output 5 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_eval/model.onnx | ❌ | Missing output 5 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx | ❌ | Missing output 5 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConstantPad2d/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_groups/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1size1/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2size1/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_padded/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_strided/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_with_multiplier/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_dilated/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_no_bias/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_padding/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_strided/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_groups/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ❌ | Missing output 2 in testbench data |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConstantPad2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_groups/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1size1/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2size1/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_padded/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_strided/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_with_multiplier/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_dilated/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_no_bias/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_padding/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_strided/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_groups/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx | ❌ | Elu only supports alpha=1.0 |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx | ❌ | Missing output 4 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim/model.onnx | ❌ | Missing output 4 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/model.onnx | ❌ | Missing output 1 in testbench data |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU_with_negval/model.onnx | ❌ | LeakyRelu only supports alpha=0.01 |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride/model.onnx | ❌ | Missing output 1 in testbench data |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool2d/model.onnx | ❌ | Missing output 1 in testbench data |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool2d_stride_padding_dilation/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride_padding/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d_multiparam/model.onnx | ❌ | Broadcasting mismatch for shapes: (2, 3, 4), (3,) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d_multiparam/model.onnx | ❌ | Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d_multiparam/model.onnx | ❌ | Broadcasting mismatch for shapes: (2, 3, 4, 5, 6), (3,) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx | ❌ | Missing output 5 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx | ❌ | Missing output 4 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ReflectionPad2d/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmax/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmin/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign/model.onnx | ❌ | Missing output 4 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Tanh/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_lastdim/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_functional_dim3/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_broadcast/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_broadcast/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx | ❌ | Missing output 4 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx | ❌ | Missing output 6 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_concat2/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_exp/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_index/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_max/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_maxpool/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_min/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_mm/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_non_float_params/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pad/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_params/model.onnx | ❌ | Missing output 6 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pow/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_mean/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_mean_keepdim/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_repeat/model.onnx | ❌ | Missing output 2 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_repeat_dim_overflow/model.onnx | ❌ | Missing output 4 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_sqrt/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ❌ | Missing output 3 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_view/model.onnx | ❌ | Missing output 1 in testbench data |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride_padding/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d_multiparam/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d_multiparam/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d_multiparam/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ReflectionPad2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmax/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmin/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/model.onnx | ✅ | OK (max ULP 7) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Tanh/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_lastdim/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_functional_dim3/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_broadcast/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_broadcast/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx | ✅ | OK (max ULP 32) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx | ❌ | Out of tolerance (max ULP 17525756) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_concat2/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_exp/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_index/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_max/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_maxpool/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_min/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_mm/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_non_float_params/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pad/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_params/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 2. |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pow/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_mean/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_mean_keepdim/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_repeat/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_repeat_dim_overflow/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/model.onnx | ✅ | OK (max ULP 15) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_sqrt/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 3. |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_view/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_expand_shape_model1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_expand_shape_model2/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_expand_shape_model3/model.onnx | ✅ | OK (max ULP 0) |

@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 139 / 197
+Supported operators: 141 / 197
 
 | Operator | Supported |
 | --- | --- |
@@ -186,7 +186,7 @@ Supported operators: 139 / 197
 | Tanh | ✅ |
 | TfIdfVectorizer | ❌ |
 | ThresholdedRelu | ✅ |
-| Tile | ❌ |
+| Tile | ✅ |
 | TopK | ✅ |
 | Transpose | ✅ |
 | Trilu | ✅ |

@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/test_data_set_0",
   "operators": [
     "Flatten"
   ],
   "opset_version": 6,
-  "generated_checksum": "b59282213ff2836d6513f10fb842679c0758d407ae1da9fa00bf97359e8d774b"
+  "generated_checksum": "148ace8ab56a01a9a6b293b7596f9b33c3a87e173bbc97c85cb542440e1e228f"
 }

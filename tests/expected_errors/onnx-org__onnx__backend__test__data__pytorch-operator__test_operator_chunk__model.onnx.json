@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/test_data_set_0",
   "operators": [
     "Split"
   ],
   "opset_version": 6,
-  "generated_checksum": "7edf2ced01dd17fe449bbccfbcae188136e167704e37717724a3a78bf9956bd0"
+  "generated_checksum": "aa537b7507a62382499b1e4a934bfee94c65bffee0300dc7188c9bebbca7581d"
 }

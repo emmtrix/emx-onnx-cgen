@@ -1,5 +1,5 @@
 {
-  "error": "Missing output 6 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/test_data_set_0",
   "operators": [
     "Add",
@@ -9,5 +9,5 @@
     "Neg"
   ],
   "opset_version": 6,
-  "generated_checksum": "7524dc84650905c30a1fa3ac5ca4b0e278b1dc575460851dddc03e36637ef54c"
+  "generated_checksum": "05a0b9686bf748e86ca8048bd1f726fd375f86b3534c6e8258661212eea5c670"
 }

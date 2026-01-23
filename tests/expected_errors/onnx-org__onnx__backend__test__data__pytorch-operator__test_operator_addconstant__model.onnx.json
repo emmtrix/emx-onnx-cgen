@@ -1,10 +1,10 @@
 {
-  "error": "Missing output 2 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/test_data_set_0",
   "operators": [
     "Constant",
     "Add"
   ],
   "opset_version": 6,
-  "generated_checksum": "fd62e8c97f5342683857d89deb8d8b1dac2856462b3b1faf1a9311f61ba351ea"
+  "generated_checksum": "1f0ae92281da76ce0dfb6f25cb8916433e8689171318fb581d98cb9578489845"
 }

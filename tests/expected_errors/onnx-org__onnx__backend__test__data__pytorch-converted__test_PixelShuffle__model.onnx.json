@@ -1,5 +1,5 @@
 {
-  "error": "Missing output 5 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/test_data_set_0",
   "operators": [
     "Constant",
@@ -7,5 +7,5 @@
     "Transpose"
   ],
   "opset_version": 9,
-  "generated_checksum": "f299f2423e23f05ee037d9fbc78ff9c0d9c6887c4bbabdcbfa607cf78749d787"
+  "generated_checksum": "04b3a0725f0f167ace6a6926e8803f6ee49854a705933ce51ea5234a1f7c84e0"
 }

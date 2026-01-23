@@ -1,4 +1,16 @@
 {
-  "error": "'gpu_0_data_0'",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx --cc /usr/bin/cc"
+  "error": "Out of tolerance (max ULP 981668463)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx --cc /usr/bin/cc",
+  "operators": [
+    "ConstantOfShape",
+    "Conv",
+    "Relu",
+    "LRN",
+    "MaxPool",
+    "Reshape",
+    "Gemm",
+    "Softmax"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "da7159deb3f4264d4835bc9f43ff8f73cdc40cee7810e7ecb5c2d517453cccbb"
 }

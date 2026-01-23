@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/test_data_set_0",
   "operators": [
     "ReduceSum"
   ],
   "opset_version": 6,
-  "generated_checksum": "abc22f72fb2c17bec17367713f7aa800de9e6a68fdb73e9171463bcd3722a258"
+  "generated_checksum": "52436503b0ffba67734ac884c9bb9db43911f9a37503783c26ef2299a663dae2"
 }

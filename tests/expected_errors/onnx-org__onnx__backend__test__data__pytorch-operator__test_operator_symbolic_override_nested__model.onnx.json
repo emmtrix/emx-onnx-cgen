@@ -1,10 +1,10 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested/test_data_set_0",
   "operators": [
     "Sum",
     "Neg"
   ],
   "opset_version": 6,
-  "generated_checksum": "843d51c20a1e4a7a60cf7b39515cef7b51c6beef07400217e65af6d759e5b038"
+  "generated_checksum": "ae00ce5dff924786a4b5e1c96019ec5b80e45196f5c0f4cc32e5aa234746a3f2"
 }
