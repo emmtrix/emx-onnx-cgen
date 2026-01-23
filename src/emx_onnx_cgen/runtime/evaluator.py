@@ -2201,7 +2201,8 @@ def _eval_arg_reduce(evaluator: Evaluator, node: Node) -> None:
             )
     if op.keepdims:
         indices = np.expand_dims(indices, axis=op.axis)
-    evaluator.values[op.output] = indices.astype(op.output_dtype.np_dtype)
+    output_dtype = value_dtype(evaluator.graph, op.output, node)
+    evaluator.values[op.output] = indices.astype(output_dtype.np_dtype)
 
 
 @register_evaluator("TopK")
@@ -2229,11 +2230,13 @@ def _eval_topk(evaluator: Evaluator, node: Node) -> None:
     indices_out = indices_out.reshape(moved.shape[:-1] + (op.k,))
     values_out = np.moveaxis(values_out, -1, op.axis)
     indices_out = np.moveaxis(indices_out, -1, op.axis)
+    output_values_dtype = value_dtype(evaluator.graph, op.output_values, node)
+    output_indices_dtype = value_dtype(evaluator.graph, op.output_indices, node)
     evaluator.values[op.output_values] = values_out.astype(
-        op.output_values_dtype.np_dtype
+        output_values_dtype.np_dtype
     )
     evaluator.values[op.output_indices] = indices_out.astype(
-        op.output_indices_dtype.np_dtype
+        output_indices_dtype.np_dtype
     )
 
 

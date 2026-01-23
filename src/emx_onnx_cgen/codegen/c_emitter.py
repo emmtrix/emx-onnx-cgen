@@ -761,7 +761,12 @@ class CEmitter:
         if isinstance(op, GridSampleOp):
             return (op.input0, op.grid, op.output)
         if isinstance(op, TopKOp):
-            return (op.input0, op.output_values, op.output_indices)
+            return (
+                op.input0,
+                op.k_input,
+                op.output_values,
+                op.output_indices,
+            )
         if isinstance(op, ReduceOp):
             names = [op.input0]
             if op.axes_input is not None:
@@ -946,11 +951,6 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
-                input0_shape=op.input0_shape,
-                input1_shape=op.input1_shape,
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, MultiInputBinaryOp):
             return MultiInputBinaryOp(
@@ -968,20 +968,12 @@ class CEmitter:
                 input_x=name_map.get(op.input_x, op.input_x),
                 input_y=name_map.get(op.input_y, op.input_y),
                 output=name_map.get(op.output, op.output),
-                condition_shape=op.condition_shape,
-                x_shape=op.x_shape,
-                y_shape=op.y_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
             )
         if isinstance(op, UnaryOp):
             return UnaryOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
                 function=op.function,
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 params=op.params,
             )
         if isinstance(op, ClipOp):
@@ -990,11 +982,6 @@ class CEmitter:
                 input_min=self._map_optional_name(name_map, op.input_min),
                 input_max=self._map_optional_name(name_map, op.input_max),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                min_shape=op.min_shape,
-                max_shape=op.max_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
             )
         if isinstance(op, CastOp):
             return CastOp(
@@ -1624,9 +1611,6 @@ class CEmitter:
             return IdentityOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, EyeLikeOp):
             return EyeLikeOp(
@@ -1782,45 +1766,32 @@ class CEmitter:
             return ReduceOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 axes=op.axes,
                 axes_input=self._map_optional_name(name_map, op.axes_input),
-                axes_input_shape=op.axes_input_shape,
-                axes_input_dtype=op.axes_input_dtype,
                 keepdims=op.keepdims,
                 noop_with_empty_axes=op.noop_with_empty_axes,
                 reduce_kind=op.reduce_kind,
                 reduce_count=op.reduce_count,
-                dtype=op.dtype,
             )
         if isinstance(op, ArgReduceOp):
             return ArgReduceOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 axis=op.axis,
                 keepdims=op.keepdims,
                 select_last_index=op.select_last_index,
                 reduce_kind=op.reduce_kind,
-                input_dtype=op.input_dtype,
-                output_dtype=op.output_dtype,
             )
         if isinstance(op, TopKOp):
             return TopKOp(
                 input0=name_map.get(op.input0, op.input0),
+                k_input=name_map.get(op.k_input, op.k_input),
                 output_values=name_map.get(op.output_values, op.output_values),
                 output_indices=name_map.get(op.output_indices, op.output_indices),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 axis=op.axis,
                 k=op.k,
                 largest=op.largest,
                 sorted=op.sorted,
-                input_dtype=op.input_dtype,
-                output_values_dtype=op.output_values_dtype,
-                output_indices_dtype=op.output_indices_dtype,
             )
         if isinstance(op, ConstantOfShapeOp):
             return ConstantOfShapeOp(
@@ -2787,6 +2758,8 @@ class CEmitter:
                 return model.op_context.dtype(op.data)
             if isinstance(op, ExpandOp):
                 return model.op_context.dtype(op.input0)
+            if hasattr(op, "output") and isinstance(op.output, str):
+                return model.op_context.dtype(op.output)
             return op.dtype
 
         model_dtypes.update(
@@ -2798,7 +2771,10 @@ class CEmitter:
             dtype
             for op in resolved_ops
             if isinstance(op, ArgReduceOp)
-            for dtype in (op.input_dtype, op.output_dtype)
+            for dtype in (
+                model.op_context.dtype(op.input0),
+                model.op_context.dtype(op.output),
+            )
         }
         model_dtypes.update(arg_reduce_dtypes)
         topk_dtypes = {
@@ -2806,9 +2782,9 @@ class CEmitter:
             for op in resolved_ops
             if isinstance(op, TopKOp)
             for dtype in (
-                op.input_dtype,
-                op.output_values_dtype,
-                op.output_indices_dtype,
+                model.op_context.dtype(op.input0),
+                model.op_context.dtype(op.output_values),
+                model.op_context.dtype(op.output_indices),
             )
         }
         model_dtypes.update(topk_dtypes)
@@ -2867,15 +2843,18 @@ class CEmitter:
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, UnaryOp)
-            and unary_op_symbol(op.function, dtype=op.dtype) in {"llabs", "abs"}
+            and unary_op_symbol(
+                op.function, dtype=model.op_context.dtype(op.output)
+            )
+            in {"llabs", "abs"}
             for op in resolved_ops
         ):
             includes.add("#include <stdlib.h>")
         if any(isinstance(op, PadOp) for op in resolved_ops):
             includes.add("#include <stddef.h>")
-        if CEmitter._needs_math(resolved_ops):
+        if CEmitter._needs_math(resolved_ops, model.op_context):
             includes.add("#include <math.h>")
-        if CEmitter._needs_limits(resolved_ops):
+        if CEmitter._needs_limits(resolved_ops, model.op_context):
             includes.add("#include <limits.h>")
         if any(
             isinstance(op, (ConcatOp, ReshapeOp, SplitOp, IdentityOp))
@@ -2996,6 +2975,7 @@ class CEmitter:
             | OneHotOp
             | SplitOp
         ],
+        op_context: OpContext,
     ) -> bool:
         math_ops = {
             "atanhf",
@@ -3014,13 +2994,18 @@ class CEmitter:
 
         def is_binary_math_op(op: BinaryOp) -> bool:
             op_spec = binary_op_symbol(
-                op.function, dtype=op.input_dtype, validate_attrs=False
+                op.function,
+                dtype=op_context.dtype(op.input0),
+                validate_attrs=False,
             )
             return op_spec is not None and op_spec.operator in binary_math_ops
 
         if any(
             isinstance(op, UnaryOp)
-            and unary_op_symbol(op.function, dtype=op.dtype) in math_ops
+            and unary_op_symbol(
+                op.function, dtype=op_context.dtype(op.output)
+            )
+            in math_ops
             for op in resolved_ops
         ):
             return True
@@ -3038,7 +3023,7 @@ class CEmitter:
             return True
         if any(
             isinstance(op, ClipOp)
-            and op.dtype.is_float
+            and op_context.dtype(op.output).is_float
             and (op.input_min is None or op.input_max is None)
             for op in resolved_ops
         ):
@@ -3082,7 +3067,7 @@ class CEmitter:
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind in {"min", "max"}
-            and op.dtype.is_float
+            and op_context.dtype(op.output).is_float
             for op in resolved_ops
         ):
             return True
@@ -3159,11 +3144,13 @@ class CEmitter:
             | OneHotOp
             | SplitOp
         ],
+        op_context: OpContext,
     ) -> bool:
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind in {"min", "max"}
-            and op.dtype in {
+            and op_context.dtype(op.output)
+            in {
                 ScalarType.I64,
                 ScalarType.I32,
                 ScalarType.I16,
@@ -3174,7 +3161,7 @@ class CEmitter:
             return True
         if any(
             isinstance(op, ClipOp)
-            and op.dtype.is_integer
+            and op_context.dtype(op.output).is_integer
             and (op.input_min is None or op.input_max is None)
             for op in resolved_ops
         ):
@@ -3866,11 +3853,6 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
-                input0_shape=op.input0_shape,
-                input1_shape=op.input1_shape,
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, MultiInputBinaryOp):
             return MultiInputBinaryOp(
@@ -3888,20 +3870,12 @@ class CEmitter:
                 input_x=temp_map.get(op.input_x, op.input_x),
                 input_y=temp_map.get(op.input_y, op.input_y),
                 output=temp_map.get(op.output, op.output),
-                condition_shape=op.condition_shape,
-                x_shape=op.x_shape,
-                y_shape=op.y_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
             )
         if isinstance(op, UnaryOp):
             return UnaryOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
                 function=op.function,
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 params=op.params,
             )
         if isinstance(op, ClipOp):
@@ -3914,11 +3888,6 @@ class CEmitter:
                 if op.input_max is not None
                 else None,
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                min_shape=op.min_shape,
-                max_shape=op.max_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -4746,9 +4715,6 @@ class CEmitter:
             return IdentityOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, EyeLikeOp):
             return EyeLikeOp(
@@ -4934,54 +4900,40 @@ class CEmitter:
             return ReduceOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 axes=op.axes,
                 axes_input=temp_map.get(op.axes_input, op.axes_input)
                 if op.axes_input
                 else None,
-                axes_input_shape=op.axes_input_shape,
-                axes_input_dtype=op.axes_input_dtype,
                 keepdims=op.keepdims,
                 noop_with_empty_axes=op.noop_with_empty_axes,
                 reduce_kind=op.reduce_kind,
                 reduce_count=op.reduce_count,
-                dtype=op.dtype,
             )
         if isinstance(op, ArgReduceOp):
             return ArgReduceOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 axis=op.axis,
                 keepdims=op.keepdims,
                 select_last_index=op.select_last_index,
                 reduce_kind=op.reduce_kind,
-                input_dtype=op.input_dtype,
-                output_dtype=op.output_dtype,
             )
         if isinstance(op, TopKOp):
             return TopKOp(
                 input0=temp_map.get(op.input0, op.input0),
+                k_input=temp_map.get(op.k_input, op.k_input),
                 output_values=temp_map.get(op.output_values, op.output_values),
                 output_indices=temp_map.get(op.output_indices, op.output_indices),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 axis=op.axis,
                 k=op.k,
                 largest=op.largest,
                 sorted=op.sorted,
-                input_dtype=op.input_dtype,
-                output_values_dtype=op.output_values_dtype,
-                output_indices_dtype=op.output_indices_dtype,
             )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
             function=op.function,
-            shape=op.shape,
-            dtype=op.dtype,
+            params=op.params,
         )
 
     def render_op(self, op: OpBase, ctx: EmitContext) -> str:
@@ -8736,9 +8688,9 @@ class CEmitter:
                 output_values=params["output_values"],
                 output_indices=params["output_indices"],
                 params=param_decls,
-                input_c_type=op.input_dtype.c_type,
-                output_values_c_type=op.output_values_dtype.c_type,
-                output_indices_c_type=op.output_indices_dtype.c_type,
+                input_c_type=input_dtype.c_type,
+                output_values_c_type=output_values_dtype.c_type,
+                output_indices_c_type=output_indices_dtype.c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 output_shape=output_shape,
@@ -8746,7 +8698,7 @@ class CEmitter:
                 outer_loop_vars=outer_loop_vars,
                 reduce_var=reduce_var,
                 k_var=k_var,
-                axis_dim=op.input_shape[op.axis],
+                axis_dim=input_shape[op.axis],
                 k=op.k,
                 input_index_expr=input_index_expr,
                 output_index_expr=output_index_expr,
@@ -8762,11 +8714,15 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            output_shape = CEmitter._codegen_shape(op.output_shape)
+            input_shape_raw = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
             output_loop_vars = CEmitter._loop_vars(output_shape)
-            input_shape = CEmitter._codegen_shape(op.input_shape)
+            input_shape = CEmitter._codegen_shape(input_shape_raw)
             input_loop_vars = CEmitter._loop_vars(input_shape)
-            axes_shape = op.axes_input_shape or ()
+            axes_shape = (
+                self._ctx_shape(op.axes_input) if op.axes_input is not None else ()
+            )
             axes_count = 1
             for dim in axes_shape:
                 if dim == 0:
@@ -8774,8 +8730,8 @@ class CEmitter:
                     break
                 axes_count *= dim
             axes_c_type = (
-                op.axes_input_dtype.c_type
-                if op.axes_input_dtype
+                self._ctx_dtype(op.axes_input).c_type
+                if op.axes_input is not None
                 else ScalarType.I64.c_type
             )
             input_indices = "".join(f"[{var}]" for var in input_loop_vars)
@@ -8789,10 +8745,11 @@ class CEmitter:
             update_expr = None
             init_literal = None
             post_expr = None
-            fabs_fn = CEmitter._math_fn(op.dtype, "fabsf", "fabs")
-            exp_fn = CEmitter._math_fn(op.dtype, "expf", "exp")
-            log_fn = CEmitter._math_fn(op.dtype, "logf", "log")
-            sqrt_fn = CEmitter._math_fn(op.dtype, "sqrtf", "sqrt")
+            reduce_dtype = self._ctx_dtype(op.output)
+            fabs_fn = CEmitter._math_fn(reduce_dtype, "fabsf", "fabs")
+            exp_fn = CEmitter._math_fn(reduce_dtype, "expf", "exp")
+            log_fn = CEmitter._math_fn(reduce_dtype, "logf", "log")
+            sqrt_fn = CEmitter._math_fn(reduce_dtype, "sqrtf", "sqrt")
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"*out_ptr += {value_expr};"
@@ -8807,7 +8764,7 @@ class CEmitter:
                 init_literal = max_literal
                 update_expr = f"if ({value_expr} < *out_ptr) *out_ptr = {value_expr};"
             elif op.reduce_kind == "prod":
-                init_literal = CEmitter._format_literal(op.dtype, 1)
+                init_literal = CEmitter._format_literal(reduce_dtype, 1)
                 update_expr = f"*out_ptr *= {value_expr};"
             elif op.reduce_kind == "l1":
                 init_literal = zero_literal
@@ -8831,11 +8788,11 @@ class CEmitter:
                 raise CodegenError(
                     f"Unsupported reduce kind {op.reduce_kind}"
                 )
-            input_suffix = self._param_array_suffix(op.input_shape)
-            output_suffix = self._param_array_suffix(op.output_shape)
+            input_suffix = self._param_array_suffix(input_shape_raw)
+            output_suffix = self._param_array_suffix(output_shape_raw)
             axes_suffix = (
-                self._param_array_suffix(op.axes_input_shape)
-                if op.axes_input_shape
+                self._param_array_suffix(axes_shape)
+                if axes_shape
                 else ""
             )
             params = self._build_param_decls(
@@ -10147,7 +10104,10 @@ class CEmitter:
         if isinstance(op, SplitOp):
             return ((op.input0, op.input_shape),)
         if isinstance(op, TopKOp):
-            return ((op.input0, self._ctx_shape(op.input0)),)
+            return (
+                (op.input0, self._ctx_shape(op.input0)),
+                (op.k_input, self._ctx_shape(op.k_input)),
+            )
         if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp)):
             return ((op.input0, self._ctx_shape(op.input0)),)
         return ()

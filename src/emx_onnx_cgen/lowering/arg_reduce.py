@@ -84,14 +84,10 @@ def lower_arg_reduce(graph: Graph, node: Node) -> ArgReduceOp:
     return ArgReduceOp(
         input0=input_name,
         output=output_name,
-        input_shape=input_shape,
-        output_shape=output_shape,
         axis=axis,
         keepdims=keepdims,
         select_last_index=select_last_index,
         reduce_kind=ARG_REDUCE_KIND_BY_OP[node.op_type],
-        input_dtype=input_dtype,
-        output_dtype=output_dtype,
     )
 
 

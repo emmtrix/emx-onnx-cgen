@@ -11,7 +11,6 @@
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
-| '*' object has no attribute '*' | 17 | █████████████ |
 | Test data input count does not match model inputs: 1 vs 2. | 17 | █████████████ |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | █████████████ |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | █████████████ |
@@ -20,6 +19,7 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███████████ |
 | Missing output 2 in testbench data | 12 | █████████ |
 | Unsupported op ImageDecoder | 9 | ███████ |
+| '*' object has no attribute '*' | 8 | ██████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
 | tuple index out of range | 8 | ██████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |

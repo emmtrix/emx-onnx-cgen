@@ -61,11 +61,6 @@ def lower_clip(graph: Graph, node: Node) -> ClipOp:
         input_min=min_name,
         input_max=max_name,
         output=node.outputs[0],
-        input_shape=input_shape,
-        min_shape=min_shape,
-        max_shape=max_shape,
-        output_shape=output_shape,
-        dtype=input_dtype,
     )
 
 
@@ -82,9 +77,6 @@ def lower_celu(graph: Graph, node: Node) -> UnaryOp:
         input0=node.inputs[0],
         output=node.outputs[0],
         function=ScalarFunction.CELU,
-        shape=output_shape,
-        dtype=dtype,
-        input_dtype=dtype,
         params=(alpha,),
     )
 
@@ -102,9 +94,6 @@ def lower_swish(graph: Graph, node: Node) -> UnaryOp:
         input0=node.inputs[0],
         output=node.outputs[0],
         function=ScalarFunction.SWISH,
-        shape=output_shape,
-        dtype=dtype,
-        input_dtype=dtype,
         params=(alpha,),
     )
 
@@ -123,9 +112,6 @@ def lower_shrink(graph: Graph, node: Node) -> UnaryOp:
         input0=node.inputs[0],
         output=node.outputs[0],
         function=ScalarFunction.SHRINK,
-        shape=output_shape,
-        dtype=dtype,
-        input_dtype=dtype,
         params=(bias, lambd),
     )
 
@@ -163,11 +149,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
-            input0_shape=input0_shape,
-            input1_shape=input1_shape,
-            shape=output_shape,
-            dtype=op_dtype,
-            input_dtype=op_dtype,
         )
     if node.op_type == "Mod":
         fmod = int(node.attrs.get("fmod", 0))
@@ -207,11 +188,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
-            input0_shape=input0_shape,
-            input1_shape=input1_shape,
-            shape=output_shape,
-            dtype=output_dtype,
-            input_dtype=input_dtype,
         )
     op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
     op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
@@ -232,11 +208,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
-            input0_shape=input0_shape,
-            input1_shape=input1_shape,
-            shape=output_shape,
-            dtype=op_dtype,
-            input_dtype=op_dtype,
         )
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError(
@@ -247,9 +218,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         input0=node.inputs[0],
         output=node.outputs[0],
         function=function,
-        shape=output_shape,
-        dtype=op_dtype,
-        input_dtype=op_dtype,
         params=(),
     )
 
@@ -283,9 +251,6 @@ def lower_isinf(graph: Graph, node: Node) -> UnaryOp:
         input0=node.inputs[0],
         output=node.outputs[0],
         function=ScalarFunction.ISINF,
-        shape=output_shape,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
         params=(float(detect_negative), float(detect_positive)),
     )
 
@@ -305,8 +270,5 @@ def lower_isnan(graph: Graph, node: Node) -> UnaryOp:
         input0=node.inputs[0],
         output=node.outputs[0],
         function=ScalarFunction.ISNAN,
-        shape=output_shape,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
         params=(),
     )

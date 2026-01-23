@@ -117,17 +117,13 @@ def lower_topk(graph: Graph, node: Node) -> TopKOp:
     sorted_output = bool(int(node.attrs.get("sorted", 1)))
     return TopKOp(
         input0=input_name,
+        k_input=k_name,
         output_values=output_values,
         output_indices=output_indices,
-        input_shape=input_shape,
-        output_shape=output_shape,
         axis=axis,
         k=k,
         largest=largest,
         sorted=sorted_output,
-        input_dtype=input_dtype,
-        output_values_dtype=values_dtype,
-        output_indices_dtype=indices_dtype,
     )
 
 

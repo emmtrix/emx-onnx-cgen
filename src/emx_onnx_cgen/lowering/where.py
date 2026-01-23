@@ -65,9 +65,4 @@ def lower_where(graph: Graph, node: Node) -> WhereOp:
         input_x=x_name,
         input_y=y_name,
         output=output_name,
-        condition_shape=condition_shape,
-        x_shape=x_shape,
-        y_shape=y_shape,
-        output_shape=output_shape,
-        dtype=output_dtype,
     )

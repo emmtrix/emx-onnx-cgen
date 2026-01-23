@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from shared.scalar_types import ScalarType
-
 from ..op_base import ReduceOpBase
 from ..op_context import OpContext
 
@@ -12,17 +10,12 @@ from ..op_context import OpContext
 class ReduceOp(ReduceOpBase):
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     axes: tuple[int, ...]
     axes_input: str | None
-    axes_input_shape: tuple[int, ...] | None
-    axes_input_dtype: ScalarType | None
     keepdims: bool
     noop_with_empty_axes: bool
     reduce_kind: str
     reduce_count: int | None
-    dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.output)
@@ -45,14 +38,10 @@ class ReduceOp(ReduceOpBase):
 class ArgReduceOp(ReduceOpBase):
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     axis: int
     keepdims: bool
     select_last_index: bool
     reduce_kind: str
-    input_dtype: ScalarType
-    output_dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
@@ -71,17 +60,13 @@ class ArgReduceOp(ReduceOpBase):
 @dataclass(frozen=True)
 class TopKOp(ReduceOpBase):
     input0: str
+    k_input: str
     output_values: str
     output_indices: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     axis: int
     k: int
     largest: bool
     sorted: bool
-    input_dtype: ScalarType
-    output_values_dtype: ScalarType
-    output_indices_dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
