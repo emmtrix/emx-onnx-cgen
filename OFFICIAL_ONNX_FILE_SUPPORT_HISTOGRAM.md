@@ -2,36 +2,35 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Missing output 1 in testbench data | 38 | ██████████████████████████████ |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 33 | ██████████████████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
-| Test data input count does not match model inputs: 1 vs 3. | 27 | █████████████████████ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████ |
-| Out of tolerance | 20 | ████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
-| Test data input count does not match model inputs: 1 vs 2. | 17 | █████████████ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███████████ |
+| Missing output 1 in testbench data | 41 | ██████████████████████████████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 33 | ████████████████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████ |
+| Test data input count does not match model inputs: 1 vs 3. | 27 | ████████████████████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████████████ |
+| Out of tolerance | 21 | ███████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████████████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | █████████████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | █████████████ |
+| Test data input count does not match model inputs: 1 vs 2. | 17 | ████████████ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ████████████ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ████████████ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ████████████ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ████████████ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ██████████ |
 | Missing output 2 in testbench data | 12 | █████████ |
 | Unsupported op ImageDecoder | 9 | ███████ |
 | '*' object has no attribute '*' | 8 | ██████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
 | tuple index out of range | 8 | ██████ |
-| Unsupported op TfIdfVectorizer | 7 | ██████ |
-| AveragePool has unsupported attributes | 6 | █████ |
-| Missing output 4 in testbench data | 6 | █████ |
-| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
-| Unsupported op CenterCropPad | 6 | █████ |
-| Unsupported op DFT | 6 | █████ |
-| Unsupported op ScatterElements | 6 | █████ |
-| Unsupported op Unique | 6 | █████ |
+| Unsupported op TfIdfVectorizer | 7 | █████ |
+| AveragePool has unsupported attributes | 6 | ████ |
+| Missing output 4 in testbench data | 6 | ████ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ████ |
+| Unsupported op CenterCropPad | 6 | ████ |
+| Unsupported op DFT | 6 | ████ |
+| Unsupported op ScatterElements | 6 | ████ |
+| Unsupported op Unique | 6 | ████ |
 | And expects identical input/output shapes | 5 | ████ |
-| AveragePool expects 2D kernel_shape | 5 | ████ |
 | Iteration of zero-sized operands is not enabled | 5 | ████ |
 | Or expects identical input/output shapes | 5 | ████ |
 | Test data input count does not match model inputs: 1 vs 5. | 5 | ████ |
@@ -70,37 +69,37 @@ Max relative difference among violations: 5.4
  ACTUAL: array([[  41,  -12,   -9],
        [   1,  -75, -128]], dtype=int8)
  DESIRED: array([[ 41, -12,  -9],
-       [  1, -75,  20]], dtype=int8) | 2 | ██ |
-| AveragePool supports ceil_mode=0 only | 2 | ██ |
-| BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
-| BitwiseAnd expects identical input/output shapes | 2 | ██ |
-| BitwiseOr expects identical input/output shapes | 2 | ██ |
-| BitwiseXor expects identical input/output shapes | 2 | ██ |
-| Failed to build testbench. | 2 | ██ |
-| Gelu only supports approximate=none | 2 | ██ |
-| LpPool expects 2D kernel_shape | 2 | ██ |
-| LpPool supports auto_pad=NOTSET only | 2 | ██ |
-| Pow expects matching dtypes, got float, int32 | 2 | ██ |
-| Pow expects matching dtypes, got float, int64 | 2 | ██ |
-| QuantizeLinear block_size is not supported | 2 | ██ |
-| Selu only supports alpha=1.6732632423543772 | 2 | ██ |
-| Test data input count does not match model inputs: 3 vs 5. | 2 | ██ |
-| ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
-| Tile repeats input must be a constant initializer | 2 | ██ |
-| Unsupported op Adam | 2 | ██ |
-| Unsupported op BitwiseNot | 2 | ██ |
-| Unsupported op BlackmanWindow | 2 | ██ |
-| Unsupported op ConvInteger | 2 | ██ |
-| Unsupported op Det | 2 | ██ |
-| Unsupported op Gradient | 2 | ██ |
-| Unsupported op HammingWindow | 2 | ██ |
-| Unsupported op HannWindow | 2 | ██ |
-| Unsupported op MaxUnpool | 2 | ██ |
-| Unsupported op ReverseSequence | 2 | ██ |
-| Unsupported op STFT | 2 | ██ |
-| Unsupported op Scan | 2 | ██ |
-| Unsupported op Scatter | 2 | ██ |
-| Unsupported op TreeEnsemble | 2 | ██ |
+       [  1, -75,  20]], dtype=int8) | 2 | █ |
+| AveragePool supports ceil_mode=0 only | 2 | █ |
+| BatchNormalization must have 5 inputs and 1 output | 2 | █ |
+| BitwiseAnd expects identical input/output shapes | 2 | █ |
+| BitwiseOr expects identical input/output shapes | 2 | █ |
+| BitwiseXor expects identical input/output shapes | 2 | █ |
+| Failed to build testbench. | 2 | █ |
+| Gelu only supports approximate=none | 2 | █ |
+| LpPool expects 2D kernel_shape | 2 | █ |
+| LpPool supports auto_pad=NOTSET only | 2 | █ |
+| Pow expects matching dtypes, got float, int32 | 2 | █ |
+| Pow expects matching dtypes, got float, int64 | 2 | █ |
+| QuantizeLinear block_size is not supported | 2 | █ |
+| Selu only supports alpha=1.6732632423543772 | 2 | █ |
+| Test data input count does not match model inputs: 3 vs 5. | 2 | █ |
+| ThresholdedRelu only supports alpha=1.0 | 2 | █ |
+| Tile repeats input must be a constant initializer | 2 | █ |
+| Unsupported op Adam | 2 | █ |
+| Unsupported op BitwiseNot | 2 | █ |
+| Unsupported op BlackmanWindow | 2 | █ |
+| Unsupported op ConvInteger | 2 | █ |
+| Unsupported op Det | 2 | █ |
+| Unsupported op Gradient | 2 | █ |
+| Unsupported op HammingWindow | 2 | █ |
+| Unsupported op HannWindow | 2 | █ |
+| Unsupported op MaxUnpool | 2 | █ |
+| Unsupported op ReverseSequence | 2 | █ |
+| Unsupported op STFT | 2 | █ |
+| Unsupported op Scan | 2 | █ |
+| Unsupported op Scatter | 2 | █ |
+| Unsupported op TreeEnsemble | 2 | █ |
 | 
 Arrays are not equal
 
@@ -143,6 +142,7 @@ Max relative difference among violations: 0.10344828
  DESIRED: array([[[ -86,  116,  119],
         [ 115,   39, -121]],
 ... | 1 | █ |
+| AveragePool supports 2D/3D inputs only | 1 | █ |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Graph must contain at least one node | 1 | █ |

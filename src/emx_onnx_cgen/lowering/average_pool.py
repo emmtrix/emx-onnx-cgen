@@ -12,16 +12,23 @@ from .registry import register_lowering
 class _AveragePoolSpec:
     batch: int
     channels: int
+    spatial_rank: int
+    in_d: int
     in_h: int
     in_w: int
+    out_d: int
     out_h: int
     out_w: int
+    kernel_d: int
     kernel_h: int
     kernel_w: int
+    stride_d: int
     stride_h: int
     stride_w: int
+    pad_front: int
     pad_top: int
     pad_left: int
+    pad_back: int
     pad_bottom: int
     pad_right: int
     count_include_pad: bool
@@ -75,47 +82,86 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     if kernel_shape is None:
         raise UnsupportedOpError("AveragePool requires kernel_shape")
     kernel_shape = tuple(int(value) for value in kernel_shape)
-    if len(kernel_shape) != 2:
-        raise UnsupportedOpError("AveragePool expects 2D kernel_shape")
-    kernel_h, kernel_w = kernel_shape
-    strides = tuple(int(value) for value in node.attrs.get("strides", (1, 1)))
-    if len(strides) != 2:
-        raise UnsupportedOpError("AveragePool expects 2D strides")
-    pads = tuple(int(value) for value in node.attrs.get("pads", (0, 0, 0, 0)))
-    if len(pads) != 4:
-        raise UnsupportedOpError("AveragePool expects 4D pads")
-    pad_top, pad_left, pad_bottom, pad_right = pads
     input_shape = _value_shape(graph, node.inputs[0], node)
-    if len(input_shape) != 4:
-        raise UnsupportedOpError("AveragePool supports NCHW 2D inputs only")
-    batch, channels, in_h, in_w = input_shape
-    stride_h, stride_w = strides
-    out_h = (in_h + pad_top + pad_bottom - kernel_h) // stride_h + 1
-    out_w = (in_w + pad_left + pad_right - kernel_w) // stride_w + 1
-    if out_h < 0 or out_w < 0:
+    if len(input_shape) < 3:
+        raise UnsupportedOpError("AveragePool expects NCHW inputs with spatial dims")
+    spatial_rank = len(input_shape) - 2
+    if spatial_rank not in {2, 3}:
+        raise UnsupportedOpError("AveragePool supports 2D/3D inputs only")
+    if len(kernel_shape) != spatial_rank:
         raise ShapeInferenceError(
-            "AveragePool output shape must be non-negative"
+            "AveragePool kernel_shape must have "
+            f"{spatial_rank} dims, got {kernel_shape}"
         )
+    strides = tuple(
+        int(value) for value in node.attrs.get("strides", (1,) * spatial_rank)
+    )
+    if len(strides) != spatial_rank:
+        raise UnsupportedOpError("AveragePool stride rank mismatch")
+    pads = tuple(
+        int(value) for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
+    )
+    if len(pads) != 2 * spatial_rank:
+        raise UnsupportedOpError("AveragePool pads rank mismatch")
+    batch, channels = input_shape[:2]
+    in_spatial = input_shape[2:]
+    out_spatial = []
+    pad_begin = pads[:spatial_rank]
+    pad_end = pads[spatial_rank:]
+    for dim, stride, kernel, pad_start, pad_finish in zip(
+        in_spatial, strides, kernel_shape, pad_begin, pad_end
+    ):
+        out_dim = (dim + pad_start + pad_finish - kernel) // stride + 1
+        if out_dim < 0:
+            raise ShapeInferenceError(
+                "AveragePool output shape must be non-negative"
+            )
+        out_spatial.append(out_dim)
     output_shape = _value_shape(graph, node.outputs[0], node)
-    expected_output_shape = (batch, channels, out_h, out_w)
+    expected_output_shape = (batch, channels, *out_spatial)
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "AveragePool output shape must be "
             f"{expected_output_shape}, got {output_shape}"
         )
+    in_d = in_spatial[0] if spatial_rank == 3 else 1
+    in_h = in_spatial[-2]
+    in_w = in_spatial[-1]
+    out_d = out_spatial[0] if spatial_rank == 3 else 1
+    out_h = out_spatial[-2]
+    out_w = out_spatial[-1]
+    kernel_d = kernel_shape[0] if spatial_rank == 3 else 1
+    kernel_h = kernel_shape[-2]
+    kernel_w = kernel_shape[-1]
+    stride_d = strides[0] if spatial_rank == 3 else 1
+    stride_h = strides[-2]
+    stride_w = strides[-1]
+    pad_front = pad_begin[0] if spatial_rank == 3 else 0
+    pad_top = pad_begin[-2]
+    pad_left = pad_begin[-1]
+    pad_back = pad_end[0] if spatial_rank == 3 else 0
+    pad_bottom = pad_end[-2]
+    pad_right = pad_end[-1]
     return _AveragePoolSpec(
         batch=batch,
         channels=channels,
+        spatial_rank=spatial_rank,
+        in_d=in_d,
         in_h=in_h,
         in_w=in_w,
+        out_d=out_d,
         out_h=out_h,
         out_w=out_w,
+        kernel_d=kernel_d,
         kernel_h=kernel_h,
         kernel_w=kernel_w,
+        stride_d=stride_d,
         stride_h=stride_h,
         stride_w=stride_w,
+        pad_front=pad_front,
         pad_top=pad_top,
         pad_left=pad_left,
+        pad_back=pad_back,
         pad_bottom=pad_bottom,
         pad_right=pad_right,
         count_include_pad=bool(count_include_pad),
@@ -128,29 +174,45 @@ def _resolve_global_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolS
     if node.attrs:
         raise UnsupportedOpError("GlobalAveragePool has unsupported attributes")
     input_shape = _value_shape(graph, node.inputs[0], node)
-    if len(input_shape) != 4:
-        raise UnsupportedOpError("GlobalAveragePool supports NCHW 2D inputs only")
-    batch, channels, in_h, in_w = input_shape
+    if len(input_shape) < 3:
+        raise UnsupportedOpError(
+            "GlobalAveragePool expects NCHW inputs with spatial dims"
+        )
+    spatial_rank = len(input_shape) - 2
+    if spatial_rank not in {2, 3}:
+        raise UnsupportedOpError("GlobalAveragePool supports 2D/3D inputs only")
+    batch, channels = input_shape[:2]
+    in_spatial = input_shape[2:]
     output_shape = _value_shape(graph, node.outputs[0], node)
-    expected_output_shape = (batch, channels, 1, 1)
+    expected_output_shape = (batch, channels, *([1] * spatial_rank))
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "GlobalAveragePool output shape must be "
             f"{expected_output_shape}, got {output_shape}"
         )
+    in_d = in_spatial[0] if spatial_rank == 3 else 1
+    in_h = in_spatial[-2]
+    in_w = in_spatial[-1]
     return _AveragePoolSpec(
         batch=batch,
         channels=channels,
+        spatial_rank=spatial_rank,
+        in_d=in_d,
         in_h=in_h,
         in_w=in_w,
+        out_d=1,
         out_h=1,
         out_w=1,
+        kernel_d=in_d,
         kernel_h=in_h,
         kernel_w=in_w,
+        stride_d=1,
         stride_h=1,
         stride_w=1,
+        pad_front=0,
         pad_top=0,
         pad_left=0,
+        pad_back=0,
         pad_bottom=0,
         pad_right=0,
         count_include_pad=False,
@@ -176,16 +238,23 @@ def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
         output=node.outputs[0],
         batch=spec.batch,
         channels=spec.channels,
+        spatial_rank=spec.spatial_rank,
+        in_d=spec.in_d,
         in_h=spec.in_h,
         in_w=spec.in_w,
+        out_d=spec.out_d,
         out_h=spec.out_h,
         out_w=spec.out_w,
+        kernel_d=spec.kernel_d,
         kernel_h=spec.kernel_h,
         kernel_w=spec.kernel_w,
+        stride_d=spec.stride_d,
         stride_h=spec.stride_h,
         stride_w=spec.stride_w,
+        pad_front=spec.pad_front,
         pad_top=spec.pad_top,
         pad_left=spec.pad_left,
+        pad_back=spec.pad_back,
         pad_bottom=spec.pad_bottom,
         pad_right=spec.pad_right,
         count_include_pad=spec.count_include_pad,
@@ -212,16 +281,23 @@ def lower_global_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
         output=node.outputs[0],
         batch=spec.batch,
         channels=spec.channels,
+        spatial_rank=spec.spatial_rank,
+        in_d=spec.in_d,
         in_h=spec.in_h,
         in_w=spec.in_w,
+        out_d=spec.out_d,
         out_h=spec.out_h,
         out_w=spec.out_w,
+        kernel_d=spec.kernel_d,
         kernel_h=spec.kernel_h,
         kernel_w=spec.kernel_w,
+        stride_d=spec.stride_d,
         stride_h=spec.stride_h,
         stride_w=spec.stride_w,
+        pad_front=spec.pad_front,
         pad_top=spec.pad_top,
         pad_left=spec.pad_left,
+        pad_back=spec.pad_back,
         pad_bottom=spec.pad_bottom,
         pad_right=spec.pad_right,
         count_include_pad=spec.count_include_pad,

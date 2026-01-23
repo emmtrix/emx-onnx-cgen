@@ -222,7 +222,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool supports 2D/3D inputs only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_default/model.onnx | ✅ | OK (max ULP 0) |
@@ -236,7 +236,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_same_lower/model.onnx | ❌ | AveragePool supports auto_pad=NOTSET only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_same_upper/model.onnx | ❌ | AveragePool supports auto_pad=NOTSET only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_strides/model.onnx | ❌ | Out of tolerance (max ULP 164) |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/model.onnx | ❌ | Out of tolerance (max ULP 28928) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | ❌ | AveragePool has unsupported attributes |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | ❌ | AveragePool has unsupported attributes |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | ❌ | AveragePool has unsupported attributes |
@@ -1674,9 +1674,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx | ❌ | Missing output 3 in testbench data |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d/model.onnx | ❌ | Missing output 1 in testbench data |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d_stride/model.onnx | ❌ | Missing output 1 in testbench data |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input/model.onnx | ❌ | AveragePool expects 2D kernel_shape |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d/model.onnx | ❌ | Missing output 1 in testbench data |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/model.onnx | ❌ | Missing output 1 in testbench data |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input/model.onnx | ❌ | Missing output 1 in testbench data |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx | ❌ | Test data input count does not match model inputs: 1 vs 5. |
