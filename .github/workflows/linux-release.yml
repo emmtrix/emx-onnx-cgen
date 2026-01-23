@@ -17,18 +17,19 @@ jobs:
 
       - name: Set up Python
         run: |
-          echo "/opt/python/cp311-cp311/bin" >> "$GITHUB_PATH"
-          python --version
+          python_bin="/opt/python/cp311-cp311/bin/python"
+          echo "PYTHON_BIN=${python_bin}" >> "$GITHUB_ENV"
+          "${python_bin}" --version
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements-ci.txt
-          python -m pip install pyinstaller
+          "${PYTHON_BIN}" -m pip install --upgrade pip
+          "${PYTHON_BIN}" -m pip install -r requirements-ci.txt
+          "${PYTHON_BIN}" -m pip install pyinstaller
 
       - name: Build PyInstaller bundle
         run: |
-          pyinstaller --clean --noconfirm --onedir --name emx-onnx-cgen --paths src src/emx_onnx_cgen/cli.py
+          "${PYTHON_BIN}" -m PyInstaller --clean --noconfirm --onedir --name emx-onnx-cgen --paths src src/emx_onnx_cgen/cli.py
 
       - name: Package bundle
         run: |
