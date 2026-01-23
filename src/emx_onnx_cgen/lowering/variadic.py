@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from shared.scalar_functions import ScalarFunction
-from shared.scalar_types import ScalarType
 
-from ..ir.ops import MultiInputBinaryOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
-from ..lowering.common import node_dtype, value_dtype, value_shape
+from ..ir.ops import MultiInputBinaryOp
 from ..lowering.registry import register_lowering
-from ..ops import binary_op_symbol
+from ..ops import OperatorKind
 
 VARIADIC_OP_FUNCTIONS: dict[str, ScalarFunction] = {
     "Sum": ScalarFunction.ADD,
@@ -32,62 +30,31 @@ BINARY_ONLY_OPS = {
     "BitwiseXor",
 }
 
-
-def _validate_inputs(
-    graph: Graph, node: Node, *, function: ScalarFunction
-) -> tuple[ScalarType, tuple[int, ...]]:
-    if len(node.outputs) != 1:
-        raise UnsupportedOpError(f"{node.op_type} must have 1 output")
-    if node.op_type in BINARY_ONLY_OPS:
-        if len(node.inputs) != 2:
-            raise UnsupportedOpError(
-                f"{node.op_type} must have exactly 2 inputs"
-            )
-    elif len(node.inputs) < 2:
-        raise UnsupportedOpError(
-            f"{node.op_type} must have at least 2 inputs"
-        )
-    for name in node.inputs:
-        if not name:
-            raise UnsupportedOpError(f"{node.op_type} input must be provided")
-    op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
-    output_dtype = value_dtype(graph, node.outputs[0], node)
-    if op_dtype != output_dtype:
-        raise UnsupportedOpError(
-            f"{node.op_type} expects matching input/output dtypes, "
-            f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
-        )
-    output_shape = value_shape(graph, node.outputs[0], node)
-    for name in node.inputs:
-        input_shape = value_shape(graph, name, node)
-        if input_shape != output_shape:
-            raise UnsupportedOpError(
-                f"{node.op_type} expects identical input/output shapes"
-            )
-    op_spec = binary_op_symbol(function, dtype=op_dtype, validate_attrs=False)
-    if op_spec is None:
-        raise UnsupportedOpError(
-            f"{node.op_type} does not support dtype {op_dtype.onnx_name}"
-        )
-    return op_dtype, output_shape
+VARIADIC_OP_OPERATOR_KINDS: dict[str, OperatorKind] = {
+    "Sum": OperatorKind.INFIX,
+    "Mean": OperatorKind.EXPR,
+    "Max": OperatorKind.FUNC,
+    "Min": OperatorKind.FUNC,
+    "And": OperatorKind.INFIX,
+    "Or": OperatorKind.INFIX,
+    "Xor": OperatorKind.INFIX,
+    "BitwiseAnd": OperatorKind.INFIX,
+    "BitwiseOr": OperatorKind.INFIX,
+    "BitwiseXor": OperatorKind.INFIX,
+}
 
 
 def _lower_variadic(graph: Graph, node: Node) -> MultiInputBinaryOp:
-    function = VARIADIC_OP_FUNCTIONS[node.op_type]
-    op_dtype, output_shape = _validate_inputs(graph, node, function=function)
-    op_spec = binary_op_symbol(function, dtype=op_dtype, validate_attrs=False)
-    if op_spec is None:
-        raise UnsupportedOpError(
-            f"{node.op_type} does not support dtype {op_dtype.onnx_name}"
-        )
+    if len(node.outputs) != 1:
+        raise UnsupportedOpError(f"{node.op_type} must have 1 output")
     return MultiInputBinaryOp(
+        op_type=node.op_type,
         inputs=tuple(node.inputs),
         output=node.outputs[0],
-        function=function,
-        operator_kind=op_spec.kind,
-        shape=output_shape,
-        dtype=op_dtype,
-        input_dtype=op_dtype,
+        function=VARIADIC_OP_FUNCTIONS[node.op_type],
+        operator_kind=VARIADIC_OP_OPERATOR_KINDS[node.op_type],
+        min_inputs=2,
+        max_inputs=2 if node.op_type in BINARY_ONLY_OPS else None,
     )
 
 
