@@ -22,7 +22,7 @@ from ..lowering.dropout import lower_dropout
 from ..lowering.cumsum import lower_cumsum
 from ..lowering.einsum import lower_einsum
 from ..lowering.flatten import lower_flatten
-from ..lowering.gemm import resolve_gemm_spec
+from ..ir.ops import GemmOp
 from ..lowering.logsoftmax import lower_logsoftmax
 from ..lowering.hardmax import lower_hardmax
 from ..lowering.lp_normalization import lower_lp_normalization
@@ -1024,20 +1024,51 @@ def _eval_gemm(evaluator: Evaluator, node: Node) -> None:
             f"{node.op_type} expects matching input/output dtypes, "
             f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
-    spec = resolve_gemm_spec(evaluator.graph, node, op_dtype)
+    alpha_attr = float(node.attrs.get("alpha", 1.0))
+    beta_attr = float(node.attrs.get("beta", 1.0))
+    trans_a_attr = int(node.attrs.get("transA", 0))
+    trans_b_attr = int(node.attrs.get("transB", 0))
+    alpha, beta, trans_a, trans_b = GemmOp._normalize_attrs(
+        op_dtype,
+        alpha=alpha_attr,
+        beta=beta_attr,
+        trans_a=trans_a_attr,
+        trans_b=trans_b_attr,
+    )
+    input0_shape = value_shape(evaluator.graph, node.inputs[0], node)
+    input1_shape = value_shape(evaluator.graph, node.inputs[1], node)
+    if len(input0_shape) != 2 or len(input1_shape) != 2:
+        raise UnsupportedOpError(
+            "Gemm supports 2D inputs only, "
+            f"got {input0_shape} x {input1_shape}"
+        )
+    if trans_a:
+        m, k_left = input0_shape[1], input0_shape[0]
+    else:
+        m, k_left = input0_shape
+    if trans_b:
+        n, k_right = input1_shape[0], input1_shape[1]
+    else:
+        k_right, n = input1_shape
+    if k_left != k_right:
+        raise ShapeInferenceError(
+            f"Gemm inner dimensions must match, got {k_left} and {k_right}"
+        )
+    output_shape = value_shape(evaluator.graph, node.outputs[0], node)
+    if output_shape != (m, n):
+        raise ShapeInferenceError(
+            f"Gemm output shape must be {(m, n)}, got {output_shape}"
+        )
+    if len(node.inputs) == 3:
+        bias_shape = value_shape(evaluator.graph, node.inputs[2], node)
+        GemmOp._validate_bias_shape((m, n), bias_shape)
     left = evaluator.values[node.inputs[0]]
     right = evaluator.values[node.inputs[1]]
-    if spec.trans_a:
+    if trans_a:
         left = left.T
-    if spec.trans_b:
+    if trans_b:
         right = right.T
     result = _apply_matmul(left, right)
-    if op_dtype.is_float:
-        alpha = float(spec.alpha)
-        beta = float(spec.beta)
-    else:
-        alpha = int(spec.alpha)
-        beta = int(spec.beta)
     if alpha != 1:
         result = result * alpha
     if len(node.inputs) == 3:

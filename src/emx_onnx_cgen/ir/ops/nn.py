@@ -6,7 +6,7 @@ from enum import Enum
 from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
-from ...errors import ShapeInferenceError
+from ...errors import ShapeInferenceError, UnsupportedOpError
 from ..op_base import ConvLikeOpBase, GemmLikeOpBase, MatMulLikeOpBase, RenderableOpBase
 from ..op_context import OpContext
 
@@ -29,23 +29,117 @@ def _shape_product(shape: tuple[int, ...]) -> int:
     return product
 
 
+def _broadcast_batch_shapes(
+    left: tuple[int, ...], right: tuple[int, ...]
+) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
+    max_rank = max(len(left), len(right))
+    left_padded = (1,) * (max_rank - len(left)) + left
+    right_padded = (1,) * (max_rank - len(right)) + right
+    broadcast_shape: list[int] = []
+    for left_dim, right_dim in zip(left_padded, right_padded):
+        if not (left_dim == right_dim or left_dim == 1 or right_dim == 1):
+            raise ShapeInferenceError(
+                "MatMul batch dimensions must be broadcastable, "
+                f"got {left} x {right}"
+            )
+        broadcast_shape.append(max(left_dim, right_dim))
+    return tuple(broadcast_shape), left_padded, right_padded
+
+
+def _resolve_matmul_spec(
+    ctx: OpContext, input0: str, input1: str
+) -> dict[str, object]:
+    input0_shape = ctx.shape(input0)
+    input1_shape = ctx.shape(input1)
+    if len(input0_shape) < 1 or len(input1_shape) < 1:
+        raise UnsupportedOpError(
+            "MatMul inputs must be at least 1D, "
+            f"got {input0_shape} x {input1_shape}"
+        )
+    left_vector = len(input0_shape) == 1
+    right_vector = len(input1_shape) == 1
+    input0_effective = (1, input0_shape[0]) if left_vector else input0_shape
+    input1_effective = (input1_shape[0], 1) if right_vector else input1_shape
+    m, k_left = input0_effective[-2], input0_effective[-1]
+    k_right, n = input1_effective[-2], input1_effective[-1]
+    if k_left != k_right:
+        raise ShapeInferenceError(
+            f"MatMul inner dimensions must match, got {k_left} and {k_right}"
+        )
+    batch_shape, input0_batch_shape, input1_batch_shape = (
+        _broadcast_batch_shapes(
+            input0_effective[:-2],
+            input1_effective[:-2],
+        )
+    )
+    if left_vector and right_vector:
+        output_shape = batch_shape
+    elif left_vector:
+        output_shape = batch_shape + (n,)
+    elif right_vector:
+        output_shape = batch_shape + (m,)
+    else:
+        output_shape = batch_shape + (m, n)
+    return {
+        "input0_shape": input0_shape,
+        "input1_shape": input1_shape,
+        "output_shape": output_shape,
+        "batch_shape": batch_shape,
+        "input0_batch_shape": input0_batch_shape,
+        "input1_batch_shape": input1_batch_shape,
+        "m": m,
+        "n": n,
+        "k": k_left,
+        "left_vector": left_vector,
+        "right_vector": right_vector,
+    }
+
+
 @dataclass(frozen=True)
 class MatMulOp(MatMulLikeOpBase):
     input0: str
     input1: str
     output: str
-    input0_shape: tuple[int, ...]
-    input1_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    batch_shape: tuple[int, ...]
-    input0_batch_shape: tuple[int, ...]
-    input1_batch_shape: tuple[int, ...]
-    m: int
-    n: int
-    k: int
-    left_vector: bool
-    right_vector: bool
-    dtype: ScalarType
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input0_dtype = ctx.dtype(self.input0)
+        input1_dtype = ctx.dtype(self.input1)
+        if input0_dtype != input1_dtype:
+            raise UnsupportedOpError(
+                "MatMul expects matching input dtypes, "
+                f"got {input0_dtype.onnx_name} and {input1_dtype.onnx_name}"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input0_dtype)
+            output_dtype = input0_dtype
+        if output_dtype != input0_dtype:
+            raise UnsupportedOpError(
+                "MatMul expects output dtype to match inputs, "
+                f"got {output_dtype.onnx_name} and {input0_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        spec = _resolve_matmul_spec(ctx, self.input0, self.input1)
+        output_shape = spec["output_shape"]
+        try:
+            expected = ctx.shape(self.output)
+        except ShapeInferenceError:
+            expected = None
+        if expected is not None and expected != output_shape:
+            raise ShapeInferenceError(
+                f"MatMul output shape must be {output_shape}, got {expected}"
+            )
+        ctx.set_shape(self.output, output_shape)
+        ctx.set_derived(self, "batch_shape", spec["batch_shape"])
+        ctx.set_derived(self, "input0_batch_shape", spec["input0_batch_shape"])
+        ctx.set_derived(self, "input1_batch_shape", spec["input1_batch_shape"])
+        ctx.set_derived(self, "m", spec["m"])
+        ctx.set_derived(self, "n", spec["n"])
+        ctx.set_derived(self, "k", spec["k"])
+        ctx.set_derived(self, "left_vector", spec["left_vector"])
+        ctx.set_derived(self, "right_vector", spec["right_vector"])
 
 @dataclass(frozen=True)
 class QLinearMatMulOp(MatMulLikeOpBase):
@@ -98,15 +192,139 @@ class GemmOp(GemmLikeOpBase):
     input_b: str
     input_c: str | None
     output: str
-    m: int
-    n: int
-    k: int
-    trans_a: bool
-    trans_b: bool
+    trans_a: int
+    trans_b: int
     alpha: float | int
     beta: float | int
-    c_shape: tuple[int, ...] | None
-    dtype: ScalarType
+
+    @staticmethod
+    def _normalize_attrs(
+        dtype: ScalarType,
+        *,
+        alpha: float | int,
+        beta: float | int,
+        trans_a: int,
+        trans_b: int,
+    ) -> tuple[float | int, float | int, bool, bool]:
+        if trans_a not in {0, 1} or trans_b not in {0, 1}:
+            raise UnsupportedOpError(
+                "Gemm only supports transA/transB values of 0 or 1"
+            )
+        if dtype == ScalarType.BOOL:
+            raise UnsupportedOpError("Gemm supports numeric inputs only")
+        if not dtype.is_float:
+            alpha_int = int(alpha)
+            beta_int = int(beta)
+            if alpha != alpha_int or beta != beta_int:
+                raise UnsupportedOpError(
+                    "Gemm alpha and beta must be integers for non-float inputs"
+                )
+            alpha = alpha_int
+            beta = beta_int
+        return alpha, beta, bool(trans_a), bool(trans_b)
+
+    @staticmethod
+    def _validate_bias_shape(
+        output_shape: tuple[int, int], bias_shape: tuple[int, ...]
+    ) -> tuple[int, ...]:
+        if len(bias_shape) == 0:
+            return bias_shape
+        if len(bias_shape) == 1:
+            if bias_shape[0] not in {1, output_shape[1]}:
+                raise ShapeInferenceError(
+                    "Gemm bias input must be broadcastable to output shape, "
+                    f"got {bias_shape} vs {output_shape}"
+                )
+            return bias_shape
+        if len(bias_shape) == 2:
+            m, n = output_shape
+            if bias_shape[0] not in {1, m} or bias_shape[1] not in {1, n}:
+                raise ShapeInferenceError(
+                    "Gemm bias input must be broadcastable to output shape, "
+                    f"got {bias_shape} vs {output_shape}"
+                )
+            return bias_shape
+        raise ShapeInferenceError(
+            f"Gemm bias input must be rank 1 or 2, got {bias_shape}"
+        )
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_a_dtype = ctx.dtype(self.input_a)
+        input_b_dtype = ctx.dtype(self.input_b)
+        if input_a_dtype != input_b_dtype:
+            raise UnsupportedOpError(
+                "Gemm expects matching input dtypes, "
+                f"got {input_a_dtype.onnx_name} and {input_b_dtype.onnx_name}"
+            )
+        if self.input_c is not None:
+            input_c_dtype = ctx.dtype(self.input_c)
+            if input_c_dtype != input_a_dtype:
+                raise UnsupportedOpError(
+                    "Gemm expects bias dtype to match inputs, "
+                    f"got {input_c_dtype.onnx_name} and {input_a_dtype.onnx_name}"
+                )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input_a_dtype)
+            output_dtype = input_a_dtype
+        if output_dtype != input_a_dtype:
+            raise UnsupportedOpError(
+                "Gemm expects output dtype to match inputs, "
+                f"got {output_dtype.onnx_name} and {input_a_dtype.onnx_name}"
+            )
+        alpha, beta, trans_a, trans_b = self._normalize_attrs(
+            output_dtype,
+            alpha=self.alpha,
+            beta=self.beta,
+            trans_a=self.trans_a,
+            trans_b=self.trans_b,
+        )
+        ctx.set_derived(self, "alpha", alpha)
+        ctx.set_derived(self, "beta", beta)
+        ctx.set_derived(self, "trans_a", trans_a)
+        ctx.set_derived(self, "trans_b", trans_b)
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        trans_a = ctx.require_derived(self, "trans_a")
+        trans_b = ctx.require_derived(self, "trans_b")
+        input_a_shape = ctx.shape(self.input_a)
+        input_b_shape = ctx.shape(self.input_b)
+        if len(input_a_shape) != 2 or len(input_b_shape) != 2:
+            raise UnsupportedOpError(
+                "Gemm supports 2D inputs only, "
+                f"got {input_a_shape} x {input_b_shape}"
+            )
+        if trans_a:
+            m, k_left = input_a_shape[1], input_a_shape[0]
+        else:
+            m, k_left = input_a_shape
+        if trans_b:
+            n, k_right = input_b_shape[0], input_b_shape[1]
+        else:
+            k_right, n = input_b_shape
+        if k_left != k_right:
+            raise ShapeInferenceError(
+                f"Gemm inner dimensions must match, got {k_left} and {k_right}"
+            )
+        output_shape = (m, n)
+        try:
+            expected = ctx.shape(self.output)
+        except ShapeInferenceError:
+            expected = None
+        if expected is not None and expected != output_shape:
+            raise ShapeInferenceError(
+                f"Gemm output shape must be {output_shape}, got {expected}"
+            )
+        ctx.set_shape(self.output, output_shape)
+        c_shape = None
+        if self.input_c is not None:
+            bias_shape = ctx.shape(self.input_c)
+            c_shape = self._validate_bias_shape(output_shape, bias_shape)
+        ctx.set_derived(self, "m", m)
+        ctx.set_derived(self, "n", n)
+        ctx.set_derived(self, "k", k_left)
+        ctx.set_derived(self, "c_shape", c_shape)
 
 @dataclass(frozen=True)
 class AttentionOp(RenderableOpBase):
