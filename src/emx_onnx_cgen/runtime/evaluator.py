@@ -7,7 +7,9 @@ import numpy as np
 
 from shared.scalar_types import ScalarType
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
+from ..ir.op_context import OpContext
 from ..lowering.attention import resolve_attention_spec
 from ..lowering.average_pool import lower_average_pool, lower_global_average_pool
 from ..lowering.adagrad import lower_adagrad
@@ -2021,8 +2023,13 @@ def _eval_nonzero(evaluator: Evaluator, node: Node) -> None:
 def _eval_expand(evaluator: Evaluator, node: Node) -> None:
     op = lower_expand(evaluator.graph, node)
     value = evaluator.values[op.input0]
+    op_ctx = OpContext(GraphContext(evaluator.graph))
+    op.validate(op_ctx)
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    output_shape = op_ctx.shape(op.output)
     evaluator.values[op.output] = np.broadcast_to(
-        value, op.output_shape
+        value, output_shape
     ).copy()
 
 

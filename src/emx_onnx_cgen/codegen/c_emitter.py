@@ -954,13 +954,13 @@ class CEmitter:
             )
         if isinstance(op, MultiInputBinaryOp):
             return MultiInputBinaryOp(
+                op_type=op.op_type,
                 inputs=tuple(name_map.get(name, name) for name in op.inputs),
                 output=name_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                min_inputs=op.min_inputs,
+                max_inputs=op.max_inputs,
             )
         if isinstance(op, WhereOp):
             return WhereOp(
@@ -1554,12 +1554,7 @@ class CEmitter:
                 data=name_map.get(op.data, op.data),
                 indices=name_map.get(op.indices, op.indices),
                 output=name_map.get(op.output, op.output),
-                data_shape=op.data_shape,
-                indices_shape=op.indices_shape,
-                output_shape=op.output_shape,
                 axis=op.axis,
-                dtype=op.dtype,
-                indices_dtype=op.indices_dtype,
             )
         if isinstance(op, GatherNDOp):
             return GatherNDOp(
@@ -1896,13 +1891,8 @@ class CEmitter:
         if isinstance(op, ExpandOp):
             return ExpandOp(
                 input0=name_map.get(op.input0, op.input0),
-                output=name_map.get(op.output, op.output),
                 input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                input_shape_padded=op.input_shape_padded,
-                input_strides=op.input_strides,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                output=name_map.get(op.output, op.output),
             )
         if isinstance(op, CumSumOp):
             return CumSumOp(
@@ -2233,8 +2223,8 @@ class CEmitter:
         ):
             testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
-            model,
-            resolved_ops,
+            original_model,
+            list(original_model.ops),
             emit_testbench=emit_testbench,
             extra_includes=scalar_includes | testbench_math_include,
             needs_weight_loader=bool(large_constants),
@@ -2380,8 +2370,8 @@ class CEmitter:
         ):
             testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
-            model,
-            resolved_ops,
+            original_model,
+            list(original_model.ops),
             emit_testbench=emit_testbench,
             extra_includes=scalar_includes | testbench_math_include,
             needs_weight_loader=bool(large_constants),
@@ -2790,8 +2780,17 @@ class CEmitter:
             *(const.dtype for const in model.constants),
             *constant_of_shape_inputs,
         }
+        def _resolved_output_dtype(op: OpBase) -> ScalarType:
+            if isinstance(op, MultiInputBinaryOp):
+                return model.op_context.dtype(op.inputs[0])
+            if isinstance(op, GatherOp):
+                return model.op_context.dtype(op.data)
+            if isinstance(op, ExpandOp):
+                return model.op_context.dtype(op.input0)
+            return op.dtype
+
         model_dtypes.update(
-            op.dtype
+            _resolved_output_dtype(op)
             for op in resolved_ops
             if not isinstance(op, (ArgReduceOp, TopKOp))
         )
@@ -3875,13 +3874,13 @@ class CEmitter:
             )
         if isinstance(op, MultiInputBinaryOp):
             return MultiInputBinaryOp(
+                op_type=op.op_type,
                 inputs=tuple(temp_map.get(name, name) for name in op.inputs),
                 output=temp_map.get(op.output, op.output),
                 function=op.function,
                 operator_kind=op.operator_kind,
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                min_inputs=op.min_inputs,
+                max_inputs=op.max_inputs,
             )
         if isinstance(op, WhereOp):
             return WhereOp(
@@ -4545,11 +4544,6 @@ class CEmitter:
                 indices=temp_map.get(op.indices, op.indices),
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
-                data_shape=op.data_shape,
-                indices_shape=op.indices_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
-                indices_dtype=op.indices_dtype,
             )
         if isinstance(op, GatherNDOp):
             return GatherNDOp(
@@ -4674,13 +4668,8 @@ class CEmitter:
         if isinstance(op, ExpandOp):
             return ExpandOp(
                 input0=temp_map.get(op.input0, op.input0),
-                output=temp_map.get(op.output, op.output),
                 input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                input_shape_padded=op.input_shape_padded,
-                input_strides=op.input_strides,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                output=temp_map.get(op.output, op.output),
             )
         if isinstance(op, CumSumOp):
             return CumSumOp(
@@ -7446,30 +7435,34 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            output_shape = CEmitter._codegen_shape(op.output_shape)
-            loop_vars = CEmitter._loop_vars(output_shape)
-            output_loop_vars = loop_vars if op.output_shape else ()
-            indices_rank = len(op.indices_shape)
+            output_shape_raw = self._ctx_shape(op.output)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_loop_vars = loop_vars if output_shape_raw else ()
+            indices_shape = self._ctx_shape(op.indices)
+            indices_rank = len(indices_shape)
             if indices_rank == 0:
                 indices_indices = ("0",)
             else:
-                indices_indices = output_loop_vars[
-                    op.axis : op.axis + indices_rank
-                ]
+                axis = int(self._derived(op, "axis"))
+                indices_indices = output_loop_vars[axis : axis + indices_rank]
+            axis = int(self._derived(op, "axis"))
             data_indices = [
-                *output_loop_vars[: op.axis],
+                *output_loop_vars[:axis],
                 "gather_index",
-                *output_loop_vars[op.axis + indices_rank :],
+                *output_loop_vars[axis + indices_rank :],
             ]
-            data_suffix = self._param_array_suffix(op.data_shape)
-            indices_suffix = self._param_array_suffix(op.indices_shape)
-            output_suffix = self._param_array_suffix(op.output_shape)
+            data_shape = self._ctx_shape(op.data)
+            data_suffix = self._param_array_suffix(data_shape)
+            indices_suffix = self._param_array_suffix(indices_shape)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            indices_dtype = self._ctx_dtype(op.indices)
             param_decls = self._build_param_decls(
                 [
                     (params["data"], c_type, data_suffix, True),
                     (
                         params["indices"],
-                        op.indices_dtype.c_type,
+                        indices_dtype.c_type,
                         indices_suffix,
                         True,
                     ),
@@ -7484,7 +7477,7 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
-                indices_c_type=op.indices_dtype.c_type,
+                indices_c_type=indices_dtype.c_type,
                 data_suffix=data_suffix,
                 indices_suffix=indices_suffix,
                 output_suffix=output_suffix,
@@ -7492,7 +7485,7 @@ class CEmitter:
                 loop_vars=loop_vars,
                 indices_indices=indices_indices,
                 data_indices=data_indices,
-                axis_dim=op.data_shape[op.axis],
+                axis_dim=data_shape[axis],
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GatherNDOp):
@@ -9139,15 +9132,17 @@ class CEmitter:
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
+            output_shape_raw = self._ctx_shape(op.output)
             output_shape = CEmitter._shape_dim_exprs(
-                op.output_shape, output_dim_names
+                output_shape_raw, output_dim_names
             )
-            loop_vars = CEmitter._loop_vars(op.output_shape)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            input_shape = self._ctx_shape(op.input0)
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0)
+                input_shape, _dim_names_for(op.input0)
             )
             output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
+                output_shape_raw, output_dim_names
             )
             param_decls = self._build_param_decls(
                 [
@@ -9155,10 +9150,12 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            input_shape_padded = self._derived(op, "input_shape_padded")
+            input_strides = self._derived(op, "input_strides")
             input_index_terms = [
                 f"{loop_var} * {stride}"
                 for loop_var, input_dim, stride in zip(
-                    loop_vars, op.input_shape_padded, op.input_strides
+                    loop_vars, input_shape_padded, input_strides
                 )
                 if input_dim != 1
             ]
@@ -10442,7 +10439,13 @@ class CEmitter:
             )
         if isinstance(op, NonMaxSuppressionOp):
             return ((op.output, op.output_shape, op.output_dtype),)
-        return ((op.output, self._op_output_shape(op), op.dtype),)
+        return (
+            (
+                op.output,
+                self._op_output_shape(op),
+                self._op_output_dtype(op),
+            ),
+        )
 
     def _op_output_shape(
         self,
@@ -10566,7 +10569,7 @@ class CEmitter:
         if isinstance(op, GatherElementsOp):
             return op.output_shape
         if isinstance(op, GatherOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, GatherNDOp):
             return op.output_shape
         if isinstance(op, ScatterNDOp):
@@ -10614,7 +10617,7 @@ class CEmitter:
         if isinstance(op, NonMaxSuppressionOp):
             return op.output_shape
         if isinstance(op, ExpandOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, CumSumOp):
             return op.input_shape
         if isinstance(op, RangeOp):
@@ -10700,10 +10703,12 @@ class CEmitter:
                 SoftmaxOp,
                 LogSoftmaxOp,
                 HardmaxOp,
+                GatherOp,
                 TransposeOp,
                 ReshapeOp,
                 IdentityOp,
                 ReduceOp,
+                ExpandOp,
             ),
         ):
             return self._ctx_dtype(op.output)
