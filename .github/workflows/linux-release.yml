@@ -47,7 +47,15 @@ jobs:
         run: |
           tar -czf emx-onnx-cgen-linux-amd64.tar.gz -C dist/emx-onnx-cgen .
 
+      - name: Upload workflow artifact
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: emx-onnx-cgen-linux-amd64
+          path: emx-onnx-cgen-linux-amd64.tar.gz
+
       - name: Upload release asset
+        if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v2
         with:
           files: emx-onnx-cgen-linux-amd64.tar.gz
