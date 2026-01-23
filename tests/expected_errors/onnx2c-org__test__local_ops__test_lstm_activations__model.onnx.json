@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 15064758)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_activations/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_lstm_activations/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_activations/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_lstm_activations/test_data_set_0",
   "operators": [
     "LSTM"
   ]

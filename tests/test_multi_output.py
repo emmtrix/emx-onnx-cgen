@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 from onnx import TensorProto, helper
 
@@ -31,9 +29,7 @@ def test_multi_output_graph_compile_and_run() -> None:
         [add_output, mul_output],
     )
     model = helper.make_model(graph)
-    compiler = Compiler(
-        CompilerOptions(template_dir=Path("templates"), model_name="multi")
-    )
+    compiler = Compiler(CompilerOptions(model_name="multi"))
     generated = compiler.compile(model)
     assert "void multi(" in generated
     assert "out_add[restrict 2][2]" in generated

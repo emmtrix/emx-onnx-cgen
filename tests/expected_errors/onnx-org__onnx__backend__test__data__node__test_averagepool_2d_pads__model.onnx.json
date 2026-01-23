@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 683)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/test_data_set_0",
   "operators": [
     "AveragePool"
   ]

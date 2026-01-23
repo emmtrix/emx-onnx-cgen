@@ -2522,7 +2522,6 @@ def _compile_and_run_testbench(
         c_path = temp_path / "model.c"
         exe_path = temp_path / "model"
         options = CompilerOptions(
-            template_dir=PROJECT_ROOT / "templates",
             emit_testbench=True,
             testbench_inputs=testbench_inputs,
         )

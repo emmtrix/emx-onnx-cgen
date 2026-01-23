@@ -1,6 +1,6 @@
 {
   "error": "onnx-reference failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx: Unable to find input 'sizes' in known results ['', 'X'], self.rt_inits_ has [], feed_inputs has ['X'].",
-  "command_line": "verify onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/test_data_set_0",
   "operators": [
     "Resize",
     "Constant"

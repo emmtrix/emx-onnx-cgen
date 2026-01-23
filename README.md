@@ -32,7 +32,7 @@ Key characteristics:
 
 - CLI for ONNX-to-C compilation and verification.
 - Deterministic codegen with explicit tensor shapes and loop nests.
-- Minimal C runtime templates in `templates/`.
+- Minimal C runtime templates in `src/emx_onnx_cgen/templates/`.
 - ONNX Runtime comparison for end-to-end validation.
 - Official ONNX operator coverage tracking.
 - Support for a wide range of ONNX operators (see `OFFICIAL_ONNX_FILE_SUPPORT.md`).
@@ -82,7 +82,6 @@ emx-onnx-cgen compile <model.onnx> <output.c> [options]
 
 Options:
 
-- `--template-dir`: Directory containing the C templates (default: `templates`).
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
@@ -98,7 +97,6 @@ emx-onnx-cgen verify <model.onnx> [options]
 
 Options:
 
-- `--template-dir`: Directory containing the C templates (default: `templates`).
 - `--model-name`: Override the generated model name (default: model file stem).
 - `--cc`: Explicit C compiler command for building the testbench binary.
 - `--large-weight-threshold`: Store weights larger than this element count in a binary file (default: `1024`).

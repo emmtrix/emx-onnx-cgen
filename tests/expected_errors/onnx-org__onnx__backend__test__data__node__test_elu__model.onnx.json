@@ -1,6 +1,6 @@
 {
   "error": "Elu only supports alpha=1.0",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_elu/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_elu/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_elu/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_elu/test_data_set_0",
   "operators": [
     "Elu"
   ]

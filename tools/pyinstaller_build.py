@@ -25,6 +25,8 @@ def main() -> int:
         "emx-onnx-cgen",
         "--paths",
         "src",
+        "--collect-data",
+        "emx_onnx_cgen",
         str(entrypoint_path),
     ]
 

@@ -1,6 +1,6 @@
 {
   "error": "QuantizeLinear block_size is not supported",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_symmetric/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_symmetric/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_symmetric/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_symmetric/test_data_set_0",
   "operators": [
     "QuantizeLinear"
   ]

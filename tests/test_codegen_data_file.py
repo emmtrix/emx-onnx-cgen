@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 from onnx import TensorProto, helper
 
@@ -33,9 +31,7 @@ def test_compile_with_data_file_emits_externs() -> None:
         [weights_initializer],
     )
     model = helper.make_model(graph)
-    compiler = Compiler(
-        CompilerOptions(template_dir=Path("templates"), model_name="const_data")
-    )
+    compiler = Compiler(CompilerOptions(model_name="const_data"))
     main_source, data_source = compiler.compile_with_data_file(model)
 
     assert "extern const float weight1_weights[2][2];" in main_source

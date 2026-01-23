@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op HannWindow",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric/test_data_set_0",
   "operators": [
     "HannWindow"
   ]

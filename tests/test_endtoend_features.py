@@ -66,10 +66,7 @@ def _compile_and_run_testbench(
         c_path = temp_path / "model.c"
         exe_path = temp_path / "model"
         if compiler_options is None:
-            compiler_options = CompilerOptions(
-                template_dir=PROJECT_ROOT / "templates",
-                emit_testbench=True,
-            )
+            compiler_options = CompilerOptions(emit_testbench=True)
         compiler = Compiler(compiler_options)
         generated = compiler.compile(model)
         c_path.write_text(generated, encoding="utf-8")
@@ -102,8 +99,6 @@ def _run_cli_verify(model_path: Path) -> None:
             "emx_onnx_cgen",
             "verify",
             str(model_path),
-            "--template-dir",
-            str(PROJECT_ROOT / "templates"),
         ],
         check=True,
         capture_output=True,
@@ -133,7 +128,6 @@ def test_testbench_accepts_constant_inputs() -> None:
         weights.shape
     )
     options = CompilerOptions(
-        template_dir=PROJECT_ROOT / "templates",
         emit_testbench=True,
         testbench_inputs={"in0": input_values},
     )

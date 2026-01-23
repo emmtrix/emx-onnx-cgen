@@ -1,6 +1,6 @@
 {
   "error": "Missing output 1 in testbench data",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3/test_data_set_0",
   "operators": [
     "LogSoftmax"
   ]

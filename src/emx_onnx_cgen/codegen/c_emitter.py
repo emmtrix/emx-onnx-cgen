@@ -9,7 +9,7 @@ import re
 import struct
 from typing import Mapping, Sequence
 
-from jinja2 import Environment, FileSystemLoader, Template, select_autoescape
+from jinja2 import Environment, FileSystemLoader, PackageLoader, Template, select_autoescape
 import numpy as np
 
 from ..errors import CodegenError
@@ -304,15 +304,20 @@ class _EmitState:
 class CEmitter:
     def __init__(
         self,
-        template_dir: Path,
+        template_dir: Path | None,
         *,
         restrict_arrays: bool = True,
         truncate_weights_after: int | None = None,
         large_temp_threshold_bytes: int = 1024,
         large_weight_threshold: int = 1024,
     ) -> None:
+        loader = (
+            FileSystemLoader(str(template_dir))
+            if template_dir is not None
+            else PackageLoader("emx_onnx_cgen", "templates")
+        )
         self._env = Environment(
-            loader=FileSystemLoader(str(template_dir)),
+            loader=loader,
             autoescape=select_autoescape(enabled_extensions=()),
             trim_blocks=True,
             lstrip_blocks=True,

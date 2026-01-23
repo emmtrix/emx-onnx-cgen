@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT/test_data_set_0",
   "operators": [
     "CastLike"
   ]

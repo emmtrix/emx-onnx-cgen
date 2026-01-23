@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 981668463)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx --template-dir templates --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx --cc /usr/bin/cc",
   "operators": [
     "ConstantOfShape",
     "Conv",

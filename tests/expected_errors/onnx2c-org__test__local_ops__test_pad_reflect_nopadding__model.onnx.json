@@ -1,6 +1,6 @@
 {
   "error": "onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_reflect_nopadding/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data'].",
-  "command_line": "verify onnx2c-org/test/local_ops/test_pad_reflect_nopadding/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_pad_reflect_nopadding/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_pad_reflect_nopadding/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_pad_reflect_nopadding/test_data_set_0",
   "operators": [
     "Pad",
     "Constant"
