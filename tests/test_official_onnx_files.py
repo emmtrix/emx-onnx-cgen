@@ -349,6 +349,16 @@ def test_official_onnx_expected_errors(
         "--cc",
         compiler_cmd[0],
     ]
+    if (
+        expectation.generated_checksum is not None
+        and not os.getenv("UPDATE_REFS")
+    ):
+        verify_args.extend(
+            [
+                "--expected-checksum",
+                expectation.generated_checksum,
+            ]
+        )
     if test_data_dir is not None:
         verify_args.extend(
             [
@@ -419,6 +429,16 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         "--cc",
         compiler_cmd[0],
     ]
+    if (
+        expectation.generated_checksum is not None
+        and not os.getenv("UPDATE_REFS")
+    ):
+        verify_args.extend(
+            [
+                "--expected-checksum",
+                expectation.generated_checksum,
+            ]
+        )
     if test_data_dir is not None:
         verify_args.extend(
             [
