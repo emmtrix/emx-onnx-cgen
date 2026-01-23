@@ -8,7 +8,7 @@ jobs:
   build-linux-bundle:
     runs-on: ubuntu-latest
     container:
-      image: quay.io/pypa/manylinux_2_28_x86_64
+      image: python:3.11-slim
     permissions:
       contents: write
     steps:
@@ -17,20 +17,25 @@ jobs:
 
       - name: Set up Python
         run: |
-          python_bin="/opt/python/cp311-cp311/bin/python"
-          echo "PYTHON_BIN=${python_bin}" >> "$GITHUB_ENV"
-          echo "LD_LIBRARY_PATH=/opt/python/cp311-cp311/lib:${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
-          "${python_bin}" --version
+          python --version
+          python -m pip --version
+
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential \
+          && rm -rf /var/lib/apt/lists/*
 
       - name: Install dependencies
         run: |
-          "${PYTHON_BIN}" -m pip install --upgrade pip
-          "${PYTHON_BIN}" -m pip install -r requirements-ci.txt
-          "${PYTHON_BIN}" -m pip install pyinstaller
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+          python -m pip install pyinstaller
 
       - name: Build PyInstaller bundle
         run: |
-          "${PYTHON_BIN}" -m PyInstaller --clean --noconfirm --onedir --name emx-onnx-cgen --paths src src/emx_onnx_cgen/cli.py
+          python -m PyInstaller --clean --noconfirm --onedir --name emx-onnx-cgen --paths src src/emx_onnx_cgen/cli.py
 
       - name: Package bundle
         run: |
