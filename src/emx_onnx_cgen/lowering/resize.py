@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import ResizeOp
+from ..ir.ops import ResizeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
 from .registry import register_lowering

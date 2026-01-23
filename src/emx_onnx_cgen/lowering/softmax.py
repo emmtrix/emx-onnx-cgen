@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import SoftmaxOp
+from ..ir.ops import SoftmaxOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype as _node_dtype

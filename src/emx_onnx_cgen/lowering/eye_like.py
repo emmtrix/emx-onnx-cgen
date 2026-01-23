@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import EyeLikeOp
+from ..ir.ops import EyeLikeOp
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node

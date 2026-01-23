@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from ..codegen.c_emitter import ConvTransposeOp
+from ..ir.ops import ConvTransposeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype as _node_dtype

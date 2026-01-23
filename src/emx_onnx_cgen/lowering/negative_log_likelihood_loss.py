@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import NegativeLogLikelihoodLossOp
+from ..ir.ops import NegativeLogLikelihoodLossOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
 from .common import shape_product as _shape_product

@@ -4,7 +4,7 @@ import numpy as np
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import PadOp
+from ..ir.ops import PadOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
 from ..lowering.common import optional_name, value_dtype, value_shape

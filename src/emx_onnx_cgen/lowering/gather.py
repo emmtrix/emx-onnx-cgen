@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import GatherOp
+from ..ir.ops import GatherOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import normalize_axis

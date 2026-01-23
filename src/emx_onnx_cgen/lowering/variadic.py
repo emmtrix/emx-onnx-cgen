@@ -3,7 +3,7 @@ from __future__ import annotations
 from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import MultiInputBinaryOp
+from ..ir.ops import MultiInputBinaryOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..lowering.common import node_dtype, value_dtype, value_shape

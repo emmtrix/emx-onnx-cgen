@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..codegen.c_emitter import AveragePoolOp
+from ..ir.ops import AveragePoolOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .registry import register_lowering

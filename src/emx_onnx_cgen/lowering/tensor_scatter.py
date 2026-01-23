@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import TensorScatterOp
+from ..ir.ops import TensorScatterOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import normalize_axis

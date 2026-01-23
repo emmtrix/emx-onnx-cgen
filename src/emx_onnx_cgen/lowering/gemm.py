@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import GemmOp
+from ..ir.ops import GemmOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype as _node_dtype

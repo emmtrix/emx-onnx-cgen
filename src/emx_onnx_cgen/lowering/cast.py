@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import onnx
 
-from ..codegen.c_emitter import CastOp
+from ..ir.ops import CastOp
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node

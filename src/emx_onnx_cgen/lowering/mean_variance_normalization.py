@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import MeanVarianceNormalizationOp
+from ..ir.ops import MeanVarianceNormalizationOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import ensure_output_shape_matches_input

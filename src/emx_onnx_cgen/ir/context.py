@@ -35,6 +35,9 @@ class GraphContext:
         self._dtype_cache[name] = dtype
         return dtype
 
+    def set_dtype(self, name: str, dtype: ScalarType) -> None:
+        self._dtype_cache[name] = dtype
+
     def shape(self, name: str, node: Node | None = None) -> tuple[int, ...]:
         if name in self._shape_cache:
             return self._shape_cache[name]
@@ -48,6 +51,9 @@ class GraphContext:
             ) from exc
         self._shape_cache[name] = value.type.shape
         return value.type.shape
+
+    def set_shape(self, name: str, shape: tuple[int, ...]) -> None:
+        self._shape_cache[name] = shape
 
     def initializer(self, name: str) -> Initializer | None:
         if name in self._initializer_cache:

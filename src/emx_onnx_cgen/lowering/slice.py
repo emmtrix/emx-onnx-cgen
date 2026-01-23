@@ -6,7 +6,7 @@ import numpy as np
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import SliceOp
+from ..ir.ops import SliceOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
 from ..lowering.common import value_dtype, value_shape

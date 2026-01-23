@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import ShapeOp
+from ..ir.ops import ShapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import value_dtype, value_shape

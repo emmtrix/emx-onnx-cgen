@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import ReshapeOp
+from ..ir.ops import ReshapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import shape_product, value_dtype, value_shape

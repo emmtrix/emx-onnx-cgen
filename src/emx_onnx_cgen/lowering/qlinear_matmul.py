@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import QLinearMatMulOp
+from ..ir.ops import QLinearMatMulOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import value_dtype as _value_dtype

@@ -6,7 +6,7 @@ import numpy as np
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import RangeOp
+from ..ir.ops import RangeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
 from ..lowering.common import node_dtype, value_shape

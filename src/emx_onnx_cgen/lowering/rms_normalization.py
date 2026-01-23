@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import RMSNormalizationOp
+from ..ir.ops import RMSNormalizationOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import ensure_output_shape_matches_input

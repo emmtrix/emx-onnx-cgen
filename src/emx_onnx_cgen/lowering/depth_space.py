@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import DepthToSpaceOp, SpaceToDepthOp
+from ..ir.ops import DepthToSpaceOp, SpaceToDepthOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..lowering.common import value_dtype, value_shape

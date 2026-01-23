@@ -4,7 +4,7 @@ from onnx import numpy_helper
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import ConstantOfShapeOp
+from ..ir.ops import ConstantOfShapeOp
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node

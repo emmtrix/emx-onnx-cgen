@@ -23,6 +23,7 @@ from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .ir.context import GraphContext
 from .ir.model import Graph, TensorType, Value
 from .ir.op_base import OpBase
+from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product, value_dtype
 from .lowering.registry import get_lowering_registry
@@ -170,6 +171,13 @@ class Compiler:
             output_dtypes,
         ) = self._collect_io_specs(graph)
         ops, node_infos = self._lower_nodes(ctx)
+        op_ctx = OpContext(ctx)
+        for op in ops:
+            op.validate(op_ctx)
+        for op in ops:
+            op.infer_types(op_ctx)
+        for op in ops:
+            op.infer_shapes(op_ctx)
         header = self._build_header(model, graph)
         return LoweredModel(
             name=self._options.model_name,
@@ -416,4 +424,3 @@ def _lowered_constants(graph: Graph | GraphContext) -> tuple[ConstTensor, ...]:
             )
         )
     return tuple(constants)
-

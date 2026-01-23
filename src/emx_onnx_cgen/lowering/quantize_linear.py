@@ -10,7 +10,7 @@ from ..ir.model import Graph, Node
 from ..validation import normalize_axis
 from .common import optional_name, value_dtype as _value_dtype, value_shape as _value_shape
 from .registry import register_lowering
-from ..codegen.c_emitter import QuantizeLinearOp
+from ..ir.ops import QuantizeLinearOp
 
 
 @dataclass(frozen=True)

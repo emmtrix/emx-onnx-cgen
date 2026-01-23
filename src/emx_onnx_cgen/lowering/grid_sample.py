@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import GridSampleOp
+from ..ir.ops import GridSampleOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import value_dtype, value_shape

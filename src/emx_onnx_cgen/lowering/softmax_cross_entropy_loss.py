@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import SoftmaxCrossEntropyLossOp
+from ..ir.ops import SoftmaxCrossEntropyLossOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import shape_product as _shape_product

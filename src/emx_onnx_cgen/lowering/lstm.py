@@ -323,7 +323,7 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
 
 @register_lowering("LSTM")
 def lower_lstm(graph: Graph, node: Node) -> "LstmOp":
-    from ..codegen.c_emitter import LstmOp
+    from ..ir.ops import LstmOp
 
     spec = resolve_lstm_spec(graph, node)
     return LstmOp(

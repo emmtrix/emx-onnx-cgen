@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import RotaryEmbeddingOp
+from ..ir.ops import RotaryEmbeddingOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import optional_name, value_dtype, value_shape

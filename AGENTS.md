@@ -33,6 +33,8 @@ When making architectural decisions, prefer clean and maintainable design even i
   Main package (or rename to your chosen package name).
 - `src/onnx2c/ir/`  
   Internal IR definitions (graph, tensors, types, attributes).
+- `src/onnx2c/ir/ops/`  
+  IR op dataclasses + validation/inference hooks.
 - `src/onnx2c/passes/`  
   Normalization + optimization passes.
 - `src/onnx2c/lowering/`  
@@ -142,13 +144,18 @@ UPDATE_REFS=1 pytest -n auto -q
    * Produce explicit tensor views / memory model
    * Decide storage (stack/static/global)
 
-6. **Code generation**
+6. **Validate/Infer**
+
+   * Validate lowered ops
+   * Infer dtypes and shapes
+
+7. **Code generation**
 
    * Emit `model.c/.h`
    * Emit kernels (or link runtime kernels)
    * Emit weights
 
-7. **Verification**
+8. **Verification**
 
    * Run ORT and generated code, compare numerically
    * Log max abs/rel error

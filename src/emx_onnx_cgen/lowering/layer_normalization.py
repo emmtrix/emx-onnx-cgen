@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import LayerNormalizationOp
+from ..ir.ops import LayerNormalizationOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import ensure_output_shape_matches_input

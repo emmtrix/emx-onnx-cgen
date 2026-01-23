@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..codegen.c_emitter import IdentityOp
+from ..ir.ops import IdentityOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import value_dtype, value_shape

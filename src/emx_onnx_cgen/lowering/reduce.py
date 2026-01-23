@@ -6,7 +6,7 @@ import numpy as np
 
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import ReduceOp, ReshapeOp
+from ..ir.ops import ReduceOp, ReshapeOp
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node

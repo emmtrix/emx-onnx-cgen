@@ -3,7 +3,7 @@ from __future__ import annotations
 from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from shared.scalar_types import ScalarType
 
-from ..codegen.c_emitter import BinaryOp, ClipOp, UnaryOp
+from ..ir.ops import BinaryOp, ClipOp, UnaryOp
 from ..errors import UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
