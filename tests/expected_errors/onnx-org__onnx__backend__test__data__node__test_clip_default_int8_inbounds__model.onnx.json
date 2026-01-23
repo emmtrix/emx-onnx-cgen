@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_default_int8_inbounds/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_default_int8_inbounds/test_data_set_0",
   "operators": [
     "Clip"
-  ]
+  ],
+  "opset_version": 13
 }

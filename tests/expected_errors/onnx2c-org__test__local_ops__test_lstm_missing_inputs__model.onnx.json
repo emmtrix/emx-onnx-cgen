@@ -3,5 +3,6 @@
   "command_line": "verify onnx2c-org/test/local_ops/test_lstm_missing_inputs/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_lstm_missing_inputs/test_data_set_0",
   "operators": [
     "LSTM"
-  ]
+  ],
+  "opset_version": 12
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_negative_axes_keepdims_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_negative_axes_keepdims_example/test_data_set_0",
   "operators": [
     "ReduceSumSquare"
-  ]
+  ],
+  "opset_version": 18
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mul/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mul/test_data_set_0",
   "operators": [
     "Mul"
-  ]
+  ],
+  "opset_version": 14
 }

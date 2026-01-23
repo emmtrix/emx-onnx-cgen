@@ -6,5 +6,6 @@
     "Constant",
     "Add",
     "Div"
-  ]
+  ],
+  "opset_version": 6
 }

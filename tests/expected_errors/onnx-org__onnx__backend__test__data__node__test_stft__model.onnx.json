@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_stft/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_stft/test_data_set_0",
   "operators": [
     "STFT"
-  ]
+  ],
+  "opset_version": 17
 }

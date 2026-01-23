@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/test_data_set_0",
   "operators": [
     "Conv"
-  ]
+  ],
+  "opset_version": 22
 }

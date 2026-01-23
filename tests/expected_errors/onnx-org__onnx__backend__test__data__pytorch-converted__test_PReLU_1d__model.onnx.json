@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/test_data_set_0",
   "operators": [
     "PRelu"
-  ]
+  ],
+  "opset_version": 6
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_axes_chw/test_data_set_0",
   "operators": [
     "CenterCropPad"
-  ]
+  ],
+  "opset_version": 18
 }

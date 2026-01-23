@@ -4,5 +4,6 @@
   "operators": [
     "Constant",
     "Add"
-  ]
+  ],
+  "opset_version": 6
 }

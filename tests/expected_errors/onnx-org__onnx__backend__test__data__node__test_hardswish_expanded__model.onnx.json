@@ -4,5 +4,6 @@
   "operators": [
     "HardSigmoid",
     "Mul"
-  ]
+  ],
+  "opset_version": 22
 }

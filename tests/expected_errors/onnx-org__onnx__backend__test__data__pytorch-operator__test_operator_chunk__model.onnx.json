@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/test_data_set_0",
   "operators": [
     "Split"
-  ]
+  ],
+  "opset_version": 6
 }

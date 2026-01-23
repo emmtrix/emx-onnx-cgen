@@ -4,5 +4,6 @@
   "operators": [
     "Constant",
     "Mul"
-  ]
+  ],
+  "opset_version": 13
 }

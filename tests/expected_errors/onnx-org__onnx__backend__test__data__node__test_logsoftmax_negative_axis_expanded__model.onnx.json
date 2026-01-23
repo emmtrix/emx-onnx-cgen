@@ -8,5 +8,6 @@
     "Exp",
     "ReduceSum",
     "Log"
-  ]
+  ],
+  "opset_version": 13
 }

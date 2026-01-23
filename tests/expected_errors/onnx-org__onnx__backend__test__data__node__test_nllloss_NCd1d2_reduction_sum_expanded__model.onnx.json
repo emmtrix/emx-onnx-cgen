@@ -9,5 +9,6 @@
     "Slice",
     "Squeeze",
     "ReduceSum"
-  ]
+  ],
+  "opset_version": 22
 }

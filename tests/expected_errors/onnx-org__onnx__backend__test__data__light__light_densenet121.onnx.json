@@ -13,5 +13,6 @@
     "Concat",
     "AveragePool",
     "GlobalAveragePool"
-  ]
+  ],
+  "opset_version": 9
 }

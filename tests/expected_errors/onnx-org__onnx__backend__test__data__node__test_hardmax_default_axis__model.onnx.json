@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hardmax_default_axis/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hardmax_default_axis/test_data_set_0",
   "operators": [
     "Hardmax"
-  ]
+  ],
+  "opset_version": 13
 }

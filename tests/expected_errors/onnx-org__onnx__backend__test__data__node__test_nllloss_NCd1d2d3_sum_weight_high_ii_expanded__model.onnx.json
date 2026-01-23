@@ -15,5 +15,6 @@
     "Squeeze",
     "Mul",
     "ReduceSum"
-  ]
+  ],
+  "opset_version": 22
 }

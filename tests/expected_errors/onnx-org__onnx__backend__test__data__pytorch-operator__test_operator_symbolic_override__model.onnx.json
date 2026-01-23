@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/test_data_set_0",
   "operators": [
     "InstanceNormalization"
-  ]
+  ],
+  "opset_version": 6
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint2/test_data_set_0",
   "operators": [
     "DequantizeLinear"
-  ]
+  ],
+  "opset_version": 25
 }

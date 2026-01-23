@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/test_data_set_0",
   "operators": [
     "Gather"
-  ]
+  ],
+  "opset_version": 6
 }

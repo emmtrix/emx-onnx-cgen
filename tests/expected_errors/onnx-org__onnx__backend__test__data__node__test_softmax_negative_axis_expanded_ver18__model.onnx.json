@@ -8,5 +8,6 @@
     "Exp",
     "ReduceSum",
     "Div"
-  ]
+  ],
+  "opset_version": 18
 }

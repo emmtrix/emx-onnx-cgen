@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_einsum_batch_diagonal/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_einsum_batch_diagonal/test_data_set_0",
   "operators": [
     "Einsum"
-  ]
+  ],
+  "opset_version": 12
 }

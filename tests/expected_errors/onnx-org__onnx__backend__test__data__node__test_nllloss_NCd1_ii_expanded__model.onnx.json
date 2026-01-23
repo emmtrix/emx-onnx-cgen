@@ -15,5 +15,6 @@
     "Mul",
     "ReduceSum",
     "Div"
-  ]
+  ],
+  "opset_version": 22
 }

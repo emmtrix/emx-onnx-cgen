@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_unique_not_sorted_without_axis/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_unique_not_sorted_without_axis/test_data_set_0",
   "operators": [
     "Unique"
-  ]
+  ],
+  "opset_version": 11
 }

@@ -19,5 +19,6 @@
     "Div",
     "Reshape",
     "Reciprocal"
-  ]
+  ],
+  "opset_version": 17
 }

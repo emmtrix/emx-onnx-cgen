@@ -6,5 +6,6 @@
     "CastLike",
     "Mul",
     "Sigmoid"
-  ]
+  ],
+  "opset_version": 24
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Transpose",
     "MatMul"
-  ]
+  ],
+  "opset_version": 6
 }

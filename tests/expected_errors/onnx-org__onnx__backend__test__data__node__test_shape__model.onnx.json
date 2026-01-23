@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shape/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_shape/test_data_set_0",
   "operators": [
     "Shape"
-  ]
+  ],
+  "opset_version": 25
 }

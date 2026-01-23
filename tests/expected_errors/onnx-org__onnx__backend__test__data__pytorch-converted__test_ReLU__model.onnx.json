@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/test_data_set_0",
   "operators": [
     "Relu"
-  ]
+  ],
+  "opset_version": 6
 }

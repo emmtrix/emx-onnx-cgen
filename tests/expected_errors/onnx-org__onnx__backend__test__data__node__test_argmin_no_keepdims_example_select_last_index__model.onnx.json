@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_example_select_last_index/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_example_select_last_index/test_data_set_0",
   "operators": [
     "ArgMin"
-  ]
+  ],
+  "opset_version": 13
 }

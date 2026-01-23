@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_scan_sum/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_scan_sum/test_data_set_0",
   "operators": [
     "Scan"
-  ]
+  ],
+  "opset_version": 8
 }

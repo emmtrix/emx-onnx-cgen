@@ -24,5 +24,6 @@
     "Add",
     "Tanh",
     "Softmax"
-  ]
+  ],
+  "opset_version": 23
 }

@@ -9,5 +9,6 @@
     "Slice",
     "Squeeze",
     "ReduceMean"
-  ]
+  ],
+  "opset_version": 22
 }

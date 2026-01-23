@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_size/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_size/test_data_set_0",
   "operators": [
     "Size"
-  ]
+  ],
+  "opset_version": 25
 }

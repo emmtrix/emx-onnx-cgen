@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2/test_data_set_0",
   "operators": [
     "Gelu"
-  ]
+  ],
+  "opset_version": 20
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_uint16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_uint16/test_data_set_0",
   "operators": [
     "Add"
-  ]
+  ],
+  "opset_version": 14
 }

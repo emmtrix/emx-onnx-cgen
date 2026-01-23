@@ -6,5 +6,6 @@
     "SequenceErase",
     "SequenceInsert",
     "SequenceAt"
-  ]
+  ],
+  "opset_version": 12
 }

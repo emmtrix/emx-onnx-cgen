@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/test_data_set_0",
   "operators": [
     "BitwiseXor"
-  ]
+  ],
+  "opset_version": 18
 }

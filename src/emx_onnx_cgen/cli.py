@@ -42,6 +42,7 @@ class CliResult:
     generated: str | None = None
     data_source: str | None = None
     operators: list[str] | None = None
+    opset_version: int | None = None
 
 
 def run_cli_command(
@@ -59,7 +60,7 @@ def run_cli_command(
 
     try:
         if args.command != "compile":
-            success_message, error, operators = _verify_model(
+            success_message, error, operators, opset_version = _verify_model(
                 args, include_build_details=False
             )
             return CliResult(
@@ -68,6 +69,7 @@ def run_cli_command(
                 error=error,
                 success_message=success_message,
                 operators=operators,
+                opset_version=opset_version,
             )
         generated, data_source, error = _compile_model(
             args, testbench_inputs=testbench_inputs
@@ -357,7 +359,7 @@ def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] 
 
 
 def _handle_verify(args: argparse.Namespace) -> int:
-    success_message, error, _operators = _verify_model(
+    success_message, error, _operators, _opset_version = _verify_model(
         args, include_build_details=True
     )
     if error is not None:
@@ -372,7 +374,7 @@ def _verify_model(
     args: argparse.Namespace,
     *,
     include_build_details: bool,
-) -> tuple[str | None, str | None, list[str]]:
+) -> tuple[str | None, str | None, list[str], int | None]:
     import numpy as np
 
     def log_step(step: str, started_at: float) -> None:
@@ -398,13 +400,15 @@ def _verify_model(
             None,
             "No C compiler found (set --cc or CC environment variable).",
             [],
+            None,
         )
     try:
         model = onnx.load_model(model_path)
     except OSError as exc:
-        return None, str(exc), []
+        return None, str(exc), [], None
 
     operators = _collect_model_operators(model)
+    opset_version = _model_opset_version(model)
     operators_display = ", ".join(operators) if operators else "(none)"
     LOGGER.info("verify operators: %s", operators_display)
 
@@ -426,14 +430,19 @@ def _verify_model(
         generated, weight_data = compiler.compile_with_weight_data(model)
         log_step("codegen", codegen_started)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
-        return None, str(exc), operators
+        return None, str(exc), operators, opset_version
 
     try:
         graph = import_onnx(model)
         output_dtypes = {value.name: value.type.dtype for value in graph.outputs}
         input_dtypes = {value.name: value.type.dtype for value in graph.inputs}
     except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
-        return None, f"Failed to resolve model dtype: {exc}", operators
+        return (
+            None,
+            f"Failed to resolve model dtype: {exc}",
+            operators,
+            opset_version,
+        )
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = Path(temp_dir)
@@ -469,7 +478,7 @@ def _verify_model(
                 details = exc.stderr.strip()
                 if details:
                     message = f"{message} {details}"
-            return None, message, operators
+            return None, message, operators, opset_version
         try:
             run_started = time.perf_counter()
             result = subprocess.run(
@@ -483,12 +492,17 @@ def _verify_model(
         except subprocess.CalledProcessError as exc:
             return None, (
                 "Testbench execution failed: " + describe_exit_code(exc.returncode)
-            ), operators
+            ), operators, opset_version
 
     try:
         payload = json.loads(result.stdout)
     except json.JSONDecodeError as exc:
-        return None, f"Failed to parse testbench JSON: {exc}", operators
+        return (
+            None,
+            f"Failed to parse testbench JSON: {exc}",
+            operators,
+            opset_version,
+        )
 
     if testbench_inputs:
         inputs = {
@@ -529,11 +543,12 @@ def _verify_model(
                 model_path,
                 message,
             )
-            return "", None, operators
+            return "", None, operators, opset_version
         return (
             None,
             f"{runtime_name} failed to run {model_path}: {message}",
             operators,
+            opset_version,
         )
     log_step(runtime_name, runtime_started)
     payload_outputs = payload.get("outputs", {})
@@ -554,10 +569,15 @@ def _verify_model(
             else:
                 np.testing.assert_array_equal(output_data, runtime_out)
     except AssertionError as exc:
-        return None, str(exc), operators
+        return None, str(exc), operators, opset_version
     if max_ulp > args.max_ulp:
-        return None, f"Out of tolerance (max ULP {max_ulp})", operators
-    return format_success_message(max_ulp), None, operators
+        return (
+            None,
+            f"Out of tolerance (max ULP {max_ulp})",
+            operators,
+            opset_version,
+        )
+    return format_success_message(max_ulp), None, operators, opset_version
 
 
 def _load_test_data_inputs(
@@ -620,3 +640,14 @@ def _collect_model_operators(model: onnx.ModelProto) -> list[str]:
         seen.add(op_name)
         operators.append(op_name)
     return operators
+
+
+def _model_opset_version(model: onnx.ModelProto, *, domain: str = "") -> int | None:
+    if not model.opset_import:
+        return None
+    domains = (domain,) if domain else ("", "ai.onnx")
+    for target_domain in domains:
+        for opset in model.opset_import:
+            if opset.domain == target_domain:
+                return opset.version
+    return None

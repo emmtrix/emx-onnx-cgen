@@ -7,5 +7,6 @@
     "Less",
     "Mul",
     "Where"
-  ]
+  ],
+  "opset_version": 16
 }

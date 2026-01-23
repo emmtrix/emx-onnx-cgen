@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/test_data_set_0",
   "operators": [
     "LessOrEqual"
-  ]
+  ],
+  "opset_version": 16
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv/test_data_set_0",
   "operators": [
     "Attention"
-  ]
+  ],
+  "opset_version": 24
 }

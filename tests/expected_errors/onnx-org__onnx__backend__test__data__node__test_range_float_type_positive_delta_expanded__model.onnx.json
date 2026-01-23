@@ -8,5 +8,6 @@
     "Ceil",
     "Relu",
     "Loop"
-  ]
+  ],
+  "opset_version": 11
 }

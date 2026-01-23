@@ -4,5 +4,6 @@
   "operators": [
     "SplitToSequence",
     "SequenceLength"
-  ]
+  ],
+  "opset_version": 12
 }

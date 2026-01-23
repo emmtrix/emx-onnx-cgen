@@ -4,5 +4,6 @@
   "operators": [
     "Constant",
     "Tile"
-  ]
+  ],
+  "opset_version": 9
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Sum",
     "Neg"
-  ]
+  ],
+  "opset_version": 6
 }

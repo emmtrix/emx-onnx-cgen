@@ -4,5 +4,6 @@
   "operators": [
     "Add",
     "Mul"
-  ]
+  ],
+  "opset_version": 6
 }

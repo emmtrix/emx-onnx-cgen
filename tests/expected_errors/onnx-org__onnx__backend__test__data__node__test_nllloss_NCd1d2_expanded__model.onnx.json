@@ -8,5 +8,6 @@
     "Neg",
     "Slice",
     "Squeeze"
-  ]
+  ],
+  "opset_version": 22
 }

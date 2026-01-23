@@ -4,5 +4,6 @@
   "operators": [
     "Slice",
     "Squeeze"
-  ]
+  ],
+  "opset_version": 6
 }

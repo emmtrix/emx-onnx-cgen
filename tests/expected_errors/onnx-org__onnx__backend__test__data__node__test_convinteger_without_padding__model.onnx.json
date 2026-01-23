@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_convinteger_without_padding/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_convinteger_without_padding/test_data_set_0",
   "operators": [
     "ConvInteger"
-  ]
+  ],
+  "opset_version": 10
 }

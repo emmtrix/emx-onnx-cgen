@@ -17,5 +17,6 @@
     "Unsqueeze",
     "Reshape",
     "MatMul"
-  ]
+  ],
+  "opset_version": 20
 }

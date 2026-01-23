@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop_example/test_data_set_0",
   "operators": [
     "ReduceSum"
-  ]
+  ],
+  "opset_version": 13
 }

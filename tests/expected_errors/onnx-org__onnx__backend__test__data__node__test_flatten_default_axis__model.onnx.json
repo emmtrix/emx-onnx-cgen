@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_flatten_default_axis/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_flatten_default_axis/test_data_set_0",
   "operators": [
     "Flatten"
-  ]
+  ],
+  "opset_version": 25
 }

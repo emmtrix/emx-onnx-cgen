@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_asin_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_asin_example/test_data_set_0",
   "operators": [
     "Asin"
-  ]
+  ],
+  "opset_version": 22
 }

@@ -11,5 +11,6 @@
     "Gemm",
     "Dropout",
     "Softmax"
-  ]
+  ],
+  "opset_version": 9
 }

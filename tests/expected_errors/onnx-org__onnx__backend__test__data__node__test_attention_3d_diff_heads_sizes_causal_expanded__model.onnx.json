@@ -27,5 +27,6 @@
     "Mul",
     "MatMul",
     "Softmax"
-  ]
+  ],
+  "opset_version": 23
 }

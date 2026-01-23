@@ -9,5 +9,6 @@
     "Sub",
     "Less",
     "Where"
-  ]
+  ],
+  "opset_version": 18
 }

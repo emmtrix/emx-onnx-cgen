@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_max_negative_axes_keepdims_random/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_max_negative_axes_keepdims_random/test_data_set_0",
   "operators": [
     "ReduceMax"
-  ]
+  ],
+  "opset_version": 18
 }

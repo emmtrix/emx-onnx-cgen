@@ -8,5 +8,6 @@
     "Add",
     "Min",
     "Max"
-  ]
+  ],
+  "opset_version": 18
 }

@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_qlinearconv/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_qlinearconv/test_data_set_0",
   "operators": [
     "QLinearConv"
-  ]
+  ],
+  "opset_version": 10
 }

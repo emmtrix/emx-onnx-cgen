@@ -5,5 +5,6 @@
     "Split",
     "Sigmoid",
     "Mul"
-  ]
+  ],
+  "opset_version": 6
 }

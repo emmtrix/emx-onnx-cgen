@@ -3,5 +3,6 @@
   "command_line": "verify onnx2c-org/test/local_ops/test_maxpool_stride_2/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_maxpool_stride_2/test_data_set_0",
   "operators": [
     "MaxPool"
-  ]
+  ],
+  "opset_version": 12
 }

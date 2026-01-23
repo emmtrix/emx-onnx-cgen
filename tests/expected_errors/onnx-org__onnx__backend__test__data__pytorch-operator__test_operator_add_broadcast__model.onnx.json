@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_broadcast/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_broadcast/test_data_set_0",
   "operators": [
     "Add"
-  ]
+  ],
+  "opset_version": 6
 }

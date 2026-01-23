@@ -15,5 +15,6 @@
     "Reshape",
     "Gemm",
     "Softmax"
-  ]
+  ],
+  "opset_version": 9
 }

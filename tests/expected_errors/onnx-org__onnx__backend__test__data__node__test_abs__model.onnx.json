@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_abs/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_abs/test_data_set_0",
   "operators": [
     "Abs"
-  ]
+  ],
+  "opset_version": 13
 }

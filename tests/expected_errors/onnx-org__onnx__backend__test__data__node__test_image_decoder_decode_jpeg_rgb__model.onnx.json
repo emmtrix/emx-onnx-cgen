@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_rgb/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_rgb/test_data_set_0",
   "operators": [
     "ImageDecoder"
-  ]
+  ],
+  "opset_version": 20
 }
