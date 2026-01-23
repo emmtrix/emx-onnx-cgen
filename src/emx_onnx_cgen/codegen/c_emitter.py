@@ -10953,10 +10953,6 @@ class CEmitter:
         dim_values: Mapping[str, int],
         weight_data_filename: str,
     ) -> str:
-        opset_version = self._model_opset_version(model.header.opset_imports)
-        opset_version_json = (
-            str(opset_version) if opset_version is not None else "null"
-        )
         input_counts = tuple(
             self._element_count(shape) for shape in model.input_shapes
         )
@@ -11044,27 +11040,9 @@ class CEmitter:
             ],
             inputs=inputs,
             outputs=outputs,
-            opset_version_json=opset_version_json,
             weight_data_filename=weight_data_filename,
         ).rstrip()
         return _format_c_indentation(rendered)
-
-    @staticmethod
-    def _model_opset_version(
-        opset_imports: tuple[tuple[str, int], ...],
-        *,
-        domain: str = "",
-    ) -> int | None:
-        if not opset_imports:
-            return None
-        primary_domains = (domain,)
-        if domain == "":
-            primary_domains = ("", "ai.onnx")
-        for primary_domain in primary_domains:
-            for opset_domain, version in opset_imports:
-                if opset_domain == primary_domain:
-                    return version
-        return None
 
     @staticmethod
     def _testbench_requires_math(

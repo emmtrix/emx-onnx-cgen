@@ -74,7 +74,7 @@ int main(void) {
     }
     {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
 
-    printf("{\"opset_version\":{{ opset_version_json }},\"inputs\":{");
+    printf("{\"inputs\":{");
 {% for input in inputs %}
 {% if not loop.first %}
     printf(",");
