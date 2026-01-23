@@ -39,7 +39,7 @@ def load_failing_entries() -> list[dict[str, str]]:
         reproduction_cmd = ""
         if expectation.command_line:
             reproduction_cmd = (
-                f"PYTHONPATH=src python -m emx_onnx_cgen.cli {expectation.command_line}"
+                f"PYTHONPATH=src python -m emx_onnx_cgen {expectation.command_line}"
             )
         entries.append(
             {
@@ -101,10 +101,8 @@ def main() -> None:
         "codegen/runtime match the backend tests."
     )
     prompt_lines.append(
-        "Verification hint: if the failure reports a missing output by name, "
-        "compare the model's graph output names against any testbench JSON keys "
-        "or sanitized C identifiers; mismatches can occur when output names are "
-        "not valid C identifiers."
+        "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
+        "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
