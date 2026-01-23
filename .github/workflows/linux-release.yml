@@ -1,6 +1,12 @@
 name: linux-release
 
 on:
+  workflow_dispatch:
+    inputs:
+      upload:
+        description: "Upload release asset"
+        required: false
+        default: "false"
   release:
     types: [published]
 
