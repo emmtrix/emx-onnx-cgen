@@ -15,7 +15,7 @@ dist_dir="${tmp_dir}/dist"
 build_dir="${tmp_dir}/build"
 spec_dir="${tmp_dir}/spec"
 
-bash "${repo_root}/tools/pyinstaller_build.sh" \
+python "${repo_root}/tools/pyinstaller_build.py" \
   --distpath "${dist_dir}" \
   --workpath "${build_dir}" \
   --specpath "${spec_dir}"
