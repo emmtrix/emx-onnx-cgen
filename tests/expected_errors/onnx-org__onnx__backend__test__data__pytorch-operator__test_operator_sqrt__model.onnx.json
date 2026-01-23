@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_sqrt/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_sqrt/test_data_set_0",
   "operators": [
     "Sqrt"
   ],
   "opset_version": 6,
-  "generated_checksum": "05fca7220bb7c34ea2c5d93881d9fe0547ae3a39428cc353bd42d1e783fc3f22"
+  "generated_checksum": "9c68724264812e57c18baa5cb63321a9f04f3571780594f5c5358df5044069e8"
 }

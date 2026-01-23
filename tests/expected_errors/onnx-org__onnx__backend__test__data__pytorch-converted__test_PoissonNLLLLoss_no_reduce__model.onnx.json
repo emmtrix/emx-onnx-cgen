@@ -1,5 +1,5 @@
 {
-  "error": "Missing output 4 in testbench data",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/test_data_set_0",
   "operators": [
     "Constant",
@@ -8,5 +8,5 @@
     "Sub"
   ],
   "opset_version": 6,
-  "generated_checksum": "ec2f73af03af383dbd4cf43708b502d5908ee3db5909a2c33456d43d1b83a96e"
+  "generated_checksum": "3d764c5e21b447eb2ab00c3f83dac38c1f17c1711391784076c92065713cb150"
 }

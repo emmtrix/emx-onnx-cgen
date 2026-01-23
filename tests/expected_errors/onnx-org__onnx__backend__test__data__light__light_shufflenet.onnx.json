@@ -1,4 +1,20 @@
 {
-  "error": "'gpu_0_data_0'",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx --cc /usr/bin/cc"
+  "error": "OK (max ULP 10)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx --cc /usr/bin/cc",
+  "operators": [
+    "ConstantOfShape",
+    "Conv",
+    "BatchNormalization",
+    "Relu",
+    "MaxPool",
+    "Reshape",
+    "Transpose",
+    "AveragePool",
+    "Concat",
+    "Sum",
+    "Gemm",
+    "Softmax"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "852d1f4fa2bdacf4406db9d5f12c231af7019b0f7dc31399e3b9238b4c47b8e3"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_mean/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_mean/test_data_set_0",
   "operators": [
     "ReduceMean"
   ],
   "opset_version": 6,
-  "generated_checksum": "3772bfb50a9d79a995e46bfce4d867ebbd4a105ed9f038af12ecc2cfb543507d"
+  "generated_checksum": "f2910a8052ad0c4e4dc228c02bc7f01a2e130eb14b5cbd4b686f7f15000d3449"
 }

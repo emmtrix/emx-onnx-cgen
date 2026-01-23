@@ -1,8 +1,9 @@
 {
-  "error": "Test data input count does not match model inputs: 1 vs 3.",
+  "error": "Missing output 3 in testbench data",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/test_data_set_0",
   "operators": [
     "Gemm"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "193e68ba1553480adbb99516b6f53088572ccbebb2827433ca9f029fc2117d9b"
 }

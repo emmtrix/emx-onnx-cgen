@@ -1,5 +1,5 @@
 {
-  "error": "Sum expects identical input/output shapes",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -10,5 +10,6 @@
     "Sum",
     "Mul"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "f5d6ac97dcc19330162ed896027ba66df0005834ad0b737a149fa55e153b1603"
 }

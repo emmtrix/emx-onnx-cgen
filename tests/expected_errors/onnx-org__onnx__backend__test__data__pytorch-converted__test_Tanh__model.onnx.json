@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Tanh/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Tanh/test_data_set_0",
   "operators": [
     "Tanh"
   ],
   "opset_version": 6,
-  "generated_checksum": "f5a1233d39ef93d13e52c5ce3179955f7a43a5b536104b5f307e467a46727865"
+  "generated_checksum": "edff924ee77d7da82e7ac59fa86ec32eba023d811dc8c7565de1cc531738666a"
 }

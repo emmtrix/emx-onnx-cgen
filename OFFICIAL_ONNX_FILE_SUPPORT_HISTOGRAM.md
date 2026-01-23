@@ -24,43 +24,40 @@
 | tuple index out of range | 8 | ██████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | AveragePool has unsupported attributes | 6 | █████ |
-| Missing output 4 in testbench data | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
 | Unsupported op CenterCropPad | 6 | █████ |
 | Unsupported op DFT | 6 | █████ |
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
-| And expects identical input/output shapes | 5 | ████ |
-| AveragePool expects 2D kernel_shape | 5 | ████ |
-| Iteration of zero-sized operands is not enabled | 5 | ████ |
-| Or expects identical input/output shapes | 5 | ████ |
-| Test data input count does not match model inputs: 1 vs 5. | 5 | ████ |
-| Unsupported op Col2Im | 5 | ████ |
-| Unsupported op DequantizeLinear | 5 | ████ |
-| Unsupported op If | 5 | ████ |
-| Xor expects identical input/output shapes | 5 | ████ |
-| Missing output 3 in testbench data | 4 | ███ |
-| Sum expects identical input/output shapes | 4 | ███ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
-| Unsupported op AffineGrid | 4 | ███ |
-| Unsupported op Compress | 4 | ███ |
-| Unsupported op DeformConv | 4 | ███ |
-| Unsupported op GRU | 4 | ███ |
-| Unsupported op OptionalHasElement | 4 | ███ |
-| Unsupported op RNN | 4 | ███ |
-| '*' | 3 | ██ |
-| AveragePool supports auto_pad=NOTSET only | 3 | ██ |
-| Elu only supports alpha=1.0 | 3 | ██ |
-| HardSigmoid only supports alpha=0.2 | 3 | ██ |
-| LeakyRelu only supports alpha=0.01 | 3 | ██ |
-| Min expects identical input/output shapes | 3 | ██ |
-| Unsupported op Bernoulli | 3 | ██ |
-| Unsupported op DynamicQuantizeLinear | 3 | ██ |
-| Unsupported op Loop | 3 | ██ |
-| Unsupported op Momentum | 3 | ██ |
-| Unsupported op RandomUniformLike | 3 | ██ |
-| Unsupported op RoiAlign | 3 | ██ |
-| name '*' is not defined | 3 | ██ |
+| And expects identical input/output shapes | 5 | █████ |
+| AveragePool expects 2D kernel_shape | 5 | █████ |
+| Iteration of zero-sized operands is not enabled | 5 | █████ |
+| Or expects identical input/output shapes | 5 | █████ |
+| Test data input count does not match model inputs: 1 vs 5. | 5 | █████ |
+| Unsupported op Col2Im | 5 | █████ |
+| Unsupported op DequantizeLinear | 5 | █████ |
+| Unsupported op If | 5 | █████ |
+| Xor expects identical input/output shapes | 5 | █████ |
+| Sum expects identical input/output shapes | 4 | ████ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ████ |
+| Unsupported op AffineGrid | 4 | ████ |
+| Unsupported op Compress | 4 | ████ |
+| Unsupported op DeformConv | 4 | ████ |
+| Unsupported op GRU | 4 | ████ |
+| Unsupported op OptionalHasElement | 4 | ████ |
+| Unsupported op RNN | 4 | ████ |
+| AveragePool supports auto_pad=NOTSET only | 3 | ███ |
+| Elu only supports alpha=1.0 | 3 | ███ |
+| HardSigmoid only supports alpha=0.2 | 3 | ███ |
+| LeakyRelu only supports alpha=0.01 | 3 | ███ |
+| Min expects identical input/output shapes | 3 | ███ |
+| Unsupported op Bernoulli | 3 | ███ |
+| Unsupported op DynamicQuantizeLinear | 3 | ███ |
+| Unsupported op Loop | 3 | ███ |
+| Unsupported op Momentum | 3 | ███ |
+| Unsupported op RandomUniformLike | 3 | ███ |
+| Unsupported op RoiAlign | 3 | ███ |
+| name '*' is not defined | 3 | ███ |
 | 
 Arrays are not equal
 
@@ -73,18 +70,15 @@ Max relative difference among violations: 5.4
        [  1, -75,  20]], dtype=int8) | 2 | ██ |
 | AveragePool supports ceil_mode=0 only | 2 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
-| BitwiseAnd expects identical input/output shapes | 2 | ██ |
-| BitwiseOr expects identical input/output shapes | 2 | ██ |
-| BitwiseXor expects identical input/output shapes | 2 | ██ |
 | Failed to build testbench. | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
 | LpPool expects 2D kernel_shape | 2 | ██ |
 | LpPool supports auto_pad=NOTSET only | 2 | ██ |
+| Missing output 6 in testbench data | 2 | ██ |
 | Pow expects matching dtypes, got float, int32 | 2 | ██ |
 | Pow expects matching dtypes, got float, int64 | 2 | ██ |
 | QuantizeLinear block_size is not supported | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
-| Test data input count does not match model inputs: 3 vs 5. | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
 | Tile repeats input must be a constant initializer | 2 | ██ |
 | Unsupported op Adam | 2 | ██ |
@@ -143,23 +137,23 @@ Max relative difference among violations: 0.10344828
  DESIRED: array([[[ -86,  116,  119],
         [ 115,   39, -121]],
 ... | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4, 5, 6), (3,) | 1 | █ |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
+| Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | LpPool supports dilations=1 only | 1 | █ |
-| Max expects identical input/output shapes | 1 | █ |
 | Max must have at least 2 inputs | 1 | █ |
 | Mean must have at least 2 inputs | 1 | █ |
 | Min must have at least 2 inputs | 1 | █ |
-| Missing output 5 in testbench data | 1 | █ |
-| Missing output 6 in testbench data | 1 | █ |
 | Pad value input must be a scalar | 1 | █ |
 | Pow expects matching dtypes, got float, uint32 | 1 | █ |
 | Pow expects matching dtypes, got float, uint64 | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
 | Sum must have at least 2 inputs | 1 | █ |
-| Test data input count does not match model inputs: 3 vs 6. | 1 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
@@ -167,6 +161,8 @@ Max relative difference among violations: 0.10344828
 | Unsupported op OptionalGetElement | 1 | █ |
 | Unsupported op QLinearConv | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
+| onnxruntime failed to run onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx: [ONNXRuntimeError] : 1 : FAIL : Fatal error: ai.onnx.preview.training:Adagrad(-1) is not a registered function/op | 1 | █ |
+| onnxruntime failed to run onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx: [ONNXRuntimeError] : 1 : FAIL : Fatal error: ai.onnx.preview.training:Adagrad(-1) is not a registered function/op | 1 | █ |
 
 ## Local ONNX file support histogram
 
@@ -177,7 +173,6 @@ Max relative difference among violations: 0.10344828
 | Out of tolerance | 2 | ██████████████████████████████ |
 | Unsupported LSTM direction b'*' | 2 | ██████████████████████████████ |
 | Unsupported op QLinearAdd | 2 | ██████████████████████████████ |
-| Unsupported op QLinearMul | 2 | ██████████████████████████████ |
 | 
 Arrays are not equal
 

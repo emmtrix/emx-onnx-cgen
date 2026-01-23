@@ -48,6 +48,7 @@ _LOWERING_MODULES = [
     "one_hot",
     "pad",
     "qlinear_matmul",
+    "qlinear_mul",
     "quantize_linear",
     "range",
     "reduce",

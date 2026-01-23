@@ -1,8 +1,9 @@
 {
-  "error": "Or expects identical input/output shapes",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_or_bcast4v4d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_or_bcast4v4d/test_data_set_0",
   "operators": [
     "Or"
   ],
-  "opset_version": 7
+  "opset_version": 7,
+  "generated_checksum": "222b7e621f6da31a291abefad44f25e7e0c3fc9880352b890458bb547db032f9"
 }

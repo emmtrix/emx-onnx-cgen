@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/test_data_set_0",
   "operators": [
     "Relu"
   ],
   "opset_version": 6,
-  "generated_checksum": "96822ac7187a36fbdd3d966f65b654c64de5639b1fadb57bb1ee129f60041bb4"
+  "generated_checksum": "fa822d9f66169a34d20dc79224adb9877d6ae9c4f5322490f417950969f43d60"
 }

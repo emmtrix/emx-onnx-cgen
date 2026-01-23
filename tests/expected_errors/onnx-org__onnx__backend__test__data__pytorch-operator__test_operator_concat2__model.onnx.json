@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 2 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_concat2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_concat2/test_data_set_0",
   "operators": [
     "Concat"
   ],
   "opset_version": 6,
-  "generated_checksum": "795482f4260bdee4b37b4b220dfa6b9f4cfd0421d1c9ed99b0f1f01f8a84af4f"
+  "generated_checksum": "043d82b8e624927d16744192ac3e2c6592571441a689b0551bd7081036618930"
 }

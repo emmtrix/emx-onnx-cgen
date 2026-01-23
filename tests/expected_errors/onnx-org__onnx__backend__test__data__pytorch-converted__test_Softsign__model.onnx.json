@@ -1,5 +1,5 @@
 {
-  "error": "Missing output 4 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign/test_data_set_0",
   "operators": [
     "Abs",
@@ -8,5 +8,5 @@
     "Div"
   ],
   "opset_version": 6,
-  "generated_checksum": "1df3f93b1d6e05ece160f48a2fba4489520c00005e54759f3fd629338e03aa15"
+  "generated_checksum": "25b6c777572f84c07d9303ed1d98ad09ab3936fed79c3938fc5b2ab73eb5c88c"
 }

@@ -1,10 +1,10 @@
 {
-  "error": "Missing output 2 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_index/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_index/test_data_set_0",
   "operators": [
     "Slice",
     "Squeeze"
   ],
   "opset_version": 6,
-  "generated_checksum": "0572a4d483c8c19e01ae8c737b4d4ee1c1bfbc84944400fe7f6b124b481f94fa"
+  "generated_checksum": "38af9f65d14b3fea0c67f4066da55c5c49e2691160def26635811c4c57765166"
 }

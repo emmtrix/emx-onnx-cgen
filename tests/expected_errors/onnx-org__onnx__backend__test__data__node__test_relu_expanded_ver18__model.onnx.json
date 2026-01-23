@@ -1,10 +1,11 @@
 {
-  "error": "Max expects identical input/output shapes",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
     "Max"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "81f9349ff190d65692e5cc9cb46a902067d7997db6b37b7b42caa403642b3a1b"
 }

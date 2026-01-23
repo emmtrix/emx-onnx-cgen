@@ -1,8 +1,9 @@
 {
-  "error": "BitwiseAnd expects identical input/output shapes",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/test_data_set_0",
   "operators": [
     "BitwiseAnd"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "b73a4370d11906de981fbfd75e08c5e5cce3fb5edeef063607e8bb5306a90000"
 }

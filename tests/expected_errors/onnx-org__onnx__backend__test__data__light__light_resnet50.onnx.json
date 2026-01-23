@@ -1,4 +1,18 @@
 {
-  "error": "'gpu_0_data_0'",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_resnet50.onnx --cc /usr/bin/cc"
+  "error": "Out of tolerance (max ULP 553)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_resnet50.onnx --cc /usr/bin/cc",
+  "operators": [
+    "ConstantOfShape",
+    "Conv",
+    "BatchNormalization",
+    "Relu",
+    "MaxPool",
+    "Sum",
+    "AveragePool",
+    "Reshape",
+    "Gemm",
+    "Softmax"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "bad30cc231f71ddd57443422b985b308341e047dc218b99e612cd9163fcbd03c"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 4 in testbench data",
+  "error": "OK (max ULP 32)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/test_data_set_0",
   "operators": [
     "Gemm"
   ],
   "opset_version": 6,
-  "generated_checksum": "59a3aba773e1869ff4398b19e6838f17ab7f13f03acbdae385b89acac212ea7e"
+  "generated_checksum": "848928b550d8490058846d7c14382be1cf8f12a00f45304e1269ad93826c487f"
 }

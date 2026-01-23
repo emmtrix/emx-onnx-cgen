@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool2d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool2d/test_data_set_0",
   "operators": [
     "MaxPool"
   ],
   "opset_version": 6,
-  "generated_checksum": "79f78ed1270933b8682d9268edc0d257d973a3352b728f93989eab408a9be337"
+  "generated_checksum": "8f26ebf6ed5ede0f5b136e2d9611d4678ae48b19b2b16e6c3db45fa876d6f63f"
 }

@@ -74,6 +74,11 @@ def main() -> None:
         "and onnx-org/onnx/backend/test/case/node for test inputs."
     )
     prompt_lines.append(
+        "Local ops hint: for com.microsoft operators or local test cases, "
+        "check onnx2c-org/test/local_ops for the model generator and "
+        "onnx2c-org/src/nodes for a reference implementation."
+    )
+    prompt_lines.append(
         "Implementation map: add/adjust lowering in src/emx_onnx_cgen/lowering/, "
         "wire codegen in src/emx_onnx_cgen/codegen/c_emitter.py with a matching "
         "templates/*_op.c.j2 file, update runtime/evaluator.py for numpy checks, "
@@ -83,6 +88,12 @@ def main() -> None:
         "Model inspection hint: when an input is dynamic (e.g., scalar tensors like "
         "TopK's k), check the model's input/output shapes via onnx.load(...) to "
         "see if the value can be inferred from value_info or output shapes."
+    )
+    prompt_lines.append(
+        "Input loading hint: ONNX graphs list initializers in graph.input, but "
+        "backend test data only includes non-initializer inputs. When matching "
+        "test_data_set_* input_*.pb files to model inputs, filter out initializers "
+        "(including sparse initializers) before comparing counts or assigning data."
     )
     prompt_lines.append(
         "Operator behavior hint: consult the ONNX reference op implementation to "
