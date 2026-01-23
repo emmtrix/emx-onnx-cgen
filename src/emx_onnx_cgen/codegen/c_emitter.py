@@ -1611,9 +1611,6 @@ class CEmitter:
             return IdentityOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, EyeLikeOp):
             return EyeLikeOp(
@@ -2846,15 +2843,18 @@ class CEmitter:
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, UnaryOp)
-            and unary_op_symbol(op.function, dtype=op.dtype) in {"llabs", "abs"}
+            and unary_op_symbol(
+                op.function, dtype=model.op_context.dtype(op.output)
+            )
+            in {"llabs", "abs"}
             for op in resolved_ops
         ):
             includes.add("#include <stdlib.h>")
         if any(isinstance(op, PadOp) for op in resolved_ops):
             includes.add("#include <stddef.h>")
-        if CEmitter._needs_math(resolved_ops):
+        if CEmitter._needs_math(resolved_ops, model.op_context):
             includes.add("#include <math.h>")
-        if CEmitter._needs_limits(resolved_ops):
+        if CEmitter._needs_limits(resolved_ops, model.op_context):
             includes.add("#include <limits.h>")
         if any(
             isinstance(op, (ConcatOp, ReshapeOp, SplitOp, IdentityOp))
@@ -2975,6 +2975,7 @@ class CEmitter:
             | OneHotOp
             | SplitOp
         ],
+        op_context: OpContext,
     ) -> bool:
         math_ops = {
             "atanhf",
@@ -2993,13 +2994,18 @@ class CEmitter:
 
         def is_binary_math_op(op: BinaryOp) -> bool:
             op_spec = binary_op_symbol(
-                op.function, dtype=op.input_dtype, validate_attrs=False
+                op.function,
+                dtype=op_context.dtype(op.input0),
+                validate_attrs=False,
             )
             return op_spec is not None and op_spec.operator in binary_math_ops
 
         if any(
             isinstance(op, UnaryOp)
-            and unary_op_symbol(op.function, dtype=op.dtype) in math_ops
+            and unary_op_symbol(
+                op.function, dtype=op_context.dtype(op.output)
+            )
+            in math_ops
             for op in resolved_ops
         ):
             return True
@@ -3017,7 +3023,7 @@ class CEmitter:
             return True
         if any(
             isinstance(op, ClipOp)
-            and op.dtype.is_float
+            and op_context.dtype(op.output).is_float
             and (op.input_min is None or op.input_max is None)
             for op in resolved_ops
         ):
@@ -3061,7 +3067,7 @@ class CEmitter:
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind in {"min", "max"}
-            and op.dtype.is_float
+            and op_context.dtype(op.output).is_float
             for op in resolved_ops
         ):
             return True
@@ -3138,11 +3144,13 @@ class CEmitter:
             | OneHotOp
             | SplitOp
         ],
+        op_context: OpContext,
     ) -> bool:
         if any(
             isinstance(op, ReduceOp)
             and op.reduce_kind in {"min", "max"}
-            and op.dtype in {
+            and op_context.dtype(op.output)
+            in {
                 ScalarType.I64,
                 ScalarType.I32,
                 ScalarType.I16,
@@ -3153,7 +3161,7 @@ class CEmitter:
             return True
         if any(
             isinstance(op, ClipOp)
-            and op.dtype.is_integer
+            and op_context.dtype(op.output).is_integer
             and (op.input_min is None or op.input_max is None)
             for op in resolved_ops
         ):
@@ -4707,9 +4715,6 @@ class CEmitter:
             return IdentityOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                shape=op.shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, EyeLikeOp):
             return EyeLikeOp(

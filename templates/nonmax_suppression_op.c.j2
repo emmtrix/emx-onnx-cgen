@@ -84,14 +84,14 @@ static inline int {{ op_name }}_suppress_by_iou(
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     idx_t output_index = 0;
     const idx_t output_capacity = {{ output_capacity }};
-    int64_t max_output_boxes_per_class = 0;
+    int64_t max_output_boxes_per_class_value = 0;
     {{ compute_type }} iou_threshold_value = {{ iou_threshold_default }};
     {{ compute_type }} score_threshold_value = {{ score_threshold_default }};
 {% if max_output_boxes_per_class %}
-    max_output_boxes_per_class =
+    max_output_boxes_per_class_value =
         (int64_t){{ max_output_boxes_per_class }}[0];
-    if (max_output_boxes_per_class < 0) {
-        max_output_boxes_per_class = 0;
+    if (max_output_boxes_per_class_value < 0) {
+        max_output_boxes_per_class_value = 0;
     }
 {% endif %}
 {% if iou_threshold %}
@@ -100,7 +100,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if score_threshold %}
     score_threshold_value = ({{ compute_type }}){{ score_threshold }}[0];
 {% endif %}
-    if (output_capacity == 0 || max_output_boxes_per_class == 0) {
+    if (output_capacity == 0 || max_output_boxes_per_class_value == 0) {
         for (idx_t idx = 0; idx < output_capacity; ++idx) {
             {{ output }}[idx][0] = 0;
             {{ output }}[idx][1] = 0;
@@ -146,7 +146,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
 
             for (idx_t candidate_pos = candidate_count; candidate_pos > 0; --candidate_pos) {
-                if (selected_count >= (idx_t)max_output_boxes_per_class) {
+                if (selected_count >= (idx_t)max_output_boxes_per_class_value) {
                     break;
                 }
                 idx_t candidate_index = candidate_indices[candidate_pos - 1];

@@ -15,7 +15,6 @@ def lower_identity(graph: Graph, node: Node) -> IdentityOp:
     output_shape = value_shape(graph, node.outputs[0], node)
     input_dim_params = graph.find_value(node.inputs[0]).type.dim_params
     output_dim_params = graph.find_value(node.outputs[0]).type.dim_params
-    resolved_shape = output_shape or input_shape
     if input_shape and output_shape:
         if len(input_shape) != len(output_shape):
             raise ShapeInferenceError("Identity input and output shapes must match")
@@ -38,7 +37,4 @@ def lower_identity(graph: Graph, node: Node) -> IdentityOp:
     return IdentityOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        shape=resolved_shape,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )

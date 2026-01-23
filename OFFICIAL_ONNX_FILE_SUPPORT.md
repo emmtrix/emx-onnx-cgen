@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1161 / 1802 official ONNX files.
+Support 1170 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1033,15 +1033,15 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_center_point_box_format/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_flipped_coordinates/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_identical_boxes/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_single_box/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_batches/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
-| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_classes/model.onnx | ❌ | 'NonMaxSuppressionOp' object has no attribute 'dtype' |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_center_point_box_format/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_flipped_coordinates/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_identical_boxes/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_single_box/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_batches/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_classes/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nonzero_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_not_3d/model.onnx | ✅ | OK (max ULP 0) |
