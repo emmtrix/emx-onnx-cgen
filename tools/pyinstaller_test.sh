@@ -21,5 +21,11 @@ bash "${repo_root}/tools/pyinstaller_build.sh" \
   --specpath "${spec_dir}"
 
 "${dist_dir}/emx-onnx-cgen/emx-onnx-cgen" --help >/dev/null
+compile_output="${tmp_dir}/single_relu.c"
+"${dist_dir}/emx-onnx-cgen/emx-onnx-cgen" compile \
+  "${repo_root}/onnx-org/examples/resources/single_relu.onnx" \
+  "${compile_output}" \
+  --template-dir "${repo_root}/templates"
+test -s "${compile_output}"
 
 echo "PyInstaller build succeeded."
