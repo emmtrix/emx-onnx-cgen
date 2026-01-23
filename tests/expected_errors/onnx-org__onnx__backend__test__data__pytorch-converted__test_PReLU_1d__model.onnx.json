@@ -1,8 +1,9 @@
 {
-  "error": "Test data input count does not match model inputs: 1 vs 2.",
+  "error": "Missing output 2 in testbench data",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/test_data_set_0",
   "operators": [
     "PRelu"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "3714f18fa829ba5612420af2d63c3a32c519e1334f12aee584f79e52959a8acd"
 }

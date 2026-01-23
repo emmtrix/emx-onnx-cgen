@@ -1,9 +1,10 @@
 {
-  "error": "Test data input count does not match model inputs: 1 vs 2.",
+  "error": "Missing output 3 in testbench data",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/test_data_set_0",
   "operators": [
     "Transpose",
     "MatMul"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "1ff2dc153afbe3dc0742ba05be9095710016aedf984107b7e9840cef01dfff5f"
 }

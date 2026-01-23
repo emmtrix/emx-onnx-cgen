@@ -90,6 +90,12 @@ def main() -> None:
         "see if the value can be inferred from value_info or output shapes."
     )
     prompt_lines.append(
+        "Input loading hint: ONNX graphs list initializers in graph.input, but "
+        "backend test data only includes non-initializer inputs. When matching "
+        "test_data_set_* input_*.pb files to model inputs, filter out initializers "
+        "(including sparse initializers) before comparing counts or assigning data."
+    )
+    prompt_lines.append(
         "Operator behavior hint: consult the ONNX reference op implementation to "
         "capture tie-break rules, optional input defaults, and output ordering so "
         "codegen/runtime match the backend tests."
