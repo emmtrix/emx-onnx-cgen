@@ -4,5 +4,6 @@
   "operators": [
     "DepthToSpace"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "72ac316621cc6b39aae940a4704f070ea3edb41f4910b692e2ba118bc8b54f7c"
 }

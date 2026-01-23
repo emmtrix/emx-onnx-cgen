@@ -4,5 +4,6 @@
   "operators": [
     "Min"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "ee35efcd296d0aed6de0ee7d5ec991b7922f5bb6af686a993a8c53c93ee82768"
 }

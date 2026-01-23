@@ -4,5 +4,6 @@
   "operators": [
     "InstanceNormalization"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "7372964676166593ed9943f3486f01b392cd1232110b667fb59d69ee88c87ece"
 }

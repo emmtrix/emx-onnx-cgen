@@ -4,5 +4,6 @@
   "operators": [
     "MaxPool"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "d617f3d794b65465495d0d0ba02a66b611196c9f74e78ddc90ccbbf78346f826"
 }

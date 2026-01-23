@@ -4,5 +4,6 @@
   "operators": [
     "Asinh"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "78ff3df6baf63a6443f4a830bf9be2ed9ee39a1e3f4acac2a9a148b40b6dd062"
 }

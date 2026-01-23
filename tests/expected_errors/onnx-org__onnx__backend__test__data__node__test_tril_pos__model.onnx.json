@@ -4,5 +4,6 @@
   "operators": [
     "Trilu"
   ],
-  "opset_version": 14
+  "opset_version": 14,
+  "generated_checksum": "4f0f9fbe41667e345bc46f3de5d9207425b5f8478d2b59f6657be831dbae0449"
 }

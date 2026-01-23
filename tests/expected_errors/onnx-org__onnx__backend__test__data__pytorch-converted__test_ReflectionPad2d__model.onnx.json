@@ -4,5 +4,6 @@
   "operators": [
     "Pad"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "4067f5b49a0553991d4ea568d6813d63e898a522fb46a4825994d1772913708f"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Swish"
   ],
-  "opset_version": 24
+  "opset_version": 24,
+  "generated_checksum": "c08bc37318eb7b84ec215092affe4d1d1b5654975877649f0a31d72f1de81fd0"
 }

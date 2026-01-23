@@ -4,5 +4,6 @@
   "operators": [
     "Max"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "78ef174d4ff87d276cbce0f65877f6e7e0fa9b026a3d58ac35e035b175bc5c64"
 }

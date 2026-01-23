@@ -4,5 +4,6 @@
   "operators": [
     "SoftmaxCrossEntropyLoss"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "4491a0709d3fe2ed0e741be6094ef9ed13dd83b609141c578bc3a23ab111449d"
 }

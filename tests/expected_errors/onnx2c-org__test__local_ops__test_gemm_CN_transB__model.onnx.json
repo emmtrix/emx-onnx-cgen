@@ -4,5 +4,6 @@
   "operators": [
     "Gemm"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "1addcb51d40777dd288f7a862ad096e18acba9464826692ed965e914b2cdb9ea"
 }

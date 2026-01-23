@@ -4,5 +4,6 @@
   "operators": [
     "Not"
   ],
-  "opset_version": 1
+  "opset_version": 1,
+  "generated_checksum": "fff53371e2d015a471f51649c13c95481f85ecbb5099a72297fbb524c39b938b"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Neg"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "8507bf4f3ac88ed50877c82007a01822c222104fba23e83d409752ee03c800c6"
 }

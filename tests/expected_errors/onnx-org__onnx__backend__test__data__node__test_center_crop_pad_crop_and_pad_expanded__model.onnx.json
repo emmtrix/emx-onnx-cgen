@@ -12,5 +12,6 @@
     "Add",
     "Slice"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "db92141897f155977e136735a8637f071d50b29a97c0e351dcdd211d6af6b811"
 }

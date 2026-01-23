@@ -4,5 +4,6 @@
   "operators": [
     "Sin"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "6ea61a3c3dd4b582e18f7a1f07d273d578e8d64d0b896235dad545cea3e8bbd3"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "LpPool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "8d304feb73582aab06c102f9022678e34ca4be49afcbe086cae999a52c868bbd"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "EyeLike"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "06903d19169da74a4ae72962205ccdfde388cb936b187ed7fb0911110b652b06"
 }

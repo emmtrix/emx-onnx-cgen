@@ -4,5 +4,6 @@
   "operators": [
     "Cos"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "9b8161292769d426535aa324f093ec9391318122196c4f0e5002494981452405"
 }

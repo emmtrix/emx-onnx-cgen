@@ -4,5 +4,6 @@
   "operators": [
     "ConvTranspose"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "b9edb195b2e354d1015e60eec900e3477c012ef340b3866af8e47d8d8fc975c6"
 }

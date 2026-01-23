@@ -6,5 +6,6 @@
     "Sigmoid",
     "Mul"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "32bc422e63e6ddba10a47a18e4dd6afbc3b02374d68c1099d562c7752fa34248"
 }

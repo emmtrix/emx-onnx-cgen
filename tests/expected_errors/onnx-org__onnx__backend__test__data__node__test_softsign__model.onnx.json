@@ -4,5 +4,6 @@
   "operators": [
     "Softsign"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "2c98b1da8aa5e0e41e40d3d380f27526bbf83fb725519f71d6fdb3fd62959446"
 }

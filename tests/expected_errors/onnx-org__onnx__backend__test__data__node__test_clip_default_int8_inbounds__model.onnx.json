@@ -4,5 +4,6 @@
   "operators": [
     "Clip"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "a00b8865b7182f24cf1d712d4aef2a5262433dbc1c9d0e6388b244a0bc755eb4"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Or"
   ],
-  "opset_version": 7
+  "opset_version": 7,
+  "generated_checksum": "a1ebe8497275370027a246fa5fa6e504a5a8435426a8da06d2c7616b2746df45"
 }

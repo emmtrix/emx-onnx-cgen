@@ -11,5 +11,6 @@
     "GlobalAveragePool",
     "Softmax"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "c0f0981fa950ae3b3531c5b48686c32568c3775c589a56d01c4a7bb9527a2ddd"
 }

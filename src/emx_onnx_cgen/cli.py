@@ -43,6 +43,7 @@ class CliResult:
     data_source: str | None = None
     operators: list[str] | None = None
     opset_version: int | None = None
+    generated_checksum: str | None = None
 
 
 def run_cli_command(
@@ -60,7 +61,13 @@ def run_cli_command(
 
     try:
         if args.command != "compile":
-            success_message, error, operators, opset_version = _verify_model(
+            (
+                success_message,
+                error,
+                operators,
+                opset_version,
+                generated_checksum,
+            ) = _verify_model(
                 args, include_build_details=False
             )
             return CliResult(
@@ -70,6 +77,7 @@ def run_cli_command(
                 success_message=success_message,
                 operators=operators,
                 opset_version=opset_version,
+                generated_checksum=generated_checksum,
             )
         generated, data_source, error = _compile_model(
             args, testbench_inputs=testbench_inputs
@@ -359,14 +367,20 @@ def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] 
 
 
 def _handle_verify(args: argparse.Namespace) -> int:
-    success_message, error, _operators, _opset_version = _verify_model(
-        args, include_build_details=True
-    )
+    (
+        success_message,
+        error,
+        _operators,
+        _opset_version,
+        generated_checksum,
+    ) = _verify_model(args, include_build_details=True)
     if error is not None:
         LOGGER.error("Verification failed: %s", error)
         return 1
     if success_message:
         LOGGER.info("%s", success_message)
+    if generated_checksum:
+        LOGGER.info("verify generated checksum (sha256): %s", generated_checksum)
     return 0
 
 
@@ -374,7 +388,7 @@ def _verify_model(
     args: argparse.Namespace,
     *,
     include_build_details: bool,
-) -> tuple[str | None, str | None, list[str], int | None]:
+) -> tuple[str | None, str | None, list[str], int | None, str | None]:
     import numpy as np
 
     def log_step(step: str, started_at: float) -> None:
@@ -401,11 +415,12 @@ def _verify_model(
             "No C compiler found (set --cc or CC environment variable).",
             [],
             None,
+            None,
         )
     try:
         model = onnx.load_model(model_path)
     except OSError as exc:
-        return None, str(exc), [], None
+        return None, str(exc), [], None, None
 
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
@@ -430,7 +445,7 @@ def _verify_model(
         generated, weight_data = compiler.compile_with_weight_data(model)
         log_step("codegen", codegen_started)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
-        return None, str(exc), operators, opset_version
+        return None, str(exc), operators, opset_version, None
 
     try:
         graph = import_onnx(model)
@@ -442,6 +457,7 @@ def _verify_model(
             f"Failed to resolve model dtype: {exc}",
             operators,
             opset_version,
+            None,
         )
 
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -450,6 +466,7 @@ def _verify_model(
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
         exe_path = temp_path / "model"
+        generated_checksum = _generated_checksum(generated)
         c_path.write_text(generated, encoding="utf-8")
         if weight_data is not None:
             weights_path.write_bytes(weight_data)
@@ -478,7 +495,7 @@ def _verify_model(
                 details = exc.stderr.strip()
                 if details:
                     message = f"{message} {details}"
-            return None, message, operators, opset_version
+            return None, message, operators, opset_version, generated_checksum
         try:
             run_started = time.perf_counter()
             result = subprocess.run(
@@ -492,7 +509,7 @@ def _verify_model(
         except subprocess.CalledProcessError as exc:
             return None, (
                 "Testbench execution failed: " + describe_exit_code(exc.returncode)
-            ), operators, opset_version
+            ), operators, opset_version, generated_checksum
 
     try:
         payload = json.loads(result.stdout)
@@ -502,6 +519,7 @@ def _verify_model(
             f"Failed to parse testbench JSON: {exc}",
             operators,
             opset_version,
+            generated_checksum,
         )
 
     if testbench_inputs:
@@ -543,12 +561,13 @@ def _verify_model(
                 model_path,
                 message,
             )
-            return "", None, operators, opset_version
+            return "", None, operators, opset_version, generated_checksum
         return (
             None,
             f"{runtime_name} failed to run {model_path}: {message}",
             operators,
             opset_version,
+            generated_checksum,
         )
     log_step(runtime_name, runtime_started)
     payload_outputs = payload.get("outputs", {})
@@ -569,15 +588,22 @@ def _verify_model(
             else:
                 np.testing.assert_array_equal(output_data, runtime_out)
     except AssertionError as exc:
-        return None, str(exc), operators, opset_version
+        return None, str(exc), operators, opset_version, generated_checksum
     if max_ulp > args.max_ulp:
         return (
             None,
             f"Out of tolerance (max ULP {max_ulp})",
             operators,
             opset_version,
+            generated_checksum,
         )
-    return format_success_message(max_ulp), None, operators, opset_version
+    return (
+        format_success_message(max_ulp),
+        None,
+        operators,
+        opset_version,
+        generated_checksum,
+    )
 
 
 def _load_test_data_inputs(
@@ -627,6 +653,12 @@ def _format_command_line(argv: Sequence[str] | None) -> str:
 def _model_checksum(model_path: Path) -> str:
     digest = hashlib.sha256()
     digest.update(model_path.read_bytes())
+    return digest.hexdigest()
+
+
+def _generated_checksum(generated: str) -> str:
+    digest = hashlib.sha256()
+    digest.update(generated.encode("utf-8"))
     return digest.hexdigest()
 
 

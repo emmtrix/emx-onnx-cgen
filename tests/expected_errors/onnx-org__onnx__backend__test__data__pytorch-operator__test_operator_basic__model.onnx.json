@@ -8,5 +8,6 @@
     "Sigmoid",
     "Neg"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "993994effa8c7b5d7e0fcca76e7d2458281fec4e057b47cec6fefff656dbc18a"
 }

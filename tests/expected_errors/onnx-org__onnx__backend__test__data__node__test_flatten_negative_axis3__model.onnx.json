@@ -4,5 +4,6 @@
   "operators": [
     "Flatten"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "eb99fd6a83134eb3a2e812e4eac478b72e1bf1fa12d3c460072ae7a0da6bafec"
 }

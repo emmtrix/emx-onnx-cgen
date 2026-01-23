@@ -4,5 +4,6 @@
   "operators": [
     "Attention"
   ],
-  "opset_version": 23
+  "opset_version": 23,
+  "generated_checksum": "10e0f371b0790ac9099d3bb390bbfda45b715c78c88b286440117ca348ecf269"
 }

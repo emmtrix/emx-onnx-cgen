@@ -4,5 +4,6 @@
   "operators": [
     "BitwiseXor"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "af35f8c7ec85aa6c005d7d6e561ae0faff7c2c6d794ff11f4e410210d4c07ec0"
 }

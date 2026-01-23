@@ -4,5 +4,6 @@
   "operators": [
     "Shrink"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "54916221a1f36bac73c4c6b67e615efa0b5dba2c69d3043385f62a16bfc2bdd6"
 }

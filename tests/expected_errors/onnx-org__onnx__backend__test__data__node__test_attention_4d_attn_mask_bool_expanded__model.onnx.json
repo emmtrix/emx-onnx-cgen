@@ -23,5 +23,6 @@
     "Add",
     "Softmax"
   ],
-  "opset_version": 23
+  "opset_version": 23,
+  "generated_checksum": "ec0eb54a4c142533e9305addb0aa1aae31e2a4c76f74cd72d8b473de0850f522"
 }

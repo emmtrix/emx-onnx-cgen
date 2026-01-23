@@ -8,5 +8,6 @@
     "Add",
     "Div"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "5881a2cb7c982a79e04ef806b8cd529cf357827548b872cad54661ee1ed57aa0"
 }
