@@ -108,6 +108,10 @@ test case) to keep iteration fast. Run the full test suite with reference update
 enabled when changes impact code generation or test expectations, but it is not
 required for every change:
 
+* Run tests only when files under `src/` or `tests/` change.
+* Prefer targeted tests over `pytest -q` for routine validation.
+* `pytest -n auto -q` alone takes over 5 minutes; avoid running general tests without `-n auto`.
+
 ```bash
 UPDATE_REFS=1 pytest -n auto -q
 ```
