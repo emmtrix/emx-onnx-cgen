@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -35,7 +42,7 @@
  * Attrs:
  *   axes: [-1]
  */
-static inline void node0_meanvariancenormalization(const float input0[restrict 2][3][4], float output[restrict 2][3][4]) {
+static inline void node0_meanvariancenormalization(const float input0[2][3][4], float output[2][3][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;

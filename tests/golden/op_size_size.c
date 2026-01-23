@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -33,7 +40,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_size(const float input0[restrict 2][3][4], int64_t output[restrict 1]) {
+static inline void node0_size(const float input0[2][3][4], int64_t output[1]) {
     (void)input0;
     output[0] = 24LL;
 }

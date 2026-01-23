@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -33,7 +40,7 @@
  * Elements: 4
  * Dtype: int64
  */
-static const int64_t weight1_pads[4] = {
+static const EMX_UNUSED int64_t weight1_pads[4] = {
     0LL, 1LL, 0LL, 1LL
 };
 
@@ -44,7 +51,7 @@ static const int64_t weight1_pads[4] = {
  * Elements: 1
  * Dtype: float
  */
-static const float weight2_value[1] = {
+static const EMX_UNUSED float weight2_value[1] = {
     0x0.0p+0f
 };
 
@@ -57,7 +64,7 @@ static const float weight2_value[1] = {
  * Attrs:
  *   mode: constant
  */
-static inline void node0_pad(const float input[restrict 2][3], float output[restrict 2][5]) {
+static inline void node0_pad(const float input[2][3], float output[2][5]) {
     const float *input_flat = (const float *)input;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 5; ++i1) {

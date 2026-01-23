@@ -1,3 +1,4 @@
+{% if rng_requires_u64 %}
 static uint64_t rng_state = 0x243f6a8885a308d3ull;
 
 static uint64_t rng_next_u64(void) {
@@ -8,18 +9,25 @@ static uint64_t rng_next_u64(void) {
     rng_state = x;
     return x * 0x2545f4914f6cdd1dull;
 }
+{% endif %}
 
+{% if rng_requires_float %}
 static float rng_next_float(void) {
     return (float)((double)rng_next_u64() * (1.0 / 18446744073709551616.0));
 }
+{% endif %}
 
+{% if rng_requires_double %}
 static double rng_next_double(void) {
     return (double)rng_next_u64() * (1.0 / 18446744073709551616.0);
 }
+{% endif %}
 
+{% if rng_requires_i64 %}
 static int64_t rng_next_i64(void) {
     return (int64_t)rng_next_u64();
 }
+{% endif %}
 
 {% for input in inputs %}
 {% if input.constant_lines %}

@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -32,7 +39,7 @@
  * Elements: 9
  * Dtype: float
  */
-static const float weight1_weight[1][1][3][3] = {
+static const EMX_UNUSED float weight1_weight[1][1][3][3] = {
     {
         {
             {
@@ -55,7 +62,7 @@ static const float weight1_weight[1][1][3][3] = {
  * Elements: 1
  * Dtype: float
  */
-static const float weight2_bias[1] = {
+static const EMX_UNUSED float weight2_bias[1] = {
     0x1.000000p-2f
 };
 
@@ -69,7 +76,7 @@ static const float weight2_bias[1] = {
  *   pads: [1, 1, 1, 1]
  *   strides: [1, 1]
  */
-static inline void node0_conv(const float input0[restrict 1][1][4][4], const float weights[restrict 1][1][3][3], const float bias[restrict 1], float output[restrict 1][1][4][4]) {
+static inline void node0_conv(const float input0[1][1][4][4], const float weights[1][1][3][3], const float bias[1], float output[1][1][4][4]) {
     for (idx_t n = 0; n < 1; ++n) {
         for (idx_t g = 0; g < 1; ++g) {
             for (idx_t oc = 0; oc < 1; ++oc) {

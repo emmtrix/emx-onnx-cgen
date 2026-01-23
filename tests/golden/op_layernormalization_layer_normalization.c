@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -36,7 +43,7 @@
  *   axis: 1
  *   epsilon: 9.999999747378752e-06
  */
-static inline void node0_layernormalization(const float input0[restrict 2][3][4], const float scale[restrict 3][4], const float bias[restrict 3][4], float output[restrict 2][3][4]) {
+static inline void node0_layernormalization(const float input0[2][3][4], const float scale[3][4], const float bias[3][4], float output[2][3][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         float sum = 0.0f;
         float sum_comp = 0.0f;

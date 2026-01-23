@@ -26,6 +26,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 static inline float ref_scalar_f32_fmax(float a, float b) {
     return fmaxf(a, b);
@@ -39,7 +46,7 @@ static inline float ref_scalar_f32_fmax(float a, float b) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_attention(const float input_q[restrict 1][2][3][4], const float input_k[restrict 1][2][5][4], const float input_v[restrict 1][2][5][4], float output[restrict 1][2][3][4]) {
+static inline void node0_attention(const float input_q[1][2][3][4], const float input_k[1][2][5][4], const float input_v[1][2][5][4], float output[1][2][3][4]) {
     const float scale = 0.5f;
     const float softcap = 0.0f;
     for (int b = 0; b < 1; ++b) {

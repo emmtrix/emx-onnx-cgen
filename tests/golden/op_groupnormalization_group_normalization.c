@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -36,7 +43,7 @@
  *   epsilon: 9.999999747378752e-06
  *   num_groups: 2
  */
-static inline void node0_groupnormalization(const float input0[restrict 1][4][2][2], const float scale[restrict 4], const float bias[restrict 4], float output[restrict 1][4][2][2]) {
+static inline void node0_groupnormalization(const float input0[1][4][2][2], const float scale[4], const float bias[4], float output[1][4][2][2]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t g = 0; g < 2; ++g) {
             float sum = 0.0f;

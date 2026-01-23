@@ -2194,6 +2194,7 @@ class CEmitter:
             *includes,
             "",
             self._emit_index_type_define(),
+            self._emit_unused_define(),
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
@@ -2873,6 +2874,20 @@ class CEmitter:
         )
 
     @staticmethod
+    def _emit_unused_define() -> str:
+        return "\n".join(
+            (
+                "#ifndef EMX_UNUSED",
+                "#if defined(__GNUC__) || defined(__clang__)",
+                "#define EMX_UNUSED __attribute__((unused))",
+                "#else",
+                "#define EMX_UNUSED",
+                "#endif",
+                "#endif",
+            )
+        )
+
+    @staticmethod
     def _needs_stdint(
         model_dtypes: set[ScalarType],
         targets: tuple[set[ScalarType], ...],
@@ -3248,14 +3263,14 @@ class CEmitter:
         ):
             params.append(
                 f"const {dtype.c_type} {name}"
-                f"{self._param_array_suffix(shape, input_dim_names.get(index))}"
+                f"{self._param_array_suffix(shape, input_dim_names.get(index), use_restrict=True)}"
             )
         for index, (name, shape, dtype) in enumerate(
             zip(model.output_names, model.output_shapes, model.output_dtypes)
         ):
             params.append(
                 f"{dtype.c_type} {name}"
-                f"{self._param_array_suffix(shape, output_dim_names.get(index))}"
+                f"{self._param_array_suffix(shape, output_dim_names.get(index), use_restrict=True)}"
             )
         signature = ", ".join(params)
         lines = [f"void {model.name}({signature}) {{"]
@@ -10695,10 +10710,12 @@ class CEmitter:
         self,
         shape: tuple[int, ...],
         dim_names: Mapping[int, str] | None = None,
+        *,
+        use_restrict: bool = False,
     ) -> str:
         shape = CEmitter._codegen_shape(shape)
         dim_names = dim_names or {}
-        if not self._restrict_arrays:
+        if not (self._restrict_arrays and use_restrict):
             return "".join(
                 f"[{dim_names.get(index, dim)}]"
                 for index, dim in enumerate(shape)
@@ -10959,6 +10976,10 @@ class CEmitter:
             self._element_count(shape) for shape in model.input_shapes
         )
         testbench_inputs = testbench_inputs or {}
+        rng_requires_u64 = False
+        rng_requires_float = False
+        rng_requires_double = False
+        rng_requires_i64 = False
         inputs = []
         for name, shape, count, dtype in zip(
             model.input_names, model.input_shapes, input_counts, model.input_dtypes
@@ -10966,6 +10987,17 @@ class CEmitter:
             codegen_shape = self._codegen_shape(shape)
             loop_shape = (1,) if not shape else shape
             loop_vars = self._loop_vars(loop_shape)
+            constant_values = testbench_inputs.get(name)
+            if constant_values is None:
+                rng_requires_u64 = True
+                if dtype in {ScalarType.F16, ScalarType.F32}:
+                    rng_requires_float = True
+                elif dtype == ScalarType.F64:
+                    rng_requires_double = True
+                elif dtype == ScalarType.BOOL:
+                    pass
+                else:
+                    rng_requires_i64 = True
             if dtype in {ScalarType.F16, ScalarType.F32}:
                 random_expr = "rng_next_float()"
             elif dtype == ScalarType.F64:
@@ -10974,7 +11006,6 @@ class CEmitter:
                 random_expr = "((rng_next_u64() & 1ull) != 0)"
             else:
                 random_expr = f"({dtype.c_type})rng_next_i64()"
-            constant_values = testbench_inputs.get(name)
             constant_name = None
             constant_lines = None
             if constant_values is not None:
@@ -11036,6 +11067,10 @@ class CEmitter:
             )
         rendered = testbench_template.render(
             model_name=model.name,
+            rng_requires_u64=rng_requires_u64,
+            rng_requires_float=rng_requires_float,
+            rng_requires_double=rng_requires_double,
+            rng_requires_i64=rng_requires_i64,
             dim_args=[
                 {"name": dim_name, "value": dim_values[dim_name]}
                 for dim_name in dim_order
@@ -11142,7 +11177,7 @@ class CEmitter:
                 for value in const.data
             ]
             lines.append(
-                f"{storage_prefix} {c_type} {const.name}{array_suffix} = {{"
+                f"{storage_prefix} EMX_UNUSED {c_type} {const.name}{array_suffix} = {{"
             )
             if values:
                 if (

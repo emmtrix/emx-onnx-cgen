@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -32,7 +39,7 @@
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t weight1_start[1] = {
+static const EMX_UNUSED int64_t weight1_start[1] = {
     0LL
 };
 
@@ -43,7 +50,7 @@ static const int64_t weight1_start[1] = {
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t weight2_limit[1] = {
+static const EMX_UNUSED int64_t weight2_limit[1] = {
     4LL
 };
 
@@ -54,7 +61,7 @@ static const int64_t weight2_limit[1] = {
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t weight3_delta[1] = {
+static const EMX_UNUSED int64_t weight3_delta[1] = {
     1LL
 };
 
@@ -66,7 +73,7 @@ static const int64_t weight3_delta[1] = {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void node0_range(const int64_t start[restrict 1], const int64_t limit[restrict 1], const int64_t delta[restrict 1], int64_t output[restrict 4]) {
+static inline void node0_range(const int64_t start[1], const int64_t limit[1], const int64_t delta[1], int64_t output[4]) {
     (void)limit;
     const int64_t start_value = start[0];
     const int64_t delta_value = delta[0];

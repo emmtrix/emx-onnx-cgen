@@ -488,6 +488,7 @@ def _verify_model(
                 *compiler_cmd,
                 "-std=c99",
                 "-O2",
+                "-Wall",
                 "-Werror",
                 str(c_path),
                 "-o",

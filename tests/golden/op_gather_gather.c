@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -34,7 +41,7 @@
  * Attrs:
  *   axis: 0
  */
-static inline void node0_gather(const float data[restrict 3][2], const int64_t indices[restrict 2], float output[restrict 2][2]) {
+static inline void node0_gather(const float data[3][2], const int64_t indices[2], float output[2][2]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 2; ++i1) {
             idx_t gather_index = indices[i0];

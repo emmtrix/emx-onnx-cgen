@@ -26,6 +26,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 static inline float ref_scalar_f32_sigmoid(float a) {
     return 1.0f / (1.0f + expf(-a));
@@ -45,7 +52,7 @@ static inline float ref_scalar_f32_tanh(float a) {
  *   hidden_size: 3
  *   layout: 0
  */
-static inline void node0_lstm(const float input_x[restrict 1][1][2], const float input_w[restrict 1][12][2], const float input_r[restrict 1][12][3], float output_y[restrict 1][1][1][3], float output_y_h[restrict 1][1][3], float output_y_c[restrict 1][1][3]) {
+static inline void node0_lstm(const float input_x[1][1][2], const float input_w[1][12][2], const float input_r[1][12][3], float output_y[1][1][1][3], float output_y_h[1][1][3], float output_y_c[1][1][3]) {
     {
         const int dir = 0;
         const int reverse = 0;

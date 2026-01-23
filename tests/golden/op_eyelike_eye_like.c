@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -34,7 +41,7 @@
  * Attrs:
  *   k: 0
  */
-static inline void node0_eyelike(const float input0[restrict 3][3], float output[restrict 3][3]) {
+static inline void node0_eyelike(const float input0[3][3], float output[3][3]) {
     (void)input0;
     float *output_data = (float *)output;
     idx_t total = (idx_t)1 * 3 * 3;

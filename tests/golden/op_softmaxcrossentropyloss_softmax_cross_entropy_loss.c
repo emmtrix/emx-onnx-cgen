@@ -26,6 +26,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 static inline double ref_scalar_f64_fmax(double a, double b) {
     return fmax(a, b);
@@ -40,7 +47,7 @@ static inline double ref_scalar_f64_fmax(double a, double b) {
  * Attrs:
  *   reduction: mean
  */
-static inline void node0_softmaxcrossentropyloss(const float input0[restrict 2][3], const int64_t target[restrict 2], float output[restrict 1], float log_prob[restrict 2][3]) {
+static inline void node0_softmaxcrossentropyloss(const float input0[2][3], const int64_t target[2], float output[1], float log_prob[2][3]) {
     const float *input_flat = (const float *)input0;
     const int64_t *target_flat = (const int64_t *)target;
     float *output_flat = (float *)output;
@@ -49,7 +56,6 @@ static inline void node0_softmaxcrossentropyloss(const float input0[restrict 2][
     const idx_t c = 3;
     const idx_t d = 1;
     double loss_sum = 0.0;
-    double weight_sum = 0.0;
     for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
         for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
             idx_t target_index = n_idx * d + d_idx;
@@ -75,7 +81,6 @@ static inline void node0_softmaxcrossentropyloss(const float input0[restrict 2][
                     loss_value = -log_prob_value;
                 }
             }
-            double sample_weight = 1.0;
             loss_sum += loss_value;
         }
     }

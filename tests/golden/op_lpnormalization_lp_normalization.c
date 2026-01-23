@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -36,7 +43,7 @@
  *   axis: -1
  *   p: 1
  */
-static inline void node0_lpnormalization(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_lpnormalization(const float input0[2][3], float output[2][3]) {
     const float *input_flat = (const float *)input0;
     float *output_flat = (float *)output;
     const idx_t outer = 2;

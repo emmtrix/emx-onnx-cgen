@@ -33,8 +33,10 @@ static inline void {{ op_name }}_cubic_coeffs(double x, double coeffs[4]) {
 
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int input_spatial[{{ spatial_rank }}] = { {% for dim in input_spatial %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+{% if padding_mode != "zeros" %}
     const double border_min[{{ spatial_rank }}] = { {% for dim in input_spatial %}{% if align_corners %}0.0{% else %}-0.5{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} };
     const double border_max[{{ spatial_rank }}] = { {% for dim in input_spatial %}{% if align_corners %}{{ dim - 1 }}.0{% else %}{{ dim - 0.5 }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %} };
+{% endif %}
 {% set n_var = output_loop_vars[0] %}
 {% set c_var = output_loop_vars[1] %}
 {% set spatial_vars = output_loop_vars[2:] %}

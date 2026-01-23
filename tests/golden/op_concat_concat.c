@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -35,7 +42,7 @@
  * Attrs:
  *   axis: 2
  */
-static inline void node0_concat(const float input_0[restrict 1][2][3], const float input_1[restrict 1][2][1], float output[restrict 1][2][4]) {
+static inline void node0_concat(const float input_0[1][2][3], const float input_1[1][2][1], float output[1][2][4]) {
     const void *inputs[] = { input_0, input_1 };
     const idx_t axis_sizes[] = { 3, 1 };
     idx_t concat_axis = 0;

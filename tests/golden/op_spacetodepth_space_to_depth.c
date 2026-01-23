@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -34,7 +41,7 @@
  * Attrs:
  *   blocksize: 2
  */
-static inline void node0_spacetodepth(const float input0[restrict 1][1][4][4], float output[restrict 1][4][2][2]) {
+static inline void node0_spacetodepth(const float input0[1][1][4][4], float output[1][4][2][2]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     idx_t output_index = 0;

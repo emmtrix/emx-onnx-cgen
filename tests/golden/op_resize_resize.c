@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -33,7 +40,7 @@
  * Elements: 4
  * Dtype: int64
  */
-static const int64_t weight1_sizes[4] = {
+static const EMX_UNUSED int64_t weight1_sizes[4] = {
     1LL, 1LL, 4LL, 4LL
 };
 
@@ -48,11 +55,11 @@ static const int64_t weight1_sizes[4] = {
  *   mode: nearest
  *   nearest_mode: floor
  */
-static inline void node0_resize(const float input0[restrict 1][1][2][2], const int64_t sizes_input[restrict 4], float output[restrict 1][1][4][4]) {
+static inline void node0_resize(const float input0[1][1][2][2], const int64_t sizes_input[4], float output[1][1][4][4]) {
     const int64_t input_shape[4] = { 1, 1, 2, 2 };
-    const int64_t output_shape[4] = { 1, 1, 4, 4 };
-    double scales[4];
-    const double roi[8] = {
+    const int64_t output_shape[4] EMX_UNUSED = { 1, 1, 4, 4 };
+    double scales[4] EMX_UNUSED;
+    const double roi[8] EMX_UNUSED = {
         0.0,        0.0,        0.0,        0.0,        1.0,        1.0,        1.0,        1.0    };
     for (idx_t r = 0; r < 4; ++r) {
         scales[r] = 1.0;
@@ -78,8 +85,8 @@ static inline void node0_resize(const float input0[restrict 1][1][2][2], const i
                         output[i0][i1][i2][i3] = (float)0.0;
                     } else {
                         const double x_val0 = x_orig0;
-                        const double x_floor0 = floor(x_val0);
-                        const double x_ceil0 = ceil(x_val0);
+                        const double x_floor0 EMX_UNUSED = floor(x_val0);
+                        const double x_ceil0 EMX_UNUSED = ceil(x_val0);
                         int idx0;
                         idx0 = (int)x_floor0;
                         if (idx0 < 0) {
@@ -88,8 +95,8 @@ static inline void node0_resize(const float input0[restrict 1][1][2][2], const i
                             idx0 = (int)input_shape[0] - 1;
                         }
                         const double x_val1 = x_orig1;
-                        const double x_floor1 = floor(x_val1);
-                        const double x_ceil1 = ceil(x_val1);
+                        const double x_floor1 EMX_UNUSED = floor(x_val1);
+                        const double x_ceil1 EMX_UNUSED = ceil(x_val1);
                         int idx1;
                         idx1 = (int)x_floor1;
                         if (idx1 < 0) {
@@ -98,8 +105,8 @@ static inline void node0_resize(const float input0[restrict 1][1][2][2], const i
                             idx1 = (int)input_shape[1] - 1;
                         }
                         const double x_val2 = x_orig2;
-                        const double x_floor2 = floor(x_val2);
-                        const double x_ceil2 = ceil(x_val2);
+                        const double x_floor2 EMX_UNUSED = floor(x_val2);
+                        const double x_ceil2 EMX_UNUSED = ceil(x_val2);
                         int idx2;
                         idx2 = (int)x_floor2;
                         if (idx2 < 0) {
@@ -108,8 +115,8 @@ static inline void node0_resize(const float input0[restrict 1][1][2][2], const i
                             idx2 = (int)input_shape[2] - 1;
                         }
                         const double x_val3 = x_orig3;
-                        const double x_floor3 = floor(x_val3);
-                        const double x_ceil3 = ceil(x_val3);
+                        const double x_floor3 EMX_UNUSED = floor(x_val3);
+                        const double x_ceil3 EMX_UNUSED = ceil(x_val3);
                         int idx3;
                         idx3 = (int)x_floor3;
                         if (idx3 < 0) {

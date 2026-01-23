@@ -1,9 +1,9 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int64_t input_shape[{{ rank }}] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    const int64_t output_shape[{{ rank }}] = { {% for dim in output_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
-    double scales[{{ rank }}];
+    const int64_t output_shape[{{ rank }}] EMX_UNUSED = { {% for dim in output_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    double scales[{{ rank }}] EMX_UNUSED;
 {% if roi_input %}
-    double roi[{{ rank * 2 }}];
+    double roi[{{ rank * 2 }}] EMX_UNUSED;
 {% if roi_axes %}
     for (idx_t r = 0; r < {{ rank }}; ++r) {
         roi[r] = 0.0;
@@ -19,7 +19,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     }
 {% endif %}
 {% else %}
-    const double roi[{{ rank * 2 }}] = {
+    const double roi[{{ rank * 2 }}] EMX_UNUSED = {
 {% for _ in range(rank) %}        0.0{% if not loop.last %},{% endif %}
 {% endfor %}{% if rank > 0 %},{% endif %}
 {% for _ in range(rank) %}        1.0{% if not loop.last %},{% endif %}
@@ -133,8 +133,8 @@ if (use_extrapolation) {
 {% if mode == "nearest" %}
 {% for dim in range(rank) %}
     const double x_val{{ dim }} = x_orig{{ dim }};
-    const double x_floor{{ dim }} = floor(x_val{{ dim }});
-    const double x_ceil{{ dim }} = ceil(x_val{{ dim }});
+    const double x_floor{{ dim }} EMX_UNUSED = floor(x_val{{ dim }});
+    const double x_ceil{{ dim }} EMX_UNUSED = ceil(x_val{{ dim }});
     int idx{{ dim }};
 {% if nearest_mode == "round_prefer_floor" %}
     idx{{ dim }} = (x_val{{ dim }} - x_floor{{ dim }} <= 0.5) ? (int)x_floor{{ dim }} : (int)x_ceil{{ dim }};

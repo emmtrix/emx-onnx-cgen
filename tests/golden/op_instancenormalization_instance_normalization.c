@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -35,7 +42,7 @@
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  */
-static inline void node0_instancenormalization(const float input0[restrict 1][3][2][2], const float scale[restrict 3], const float bias[restrict 3], float output[restrict 1][3][2][2]) {
+static inline void node0_instancenormalization(const float input0[1][3][2][2], const float scale[3], const float bias[3], float output[1][3][2][2]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;

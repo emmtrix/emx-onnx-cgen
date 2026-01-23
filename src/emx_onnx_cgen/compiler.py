@@ -448,8 +448,13 @@ class Compiler:
 
 
 def _lowered_constants(graph: Graph | GraphContext) -> tuple[ConstTensor, ...]:
+    used_initializers = {value.name for value in graph.outputs}
+    for node in graph.nodes:
+        used_initializers.update(node.inputs)
     constants: list[ConstTensor] = []
     for initializer in graph.initializers:
+        if initializer.name not in used_initializers:
+            continue
         dtype = ensure_supported_dtype(initializer.type.dtype)
         constants.append(
             ConstTensor(

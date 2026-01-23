@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -35,7 +42,7 @@
  *   alpha: 1.0
  *   beta: 1.0
  */
-static inline void node0_gemm(const float input_a[restrict 2][3], const float input_b[restrict 3][4], const float input_c[restrict 2][4], float output[restrict 2][4]) {
+static inline void node0_gemm(const float input_a[2][3], const float input_b[3][4], const float input_c[2][4], float output[2][4]) {
     for (idx_t i = 0; i < 2; ++i) {
         for (idx_t j = 0; j < 4; ++j) {
             float acc = 0.0f;

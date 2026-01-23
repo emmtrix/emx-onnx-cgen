@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -36,7 +43,7 @@
  *   keepdims: 1
  *   select_last_index: 0
  */
-static inline void node0_argmax(const float input0[restrict 2][3][4], int64_t output[restrict 2][1][4]) {
+static inline void node0_argmax(const float input0[2][3][4], int64_t output[2][1][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 1; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {

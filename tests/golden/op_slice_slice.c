@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -32,7 +39,7 @@
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t weight1_starts[2] = {
+static const EMX_UNUSED int64_t weight1_starts[2] = {
     0LL, 1LL
 };
 
@@ -43,7 +50,7 @@ static const int64_t weight1_starts[2] = {
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t weight2_ends[2] = {
+static const EMX_UNUSED int64_t weight2_ends[2] = {
     2LL, 3LL
 };
 
@@ -54,7 +61,7 @@ static const int64_t weight2_ends[2] = {
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t weight3_axes[2] = {
+static const EMX_UNUSED int64_t weight3_axes[2] = {
     0LL, 2LL
 };
 
@@ -65,7 +72,7 @@ static const int64_t weight3_axes[2] = {
  * Elements: 2
  * Dtype: int64
  */
-static const int64_t weight4_steps[2] = {
+static const EMX_UNUSED int64_t weight4_steps[2] = {
     1LL, 2LL
 };
 
@@ -77,7 +84,7 @@ static const int64_t weight4_steps[2] = {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_slice(const float input0[restrict 2][3][4], float output[restrict 2][3][1]) {
+static inline void node0_slice(const float input0[2][3][4], float output[2][3][1]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 1; ++i2) {

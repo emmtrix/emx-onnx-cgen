@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -34,7 +41,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_where(const bool condition[restrict 2][3], const float input_x[restrict 2][3], const float input_y[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_where(const bool condition[2][3], const float input_x[2][3], const float input_y[2][3], float output[2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = condition[i0][i1] ? input_x[i0][i1] : input_y[i0][i1];

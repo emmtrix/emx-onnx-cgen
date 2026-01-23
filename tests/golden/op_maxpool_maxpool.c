@@ -26,6 +26,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 static inline float ref_scalar_f32_fmax(float a, float b) {
     return fmaxf(a, b);
@@ -43,7 +50,7 @@ static inline float ref_scalar_f32_fmax(float a, float b) {
  *   pads: [0, 0, 0, 0]
  *   strides: [2, 2]
  */
-static inline void node0_maxpool(const float input0[restrict 1][1][4][4], float output[restrict 1][1][2][2]) {
+static inline void node0_maxpool(const float input0[1][1][4][4], float output[1][1][2][2]) {
     for (idx_t n = 0; n < 1; ++n) {
         for (idx_t c = 0; c < 1; ++c) {
             for (idx_t oh = 0; oh < 2; ++oh) {
@@ -56,7 +63,6 @@ static inline void node0_maxpool(const float input0[restrict 1][1][4][4], float 
                                 const idx_t iw = ow * 2 + kw * 1 - 0;
                                 if (iw >= 0 && iw < 4) {
                                     float val = input0[n][c][ih][iw];
-                                    const float prev_max = max_value;
                                     max_value = ref_scalar_f32_fmax(max_value, val);
                                 }
                             }

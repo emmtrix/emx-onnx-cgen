@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -35,7 +42,7 @@
  *   blocksize: 2
  *   mode: DCR
  */
-static inline void node0_depthtospace(const float input0[restrict 1][4][2][2], float output[restrict 1][1][4][4]) {
+static inline void node0_depthtospace(const float input0[1][4][2][2], float output[1][1][4][4]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     idx_t output_index = 0;

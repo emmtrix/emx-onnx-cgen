@@ -26,6 +26,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -34,7 +41,7 @@
  * Elements: 1
  * Dtype: float
  */
-static const float weight1_min[1] = {
+static const EMX_UNUSED float weight1_min[1] = {
     0x0.0p+0f
 };
 
@@ -45,7 +52,7 @@ static const float weight1_min[1] = {
  * Elements: 1
  * Dtype: float
  */
-static const float weight2_max[1] = {
+static const EMX_UNUSED float weight2_max[1] = {
     0x1.800000p+2f
 };
 
@@ -65,7 +72,7 @@ static inline float ref_scalar_f32_fmax(float a, float b) {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void node0_clip(const float input0[restrict 2][3], const float input_min[restrict 1], const float input_max[restrict 1], float output[restrict 2][3]) {
+static inline void node0_clip(const float input0[2][3], const float input_min[1], const float input_max[1], float output[2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             float value = input0[i0][i1];

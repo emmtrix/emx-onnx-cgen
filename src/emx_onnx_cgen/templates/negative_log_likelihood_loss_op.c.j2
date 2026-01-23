@@ -5,8 +5,12 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const idx_t n = {{ n }};
     const idx_t c = {{ c }};
     const idx_t d = {{ d }};
+{% if reduction != "none" %}
     {{ acc_type }} loss_sum = {{ acc_zero_literal }};
+{% if reduction == "mean" %}
     {{ acc_type }} weight_sum = {{ acc_zero_literal }};
+{% endif %}
+{% endif %}
     for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
         for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
             idx_t target_index = n_idx * d + d_idx;
@@ -22,15 +26,17 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if weight %}
                 {{ acc_type }} sample_weight = {{ weight }}[class_index];
                 value *= sample_weight;
-{% else %}
-                {{ acc_type }} sample_weight = {{ acc_one_literal }};
 {% endif %}
 {% if reduction == "none" %}
                 output_flat[target_index] = value;
 {% else %}
                 loss_sum += value;
 {% if reduction == "mean" %}
+{% if weight %}
                 weight_sum += sample_weight;
+{% else %}
+                weight_sum += {{ acc_one_literal }};
+{% endif %}
 {% endif %}
 {% endif %}
             }

@@ -26,6 +26,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 static inline float ref_scalar_f32_add(float a, float b) {
     return a + b;
@@ -43,7 +50,7 @@ static inline float ref_scalar_f32_relu(float a) {
  * Outputs: tmp
  * Attrs: n/a
  */
-static inline void node0_add(const float input0[restrict 1][257], const float input1[restrict 1][257], float output[restrict 1][257]) {
+static inline void node0_add(const float input0[1][257], const float input1[1][257], float output[1][257]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 257; ++i1) {
             output[i0][i1] = ref_scalar_f32_add(input0[0][i1], input1[0][i1]);
@@ -59,7 +66,7 @@ static inline void node0_add(const float input0[restrict 1][257], const float in
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node1_relu(const float input0[restrict 1][257], float output[restrict 1][257]) {
+static inline void node1_relu(const float input0[1][257], float output[1][257]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 257; ++i1) {
             output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);

@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -32,7 +39,7 @@
  * Elements: 1
  * Dtype: int64
  */
-static const int64_t weight1_axis[1] = {
+static const EMX_UNUSED int64_t weight1_axis[1] = {
     1LL
 };
 
@@ -46,7 +53,7 @@ static const int64_t weight1_axis[1] = {
  *   exclusive: 0
  *   reverse: 0
  */
-static inline void node0_cumsum(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_cumsum(const float input0[2][3], float output[2][3]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     const idx_t dims[2] = { 2, 3 };

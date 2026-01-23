@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Weight 1:
@@ -33,7 +40,7 @@
  * Elements: 3
  * Dtype: float
  */
-static const float weight1_scale[3] = {
+static const EMX_UNUSED float weight1_scale[3] = {
     0x1.000000p+0f, 0x1.800000p+0f, -0x1.000000p-1f
 };
 
@@ -44,7 +51,7 @@ static const float weight1_scale[3] = {
  * Elements: 3
  * Dtype: float
  */
-static const float weight2_bias[3] = {
+static const EMX_UNUSED float weight2_bias[3] = {
     0x0.0p+0f, 0x1.99999ap-4f, -0x1.99999ap-3f
 };
 
@@ -55,7 +62,7 @@ static const float weight2_bias[3] = {
  * Elements: 3
  * Dtype: float
  */
-static const float weight3_mean[3] = {
+static const EMX_UNUSED float weight3_mean[3] = {
     0x1.000000p-1f, -0x1.000000p-1f, 0x1.000000p+0f
 };
 
@@ -66,7 +73,7 @@ static const float weight3_mean[3] = {
  * Elements: 3
  * Dtype: float
  */
-static const float weight4_var[3] = {
+static const EMX_UNUSED float weight4_var[3] = {
     0x1.000000p-2f, 0x1.000000p-1f, 0x1.800000p+0f
 };
 
@@ -79,7 +86,7 @@ static const float weight4_var[3] = {
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  */
-static inline void node0_batchnormalization(const float input0[restrict 2][3][2][2], const float scale[restrict 3], const float bias[restrict 3], const float mean[restrict 3], const float variance[restrict 3], float output[restrict 2][3][2][2]) {
+static inline void node0_batchnormalization(const float input0[2][3][2][2], const float scale[3], const float bias[3], const float mean[3], const float variance[3], float output[2][3][2][2]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 2; ++i2) {

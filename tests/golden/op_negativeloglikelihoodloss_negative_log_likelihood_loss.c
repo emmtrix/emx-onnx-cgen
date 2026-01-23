@@ -24,6 +24,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -34,7 +41,7 @@
  * Attrs:
  *   reduction: mean
  */
-static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2][3], const int64_t target[restrict 2], float output[restrict 1]) {
+static inline void node0_negativeloglikelihoodloss(const float input0[2][3], const int64_t target[2], float output[1]) {
     const float *input_flat = (const float *)input0;
     const int64_t *target_flat = (const int64_t *)target;
     float *output_flat = (float *)output;
@@ -52,9 +59,8 @@ static inline void node0_negativeloglikelihoodloss(const float input0[restrict 2
                 idx_t class_index = (idx_t)target_value;
                 idx_t input_index = (n_idx * c + class_index) * d + d_idx;
                 double value = -(double)input_flat[input_index];
-                double sample_weight = 1.0;
                 loss_sum += value;
-                weight_sum += sample_weight;
+                weight_sum += 1.0;
             }
         }
     }

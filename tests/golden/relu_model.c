@@ -26,6 +26,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 static inline float ref_scalar_f32_relu(float a) {
     return a > 0.0f ? a : 0.0f;
@@ -39,7 +46,7 @@ static inline float ref_scalar_f32_relu(float a) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_relu(const float input0[restrict 2][3], float output[restrict 2][3]) {
+static inline void node0_relu(const float input0[2][3], float output[2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);

@@ -25,6 +25,13 @@
 #ifndef idx_t
 #define idx_t int32_t
 #endif
+#ifndef EMX_UNUSED
+#if defined(__GNUC__) || defined(__clang__)
+#define EMX_UNUSED __attribute__((unused))
+#else
+#define EMX_UNUSED
+#endif
+#endif
 
 /*
  * Node 0:
@@ -57,10 +64,8 @@ static inline double node0_gridsample_reflect(double value, double x_min, double
     return value;
 }
 
-static inline void node0_gridsample(const float x[restrict 1][1][2][2], const float grid[restrict 1][2][2][2], float y[restrict 1][1][2][2]) {
+static inline void node0_gridsample(const float x[1][1][2][2], const float grid[1][2][2][2], float y[1][1][2][2]) {
     const int input_spatial[2] = { 2, 2 };
-    const double border_min[2] = { -0.5, -0.5 };
-    const double border_max[2] = { 1.5, 1.5 };
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 1; ++i1) {
             for (idx_t i2 = 0; i2 < 2; ++i2) {

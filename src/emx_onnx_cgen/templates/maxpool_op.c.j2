@@ -11,12 +11,14 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     const idx_t ix = ox * {{ strides[0] }} + kx * {{ dilations[0] }} - {{ pads[0] }};
                     if (ix >= 0 && ix < {{ in_spatial[0] }}) {
                         {{ c_type }} val = {{ input0 }}[n][c][ix];
+{% if indices %}
                         const {{ c_type }} prev_max = max_value;
                         max_value = {{ max_fn }}(max_value, val);
-{% if indices %}
                         max_index = (val > prev_max)
                             ? ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix)
                             : max_index;
+{% else %}
+                        max_value = {{ max_fn }}(max_value, val);
 {% endif %}
                     }
                 }
@@ -39,9 +41,9 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                 const idx_t iw = ow * {{ strides[1] }} + kw * {{ dilations[1] }} - {{ pads[1] }};
                                 if (iw >= 0 && iw < {{ in_spatial[1] }}) {
                                     {{ c_type }} val = {{ input0 }}[n][c][ih][iw];
+{% if indices %}
                                     const {{ c_type }} prev_max = max_value;
                                     max_value = {{ max_fn }}(max_value, val);
-{% if indices %}
                                     max_index = (val > prev_max)
                                         ? (
 {% if storage_order == 0 %}
@@ -51,6 +53,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
                                         )
                                         : max_index;
+{% else %}
+                                    max_value = {{ max_fn }}(max_value, val);
 {% endif %}
                                 }
                             }
@@ -80,9 +84,9 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                             const idx_t iw = ow * {{ strides[2] }} + kw * {{ dilations[2] }} - {{ pads[2] }};
                                             if (iw >= 0 && iw < {{ in_spatial[2] }}) {
                                                 {{ c_type }} val = {{ input0 }}[n][c][id][ih][iw];
+{% if indices %}
                                                 const {{ c_type }} prev_max = max_value;
                                                 max_value = {{ max_fn }}(max_value, val);
-{% if indices %}
                                                 max_index = (val > prev_max)
                                                     ? (
 {% if storage_order == 0 %}
@@ -92,6 +96,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
                                                     )
                                                     : max_index;
+{% else %}
+                                                max_value = {{ max_fn }}(max_value, val);
 {% endif %}
                                             }
                                         }
