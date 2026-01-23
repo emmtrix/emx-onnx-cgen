@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1233 / 1802 official ONNX files.
+Support 1172 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -12,9 +12,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | ❌ | Out of tolerance (max ULP 50389) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Out of tolerance (max ULP 553) |
-| onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ✅ | OK (max ULP 10) |
-| onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | ❌ | Out of tolerance (max ULP 83684753) |
+| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | 'gpu_0_data_0' |
+| onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ❌ | 'gpu_0_data_0' |
+| onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/node/test_abs/model.onnx | ✅ | OK (max ULP 0) |
