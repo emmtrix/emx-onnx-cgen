@@ -19,6 +19,7 @@ jobs:
         run: |
           python_bin="/opt/python/cp311-cp311/bin/python"
           echo "PYTHON_BIN=${python_bin}" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=/opt/python/cp311-cp311/lib:${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
           "${python_bin}" --version
 
       - name: Install dependencies
