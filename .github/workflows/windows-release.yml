@@ -28,7 +28,7 @@ jobs:
           
       - name: Build PyInstaller bundle
         run: |
-          bash tools/pyinstaller_build.sh
+          python tools/pyinstaller_build.py
 
       - name: Zip bundle
         run: |
