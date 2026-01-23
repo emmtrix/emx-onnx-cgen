@@ -4,5 +4,6 @@
   "operators": [
     "Round"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "2f021e2bf6ca01dec50652eb83f3eae8aa66522db949c7710cb76038af9638a6"
 }

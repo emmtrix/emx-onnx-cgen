@@ -4,5 +4,6 @@
   "operators": [
     "Add"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "a4e50f01f3980ed866bd86964e2d3177675fcaedb4432e8144a055f596bdfbd4"
 }

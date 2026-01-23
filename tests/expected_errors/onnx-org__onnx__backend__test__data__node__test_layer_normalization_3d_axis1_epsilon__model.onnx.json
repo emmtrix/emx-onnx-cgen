@@ -4,5 +4,6 @@
   "operators": [
     "LayerNormalization"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "2b233d3036bd2ebd4fb194277bc124678cb9faef630440cccb31a5a2224c2761"
 }

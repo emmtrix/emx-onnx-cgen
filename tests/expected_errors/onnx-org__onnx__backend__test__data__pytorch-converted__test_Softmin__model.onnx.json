@@ -5,5 +5,6 @@
     "Neg",
     "Softmax"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "2c041fc62e6c2d9032527269df289de100a410efc9b79e5a79c8ef85ce66a85b"
 }

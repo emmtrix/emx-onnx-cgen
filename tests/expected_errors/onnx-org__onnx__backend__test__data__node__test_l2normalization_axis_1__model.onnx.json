@@ -4,5 +4,6 @@
   "operators": [
     "LpNormalization"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "8a07b4ced10f61cfd7ae7b186d2e2ff4798a9c2493f605a7fb55c5cda9077c20"
 }

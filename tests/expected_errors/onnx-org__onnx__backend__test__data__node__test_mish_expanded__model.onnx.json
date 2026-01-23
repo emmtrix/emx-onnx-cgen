@@ -6,5 +6,6 @@
     "Tanh",
     "Mul"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "ac81b5046f2551160363abc53bac0779091274868bd49e3e07f4d07b9c96f69b"
 }

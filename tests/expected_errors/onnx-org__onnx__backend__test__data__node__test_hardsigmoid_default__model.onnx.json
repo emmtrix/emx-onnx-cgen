@@ -4,5 +4,6 @@
   "operators": [
     "HardSigmoid"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "529d23ad32ee7c3241b26712c222f86625bf9104240c029a13cb6b2a20b68e98"
 }

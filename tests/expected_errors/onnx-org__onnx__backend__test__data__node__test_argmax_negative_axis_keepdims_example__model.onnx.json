@@ -4,5 +4,6 @@
   "operators": [
     "ArgMax"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "147387cb7061ca845f223fe63ddb03f4daaaf5c11a5b3f684cbf9b181b79770e"
 }

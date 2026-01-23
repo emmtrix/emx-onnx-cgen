@@ -5,5 +5,6 @@
     "Mul",
     "ReduceSum"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "913f52d45b8ee90a64a26efbbf432660a9151c10f15ac87f5e99fdaf86f139b6"
 }

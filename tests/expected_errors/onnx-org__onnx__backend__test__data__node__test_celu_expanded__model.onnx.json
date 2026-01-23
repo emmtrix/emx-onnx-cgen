@@ -7,5 +7,6 @@
     "Elu",
     "Mul"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "e3ea109b12384c1ca2daf9cf3c39e90296a38e0c3dcaaf9ab2d5734d514b3b4c"
 }

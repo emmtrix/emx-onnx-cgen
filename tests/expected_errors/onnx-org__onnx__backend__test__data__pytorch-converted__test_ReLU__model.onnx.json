@@ -4,5 +4,6 @@
   "operators": [
     "Relu"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "3312eb67b7145beec25a496d66491c95314db5d835255491f754f09cee2b8910"
 }

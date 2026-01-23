@@ -4,5 +4,6 @@
   "operators": [
     "Softmax"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "9270fd72fd43c50357a9ec97eea2e5c394bd09320d65a48df4a300f8af953f0d"
 }

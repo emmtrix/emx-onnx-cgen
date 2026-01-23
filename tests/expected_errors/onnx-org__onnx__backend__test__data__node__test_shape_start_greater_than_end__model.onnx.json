@@ -4,5 +4,6 @@
   "operators": [
     "Shape"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "147b530607aa6cffad2533f82894947a1be07b5712eada82ee68cb2daf31b144"
 }

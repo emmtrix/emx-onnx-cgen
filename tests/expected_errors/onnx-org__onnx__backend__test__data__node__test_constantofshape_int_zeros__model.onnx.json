@@ -4,5 +4,6 @@
   "operators": [
     "ConstantOfShape"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "5b698bac56540df43a9ebfe0598dba2ed498ff6e34b7b121c82eb49996d0ca63"
 }

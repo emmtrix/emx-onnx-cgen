@@ -4,5 +4,6 @@
   "operators": [
     "Einsum"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "16b1d77dd6cb84e40f4c126b9694fe6a7e13a94d3b330b332de0435ddee0eacd"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "ScatterND"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "3835cab1c45bdea0645970076d14997e9362a6757b26087abc60fb32737f79b3"
 }

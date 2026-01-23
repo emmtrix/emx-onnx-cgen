@@ -10,5 +10,6 @@
     "Squeeze",
     "ReduceMean"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "b1693d3c492f583be9527342bf50a1e8c2e82d5d18518a1f8079c1c03711dcfa"
 }

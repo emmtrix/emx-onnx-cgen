@@ -4,5 +4,6 @@
   "operators": [
     "ReduceSum"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "1557801757cb0cc5b1cb50801a0005be80537cc3a83de58e12f2a4f403154b00"
 }

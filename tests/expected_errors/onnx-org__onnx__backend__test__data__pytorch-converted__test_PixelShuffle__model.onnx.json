@@ -6,5 +6,6 @@
     "Reshape",
     "Transpose"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "b5e0697f40e8e522feb305cccf345d35e47ce5fdda7a546b0cfc3665862905d3"
 }

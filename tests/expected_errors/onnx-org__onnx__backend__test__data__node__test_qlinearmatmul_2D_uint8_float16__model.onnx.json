@@ -4,5 +4,6 @@
   "operators": [
     "QLinearMatMul"
   ],
-  "opset_version": 21
+  "opset_version": 21,
+  "generated_checksum": "060283031316d1403bfb8b801f96b9f5075051bc0b0806f3c976599a6b65b14b"
 }

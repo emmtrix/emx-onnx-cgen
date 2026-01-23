@@ -4,5 +4,6 @@
   "operators": [
     "Slice"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "ede09ad2799de90019f03d8e31c05bbe6ca87e88b1f8d9f0dcbccdba3cf1bedf"
 }

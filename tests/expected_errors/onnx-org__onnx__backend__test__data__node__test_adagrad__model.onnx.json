@@ -3,5 +3,6 @@
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_adagrad/test_data_set_0",
   "operators": [
     "ai.onnx.preview.training::Adagrad"
-  ]
+  ],
+  "generated_checksum": "4d1da5dd23d7e320986730a5db0cd8220fb766345456f14fb7d02ab749fc6597"
 }

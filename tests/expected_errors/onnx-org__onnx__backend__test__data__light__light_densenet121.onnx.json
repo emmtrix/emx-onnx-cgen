@@ -14,5 +14,6 @@
     "AveragePool",
     "GlobalAveragePool"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "8fdd6f9c7088d0856d9b599c3c064a919905af19bd8575587516de41797ae19b"
 }

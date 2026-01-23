@@ -4,5 +4,6 @@
   "operators": [
     "RMSNormalization"
   ],
-  "opset_version": 23
+  "opset_version": 23,
+  "generated_checksum": "d3742f26aeac7c0c941d1ee7624db30a074fc85ce2b0655ce2b5d381ba079908"
 }

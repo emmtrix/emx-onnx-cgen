@@ -6,5 +6,6 @@
     "AveragePool",
     "Squeeze"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "c2198a8b3c27352a589585b3f7aa869caff4ee66e510debcd3481f2268ad4cb5"
 }

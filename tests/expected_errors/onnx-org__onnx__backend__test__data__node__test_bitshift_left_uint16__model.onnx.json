@@ -4,5 +4,6 @@
   "operators": [
     "BitShift"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "7874279689aa25c5ae2c4f18716c170774f43bd5cf97a391534d95ad7b366a78"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "ArgMin"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "1aad2bf96e7322686758a7830e0c5991497ac62913007f0a6ae27cd357ac3cdd"
 }

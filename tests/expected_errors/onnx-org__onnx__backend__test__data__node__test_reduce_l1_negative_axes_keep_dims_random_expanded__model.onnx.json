@@ -5,5 +5,6 @@
     "Abs",
     "ReduceSum"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "e84b89120ea46abd184843177dabfed74cabd04ca4d365f0374e6a88aca3482d"
 }

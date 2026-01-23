@@ -4,5 +4,6 @@
   "operators": [
     "Sigmoid"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "c67a791d642cd614ec4ed7854b8f08df13c93f8812e1b963d7f43ea9ac399e3c"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "ReduceMin"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "bf3fc50b6b516d651cb323bc372d3a151f6e96aa71b803500e227fbded0a0657"
 }

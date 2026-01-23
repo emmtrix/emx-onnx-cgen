@@ -15,5 +15,6 @@
     "Identity",
     "QuantizeLinear"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "d49b7692eea5c2b52bc1a2b83f458d89eece2787206f19425b2ca52133d25ca1"
 }

@@ -28,6 +28,7 @@ class OnnxFileExpectation:
     command_line: str = ""
     operators: list[str] | None = None
     opset_version: int | None = None
+    generated_checksum: str | None = None
 
 
 def _repo_root() -> Path:
@@ -128,11 +129,13 @@ def _read_expectation_file(
     command_line = ""
     operators: list[str] | None = None
     opset_version: int | None = None
+    generated_checksum: str | None = None
     if isinstance(data, dict):
         error = data.get("error", "")
         command_line = data.get("command_line", "")
         operators = data.get("operators")
         opset_version = data.get("opset_version")
+        generated_checksum = data.get("generated_checksum")
     elif isinstance(data, list):
         if data and isinstance(data[0], str) and data[0].endswith(".onnx"):
             if len(data) >= 2:
@@ -152,6 +155,7 @@ def _read_expectation_file(
         command_line=command_line,
         operators=operators,
         opset_version=opset_version,
+        generated_checksum=generated_checksum,
     )
 
 
@@ -194,6 +198,8 @@ def _write_expectation_file(
         payload["operators"] = expectation.operators
     if expectation.opset_version is not None:
         payload["opset_version"] = expectation.opset_version
+    if expectation.generated_checksum is not None:
+        payload["generated_checksum"] = expectation.generated_checksum
     expectation_path.write_text(
         json.dumps(
             payload,
@@ -368,6 +374,7 @@ def test_official_onnx_expected_errors(
         command_line=cli_result.command_line,
         operators=cli_result.operators,
         opset_version=cli_result.opset_version,
+        generated_checksum=cli_result.generated_checksum,
     )
     if os.getenv("UPDATE_REFS"):
         _write_expectation_file(
@@ -437,6 +444,7 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         command_line=cli_result.command_line,
         operators=cli_result.operators,
         opset_version=cli_result.opset_version,
+        generated_checksum=cli_result.generated_checksum,
     )
     if os.getenv("UPDATE_REFS"):
         _write_expectation_file(

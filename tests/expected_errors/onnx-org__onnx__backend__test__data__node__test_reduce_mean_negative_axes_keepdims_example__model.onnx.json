@@ -4,5 +4,6 @@
   "operators": [
     "ReduceMean"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "210cba16134f0bead0d19e65880fc5215e6e247768e821b82bbdc11f3f7d1a93"
 }

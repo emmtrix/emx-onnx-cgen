@@ -9,5 +9,6 @@
     "ReduceSum",
     "Div"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "260069c5742e070153ade7a091809ece399658952cd123689228619249e805fd"
 }
