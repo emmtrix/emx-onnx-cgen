@@ -14,5 +14,6 @@
     "Gemm",
     "Softmax"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "7f7fb2dece3567bdbe6a8e4a241e82413d623d6f4e96704d2b24affa4e582c51"
 }

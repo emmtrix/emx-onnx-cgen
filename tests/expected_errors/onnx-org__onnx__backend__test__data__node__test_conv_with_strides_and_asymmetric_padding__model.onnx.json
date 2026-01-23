@@ -4,5 +4,6 @@
   "operators": [
     "Conv"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "0684046c80bbbc3f4edd843ec45a4f4512026e8c533ecdd0f9da2200c0bd9fba"
 }

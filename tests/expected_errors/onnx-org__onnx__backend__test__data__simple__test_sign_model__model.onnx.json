@@ -4,5 +4,6 @@
   "operators": [
     "Sign"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "dce519bd963aaf96d257f4a95b22460670a7f1d488191ecfd9f552140d953e41"
 }

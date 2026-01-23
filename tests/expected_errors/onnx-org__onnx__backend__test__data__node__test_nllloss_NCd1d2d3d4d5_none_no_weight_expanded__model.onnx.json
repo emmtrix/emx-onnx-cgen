@@ -9,5 +9,6 @@
     "Slice",
     "Squeeze"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "32e8781689c733a4a2fa7029f13baff6948dcf3fcb10002c83324c6b2d0fb15a"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "LSTM"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "ce2aa30817366a5a5c69a6df2a61e3886aa328acb5ca84aa9b4204436a41a058"
 }

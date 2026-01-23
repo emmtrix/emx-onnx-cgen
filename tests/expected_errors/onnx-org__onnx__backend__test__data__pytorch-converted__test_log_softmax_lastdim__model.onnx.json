@@ -4,5 +4,6 @@
   "operators": [
     "LogSoftmax"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "8b7c3245fafe51e4ca156e7acee2a258b6b1d50de87a39ece75becdec0629b85"
 }

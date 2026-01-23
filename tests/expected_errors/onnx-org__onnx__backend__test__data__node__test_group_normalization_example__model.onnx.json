@@ -4,5 +4,6 @@
   "operators": [
     "GroupNormalization"
   ],
-  "opset_version": 21
+  "opset_version": 21,
+  "generated_checksum": "73b81b1d672c4f13d8089b5b707ac7befa5dd0f08a2818bcdb50dae8e1a71507"
 }

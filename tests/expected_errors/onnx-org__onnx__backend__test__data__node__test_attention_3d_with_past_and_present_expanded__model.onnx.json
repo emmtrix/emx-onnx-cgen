@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 4)",
+  "error": "OK (max ULP 5)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/test_data_set_0",
   "operators": [
     "Shape",
@@ -23,5 +23,6 @@
     "Add",
     "Softmax"
   ],
-  "opset_version": 23
+  "opset_version": 23,
+  "generated_checksum": "7fe531bf34eda41d6baf91896505c89d985858c3deb65277be996eaa734924e0"
 }

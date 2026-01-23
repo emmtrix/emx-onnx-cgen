@@ -5,5 +5,6 @@
     "Resize",
     "Constant"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "8402bfbf9fedfcf0eadc706b39e65e1d0c9aad33875c83146d2d760af7a412d2"
 }

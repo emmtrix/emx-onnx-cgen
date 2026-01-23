@@ -4,5 +4,6 @@
   "operators": [
     "Identity"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "15a1ddfa16edfbbc8e1a30359c3156e662338f6d53bfd7734b28be50df605c80"
 }

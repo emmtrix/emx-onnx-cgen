@@ -4,5 +4,6 @@
   "operators": [
     "GridSample"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "b0399b948c20198fc16ed6deca89d8e7af67b0f51319c9de4102ed02eac86d0a"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Equal"
   ],
-  "opset_version": 19
+  "opset_version": 19,
+  "generated_checksum": "cdcd8516708328c995ee40071818a25491d92843ba93dfb6fa5cfae513bb55a3"
 }

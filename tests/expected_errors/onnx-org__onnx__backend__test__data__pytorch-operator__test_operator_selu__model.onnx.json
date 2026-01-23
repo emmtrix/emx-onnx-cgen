@@ -4,5 +4,6 @@
   "operators": [
     "Selu"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "04d3d66ecb0450aca267fc8d4ddee02b1c3d780b6863933f9b60a6ed31477e9b"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "Log"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "593149aaa32f035404d39e194981c35104919c2d73a43ead7e29dee0e808e022"
 }

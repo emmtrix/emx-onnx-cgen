@@ -4,5 +4,6 @@
   "operators": [
     "MatMul"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "d85de2a1f8ed8c79d9d27b43f79a23bb4261e635cebb9418c49b5a5335346726"
 }

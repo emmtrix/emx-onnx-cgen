@@ -4,5 +4,6 @@
   "operators": [
     "Concat"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "3ca77f81d3eab2868eddd508fb3246be9a65be5381877d8c4af970933cc91425"
 }

@@ -1,8 +1,9 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_asinh/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_asinh/test_data_set_0",
   "operators": [
     "Asinh"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "38d6d4ab5d030585e297bf7ae5c691789aa7653db2e003c19914ce3afbca3e7e"
 }

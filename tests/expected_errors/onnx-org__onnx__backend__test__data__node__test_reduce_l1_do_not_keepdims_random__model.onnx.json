@@ -4,5 +4,6 @@
   "operators": [
     "ReduceL1"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "c36cc59f8849ab93a86633482590e65b2e25fc35dc1ab79a533d5e97d36d491a"
 }

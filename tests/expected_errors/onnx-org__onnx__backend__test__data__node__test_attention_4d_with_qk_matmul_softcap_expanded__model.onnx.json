@@ -24,5 +24,6 @@
     "Tanh",
     "Softmax"
   ],
-  "opset_version": 23
+  "opset_version": 23,
+  "generated_checksum": "62ee8c84b084d932596c7ea448621fcb12d590196d9763c8c1c3949fa8100c23"
 }

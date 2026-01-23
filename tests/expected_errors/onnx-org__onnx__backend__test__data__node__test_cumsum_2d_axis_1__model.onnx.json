@@ -4,5 +4,6 @@
   "operators": [
     "CumSum"
   ],
-  "opset_version": 14
+  "opset_version": 14,
+  "generated_checksum": "863264bcc17803ba06093c3044ea693a7ce858ea5cd029409e02327b3f3679ba"
 }

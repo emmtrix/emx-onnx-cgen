@@ -4,5 +4,6 @@
   "operators": [
     "Softplus"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "fb24a1d06b4f2e78fc7f119bff517b031afd20b8f8a6acfa5472d24d54d52c37"
 }

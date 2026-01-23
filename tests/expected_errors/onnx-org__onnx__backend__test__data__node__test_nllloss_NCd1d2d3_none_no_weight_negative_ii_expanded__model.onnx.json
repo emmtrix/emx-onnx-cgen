@@ -14,5 +14,6 @@
     "Squeeze",
     "Mul"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "4eb4579080b3fcbcc88ac94a68e8f285e60ec505ff47a23f99d081b799b389e2"
 }

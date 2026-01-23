@@ -4,5 +4,6 @@
   "operators": [
     "Hardmax"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "33b9f509505e73ffdd36f85a8af453842c297d7c0d66382cb47b7ba217a19e8a"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "NonMaxSuppression"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "22a1c6d86998e162af71e32382ca5e4d9eccee5b304b72a96030d6af1680e5c9"
 }

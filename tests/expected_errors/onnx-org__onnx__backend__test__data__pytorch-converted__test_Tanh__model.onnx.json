@@ -4,5 +4,6 @@
   "operators": [
     "Tanh"
   ],
-  "opset_version": 6
+  "opset_version": 6,
+  "generated_checksum": "0cd06c23c6e7d495d79d5e061c375a7d2b4fc297438134acc2d2973da1239725"
 }

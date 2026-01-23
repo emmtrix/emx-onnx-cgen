@@ -28,5 +28,6 @@
     "MatMul",
     "Softmax"
   ],
-  "opset_version": 23
+  "opset_version": 23,
+  "generated_checksum": "95224ab2473f2733e85fa78466c1714e93ea8e15c39e1565e3c4a0746a1e8a59"
 }

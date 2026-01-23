@@ -4,5 +4,6 @@
   "operators": [
     "Resize"
   ],
-  "opset_version": 19
+  "opset_version": 19,
+  "generated_checksum": "8eaa2243b2b68822ea78de7b4d946d928a878c06f2699fafe51c8d42d8b02549"
 }

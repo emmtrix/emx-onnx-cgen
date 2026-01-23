@@ -4,5 +4,6 @@
   "operators": [
     "Transpose"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "5359a5442a1c707ef002629e3328842945340b9df60da8cbc9f02fcd141eba5c"
 }

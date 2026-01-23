@@ -4,5 +4,6 @@
   "operators": [
     "Split"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "01cd167858fc7e66949349fe3148b2e3e1f5ef75c08b22613488061a15807ad1"
 }

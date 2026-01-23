@@ -8,5 +8,6 @@
     "Add",
     "Log"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "0117bdd7795cbc9ed625803f1ef1cc76a316ae21406c54431ab8253c92b436e6"
 }

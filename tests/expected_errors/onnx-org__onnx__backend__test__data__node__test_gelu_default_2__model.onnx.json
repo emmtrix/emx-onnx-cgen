@@ -4,5 +4,6 @@
   "operators": [
     "Gelu"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "51900188af424ddd61dccdc91e9ede867fe5417204324f707657d320a61a26d2"
 }

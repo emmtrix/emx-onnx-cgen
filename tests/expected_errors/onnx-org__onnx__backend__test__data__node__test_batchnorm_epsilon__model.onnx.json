@@ -4,5 +4,6 @@
   "operators": [
     "BatchNormalization"
   ],
-  "opset_version": 15
+  "opset_version": 15,
+  "generated_checksum": "30785d11bbccd7865eebb57604b7433651227b89c1cd50994b9d6029fad0daa0"
 }

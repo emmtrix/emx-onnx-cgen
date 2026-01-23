@@ -4,5 +4,6 @@
   "operators": [
     "ReduceMax"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "8f3100019a9232bd16050e899ffa24093720e0cff82c8d8ba2c5f42cc182ac8e"
 }

@@ -4,5 +4,6 @@
   "operators": [
     "BitwiseNot"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "6707306fa64cb166f87ce7134578d87213cd6698d39998ff68475b8245f327a2"
 }

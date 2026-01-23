@@ -4,5 +4,6 @@
   "operators": [
     "Xor"
   ],
-  "opset_version": 7
+  "opset_version": 7,
+  "generated_checksum": "bc42ffbc9964fa663e034348be78d8c72f8e3676b9a352f9650d46b09ec1bdac"
 }

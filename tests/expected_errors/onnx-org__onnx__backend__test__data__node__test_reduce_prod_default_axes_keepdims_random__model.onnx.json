@@ -4,5 +4,6 @@
   "operators": [
     "ReduceProd"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "e6e8e48e58826b883a63cec07ea403013f122772da37d3e37029e4ce893f8786"
 }

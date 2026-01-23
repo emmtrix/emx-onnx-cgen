@@ -4,5 +4,6 @@
   "operators": [
     "NegativeLogLikelihoodLoss"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "aebfa59ee314503df58323f2c1d90b1076f20ab037748e5dcf0cd326e0ae8a52"
 }

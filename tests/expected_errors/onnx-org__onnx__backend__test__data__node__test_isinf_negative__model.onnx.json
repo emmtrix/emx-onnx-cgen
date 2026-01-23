@@ -4,5 +4,6 @@
   "operators": [
     "IsInf"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "cdebada38c2641c4226be47541474cf48f6178d6d4aa1ba9280d1d7325dc460f"
 }

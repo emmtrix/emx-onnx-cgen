@@ -4,5 +4,6 @@
   "operators": [
     "Mish"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "01d39ea77701645bd89a3a973c2cc9ec23c16e31faeceb275f3386768284a41f"
 }

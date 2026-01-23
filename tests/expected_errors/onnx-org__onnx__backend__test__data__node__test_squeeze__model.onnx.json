@@ -4,5 +4,6 @@
   "operators": [
     "Squeeze"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "91cb26e4e66b87d516e86b7cd6f923b081f2f58fc5003b0078e2d5bfe9a02fcb"
 }
