@@ -1,6 +1,7 @@
 name: windows-release
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -33,7 +34,15 @@ jobs:
         run: |
           Compress-Archive -Path dist/emx-onnx-cgen/* -DestinationPath emx-onnx-cgen-windows-amd64.zip
 
+      - name: Upload workflow artifact
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: emx-onnx-cgen-windows-amd64
+          path: emx-onnx-cgen-windows-amd64.zip
+
       - name: Upload release asset
+        if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v2
         with:
           files: emx-onnx-cgen-windows-amd64.zip
