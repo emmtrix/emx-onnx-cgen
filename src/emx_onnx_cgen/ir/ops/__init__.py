@@ -1,4 +1,12 @@
-from .elementwise import BinaryOp, ClipOp, IdentityOp, MultiInputBinaryOp, UnaryOp, WhereOp
+from .elementwise import (
+    BinaryOp,
+    ClipOp,
+    IdentityOp,
+    MultiInputBinaryOp,
+    UnaryOp,
+    VariadicOp,
+    WhereOp,
+)
 from .misc import (
     CastOp,
     ConcatOp,
@@ -126,5 +134,6 @@ __all__ = [
     "TransposeOp",
     "TriluOp",
     "UnaryOp",
+    "VariadicOp",
     "WhereOp",
 ]

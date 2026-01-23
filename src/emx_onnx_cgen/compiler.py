@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 import hashlib
 from pathlib import Path
 from typing import Mapping
@@ -24,6 +24,7 @@ from .ir.context import GraphContext
 from .ir.model import Graph, TensorType, Value
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
+from .ir.ops import ExpandOp, GatherOp, MultiInputBinaryOp
 from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product, value_dtype
 from .lowering.registry import get_lowering_registry
@@ -172,6 +173,43 @@ class Compiler:
         ) = self._collect_io_specs(graph)
         ops, node_infos = self._lower_nodes(ctx)
         op_ctx = OpContext(ctx)
+        for op, node_info in zip(ops, node_infos):
+            field_names = {field.name for field in fields(op)}
+            if "dtype" in field_names:
+                dtype = getattr(op, "dtype")
+                for field in fields(op):
+                    if not field.name.startswith("output"):
+                        continue
+                    value = getattr(op, field.name)
+                    if isinstance(value, str):
+                        op_ctx.set_dtype(value, dtype)
+                for name in node_info.outputs:
+                    op_ctx.set_dtype(name, dtype)
+            if "outputs" in field_names:
+                dtype = getattr(op, "dtype", None)
+                if dtype is not None:
+                    for name in getattr(op, "outputs"):
+                        op_ctx.set_dtype(name, dtype)
+            if "output_dtype" in field_names and "output" in field_names:
+                output_name = getattr(op, "output")
+                if isinstance(output_name, str):
+                    op_ctx.set_dtype(output_name, getattr(op, "output_dtype"))
+            if "output_values_dtype" in field_names:
+                op_ctx.set_dtype(
+                    getattr(op, "output_values"),
+                    getattr(op, "output_values_dtype"),
+                )
+            if "output_indices_dtype" in field_names:
+                op_ctx.set_dtype(
+                    getattr(op, "output_indices"),
+                    getattr(op, "output_indices_dtype"),
+                )
+            if isinstance(op, MultiInputBinaryOp) and op.inputs:
+                op_ctx.set_dtype(op.output, op_ctx.dtype(op.inputs[0]))
+            if isinstance(op, GatherOp):
+                op_ctx.set_dtype(op.output, op_ctx.dtype(op.data))
+            if isinstance(op, ExpandOp):
+                op_ctx.set_dtype(op.output, op_ctx.dtype(op.input0))
         for op in ops:
             op.validate(op_ctx)
         for op in ops:

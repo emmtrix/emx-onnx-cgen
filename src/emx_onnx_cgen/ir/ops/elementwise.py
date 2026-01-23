@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
-from ...ops import COMPARE_FUNCTIONS, OperatorKind
-from ..op_base import ElementwiseOpBase
+from ...ops import COMPARE_FUNCTIONS, OperatorKind, binary_op_symbol
+from ..op_base import ElementwiseOpBase, VariadicLikeOpBase
 from ..op_context import OpContext
 
 
@@ -34,23 +34,44 @@ class BinaryOp(ElementwiseOpBase):
 
 
 @dataclass(frozen=True)
-class MultiInputBinaryOp(ElementwiseOpBase):
+class VariadicOp(VariadicLikeOpBase):
+    op_type: str
     inputs: tuple[str, ...]
     output: str
     function: ScalarFunction
     operator_kind: OperatorKind
-    shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
+    min_inputs: int = 2
+    max_inputs: int | None = None
 
-    def _elementwise_inputs(self) -> tuple[str, ...]:
+    def _variadic_inputs(self) -> tuple[str, ...]:
         return self.inputs
 
-    def _elementwise_output(self) -> str:
+    def _variadic_output(self) -> str:
         return self.output
 
-    def _elementwise_compare(self) -> bool:
+    def _variadic_kind(self) -> str:
+        return self.op_type
+
+    def _variadic_compare(self) -> bool:
         return self.function in COMPARE_FUNCTIONS
+
+    def _variadic_min_inputs(self) -> int:
+        return self.min_inputs
+
+    def _variadic_max_inputs(self) -> int | None:
+        return self.max_inputs
+
+    def _variadic_supports_dtype(self, dtype: ScalarType) -> bool:
+        return (
+            binary_op_symbol(
+                self.function, dtype=dtype, validate_attrs=False
+            )
+            is not None
+        )
+
+
+class MultiInputBinaryOp(VariadicOp):
+    pass
 
 
 @dataclass(frozen=True)

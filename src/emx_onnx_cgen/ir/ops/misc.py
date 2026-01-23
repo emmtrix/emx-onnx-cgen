@@ -2,11 +2,27 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import numpy as np
+
 from shared.scalar_types import ScalarType
 
-from ...errors import ShapeInferenceError
-from ..op_base import BroadcastingOpBase, RenderableOpBase
+from ...errors import ShapeInferenceError, UnsupportedOpError
+from ..op_base import (
+    BroadcastingOpBase,
+    GatherLikeOpBase,
+    RenderableOpBase,
+    ShapeLikeOpBase,
+)
 from ..op_context import OpContext
+
+
+def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
+    strides: list[int] = []
+    stride = 1
+    for dim in reversed(shape):
+        strides.append(stride)
+        stride *= dim
+    return tuple(reversed(strides))
 
 
 @dataclass(frozen=True)
@@ -59,16 +75,26 @@ class GatherElementsOp(RenderableOpBase):
     indices_dtype: ScalarType
 
 @dataclass(frozen=True)
-class GatherOp(RenderableOpBase):
+class GatherOp(GatherLikeOpBase):
     data: str
     indices: str
     output: str
     axis: int
-    data_shape: tuple[int, ...]
-    indices_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    indices_dtype: ScalarType
+
+    def _gather_data(self) -> str:
+        return self.data
+
+    def _gather_indices(self) -> str:
+        return self.indices
+
+    def _gather_output(self) -> str:
+        return self.output
+
+    def _gather_axis(self) -> int:
+        return self.axis
+
+    def _gather_mode(self) -> str:
+        return "gather"
 
 @dataclass(frozen=True)
 class GatherNDOp(RenderableOpBase):
@@ -360,15 +386,72 @@ class NonMaxSuppressionOp(RenderableOpBase):
     score_threshold_shape: tuple[int, ...] | None
 
 @dataclass(frozen=True)
-class ExpandOp(BroadcastingOpBase):
+class ExpandOp(ShapeLikeOpBase):
     input0: str
+    input_shape: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    input_shape_padded: tuple[int, ...]
-    input_strides: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
+
+    def _shape_data(self) -> str:
+        return self.input0
+
+    def _shape_output(self) -> str:
+        return self.output
+
+    def _shape_mode(self) -> str:
+        return "expand"
+
+    def _shape_spec(self, ctx: OpContext) -> tuple[int, ...]:
+        initializer = ctx.initializer(self.input_shape)
+        if initializer is not None:
+            if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
+                raise UnsupportedOpError(
+                    f"{self.kind} shape input must be int64 or int32"
+                )
+            if len(initializer.type.shape) != 1:
+                raise UnsupportedOpError(
+                    f"{self.kind} shape input must be a 1D tensor"
+                )
+            values = np.array(initializer.data, dtype=np.int64).reshape(-1)
+            if values.size == 0:
+                raise ShapeInferenceError(
+                    f"{self.kind} shape input cannot be empty"
+                )
+            return tuple(int(value) for value in values)
+        dtype = ctx.dtype(self.input_shape)
+        if dtype not in {ScalarType.I64, ScalarType.I32}:
+            raise UnsupportedOpError(
+                f"{self.kind} shape input must be int64 or int32"
+            )
+        shape = ctx.shape(self.input_shape)
+        if len(shape) != 1:
+            raise UnsupportedOpError(
+                f"{self.kind} shape input must be a 1D tensor"
+            )
+        if shape[0] <= 0:
+            raise ShapeInferenceError(
+                f"{self.kind} shape input cannot be empty"
+            )
+        output_shape = ctx.shape(self.output)
+        if not output_shape:
+            raise ShapeInferenceError(
+                f"{self.kind} output shape must be specified"
+            )
+        return output_shape
+
+    def _shape_derived(
+        self,
+        ctx: OpContext,
+        *,
+        data_shape: tuple[int, ...],
+        target_shape: tuple[int, ...],
+        output_shape: tuple[int, ...],
+    ) -> None:
+        input_shape_padded = (
+            (1,) * (len(output_shape) - len(data_shape)) + data_shape
+        )
+        input_strides = _compute_strides(input_shape_padded)
+        ctx.set_derived(self, "input_shape_padded", input_shape_padded)
+        ctx.set_derived(self, "input_strides", input_strides)
 
 @dataclass(frozen=True)
 class CumSumOp(RenderableOpBase):
