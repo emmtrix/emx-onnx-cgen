@@ -17,11 +17,6 @@ class BinaryOp(ElementwiseOpBase):
     output: str
     function: ScalarFunction
     operator_kind: OperatorKind
-    input0_shape: tuple[int, ...]
-    input1_shape: tuple[int, ...]
-    shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
         return (self.input0, self.input1)
@@ -80,11 +75,6 @@ class WhereOp(ElementwiseOpBase):
     input_x: str
     input_y: str
     output: str
-    condition_shape: tuple[int, ...]
-    x_shape: tuple[int, ...]
-    y_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
         return (self.condition, self.input_x, self.input_y)
@@ -101,9 +91,6 @@ class UnaryOp(ElementwiseOpBase):
     input0: str
     output: str
     function: ScalarFunction
-    shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
     params: tuple[float, ...] = ()
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
@@ -126,11 +113,6 @@ class ClipOp(ElementwiseOpBase):
     input_min: str | None
     input_max: str | None
     output: str
-    input_shape: tuple[int, ...]
-    min_shape: tuple[int, ...] | None
-    max_shape: tuple[int, ...] | None
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
         inputs = [self.input0]
@@ -152,9 +134,6 @@ class ClipOp(ElementwiseOpBase):
 class IdentityOp(ElementwiseOpBase):
     input0: str
     output: str
-    shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
         return (self.input0,)

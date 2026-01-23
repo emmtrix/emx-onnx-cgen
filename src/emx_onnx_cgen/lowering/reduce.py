@@ -525,17 +525,12 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
     return ReduceOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=spec.output_shape,
         axes=spec.axes or (),
         axes_input=spec.axes_input,
-        axes_input_shape=spec.axes_input_shape,
-        axes_input_dtype=spec.axes_input_dtype,
         keepdims=spec.keepdims,
         noop_with_empty_axes=bool(int(node.attrs.get("noop_with_empty_axes", 0))),
         reduce_kind=REDUCE_KIND_BY_OP[node.op_type],
         reduce_count=spec.reduce_count,
-        dtype=op_dtype,
     )
 
 

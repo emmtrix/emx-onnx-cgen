@@ -45,15 +45,10 @@ def lower_global_max_pool(graph: Graph, node: Node) -> ReduceOp:
     return ReduceOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=output_shape,
         axes=axes,
         axes_input=None,
-        axes_input_shape=None,
-        axes_input_dtype=None,
         keepdims=True,
         noop_with_empty_axes=False,
         reduce_kind="max",
         reduce_count=None,
-        dtype=op_dtype,
     )
