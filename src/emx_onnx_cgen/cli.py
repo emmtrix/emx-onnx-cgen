@@ -633,12 +633,21 @@ def _load_test_data_inputs(
     )
     if not input_files:
         raise CodegenError(f"No input_*.pb files found in {data_dir}")
-    if len(input_files) != len(model.graph.input):
+    initializer_names = {init.name for init in model.graph.initializer}
+    initializer_names.update(
+        sparse_init.name for sparse_init in model.graph.sparse_initializer
+    )
+    model_inputs = [
+        value_info
+        for value_info in model.graph.input
+        if value_info.name not in initializer_names
+    ]
+    if len(input_files) != len(model_inputs):
         raise CodegenError(
             "Test data input count does not match model inputs: "
-            f"{len(input_files)} vs {len(model.graph.input)}."
+            f"{len(input_files)} vs {len(model_inputs)}."
         )
-    for value_info in model.graph.input:
+    for value_info in model_inputs:
         value_kind = value_info.type.WhichOneof("value")
         if value_kind != "tensor_type":
             LOGGER.warning(
@@ -651,7 +660,7 @@ def _load_test_data_inputs(
     for index, path in enumerate(input_files):
         tensor = onnx.TensorProto()
         tensor.ParseFromString(path.read_bytes())
-        inputs[model.graph.input[index].name] = numpy_helper.to_array(tensor)
+        inputs[model_inputs[index].name] = numpy_helper.to_array(tensor)
     return inputs
 
 
