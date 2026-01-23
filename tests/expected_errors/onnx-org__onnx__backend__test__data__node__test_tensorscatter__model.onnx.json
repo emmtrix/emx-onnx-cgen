@@ -1,4 +1,4 @@
 {
   "error": "name 'tensor_scatter_template' is not defined",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tensorscatter/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_tensorscatter/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tensorscatter/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_tensorscatter/test_data_set_0"
 }

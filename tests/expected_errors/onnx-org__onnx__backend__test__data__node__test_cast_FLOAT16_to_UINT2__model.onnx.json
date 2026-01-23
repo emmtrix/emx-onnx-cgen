@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 25 (UINT2) for tensor 'output'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT2/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT2/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT2/test_data_set_0",
   "operators": [
     "Cast"
   ]

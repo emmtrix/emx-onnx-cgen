@@ -16,6 +16,9 @@ emx-onnx-cgen = "emx_onnx_cgen.cli:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.package-data]
+emx_onnx_cgen = ["templates/*.j2"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

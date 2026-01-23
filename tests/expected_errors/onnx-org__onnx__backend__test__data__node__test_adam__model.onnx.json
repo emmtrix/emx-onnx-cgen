@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op Adam",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_adam/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_adam/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_adam/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_adam/test_data_set_0",
   "operators": [
     "ai.onnx.preview.training::Adam"
   ]

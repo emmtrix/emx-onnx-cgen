@@ -305,7 +305,6 @@ def test_codegen_golden_dynamic_dims() -> None:
     )
     compiler = Compiler(
         CompilerOptions(
-            template_dir=Path("templates"),
             model_name="dynamic_dims_model",
         )
     )
@@ -351,7 +350,7 @@ def test_codegen_golden_add() -> None:
 def test_codegen_golden_add_no_restrict() -> None:
     model = _make_add_model()
     compiler = Compiler(
-        CompilerOptions(template_dir=Path("templates"), restrict_arrays=False)
+        CompilerOptions(restrict_arrays=False)
     )
     generated = compiler.compile(model)
     golden_path = (
@@ -372,7 +371,6 @@ def test_codegen_golden_large_weight_loader() -> None:
     model = _make_large_weight_initializer_model()
     compiler = Compiler(
         CompilerOptions(
-            template_dir=Path("templates"),
             model_name="large_weight_model",
             large_weight_threshold=4,
             emit_testbench=True,
@@ -480,7 +478,6 @@ def test_codegen_golden_large_temp_static() -> None:
     model = _make_large_temp_model()
     compiler = Compiler(
         CompilerOptions(
-            template_dir=Path("templates"),
             model_name="large_temp_static_model",
         )
     )
@@ -529,7 +526,7 @@ def test_codegen_golden_matmul() -> None:
 
 def test_codegen_includes_testbench() -> None:
     model = _make_add_model()
-    options = CompilerOptions(template_dir=Path("templates"), emit_testbench=True)
+    options = CompilerOptions(emit_testbench=True)
     compiler = Compiler(options)
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "add_model_testbench.c"

@@ -133,12 +133,6 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     compile_parser.add_argument(
-        "--template-dir",
-        type=Path,
-        default=Path("templates"),
-        help="Template directory (default: templates)",
-    )
-    compile_parser.add_argument(
         "--model-name",
         type=str,
         default=None,
@@ -191,12 +185,6 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Compile an ONNX model and verify outputs against ONNX Runtime",
     )
     verify_parser.add_argument("model", type=Path, help="Path to the ONNX model")
-    verify_parser.add_argument(
-        "--template-dir",
-        type=Path,
-        default=Path("templates"),
-        help="Template directory (default: templates)",
-    )
     verify_parser.add_argument(
         "--model-name",
         type=str,
@@ -314,7 +302,6 @@ def _compile_model(
         model_checksum = _model_checksum(model_path)
         model = onnx.load_model(model_path)
         options = CompilerOptions(
-            template_dir=args.template_dir,
             model_name=model_name,
             emit_testbench=args.emit_testbench,
             command_line=args.command_line,
@@ -424,7 +411,6 @@ def _verify_model(
     try:
         testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
         options = CompilerOptions(
-            template_dir=args.template_dir,
             model_name=model_name,
             emit_testbench=True,
             command_line=args.command_line,

@@ -334,8 +334,6 @@ def test_official_onnx_expected_errors(
         "emx-onnx-cgen",
         "verify",
         str(model_path.relative_to(repo_root)),
-        "--template-dir",
-        "templates",
         "--cc",
         compiler_cmd[0],
     ]
@@ -404,8 +402,6 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         "emx-onnx-cgen",
         "verify",
         str(model_path.relative_to(repo_root)),
-        "--template-dir",
-        "templates",
         "--cc",
         compiler_cmd[0],
     ]

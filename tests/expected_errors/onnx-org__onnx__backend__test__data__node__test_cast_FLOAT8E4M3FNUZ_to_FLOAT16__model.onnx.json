@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/test_data_set_0",
   "operators": [
     "Cast"
   ]

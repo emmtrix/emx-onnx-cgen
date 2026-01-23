@@ -1,6 +1,6 @@
 {
   "error": "\nArrays are not equal\n\nMismatched elements: 1 / 6 (16.7%)\nMax absolute difference among violations: 108\nMax relative difference among violations: 5.4\n ACTUAL: array([[  41,  -12,   -9],\n       [   1,  -75, -128]], dtype=int8)\n DESIRED: array([[ 41, -12,  -9],\n       [  1, -75,  20]], dtype=int8)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/test_data_set_0",
   "operators": [
     "QLinearMatMul"
   ]

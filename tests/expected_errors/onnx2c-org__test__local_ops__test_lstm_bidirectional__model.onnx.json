@@ -1,6 +1,6 @@
 {
   "error": "Unsupported LSTM direction b'bidirectional'",
-  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_bidirectional/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_lstm_bidirectional/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_bidirectional/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_lstm_bidirectional/test_data_set_0",
   "operators": [
     "LSTM"
   ]

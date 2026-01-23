@@ -1,4 +1,4 @@
 {
   "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/test_data_set_0"
 }

@@ -1,6 +1,6 @@
 {
   "error": "\nArrays are not equal\n\nMismatched elements: 288 / 432 (66.7%)\nMax absolute difference among violations: 288\nMax relative difference among violations: 288.\n ACTUAL: array([[[[  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11],\n         [ 12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23],\n         [ 24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35],...\n DESIRED: array([[[[  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11],\n         [ 12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23],\n         [ 24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35],...",
-  "command_line": "verify onnx2c-org/test/local_ops/test_maxpool_stride_1/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_maxpool_stride_1/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_maxpool_stride_1/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_maxpool_stride_1/test_data_set_0",
   "operators": [
     "MaxPool"
   ]

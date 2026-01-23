@@ -34,7 +34,7 @@ from .runtime.evaluator import Evaluator
 
 @dataclass(frozen=True)
 class CompilerOptions:
-    template_dir: Path
+    template_dir: Path | None = None
     model_name: str = "model"
     emit_testbench: bool = False
     command_line: str | None = None
@@ -56,7 +56,7 @@ def _onnx_elem_type(dtype: np.dtype) -> int:
 class Compiler:
     def __init__(self, options: CompilerOptions | None = None) -> None:
         if options is None:
-            options = CompilerOptions(template_dir=Path("templates"))
+            options = CompilerOptions()
         self._options = options
         self._emitter = CEmitter(
             options.template_dir,

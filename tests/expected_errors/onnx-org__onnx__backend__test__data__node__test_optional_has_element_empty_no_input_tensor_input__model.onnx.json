@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op OptionalHasElement",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_tensor_input/model.onnx --template-dir templates --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_tensor_input/model.onnx --cc /usr/bin/cc",
   "operators": [
     "OptionalHasElement"
   ]

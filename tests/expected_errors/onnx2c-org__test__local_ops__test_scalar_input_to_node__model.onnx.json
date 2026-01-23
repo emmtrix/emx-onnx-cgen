@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_scalar_input_to_node/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_scalar_input_to_node/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_scalar_input_to_node/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_scalar_input_to_node/test_data_set_0",
   "operators": [
     "Constant",
     "Mul"

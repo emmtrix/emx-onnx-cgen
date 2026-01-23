@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op ImageDecoder",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr/test_data_set_0",
   "operators": [
     "ImageDecoder"
   ]

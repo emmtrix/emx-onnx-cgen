@@ -1,4 +1,4 @@
 {
   "error": "'gpu_0_data_0'",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx --template-dir templates --cc /usr/bin/cc"
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx --cc /usr/bin/cc"
 }

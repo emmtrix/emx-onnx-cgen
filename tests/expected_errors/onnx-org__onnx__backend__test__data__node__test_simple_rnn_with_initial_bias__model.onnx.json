@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op RNN",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_simple_rnn_with_initial_bias/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_simple_rnn_with_initial_bias/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_simple_rnn_with_initial_bias/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_simple_rnn_with_initial_bias/test_data_set_0",
   "operators": [
     "RNN"
   ]

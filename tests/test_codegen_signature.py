@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
 from onnx import TensorProto, helper
 
@@ -40,9 +39,7 @@ def test_compile_dedupes_dim_param_names() -> None:
         [output_info],
     )
     model = helper.make_model(graph)
-    compiler = Compiler(
-        CompilerOptions(template_dir=Path("templates"), model_name="model")
-    )
+    compiler = Compiler(CompilerOptions(model_name="model"))
     source = compiler.compile(model)
 
     param_names = _signature_param_names(source)

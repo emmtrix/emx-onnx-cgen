@@ -1,6 +1,6 @@
 {
   "error": "Unsupported value type 'sequence_type' for 'seq_empty'. Hint: export the model with tensor inputs/outputs.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx --template-dir templates --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_loop13_seq/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_loop13_seq/test_data_set_0",
   "operators": [
     "Loop"
   ]
