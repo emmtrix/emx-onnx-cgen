@@ -74,6 +74,11 @@ def main() -> None:
         "and onnx-org/onnx/backend/test/case/node for test inputs."
     )
     prompt_lines.append(
+        "Local ops hint: for com.microsoft operators or local test cases, "
+        "check onnx2c-org/test/local_ops for the model generator and "
+        "onnx2c-org/src/nodes for a reference implementation."
+    )
+    prompt_lines.append(
         "Implementation map: add/adjust lowering in src/emx_onnx_cgen/lowering/, "
         "wire codegen in src/emx_onnx_cgen/codegen/c_emitter.py with a matching "
         "templates/*_op.c.j2 file, update runtime/evaluator.py for numpy checks, "

@@ -549,6 +549,19 @@ def _verify_model(
             for name, value in payload["inputs"].items()
         }
     runtime_name = args.runtime
+    custom_domains = sorted(
+        {
+            opset.domain
+            for opset in model.opset_import
+            if opset.domain not in {"", "ai.onnx"}
+        }
+    )
+    if runtime_name == "onnx-reference" and custom_domains:
+        LOGGER.info(
+            "verify runtime: switching to onnxruntime for custom domains %s",
+            ", ".join(custom_domains),
+        )
+        runtime_name = "onnxruntime"
     runtime_started = time.perf_counter()
     try:
         if runtime_name == "onnxruntime":

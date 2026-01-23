@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1171 / 1802 official ONNX files.
+Support 1169 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -22,8 +22,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_acos_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acosh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_acosh_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx | ❌ | onnxruntime failed to run onnx-org/onnx/backend/test/data/node/test_adagrad/model.onnx: [ONNXRuntimeError] : 1 : FAIL : Fatal error: ai.onnx.preview.training:Adagrad(-1) is not a registered function/op |
+| onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx | ❌ | onnxruntime failed to run onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx: [ONNXRuntimeError] : 1 : FAIL : Fatal error: ai.onnx.preview.training:Adagrad(-1) is not a registered function/op |
 | onnx-org/onnx/backend/test/data/node/test_adam/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_adam_multiple/model.onnx | ❌ | Unsupported op Adam |
 | onnx-org/onnx/backend/test/data/node/test_add/model.onnx | ✅ | OK (max ULP 0) |
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 52 / 74 local ONNX files.
+Support 54 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -1882,8 +1882,8 @@ Support 52 / 74 local ONNX files.
 | test_pad_reflect_nopadding/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_reflect_nopadding/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
 | test_qlinearadd_int8/model.onnx | ❌ | Unsupported op QLinearAdd |
 | test_qlinearadd_uint8/model.onnx | ❌ | Unsupported op QLinearAdd |
-| test_qlinearmul_int8/model.onnx | ❌ | Unsupported op QLinearMul |
-| test_qlinearmul_uint8/model.onnx | ❌ | Unsupported op QLinearMul |
+| test_qlinearmul_int8/model.onnx | ✅ | OK (max ULP 0) |
+| test_qlinearmul_uint8/model.onnx | ✅ | OK (max ULP 0) |
 | test_resize_downsample_sizes_linear_1D/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D/model.onnx: Unable to find input 'sizes' in known results ['', 'X'], self.rt_inits_ has [], feed_inputs has ['X']. |
 | test_resize_downsample_sizes_linear_1D_align/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx: Unable to find input 'sizes' in known results ['', 'X'], self.rt_inits_ has [], feed_inputs has ['X']. |
 | test_scalar_input_to_node/model.onnx | ✅ | OK (max ULP 0) |
