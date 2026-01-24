@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 1 in testbench data",
+  "error": "OK (max ULP 16)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 6,
-  "generated_checksum": "80f43627f6434cfb356f0eb64e938d94403a282b8fb69a0e189cfe293a964b84"
+  "generated_checksum": "d226bb2b100537a8042fb8bc5fbfddade72abe6f2f404354091e35cdd33eeb9b"
 }

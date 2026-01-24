@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 5 in testbench data",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_momentum_eval/test_data_set_0",
   "operators": [
     "BatchNormalization"
   ],
   "opset_version": 6,
-  "generated_checksum": "ccd8f95755f50d49407effa32e40e60b13173fa2f2d680c9bcf149bd45390b3c"
+  "generated_checksum": "d8891cef844c573e1df485c3d57ec668d6755eb8e51868572d1fc751989ccf05"
 }

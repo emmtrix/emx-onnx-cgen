@@ -1,10 +1,10 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_non_float_params/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_non_float_params/test_data_set_0",
   "operators": [
     "Add",
     "Mul"
   ],
   "opset_version": 6,
-  "generated_checksum": "94139cd554b71e5734806d447ff703829c190d39df0a12c5b090050c29ff5dec"
+  "generated_checksum": "b175a792b706a1aa2dd8f46f60e4b80c40eb816295c3ea0a81347cddebd450ff"
 }

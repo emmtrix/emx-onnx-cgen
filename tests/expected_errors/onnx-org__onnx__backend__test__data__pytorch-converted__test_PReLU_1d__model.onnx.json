@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 2 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/test_data_set_0",
   "operators": [
     "PRelu"
   ],
   "opset_version": 6,
-  "generated_checksum": "3714f18fa829ba5612420af2d63c3a32c519e1334f12aee584f79e52959a8acd"
+  "generated_checksum": "6741f0c8b42dba086dfd4ee48a64b28096c46b3525e64f53e649fb46cbb67191"
 }
