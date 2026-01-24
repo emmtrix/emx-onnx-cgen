@@ -1,53 +1,17 @@
 from __future__ import annotations
 
-from shared.scalar_types import ScalarType
-
 from ..ir.ops import HardmaxOp
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
-from .common import node_dtype as _node_dtype
-from .common import onnx_opset_version as _onnx_opset_version
-from .common import shape_product as _shape_product
-from .common import value_shape as _value_shape
 from .registry import register_lowering
-from ..validation import ensure_output_shape_matches_input
-from ..validation import normalize_axis as _normalize_axis
 
 
 @register_lowering("Hardmax")
 def lower_hardmax(graph: Graph, node: Node) -> HardmaxOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Hardmax must have 1 input and 1 output")
-    op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
-    if op_dtype not in {ScalarType.F16, ScalarType.F32, ScalarType.F64}:
-        raise UnsupportedOpError(
-            "Hardmax supports float16, float, and double inputs only"
-        )
-    input_shape = _value_shape(graph, node.inputs[0], node)
-    output_shape = _value_shape(graph, node.outputs[0], node)
-    ensure_output_shape_matches_input(node, input_shape, output_shape)
-    opset_version = _onnx_opset_version(graph)
-    default_axis = 1 if opset_version is not None and opset_version < 13 else -1
-    axis_attr = node.attrs.get("axis", default_axis)
-    axis = _normalize_axis(
-        int(axis_attr),
-        input_shape,
-        node,
-    )
-    outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-    axis_size = input_shape[axis]
-    inner = (
-        _shape_product(input_shape[axis + 1 :])
-        if axis + 1 < len(input_shape)
-        else 1
-    )
     return HardmaxOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        outer=outer,
-        axis_size=axis_size,
-        inner=inner,
-        axis=axis,
-        shape=input_shape,
-        dtype=op_dtype,
+        axis=int(node.attrs["axis"]) if "axis" in node.attrs else None,
     )

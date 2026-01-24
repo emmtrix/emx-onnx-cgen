@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 13)",
+  "error": "OK (max ULP 27)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/test_data_set_0",
   "operators": [
     "Conv"
