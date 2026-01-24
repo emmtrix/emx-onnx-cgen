@@ -104,6 +104,7 @@ Options:
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnx-reference`).
 - `--temp-dir`: Directory in which to create temporary verification files (default: system temp dir).
+- `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
 
 How verification works:
 

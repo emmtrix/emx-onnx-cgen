@@ -342,6 +342,11 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     verify_parser.add_argument(
+        "--keep-temp-dir",
+        action="store_true",
+        help="Keep the temporary verification directory (default: delete it)",
+    )
+    verify_parser.add_argument(
         "--max-ulp",
         type=int,
         default=100,
@@ -588,10 +593,18 @@ def _verify_model(
                 generated_checksum,
             )
         temp_dir_root.mkdir(parents=True, exist_ok=True)
-    temp_dir = tempfile.TemporaryDirectory(
-        dir=str(temp_dir_root) if temp_dir_root is not None else None
-    )
-    temp_path = Path(temp_dir.name)
+    temp_dir: tempfile.TemporaryDirectory | None = None
+    if args.keep_temp_dir:
+        temp_path = Path(
+            tempfile.mkdtemp(
+                dir=str(temp_dir_root) if temp_dir_root is not None else None
+            )
+        )
+    else:
+        temp_dir = tempfile.TemporaryDirectory(
+            dir=str(temp_dir_root) if temp_dir_root is not None else None
+        )
+        temp_path = Path(temp_dir.name)
     active_reporter.info(f"Using temporary folder: {temp_path}")
     try:
         c_path = temp_path / "model.c"
@@ -645,9 +658,15 @@ def _verify_model(
                 "Testbench execution failed: " + describe_exit_code(exc.returncode)
             ), operators, opset_version, generated_checksum
     finally:
-        delete_started = active_reporter.start_step("Deleting temporary folder")
-        temp_dir.cleanup()
-        active_reporter.step_ok(delete_started)
+        if temp_dir is None:
+            active_reporter.note(f"Keeping temporary folder: {temp_path}")
+        else:
+            delete_started = active_reporter.start_step(
+                "Deleting temporary folder: "
+                f"{temp_path} [--keep-temp-dir not set]"
+            )
+            temp_dir.cleanup()
+            active_reporter.step_ok(delete_started)
     try:
         payload = json.loads(result.stdout)
     except json.JSONDecodeError as exc:
