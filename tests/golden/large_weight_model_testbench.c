@@ -66,6 +66,8 @@ static inline void node0_add(const float input0[2][3], const float input1[2][3],
     }
 }
 
+static _Bool large_weight_model_load_file(FILE *file);
+
 _Bool large_weight_model_load(const char *path) {
     FILE *file = fopen(path, "rb");
     if (!file) {

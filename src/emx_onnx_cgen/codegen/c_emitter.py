@@ -11504,12 +11504,16 @@ class CEmitter:
     def _emit_weight_loader(
         self, model: LoweredModel, large_constants: tuple[ConstTensor, ...]
     ) -> str:
-        lines = [f"_Bool {model.name}_load(const char *path) {{"]
+        lines = []
         if not large_constants:
+            lines.append(f"_Bool {model.name}_load(const char *path) {{")
             lines.append("    (void)path;")
             lines.append("    return 1;")
             lines.append("}")
             return _format_c_indentation("\n".join(lines))
+        lines.append(f"static _Bool {model.name}_load_file(FILE *file);")
+        lines.append("")
+        lines.append(f"_Bool {model.name}_load(const char *path) {{")
         lines.append("    FILE *file = fopen(path, \"rb\");")
         lines.append("    if (!file) {")
         lines.append("        return 0;")
