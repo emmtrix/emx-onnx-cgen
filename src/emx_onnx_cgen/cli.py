@@ -7,17 +7,20 @@ import logging
 import os
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
 import time
-import signal
-from pathlib import Path
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Mapping, Sequence
+from pathlib import Path
+from typing import Mapping, Sequence, TextIO
 
+import numpy as np
 import onnx
 from onnx import numpy_helper
+
+from shared.ulp import ulp_intdiff_float
 
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
@@ -25,12 +28,9 @@ from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
 from .onnxruntime_utils import make_deterministic_session_options
 from .testbench import decode_testbench_array
-from .verification import format_success_message, max_ulp_diff
+from .verification import format_success_message
 
 LOGGER = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    import numpy as np
 
 
 @dataclass(frozen=True)
@@ -44,6 +44,93 @@ class CliResult:
     operators: list[str] | None = None
     opset_version: int | None = None
     generated_checksum: str | None = None
+
+
+@dataclass(frozen=True)
+class _WorstDiff:
+    output_name: str
+    node_name: str | None
+    index: tuple[int, ...]
+    got: float
+    reference: float
+    ulp: int
+
+
+class _VerifyReporter:
+    def __init__(self, stream: TextIO | None = None) -> None:
+        self._stream = stream or sys.stdout
+
+    def start_step(self, label: str) -> float:
+        print(f"{label} ...", end=" ", file=self._stream, flush=True)
+        return time.perf_counter()
+
+    def step_ok(self, started_at: float) -> None:
+        duration = time.perf_counter() - started_at
+        print(f"OK ({duration:.3f}s)", file=self._stream)
+
+    def step_ok_detail(self, detail: str) -> None:
+        print(f"OK ({detail})", file=self._stream)
+
+    def step_fail(self, reason: str) -> None:
+        print(f"FAIL ({reason})", file=self._stream)
+
+    def note(self, message: str) -> None:
+        print(f"Note: {message}", file=self._stream)
+
+    def info(self, message: str) -> None:
+        print(message, file=self._stream)
+
+
+class _NullVerifyReporter(_VerifyReporter):
+    def __init__(self) -> None:
+        super().__init__(stream=sys.stdout)
+
+    def start_step(self, label: str) -> float:
+        return time.perf_counter()
+
+    def step_ok(self, started_at: float) -> None:
+        return None
+
+    def step_ok_detail(self, detail: str) -> None:
+        return None
+
+    def step_fail(self, reason: str) -> None:
+        return None
+
+    def note(self, message: str) -> None:
+        return None
+
+    def info(self, message: str) -> None:
+        return None
+
+
+def _worst_ulp_diff(
+    actual: "np.ndarray", expected: "np.ndarray"
+) -> tuple[int, tuple[tuple[int, ...], float, float] | None]:
+    if actual.shape != expected.shape:
+        raise ValueError(
+            f"Shape mismatch for ULP calculation: {actual.shape} vs {expected.shape}"
+        )
+    if not np.issubdtype(expected.dtype, np.floating):
+        return 0, None
+    dtype = expected.dtype
+    actual_cast = actual.astype(dtype, copy=False)
+    expected_cast = expected.astype(dtype, copy=False)
+    max_diff = 0
+    worst: tuple[tuple[int, ...], float, float] | None = None
+    iterator = np.nditer(
+        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
+    )
+    for actual_value, expected_value in iterator:
+        diff = ulp_intdiff_float(actual_value[()], expected_value[()])
+        if diff > max_diff:
+            max_diff = diff
+            worst = (
+                iterator.multi_index,
+                float(actual_value[()]),
+                float(expected_value[()]),
+            )
+    return max_diff, worst
 
 
 def run_cli_command(
@@ -68,7 +155,7 @@ def run_cli_command(
                 opset_version,
                 generated_checksum,
             ) = _verify_model(
-                args, include_build_details=False
+                args, include_build_details=False, reporter=_NullVerifyReporter()
             )
             return CliResult(
                 exit_code=0 if error is None else 1,
@@ -387,20 +474,23 @@ def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] 
 
 
 def _handle_verify(args: argparse.Namespace) -> int:
+    reporter = _VerifyReporter()
     (
         success_message,
         error,
         _operators,
         _opset_version,
         generated_checksum,
-    ) = _verify_model(args, include_build_details=True)
+    ) = _verify_model(args, include_build_details=True, reporter=reporter)
     if error is not None:
-        LOGGER.error("Verification failed: %s", error)
+        reporter.info("")
+        reporter.info(f"Result: {error}")
         return 1
     if success_message:
-        LOGGER.info("%s", success_message)
+        reporter.info("")
+        reporter.info(f"Result: {success_message}")
     if generated_checksum:
-        LOGGER.info("verify generated checksum (sha256): %s", generated_checksum)
+        reporter.note(f"Generated checksum (sha256): {generated_checksum}")
     return 0
 
 
@@ -408,12 +498,9 @@ def _verify_model(
     args: argparse.Namespace,
     *,
     include_build_details: bool,
+    reporter: _VerifyReporter | None = None,
 ) -> tuple[str | None, str | None, list[str], int | None, str | None]:
-    import numpy as np
-
-    def log_step(step: str, started_at: float) -> None:
-        duration = time.perf_counter() - started_at
-        LOGGER.info("verify step %s: %.3fs", step, duration)
+    active_reporter = reporter or _NullVerifyReporter()
 
     def describe_exit_code(returncode: int) -> str:
         if returncode >= 0:
@@ -437,17 +524,23 @@ def _verify_model(
             None,
             None,
         )
+    load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     try:
         model = onnx.load_model(model_path)
     except OSError as exc:
+        active_reporter.step_fail(str(exc))
         return None, str(exc), [], None, None
+    active_reporter.step_ok(load_started)
 
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
     operators_display = ", ".join(operators) if operators else "(none)"
-    LOGGER.info("verify operators: %s", operators_display)
+    active_reporter.note(
+        f"Model operators ({len(operators)}): {operators_display}"
+    )
 
     try:
+        codegen_started = active_reporter.start_step("Generating C code")
         testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
         options = CompilerOptions(
             model_name=model_name,
@@ -461,10 +554,10 @@ def _verify_model(
             testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
-        codegen_started = time.perf_counter()
         generated, weight_data = compiler.compile_with_weight_data(model)
-        log_step("codegen", codegen_started)
+        active_reporter.step_ok(codegen_started)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
+        active_reporter.step_fail(str(exc))
         return None, str(exc), operators, opset_version, None
     generated_checksum = _generated_checksum(generated)
     expected_checksum = args.expected_checksum
@@ -495,11 +588,12 @@ def _verify_model(
                 generated_checksum,
             )
         temp_dir_root.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(
+    temp_dir = tempfile.TemporaryDirectory(
         dir=str(temp_dir_root) if temp_dir_root is not None else None
-    ) as temp_dir:
-        temp_path = Path(temp_dir)
-        LOGGER.info("verify temp dir: %s", temp_path)
+    )
+    temp_path = Path(temp_dir.name)
+    active_reporter.info(f"Using temporary folder: {temp_path}")
+    try:
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
         exe_path = temp_path / "model"
@@ -507,7 +601,6 @@ def _verify_model(
         if weight_data is not None:
             weights_path.write_bytes(weight_data)
         try:
-            compile_started = time.perf_counter()
             compile_cmd = [
                 *compiler_cmd,
                 "-std=c99",
@@ -519,23 +612,25 @@ def _verify_model(
                 str(exe_path),
                 "-lm",
             ]
-            LOGGER.info("verify compile command: %s", shlex.join(compile_cmd))
+            active_reporter.note(f"Compile command: {shlex.join(compile_cmd)}")
+            compile_started = active_reporter.start_step("Compiling C code")
             subprocess.run(
                 compile_cmd,
                 check=True,
                 capture_output=True,
                 text=True,
             )
-            log_step("compile", compile_started)
+            active_reporter.step_ok(compile_started)
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
             if include_build_details:
                 details = exc.stderr.strip()
                 if details:
                     message = f"{message} {details}"
+            active_reporter.step_fail(message)
             return None, message, operators, opset_version, generated_checksum
         try:
-            run_started = time.perf_counter()
+            run_started = active_reporter.start_step("Running generated binary")
             result = subprocess.run(
                 [str(exe_path)],
                 check=True,
@@ -543,12 +638,16 @@ def _verify_model(
                 text=True,
                 cwd=temp_path,
             )
-            log_step("run", run_started)
+            active_reporter.step_ok(run_started)
         except subprocess.CalledProcessError as exc:
+            active_reporter.step_fail(describe_exit_code(exc.returncode))
             return None, (
                 "Testbench execution failed: " + describe_exit_code(exc.returncode)
             ), operators, opset_version, generated_checksum
-
+    finally:
+        delete_started = active_reporter.start_step("Deleting temporary folder")
+        temp_dir.cleanup()
+        active_reporter.step_ok(delete_started)
     try:
         payload = json.loads(result.stdout)
     except json.JSONDecodeError as exc:
@@ -581,12 +680,12 @@ def _verify_model(
         }
     )
     if runtime_name == "onnx-reference" and custom_domains:
-        LOGGER.info(
-            "verify runtime: switching to onnxruntime for custom domains %s",
-            ", ".join(custom_domains),
+        active_reporter.note(
+            "Runtime: switching to onnxruntime for custom domains "
+            f"{', '.join(custom_domains)}"
         )
         runtime_name = "onnxruntime"
-    runtime_started = time.perf_counter()
+    runtime_started = active_reporter.start_step(f"Running {runtime_name}")
     try:
         if runtime_name == "onnxruntime":
             import onnxruntime as ort
@@ -604,13 +703,13 @@ def _verify_model(
             evaluator = ReferenceEvaluator(model)
             runtime_outputs = evaluator.run(None, inputs)
     except Exception as exc:
-        log_step(runtime_name, runtime_started)
+        active_reporter.step_fail(str(exc))
         message = str(exc)
         if runtime_name == "onnxruntime" and "NOT_IMPLEMENTED" in message:
-            LOGGER.warning(
-                "Skipping verification for %s: ONNX Runtime does not support the model (%s)",
-                model_path,
-                message,
+            active_reporter.note(
+                f"Skipping verification for {model_path}: "
+                "ONNX Runtime does not support the model "
+                f"({message})"
             )
             return "", None, operators, opset_version, generated_checksum
         return (
@@ -620,9 +719,18 @@ def _verify_model(
             opset_version,
             generated_checksum,
         )
-    log_step(runtime_name, runtime_started)
+    active_reporter.step_ok(runtime_started)
     payload_outputs = payload.get("outputs", {})
     max_ulp = 0
+    worst_diff: _WorstDiff | None = None
+    output_nodes = {
+        output_name: node
+        for node in graph.nodes
+        for output_name in node.outputs
+    }
+    active_reporter.start_step(
+        f"Verifying outputs [--max-ulp={args.max_ulp}]"
+    )
     try:
         for value, runtime_out in zip(graph.outputs, runtime_outputs):
             output_payload = payload_outputs.get(value.name)
@@ -635,12 +743,39 @@ def _verify_model(
             runtime_out = runtime_out.astype(info.np_dtype, copy=False)
             output_data = output_data.reshape(runtime_out.shape)
             if np.issubdtype(info.np_dtype, np.floating):
-                max_ulp = max(max_ulp, max_ulp_diff(output_data, runtime_out))
+                output_max, output_worst = _worst_ulp_diff(
+                    output_data, runtime_out
+                )
+                if output_max > max_ulp:
+                    max_ulp = output_max
+                    if output_worst is not None:
+                        node = output_nodes.get(value.name)
+                        worst_diff = _WorstDiff(
+                            output_name=value.name,
+                            node_name=node.name if node else None,
+                            index=output_worst[0],
+                            got=float(output_worst[1]),
+                            reference=float(output_worst[2]),
+                            ulp=output_max,
+                        )
             else:
                 np.testing.assert_array_equal(output_data, runtime_out)
     except AssertionError as exc:
+        active_reporter.step_fail(str(exc))
         return None, str(exc), operators, opset_version, generated_checksum
     if max_ulp > args.max_ulp:
+        active_reporter.step_fail(f"max ULP {max_ulp}")
+        if worst_diff is not None:
+            node_label = worst_diff.node_name or "(unknown)"
+            index_display = ", ".join(str(dim) for dim in worst_diff.index)
+            active_reporter.info(
+                "  Worst diff: output="
+                f"{worst_diff.output_name} node={node_label} "
+                f"index=[{index_display}] "
+                f"got={worst_diff.got:.8g} "
+                f"ref={worst_diff.reference:.8g} "
+                f"ulp={worst_diff.ulp}"
+            )
         return (
             None,
             f"Out of tolerance (max ULP {max_ulp})",
@@ -648,6 +783,7 @@ def _verify_model(
             opset_version,
             generated_checksum,
         )
+    active_reporter.step_ok_detail(f"max ULP {max_ulp}")
     return (
         format_success_message(max_ulp),
         None,
