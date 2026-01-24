@@ -244,6 +244,15 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     verify_parser.add_argument(
+        "--temp-dir",
+        type=Path,
+        default=None,
+        help=(
+            "Directory in which to create temporary verification files "
+            "(default: system temp dir)"
+        ),
+    )
+    verify_parser.add_argument(
         "--max-ulp",
         type=int,
         default=100,
@@ -473,7 +482,20 @@ def _verify_model(
             None,
         )
 
-    with tempfile.TemporaryDirectory() as temp_dir:
+    temp_dir_root: Path | None = args.temp_dir
+    if temp_dir_root is not None:
+        if temp_dir_root.exists() and not temp_dir_root.is_dir():
+            return (
+                None,
+                f"Verification temp dir root is not a directory: {temp_dir_root}",
+                operators,
+                opset_version,
+                generated_checksum,
+            )
+        temp_dir_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(
+        dir=str(temp_dir_root) if temp_dir_root is not None else None
+    ) as temp_dir:
         temp_path = Path(temp_dir)
         LOGGER.info("verify temp dir: %s", temp_path)
         c_path = temp_path / "model.c"

@@ -36,6 +36,8 @@ def _run_cli_verify(model: onnx.ModelProto) -> None:
                 "emx_onnx_cgen",
                 "verify",
                 str(model_path),
+                "--temp-dir",
+                str(temp_dir),
             ],
             check=True,
             capture_output=True,
