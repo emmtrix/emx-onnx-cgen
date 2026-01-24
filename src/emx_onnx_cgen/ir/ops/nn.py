@@ -496,16 +496,29 @@ class LpPoolOp(RenderableOpBase):
 class SoftmaxOp(RenderableOpBase):
     input0: str
     output: str
-    outer: int
-    axis_size: int
-    inner: int
-    axis: int
-    shape: tuple[int, ...]
-    dtype: ScalarType
+    axis: int | None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_dtype = ctx.dtype(self.input0)
+        if not input_dtype.is_float:
+            raise UnsupportedOpError(
+                "Softmax supports float16, float, and double inputs only"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input_dtype)
+            return None
+        if output_dtype != input_dtype:
+            raise UnsupportedOpError(
+                "Softmax expects output dtype to match input dtype"
+            )
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axis = self.axis
+        if axis is None:
+            axis = -1
         if axis < 0:
             axis += len(input_shape)
         if axis < 0 or axis >= len(input_shape):
@@ -520,6 +533,7 @@ class SoftmaxOp(RenderableOpBase):
             else 1
         )
         ctx.set_shape(self.output, input_shape)
+        ctx.set_derived(self, "axis", axis)
         ctx.set_derived(self, "outer", outer)
         ctx.set_derived(self, "axis_size", axis_size)
         ctx.set_derived(self, "inner", inner)
@@ -528,16 +542,29 @@ class SoftmaxOp(RenderableOpBase):
 class LogSoftmaxOp(RenderableOpBase):
     input0: str
     output: str
-    outer: int
-    axis_size: int
-    inner: int
-    axis: int
-    shape: tuple[int, ...]
-    dtype: ScalarType
+    axis: int | None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_dtype = ctx.dtype(self.input0)
+        if not input_dtype.is_float:
+            raise UnsupportedOpError(
+                "LogSoftmax supports float16, float, and double inputs only"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input_dtype)
+            return None
+        if output_dtype != input_dtype:
+            raise UnsupportedOpError(
+                "LogSoftmax expects output dtype to match input dtype"
+            )
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axis = self.axis
+        if axis is None:
+            axis = -1
         if axis < 0:
             axis += len(input_shape)
         if axis < 0 or axis >= len(input_shape):
@@ -552,6 +579,7 @@ class LogSoftmaxOp(RenderableOpBase):
             else 1
         )
         ctx.set_shape(self.output, input_shape)
+        ctx.set_derived(self, "axis", axis)
         ctx.set_derived(self, "outer", outer)
         ctx.set_derived(self, "axis_size", axis_size)
         ctx.set_derived(self, "inner", inner)
@@ -560,16 +588,30 @@ class LogSoftmaxOp(RenderableOpBase):
 class HardmaxOp(RenderableOpBase):
     input0: str
     output: str
-    outer: int
-    axis_size: int
-    inner: int
-    axis: int
-    shape: tuple[int, ...]
-    dtype: ScalarType
+    axis: int | None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_dtype = ctx.dtype(self.input0)
+        if input_dtype not in {ScalarType.F16, ScalarType.F32, ScalarType.F64}:
+            raise UnsupportedOpError(
+                "Hardmax supports float16, float, and double inputs only"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input_dtype)
+            return None
+        if output_dtype != input_dtype:
+            raise UnsupportedOpError(
+                "Hardmax expects output dtype to match input dtype"
+            )
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axis = self.axis
+        if axis is None:
+            opset_version = ctx.opset_version()
+            axis = 1 if opset_version is not None and opset_version < 13 else -1
         if axis < 0:
             axis += len(input_shape)
         if axis < 0 or axis >= len(input_shape):
@@ -584,6 +626,7 @@ class HardmaxOp(RenderableOpBase):
             else 1
         )
         ctx.set_shape(self.output, input_shape)
+        ctx.set_derived(self, "axis", axis)
         ctx.set_derived(self, "outer", outer)
         ctx.set_derived(self, "axis_size", axis_size)
         ctx.set_derived(self, "inner", inner)

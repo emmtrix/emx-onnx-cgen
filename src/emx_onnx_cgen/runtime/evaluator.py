@@ -1950,26 +1950,43 @@ def _eval_global_max_pool(evaluator: Evaluator, node: Node) -> None:
 def _eval_softmax(evaluator: Evaluator, node: Node) -> None:
     op = lower_softmax(evaluator.graph, node)
     value = evaluator.values[node.inputs[0]]
-    evaluator.values[node.outputs[0]] = _apply_softmax(value, op.axis)
+    op_ctx = OpContext(GraphContext(evaluator.graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    axis = op_ctx.require_derived(op, "axis")
+    evaluator.values[node.outputs[0]] = _apply_softmax(value, axis)
 
 
 @register_evaluator("LogSoftmax")
 def _eval_logsoftmax(evaluator: Evaluator, node: Node) -> None:
     op = lower_logsoftmax(evaluator.graph, node)
     value = evaluator.values[node.inputs[0]]
-    evaluator.values[node.outputs[0]] = _apply_logsoftmax(value, op.axis)
+    op_ctx = OpContext(GraphContext(evaluator.graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    axis = op_ctx.require_derived(op, "axis")
+    evaluator.values[node.outputs[0]] = _apply_logsoftmax(value, axis)
 
 
 @register_evaluator("Hardmax")
 def _eval_hardmax(evaluator: Evaluator, node: Node) -> None:
     op = lower_hardmax(evaluator.graph, node)
     value = evaluator.values[node.inputs[0]]
-    max_values = np.max(value, axis=op.axis, keepdims=True)
+    op_ctx = OpContext(GraphContext(evaluator.graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    axis = op_ctx.require_derived(op, "axis")
+    max_values = np.max(value, axis=axis, keepdims=True)
     is_max = value == max_values
-    max_index = np.argmax(is_max, axis=op.axis)
+    max_index = np.argmax(is_max, axis=axis)
     output = np.zeros_like(value)
     ones = np.array(1.0, dtype=value.dtype)
-    np.put_along_axis(output, np.expand_dims(max_index, axis=op.axis), ones, axis=op.axis)
+    np.put_along_axis(
+        output,
+        np.expand_dims(max_index, axis=axis),
+        ones,
+        axis=axis,
+    )
     evaluator.values[node.outputs[0]] = output
 
 
