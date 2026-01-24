@@ -333,12 +333,21 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     verify_parser.add_argument(
+        "--temp-dir-root",
+        type=Path,
+        default=None,
+        help=(
+            "Root directory in which to create a temporary verification "
+            "directory (default: system temp dir)"
+        ),
+    )
+    verify_parser.add_argument(
         "--temp-dir",
         type=Path,
         default=None,
         help=(
-            "Directory in which to create temporary verification files "
-            "(default: system temp dir)"
+            "Exact directory to use for temporary verification files "
+            "(default: create a temporary directory)"
         ),
     )
     verify_parser.add_argument(
@@ -582,7 +591,16 @@ def _verify_model(
             None,
         )
 
-    temp_dir_root: Path | None = args.temp_dir
+    temp_dir_root: Path | None = args.temp_dir_root
+    explicit_temp_dir: Path | None = args.temp_dir
+    if temp_dir_root is not None and explicit_temp_dir is not None:
+        return (
+            None,
+            "Cannot set both --temp-dir-root and --temp-dir.",
+            operators,
+            opset_version,
+            generated_checksum,
+        )
     if temp_dir_root is not None:
         if temp_dir_root.exists() and not temp_dir_root.is_dir():
             return (
@@ -593,8 +611,23 @@ def _verify_model(
                 generated_checksum,
             )
         temp_dir_root.mkdir(parents=True, exist_ok=True)
+    if explicit_temp_dir is not None:
+        if explicit_temp_dir.exists() and not explicit_temp_dir.is_dir():
+            return (
+                None,
+                f"Verification temp dir is not a directory: {explicit_temp_dir}",
+                operators,
+                opset_version,
+                generated_checksum,
+            )
     temp_dir: tempfile.TemporaryDirectory | None = None
-    if args.keep_temp_dir:
+    cleanup_created_dir = False
+    if explicit_temp_dir is not None:
+        temp_path = explicit_temp_dir
+        if not temp_path.exists():
+            temp_path.mkdir(parents=True, exist_ok=True)
+            cleanup_created_dir = not args.keep_temp_dir
+    elif args.keep_temp_dir:
         temp_path = Path(
             tempfile.mkdtemp(
                 dir=str(temp_dir_root) if temp_dir_root is not None else None
@@ -658,8 +691,15 @@ def _verify_model(
                 "Testbench execution failed: " + describe_exit_code(exc.returncode)
             ), operators, opset_version, generated_checksum
     finally:
-        if temp_dir is None:
+        if temp_dir is None and not cleanup_created_dir:
             active_reporter.note(f"Keeping temporary folder: {temp_path}")
+        elif temp_dir is None:
+            delete_started = active_reporter.start_step(
+                "Deleting temporary folder: "
+                f"{temp_path} [--keep-temp-dir not set]"
+            )
+            shutil.rmtree(temp_path)
+            active_reporter.step_ok(delete_started)
         else:
             delete_started = active_reporter.start_step(
                 "Deleting temporary folder: "

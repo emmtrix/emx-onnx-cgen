@@ -103,7 +103,8 @@ Options:
 - `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnx-reference`).
-- `--temp-dir`: Directory in which to create temporary verification files (default: system temp dir).
+- `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
+- `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
 - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
 
 How verification works:
