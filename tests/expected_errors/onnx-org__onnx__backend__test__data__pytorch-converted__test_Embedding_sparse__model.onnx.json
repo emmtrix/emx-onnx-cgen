@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 2 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/test_data_set_0",
   "operators": [
     "Gather"
   ],
   "opset_version": 6,
-  "generated_checksum": "442704657ed6b42a80d67d24c4b7aa3c61aff44af697067c1ab133fcbf3a1700"
+  "generated_checksum": "66f4d458dca95eb6e254fbe619270aa6c3db67cf18d9055860059b483d13cf6a"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "Out of tolerance (max ULP 5380)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/test_data_set_0",
   "operators": [
     "InstanceNormalization"
   ],
   "opset_version": 6,
-  "generated_checksum": "ae6eccca2678fef3f8f329eedcb41e068f9e676a23ff635b1d05180ae27375c3"
+  "generated_checksum": "a6001721d04495402e89acd6a91802d1ee29584b8c135f8b29176f19a61dcde9"
 }

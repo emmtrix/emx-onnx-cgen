@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "OK (max ULP 24)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "f312326499b6cb7557675eeda23a94ce146f14e15f9c9ee6a7857d21fa556893"
+  "generated_checksum": "fae52a874ab2a1dbff0d8d8375f1aea8110130aea0d21ff3aaffbcaca2ddcd04"
 }

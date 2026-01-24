@@ -1,10 +1,10 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "OK (max ULP 62)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/test_data_set_0",
   "operators": [
     "Transpose",
     "MatMul"
   ],
   "opset_version": 6,
-  "generated_checksum": "1ff2dc153afbe3dc0742ba05be9095710016aedf984107b7e9840cef01dfff5f"
+  "generated_checksum": "0d83020c5a1b3f676177ac7d0d2087896938388ca8ffcb9ca9c310d66703f219"
 }

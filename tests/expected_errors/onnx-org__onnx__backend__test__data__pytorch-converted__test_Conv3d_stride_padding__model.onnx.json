@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "OK (max ULP 84)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "2534932f8102e46ba821a2b8789c8882c073c36c00c7b0b139246b980e499bea"
+  "generated_checksum": "456d5db95fcdf9f4e065547637a5b7a3ea2f33904790f78a996206bc14954858"
 }

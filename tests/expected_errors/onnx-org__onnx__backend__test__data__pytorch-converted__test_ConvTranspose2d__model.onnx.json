@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 3 in testbench data",
+  "error": "Out of tolerance (max ULP 112)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/test_data_set_0",
   "operators": [
     "ConvTranspose"
   ],
   "opset_version": 6,
-  "generated_checksum": "d646625d0daad104fa5d3f62d9b43172731e174aecfb2853cb9f103198ffbbcd"
+  "generated_checksum": "0cfbb1c956d89528812f4bc5c7db1a61f6c4151cc595224d1780ef351d38b479"
 }

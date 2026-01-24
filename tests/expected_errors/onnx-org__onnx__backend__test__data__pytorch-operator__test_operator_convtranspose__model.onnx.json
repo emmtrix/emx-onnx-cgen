@@ -1,9 +1,9 @@
 {
-  "error": "Missing output 2 in testbench data",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/test_data_set_0",
   "operators": [
     "ConvTranspose"
   ],
   "opset_version": 6,
-  "generated_checksum": "f9a10c4c4b6bc80c84d20ad88b146ae50178f38fbbace459a5e9c8199d938fd9"
+  "generated_checksum": "cd30f8ebc82a63e2c9d060c4a4b340d1271f5a5e7f8ed00e9bd2a8acd522d67f"
 }
