@@ -32,6 +32,11 @@
 #endif
 #endif
 
+extern const int64_t weight1_starts[2];
+extern const int64_t weight2_ends[2];
+extern const int64_t weight3_axes[2];
+extern const int64_t weight4_steps[2];
+
 /*
  * Weight 1:
  * Name: weight1_starts
@@ -39,7 +44,7 @@
  * Elements: 2
  * Dtype: int64
  */
-static const EMX_UNUSED int64_t weight1_starts[2] = {
+const EMX_UNUSED int64_t weight1_starts[2] = {
     0LL, 1LL
 };
 
@@ -50,7 +55,7 @@ static const EMX_UNUSED int64_t weight1_starts[2] = {
  * Elements: 2
  * Dtype: int64
  */
-static const EMX_UNUSED int64_t weight2_ends[2] = {
+const EMX_UNUSED int64_t weight2_ends[2] = {
     2LL, 3LL
 };
 
@@ -61,7 +66,7 @@ static const EMX_UNUSED int64_t weight2_ends[2] = {
  * Elements: 2
  * Dtype: int64
  */
-static const EMX_UNUSED int64_t weight3_axes[2] = {
+const EMX_UNUSED int64_t weight3_axes[2] = {
     0LL, 2LL
 };
 
@@ -72,7 +77,7 @@ static const EMX_UNUSED int64_t weight3_axes[2] = {
  * Elements: 2
  * Dtype: int64
  */
-static const EMX_UNUSED int64_t weight4_steps[2] = {
+const EMX_UNUSED int64_t weight4_steps[2] = {
     1LL, 2LL
 };
 

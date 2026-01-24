@@ -33,6 +33,8 @@
 #endif
 #endif
 
+extern const int64_t weight1_split[3];
+
 /*
  * Weight 1:
  * Name: weight1_split
@@ -40,7 +42,7 @@
  * Elements: 3
  * Dtype: int64
  */
-static const EMX_UNUSED int64_t weight1_split[3] = {
+const EMX_UNUSED int64_t weight1_split[3] = {
     2LL, 2LL, 2LL
 };
 

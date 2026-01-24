@@ -111,7 +111,8 @@ def _run_cli_verify(model_path: Path) -> None:
 def test_initializer_weights_emitted_as_static_arrays() -> None:
     model, weights = _make_add_initializer_model()
     payload, generated = _compile_and_run_testbench(model)
-    assert "static const EMX_UNUSED float weight" in generated
+    assert "extern const float weight" in generated
+    assert "const EMX_UNUSED float weight" in generated
     output_data = decode_testbench_array(
         payload["outputs"]["out"]["data"], np.dtype(np.float32)
     )

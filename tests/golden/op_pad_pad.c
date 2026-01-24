@@ -33,6 +33,9 @@
 #endif
 #endif
 
+extern const int64_t weight1_pads[4];
+extern const float weight2_value[1];
+
 /*
  * Weight 1:
  * Name: weight1_pads
@@ -40,7 +43,7 @@
  * Elements: 4
  * Dtype: int64
  */
-static const EMX_UNUSED int64_t weight1_pads[4] = {
+const EMX_UNUSED int64_t weight1_pads[4] = {
     0LL, 1LL, 0LL, 1LL
 };
 
@@ -51,7 +54,7 @@ static const EMX_UNUSED int64_t weight1_pads[4] = {
  * Elements: 1
  * Dtype: float
  */
-static const EMX_UNUSED float weight2_value[1] = {
+const EMX_UNUSED float weight2_value[1] = {
     0x0.0p+0f
 };
 

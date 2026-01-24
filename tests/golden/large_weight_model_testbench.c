@@ -35,6 +35,8 @@
 #endif
 #endif
 
+extern float weight1_weight_large[2][3];
+
 /*
  * Weight 1:
  * Name: weight1_weight_large
@@ -42,7 +44,7 @@
  * Elements: 6
  * Dtype: float
  */
-static float weight1_weight_large[2][3];
+float weight1_weight_large[2][3];
 
 static inline float ref_scalar_f32_add(float a, float b) {
     return a + b;

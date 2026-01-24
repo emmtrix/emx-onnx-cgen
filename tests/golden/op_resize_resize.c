@@ -33,6 +33,8 @@
 #endif
 #endif
 
+extern const int64_t weight1_sizes[4];
+
 /*
  * Weight 1:
  * Name: weight1_sizes
@@ -40,7 +42,7 @@
  * Elements: 4
  * Dtype: int64
  */
-static const EMX_UNUSED int64_t weight1_sizes[4] = {
+const EMX_UNUSED int64_t weight1_sizes[4] = {
     1LL, 1LL, 4LL, 4LL
 };
 

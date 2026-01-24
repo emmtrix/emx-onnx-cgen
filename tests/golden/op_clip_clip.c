@@ -34,6 +34,9 @@
 #endif
 #endif
 
+extern const float weight1_min[1];
+extern const float weight2_max[1];
+
 /*
  * Weight 1:
  * Name: weight1_min
@@ -41,7 +44,7 @@
  * Elements: 1
  * Dtype: float
  */
-static const EMX_UNUSED float weight1_min[1] = {
+const EMX_UNUSED float weight1_min[1] = {
     0x0.0p+0f
 };
 
@@ -52,7 +55,7 @@ static const EMX_UNUSED float weight1_min[1] = {
  * Elements: 1
  * Dtype: float
  */
-static const EMX_UNUSED float weight2_max[1] = {
+const EMX_UNUSED float weight2_max[1] = {
     0x1.800000p+2f
 };
 

@@ -32,6 +32,9 @@
 #endif
 #endif
 
+extern const float weight1_weight[1][1][3][3];
+extern const float weight2_bias[1];
+
 /*
  * Weight 1:
  * Name: weight1_weight
@@ -39,7 +42,7 @@
  * Elements: 9
  * Dtype: float
  */
-static const EMX_UNUSED float weight1_weight[1][1][3][3] = {
+const EMX_UNUSED float weight1_weight[1][1][3][3] = {
     {
         {
             {
@@ -62,7 +65,7 @@ static const EMX_UNUSED float weight1_weight[1][1][3][3] = {
  * Elements: 1
  * Dtype: float
  */
-static const EMX_UNUSED float weight2_bias[1] = {
+const EMX_UNUSED float weight2_bias[1] = {
     0x1.000000p-2f
 };
 

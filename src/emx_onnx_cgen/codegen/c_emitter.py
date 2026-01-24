@@ -2256,11 +2256,21 @@ class CEmitter:
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
         sections.append("")
-        constants_section = self._emit_constant_definitions(inline_constants)
+        constants_section = self._emit_constant_declarations(inline_constants)
+        if constants_section:
+            sections.extend((constants_section.rstrip(), ""))
+        storage_declarations = self._emit_constant_storage_declarations(
+            large_constants
+        )
+        if storage_declarations:
+            sections.extend((storage_declarations.rstrip(), ""))
+        constants_section = self._emit_constant_definitions(
+            inline_constants, storage_prefix="const"
+        )
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
         large_constants_section = self._emit_constant_storage_definitions(
-            large_constants
+            large_constants, storage_prefix=""
         )
         if large_constants_section:
             sections.extend((large_constants_section.rstrip(), ""))
@@ -2406,8 +2416,13 @@ class CEmitter:
         constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
-        large_constants_section = self._emit_constant_storage_definitions(
+        storage_declarations = self._emit_constant_storage_declarations(
             large_constants
+        )
+        if storage_declarations:
+            sections.extend((storage_declarations.rstrip(), ""))
+        large_constants_section = self._emit_constant_storage_definitions(
+            large_constants, storage_prefix=""
         )
         if large_constants_section:
             sections.extend((large_constants_section.rstrip(), ""))
@@ -11575,10 +11590,21 @@ class CEmitter:
             return ""
         lines = []
         for index, const in enumerate(constants, start=1):
-            lines.append(self._emit_constant_comment(const, index))
             c_type = const.dtype.c_type
             array_suffix = self._array_suffix(const.shape)
             lines.append(f"extern const {c_type} {const.name}{array_suffix};")
+        return "\n".join(lines)
+
+    def _emit_constant_storage_declarations(
+        self, constants: tuple[ConstTensor, ...]
+    ) -> str:
+        if not constants:
+            return ""
+        lines = []
+        for index, const in enumerate(constants, start=1):
+            c_type = const.dtype.c_type
+            array_suffix = self._array_suffix(const.shape)
+            lines.append(f"extern {c_type} {const.name}{array_suffix};")
         return "\n".join(lines)
 
     def _emit_constant_storage_definitions(
@@ -11590,11 +11616,12 @@ class CEmitter:
         if not constants:
             return ""
         lines: list[str] = []
+        prefix = f"{storage_prefix} " if storage_prefix else ""
         for index, const in enumerate(constants, start=1):
             lines.append(self._emit_constant_comment(const, index))
             c_type = const.dtype.c_type
             array_suffix = self._array_suffix(const.shape)
-            lines.append(f"{storage_prefix} {c_type} {const.name}{array_suffix};")
+            lines.append(f"{prefix}{c_type} {const.name}{array_suffix};")
             lines.append("")
         if lines and not lines[-1]:
             lines.pop()
