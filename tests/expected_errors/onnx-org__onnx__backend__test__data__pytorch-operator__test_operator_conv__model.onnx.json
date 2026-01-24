@@ -1,9 +1,9 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "8d9437ab100eccc5ffc6f4f3fe9cd63a4469405fc90c786b6a6262b1b46c4028"
+  "generated_checksum": "062665adb2834c7682e94f4e8e3a40df7f3ca4129f3593b16ff4b13eeb77c7a2"
 }

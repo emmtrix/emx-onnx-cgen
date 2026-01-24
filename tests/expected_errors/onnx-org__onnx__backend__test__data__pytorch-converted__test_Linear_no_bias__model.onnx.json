@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 224)",
+  "error": "OK (max ULP 62)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/test_data_set_0",
   "operators": [
     "Transpose",

@@ -43,7 +43,7 @@ class CompilerOptions:
     testbench_inputs: Mapping[str, np.ndarray] | None = None
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
-    large_weight_threshold: int = 1024 * 1024
+    large_weight_threshold: int = 100 * 1024
 
 
 def _onnx_elem_type(dtype: np.dtype) -> int:

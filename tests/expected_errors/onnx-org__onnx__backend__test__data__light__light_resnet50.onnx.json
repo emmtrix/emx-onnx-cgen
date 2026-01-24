@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 553)",
+  "error": "Out of tolerance (max ULP 539)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_resnet50.onnx --cc /usr/bin/cc",
   "operators": [
     "ConstantOfShape",

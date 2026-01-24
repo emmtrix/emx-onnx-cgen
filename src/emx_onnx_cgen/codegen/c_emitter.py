@@ -11456,13 +11456,30 @@ class CEmitter:
     ) -> tuple[tuple[ConstTensor, ...], tuple[ConstTensor, ...]]:
         if self._large_weight_threshold <= 0:
             return constants, ()
+        sorted_constants = sorted(
+            enumerate(constants),
+            key=lambda item: (
+                self._element_count(item[1].shape)
+                * item[1].dtype.np_dtype.itemsize,
+                item[0],
+            ),
+        )
+        inline_set: set[ConstTensor] = set()
+        total_bytes = 0
+        for _, const in sorted_constants:
+            const_bytes = (
+                self._element_count(const.shape) * const.dtype.np_dtype.itemsize
+            )
+            if total_bytes + const_bytes <= self._large_weight_threshold:
+                inline_set.add(const)
+                total_bytes += const_bytes
         inline: list[ConstTensor] = []
         large: list[ConstTensor] = []
         for const in constants:
-            if self._element_count(const.shape) > self._large_weight_threshold:
-                large.append(const)
-            else:
+            if const in inline_set:
                 inline.append(const)
+            else:
+                large.append(const)
         return tuple(inline), tuple(large)
 
     @staticmethod

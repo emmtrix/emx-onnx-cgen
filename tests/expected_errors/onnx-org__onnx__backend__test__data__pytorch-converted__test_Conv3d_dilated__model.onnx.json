@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 552)",
+  "error": "Out of tolerance (max ULP 168)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/test_data_set_0",
   "operators": [
     "Conv"
