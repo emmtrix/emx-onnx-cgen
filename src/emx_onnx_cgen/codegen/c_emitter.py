@@ -1467,34 +1467,19 @@ class CEmitter:
             return SoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                outer=op.outer,
-                axis_size=op.axis_size,
-                inner=op.inner,
                 axis=op.axis,
-                shape=op.shape,
-                dtype=op.dtype,
             )
         if isinstance(op, LogSoftmaxOp):
             return LogSoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                outer=op.outer,
-                axis_size=op.axis_size,
-                inner=op.inner,
                 axis=op.axis,
-                shape=op.shape,
-                dtype=op.dtype,
             )
         if isinstance(op, HardmaxOp):
             return HardmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                outer=op.outer,
-                axis_size=op.axis_size,
-                inner=op.inner,
                 axis=op.axis,
-                shape=op.shape,
-                dtype=op.dtype,
             )
         if isinstance(op, NegativeLogLikelihoodLossOp):
             return NegativeLogLikelihoodLossOp(
@@ -4518,34 +4503,19 @@ class CEmitter:
             return SoftmaxOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                outer=op.outer,
-                axis_size=op.axis_size,
-                inner=op.inner,
                 axis=op.axis,
-                shape=op.shape,
-                dtype=op.dtype,
             )
         if isinstance(op, LogSoftmaxOp):
             return LogSoftmaxOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                outer=op.outer,
-                axis_size=op.axis_size,
-                inner=op.inner,
                 axis=op.axis,
-                shape=op.shape,
-                dtype=op.dtype,
             )
         if isinstance(op, HardmaxOp):
             return HardmaxOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                outer=op.outer,
-                axis_size=op.axis_size,
-                inner=op.inner,
                 axis=op.axis,
-                shape=op.shape,
-                dtype=op.dtype,
             )
         if isinstance(op, NegativeLogLikelihoodLossOp):
             return NegativeLogLikelihoodLossOp(
