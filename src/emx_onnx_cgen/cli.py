@@ -171,9 +171,10 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     compile_parser.add_argument(
-        "--large-temp-threshold-bytes",
+        "--large-temp-threshold",
         type=int,
         default=1024,
+        dest="large_temp_threshold_bytes",
         help=(
             "Mark temporary buffers larger than this threshold as static "
             "(default: 1024)"
@@ -217,9 +218,10 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     verify_parser.add_argument(
-        "--large-temp-threshold-bytes",
+        "--large-temp-threshold",
         type=int,
         default=1024,
+        dest="large_temp_threshold_bytes",
         help=(
             "Mark temporary buffers larger than this threshold as static "
             "(default: 1024)"
