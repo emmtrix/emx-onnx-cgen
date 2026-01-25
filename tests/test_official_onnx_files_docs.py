@@ -179,7 +179,9 @@ def _render_supported_ops_markdown(
     return "\n".join(lines)
 
 
-@pytest.mark.order(after="test_official_onnx_expected_errors")
+@pytest.mark.order(
+    after="tests/test_official_onnx_files.py::test_local_onnx_expected_errors"
+)
 def test_official_onnx_file_support_doc() -> None:
     if not ONNX_VERSION_PATH.exists():
         _maybe_init_onnx_org()
