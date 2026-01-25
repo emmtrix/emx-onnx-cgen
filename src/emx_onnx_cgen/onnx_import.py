@@ -112,6 +112,54 @@ def _collect_dim_params(
     return dim_params
 
 
+def _value_info_complete(value_info: onnx.ValueInfoProto) -> bool:
+    if value_info.type.WhichOneof("value") != "tensor_type":
+        return False
+    tensor_type = value_info.type.tensor_type
+    if not tensor_type.HasField("elem_type"):
+        return False
+    if not tensor_type.HasField("shape"):
+        return False
+    for dim in tensor_type.shape.dim:
+        if dim.HasField("dim_value"):
+            continue
+        if dim.HasField("dim_param"):
+            continue
+        return False
+    return True
+
+
+def _needs_shape_inference(model: onnx.ModelProto) -> bool:
+    graph = model.graph
+    value_info_by_name = {
+        value_info.name: value_info for value_info in graph.value_info
+    }
+    output_names = {value_info.name for value_info in graph.output}
+    initializer_names = {initializer.name for initializer in graph.initializer}
+    initializer_names.update(
+        sparse_init.name for sparse_init in graph.sparse_initializer
+    )
+    for node in graph.node:
+        for output in node.output:
+            if not output:
+                continue
+            if output in output_names or output in value_info_by_name:
+                continue
+            return True
+    for value_info in graph.value_info:
+        if not _value_info_complete(value_info):
+            return True
+    for value_info in graph.output:
+        if not _value_info_complete(value_info):
+            return True
+    for value_info in graph.input:
+        if value_info.name in initializer_names:
+            continue
+        if not _value_info_complete(value_info):
+            return True
+    return False
+
+
 def _initializer(value: onnx.TensorProto) -> Initializer:
     dtype = scalar_type_from_onnx(value.data_type)
     if dtype is None:
@@ -215,10 +263,11 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
     opset_imports = tuple(
         (opset.domain, opset.version) for opset in model.opset_import
     )
-    try:
-        model = shape_inference.infer_shapes(model, data_prop=True)
-    except Exception as exc:  # pragma: no cover - onnx inference errors
-        raise ShapeInferenceError("ONNX shape inference failed") from exc
+    if _needs_shape_inference(model):
+        try:
+            model = shape_inference.infer_shapes(model, data_prop=True)
+        except Exception as exc:  # pragma: no cover - onnx inference errors
+            raise ShapeInferenceError("ONNX shape inference failed") from exc
     graph = model.graph
     base_initializers = [_initializer(value) for value in graph.initializer]
     constant_initializers: list[Initializer] = []

@@ -113,16 +113,10 @@ def _format_artifact_size(size_bytes: int) -> str:
 def _report_generated_artifacts(
     reporter: _VerifyReporter,
     *,
-    model_name: str,
-    generated: str,
-    weight_data: bytes | None,
+    artifacts: Sequence[tuple[str, int]],
 ) -> None:
-    c_size_bytes = len(generated.encode("utf-8"))
-    reporter.info(f"  model.c ({_format_artifact_size(c_size_bytes)})")
-    if weight_data is not None:
-        reporter.info(
-            f"  {model_name}.bin ({_format_artifact_size(len(weight_data))})"
-        )
+    for name, size_bytes in artifacts:
+        reporter.info(f"  {name} ({_format_artifact_size(size_bytes)})")
 
 
 def _worst_ulp_diff(
@@ -419,27 +413,28 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _handle_compile(args: argparse.Namespace) -> int:
+    reporter = _VerifyReporter()
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
     model_name = args.model_name or "model"
-    generated, data_source, weight_data, error = _compile_model(args)
+    generated, data_source, weight_data, error = _compile_model(
+        args, reporter=reporter
+    )
     if error:
-        LOGGER.error("Failed to compile %s: %s", model_path, error)
+        reporter.info("")
+        reporter.info(f"Result: {error}")
         return 1
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generated or "", encoding="utf-8")
-    LOGGER.info("Wrote C source to %s", output_path)
     if data_source is not None:
         data_path = output_path.with_name(
             f"{output_path.stem}_data{output_path.suffix}"
         )
         data_path.write_text(data_source, encoding="utf-8")
-        LOGGER.info("Wrote data source to %s", data_path)
     if weight_data is not None:
         weights_path = output_path.with_name(f"{model_name}.bin")
         weights_path.write_bytes(weight_data)
-        LOGGER.info("Wrote weights binary to %s", weights_path)
     return 0
 
 
@@ -447,12 +442,36 @@ def _compile_model(
     args: argparse.Namespace,
     *,
     testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
+    reporter: _VerifyReporter | None = None,
 ) -> tuple[str | None, str | None, bytes | None, str | None]:
     model_path: Path = args.model
     model_name = args.model_name or "model"
+    active_reporter = reporter or _NullVerifyReporter()
+    load_started = active_reporter.start_step(
+        f"Loading model {model_path.name}"
+    )
+    timings: dict[str, float] = {}
     try:
-        model_checksum = _model_checksum(model_path)
-        model = onnx.load_model(model_path)
+        model, model_checksum = _load_model_and_checksum(model_path)
+        active_reporter.step_ok(load_started)
+    except OSError as exc:
+        active_reporter.step_fail(str(exc))
+        return None, None, None, str(exc)
+    operators = _collect_model_operators(model)
+    opset_version = _model_opset_version(model)
+    _report_model_details(
+        active_reporter,
+        model_path=model_path,
+        model_checksum=model_checksum,
+        operators=operators,
+        opset_version=opset_version,
+        node_count=len(model.graph.node),
+        initializer_count=len(model.graph.initializer),
+        input_count=len(model.graph.input),
+        output_count=len(model.graph.output),
+    )
+    codegen_started = active_reporter.start_step("Generating C code")
+    try:
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=args.emit_testbench,
@@ -463,6 +482,7 @@ def _compile_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
+            timings=timings,
         )
         compiler = Compiler(options)
         if args.emit_data_file:
@@ -472,8 +492,25 @@ def _compile_model(
         else:
             generated, weight_data = compiler.compile_with_weight_data(model)
             data_source = None
-    except (OSError, CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
+        active_reporter.step_ok(codegen_started)
+        _report_codegen_timings(active_reporter, timings=timings)
+    except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
+        active_reporter.step_fail(str(exc))
         return None, None, None, str(exc)
+    output_path: Path = args.output or model_path.with_suffix(".c")
+    artifacts = [(str(output_path), len(generated.encode("utf-8")))]
+    if data_source is not None:
+        data_path = output_path.with_name(
+            f"{output_path.stem}_data{output_path.suffix}"
+        )
+        artifacts.append((str(data_path), len(data_source.encode("utf-8"))))
+    if weight_data is not None:
+        weights_path = output_path.with_name(f"{model_name}.bin")
+        artifacts.append((str(weights_path), len(weight_data)))
+    _report_generated_artifacts(active_reporter, artifacts=artifacts)
+    active_reporter.info(
+        f"  Generated checksum (sha256): {_generated_checksum(generated)}"
+    )
     return generated, data_source, weight_data, None
 
 
@@ -547,7 +584,7 @@ def _verify_model(
 
     model_path: Path = args.model
     model_name = args.model_name or "model"
-    model_checksum = _model_checksum(model_path)
+    model, model_checksum = _load_model_and_checksum(model_path)
     compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=False)
     if compiler_cmd is None:
         return (
@@ -559,7 +596,7 @@ def _verify_model(
         )
     load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     try:
-        model = onnx.load_model(model_path)
+        model, model_checksum = _load_model_and_checksum(model_path)
     except OSError as exc:
         active_reporter.step_fail(str(exc))
         return None, str(exc), [], None, None
@@ -567,11 +604,19 @@ def _verify_model(
 
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
-    operators_display = ", ".join(operators) if operators else "(none)"
-    active_reporter.note(
-        f"Model operators ({len(operators)}): {operators_display}"
+    _report_model_details(
+        active_reporter,
+        model_path=model_path,
+        model_checksum=model_checksum,
+        operators=operators,
+        opset_version=opset_version,
+        node_count=len(model.graph.node),
+        initializer_count=len(model.graph.initializer),
+        input_count=len(model.graph.input),
+        output_count=len(model.graph.output),
     )
 
+    timings: dict[str, float] = {}
     try:
         codegen_started = active_reporter.start_step("Generating C code")
         testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
@@ -585,16 +630,16 @@ def _verify_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
+            timings=timings,
         )
         compiler = Compiler(options)
         generated, weight_data = compiler.compile_with_weight_data(model)
         active_reporter.step_ok(codegen_started)
-        _report_generated_artifacts(
-            active_reporter,
-            model_name=model_name,
-            generated=generated,
-            weight_data=weight_data,
-        )
+        _report_codegen_timings(active_reporter, timings=timings)
+        artifacts = [("model.c", len(generated.encode("utf-8")))]
+        if weight_data is not None:
+            artifacts.append((f"{model_name}.bin", len(weight_data)))
+        _report_generated_artifacts(active_reporter, artifacts=artifacts)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         active_reporter.step_fail(str(exc))
         return None, str(exc), operators, opset_version, None
@@ -944,16 +989,78 @@ def _format_command_line(argv: Sequence[str] | None) -> str:
     return shlex.join(filtered)
 
 
-def _model_checksum(model_path: Path) -> str:
+def _load_model_and_checksum(
+    model_path: Path,
+) -> tuple[onnx.ModelProto, str]:
+    model_bytes = model_path.read_bytes()
     digest = hashlib.sha256()
-    digest.update(model_path.read_bytes())
-    return digest.hexdigest()
+    digest.update(model_bytes)
+    model = onnx.load_model_from_string(model_bytes)
+    return model, digest.hexdigest()
 
 
 def _generated_checksum(generated: str) -> str:
     digest = hashlib.sha256()
     digest.update(generated.encode("utf-8"))
     return digest.hexdigest()
+
+
+def _report_model_details(
+    reporter: _VerifyReporter,
+    *,
+    model_path: Path,
+    model_checksum: str,
+    operators: Sequence[str],
+    opset_version: int | None,
+    node_count: int,
+    initializer_count: int,
+    input_count: int,
+    output_count: int,
+) -> None:
+    operators_display = ", ".join(operators) if operators else "(none)"
+    reporter.info(
+        f"  Model operators ({len(operators)}): {operators_display}"
+    )
+    reporter.info(
+        f"  Model file size: {_format_artifact_size(model_path.stat().st_size)}"
+    )
+    reporter.info(f"  Model checksum (sha256): {model_checksum}")
+    if opset_version is not None:
+        reporter.info(f"  Opset version: {opset_version}")
+    reporter.info(
+        "  Counts: "
+        f"nodes={node_count}, "
+        f"initializers={initializer_count}, "
+        f"inputs={input_count}, "
+        f"outputs={output_count}"
+    )
+
+
+def _report_codegen_timings(
+    reporter: _VerifyReporter, *, timings: Mapping[str, float]
+) -> None:
+    if not timings:
+        return
+    order = [
+        ("import_onnx", "import"),
+        ("concretize_shapes", "concretize"),
+        ("resolve_testbench_inputs", "testbench"),
+        ("collect_variable_dims", "var_dims"),
+        ("lower_model", "lower"),
+        ("emit_model", "emit"),
+        ("emit_model_with_data_file", "emit_data"),
+        ("collect_weight_data", "weights"),
+    ]
+    seen = set()
+    parts: list[str] = []
+    for key, label in order:
+        if key not in timings:
+            continue
+        parts.append(f"{label}={timings[key]:.3f}s")
+        seen.add(key)
+    for key in sorted(k for k in timings if k not in seen):
+        parts.append(f"{key}={timings[key]:.3f}s")
+    reporter.info(f"  Codegen timing: {', '.join(parts)}")
 
 
 def _collect_model_operators(model: onnx.ModelProto) -> list[str]:
