@@ -104,6 +104,27 @@ class _NullVerifyReporter(_VerifyReporter):
         return None
 
 
+def _format_artifact_size(size_bytes: int) -> str:
+    if size_bytes < 1024:
+        return f"{size_bytes} bytes"
+    return f"{size_bytes / 1024:.1f} KiB"
+
+
+def _report_generated_artifacts(
+    reporter: _VerifyReporter,
+    *,
+    model_name: str,
+    generated: str,
+    weight_data: bytes | None,
+) -> None:
+    c_size_bytes = len(generated.encode("utf-8"))
+    reporter.info(f"  model.c ({_format_artifact_size(c_size_bytes)})")
+    if weight_data is not None:
+        reporter.info(
+            f"  {model_name}.bin ({_format_artifact_size(len(weight_data))})"
+        )
+
+
 def _worst_ulp_diff(
     actual: "np.ndarray", expected: "np.ndarray"
 ) -> tuple[int, tuple[tuple[int, ...], float, float] | None]:
@@ -503,8 +524,6 @@ def _handle_verify(args: argparse.Namespace) -> int:
     if success_message:
         reporter.info("")
         reporter.info(f"Result: {success_message}")
-    if generated_checksum:
-        reporter.note(f"Generated checksum (sha256): {generated_checksum}")
     return 0
 
 
@@ -570,10 +589,17 @@ def _verify_model(
         compiler = Compiler(options)
         generated, weight_data = compiler.compile_with_weight_data(model)
         active_reporter.step_ok(codegen_started)
+        _report_generated_artifacts(
+            active_reporter,
+            model_name=model_name,
+            generated=generated,
+            weight_data=weight_data,
+        )
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         active_reporter.step_fail(str(exc))
         return None, str(exc), operators, opset_version, None
     generated_checksum = _generated_checksum(generated)
+    active_reporter.info(f"  Generated checksum (sha256): {generated_checksum}")
     expected_checksum = args.expected_checksum
     if expected_checksum and expected_checksum == generated_checksum:
         return "OK CHECKSUM", None, operators, opset_version, generated_checksum
@@ -638,7 +664,7 @@ def _verify_model(
             dir=str(temp_dir_root) if temp_dir_root is not None else None
         )
         temp_path = Path(temp_dir.name)
-    active_reporter.info(f"Using temporary folder: {temp_path}")
+    active_reporter.info(f"  Using temporary folder: {temp_path}")
     try:
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
@@ -653,9 +679,9 @@ def _verify_model(
                 "-O2",
                 "-Wall",
                 "-Werror",
-                str(c_path),
+                str(c_path.name),
                 "-o",
-                str(exe_path),
+                str(exe_path.name),
                 "-lm",
             ]
             active_reporter.note(f"Compile command: {shlex.join(compile_cmd)}")
@@ -665,6 +691,7 @@ def _verify_model(
                 check=True,
                 capture_output=True,
                 text=True,
+                cwd=temp_path,
             )
             active_reporter.step_ok(compile_started)
         except subprocess.CalledProcessError as exc:
@@ -692,18 +719,16 @@ def _verify_model(
             ), operators, opset_version, generated_checksum
     finally:
         if temp_dir is None and not cleanup_created_dir:
-            active_reporter.note(f"Keeping temporary folder: {temp_path}")
+            active_reporter.note("Keeping temporary folder")
         elif temp_dir is None:
             delete_started = active_reporter.start_step(
-                "Deleting temporary folder: "
-                f"{temp_path} [--keep-temp-dir not set]"
+                "Deleting temporary folder [--keep-temp-dir not set]"
             )
             shutil.rmtree(temp_path)
             active_reporter.step_ok(delete_started)
         else:
             delete_started = active_reporter.start_step(
-                "Deleting temporary folder: "
-                f"{temp_path} [--keep-temp-dir not set]"
+                "Deleting temporary folder [--keep-temp-dir not set]"
             )
             temp_dir.cleanup()
             active_reporter.step_ok(delete_started)
