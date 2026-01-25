@@ -4,7 +4,7 @@ from contextlib import contextmanager
 import os
 from typing import Iterator
 
-_THREAD_ENV_VARS = (
+THREAD_ENV_VARS = (
     "OMP_NUM_THREADS",
     "OPENBLAS_NUM_THREADS",
     "MKL_NUM_THREADS",
@@ -16,8 +16,8 @@ _THREAD_ENV_VARS = (
 
 @contextmanager
 def deterministic_reference_runtime() -> Iterator[None]:
-    previous = {name: os.environ.get(name) for name in _THREAD_ENV_VARS}
-    for name in _THREAD_ENV_VARS:
+    previous = {name: os.environ.get(name) for name in THREAD_ENV_VARS}
+    for name in THREAD_ENV_VARS:
         os.environ[name] = "1"
     limits_context = None
     try:

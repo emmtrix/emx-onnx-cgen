@@ -4,7 +4,7 @@ from emx_onnx_cgen import determinism
 
 
 def test_deterministic_reference_runtime_restores_env() -> None:
-    env_vars = determinism._THREAD_ENV_VARS
+    env_vars = determinism.THREAD_ENV_VARS
     if not env_vars:
         raise AssertionError("Expected thread env vars to be defined")
     first_var = env_vars[0]
