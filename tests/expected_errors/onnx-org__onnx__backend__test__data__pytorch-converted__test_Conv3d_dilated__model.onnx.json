@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 552)",
+  "error": "OK (max ULP 40)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "1216e76d3b54467e8da484be9146d8f79182912f883dd7481542e9293d4f1e43"
+  "generated_checksum": "4b900889d0e622e859a120a29a8ed85d786dae1710ad3a4831d0cf58138f4956"
 }

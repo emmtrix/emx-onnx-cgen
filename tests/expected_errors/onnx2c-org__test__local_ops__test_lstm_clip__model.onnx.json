@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 32351084)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_lstm_clip/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_lstm_clip/test_data_set_0",
   "operators": [
     "LSTM"
   ],
   "opset_version": 11,
-  "generated_checksum": "526d875eb4b38e7f537eaa21e84d5f1f6212148e414c4804795bd5feab84aac4"
+  "generated_checksum": "9d9baeec478472487c1ba32167708af9e4b0401470490878f2a0497dec64faf4"
 }

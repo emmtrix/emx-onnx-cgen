@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 4)",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/test_data_set_0",
   "operators": [
     "Constant",
@@ -8,5 +8,5 @@
     "Sub"
   ],
   "opset_version": 6,
-  "generated_checksum": "1c64c434f3ff49a31664df963a4b3b0474db81142b1883adcb2ada1f49e2d17d"
+  "generated_checksum": "87fbc18057cca7be30d196ade639e9de2b7675d07ed05c95598eecee7f75611f"
 }

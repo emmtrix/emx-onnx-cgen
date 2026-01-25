@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 18940)",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mish_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mish_expanded/test_data_set_0",
   "operators": [
     "Softplus",
@@ -7,5 +7,5 @@
     "Mul"
   ],
   "opset_version": 22,
-  "generated_checksum": "c712b2dcefcb09459d993205feb3c2185495114862bdae5afbb9ccad0f1baced"
+  "generated_checksum": "a8d9378d79d527e49f1edad306c57806718c3276c0c503d4f990a530b36b6404"
 }

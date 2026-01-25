@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 5380)",
+  "error": "OK (max ULP 9)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/test_data_set_0",
   "operators": [
     "InstanceNormalization"
   ],
   "opset_version": 6,
-  "generated_checksum": "d15ea10e4d0571c0e99f4d1621fb49165125f658aa4acbecf8637eaf91226f6f"
+  "generated_checksum": "09f6d6929244d5e6216b5ae5da9e6a5476861d0bebfd349bae79a6b5337316b5"
 }
