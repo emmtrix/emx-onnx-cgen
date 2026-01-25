@@ -111,13 +111,35 @@ static float rng_next_float(void) {
 
 
 
-int main(void) {
+int main(int argc, char **argv) {
+    FILE *input_file = NULL;
+    if (argc > 1) {
+        input_file = fopen(argv[1], "rb");
+        if (!input_file) {
+            fprintf(stderr, "Failed to open input file: %s\n", argv[1]);
+            return 1;
+        }
+    }
 
     float in0[2][3];
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 3; ++i1) {
-            in0[i0][i1] = rng_next_float();
+    if (input_file) {
+        for (idx_t i0 = 0; i0 < 2; ++i0) {
+            for (idx_t i1 = 0; i1 < 3; ++i1) {
+                if (fread(&in0[i0][i1], sizeof(float), 1, input_file) != 1) {
+                    fprintf(stderr, "Failed to read input in0\n");
+                    return 1;
+                }
+            }
         }
+    } else {
+        for (idx_t i0 = 0; i0 < 2; ++i0) {
+            for (idx_t i1 = 0; i1 < 3; ++i1) {
+                in0[i0][i1] = rng_next_float();
+            }
+        }
+    }
+    if (input_file) {
+        fclose(input_file);
     }
 
     float out[2][3];
