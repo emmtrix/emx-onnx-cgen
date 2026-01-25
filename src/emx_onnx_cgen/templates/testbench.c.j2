@@ -39,7 +39,15 @@ static const {{ input.c_type }} {{ input.constant_name }}[] = {
 {% endif %}
 {% endfor %}
 
-int main(void) {
+int main(int argc, char **argv) {
+    FILE *input_file = NULL;
+    if (argc > 1) {
+        input_file = fopen(argv[1], "rb");
+        if (!input_file) {
+            fprintf(stderr, "Failed to open input file: %s\n", argv[1]);
+            return 1;
+        }
+    }
 {% for dim in dim_args %}
     int {{ dim.name }} = {{ dim.value }};
 {% endfor %}
@@ -59,9 +67,18 @@ int main(void) {
 {% endfor %}
 {% endif %}
 {% else %}
-{% if input.rank == 0 %}
-    {{ input.name }} = {{ input.random_expr }};
-{% else %}
+    if (input_file) {
+{% for depth in range(input.rank) %}
+    for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
+{% endfor %}
+        if (fread(&{{ input.name }}{{ input.array_index_expr }}, sizeof({{ input.c_type }}), 1, input_file) != 1) {
+            fprintf(stderr, "Failed to read input {{ input.json_name }}\n");
+            return 1;
+        }
+{% for depth in range(input.rank - 1, -1, -1) %}
+    }
+{% endfor %}
+    } else {
 {% for depth in range(input.rank) %}
     for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
@@ -69,9 +86,12 @@ int main(void) {
 {% for depth in range(input.rank - 1, -1, -1) %}
     }
 {% endfor %}
-{% endif %}
+    }
 {% endif %}
 {% endfor %}
+    if (input_file) {
+        fclose(input_file);
+    }
 
 {% for output in outputs %}
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};

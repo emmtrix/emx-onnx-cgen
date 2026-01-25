@@ -57,6 +57,7 @@ def _compile_and_run_testbench(
     model: onnx.ModelProto,
     *,
     compiler_options: CompilerOptions | None = None,
+    testbench_inputs: dict[str, np.ndarray] | None = None,
 ) -> tuple[dict[str, object], str]:
     compiler_cmd = os.environ.get("CC") or shutil.which("cc") or shutil.which("gcc")
     if compiler_cmd is None:
@@ -76,8 +77,25 @@ def _compile_and_run_testbench(
             capture_output=True,
             text=True,
         )
+        run_cmd = [str(exe_path)]
+        if testbench_inputs:
+            input_path = temp_path / "inputs.bin"
+            initializer_names = {init.name for init in model.graph.initializer}
+            with input_path.open("wb") as handle:
+                for value_info in model.graph.input:
+                    if value_info.name in initializer_names:
+                        continue
+                    array = testbench_inputs.get(value_info.name)
+                    if array is None:
+                        raise AssertionError(
+                            f"Missing testbench input {value_info.name}"
+                        )
+                    handle.write(
+                        np.ascontiguousarray(array).tobytes(order="C")
+                    )
+            run_cmd.append(str(input_path))
         result = subprocess.run(
-            [str(exe_path)],
+            run_cmd,
             check=True,
             capture_output=True,
             text=True,
@@ -128,14 +146,11 @@ def test_testbench_accepts_constant_inputs() -> None:
     input_values = np.linspace(1.0, 6.0, num=6, dtype=np.float32).reshape(
         weights.shape
     )
-    options = CompilerOptions(
-        emit_testbench=True,
-        testbench_inputs={"in0": input_values},
-    )
+    options = CompilerOptions(emit_testbench=True)
     payload, generated = _compile_and_run_testbench(
-        model, compiler_options=options
+        model, compiler_options=options, testbench_inputs={"in0": input_values}
     )
-    assert "static const float in0_testbench_data" in generated
+    assert "static const float in0_testbench_data" not in generated
     output_data = decode_testbench_array(
         payload["outputs"]["out"]["data"], np.dtype(np.float32)
     )

@@ -2534,8 +2534,22 @@ def _compile_and_run_testbench(
             capture_output=True,
             text=True,
         )
+        input_path = temp_path / "inputs.bin"
+        initializer_names = {init.name for init in model.graph.initializer}
+        with input_path.open("wb") as handle:
+            for value_info in model.graph.input:
+                if value_info.name in initializer_names:
+                    continue
+                array = testbench_inputs.get(value_info.name)
+                if array is None:
+                    raise AssertionError(
+                        f"Missing testbench input {value_info.name}"
+                    )
+                handle.write(
+                    np.ascontiguousarray(array).tobytes(order="C")
+                )
         result = subprocess.run(
-            [str(exe_path)],
+            [str(exe_path), str(input_path)],
             check=True,
             capture_output=True,
             text=True,

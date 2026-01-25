@@ -84,23 +84,60 @@ static float rng_next_float(void) {
 
 
 
-int main(void) {
+int main(int argc, char **argv) {
+    FILE *input_file = NULL;
+    if (argc > 1) {
+        input_file = fopen(argv[1], "rb");
+        if (!input_file) {
+            fprintf(stderr, "Failed to open input file: %s\n", argv[1]);
+            return 1;
+        }
+    }
 
     float a[2][3][4];
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 3; ++i1) {
-            for (idx_t i2 = 0; i2 < 4; ++i2) {
-                a[i0][i1][i2] = rng_next_float();
+    if (input_file) {
+        for (idx_t i0 = 0; i0 < 2; ++i0) {
+            for (idx_t i1 = 0; i1 < 3; ++i1) {
+                for (idx_t i2 = 0; i2 < 4; ++i2) {
+                    if (fread(&a[i0][i1][i2], sizeof(float), 1, input_file) != 1) {
+                        fprintf(stderr, "Failed to read input a\n");
+                        return 1;
+                    }
+                }
+            }
+        }
+    } else {
+        for (idx_t i0 = 0; i0 < 2; ++i0) {
+            for (idx_t i1 = 0; i1 < 3; ++i1) {
+                for (idx_t i2 = 0; i2 < 4; ++i2) {
+                    a[i0][i1][i2] = rng_next_float();
+                }
             }
         }
     }
     float b[2][3][4];
-    for (idx_t i0 = 0; i0 < 2; ++i0) {
-        for (idx_t i1 = 0; i1 < 3; ++i1) {
-            for (idx_t i2 = 0; i2 < 4; ++i2) {
-                b[i0][i1][i2] = rng_next_float();
+    if (input_file) {
+        for (idx_t i0 = 0; i0 < 2; ++i0) {
+            for (idx_t i1 = 0; i1 < 3; ++i1) {
+                for (idx_t i2 = 0; i2 < 4; ++i2) {
+                    if (fread(&b[i0][i1][i2], sizeof(float), 1, input_file) != 1) {
+                        fprintf(stderr, "Failed to read input b\n");
+                        return 1;
+                    }
+                }
             }
         }
+    } else {
+        for (idx_t i0 = 0; i0 < 2; ++i0) {
+            for (idx_t i1 = 0; i1 < 3; ++i1) {
+                for (idx_t i2 = 0; i2 < 4; ++i2) {
+                    b[i0][i1][i2] = rng_next_float();
+                }
+            }
+        }
+    }
+    if (input_file) {
+        fclose(input_file);
     }
 
     float out[2][3][4];

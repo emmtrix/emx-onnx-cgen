@@ -712,6 +712,26 @@ def _verify_model(
         temp_path = Path(temp_dir.name)
     active_reporter.info(f"  Using temporary folder: {temp_path}")
     payload: dict[str, Any] | None = None
+    testbench_input_path: Path | None = None
+    if testbench_inputs:
+        input_order = [value.name for value in graph.inputs]
+        testbench_input_path = temp_path / "testbench_inputs.bin"
+        with testbench_input_path.open("wb") as handle:
+            for name in input_order:
+                array = testbench_inputs.get(name)
+                if array is None:
+                    return (
+                        None,
+                        f"Missing testbench input data for {name}.",
+                        operators,
+                        opset_version,
+                        generated_checksum,
+                    )
+                dtype = input_dtypes[name].np_dtype
+                blob = np.ascontiguousarray(
+                    array.astype(dtype, copy=False)
+                ).tobytes(order="C")
+                handle.write(blob)
     try:
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
@@ -751,8 +771,11 @@ def _verify_model(
             return None, message, operators, opset_version, generated_checksum
         try:
             run_started = active_reporter.start_step("Running generated binary")
+            run_cmd = [str(exe_path)]
+            if testbench_input_path is not None:
+                run_cmd.append(str(testbench_input_path))
             result = subprocess.run(
-                [str(exe_path)],
+                run_cmd,
                 check=True,
                 capture_output=True,
                 text=True,
