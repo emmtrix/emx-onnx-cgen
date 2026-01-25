@@ -26,6 +26,7 @@ from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
 from .onnx_import import import_onnx
+from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
 from .testbench import decode_testbench_array
 from .verification import format_success_message
@@ -840,8 +841,9 @@ def _verify_model(
         else:
             from onnx.reference import ReferenceEvaluator
 
-            evaluator = ReferenceEvaluator(model)
-            runtime_outputs = evaluator.run(None, inputs)
+            with deterministic_reference_runtime():
+                evaluator = ReferenceEvaluator(model)
+                runtime_outputs = evaluator.run(None, inputs)
     except Exception as exc:
         active_reporter.step_fail(str(exc))
         message = str(exc)
