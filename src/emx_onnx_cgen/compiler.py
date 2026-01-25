@@ -308,7 +308,6 @@ class Compiler:
                 "Testbench inputs include unknown inputs: "
                 + ", ".join(unknown_inputs)
             )
-        resolved: dict[str, tuple[float | int | bool, ...]] = {}
         for name, values in self._options.testbench_inputs.items():
             if not isinstance(values, np.ndarray):
                 raise CodegenError(
@@ -325,9 +324,7 @@ class Compiler:
                     "Testbench input "
                     f"{name} has {array.size} elements, expected {expected_count}"
                 )
-            array = array.reshape(expected_shape)
-            resolved[name] = tuple(array.ravel().tolist())
-        return resolved
+        return None
 
     def _concretize_graph_shapes(
         self, model: onnx.ModelProto, graph: Graph
