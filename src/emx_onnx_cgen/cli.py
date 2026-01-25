@@ -450,9 +450,9 @@ def _compile_model(
     load_started = active_reporter.start_step(
         f"Loading model {model_path.name}"
     )
+    timings: dict[str, float] = {}
     try:
-        model_checksum = _model_checksum(model_path)
-        model = onnx.load_model(model_path)
+        model, model_checksum = _load_model_and_checksum(model_path)
         active_reporter.step_ok(load_started)
     except OSError as exc:
         active_reporter.step_fail(str(exc))
@@ -482,6 +482,7 @@ def _compile_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
+            timings=timings,
         )
         compiler = Compiler(options)
         if args.emit_data_file:
@@ -492,6 +493,7 @@ def _compile_model(
             generated, weight_data = compiler.compile_with_weight_data(model)
             data_source = None
         active_reporter.step_ok(codegen_started)
+        _report_codegen_timings(active_reporter, timings=timings)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         active_reporter.step_fail(str(exc))
         return None, None, None, str(exc)
@@ -582,7 +584,7 @@ def _verify_model(
 
     model_path: Path = args.model
     model_name = args.model_name or "model"
-    model_checksum = _model_checksum(model_path)
+    model, model_checksum = _load_model_and_checksum(model_path)
     compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=False)
     if compiler_cmd is None:
         return (
@@ -594,7 +596,7 @@ def _verify_model(
         )
     load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     try:
-        model = onnx.load_model(model_path)
+        model, model_checksum = _load_model_and_checksum(model_path)
     except OSError as exc:
         active_reporter.step_fail(str(exc))
         return None, str(exc), [], None, None
@@ -614,6 +616,7 @@ def _verify_model(
         output_count=len(model.graph.output),
     )
 
+    timings: dict[str, float] = {}
     try:
         codegen_started = active_reporter.start_step("Generating C code")
         testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
@@ -627,10 +630,12 @@ def _verify_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
+            timings=timings,
         )
         compiler = Compiler(options)
         generated, weight_data = compiler.compile_with_weight_data(model)
         active_reporter.step_ok(codegen_started)
+        _report_codegen_timings(active_reporter, timings=timings)
         artifacts = [("model.c", len(generated.encode("utf-8")))]
         if weight_data is not None:
             artifacts.append((f"{model_name}.bin", len(weight_data)))
@@ -984,10 +989,14 @@ def _format_command_line(argv: Sequence[str] | None) -> str:
     return shlex.join(filtered)
 
 
-def _model_checksum(model_path: Path) -> str:
+def _load_model_and_checksum(
+    model_path: Path,
+) -> tuple[onnx.ModelProto, str]:
+    model_bytes = model_path.read_bytes()
     digest = hashlib.sha256()
-    digest.update(model_path.read_bytes())
-    return digest.hexdigest()
+    digest.update(model_bytes)
+    model = onnx.load_model_from_string(model_bytes)
+    return model, digest.hexdigest()
 
 
 def _generated_checksum(generated: str) -> str:
@@ -1025,6 +1034,33 @@ def _report_model_details(
         f"inputs={input_count}, "
         f"outputs={output_count}"
     )
+
+
+def _report_codegen_timings(
+    reporter: _VerifyReporter, *, timings: Mapping[str, float]
+) -> None:
+    if not timings:
+        return
+    order = [
+        ("import_onnx", "import"),
+        ("concretize_shapes", "concretize"),
+        ("resolve_testbench_inputs", "testbench"),
+        ("collect_variable_dims", "var_dims"),
+        ("lower_model", "lower"),
+        ("emit_model", "emit"),
+        ("emit_model_with_data_file", "emit_data"),
+        ("collect_weight_data", "weights"),
+    ]
+    seen = set()
+    parts: list[str] = []
+    for key, label in order:
+        if key not in timings:
+            continue
+        parts.append(f"{label}={timings[key]:.3f}s")
+        seen.add(key)
+    for key in sorted(k for k in timings if k not in seen):
+        parts.append(f"{key}={timings[key]:.3f}s")
+    reporter.info(f"  Codegen timing: {', '.join(parts)}")
 
 
 def _collect_model_operators(model: onnx.ModelProto) -> list[str]:

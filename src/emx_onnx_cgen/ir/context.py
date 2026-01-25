@@ -14,9 +14,28 @@ class GraphContext:
     _shape_cache: dict[str, tuple[int, ...]] = field(default_factory=dict)
     _initializer_cache: dict[str, Initializer] = field(default_factory=dict)
     _producer_cache: dict[str, Node] = field(default_factory=dict)
+    _value_cache: dict[str, Value] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        for value in self.graph.inputs + self.graph.outputs + self.graph.values:
+            self._value_cache[value.name] = value
+        for initializer in self.graph.initializers:
+            if initializer.name not in self._value_cache:
+                self._value_cache[initializer.name] = Value(
+                    name=initializer.name,
+                    type=initializer.type,
+                )
+            self._initializer_cache[initializer.name] = initializer
+        for node in self.graph.nodes:
+            for output in node.outputs:
+                if output and output not in self._producer_cache:
+                    self._producer_cache[output] = node
 
     def find_value(self, name: str) -> Value:
-        return self.graph.find_value(name)
+        value = self._value_cache.get(name)
+        if value is None:
+            raise KeyError(name)
+        return value
 
     def dtype(self, name: str, node: Node | None = None) -> ScalarType:
         if name in self._dtype_cache:
@@ -56,22 +75,10 @@ class GraphContext:
         self._shape_cache[name] = shape
 
     def initializer(self, name: str) -> Initializer | None:
-        if name in self._initializer_cache:
-            return self._initializer_cache[name]
-        for initializer in self.graph.initializers:
-            if initializer.name == name:
-                self._initializer_cache[name] = initializer
-                return initializer
-        return None
+        return self._initializer_cache.get(name)
 
     def producer(self, output_name: str) -> Node | None:
-        if output_name in self._producer_cache:
-            return self._producer_cache[output_name]
-        for node in self.graph.nodes:
-            if output_name in node.outputs:
-                self._producer_cache[output_name] = node
-                return node
-        return None
+        return self._producer_cache.get(output_name)
 
     def opset_version(self, domain: str = "") -> int | None:
         if domain in {"", "ai.onnx"}:
