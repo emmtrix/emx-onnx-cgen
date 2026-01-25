@@ -2,22 +2,22 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Out of tolerance | 38 | ██████████████████████████████ |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ████████████████████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ████████████████ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ██████████████ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ██████████████ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | █████████████ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ███████████ |
-| Unsupported op ImageDecoder | 9 | ███████ |
-| '*' object has no attribute '*' | 8 | ██████ |
-| Dropout supports only the data input and 1 or 2 outputs | 8 | ██████ |
-| tuple index out of range | 8 | ██████ |
+| Out of tolerance | 36 | ██████████████████████████████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ██████████████████████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ███████████████ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████████████ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████████████ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
+| Unsupported op ImageDecoder | 9 | ████████ |
+| '*' object has no attribute '*' | 8 | ███████ |
+| Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
+| tuple index out of range | 8 | ███████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | AveragePool has unsupported attributes | 6 | █████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
