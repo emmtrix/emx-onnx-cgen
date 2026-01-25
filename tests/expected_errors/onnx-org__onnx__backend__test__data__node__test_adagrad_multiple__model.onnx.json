@@ -1,8 +1,8 @@
 {
-  "error": "onnxruntime failed to run onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx: [ONNXRuntimeError] : 1 : FAIL : Fatal error: ai.onnx.preview.training:Adagrad(-1) is not a registered function/op",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_adagrad_multiple/test_data_set_0",
   "operators": [
     "ai.onnx.preview.training::Adagrad"
   ],
-  "generated_checksum": "8b3cc976f289f57eb1bbd0737bb6d1f648f90205ed0d7e2e55b7dc1cedf773f9"
+  "generated_checksum": "497f31e3cbe36d6160aeadea69c125de48df3759c1cac2091e30678cd632fd86"
 }

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 2)",
+  "error": "OK (max ULP 3)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/test_data_set_0",
   "operators": [
     "Shape",
@@ -25,5 +25,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "65c1d817661425216f0d705e85eb44cdfa77a466dd6338d4757f73521b7c2a79"
+  "generated_checksum": "739cd840073be4b319900ff7686aa9a1b88e50d68337ad4abef8b3691448cbc3"
 }

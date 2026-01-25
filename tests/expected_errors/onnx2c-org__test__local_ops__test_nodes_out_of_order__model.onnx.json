@@ -1,10 +1,10 @@
 {
-  "error": "onnx-reference failed to run onnx2c-org/test/local_ops/test_nodes_out_of_order/model.onnx: Unable to find input 'starts' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data'].",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_nodes_out_of_order/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_nodes_out_of_order/test_data_set_0",
   "operators": [
     "Slice",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "8028b37a4d0897fe07c19cc3719afdfc202d37b5b89d105520fe23b0e1d45752"
+  "generated_checksum": "21b0b7ac0c89126e0806c893765bb67a3d899b1455a613a7a87c80dcae869982"
 }

@@ -1,10 +1,10 @@
 {
-  "error": "onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_constant_input/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data'].",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_pad_constant_input/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_pad_constant_input/test_data_set_0",
   "operators": [
     "Pad",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "fac048d7285919d4a2fdee3c832f57b14e490eaab5fef60857dbed449d75eb28"
+  "generated_checksum": "cf129c0d53e94410cd23bf70ff07868a98f487dc3987952ce4185ec84c68ea28"
 }

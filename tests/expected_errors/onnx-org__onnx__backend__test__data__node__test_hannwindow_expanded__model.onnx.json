@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 16)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hannwindow_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hannwindow_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -12,5 +12,5 @@
     "Cos"
   ],
   "opset_version": 17,
-  "generated_checksum": "094574ed6af1be9ffac591f7b16afa326c5cb8d11560ae00fd12d9e44eddaa83"
+  "generated_checksum": "b8cbf6b19b370ea9323a198763d4ae63e5fa9168dbd1e9a947494699cd024710"
 }

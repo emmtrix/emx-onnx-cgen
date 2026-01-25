@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/test_data_set_0",
   "operators": [
     "Split",
@@ -7,5 +7,5 @@
     "Mul"
   ],
   "opset_version": 6,
-  "generated_checksum": "560ff158a1f56c5ddbc6f84f1d1b23f56ccf996235d34dc68818c887c3d2df6b"
+  "generated_checksum": "5421ddaf0d947dfcd1d8cfcddd0622d7e946f6d699821f38683d963a5e23d860"
 }

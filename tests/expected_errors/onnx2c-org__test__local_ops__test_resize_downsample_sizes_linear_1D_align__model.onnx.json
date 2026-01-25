@@ -1,10 +1,10 @@
 {
-  "error": "onnx-reference failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx: Unable to find input 'sizes' in known results ['', 'X'], self.rt_inits_ has [], feed_inputs has ['X'].",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/test_data_set_0",
   "operators": [
     "Resize",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "491d814a2d369c12ef5f745460b746cf2e44ba25c603e555d114c152adad4ba4"
+  "generated_checksum": "b0936d5cb9514783d6107bbb203c6a531a5ad96b1c8ac697412596307b3b6036"
 }

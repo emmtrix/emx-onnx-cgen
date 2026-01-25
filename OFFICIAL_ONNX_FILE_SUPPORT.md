@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1296 / 1802 official ONNX files.
+Support 1297 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -12,7 +12,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | ❌ | Out of tolerance (max ULP 50389) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Out of tolerance (max ULP 540) |
+| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Out of tolerance (max ULP 539) |
 | onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ✅ | OK (max ULP 10) |
 | onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | ❌ | Out of tolerance (max ULP 981668463) |
@@ -105,22 +105,22 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded/model.onnx | ✅ | OK (max ULP 2) |
@@ -135,71 +135,71 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_causal/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_4d_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_4d/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_4d_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_expanded/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_causal/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded/model.onnx | ❌ | Pad value input must be a scalar |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_attn_mask/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_attn_mask/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_attn_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | ✅ | OK (max ULP 4) |
@@ -207,21 +207,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool supports 2D/3D inputs only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
@@ -280,9 +280,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx | ❌ | Out of tolerance (max ULP 251658240) |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Out of tolerance (max ULP 847249409) |
 | onnx-org/onnx/backend/test/data/node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ✅ | OK (max ULP 0) |
@@ -652,14 +652,14 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_gathernd_example_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32_batch_dim1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gelu_default_1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gelu_default_2/model.onnx | ✅ | OK (max ULP 7) |
-| onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gelu_default_1/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gelu_default_1_expanded/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gelu_default_2/model.onnx | ✅ | OK (max ULP 9) |
+| onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/model.onnx | ✅ | OK (max ULP 9) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1/model.onnx | ❌ | Gelu only supports approximate=none |
 | onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2/model.onnx | ❌ | Gelu only supports approximate=none |
-| onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2_expanded/model.onnx | ✅ | OK (max ULP 20) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_all_attributes/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_alpha/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_beta/model.onnx | ✅ | OK (max ULP 1) |
@@ -699,24 +699,24 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_greater_uint32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_greater_uint64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_greater_uint8/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_aligncorners_true/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx | ✅ | OK (max ULP 13) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic_align_corners_0_additional_1/model.onnx | ✅ | OK (max ULP 10) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic_align_corners_1_additional_1/model.onnx | ✅ | OK (max ULP 41) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_0_additional_1/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx | ❌ | Out of tolerance (max ULP 1678) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic_align_corners_0_additional_1/model.onnx | ✅ | OK (max ULP 13) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic_align_corners_1_additional_1/model.onnx | ✅ | OK (max ULP 34) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_0_additional_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_1_additional_1/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_border_padding/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_border_padding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_nearest/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_nearest_align_corners_0_additional_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_nearest_align_corners_1_additional_1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_reflection_padding/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_bilinear_align_corners_0/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_bilinear_align_corners_1/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_reflection_padding/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_bilinear_align_corners_0/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_bilinear_align_corners_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gridsample_zeros_padding/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_gridsample_zeros_padding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon/model.onnx | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_example/model.onnx | ✅ | OK (max ULP 16) |
@@ -726,13 +726,13 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_gru_seq_length/model.onnx | ❌ | Unsupported op GRU |
 | onnx-org/onnx/backend/test/data/node/test_gru_with_initial_bias/model.onnx | ❌ | Unsupported op GRU |
 | onnx-org/onnx/backend/test/data/node/test_hammingwindow/model.onnx | ❌ | Unsupported op HammingWindow |
-| onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx | ✅ | OK (max ULP 8) |
 | onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric/model.onnx | ❌ | Unsupported op HammingWindow |
-| onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_hannwindow/model.onnx | ❌ | Unsupported op HannWindow |
-| onnx-org/onnx/backend/test/data/node/test_hannwindow_expanded/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_hannwindow_expanded/model.onnx | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric/model.onnx | ❌ | Unsupported op HannWindow |
-| onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded/model.onnx | ❌ | Out of tolerance (max ULP 612368384) |
 | onnx-org/onnx/backend/test/data/node/test_hardmax_axis_0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hardmax_axis_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hardmax_axis_2/model.onnx | ✅ | OK (max ULP 0) |
@@ -777,59 +777,59 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1_expanded/model.onnx | ✅ | OK (max ULP 24) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | ✅ | OK (max ULP 24) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | ✅ | OK (max ULP 80) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | ✅ | OK (max ULP 80) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | ✅ | OK (max ULP 8) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon/model.onnx | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | ✅ | OK (max ULP 16) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon/model.onnx | ✅ | OK (max ULP 64) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 48) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 48) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 40) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 40) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 24) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ✅ | OK (max ULP 16) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded/model.onnx | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | ✅ | OK (max ULP 8) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded/model.onnx | ❌ | Out of tolerance (max ULP 1024) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ❌ | Out of tolerance (max ULP 1024) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded/model.onnx | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | ✅ | OK (max ULP 8) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/model.onnx | ❌ | Out of tolerance (max ULP 112) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2_expanded/model.onnx | ❌ | Out of tolerance (max ULP 128) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | ❌ | Out of tolerance (max ULP 128) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3/model.onnx | ✅ | OK (max ULP 32) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded/model.onnx | ✅ | OK (max ULP 32) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ✅ | OK (max ULP 32) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded/model.onnx | ✅ | OK (max ULP 16) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1/model.onnx | ✅ | OK (max ULP 40) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ✅ | OK (max ULP 24) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | ❌ | Out of tolerance (max ULP 256) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | ❌ | Out of tolerance (max ULP 256) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2/model.onnx | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 16) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx | ✅ | OK (max ULP 16) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 24) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx | ✅ | OK (max ULP 24) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3/model.onnx | ❌ | Out of tolerance (max ULP 128) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | ❌ | Out of tolerance (max ULP 128) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | ❌ | Out of tolerance (max ULP 128) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | ✅ | OK (max ULP 16) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis/model.onnx | ✅ | OK (max ULP 64) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded/model.onnx | ✅ | OK (max ULP 64) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | ✅ | OK (max ULP 64) |
@@ -868,7 +868,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_0/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_0_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_0_expanded_ver18/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1_expanded_ver18/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_2/model.onnx | ✅ | OK (max ULP 2) |
@@ -877,7 +877,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded_ver18/model.onnx | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_example_1/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_example_1/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_example_1_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_example_1_expanded_ver18/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_large_number/model.onnx | ✅ | OK (max ULP 1) |
@@ -891,9 +891,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_seq'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | ❌ | LpPool expects 2D kernel_shape |
-| onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_dilations/model.onnx | ❌ | LpPool supports dilations=1 only |
-| onnx-org/onnx/backend/test/data/node/test_lppool_2d_pads/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_lppool_2d_pads/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_same_lower/model.onnx | ❌ | LpPool supports auto_pad=NOTSET only |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_same_upper/model.onnx | ❌ | LpPool supports auto_pad=NOTSET only |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_strides/model.onnx | ✅ | OK (max ULP 2) |
@@ -965,8 +965,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_min_uint32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_uint64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_uint8/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_mish/model.onnx | ❌ | Out of tolerance (max ULP 18940) |
-| onnx-org/onnx/backend/test/data/node/test_mish_expanded/model.onnx | ❌ | Out of tolerance (max ULP 18940) |
+| onnx-org/onnx/backend/test/data/node/test_mish/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_mish_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_mod_broadcast/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mod_int64_fmod/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mod_mixed_sign_float16/model.onnx | ✅ | OK (max ULP 0) |
@@ -1026,7 +1026,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | ✅ | OK (max ULP 0) |
@@ -1161,19 +1161,19 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_default_axes_keepdims_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_default_axes_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_do_not_keepdims_random_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_empty_set/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_empty_set_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_example/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_random/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_random_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_negative_axes/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_negative_axes_expanded/model.onnx | ✅ | OK (max ULP 3) |
@@ -1302,43 +1302,43 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_reversesequence_batch/model.onnx | ❌ | Unsupported op ReverseSequence |
 | onnx-org/onnx/backend/test/data/node/test_reversesequence_time/model.onnx | ❌ | Unsupported op ReverseSequence |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_2/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis0_epsilon/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis0_epsilon_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis1_epsilon/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis2_epsilon/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_3_epsilon/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis0/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis0_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis0_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1_expanded/model.onnx | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis2/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis2_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis2_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis3/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis3_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_1/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_1_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_2/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_2_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_3/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_3_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_4/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis_expanded/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_rnn_seq_length/model.onnx | ❌ | Unsupported op RNN |
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx | ❌ | Unsupported op RoiAlign |
@@ -1444,8 +1444,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_sce_sum_log_prob/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sce_sum_log_prob_expanded/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_selu/model.onnx | ❌ | Selu only supports alpha=1.6732632423543772 |
-| onnx-org/onnx/backend/test/data/node/test_selu_default/model.onnx | ✅ | OK (max ULP 18) |
-| onnx-org/onnx/backend/test/data/node/test_selu_default_expanded_ver18/model.onnx | ✅ | OK (max ULP 33) |
+| onnx-org/onnx/backend/test/data/node/test_selu_default/model.onnx | ✅ | OK (max ULP 28) |
+| onnx-org/onnx/backend/test/data/node/test_selu_default_expanded_ver18/model.onnx | ✅ | OK (max ULP 43) |
 | onnx-org/onnx/backend/test/data/node/test_selu_example/model.onnx | ❌ | Selu only supports alpha=1.6732632423543772 |
 | onnx-org/onnx/backend/test/data/node/test_selu_example_expanded_ver18/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_selu_expanded_ver18/model.onnx | ✅ | OK (max ULP 24) |
@@ -1478,8 +1478,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_shrink_hard_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shrink_soft/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shrink_soft_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sigmoid/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_sigmoid_example/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_sigmoid/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_sigmoid_example/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_sign/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_simple_rnn_batchwise/model.onnx | ❌ | Unsupported op RNN |
 | onnx-org/onnx/backend/test/data/node/test_simple_rnn_defaults/model.onnx | ❌ | Unsupported op RNN |
@@ -1674,53 +1674,53 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool2d_stride/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d/model.onnx | ✅ | OK (max ULP 16) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/model.onnx | ✅ | OK (max ULP 30) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input/model.onnx | ✅ | OK (max ULP 19) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_eval/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_eval/model.onnx | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_eval/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_eval/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConstantPad2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d/model.onnx | ✅ | OK (max ULP 80) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/model.onnx | ✅ | OK (max ULP 64) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_groups/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1/model.onnx | ❌ | Out of tolerance (max ULP 101) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_groups/model.onnx | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1/model.onnx | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1size1/model.onnx | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2/model.onnx | ✅ | OK (max ULP 48) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2/model.onnx | ✅ | OK (max ULP 64) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2size1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/model.onnx | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d/model.onnx | ✅ | OK (max ULP 64) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/model.onnx | ✅ | OK (max ULP 32) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d/model.onnx | ❌ | Out of tolerance (max ULP 448) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise/model.onnx | ❌ | Out of tolerance (max ULP 480) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_padded/model.onnx | ❌ | Out of tolerance (max ULP 128) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_strided/model.onnx | ✅ | OK (max ULP 16) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_padded/model.onnx | ✅ | OK (max ULP 64) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_strided/model.onnx | ✅ | OK (max ULP 8) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_with_multiplier/model.onnx | ✅ | OK (max ULP 56) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_dilated/model.onnx | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/model.onnx | ❌ | Out of tolerance (max ULP 640) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx | ❌ | Out of tolerance (max ULP 528) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_no_bias/model.onnx | ❌ | Out of tolerance (max ULP 3072) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_padding/model.onnx | ✅ | OK (max ULP 48) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_strided/model.onnx | ✅ | OK (max ULP 64) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx | ✅ | OK (max ULP 13) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx | ❌ | Out of tolerance (max ULP 552) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | ❌ | Out of tolerance (max ULP 704) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_groups/model.onnx | ❌ | Out of tolerance (max ULP 256) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | ✅ | OK (max ULP 38) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | ✅ | OK (max ULP 60) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_dilated/model.onnx | ✅ | OK (max ULP 88) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/model.onnx | ❌ | Out of tolerance (max ULP 1024) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx | ❌ | Out of tolerance (max ULP 1520) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_no_bias/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_padding/model.onnx | ✅ | OK (max ULP 40) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_strided/model.onnx | ❌ | Out of tolerance (max ULP 192) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx | ✅ | OK (max ULP 19) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx | ✅ | OK (max ULP 40) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | ❌ | Out of tolerance (max ULP 576) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_groups/model.onnx | ❌ | Out of tolerance (max ULP 896) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | ✅ | OK (max ULP 12) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | ✅ | OK (max ULP 84) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx | ❌ | Out of tolerance (max ULP 112) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ❌ | Out of tolerance (max ULP 128) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx | ❌ | Elu only supports alpha=1.0 |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU_with_negval/model.onnx | ❌ | LeakyRelu only supports alpha=0.01 |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/model.onnx | ✅ | OK (max ULP 32) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx | ❌ | Out of tolerance (max ULP 224) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx | ✅ | OK (max ULP 0) |
@@ -1736,33 +1736,33 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d_multiparam/model.onnx | ❌ | Broadcasting mismatch for shapes: (2, 3, 4, 5, 6), (3,) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ReflectionPad2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmax/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmin/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/model.onnx | ✅ | OK (max ULP 7) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Tanh/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Tanh/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_lastdim/model.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_functional_dim3/model.onnx | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/model.onnx | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_functional_dim3/model.onnx | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_broadcast/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_broadcast/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx | ✅ | OK (max ULP 32) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx | ❌ | Out of tolerance (max ULP 17525756) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_concat2/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx | ✅ | OK (max ULP 48) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_exp/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/model.onnx | ✅ | OK (max ULP 0) |
@@ -1770,7 +1770,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_max/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_maxpool/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_min/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_mm/model.onnx | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_mm/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_non_float_params/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pad/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_params/model.onnx | ✅ | OK (max ULP 0) |
@@ -1782,7 +1782,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum_keepdim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_repeat/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_repeat_dim_overflow/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/model.onnx | ✅ | OK (max ULP 15) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_sqrt/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override/model.onnx | ❌ | Out of tolerance (max ULP 5380) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested/model.onnx | ✅ | OK (max ULP 0) |
@@ -1815,7 +1815,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 
 Local tests: `onnx2c-org/test/local_ops`.
 
-Support 54 / 74 local ONNX files.
+Support 69 / 74 local ONNX files.
 
 | File | Supported | Error |
 | --- | --- | --- |
@@ -1843,53 +1843,53 @@ Support 54 / 74 local ONNX files.
 | test_gemm_CN_transA/model.onnx | ✅ | OK (max ULP 1) |
 | test_gemm_CN_transA_transB/model.onnx | ✅ | OK (max ULP 1) |
 | test_gemm_CN_transB/model.onnx | ✅ | OK (max ULP 1) |
-| test_lstm_activations/model.onnx | ❌ | Out of tolerance (max ULP 15064758) |
-| test_lstm_all_outputs/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_lstm_all_outputs/model.onnx: Unable to find output name 'Y_c' in ['', 'R', 'W', 'X', 'Y', 'Y_h'], proto is ir_version: 5 producer_name: "backend-test" graph {   node {     input: "X"     input: "W"     input: "R"     output: "Y"     output: "Y_h"     output: "Y_c"     op_type: "LSTM"     attribute {       name: "hidden_size"       i: 4       type: INT     }   }   name: "test_lstm_all_outputs"   input {     name: "X"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 2           }           dim {             dim_value: 3           }           dim {             dim_value: 3           }         }       }     }   }   input {     name: "W"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 16           }           dim {             dim_value: 3           }         }       }     }   }   input {     name: "R"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 16           }           dim {             dim_value: 4           }         }       }     }   }   output {     name: "Y"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 2           }           dim {             dim_value: 1           }           dim {             dim_value: 3           }           dim {             dim_value: 4           }         }       }     }   }   output {     name: "Y_h"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 3           }           dim {             dim_value: 4           }         }       }     }   }   output {     name: "Y_c"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 3           }           dim {             dim_value: 4           }         }       }     }   } } opset_import {   version: 11 } |
+| test_lstm_activations/model.onnx | ✅ | OK (max ULP 0) |
+| test_lstm_all_outputs/model.onnx | ✅ | OK (max ULP 1) |
 | test_lstm_bidirectional/model.onnx | ❌ | Unsupported LSTM direction b'bidirectional' |
-| test_lstm_clip/model.onnx | ❌ | Out of tolerance (max ULP 32351084) |
+| test_lstm_clip/model.onnx | ✅ | OK (max ULP 0) |
 | test_lstm_intermediate_h/model.onnx | ✅ | OK (max ULP 1) |
 | test_lstm_missing_inputs/model.onnx | ✅ | OK (max ULP 0) |
 | test_lstm_reverse/model.onnx | ❌ | Unsupported LSTM direction b'reverse' |
 | test_lstm_seq_length/model.onnx | ✅ | OK (max ULP 43) |
 | test_lstm_simple/model.onnx | ✅ | OK (max ULP 0) |
-| test_lstm_with_initial_state/model.onnx | ✅ | OK (max ULP 2) |
-| test_lstm_y_c/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_lstm_y_c/model.onnx: Unable to find output name 'Y_c' in ['', 'R', 'W', 'X', 'Y_h'], proto is ir_version: 5 producer_name: "backend-test" graph {   node {     input: "X"     input: "W"     input: "R"     output: "Y_h"     output: ""     output: "Y_c"     op_type: "LSTM"     attribute {       name: "hidden_size"       i: 4       type: INT     }   }   name: "test_lstm_y_c"   input {     name: "X"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 2           }           dim {             dim_value: 3           }           dim {             dim_value: 3           }         }       }     }   }   input {     name: "W"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 16           }           dim {             dim_value: 3           }         }       }     }   }   input {     name: "R"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 16           }           dim {             dim_value: 4           }         }       }     }   }   output {     name: "Y_h"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 2           }           dim {             dim_value: 1           }           dim {             dim_value: 3           }           dim {             dim_value: 4           }         }       }     }   }   output {     name: "Y_c"     type {       tensor_type {         elem_type: 1         shape {           dim {             dim_value: 1           }           dim {             dim_value: 3           }           dim {             dim_value: 4           }         }       }     }   } } opset_import {   version: 11 } |
-| test_matmul_1x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_1x3x4_3x4x5/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_2x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 2) |
-| test_matmul_2x3_3x4/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_2x3x3x4_1x4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_lstm_with_initial_state/model.onnx | ✅ | OK (max ULP 5) |
+| test_lstm_y_c/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_1x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_1x3x4_3x4x5/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_2x1x3x4_2x3x4x5/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_2x3_3x4/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_2x3x3x4_1x4x5/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_2x3x4_4/model.onnx | ✅ | OK (max ULP 1) |
-| test_matmul_2x3x4_4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_2x3x4_4x5/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_2x3x4x5_5/model.onnx | ✅ | OK (max ULP 2) |
 | test_matmul_3_2x3x4/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3_3/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3_3x4/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_3x4_2x4x5/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_3x4_2x4x5/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_3x4_4/model.onnx | ✅ | OK (max ULP 0) |
-| test_matmul_4x5x2x3_4x5x3x4/model.onnx | ✅ | OK (max ULP 2) |
-| test_matmul_5x2x3_5x3x4/model.onnx | ✅ | OK (max ULP 1) |
+| test_matmul_4x5x2x3_4x5x3x4/model.onnx | ✅ | OK (max ULP 0) |
+| test_matmul_5x2x3_5x3x4/model.onnx | ✅ | OK (max ULP 0) |
 | test_matmul_precision/model.onnx | ✅ | OK (max ULP 0) |
-| test_maxpool_stride_1/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 288 / 432 (66.7%) Max absolute difference among violations: 288 Max relative difference among violations: 288.  ACTUAL: array([[[[  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11],          [ 12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23],          [ 24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35],...  DESIRED: array([[[[  0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11],          [ 12,  13,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23],          [ 24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35],... |
+| test_maxpool_stride_1/model.onnx | ✅ | OK (max ULP 0) |
 | test_maxpool_stride_2/model.onnx | ✅ | OK (max ULP 0) |
-| test_nodes_out_of_order/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_nodes_out_of_order/model.onnx: Unable to find input 'starts' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
-| test_pad_constant_default/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_constant_default/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
-| test_pad_constant_input/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_constant_input/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
-| test_pad_edge/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_edge/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
-| test_pad_edge_allaxes/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_edge_allaxes/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
-| test_pad_reflect_allaxes/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_reflect_allaxes/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
-| test_pad_reflect_nopadding/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_pad_reflect_nopadding/model.onnx: Unable to find input 'pads' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
+| test_nodes_out_of_order/model.onnx | ✅ | OK (max ULP 0) |
+| test_pad_constant_default/model.onnx | ✅ | OK (max ULP 0) |
+| test_pad_constant_input/model.onnx | ✅ | OK (max ULP 0) |
+| test_pad_edge/model.onnx | ✅ | OK (max ULP 0) |
+| test_pad_edge_allaxes/model.onnx | ✅ | OK (max ULP 0) |
+| test_pad_reflect_allaxes/model.onnx | ✅ | OK (max ULP 0) |
+| test_pad_reflect_nopadding/model.onnx | ✅ | OK (max ULP 0) |
 | test_qlinearadd_int8/model.onnx | ❌ | Unsupported op QLinearAdd |
 | test_qlinearadd_uint8/model.onnx | ❌ | Unsupported op QLinearAdd |
 | test_qlinearmul_int8/model.onnx | ✅ | OK (max ULP 0) |
 | test_qlinearmul_uint8/model.onnx | ✅ | OK (max ULP 0) |
-| test_resize_downsample_sizes_linear_1D/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D/model.onnx: Unable to find input 'sizes' in known results ['', 'X'], self.rt_inits_ has [], feed_inputs has ['X']. |
-| test_resize_downsample_sizes_linear_1D_align/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx: Unable to find input 'sizes' in known results ['', 'X'], self.rt_inits_ has [], feed_inputs has ['X']. |
+| test_resize_downsample_sizes_linear_1D/model.onnx | ✅ | OK (max ULP 0) |
+| test_resize_downsample_sizes_linear_1D_align/model.onnx | ✅ | OK (max ULP 1) |
 | test_scalar_input_to_node/model.onnx | ✅ | OK (max ULP 0) |
 | test_scatternd_indices_1x1x2/model.onnx | ✅ | OK (max ULP 0) |
 | test_scatternd_indices_1x2x2/model.onnx | ✅ | OK (max ULP 0) |
 | test_scatternd_indices_2x2x2/model.onnx | ✅ | OK (max ULP 0) |
 | test_scatternd_indices_3x2/model.onnx | ✅ | OK (max ULP 0) |
 | test_shape_const_out/model.onnx | ✅ | OK (max ULP 0) |
-| test_slice_end_INT64_MAX/model.onnx | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_slice_end_INT64_MAX/model.onnx: Unable to find input 'starts' in known results ['', 'data'], self.rt_inits_ has [], feed_inputs has ['data']. |
+| test_slice_end_INT64_MAX/model.onnx | ✅ | OK (max ULP 0) |

@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample_border_padding/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample_border_padding/test_data_set_0",
   "operators": [
     "GridSample"
   ],
   "opset_version": 22,
-  "generated_checksum": "d8ad692377b18927b2065510b9b0734f9b33382040c930ee83fa6c4565c414fe"
+  "generated_checksum": "2fe13d3a32fdfb271106a9238a30a69aa95172ce1e2e19a5f2631368e539b01a"
 }

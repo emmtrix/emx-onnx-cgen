@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_random/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_keepdims_random/test_data_set_0",
   "operators": [
     "ReduceLogSumExp"
   ],
   "opset_version": 18,
-  "generated_checksum": "767e086fa7881f3e85c1696c8033e1594d73594570cfd2bb70511dda95aa3432"
+  "generated_checksum": "974f14e55c73db81b87f721203279c5d0931926267e0a89680a11f08ce26b9f4"
 }

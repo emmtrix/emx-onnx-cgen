@@ -621,6 +621,7 @@ def _verify_model(
     try:
         codegen_started = active_reporter.start_step("Generating C code")
         testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
+        testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
@@ -835,56 +836,68 @@ def _verify_model(
             )
             for name, value in payload["inputs"].items()
         }
-    runtime_name = args.runtime
-    custom_domains = sorted(
-        {
-            opset.domain
-            for opset in model.opset_import
-            if opset.domain not in {"", "ai.onnx"}
+    runtime_outputs: dict[str, np.ndarray] | None = None
+    if testbench_outputs is not None:
+        runtime_outputs = {
+            name: output.astype(output_dtypes[name].np_dtype, copy=False)
+            for name, output in testbench_outputs.items()
         }
-    )
-    if runtime_name == "onnx-reference" and custom_domains:
-        active_reporter.note(
-            "Runtime: switching to onnxruntime for custom domains "
-            f"{', '.join(custom_domains)}"
+        active_reporter.note("Using expected outputs from test data files.")
+    else:
+        runtime_name = args.runtime
+        custom_domains = sorted(
+            {
+                opset.domain
+                for opset in model.opset_import
+                if opset.domain not in {"", "ai.onnx"}
+            }
         )
-        runtime_name = "onnxruntime"
-    runtime_started = active_reporter.start_step(f"Running {runtime_name}")
-    try:
-        if runtime_name == "onnxruntime":
-            import onnxruntime as ort
-
-            sess_options = make_deterministic_session_options(ort)
-            sess = ort.InferenceSession(
-                model.SerializeToString(),
-                sess_options=sess_options,
-                providers=["CPUExecutionProvider"],
-            )
-            runtime_outputs = sess.run(None, inputs)
-        else:
-            from onnx.reference import ReferenceEvaluator
-
-            with deterministic_reference_runtime():
-                evaluator = ReferenceEvaluator(model)
-                runtime_outputs = evaluator.run(None, inputs)
-    except Exception as exc:
-        active_reporter.step_fail(str(exc))
-        message = str(exc)
-        if runtime_name == "onnxruntime" and "NOT_IMPLEMENTED" in message:
+        if runtime_name == "onnx-reference" and custom_domains:
             active_reporter.note(
-                f"Skipping verification for {model_path}: "
-                "ONNX Runtime does not support the model "
-                f"({message})"
+                "Runtime: switching to onnxruntime for custom domains "
+                f"{', '.join(custom_domains)}"
             )
-            return "", None, operators, opset_version, generated_checksum
-        return (
-            None,
-            f"{runtime_name} failed to run {model_path}: {message}",
-            operators,
-            opset_version,
-            generated_checksum,
-        )
-    active_reporter.step_ok(runtime_started)
+            runtime_name = "onnxruntime"
+        runtime_started = active_reporter.start_step(f"Running {runtime_name}")
+        try:
+            if runtime_name == "onnxruntime":
+                import onnxruntime as ort
+
+                sess_options = make_deterministic_session_options(ort)
+                sess = ort.InferenceSession(
+                    model.SerializeToString(),
+                    sess_options=sess_options,
+                    providers=["CPUExecutionProvider"],
+                )
+                runtime_outputs_list = sess.run(None, inputs)
+            else:
+                from onnx.reference import ReferenceEvaluator
+
+                with deterministic_reference_runtime():
+                    evaluator = ReferenceEvaluator(model)
+                    runtime_outputs_list = evaluator.run(None, inputs)
+        except Exception as exc:
+            active_reporter.step_fail(str(exc))
+            message = str(exc)
+            if runtime_name == "onnxruntime" and "NOT_IMPLEMENTED" in message:
+                active_reporter.note(
+                    f"Skipping verification for {model_path}: "
+                    "ONNX Runtime does not support the model "
+                    f"({message})"
+                )
+                return "", None, operators, opset_version, generated_checksum
+            return (
+                None,
+                f"{runtime_name} failed to run {model_path}: {message}",
+                operators,
+                opset_version,
+                generated_checksum,
+            )
+        active_reporter.step_ok(runtime_started)
+        runtime_outputs = {
+            value.name: output
+            for value, output in zip(graph.outputs, runtime_outputs_list)
+        }
     payload_outputs = payload.get("outputs", {})
     max_ulp = 0
     worst_diff: _WorstDiff | None = None
@@ -897,7 +910,8 @@ def _verify_model(
         f"Verifying outputs [--max-ulp={args.max_ulp}]"
     )
     try:
-        for value, runtime_out in zip(graph.outputs, runtime_outputs):
+        for value in graph.outputs:
+            runtime_out = runtime_outputs[value.name]
             output_payload = payload_outputs.get(value.name)
             if output_payload is None:
                 raise AssertionError(f"Missing output {value.name} in testbench data")
@@ -1000,6 +1014,42 @@ def _load_test_data_inputs(
         tensor.ParseFromString(path.read_bytes())
         inputs[model_inputs[index].name] = numpy_helper.to_array(tensor)
     return inputs
+
+
+def _load_test_data_outputs(
+    model: onnx.ModelProto, data_dir: Path | None
+) -> dict[str, "np.ndarray"] | None:
+    if data_dir is None:
+        return None
+    if not data_dir.exists():
+        raise CodegenError(f"Test data directory not found: {data_dir}")
+    output_files = sorted(
+        data_dir.glob("output_*.pb"),
+        key=lambda path: int(path.stem.split("_")[-1]),
+    )
+    if not output_files:
+        return None
+    model_outputs = list(model.graph.output)
+    if len(output_files) != len(model_outputs):
+        raise CodegenError(
+            "Test data output count does not match model outputs: "
+            f"{len(output_files)} vs {len(model_outputs)}."
+        )
+    for value_info in model_outputs:
+        value_kind = value_info.type.WhichOneof("value")
+        if value_kind != "tensor_type":
+            LOGGER.warning(
+                "Skipping test data load for non-tensor output %s (type %s).",
+                value_info.name,
+                value_kind or "unknown",
+            )
+            return None
+    outputs: dict[str, np.ndarray] = {}
+    for index, path in enumerate(output_files):
+        tensor = onnx.TensorProto()
+        tensor.ParseFromString(path.read_bytes())
+        outputs[model_outputs[index].name] = numpy_helper.to_array(tensor)
+    return outputs
 
 
 def _format_command_line(argv: Sequence[str] | None) -> str:
