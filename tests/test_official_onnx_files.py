@@ -334,8 +334,7 @@ def test_official_onnx_expected_errors(
     data_root = _official_data_root()
     _ensure_official_onnx_files_present(data_root)
     repo_root = _repo_root()
-    compiler_cmd = _resolve_compiler()
-    if compiler_cmd is None:
+    if _resolve_compiler() is None:
         pytest.skip("C compiler not available (set CC or install gcc/clang)")
     rel_path = _normalize_official_path(repo_relative_path)
     expectation = _load_expectation_for_repo_relative(rel_path)
@@ -346,8 +345,6 @@ def test_official_onnx_expected_errors(
         "emx-onnx-cgen",
         "verify",
         str(model_path.relative_to(repo_root)),
-        "--cc",
-        compiler_cmd[0],
     ]
     if (
         expectation.generated_checksum is not None
@@ -410,8 +407,7 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
     data_root = LOCAL_ONNX_DATA_ROOT
     _ensure_local_onnx_files_present(data_root)
     repo_root = _repo_root()
-    compiler_cmd = _resolve_compiler()
-    if compiler_cmd is None:
+    if _resolve_compiler() is None:
         pytest.skip("C compiler not available (set CC or install gcc/clang)")
     expectation = _load_expectation_for_repo_relative(
         repo_relative_path
@@ -426,8 +422,6 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         "emx-onnx-cgen",
         "verify",
         str(model_path.relative_to(repo_root)),
-        "--cc",
-        compiler_cmd[0],
     ]
     if (
         expectation.generated_checksum is not None
