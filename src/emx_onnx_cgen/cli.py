@@ -14,7 +14,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping, Sequence, TextIO
+from typing import Any, Mapping, Sequence, TextIO
 
 import numpy as np
 import onnx
@@ -710,6 +710,7 @@ def _verify_model(
         )
         temp_path = Path(temp_dir.name)
     active_reporter.info(f"  Using temporary folder: {temp_path}")
+    payload: dict[str, Any] | None = None
     try:
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
@@ -757,6 +758,18 @@ def _verify_model(
                 cwd=temp_path,
             )
             active_reporter.step_ok(run_started)
+            result_json_path = temp_path / "testbench.json"
+            result_json_path.write_text(result.stdout, encoding="utf-8")
+            try:
+                payload = json.loads(result_json_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                return (
+                    None,
+                    f"Failed to parse testbench JSON: {exc}",
+                    operators,
+                    opset_version,
+                    generated_checksum,
+                )
         except subprocess.CalledProcessError as exc:
             active_reporter.step_fail(describe_exit_code(exc.returncode))
             return None, (
@@ -777,12 +790,10 @@ def _verify_model(
             )
             temp_dir.cleanup()
             active_reporter.step_ok(delete_started)
-    try:
-        payload = json.loads(result.stdout)
-    except json.JSONDecodeError as exc:
+    if payload is None:
         return (
             None,
-            f"Failed to parse testbench JSON: {exc}",
+            "Failed to parse testbench JSON: missing output.",
             operators,
             opset_version,
             generated_checksum,
