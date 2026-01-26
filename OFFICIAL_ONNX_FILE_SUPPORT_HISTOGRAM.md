@@ -56,7 +56,6 @@
 | QuantizeLinear block_size is not supported | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
-| Tile repeats input must be a constant initializer | 2 | ██ |
 | Unsupported op Adam | 2 | ██ |
 | Unsupported op BitwiseNot | 2 | ██ |
 | Unsupported op BlackmanWindow | 2 | ██ |
