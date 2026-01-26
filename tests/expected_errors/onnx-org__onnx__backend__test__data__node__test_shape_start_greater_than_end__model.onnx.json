@@ -1,4 +1,9 @@
 {
-  "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/test_data_set_0",
+  "operators": [
+    "Shape"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "6d089f2da2f9b9150f71d8cf241cf88685f45c5095df969fa675c1928b2d4c19"
 }

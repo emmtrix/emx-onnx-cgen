@@ -1,8 +1,9 @@
 {
-  "error": "AveragePool has unsupported attributes",
+  "error": "Out of tolerance (max ULP 21627)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "937c134ae97379de7c432fe2d6a469c5eafb67cc2934a56cd848bf05081ed751"
 }

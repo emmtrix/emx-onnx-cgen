@@ -138,6 +138,8 @@ def _worst_ulp_diff(
         )
     if not np.issubdtype(expected.dtype, np.floating):
         return 0, None
+    if actual.size == 0:
+        return 0, None
     dtype = expected.dtype
     actual_cast = actual.astype(dtype, copy=False)
     expected_cast = expected.astype(dtype, copy=False)
@@ -165,6 +167,8 @@ def _worst_abs_diff(
         raise ValueError(
             f"Shape mismatch for diff calculation: {actual.shape} vs {expected.shape}"
         )
+    if actual.size == 0:
+        return 0, None
     dtype = expected.dtype
     actual_cast = actual.astype(dtype, copy=False)
     expected_cast = expected.astype(dtype, copy=False)

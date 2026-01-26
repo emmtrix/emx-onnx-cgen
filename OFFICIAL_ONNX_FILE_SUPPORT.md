@@ -1,6 +1,10 @@
 # Official ONNX file support
 
 Support 1304 / 1802 official ONNX files.
+Support 1301 / 1802 official ONNX files.
+Support 1300 / 1802 official ONNX files.
+Support 1306 / 1802 official ONNX files.
+Support 1302 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -223,10 +227,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool supports 2D/3D inputs only |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | Out of tolerance (max ULP 2983) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_default/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_dilations/model.onnx | ❌ | AveragePool has unsupported attributes |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_dilations/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/model.onnx | ❌ | Out of tolerance (max ULP 683) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads_count_include_pad/model.onnx | ❌ | Out of tolerance (max ULP 683) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_pads/model.onnx | ✅ | OK (max ULP 0) |
@@ -237,11 +241,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_same_upper/model.onnx | ❌ | AveragePool supports auto_pad=NOTSET only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_strides/model.onnx | ❌ | Out of tolerance (max ULP 164) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/model.onnx | ❌ | Out of tolerance (max ULP 28928) |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_small/model.onnx | ❌ | AveragePool has unsupported attributes |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | ❌ | Out of tolerance (max ULP 13631) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | ❌ | Out of tolerance (max ULP 21627) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | ❌ | Out of tolerance (max ULP 10748) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | ❌ | Out of tolerance (max ULP 8165635) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_small/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_basic_conv_with_padding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_basic_conv_without_padding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_basic_deform_conv_with_padding/model.onnx | ❌ | Unsupported op DeformConv |
@@ -521,7 +525,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_constant_pad_axes/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_constant_pad_negative_axes/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_constantofshape_float_ones/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_constantofshape_int_zeros/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/model.onnx | ✅ | OK (max ULP 0) |
@@ -1221,7 +1225,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_keepdims_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_keepdims_random/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_negative_axes_keepdims_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -1250,7 +1254,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_regex_full_match_empty/model.onnx | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
 | onnx-org/onnx/backend/test/data/node/test_relu/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_extended_dims/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_negative_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_negative_extended_dims/model.onnx | ✅ | OK (max ULP 0) |
@@ -1343,21 +1347,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_mode_max/model.onnx | ❌ | Unsupported op RoiAlign |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input_expanded/model.onnx | ❌ | tuple index out of range |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
 | onnx-org/onnx/backend/test/data/node/test_round/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scan9_sum/model.onnx | ❌ | Unsupported op Scan |
@@ -1472,7 +1476,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_shape_start_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_start_1_end_2/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_start_1_end_negative_1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_start_negative_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shrink_hard/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shrink_hard_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
@@ -1497,7 +1501,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_slice_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_slice_negative_axes/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0_expanded_ver18/model.onnx | ✅ | OK (max ULP 3) |
@@ -1546,8 +1550,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_2d_opset18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset13/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset18/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
-| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset18/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sqrt/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sqrt_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_squeeze/model.onnx | ✅ | OK (max ULP 0) |
@@ -1605,8 +1609,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example/model.onnx | ❌ | ThresholdedRelu only supports alpha=1.0 |
 | onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tile/model.onnx | ❌ | Tile repeats input must be a constant initializer |
-| onnx-org/onnx/backend/test/data/node/test_tile_precomputed/model.onnx | ❌ | Tile repeats input must be a constant initializer |
+| onnx-org/onnx/backend/test/data/node/test_tile/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_tile_precomputed/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_top_k_negative_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_top_k_same_values/model.onnx | ✅ | OK (max ULP 0) |
@@ -1635,7 +1639,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_tril_pos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tril_square/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tril_square_neg/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tril_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_tril_zero/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_one_row/model.onnx | ✅ | OK (max ULP 0) |
@@ -1644,7 +1648,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_triu_pos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_square/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_square_neg/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
+| onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_unique_length_1/model.onnx | ❌ | Unsupported op Unique |
 | onnx-org/onnx/backend/test/data/node/test_unique_not_sorted_without_axis/model.onnx | ❌ | Unsupported op Unique |
 | onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_axis/model.onnx | ❌ | Unsupported op Unique |

@@ -14,9 +14,7 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
-| Iteration of zero-sized operands is not enabled | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
-| '*' object has no attribute '*' | 8 | ███████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
 | tuple index out of range | 8 | ███████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
@@ -58,7 +56,6 @@
 | QuantizeLinear block_size is not supported | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
-| Tile repeats input must be a constant initializer | 2 | ██ |
 | Unsupported op Adam | 2 | ██ |
 | Unsupported op BitwiseNot | 2 | ██ |
 | Unsupported op BlackmanWindow | 2 | ██ |

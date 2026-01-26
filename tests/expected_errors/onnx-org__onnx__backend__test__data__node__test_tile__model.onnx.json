@@ -1,8 +1,9 @@
 {
-  "error": "Tile repeats input must be a constant initializer",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tile/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_tile/test_data_set_0",
   "operators": [
     "Tile"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "9c13f9aa45ea041a68f184a7f1ba8d6dc1713b9fe1cb9b4d7a02aec0d64f233d"
 }
