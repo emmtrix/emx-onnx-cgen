@@ -3528,6 +3528,13 @@ class CEmitter:
                 call_parts.append(op.output_qk_matmul)
             args.extend(call_parts)
             return ", ".join(args)
+        if isinstance(op, RotaryEmbeddingOp):
+            call_parts = [op.input0, op.cos_cache, op.sin_cache]
+            if op.position_ids is not None:
+                call_parts.append(op.position_ids)
+            call_parts.append(op.output)
+            args.extend(call_parts)
+            return ", ".join(args)
         if isinstance(op, ConvOp):
             if op.bias is None:
                 args.extend([op.input0, op.weights, op.output])
@@ -10804,6 +10811,7 @@ class CEmitter:
         | CumSumOp
         | RangeOp
         | OneHotOp
+        | RotaryEmbeddingOp
         | SplitOp
         | PadOp,
     ) -> tuple[int, ...]:
@@ -10929,6 +10937,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, OneHotOp):
             return op.output_shape
+        if isinstance(op, RotaryEmbeddingOp):
+            return op.input_shape
         if op.output_rank == 3:
             return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
         return (op.batch, op.q_heads, op.q_seq, op.v_head_size)

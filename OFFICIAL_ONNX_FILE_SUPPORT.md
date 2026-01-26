@@ -1,5 +1,6 @@
 # Official ONNX file support
 
+Support 1306 / 1802 official ONNX files.
 Support 1302 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
@@ -1343,21 +1344,21 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_mode_max/model.onnx | ❌ | Unsupported op RoiAlign |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_3d_input_expanded/model.onnx | ❌ | tuple index out of range |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_interleaved_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_no_position_ids_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
-| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim/model.onnx | ❌ | 'RotaryEmbeddingOp' object has no attribute 'output_rank' |
+| onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | ❌ | tuple index out of range |
 | onnx-org/onnx/backend/test/data/node/test_round/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scan9_sum/model.onnx | ❌ | Unsupported op Scan |
