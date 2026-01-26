@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lstm_with_peepholes/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_lstm_with_peepholes/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lstm_with_peepholes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_lstm_with_peepholes/test_data_set_0",
   "operators": [
     "LSTM"
   ],
   "opset_version": 22,
-  "generated_checksum": "35e2bbf777c1fc4f681c9d770de16be7c07e89cb2a4479698bcbeefb64e8807b"
+  "generated_checksum": "05cf7ecc890c6b7babf958efc971996f402ea1785d41820cc6f7310c2e69a4cd"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/test_data_set_0",
   "operators": [
     "LogSoftmax"
   ],
   "opset_version": 6,
-  "generated_checksum": "9a04fbc8569bdb43918a09efa7700c57473b51cab26e6aac357577087a660e29"
+  "generated_checksum": "6b0d72fa3111ba80e26922de1eec066fdcee5575dab3a9d427db95de22c77c15"
 }

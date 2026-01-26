@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_2d_uneven_split_opset18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_2d_uneven_split_opset18/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_2d_uneven_split_opset18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_2d_uneven_split_opset18/test_data_set_0",
   "operators": [
     "Split"
   ],
   "opset_version": 18,
-  "generated_checksum": "a77e0398f73c540a68da4c08b7fcb6a97261fffd9c8bcae36e298378721a890b"
+  "generated_checksum": "15b14d06eaac0285976ce62bf9bac6ef00e5fd43e4b18c337b8e8ba2b48144c2"
 }

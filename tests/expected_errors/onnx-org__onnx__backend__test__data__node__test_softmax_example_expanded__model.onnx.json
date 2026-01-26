@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softmax_example_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_softmax_example_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softmax_example_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_softmax_example_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "ReduceMax",
@@ -10,5 +10,5 @@
     "Div"
   ],
   "opset_version": 13,
-  "generated_checksum": "186986c295f1729fa63d3a2e387c23a51468861d80f6e70db368fc5373df738c"
+  "generated_checksum": "ae303e3566985bb92d3d07667a248007e51637a364274885e5db575a9cf89014"
 }

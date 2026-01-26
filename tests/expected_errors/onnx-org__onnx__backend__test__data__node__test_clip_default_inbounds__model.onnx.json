@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_default_inbounds/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_default_inbounds/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_default_inbounds/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_default_inbounds/test_data_set_0",
   "operators": [
     "Clip"
   ],
   "opset_version": 13,
-  "generated_checksum": "d971faef7a2d3928b0d664b6c614a254f3643ce1fb51579fa134204a4cbdc6f3"
+  "generated_checksum": "a4ca285425379b9ad298b3de7866eb9b2177a055a3a6522ab51fbf6a07cebbb1"
 }

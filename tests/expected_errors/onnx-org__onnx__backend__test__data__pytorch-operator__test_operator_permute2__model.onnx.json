@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_permute2/test_data_set_0",
   "operators": [
     "Transpose"
   ],
   "opset_version": 6,
-  "generated_checksum": "61e0be66baa2703294c7a8aad2612f9d1489f12c4fcd2bd056886926798568e3"
+  "generated_checksum": "96cd425d5c9aa0949cdcd8eb61bb78482f4c0f9b22c3687d41e1636d1b7dabe3"
 }

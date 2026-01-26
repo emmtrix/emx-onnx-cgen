@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_argmin_default_axis_random/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_argmin_default_axis_random/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_argmin_default_axis_random/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_argmin_default_axis_random/test_data_set_0",
   "operators": [
     "ArgMin"
   ],
   "opset_version": 13,
-  "generated_checksum": "94fd95ee077d552229c37ebd196722d449c5a7bf6e8c2b5ce63dd6661a0651f7"
+  "generated_checksum": "080de8f073474d4b1f83f9ebd83d3e50adcf9e3520e3b1f1da1f6246954c3df6"
 }

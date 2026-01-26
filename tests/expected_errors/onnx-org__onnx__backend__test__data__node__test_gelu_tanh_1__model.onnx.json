@@ -1,6 +1,6 @@
 {
   "error": "Gelu only supports approximate=none",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1/test_data_set_0",
   "operators": [
     "Gelu"
   ],

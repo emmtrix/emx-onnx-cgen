@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l1_do_not_keepdims_random_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l1_do_not_keepdims_random_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l1_do_not_keepdims_random_expanded/test_data_set_0",
   "operators": [
     "Abs",
     "ReduceSum"
   ],
   "opset_version": 18,
-  "generated_checksum": "58366872fa5c50ea5793a85746e039a1aaf7dcd2988e1e35413cebea86aed36d"
+  "generated_checksum": "b0e886e40b242140a041bb18dc8938f1a41668f84f8d81272905e19bed528067"
 }

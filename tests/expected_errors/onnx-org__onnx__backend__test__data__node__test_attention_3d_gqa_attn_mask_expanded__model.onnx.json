@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 3)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_attn_mask_expanded/test_data_set_0",
   "operators": [
     "Shape",
     "Constant",
@@ -24,5 +24,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "5c6ecb74f7a1c113db7e25d428bfbf3d1f8b5d7f75a4516ccf7f105d46f72553"
+  "generated_checksum": "b196789ad776f0554c7886a23ab7cf93d3e4b1455178bbfc345849badb1a8205"
 }

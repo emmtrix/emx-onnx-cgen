@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/test_data_set_0",
   "operators": [
     "LessOrEqual"
   ],
   "opset_version": 16,
-  "generated_checksum": "2b1cbdc49baa8687499140b6b2fb9fc3b5a086905605f7791670676c3384ccda"
+  "generated_checksum": "037fa02c47904119688475539eb7766d999cdd8d9f22ff3ca1d3a5d87daf2b27"
 }

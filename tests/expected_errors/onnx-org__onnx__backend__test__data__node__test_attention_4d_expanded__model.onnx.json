@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 3)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/test_data_set_0",
   "operators": [
     "Shape",
     "Identity",
@@ -25,5 +25,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "e8c7b4a89e9104adef1555d9c31f98ddf365a2fcaf0b87b6857ff8452d9a86d9"
+  "generated_checksum": "f3c04a2af78485cf8e66738f0583c8e16405e171fd5360cfcf7f7ecf97223e86"
 }

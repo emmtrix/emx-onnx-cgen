@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "ReduceMin",
@@ -16,5 +16,5 @@
     "QuantizeLinear"
   ],
   "opset_version": 11,
-  "generated_checksum": "b6fea54567c38a3ceb16476bc9f0c2384c0a42444b8b02154b8267e2cfda1a29"
+  "generated_checksum": "5908f899a15dc2582ad61f3183079b0a59ee242c5feefcb032c1cb21f28eae14"
 }

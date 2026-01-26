@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 6,
-  "generated_checksum": "cb459ca0348833c2520527672a3f618eb2ad39e693a9c7e5bf249688ae4bf19e"
+  "generated_checksum": "506c11686e6adfd6a0f9d61f76ecad474553389c009ebd06083eeb6c94d4361f"
 }

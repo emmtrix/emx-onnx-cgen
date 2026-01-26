@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_pad_reflect_nopadding/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_pad_reflect_nopadding/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_pad_reflect_nopadding/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_pad_reflect_nopadding/test_data_set_0",
   "operators": [
     "Pad",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "3fc5e0a10f1a9486d678b87db4037e669b40384c9c389ca137276bcd548c51bd"
+  "generated_checksum": "22b1a59beffea467ff5d49dc20c4f9e19c0f9dade8d9679b2055a1c05a8edab8"
 }

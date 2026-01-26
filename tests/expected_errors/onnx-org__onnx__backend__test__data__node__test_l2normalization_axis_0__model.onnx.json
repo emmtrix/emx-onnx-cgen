@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/test_data_set_0",
   "operators": [
     "LpNormalization"
   ],
   "opset_version": 22,
-  "generated_checksum": "abd638f063cce2550e002e5314c782e8738f7301b7016878fa64e2d4411fbe04"
+  "generated_checksum": "810044157b2ba3ab5512ad16550b076603b70938800ecb94e774f368ac58b4ea"
 }

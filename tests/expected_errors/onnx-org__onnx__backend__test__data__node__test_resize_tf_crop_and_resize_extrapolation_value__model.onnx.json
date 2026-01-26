@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_extrapolation_value/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_extrapolation_value/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_extrapolation_value/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_extrapolation_value/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "866e18e732d0dfaeff8b2fd6a3fcb07edc3736d821ad964929714f288353358f"
+  "generated_checksum": "3d7f75f718bbff3f7709ae3fad78fb2da17fbc93060f70ec309a32abef2221ea"
 }

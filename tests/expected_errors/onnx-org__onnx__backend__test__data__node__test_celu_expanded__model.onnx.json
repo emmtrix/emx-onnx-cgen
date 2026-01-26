@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_celu_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_celu_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_celu_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_celu_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Div",
@@ -8,5 +8,5 @@
     "Mul"
   ],
   "opset_version": 12,
-  "generated_checksum": "fa071fb4d8f4f7cef331ce1fd5f5b35fea4e85ebaa5c74ae931e4ec4015516b8"
+  "generated_checksum": "31a809e12ed91fdb04ac27fc43e6de639efa1d2e93470200587dd5bff4d8fa57"
 }

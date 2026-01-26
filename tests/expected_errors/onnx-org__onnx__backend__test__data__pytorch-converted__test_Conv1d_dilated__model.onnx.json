@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 64)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "7ed4f99c2da6166dbe20187f323afa72031a7d2f0132f4742fd94bdb8cd09c2b"
+  "generated_checksum": "b2311a8aecc31b03d2e9f4c4e3050fa256850de82a6ea9301b5186203a708498"
 }

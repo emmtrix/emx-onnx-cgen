@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mvn_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_mvn_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "ReduceMean",
@@ -11,5 +11,5 @@
     "Div"
   ],
   "opset_version": 13,
-  "generated_checksum": "e1cbde429db392a18b6c01435fdfeb5a3e3690735ffbfd54258ec012fe559312"
+  "generated_checksum": "8f8a14d13a59b3b5cd2a885d0a09c852a5370172ddf9d9a18d7c22a3459d5f37"
 }

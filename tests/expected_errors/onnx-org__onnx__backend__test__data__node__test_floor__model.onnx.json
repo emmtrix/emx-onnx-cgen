@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_floor/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_floor/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_floor/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_floor/test_data_set_0",
   "operators": [
     "Floor"
   ],
   "opset_version": 13,
-  "generated_checksum": "1975c0b5158361a6b5ac8bcdd03a7f4d62caef75879ad698b7ad8ebc88e29698"
+  "generated_checksum": "834edcdfb949ccc20e306c5b9a4553dd64c33ca580b64f39a4e28e4babc70998"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_bcast/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_bcast/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_bcast/test_data_set_0",
   "operators": [
     "Add"
   ],
   "opset_version": 14,
-  "generated_checksum": "99707dde5196ab084b4f0ef2d0aeb2f062dbdc9bc3af838979f8efbf1ede3110"
+  "generated_checksum": "37626c5ad949e4482e7a21240a71e1d6970a02f16837da1e8989947d1e287aad"
 }

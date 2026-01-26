@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op ArrayFeatureExtractor",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor/test_data_set_0",
   "operators": [
     "ai.onnx.ml::ArrayFeatureExtractor"
   ]

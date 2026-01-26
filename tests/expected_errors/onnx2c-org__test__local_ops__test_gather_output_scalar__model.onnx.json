@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_gather_output_scalar/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_gather_output_scalar/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_gather_output_scalar/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_gather_output_scalar/test_data_set_0",
   "operators": [
     "Gather"
   ],
   "opset_version": 22,
-  "generated_checksum": "d9f3cfcdbe5721d8859a592b817b50c79fb80931f5eb2201f5a7713f8d2aa886"
+  "generated_checksum": "e460db3a34836605ae03e89b8b7cda880257ccec37c213fb4784e74ef155bae8"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_and2d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_and2d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_and2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_and2d/test_data_set_0",
   "operators": [
     "And"
   ],
   "opset_version": 7,
-  "generated_checksum": "934e03f3d1571b0b3505542bc73419301280ff79c24ce16fdcbe8d3859b1c067"
+  "generated_checksum": "5462e425adc6905fe5bc04c791fb9a2c476aaa85b2cdba9a7ef4cbb2de234afc"
 }

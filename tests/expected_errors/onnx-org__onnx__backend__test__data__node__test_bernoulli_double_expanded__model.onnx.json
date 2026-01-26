@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op RandomUniformLike",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bernoulli_double_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bernoulli_double_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bernoulli_double_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_bernoulli_double_expanded/test_data_set_0",
   "operators": [
     "RandomUniformLike",
     "Greater",

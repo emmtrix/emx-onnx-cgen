@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_swish_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_swish_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_swish_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_swish_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -8,5 +8,5 @@
     "Sigmoid"
   ],
   "opset_version": 24,
-  "generated_checksum": "4eb91e3baa7a18745d96fd35e9cbe29c9f1433ec32a1133a31af70114235ac58"
+  "generated_checksum": "07f9992d4ca437f66894149a27d5aa5b92b66058a9d1088ab37885ab2aa377a5"
 }

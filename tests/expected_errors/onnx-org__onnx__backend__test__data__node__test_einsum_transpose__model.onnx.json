@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_einsum_transpose/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_einsum_transpose/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_einsum_transpose/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_einsum_transpose/test_data_set_0",
   "operators": [
     "Einsum"
   ],
   "opset_version": 12,
-  "generated_checksum": "778bdaa51312f1d77161f0c072b81f403fe0bb7cb146798123f338fc870d096e"
+  "generated_checksum": "c15a890736da25b6ae39a807907c2353477c419c2c84a13ac5ea76ababffce8d"
 }

@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_elu_example_expanded_ver18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_elu_example_expanded_ver18/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_elu_example_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_elu_example_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -11,5 +11,5 @@
     "Where"
   ],
   "opset_version": 18,
-  "generated_checksum": "73ed9bfead7a4526269387248426e663655bf590bebd9f855c9706eb76dbbad8"
+  "generated_checksum": "557a3547af2a3e0e8386fb12422a3cd9ddeba00957f6ef324b38ce8fb0acc52e"
 }

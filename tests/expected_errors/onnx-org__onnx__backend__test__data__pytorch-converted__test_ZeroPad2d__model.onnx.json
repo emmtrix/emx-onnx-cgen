@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d/test_data_set_0",
   "operators": [
     "Pad"
   ],
   "opset_version": 6,
-  "generated_checksum": "bb2a96741b2921de6e0e51efc81d86cc4f0ec2a4cbc59d6f3d5240ac193d8609"
+  "generated_checksum": "069f2020ee63fb7d96db11f22a5ca58f4e111a07bdf50777c7dd4df507fe7f5c"
 }

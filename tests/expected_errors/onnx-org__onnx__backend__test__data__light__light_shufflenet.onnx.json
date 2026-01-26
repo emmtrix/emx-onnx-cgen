@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 10)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -16,5 +16,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "59804348717606a0c97bc37750486896c89ce5f3039b66254f214f8007b09894"
+  "generated_checksum": "63d09300126a6b55465e7adaedcccfe271671ecaae7a6824a38c0457e166edba"
 }

@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/test_data_set_0",
   "operators": [
     "Mul",
     "ReduceSum",
@@ -9,5 +9,5 @@
     "CastLike"
   ],
   "opset_version": 18,
-  "generated_checksum": "72e0cb5290b29b0c29aea339ee2ea82e9b5781c5a8bd2c88c00fbfac984820a2"
+  "generated_checksum": "037397442c8ef69d8864803de735fb6cfe5efc84185e25eb5925418260fbb3f9"
 }

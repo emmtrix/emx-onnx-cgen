@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_pads/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_pads/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_pads/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_pads/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "26bded3d130af1243929a42a3d7a209612732aedcd5f1154e0c4e6ab5c1d7b37"
+  "generated_checksum": "d3bfe2d905063b5c0ea7bf9a60a64f645eea26a709a0382f1beae6c9985975af"
 }

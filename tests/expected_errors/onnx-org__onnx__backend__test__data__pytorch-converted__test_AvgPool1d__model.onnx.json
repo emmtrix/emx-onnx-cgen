@@ -1,11 +1,11 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d/test_data_set_0",
   "operators": [
     "Unsqueeze",
     "AveragePool",
     "Squeeze"
   ],
   "opset_version": 6,
-  "generated_checksum": "0d3422da1c77ac4c6d01209b538cdc6c5fc6a91b9c2aae4cfdb4fe964a3c20a2"
+  "generated_checksum": "4ac0e0633b078e7a978d5e308f66b648704b5a58f737a0a74f63544d464babcc"
 }

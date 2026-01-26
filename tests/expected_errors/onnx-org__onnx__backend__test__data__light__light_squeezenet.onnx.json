@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -12,5 +12,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "639ad673317edae63270788a83f45daf79f5d3fed90e6382bfe9fdee3a7df24f"
+  "generated_checksum": "9e4bc173fd2c98e448e87bd491319fe4cd16b335725b549c26b962d4faca20f1"
 }

@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_pad_reflect_allaxes/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_pad_reflect_allaxes/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_pad_reflect_allaxes/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_pad_reflect_allaxes/test_data_set_0",
   "operators": [
     "Pad",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "c8c55f140a565c93bf4dd99362f680fcb1c8dad7ec4d374d0045c9aea6f071c2"
+  "generated_checksum": "d67d5e02115b52a956d6c87c1326a862e466dfb3aea1e64d8aa1dec39cfc84a1"
 }

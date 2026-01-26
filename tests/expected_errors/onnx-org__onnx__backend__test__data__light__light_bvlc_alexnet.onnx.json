@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 981668463)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_bvlc_alexnet.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_bvlc_alexnet.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -13,5 +13,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "7ed4b4b09975dc8ba33403a95493d459a536e9ac07eaec177db3ee13a60925d7"
+  "generated_checksum": "799cf3acf286ed12250093ea4cd06f373d8e38002e135f0a3ca01e0022011f3c"
 }

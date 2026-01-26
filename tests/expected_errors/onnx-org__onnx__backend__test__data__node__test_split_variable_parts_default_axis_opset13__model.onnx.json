@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset13/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset13/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset13/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_variable_parts_default_axis_opset13/test_data_set_0",
   "operators": [
     "Split"
   ],
   "opset_version": 13,
-  "generated_checksum": "2c909ebd9e371e37f6affcd1810b85d4f17b01317d5ec74c53c44a2458a27758"
+  "generated_checksum": "fb7c847ebb990f0a97569360993df4c1fd2785061c5136d49a1044dc041199a4"
 }

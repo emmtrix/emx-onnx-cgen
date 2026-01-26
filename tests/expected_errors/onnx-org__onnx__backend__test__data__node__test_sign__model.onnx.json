@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sign/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sign/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sign/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sign/test_data_set_0",
   "operators": [
     "Sign"
   ],
   "opset_version": 13,
-  "generated_checksum": "f2460b146474c3642b2f332ddce9f7df6152f5d9d918e38cdcfac42e2869bf17"
+  "generated_checksum": "e94dc178cdfa5c4d638f7d30ce07e67da56f0540af31ad8cac24ab4dba0b86c8"
 }

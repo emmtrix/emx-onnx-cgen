@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum/test_data_set_0",
   "operators": [
     "ReduceSum"
   ],
   "opset_version": 6,
-  "generated_checksum": "204c2e232b8c077a7fb2918bc3e2c30f0b6d74b145c85ea179c0a2bf14b06b8b"
+  "generated_checksum": "ee0d78614d8c8bcbf8660b920c0469359d72bcbdf4595c45a131c5e4eac758a1"
 }

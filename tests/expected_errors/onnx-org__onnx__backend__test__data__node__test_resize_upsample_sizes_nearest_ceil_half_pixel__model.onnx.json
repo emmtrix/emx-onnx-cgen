@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_ceil_half_pixel/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_ceil_half_pixel/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_ceil_half_pixel/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_ceil_half_pixel/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "0efbe81a2f188ce7f541a0757ede2e0f6309cc733bf534eabcbf99b84f5c4b6f"
+  "generated_checksum": "78cc1e520bd489953a0cd275ce1d9b5cec13cc8c33b43e15e7217af2f68e2efd"
 }

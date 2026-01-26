@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default/test_data_set_0",
   "operators": [
     "ReduceLogSum"
   ],
   "opset_version": 18,
-  "generated_checksum": "4530ca9d4ff33d14e1dc78c6d4c90f226201b53e1dd0cf4983845ea6aa8b4513"
+  "generated_checksum": "3f3036f38614a2a2f1a07ee4c371085d82c03f03d9b581f412f0977ad3f9e94c"
 }

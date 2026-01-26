@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 22,
-  "generated_checksum": "7240d70dbd85b564542c738ff9a3bc4fb8f432099b11ab821ab2dc45680b38ba"
+  "generated_checksum": "26f1a550674667ee246b5f2a02c0a82fa17ab7c5ba08fd7cc61f01ca38903cd2"
 }

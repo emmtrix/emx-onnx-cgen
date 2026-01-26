@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/test_data_set_0",
   "operators": [
     "Cast"
   ],

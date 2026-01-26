@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shrink_soft_expanded_ver18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_shrink_soft_expanded_ver18/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shrink_soft_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_shrink_soft_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -11,5 +11,5 @@
     "Where"
   ],
   "opset_version": 18,
-  "generated_checksum": "1164663468afdadd33990825afb084cc8e3a02a9c13060baed320c40af5e0fc2"
+  "generated_checksum": "c2916fcc3b29cbc676b58695b2395e0668711f05f20f1d5145ca1ad6d495c18e"
 }

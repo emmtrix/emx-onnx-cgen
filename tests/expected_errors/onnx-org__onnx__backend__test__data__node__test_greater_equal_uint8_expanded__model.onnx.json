@@ -1,11 +1,11 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_greater_equal_uint8_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_greater_equal_uint8_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_greater_equal_uint8_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_greater_equal_uint8_expanded/test_data_set_0",
   "operators": [
     "Greater",
     "Equal",
     "Or"
   ],
   "opset_version": 16,
-  "generated_checksum": "d93458161ce78d6641112640aedc1b32c66fc65624a41266435d7c458b3bb834"
+  "generated_checksum": "bf54157627c03db91900428d7a431eb687505a16978a35ba020b07d1fee051fc"
 }

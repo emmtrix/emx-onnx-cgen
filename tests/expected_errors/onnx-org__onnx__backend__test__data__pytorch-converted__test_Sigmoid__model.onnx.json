@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/test_data_set_0",
   "operators": [
     "Sigmoid"
   ],
   "opset_version": 6,
-  "generated_checksum": "9cc61165bdb4bacadbcd1fb896b8b24444bdec7733348f9f827402e5fb841ad6"
+  "generated_checksum": "fcc829cbd3f704a89ac915a5bfb291d7fe7f2835077011061d351e90c45a1a8f"
 }

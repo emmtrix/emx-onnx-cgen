@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 22,
-  "generated_checksum": "52c4693df2631724c20579d104864ac9a1b148808dbeb737cebf249160d41f3f"
+  "generated_checksum": "0ca2a3ad9e15739303a9ab39ab4d87d8841eb935ad74b729c4da0765f72a4d89"
 }

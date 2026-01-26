@@ -1,9 +1,9 @@
 {
   "error": "Out of tolerance (max ULP 1098996)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_cubic_align_corners/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_cubic_align_corners/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_cubic_align_corners/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_cubic_align_corners/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "441d98395dadee995607219bf4e6109001c13a8861f69fc7958c497f7b16d55f"
+  "generated_checksum": "7f11b892e3bbf8a522f3bb4fe58abcc05ca3c82b15702e9d98b1604807bc50a6"
 }

@@ -1,6 +1,6 @@
 {
   "error": "Tile repeats input must be a constant initializer",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tile_precomputed/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_tile_precomputed/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tile_precomputed/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_tile_precomputed/test_data_set_0",
   "operators": [
     "Tile"
   ],

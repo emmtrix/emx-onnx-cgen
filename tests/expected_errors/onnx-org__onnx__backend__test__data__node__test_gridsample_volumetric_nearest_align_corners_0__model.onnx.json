@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_0/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_0/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_0/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_0/test_data_set_0",
   "operators": [
     "GridSample"
   ],
   "opset_version": 22,
-  "generated_checksum": "d53e3b664bde69607f7cb4cd8eee602e84b4aa3fa7b80d916acbf3ec56f9ac5f"
+  "generated_checksum": "4f9ec363d380a98d944eb28574eeccef16ab1c875c0f1160182f538498118659"
 }

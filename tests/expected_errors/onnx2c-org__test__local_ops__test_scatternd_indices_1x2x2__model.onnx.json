@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_scatternd_indices_1x2x2/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_scatternd_indices_1x2x2/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_scatternd_indices_1x2x2/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_scatternd_indices_1x2x2/test_data_set_0",
   "operators": [
     "ScatterND"
   ],
   "opset_version": 12,
-  "generated_checksum": "6a3f57c6d9982d7b479d62b0e56e6c798c6f7d404a42e5fa5845d462f0a33704"
+  "generated_checksum": "1a4b2f816832ed8d964e2bf84d7de03220d7d671bda5f52f785523d9318850d1"
 }

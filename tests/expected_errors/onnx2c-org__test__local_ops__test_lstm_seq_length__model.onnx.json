@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 43)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_seq_length/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_lstm_seq_length/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_seq_length/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_lstm_seq_length/test_data_set_0",
   "operators": [
     "LSTM"
   ],
   "opset_version": 11,
-  "generated_checksum": "bf6a0e8f59f10278b77e5a116c6396d06ceecbfd5bdad0d6ef2f6b4b7abfaa3f"
+  "generated_checksum": "c4e92f7b8710bb944db8cdf0f9be750d56967c48f62e780db6fb8f3b499e54c5"
 }

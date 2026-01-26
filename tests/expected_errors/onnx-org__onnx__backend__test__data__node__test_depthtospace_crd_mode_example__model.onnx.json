@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/test_data_set_0",
   "operators": [
     "DepthToSpace"
   ],
   "opset_version": 13,
-  "generated_checksum": "975f10160dc3d8f0f1b1c3865ec50eafb9ac82f9685c8d60c796bb8fff349e1b"
+  "generated_checksum": "272a0eb65c4465b84bb0464993cf07374073560b0576471c6b5d1c58e23f013e"
 }

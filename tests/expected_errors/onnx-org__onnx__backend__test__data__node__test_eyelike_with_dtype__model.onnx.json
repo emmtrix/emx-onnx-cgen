@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_eyelike_with_dtype/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_eyelike_with_dtype/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_eyelike_with_dtype/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_eyelike_with_dtype/test_data_set_0",
   "operators": [
     "EyeLike"
   ],
   "opset_version": 22,
-  "generated_checksum": "64256f3f469234bfdddb69efaf2f39b9f17beeb7e10dabafa12189103ffc8f08"
+  "generated_checksum": "077112cb1b39a4d95d1f362ceff657d8d829abf410f1471e1f42a8cad2a1f3b1"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_linear_antialias/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_linear_antialias/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_linear_antialias/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_linear_antialias/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "41eebebb0fcdfd1ce4f6da40a6ac4c3cd07c1a732ab278187682b10372903266"
+  "generated_checksum": "d8484af1eec2d8362e15ef29a6eee947b8974a9d42f32fbbe55c0d0096f97cb5"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constant_pad_negative_axes/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_constant_pad_negative_axes/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constant_pad_negative_axes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_constant_pad_negative_axes/test_data_set_0",
   "operators": [
     "Pad"
   ],
   "opset_version": 25,
-  "generated_checksum": "c4e0eb2e2c54ceaf8290e8cf56826b3a8f1b84162e72071164929f7f357b0f5e"
+  "generated_checksum": "1d8ef53ca775afed8548c703036c5b0b24660682066c87718a07d412d4920ce7"
 }

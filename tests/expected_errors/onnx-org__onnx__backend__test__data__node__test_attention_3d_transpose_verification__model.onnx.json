@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_transpose_verification/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "9010206ed24bc1c0f955697bada10ee015f919e932146dfdc202717db7a0bddb"
+  "generated_checksum": "1745f0387a65f6affc0d15f6da0ecdda3351b48a13d84dcdbfc9f2d6f0d1c213"
 }

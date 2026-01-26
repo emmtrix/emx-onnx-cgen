@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mod_broadcast/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mod_broadcast/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mod_broadcast/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_mod_broadcast/test_data_set_0",
   "operators": [
     "Mod"
   ],
   "opset_version": 13,
-  "generated_checksum": "d27ab0b3303e6569f1e4af668f9f02b1927018e795cd80a4a1180b8a06776331"
+  "generated_checksum": "32e8085cfbf5da7339cd7f4f63000e98085baa0af47758fe0badecbb22da67f3"
 }

@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_default_min_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_default_min_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_default_min_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_default_min_expanded/test_data_set_0",
   "operators": [
     "Less",
     "Where"
   ],
   "opset_version": 13,
-  "generated_checksum": "d1126d2bbddddd008ead81a2bda2be91512a3363f5e9f06155d557a12bd2aca4"
+  "generated_checksum": "be1552df3b54871f3ed6f6c2cbfa470a364b9631c8a2f736e74bc00a195e9624"
 }

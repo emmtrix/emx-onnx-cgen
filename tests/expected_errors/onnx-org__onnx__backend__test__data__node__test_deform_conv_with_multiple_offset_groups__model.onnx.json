@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op DeformConv",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_deform_conv_with_multiple_offset_groups/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_deform_conv_with_multiple_offset_groups/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_deform_conv_with_multiple_offset_groups/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_deform_conv_with_multiple_offset_groups/test_data_set_0",
   "operators": [
     "DeformConv"
   ],

@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op If",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",

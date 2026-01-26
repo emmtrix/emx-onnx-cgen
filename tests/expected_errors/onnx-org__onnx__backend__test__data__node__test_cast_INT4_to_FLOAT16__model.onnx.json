@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 22 (INT4) for tensor 'input'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT16/test_data_set_0",
   "operators": [
     "Cast"
   ],

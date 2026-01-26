@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 9)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -11,5 +11,5 @@
     "Mul"
   ],
   "opset_version": 20,
-  "generated_checksum": "fd3aec9c2df9641b282246af552bbc93015362d54fb8bca2c75a32a23f77d3c6"
+  "generated_checksum": "68cc5bc56f327f603f5f1610e6352ccd706755f87830293c691b362efea5e0c3"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_SELU/test_data_set_0",
   "operators": [
     "Selu"
   ],
   "opset_version": 6,
-  "generated_checksum": "27029278e74aae46f4f09358954bce37a67b01271005b1541af0aaa2bdbbdab2"
+  "generated_checksum": "31ffaf6cae14fb4d265bd72953e1763d84496e54e6716c3d2216162133f69b0e"
 }

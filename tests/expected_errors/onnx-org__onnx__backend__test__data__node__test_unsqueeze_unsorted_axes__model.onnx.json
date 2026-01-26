@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_unsqueeze_unsorted_axes/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_unsqueeze_unsorted_axes/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_unsqueeze_unsorted_axes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_unsqueeze_unsorted_axes/test_data_set_0",
   "operators": [
     "Unsqueeze"
   ],
   "opset_version": 25,
-  "generated_checksum": "04f27f4d17c7e37c195729c549304faa3626e1018496e82b9339bdc249793088"
+  "generated_checksum": "afe880b8934d098bd9e19bac6033df83600bb786408d1f48d512478f4853b4a9"
 }

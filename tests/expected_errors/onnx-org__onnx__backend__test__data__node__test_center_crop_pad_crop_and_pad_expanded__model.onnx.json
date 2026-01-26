@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_crop_and_pad_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Shape",
@@ -13,5 +13,5 @@
     "Slice"
   ],
   "opset_version": 18,
-  "generated_checksum": "3e556013ccfae3f9ee949a2e6ed11607990180bc36d0b89c539e8f1d6436a64f"
+  "generated_checksum": "057d6c9d9dc2c489a47d6f99038418c01c27debdb18d2a05a6e59bccea287964"
 }

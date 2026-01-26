@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_top_k/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_top_k/test_data_set_0",
   "operators": [
     "TopK"
   ],
   "opset_version": 24,
-  "generated_checksum": "e5f292d9a89a4360a978c75d304878a736507901bdf5ae344bab45966c914ca3"
+  "generated_checksum": "eb6cdf4ee77dddffdb171b62657739457308566d8878b2c9af0aca608209f59b"
 }

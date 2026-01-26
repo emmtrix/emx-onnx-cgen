@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_scatternd_min/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_scatternd_min/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_scatternd_min/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_scatternd_min/test_data_set_0",
   "operators": [
     "ScatterND"
   ],
   "opset_version": 18,
-  "generated_checksum": "f7923d5d36bbf0965fe10818cd8ef11233c4e7d4a9ce15b22c0ed1fe0f43392c"
+  "generated_checksum": "d5563d54b9c07f2abd12c98421763fac9c265098f9243ba717a049bba579883a"
 }

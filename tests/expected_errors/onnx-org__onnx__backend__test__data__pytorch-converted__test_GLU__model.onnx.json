@@ -1,11 +1,11 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/test_data_set_0",
   "operators": [
     "Split",
     "Sigmoid",
     "Mul"
   ],
   "opset_version": 6,
-  "generated_checksum": "5421ddaf0d947dfcd1d8cfcddd0622d7e946f6d699821f38683d963a5e23d860"
+  "generated_checksum": "3032244fdee34c4fad259dd0974ef71c2a1c8aff55402b5c1d9736ce65de0b64"
 }

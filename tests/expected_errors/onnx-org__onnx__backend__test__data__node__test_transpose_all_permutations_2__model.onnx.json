@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_transpose_all_permutations_2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_transpose_all_permutations_2/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_transpose_all_permutations_2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_transpose_all_permutations_2/test_data_set_0",
   "operators": [
     "Transpose"
   ],
   "opset_version": 25,
-  "generated_checksum": "3b4ab231e48919470cd2a8efaff737700cb462995b4da28542abf92695363f77"
+  "generated_checksum": "31ae354864595e09b5ecb9f50f84658c6d2e068953529dc38f42e3884a002962"
 }

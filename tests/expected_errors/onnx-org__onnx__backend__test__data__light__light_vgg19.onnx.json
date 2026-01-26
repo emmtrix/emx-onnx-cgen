@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 981668463)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_vgg19.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_vgg19.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -12,5 +12,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "89e57f3250d4b86e1b0ca7830fa0b99daee35d36b77c704c244fd750ce1cd803"
+  "generated_checksum": "81f684623667d3682bb300b6135ee86d8b2e80eb504a10f794d767efe4533fdb"
 }

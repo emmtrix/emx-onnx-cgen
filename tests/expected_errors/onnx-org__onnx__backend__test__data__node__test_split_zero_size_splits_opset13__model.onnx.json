@@ -1,4 +1,4 @@
 {
   "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/test_data_set_0"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 28)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_selu_default/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_selu_default/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_selu_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_selu_default/test_data_set_0",
   "operators": [
     "Selu"
   ],
   "opset_version": 22,
-  "generated_checksum": "8fbbb6367b99dbe83b00a33e19e25ab414501f38545b18068900f1ed53a22dc8"
+  "generated_checksum": "da27a825b146e9c47c87a6937e4ca9b702f96dac154cc326efd570e156d7a885"
 }

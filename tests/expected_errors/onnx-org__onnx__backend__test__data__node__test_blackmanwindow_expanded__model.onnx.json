@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 251658240)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Cast",
@@ -12,5 +12,5 @@
     "Cos"
   ],
   "opset_version": 17,
-  "generated_checksum": "73b44148323e11779a76b65a3111dc5aa47b15eb00ef3ee843827fff783fbebb"
+  "generated_checksum": "37a6ceba398baf3669886613d67946ad683557ba20e75c738a1bd30c5510a012"
 }

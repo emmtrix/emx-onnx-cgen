@@ -1,6 +1,6 @@
 {
   "error": "Graph must contain at least one node",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constant/model.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constant/model.onnx",
   "operators": [
     "Constant"
   ],

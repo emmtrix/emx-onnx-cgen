@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_uint16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_uint16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_uint16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_uint16/test_data_set_0",
   "operators": [
     "Add"
   ],
   "opset_version": 14,
-  "generated_checksum": "bb9a6bbc4926b9f4d9ff5c30031e4c6a6f78ec14e43e32b3541edf03dc3b17d3"
+  "generated_checksum": "dd19cce1ee2f3534cc9cec4b95cef7863be7494f3afdb53b2ec9e559f928aeac"
 }

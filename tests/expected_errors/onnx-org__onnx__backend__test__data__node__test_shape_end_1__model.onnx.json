@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shape_end_1/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_shape_end_1/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shape_end_1/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_shape_end_1/test_data_set_0",
   "operators": [
     "Shape"
   ],
   "opset_version": 25,
-  "generated_checksum": "be1c718198c17f3c93fb1df500959ce3195bf009398683a065d25414d4749465"
+  "generated_checksum": "a830a1b93bab5ba8ebed58dd42c93b1263478e47a1c4c43d96b547ee7e531559"
 }

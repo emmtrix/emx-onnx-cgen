@@ -1,4 +1,4 @@
 {
   "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/test_data_set_0"
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/test_data_set_0"
 }

@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 981668463)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -15,5 +15,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "1c00f9850d3228961cb8b1001d12655ff6d813f72f9f416ac977b033cba3e598"
+  "generated_checksum": "ef13591a951d24d2589e67b180a30dacb885f8d233f2df6b1eae0ab384064d4c"
 }

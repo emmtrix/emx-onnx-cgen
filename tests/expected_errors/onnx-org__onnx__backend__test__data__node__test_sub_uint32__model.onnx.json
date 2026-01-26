@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sub_uint32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sub_uint32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sub_uint32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sub_uint32/test_data_set_0",
   "operators": [
     "Sub"
   ],
   "opset_version": 14,
-  "generated_checksum": "f97c93e0d8c4a5df76cf77e77c519f584a1bda0d98ddd09511f21b493a5d9d46"
+  "generated_checksum": "d1b87629e9f499c5be0539fc69ebd4537a552967cf54775eb233fdfd9bec5ccd"
 }

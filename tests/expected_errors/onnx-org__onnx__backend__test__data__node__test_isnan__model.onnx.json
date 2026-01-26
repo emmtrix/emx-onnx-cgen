@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isnan/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_isnan/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isnan/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_isnan/test_data_set_0",
   "operators": [
     "IsNaN"
   ],
   "opset_version": 20,
-  "generated_checksum": "97532d2312970d333708676a63422c6cf12a20f50ea9987719b2f699400791d0"
+  "generated_checksum": "9734aad42a0f1e385ecce9e8616a71c231e4d420e774e02993726315efb65533"
 }

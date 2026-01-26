@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_negative_axes/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_negative_axes/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_negative_axes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_negative_axes/test_data_set_0",
   "operators": [
     "Slice"
   ],
   "opset_version": 13,
-  "generated_checksum": "212fd9ce9a3293bc154907491031bbb18be81e51c9dcde8486d8eed5efe7ce23"
+  "generated_checksum": "842052672c017fd3fdb3e3ca7c28dad7f156e033f7e4bb65a259fff0af0a3d21"
 }

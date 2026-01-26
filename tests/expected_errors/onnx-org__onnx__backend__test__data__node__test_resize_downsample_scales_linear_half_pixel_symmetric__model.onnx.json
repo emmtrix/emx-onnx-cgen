@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_linear_half_pixel_symmetric/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_linear_half_pixel_symmetric/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_linear_half_pixel_symmetric/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_linear_half_pixel_symmetric/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "267a76023e6a8e5c2e1c2cae5e72246ebede95dd73d39a59f7428ca32880e289"
+  "generated_checksum": "48cdb5119d823b34079a7455d36105ec722e3a19e1a4330194369925980be1b1"
 }

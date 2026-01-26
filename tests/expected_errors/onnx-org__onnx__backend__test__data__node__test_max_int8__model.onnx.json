@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_max_int8/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_max_int8/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_max_int8/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_max_int8/test_data_set_0",
   "operators": [
     "Max"
   ],
   "opset_version": 13,
-  "generated_checksum": "4ff0cee01afeee7078b75574026a26d6eb412f276a17d98986e8db2147e57fc5"
+  "generated_checksum": "b7a99be347070c67820e14e22b13beaf9366a077b89d777fdf243912f7faa430"
 }

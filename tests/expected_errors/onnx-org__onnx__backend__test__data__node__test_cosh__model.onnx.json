@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cosh/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cosh/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cosh/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cosh/test_data_set_0",
   "operators": [
     "Cosh"
   ],
   "opset_version": 22,
-  "generated_checksum": "41b70b47bc54bfc72aae06e17b242f6f20dddb798869a9a1fca82dbba3d745aa"
+  "generated_checksum": "d8be9ecb4317d0af23c69defeec30a52ab9809b75d4aefce59a7199b9fac286e"
 }

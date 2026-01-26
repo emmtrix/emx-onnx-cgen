@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gathernd_example_int32/test_data_set_0",
   "operators": [
     "GatherND"
   ],
   "opset_version": 13,
-  "generated_checksum": "824ea3ac829a456368661af60e7437941a096da6b2bcda2ec1783f1966842d24"
+  "generated_checksum": "69ef395b57adaae457c9c0fff5280a7600dd6faa106bb972b9340f36ae1af38b"
 }
