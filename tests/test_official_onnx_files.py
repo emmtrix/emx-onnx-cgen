@@ -347,9 +347,9 @@ def _run_expected_error_test(
     cli_result = cli.run_cli_command(verify_args)
 
     if cli_result.exit_code != 0:
-        actual_error = cli_result.error or "ERROR UNKNOWN"
+        actual_error = cli_result.result or "ERROR UNKNOWN"
     else:
-        actual_error = cli_result.success_message or "OK UNKNOWN"
+        actual_error = cli_result.result or "OK UNKNOWN"
 
     if actual_error == "CHECKSUM":
         actual_error = expected_error

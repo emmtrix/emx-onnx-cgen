@@ -38,8 +38,7 @@ LOGGER = logging.getLogger(__name__)
 class CliResult:
     exit_code: int
     command_line: str
-    error: str | None = None
-    success_message: str | None = None
+    result: str | None = None
     generated: str | None = None
     data_source: str | None = None
     operators: list[str] | None = None
@@ -176,8 +175,7 @@ def run_cli_command(
             return CliResult(
                 exit_code=0 if error is None else 1,
                 command_line=args.command_line,
-                error=error,
-                success_message=success_message,
+                result=error or success_message,
                 operators=operators,
                 opset_version=opset_version,
                 generated_checksum=generated_checksum,
@@ -189,12 +187,12 @@ def run_cli_command(
             return CliResult(
                 exit_code=1,
                 command_line=args.command_line,
-                error=error,
+                result=error,
             )
         return CliResult(
             exit_code=0,
             command_line=args.command_line,
-            success_message="",
+            result="",
             generated=generated,
             data_source=data_source,
         )
@@ -203,7 +201,7 @@ def run_cli_command(
         return CliResult(
             exit_code=1,
             command_line=args.command_line,
-            error=str(exc),
+            result=str(exc),
         )
 
 
