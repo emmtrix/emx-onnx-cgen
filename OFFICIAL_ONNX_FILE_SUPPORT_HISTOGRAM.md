@@ -3,6 +3,7 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ██████████████████████████████ |
+| Out of tolerance | 32 | ███████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
@@ -46,8 +47,19 @@
 | Unsupported op RandomUniformLike | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
 | name '*' is not defined | 3 | ██ |
+| 
+Arrays are not equal
+
+Mismatched elements: 1 / 6 (16.7%)
+Max absolute difference among violations: 108
+Max relative difference among violations: 5.4
+ ACTUAL: array([[  41,  -12,   -9],
+       [   1,  -75, -128]], dtype=int8)
+ DESIRED: array([[ 41, -12,  -9],
+       [  1, -75,  20]], dtype=int8) | 2 | ██ |
 | AveragePool supports ceil_mode=0 only | 2 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
+| Failed to build testbench. | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
 | LpPool expects 2D kernel_shape | 2 | ██ |
 | LpPool supports auto_pad=NOTSET only | 2 | ██ |
@@ -71,6 +83,48 @@
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
+| 
+Arrays are not equal
+
+Mismatched elements: 1 / 6 (16.7%)
+Max absolute difference among violations: 1
+Max relative difference among violations: 0.00558659
+ ACTUAL: array([153, 255,   0,  26, 221, 178], dtype=uint8)
+ DESIRED: array([153, 255,   0,  26, 221, 179], dtype=uint8) | 1 | █ |
+| 
+Arrays are not equal
+
+Mismatched elements: 2 / 12 (16.7%)
+Max absolute difference among violations: 1
+Max relative difference among violations: 3.05203723e-05
+ ACTUAL: array([32767, 32703, 32768, 32766, 32768, 32766, 32769, 32765, 65535,
+           0, 65535,     0], dtype=uint16)
+ DESIRED: array([32767, 32703, 32769, 32765, 32768, 32766, 32769, 32765, 65535,
+           0, 65535,     0], dtype=uint16) | 1 | █ |
+| 
+Arrays are not equal
+
+Mismatched elements: 4 / 12 (33.3%)
+Max absolute difference among violations: 11
+Max relative difference among violations: 0.09401709
+ ACTUAL: array([[[ -86, -128, -128],
+        [ 115,   39, -121]],
+...
+ DESIRED: array([[[ -86,  117,  120],
+        [ 115,   39, -121]],
+... | 1 | █ |
+| 
+Arrays are not equal
+
+Mismatched elements: 4 / 12 (33.3%)
+Max absolute difference among violations: 12
+Max relative difference among violations: 0.10344828
+ ACTUAL: array([[[ -86, -128, -128],
+        [ 115,   39, -121]],
+...
+ DESIRED: array([[[ -86,  116,  119],
+        [ 115,   39, -121]],
+... | 1 | █ |
 | AveragePool supports 2D/3D inputs only | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |
