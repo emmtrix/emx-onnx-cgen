@@ -2277,7 +2277,8 @@ def _eval_reduce(evaluator: Evaluator, node: Node) -> None:
     elif reduce_kind == "l2":
         result = np.sqrt(np.sum(value * value, axis=axes, keepdims=keepdims))
     elif reduce_kind == "logsum":
-        result = np.log(np.sum(value, axis=axes, keepdims=keepdims))
+        with np.errstate(invalid="ignore", divide="ignore"):
+            result = np.log(np.sum(value, axis=axes, keepdims=keepdims))
     elif reduce_kind == "logsumexp":
         result = np.log(np.sum(np.exp(value), axis=axes, keepdims=keepdims))
     elif reduce_kind == "sumsquare":

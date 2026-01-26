@@ -554,6 +554,9 @@ def unary_op_symbol(function: ScalarFunction, *, dtype: ScalarType) -> str | Non
 def apply_binary_op(
     op_spec: BinaryOpSpec, left: np.ndarray, right: np.ndarray
 ) -> np.ndarray:
+    if op_spec.apply is np.power:
+        with np.errstate(invalid="ignore", divide="ignore", over="ignore"):
+            return op_spec.apply(left, right)
     return op_spec.apply(left, right)
 
 
