@@ -371,12 +371,9 @@ def test_official_onnx_expected_errors(
     if cli_result.exit_code != 0:
         actual_error = cli_result.error or ""
     else:
-        if os.getenv("UPDATE_REFS"):
-            actual_error = cli_result.success_message or ""
-        elif expected_error.startswith("OK"):
-            actual_error = "OK"
-        else:
-            actual_error = ""
+        actual_error = cli_result.success_message or ""
+        if actual_error == "CHECKSUM":
+            actual_error = expected_error
     actual_expectation = OnnxFileExpectation(
         path=rel_path,
         error=actual_error,
@@ -445,12 +442,9 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
     if cli_result.exit_code != 0:
         actual_error = cli_result.error or ""
     else:
-        if os.getenv("UPDATE_REFS"):
-            actual_error = cli_result.success_message or ""
-        elif expected_error.startswith("OK"):
-            actual_error = "OK"
-        else:
-            actual_error = ""
+        actual_error = cli_result.success_message or ""
+        if actual_error == "CHECKSUM":
+            actual_error = expected_error
     actual_expectation = OnnxFileExpectation(
         path=rel_path.as_posix(),
         error=actual_error,

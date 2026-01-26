@@ -392,7 +392,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Expected generated C checksum (sha256). When it matches the "
-            "computed checksum, verification exits early with OK CHECKSUM."
+            "computed checksum, verification exits early with CHECKSUM."
         ),
     )
     add_restrict_flags(verify_parser)
@@ -649,7 +649,7 @@ def _verify_model(
     active_reporter.info(f"  Generated checksum (sha256): {generated_checksum}")
     expected_checksum = args.expected_checksum
     if expected_checksum and expected_checksum == generated_checksum:
-        return "OK CHECKSUM", None, operators, opset_version, generated_checksum
+        return "CHECKSUM", None, operators, opset_version, generated_checksum
 
     try:
         graph = import_onnx(model)
