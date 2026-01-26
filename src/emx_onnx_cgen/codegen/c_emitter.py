@@ -1262,6 +1262,9 @@ class CEmitter:
                 kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
                 stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
@@ -4351,6 +4354,9 @@ class CEmitter:
                 kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
                 stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
@@ -6314,6 +6320,13 @@ class CEmitter:
                 params=param_decls,
                 c_type=c_type,
                 zero_literal=zero_literal,
+                neg_zero_literal=self._neg_zero_literal(op.dtype),
+                pairwise_blocksize=128,
+                kernel_elems=(
+                    op.kernel_d * op.kernel_h * op.kernel_w
+                    if op.spatial_rank == 3
+                    else op.kernel_h * op.kernel_w
+                ),
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 batch=op.batch,
@@ -6328,6 +6341,9 @@ class CEmitter:
                 kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
                 stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
@@ -11747,6 +11763,12 @@ class CEmitter:
         if dtype == ScalarType.I8:
             return CEmitter._format_int(int(value), 8, "INT8_MIN")
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
+
+    @staticmethod
+    def _neg_zero_literal(dtype: ScalarType) -> str:
+        if not dtype.is_float:
+            return "0"
+        return CEmitter._format_literal(dtype, -0.0)
 
     def _format_value(self, value: float | int | bool, dtype: ScalarType) -> str:
         if dtype == ScalarType.F16:
