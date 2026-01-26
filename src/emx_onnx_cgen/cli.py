@@ -538,9 +538,8 @@ def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] 
     if env_cc:
         return resolve_tokens(shlex.split(env_cc))
     for candidate in ("cc", "gcc", "clang"):
-        resolved = shutil.which(candidate)
-        if resolved:
-            return maybe_prefix_ccache([resolved])
+        if shutil.which(candidate):
+            return maybe_prefix_ccache([candidate])
     return None
 
 
