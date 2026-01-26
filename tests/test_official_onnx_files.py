@@ -328,6 +328,15 @@ def _skip_expected_checksum() -> bool:
     return value in {"1", "true", "yes", "on"}
 
 
+def _should_use_expected_checksum(
+    expected_error: str,
+    generated_checksum: str | None,
+) -> bool:
+    if generated_checksum is None or _skip_expected_checksum():
+        return False
+    return expected_error.startswith("OK")
+
+
 @pytest.mark.order(1)
 @pytest.mark.parametrize(
     "repo_relative_path",
@@ -351,7 +360,10 @@ def test_official_onnx_expected_errors(
         "verify",
         str(model_path.relative_to(repo_root)),
     ]
-    if expectation.generated_checksum is not None and not _skip_expected_checksum():
+    if _should_use_expected_checksum(
+        expected_error=expected_error,
+        generated_checksum=expectation.generated_checksum,
+    ):
         verify_args.extend(
             [
                 "--expected-checksum",
@@ -425,7 +437,10 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         "verify",
         str(model_path.relative_to(repo_root)),
     ]
-    if expectation.generated_checksum is not None and not _skip_expected_checksum():
+    if _should_use_expected_checksum(
+        expected_error=expected_error,
+        generated_checksum=expectation.generated_checksum,
+    ):
         verify_args.extend(
             [
                 "--expected-checksum",
