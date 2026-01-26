@@ -749,7 +749,6 @@ def _verify_model(
                 str(exe_path.name),
                 "-lm",
             ]
-            active_reporter.note(f"Compile command: {shlex.join(compile_cmd)}")
             compile_started = active_reporter.start_step("Compiling C code")
             subprocess.run(
                 compile_cmd,
@@ -759,6 +758,9 @@ def _verify_model(
                 cwd=temp_path,
             )
             active_reporter.step_ok(compile_started)
+            active_reporter.info(
+                f"  Compile command: {shlex.join(compile_cmd)}"
+            )
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
             if include_build_details:
