@@ -2843,13 +2843,21 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                             acc = 0.0
                             count = 0
                             for kd in range(op.kernel_d):
-                                id_ = od * op.stride_d + kd - op.pad_front
+                                id_ = (
+                                    od * op.stride_d
+                                    + kd * op.dilation_d
+                                    - op.pad_front
+                                )
                                 if id_ < 0 or id_ >= op.in_d:
                                     if op.count_include_pad:
                                         count += op.kernel_h * op.kernel_w
                                 else:
                                     for kh in range(op.kernel_h):
-                                        ih = oh * op.stride_h + kh - op.pad_top
+                                        ih = (
+                                            oh * op.stride_h
+                                            + kh * op.dilation_h
+                                            - op.pad_top
+                                        )
                                         if ih < 0 or ih >= op.in_h:
                                             if op.count_include_pad:
                                                 count += op.kernel_w
@@ -2857,7 +2865,7 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                                             for kw in range(op.kernel_w):
                                                 iw = (
                                                     ow * op.stride_w
-                                                    + kw
+                                                    + kw * op.dilation_w
                                                     - op.pad_left
                                                 )
                                                 if iw < 0 or iw >= op.in_w:
@@ -2880,13 +2888,21 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                     acc = 0.0
                     count = 0
                     for kh in range(op.kernel_h):
-                        ih = oh * op.stride_h + kh - op.pad_top
+                        ih = (
+                            oh * op.stride_h
+                            + kh * op.dilation_h
+                            - op.pad_top
+                        )
                         if ih < 0 or ih >= op.in_h:
                             if op.count_include_pad:
                                 count += op.kernel_w
                         else:
                             for kw in range(op.kernel_w):
-                                iw = ow * op.stride_w + kw - op.pad_left
+                                iw = (
+                                    ow * op.stride_w
+                                    + kw * op.dilation_w
+                                    - op.pad_left
+                                )
                                 if iw < 0 or iw >= op.in_w:
                                     if op.count_include_pad:
                                         count += 1

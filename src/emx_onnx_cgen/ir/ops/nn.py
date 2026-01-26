@@ -455,6 +455,8 @@ class AveragePoolOp(RenderableOpBase):
     out_w: int
     kernel_h: int
     kernel_w: int
+    dilation_h: int
+    dilation_w: int
     stride_h: int
     stride_w: int
     pad_top: int
@@ -467,6 +469,7 @@ class AveragePoolOp(RenderableOpBase):
     in_d: int = 1
     out_d: int = 1
     kernel_d: int = 1
+    dilation_d: int = 1
     stride_d: int = 1
     pad_front: int = 0
     pad_back: int = 0

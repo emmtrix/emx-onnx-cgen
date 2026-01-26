@@ -1,8 +1,9 @@
 {
-  "error": "AveragePool supports ceil_mode=0 only",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "ddcee2a942d801684750d6c4f690cbefc77342af5289f9f52190511d7277d68b"
 }

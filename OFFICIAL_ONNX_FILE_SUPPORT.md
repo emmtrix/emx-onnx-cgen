@@ -1,5 +1,6 @@
 # Official ONNX file support
 
+Support 1301 / 1802 official ONNX files.
 Support 1300 / 1802 official ONNX files.
 Support 1306 / 1802 official ONNX files.
 Support 1302 / 1802 official ONNX files.
@@ -225,10 +226,10 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx | ❌ | AveragePool supports 2D/3D inputs only |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | AveragePool supports ceil_mode=0 only |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad/model.onnx | ❌ | Out of tolerance (max ULP 2983) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_default/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_dilations/model.onnx | ❌ | AveragePool has unsupported attributes |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_2d_dilations/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/model.onnx | ❌ | Out of tolerance (max ULP 683) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads_count_include_pad/model.onnx | ❌ | Out of tolerance (max ULP 683) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_pads/model.onnx | ✅ | OK (max ULP 0) |
@@ -239,11 +240,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_same_upper/model.onnx | ❌ | AveragePool supports auto_pad=NOTSET only |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_2d_strides/model.onnx | ❌ | Out of tolerance (max ULP 164) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/model.onnx | ❌ | Out of tolerance (max ULP 28928) |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | ❌ | AveragePool has unsupported attributes |
-| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_small/model.onnx | ❌ | AveragePool has unsupported attributes |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | ❌ | Out of tolerance (max ULP 13631) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | ❌ | Out of tolerance (max ULP 21627) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | ❌ | Out of tolerance (max ULP 10748) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | ❌ | Out of tolerance (max ULP 8165635) |
+| onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_small/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_basic_conv_with_padding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_basic_conv_without_padding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_basic_deform_conv_with_padding/model.onnx | ❌ | Unsupported op DeformConv |
