@@ -62,7 +62,6 @@
 | Unsupported op ConvInteger | 2 | ██ |
 | Unsupported op Det | 2 | ██ |
 | Unsupported op Gradient | 2 | ██ |
-| Unsupported op HammingWindow | 2 | ██ |
 | Unsupported op HannWindow | 2 | ██ |
 | Unsupported op MaxUnpool | 2 | ██ |
 | Unsupported op ReverseSequence | 2 | ██ |

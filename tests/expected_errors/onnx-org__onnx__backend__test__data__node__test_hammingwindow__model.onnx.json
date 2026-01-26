@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op HammingWindow",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hammingwindow/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow/test_data_set_0",
   "operators": [
     "HammingWindow"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "706b68056489701dbfe2a2de1a451713b7ce2a8ba7098bb09b1399b26a4bf76f"
 }

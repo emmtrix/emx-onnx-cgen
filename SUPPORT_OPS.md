@@ -2,6 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
+Supported operators: 143 / 197
 Supported operators: 143 / 198
 
 | Operator | Supported |
@@ -75,7 +76,7 @@ Supported operators: 143 / 198
 | GreaterOrEqual | ✅ |
 | GridSample | ✅ |
 | GroupNormalization | ✅ |
-| HammingWindow | ❌ |
+| HammingWindow | ✅ |
 | HannWindow | ❌ |
 | HardSigmoid | ✅ |
 | HardSwish | ✅ |
