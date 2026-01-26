@@ -30,6 +30,37 @@ def _read_repeats(graph: Graph, name: str, node: Node) -> tuple[int, ...] | None
     return tuple(int(value) for value in values)
 
 
+def _infer_repeats_from_shapes(
+    input_shape: tuple[int, ...],
+    output_shape: tuple[int, ...],
+) -> tuple[int, ...]:
+    if len(input_shape) != len(output_shape):
+        raise ShapeInferenceError(
+            "Tile repeats must have the same rank as input shape"
+        )
+    repeats: list[int] = []
+    for input_dim, output_dim in zip(input_shape, output_shape):
+        if input_dim < 0 or output_dim < 0:
+            raise ShapeInferenceError(
+                "Tile repeats input must be constant when shapes are dynamic"
+            )
+        if input_dim == 0:
+            if output_dim != 0:
+                raise ShapeInferenceError(
+                    "Tile output shape mismatch: "
+                    f"expected 0 for dimension, got {output_dim}"
+                )
+            repeats.append(0)
+            continue
+        if output_dim % input_dim != 0:
+            raise ShapeInferenceError(
+                "Tile output shape mismatch: "
+                f"expected multiple of {input_dim}, got {output_dim}"
+            )
+        repeats.append(int(output_dim // input_dim))
+    return tuple(repeats)
+
+
 def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
     strides: list[int] = []
     stride = 1
@@ -54,7 +85,13 @@ def lower_tile(graph: Graph, node: Node) -> TileOp:
         )
     repeats = _read_repeats(graph, node.inputs[1], node)
     if repeats is None:
-        raise UnsupportedOpError("Tile repeats input must be a constant initializer")
+        repeats_shape = value_shape(graph, node.inputs[1], node)
+        repeats_dtype = value_dtype(graph, node.inputs[1], node)
+        if repeats_dtype not in {ScalarType.I64, ScalarType.I32}:
+            raise UnsupportedOpError("Tile repeats input must be int64 or int32")
+        if len(repeats_shape) != 1:
+            raise UnsupportedOpError("Tile repeats input must be a 1D tensor")
+        repeats = _infer_repeats_from_shapes(input_shape, output_shape)
     if len(repeats) != len(input_shape):
         raise ShapeInferenceError(
             "Tile repeats must have the same rank as input shape"
