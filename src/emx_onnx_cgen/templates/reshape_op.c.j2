@@ -3,11 +3,15 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in output_shape %}
     for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
-    idx_t linear_idx = 0;
-{% for dim in output_shape %}
-    linear_idx = linear_idx * {{ dim }} + {{ loop_vars[loop.index0] }};
+{% if loop_vars %}
+{% set ns = namespace(expr=loop_vars[0]) %}
+{% for dim in output_shape[1:] %}
+{% set ns.expr = "(" ~ ns.expr ~ " * " ~ dim ~ " + " ~ loop_vars[loop.index] ~ ")" %}
 {% endfor %}
-    {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = input0_data[linear_idx];
+    {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = input0_data[{{ ns.expr }}];
+{% else %}
+    {{ output }} = input0_data[0];
+{% endif %}
 {% for _ in output_shape %}
     }
 {% endfor %}
