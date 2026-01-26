@@ -2781,7 +2781,7 @@ def _apply_conv_transpose(
     pad_begin = spec.pads[: spec.spatial_rank]
     group_in_channels = spec.in_channels // spec.group
     group_out_channels = spec.out_channels // spec.group
-    acc_dtype = np.float32 if data.dtype == np.float16 else data.dtype
+    acc_dtype = np.float32 if data.dtype == np.float16 else data.dtype.type
     for n in range(spec.batch):
         for g in range(spec.group):
             oc_base = g * group_out_channels
