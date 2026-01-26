@@ -1,10 +1,6 @@
 # Official ONNX file support
 
-Support 1304 / 1802 official ONNX files.
-Support 1301 / 1802 official ONNX files.
-Support 1300 / 1802 official ONNX files.
-Support 1306 / 1802 official ONNX files.
-Support 1302 / 1802 official ONNX files.
+Support 1328 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1713,8 +1709,8 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | ✅ | OK (max ULP 12) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | ✅ | OK (max ULP 84) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx | ❌ | Out of tolerance (max ULP 112) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ❌ | Out of tolerance (max ULP 128) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx | ✅ | OK (max ULP 16) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx | ❌ | Elu only supports alpha=1.0 |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx | ✅ | OK (max ULP 0) |
