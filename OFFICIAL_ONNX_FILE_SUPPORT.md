@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1298 / 1802 official ONNX files.
+Support 1302 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1086,12 +1086,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_prelu_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_prelu_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearconv/model.onnx | ❌ | Unsupported op QLinearConv |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx | ❌ | Arrays are not equal (max abs diff 148) |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx | ❌ | Arrays are not equal (max abs diff 148) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float32/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float16/model.onnx | ❌ | Arrays are not equal (max abs diff 247) |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float32/model.onnx | ❌ | Arrays are not equal (max abs diff 248) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float16/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear/model.onnx | ✅ | OK (max ULP 0) |

@@ -9803,10 +9803,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearMatMulOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QLinearMatMul."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9926,32 +9922,28 @@ class CEmitter:
                     ),
                 ]
             )
-            compute_dtype = (
-                ScalarType.F64
-                if ScalarType.F64
-                in {
-                    op.input0_scale_dtype,
-                    op.input1_scale_dtype,
-                    op.output_scale_dtype,
-                }
-                else ScalarType.F32
-            )
+            if ScalarType.F64 in {
+                op.input0_scale_dtype,
+                op.input1_scale_dtype,
+                op.output_scale_dtype,
+            }:
+                scale_dtype = ScalarType.F64
+            elif ScalarType.F32 in {
+                op.input0_scale_dtype,
+                op.input1_scale_dtype,
+                op.output_scale_dtype,
+            }:
+                scale_dtype = ScalarType.F32
+            else:
+                scale_dtype = ScalarType.F16
+            compute_dtype = ScalarType.F64
             compute_type = (
                 "double" if compute_dtype == ScalarType.F64 else "float"
             )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearMatMul."
-                )
             round_fn = CEmitter._math_fn(
                 compute_dtype, "nearbyintf", "nearbyint"
             )
+            mod_fn = CEmitter._math_fn(compute_dtype, "fmodf", "fmod")
             scale_index = "0"
             rendered = qlinear_matmul_template.render(
                 model_name=model.name,
@@ -9966,6 +9958,8 @@ class CEmitter:
                 output_zero_point=params["output_zero_point"],
                 output=params["output"],
                 params=param_decls,
+                scale_type=scale_dtype.c_type,
+                scale_is_float16=scale_dtype == ScalarType.F16,
                 compute_type=compute_type,
                 output_c_type=op.dtype.c_type,
                 input0_index_expr=input0_index_expr,
@@ -9981,10 +9975,8 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                min_literal=op.dtype.min_literal,
-                max_literal=op.dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                mod_fn=mod_fn,
+                output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
