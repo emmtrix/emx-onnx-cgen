@@ -114,6 +114,12 @@ def main() -> None:
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
+    prompt_lines.append(
+        "Runtime hint: if outputs mismatch onnx-reference but match onnxruntime, "
+        "compare both backends and consider updating the expectation command_line "
+        "to include `--runtime onnxruntime` for models where numpy reference "
+        "behavior diverges."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "

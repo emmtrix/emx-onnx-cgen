@@ -1958,8 +1958,17 @@ def _eval_softmax(evaluator: Evaluator, node: Node) -> None:
     op_ctx = OpContext(GraphContext(evaluator.graph))
     op.infer_types(op_ctx)
     op.infer_shapes(op_ctx)
-    axis = op_ctx.require_derived(op, "axis")
-    evaluator.values[node.outputs[0]] = _apply_softmax(value, axis)
+    opset_version = op_ctx.opset_version()
+    if opset_version is not None and opset_version < 13:
+        outer = op_ctx.require_derived(op, "outer")
+        axis_size = op_ctx.require_derived(op, "axis_size")
+        reshaped = value.reshape((outer, axis_size))
+        evaluator.values[node.outputs[0]] = _apply_softmax(
+            reshaped, axis=1
+        ).reshape(value.shape)
+    else:
+        axis = op_ctx.require_derived(op, "axis")
+        evaluator.values[node.outputs[0]] = _apply_softmax(value, axis)
 
 
 @register_evaluator("LogSoftmax")
@@ -1969,8 +1978,17 @@ def _eval_logsoftmax(evaluator: Evaluator, node: Node) -> None:
     op_ctx = OpContext(GraphContext(evaluator.graph))
     op.infer_types(op_ctx)
     op.infer_shapes(op_ctx)
-    axis = op_ctx.require_derived(op, "axis")
-    evaluator.values[node.outputs[0]] = _apply_logsoftmax(value, axis)
+    opset_version = op_ctx.opset_version()
+    if opset_version is not None and opset_version < 13:
+        outer = op_ctx.require_derived(op, "outer")
+        axis_size = op_ctx.require_derived(op, "axis_size")
+        reshaped = value.reshape((outer, axis_size))
+        evaluator.values[node.outputs[0]] = _apply_logsoftmax(
+            reshaped, axis=1
+        ).reshape(value.shape)
+    else:
+        axis = op_ctx.require_derived(op, "axis")
+        evaluator.values[node.outputs[0]] = _apply_logsoftmax(value, axis)
 
 
 @register_evaluator("Hardmax")

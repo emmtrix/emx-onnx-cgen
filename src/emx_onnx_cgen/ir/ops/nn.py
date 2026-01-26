@@ -520,8 +520,9 @@ class SoftmaxOp(RenderableOpBase):
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axis = self.axis
+        opset_version = ctx.opset_version()
         if axis is None:
-            axis = -1
+            axis = 1 if opset_version is not None and opset_version < 13 else -1
         if axis < 0:
             axis += len(input_shape)
         if axis < 0 or axis >= len(input_shape):
@@ -529,12 +530,16 @@ class SoftmaxOp(RenderableOpBase):
                 f"Softmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
         outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-        axis_size = input_shape[axis]
-        inner = (
-            _shape_product(input_shape[axis + 1 :])
-            if axis + 1 < len(input_shape)
-            else 1
-        )
+        if opset_version is not None and opset_version < 13:
+            axis_size = _shape_product(input_shape[axis:])
+            inner = 1
+        else:
+            axis_size = input_shape[axis]
+            inner = (
+                _shape_product(input_shape[axis + 1 :])
+                if axis + 1 < len(input_shape)
+                else 1
+            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
         ctx.set_derived(self, "outer", outer)
@@ -566,8 +571,9 @@ class LogSoftmaxOp(RenderableOpBase):
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axis = self.axis
+        opset_version = ctx.opset_version()
         if axis is None:
-            axis = -1
+            axis = 1 if opset_version is not None and opset_version < 13 else -1
         if axis < 0:
             axis += len(input_shape)
         if axis < 0 or axis >= len(input_shape):
@@ -575,12 +581,16 @@ class LogSoftmaxOp(RenderableOpBase):
                 f"LogSoftmax axis {self.axis} is out of bounds for shape {input_shape}"
             )
         outer = _shape_product(input_shape[:axis]) if axis > 0 else 1
-        axis_size = input_shape[axis]
-        inner = (
-            _shape_product(input_shape[axis + 1 :])
-            if axis + 1 < len(input_shape)
-            else 1
-        )
+        if opset_version is not None and opset_version < 13:
+            axis_size = _shape_product(input_shape[axis:])
+            inner = 1
+        else:
+            axis_size = input_shape[axis]
+            inner = (
+                _shape_product(input_shape[axis + 1 :])
+                if axis + 1 < len(input_shape)
+                else 1
+            )
         ctx.set_shape(self.output, input_shape)
         ctx.set_derived(self, "axis", axis)
         ctx.set_derived(self, "outer", outer)
