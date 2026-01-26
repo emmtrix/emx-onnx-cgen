@@ -56,6 +56,7 @@ from ..ir.ops import (
     GemmOp,
     GridSampleOp,
     GroupNormalizationOp,
+    HammingWindowOp,
     HardmaxOp,
     IdentityOp,
     InstanceNormalizationOp,
@@ -507,6 +508,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> tuple[str, ...]:
@@ -724,6 +726,8 @@ class CEmitter:
             return tuple(names)
         if isinstance(op, RangeOp):
             return (op.start, op.limit, op.delta, op.output)
+        if isinstance(op, HammingWindowOp):
+            return (op.size, op.output)
         if isinstance(op, OneHotOp):
             return (op.indices, op.depth, op.values, op.output)
         if isinstance(op, SplitOp):
@@ -895,6 +899,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
         name_map: dict[str, str],
@@ -962,6 +967,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp
     ):
@@ -1921,6 +1927,15 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, HammingWindowOp):
+            return HammingWindowOp(
+                size=name_map.get(op.size, op.size),
+                output=name_map.get(op.output, op.output),
+                output_shape=op.output_shape,
+                periodic=op.periodic,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=name_map.get(op.indices, op.indices),
@@ -2127,6 +2142,9 @@ class CEmitter:
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
+                "hamming_window": self._env.get_template(
+                    "hamming_window_op.c.j2"
+                ),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "split": self._env.get_template("split_op.c.j2"),
             }
@@ -2769,6 +2787,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3037,6 +3056,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3154,6 +3174,8 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
+        if any(isinstance(op, HammingWindowOp) for op in resolved_ops):
+            return True
         return False
 
     @staticmethod
@@ -3215,6 +3237,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3318,6 +3341,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3435,6 +3459,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
         dim_order: Sequence[str],
@@ -3708,6 +3733,9 @@ class CEmitter:
         if isinstance(op, RangeOp):
             args.extend([op.start, op.limit, op.delta, op.output])
             return ", ".join(args)
+        if isinstance(op, HammingWindowOp):
+            args.extend([op.size, op.output])
+            return ", ".join(args)
         if isinstance(op, OneHotOp):
             args.extend([op.indices, op.depth, op.values, op.output])
             return ", ".join(args)
@@ -3879,6 +3907,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
         temp_map: dict[str, str],
@@ -3944,6 +3973,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp
     ):
@@ -4776,6 +4806,15 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, HammingWindowOp):
+            return HammingWindowOp(
+                size=temp_map.get(op.size, op.size),
+                output=temp_map.get(op.output, op.output),
+                output_shape=op.output_shape,
+                periodic=op.periodic,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=temp_map.get(op.indices, op.indices),
@@ -5130,6 +5169,7 @@ class CEmitter:
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
             range_template=templates["range"],
+            hamming_window_template=templates["hamming_window"],
             one_hot_template=templates["one_hot"],
             split_template=templates["split"],
             scalar_registry=state.scalar_registry,
@@ -5213,6 +5253,7 @@ class CEmitter:
         expand_template,
         cumsum_template,
         range_template,
+        hamming_window_template,
         one_hot_template,
         split_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
@@ -9393,6 +9434,38 @@ class CEmitter:
                 length=op.length,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, HammingWindowOp):
+            params = self._shared_param_map(
+                [
+                    ("size", op.size),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["size"],
+                        op.input_dtype.c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = hamming_window_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=op.output_shape[0],
+                periodic_literal="1" if op.periodic else "0",
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
             params = self._shared_param_map(
                 [
@@ -10259,6 +10332,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> str:
@@ -10326,6 +10400,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
@@ -10452,6 +10527,8 @@ class CEmitter:
             return ((op.input0, op.input_shape),)
         if isinstance(op, RangeOp):
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
+        if isinstance(op, HammingWindowOp):
+            return ((op.size, ()),)
         if isinstance(op, OneHotOp):
             return (
                 (op.indices, op.indices_shape),
@@ -10527,6 +10604,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -10601,6 +10679,7 @@ class CEmitter:
         | NonMaxSuppressionOp
         | ExpandOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...], ScalarType], ...]:
@@ -10819,6 +10898,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | RotaryEmbeddingOp
         | SplitOp
@@ -10944,6 +11024,8 @@ class CEmitter:
             return op.input_shape
         if isinstance(op, RangeOp):
             return op.output_shape
+        if isinstance(op, HammingWindowOp):
+            return op.output_shape
         if isinstance(op, OneHotOp):
             return op.output_shape
         if isinstance(op, RotaryEmbeddingOp):
@@ -11005,6 +11087,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp
         | PadOp,

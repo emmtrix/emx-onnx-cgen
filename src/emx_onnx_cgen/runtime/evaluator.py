@@ -32,6 +32,7 @@ from ..lowering.grid_sample import lower_grid_sample
 from ..lowering.instance_normalization import lower_instance_normalization
 from ..lowering.group_normalization import lower_group_normalization
 from ..lowering.layer_normalization import lower_layer_normalization
+from ..lowering.hamming_window import lower_hamming_window
 from ..lowering.non_max_suppression import lower_non_max_suppression
 from ..lowering.mean_variance_normalization import (
     lower_mean_variance_normalization,
@@ -2138,6 +2139,21 @@ def _eval_range(evaluator: Evaluator, node: Node) -> None:
     indices = np.arange(op.length, dtype=op.dtype.np_dtype)
     output = start_value + indices * delta_value
     evaluator.values[op.output] = output
+
+
+@register_evaluator("HammingWindow")
+def _eval_hamming_window(evaluator: Evaluator, node: Node) -> None:
+    op = lower_hamming_window(evaluator.graph, node)
+    size_value = evaluator.values[op.size].reshape(-1)[0]
+    size = int(size_value)
+    if size < 0:
+        raise UnsupportedOpError("HammingWindow size must be non-negative")
+    denom = size if op.periodic else size - 1
+    alpha = 25.0 / 46.0
+    beta = 1.0 - alpha
+    indices = np.arange(size, dtype=op.dtype.np_dtype)
+    values = alpha - np.cos(indices * np.pi * 2 / denom) * beta
+    evaluator.values[op.output] = values.astype(op.dtype.np_dtype)
 
 
 @register_evaluator("OneHot")

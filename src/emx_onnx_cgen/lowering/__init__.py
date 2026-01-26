@@ -31,6 +31,7 @@ _LOWERING_MODULES = [
     "grid_sample",
     "group_normalization",
     "hardmax",
+    "hamming_window",
     "identity",
     "instance_normalization",
     "layer_normalization",

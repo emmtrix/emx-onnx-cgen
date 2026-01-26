@@ -478,6 +478,15 @@ class RangeOp(RenderableOpBase):
     input_dtype: ScalarType
 
 @dataclass(frozen=True)
+class HammingWindowOp(RenderableOpBase):
+    size: str
+    output: str
+    output_shape: tuple[int, ...]
+    periodic: bool
+    dtype: ScalarType
+    input_dtype: ScalarType
+
+@dataclass(frozen=True)
 class OneHotOp(RenderableOpBase):
     indices: str
     depth: str

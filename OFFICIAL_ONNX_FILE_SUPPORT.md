@@ -1,5 +1,6 @@
 # Official ONNX file support
 
+Support 1304 / 1802 official ONNX files.
 Support 1301 / 1802 official ONNX files.
 Support 1300 / 1802 official ONNX files.
 Support 1306 / 1802 official ONNX files.
@@ -728,9 +729,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_gru_defaults/model.onnx | ❌ | Unsupported op GRU |
 | onnx-org/onnx/backend/test/data/node/test_gru_seq_length/model.onnx | ❌ | Unsupported op GRU |
 | onnx-org/onnx/backend/test/data/node/test_gru_with_initial_bias/model.onnx | ❌ | Unsupported op GRU |
-| onnx-org/onnx/backend/test/data/node/test_hammingwindow/model.onnx | ❌ | Unsupported op HammingWindow |
+| onnx-org/onnx/backend/test/data/node/test_hammingwindow/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric/model.onnx | ❌ | Unsupported op HammingWindow |
+| onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric/model.onnx | ✅ | OK (max ULP 5) |
 | onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_hannwindow/model.onnx | ❌ | Unsupported op HannWindow |
 | onnx-org/onnx/backend/test/data/node/test_hannwindow_expanded/model.onnx | ✅ | OK (max ULP 16) |
