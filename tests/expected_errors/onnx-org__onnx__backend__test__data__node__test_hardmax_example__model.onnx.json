@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hardmax_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_hardmax_example/test_data_set_0",
   "operators": [
     "Hardmax"
   ],
   "opset_version": 13,
-  "generated_checksum": "2151f0820a899e07f1e01e6b9c62da630f196b06e7b7d6416d3d160640aa0451"
+  "generated_checksum": "4afda55730801aeb57fb0735f0a8da9e6aacca54839b92838e40e5f49e56315e"
 }

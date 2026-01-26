@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 64)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_instancenorm_epsilon/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_instancenorm_epsilon/test_data_set_0",
   "operators": [
     "InstanceNormalization"
   ],
   "opset_version": 22,
-  "generated_checksum": "9dcb0ed8f032bb8b01151363d64d5ff5840ffbb5052b7a762421927436ce06f8"
+  "generated_checksum": "bc644708b25af2fdeacc697998bbabd012b30f5d600edc4b35f83d2e50d689ff"
 }

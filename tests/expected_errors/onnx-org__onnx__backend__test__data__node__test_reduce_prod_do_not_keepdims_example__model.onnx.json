@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_prod_do_not_keepdims_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_prod_do_not_keepdims_example/test_data_set_0",
   "operators": [
     "ReduceProd"
   ],
   "opset_version": 18,
-  "generated_checksum": "295fad6ec58c778e95a4c28ab10ea8dfef2bf728c05fcf594c1b5f4b518286aa"
+  "generated_checksum": "73d960a52f61aa2259513be42ff2b15d219596ebaee76bb0084a90750254e989"
 }

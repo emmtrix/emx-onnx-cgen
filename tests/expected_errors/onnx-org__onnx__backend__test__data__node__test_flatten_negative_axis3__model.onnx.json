@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_flatten_negative_axis3/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_flatten_negative_axis3/test_data_set_0",
   "operators": [
     "Flatten"
   ],
   "opset_version": 25,
-  "generated_checksum": "379b9675e9ae9c7ac304f67215c96d8432532f0745ffa6fdc68b5fc5a655aec6"
+  "generated_checksum": "3c2af7f06362ac3a82eacb756e408e4ed77221c905c8685fa8713fb02a64da4b"
 }

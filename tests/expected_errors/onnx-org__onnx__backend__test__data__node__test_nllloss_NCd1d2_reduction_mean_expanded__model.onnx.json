@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -11,5 +11,5 @@
     "ReduceMean"
   ],
   "opset_version": 22,
-  "generated_checksum": "894d3183bb12bac7d50bf90e506ab8f4a0c0c9697c6e5faabf2facd05361688a"
+  "generated_checksum": "8e6ecddc7d056f39c02bf166a648755d7966ec7d24220157259f500e439d159f"
 }

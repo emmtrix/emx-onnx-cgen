@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 128)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/test_data_set_0",
   "operators": [
     "ConvTranspose"
   ],
   "opset_version": 6,
-  "generated_checksum": "b2712dea29796f282382186f1c1a585b61c4a41827b7a2177bb526e3579e822c"
+  "generated_checksum": "d4cb3e8732082c41b9278ab1b73d723c3fa9e16ea5b2da2437ad54d87f7ee301"
 }

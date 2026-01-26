@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_same_upper/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_same_upper/test_data_set_0",
   "operators": [
     "MaxPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "452277866f97d652a7b2907dc81be8b83e5f9f87a9ffee3067f527784ad59241"
+  "generated_checksum": "f6f81455733000b3e687cb972883357cbbe2b20a1edcaa04b7af5561c48afda8"
 }

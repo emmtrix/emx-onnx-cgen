@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 683)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "212b2d17a36ec4eb00e9bbccc0d4be9ee8846b22453e4e6092d73c41ffb6e0f1"
+  "generated_checksum": "23b955df823f98389770d5959e0a6dd29231aba462632a4b5e892d39a335e74a"
 }

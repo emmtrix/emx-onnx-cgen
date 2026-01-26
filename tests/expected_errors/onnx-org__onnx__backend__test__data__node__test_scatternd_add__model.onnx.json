@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_scatternd_add/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_scatternd_add/test_data_set_0",
   "operators": [
     "ScatterND"
   ],
   "opset_version": 18,
-  "generated_checksum": "b1a81c1d2bae7475028498ad9c2c5dcba92ff0dd583d2150b3d6607d30682264"
+  "generated_checksum": "e6a47bfc6c15d1a2f4c80efaebfbfdae871c6dc0ea04fbd1abf2146ae4145c90"
 }

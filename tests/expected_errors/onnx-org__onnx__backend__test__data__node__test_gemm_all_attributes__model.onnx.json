@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gemm_all_attributes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gemm_all_attributes/test_data_set_0",
   "operators": [
     "Gemm"
   ],
   "opset_version": 13,
-  "generated_checksum": "ecbc48143dc0fd5a9eb399a375891eb3bdabbdda3d702cfe05df28f0714ed683"
+  "generated_checksum": "200a86e463bcaaea75c62fd3ca88eb50cb1f9a08209c489e1305042b9d713e6a"
 }

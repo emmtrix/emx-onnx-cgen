@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_leakyrelu_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu_default/test_data_set_0",
   "operators": [
     "LeakyRelu"
   ],
   "opset_version": 16,
-  "generated_checksum": "f931bd3abaa7f77fc382af4c3afb18d1b82509caa4674ce013cb1c9ea2937849"
+  "generated_checksum": "592b83ba4147f48826a295bb8dae06c99be0272dfcb828a25bdde20f38d84408"
 }

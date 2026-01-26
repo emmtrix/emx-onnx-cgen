@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pow/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pow/test_data_set_0",
   "operators": [
     "Pow"
   ],
   "opset_version": 6,
-  "generated_checksum": "fc64a1ae7cc178a37db66414bdbc2acc91cd6cdadab04c592840d2c966d07213"
+  "generated_checksum": "0ef0351f2e3db93801ca2f4ddfd5af8e4c5e8588c51a822a1a9f8af5d2cbafc9"
 }

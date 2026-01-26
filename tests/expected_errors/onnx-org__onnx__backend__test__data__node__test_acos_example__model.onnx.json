@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_acos_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_acos_example/test_data_set_0",
   "operators": [
     "Acos"
   ],
   "opset_version": 22,
-  "generated_checksum": "e7a8de425edc43f7df3b71fcd1eccb831f8615dd411ce63497ec50dea933caaa"
+  "generated_checksum": "973c4e2ca7576d12861488e8aa4c834ad8a1dc329208ad88c3dbccd1eea48672"
 }

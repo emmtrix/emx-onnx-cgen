@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 1098996)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_cubic_align_corners/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_cubic_align_corners/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "7f11b892e3bbf8a522f3bb4fe58abcc05ca3c82b15702e9d98b1604807bc50a6"
+  "generated_checksum": "13e13ea7baa4b682e2885c50aed0138b45398a605eaefc65dc0ce767d303d53f"
 }

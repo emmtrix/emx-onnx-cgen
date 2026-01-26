@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tril_pos/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_tril_pos/test_data_set_0",
   "operators": [
     "Trilu"
   ],
   "opset_version": 14,
-  "generated_checksum": "aece30a87a547d971c2f7b21558417432edff82108515709b2602f0cea350928"
+  "generated_checksum": "ee9f08b4424f4c26cf60bfd0be31bc59d3819ab443849823d854711716580a0a"
 }

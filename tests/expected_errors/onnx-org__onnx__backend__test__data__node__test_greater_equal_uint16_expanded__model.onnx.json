@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_greater_equal_uint16_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_greater_equal_uint16_expanded/test_data_set_0",
   "operators": [
     "Greater",
@@ -7,5 +7,5 @@
     "Or"
   ],
   "opset_version": 16,
-  "generated_checksum": "7a0be3d6c35dc7cd01bb92d7245bf7f74043c7b5adb517ca42d912acc916b539"
+  "generated_checksum": "60fa2a254e103dc06f9c228fa7f77fdfb59792e592406e32211847c1e2db2ba5"
 }

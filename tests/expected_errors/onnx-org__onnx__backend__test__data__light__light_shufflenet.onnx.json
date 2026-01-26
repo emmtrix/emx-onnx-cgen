@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 10)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx",
   "operators": [
     "ConstantOfShape",
@@ -16,5 +16,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "63d09300126a6b55465e7adaedcccfe271671ecaae7a6824a38c0457e166edba"
+  "generated_checksum": "802ef7b57c7a332cfcf4cec2bdb006bc675082e4a3449173c9e26a22cd3e4a93"
 }

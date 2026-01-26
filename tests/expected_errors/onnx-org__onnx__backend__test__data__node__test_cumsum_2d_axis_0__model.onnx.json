@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cumsum_2d_axis_0/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cumsum_2d_axis_0/test_data_set_0",
   "operators": [
     "CumSum"
   ],
   "opset_version": 14,
-  "generated_checksum": "67311a65ec4750a836b94087653b7764e4070296d2d6209a8b587c74ab53be76"
+  "generated_checksum": "ee323c6751c3e70df0c6abab59be1487f51cb0294c6b48e9029b4ae7cda16f74"
 }

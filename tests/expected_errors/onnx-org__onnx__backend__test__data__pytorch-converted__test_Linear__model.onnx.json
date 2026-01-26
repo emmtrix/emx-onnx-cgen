@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/test_data_set_0",
   "operators": [
     "Gemm"
   ],
   "opset_version": 6,
-  "generated_checksum": "dc86245b8afdab1af608fd7ac815b0edcb3d00e94bef89010de5ca74a45f0803"
+  "generated_checksum": "8d95b345dfdde784dc7da7dd7b553a4df80153d4e7b72b099573a53fce70f4c0"
 }

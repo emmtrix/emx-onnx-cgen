@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_outbounds_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_outbounds_expanded/test_data_set_0",
   "operators": [
     "Less",
     "Where"
   ],
   "opset_version": 13,
-  "generated_checksum": "24e417b06f8494141d28f7c57060aaba099e2a5ca8fc8cd1f7c09b59dfbf89bc"
+  "generated_checksum": "935eb90f49ce4adb638e73881d3a44b981131945d7411a54466b624340b285d2"
 }

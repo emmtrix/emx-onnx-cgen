@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_shape_const_out/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_shape_const_out/test_data_set_0",
   "operators": [
     "Shape",
     "Expand"
   ],
   "opset_version": 12,
-  "generated_checksum": "145d02e345d15d6bd00a61b5f56f9e2350bac34ee0943ce88e399a70beb83550"
+  "generated_checksum": "c92feeb9fe386728492be43df2a5993d096c7622e979295e8753270b9d2d58a3"
 }

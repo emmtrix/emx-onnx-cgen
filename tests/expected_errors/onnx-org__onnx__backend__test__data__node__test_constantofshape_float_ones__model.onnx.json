@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constantofshape_float_ones/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_constantofshape_float_ones/test_data_set_0",
   "operators": [
     "ConstantOfShape"
   ],
   "opset_version": 25,
-  "generated_checksum": "9cd6decbbfe7f8611f780a4bb0b7fe6b410b3d602622fbf4a13940d33417eb5d"
+  "generated_checksum": "7c437f9b2d697081a9c6b78c73d098a1086a2568ab86cf71483d28c1fab5c655"
 }

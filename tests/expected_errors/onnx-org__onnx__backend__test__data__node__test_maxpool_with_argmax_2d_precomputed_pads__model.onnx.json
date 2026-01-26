@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_with_argmax_2d_precomputed_pads/test_data_set_0",
   "operators": [
     "MaxPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "fe2ea7c8fcde88cff611b9766e4c1db8ad54b4b4bf019143330e7178a6768803"
+  "generated_checksum": "c28630692ccbf04aa00041f1e2d341602a2e3418d9a444be7d16c2afbe0eff92"
 }

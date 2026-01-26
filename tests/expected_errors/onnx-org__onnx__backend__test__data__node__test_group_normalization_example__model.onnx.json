@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 16)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_group_normalization_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_group_normalization_example/test_data_set_0",
   "operators": [
     "GroupNormalization"
   ],
   "opset_version": 21,
-  "generated_checksum": "374e6de989519c375a9642cfe55d6e8a787113bcaa932a1d6f44a71e45a756d0"
+  "generated_checksum": "bc850f974774934e6a1d7dc7019cdd2ed202ce3c261900881fe4de8d558a713e"
 }

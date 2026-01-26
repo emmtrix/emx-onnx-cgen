@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_pad_constant_input/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_pad_constant_input/test_data_set_0",
   "operators": [
     "Pad",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "c65c0ad9bc44092d94414972944e2a265deddec0aefdda71eb301320c734c467"
+  "generated_checksum": "fef2f421154b8eb3f0c358b35ca343525d1335999fab42f47f7b32008c571747"
 }

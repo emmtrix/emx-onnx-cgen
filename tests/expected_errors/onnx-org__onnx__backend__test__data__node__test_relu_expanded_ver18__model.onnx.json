@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
@@ -7,5 +7,5 @@
     "Max"
   ],
   "opset_version": 18,
-  "generated_checksum": "4fb1fb9b0e743b865e7aefdbb592ca5ca9bc126e6f805ec8d17882e03893ee27"
+  "generated_checksum": "42166f7047484e94659c63e02555bfec751b4bfd760acfabda7f91b00c091067"
 }

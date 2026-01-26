@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 3)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "cec755fc4247c0cfc23637a0b3c4ee9356e0db1cec41b04cf3427b5ac41ce27f"
+  "generated_checksum": "51d49e21dcb8f9fa20153e48ecc016609d6ee53a2692e1fddf76a0e28507a55a"
 }

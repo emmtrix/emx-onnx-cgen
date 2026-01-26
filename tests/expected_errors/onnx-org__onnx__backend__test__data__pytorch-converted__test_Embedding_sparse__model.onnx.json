@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/test_data_set_0",
   "operators": [
     "Gather"
   ],
   "opset_version": 6,
-  "generated_checksum": "c962fdc849b50c4f71b18499be0460be7a8260201c441ce510d6c99b01699a0f"
+  "generated_checksum": "aa723a15147f22fb03c57783e211d5c5a5723844053ef3083bd5985c22b8955a"
 }

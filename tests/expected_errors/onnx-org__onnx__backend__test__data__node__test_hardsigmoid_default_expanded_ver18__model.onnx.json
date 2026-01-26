@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hardsigmoid_default_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_hardsigmoid_default_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
@@ -10,5 +10,5 @@
     "Max"
   ],
   "opset_version": 18,
-  "generated_checksum": "e0b525b00f5feb87e2b3d197654c4517d88527dccfec1edfb7a524897b9df597"
+  "generated_checksum": "794976f591c3110770cdf9a1cb750e6d2cab19909d2a02ee0a29e40e7da75221"
 }

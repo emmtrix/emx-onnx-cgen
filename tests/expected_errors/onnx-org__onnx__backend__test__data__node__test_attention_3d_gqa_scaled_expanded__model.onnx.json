@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded/test_data_set_0",
   "operators": [
     "Shape",
@@ -25,5 +25,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "675cf25d5c07f4f8a98278fba75b1e02cc5dd4818981f19412b55a41bf8c702a"
+  "generated_checksum": "31ead2d7fca8b8c3d1f5b2556a5e839f1b225ecbabe3526e61a38c0b6a591ec3"
 }

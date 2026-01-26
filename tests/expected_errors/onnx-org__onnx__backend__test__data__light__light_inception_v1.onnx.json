@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 981668463)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx",
   "operators": [
     "ConstantOfShape",
@@ -15,5 +15,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "ef13591a951d24d2589e67b180a30dacb885f8d233f2df6b1eae0ab384064d4c"
+  "generated_checksum": "f449ad677f821dd2cc0c6cffc8af25d4e8b0e7cd5fd80a394a71a05a654ac8f5"
 }

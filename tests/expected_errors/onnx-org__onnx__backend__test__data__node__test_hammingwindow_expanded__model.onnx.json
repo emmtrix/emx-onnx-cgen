@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 8)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -12,5 +12,5 @@
     "Cos"
   ],
   "opset_version": 17,
-  "generated_checksum": "de5a5c542d42c1edafcdfc43d43f759865539539f7c8151860d765ff4544dcda"
+  "generated_checksum": "fa242dc686cb32c11068f2ac074baa5064c2bd014a21171fe71378021f114ab5"
 }

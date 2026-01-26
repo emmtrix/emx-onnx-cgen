@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_quantizelinear/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear/test_data_set_0",
   "operators": [
     "QuantizeLinear"
   ],
   "opset_version": 25,
-  "generated_checksum": "c21d74c51c96cb7d434edd52c870c0ecfd1faef69f875f085fdfbdfe37eb41b1"
+  "generated_checksum": "d2fa79afbc082b54efb9d6c7b6adcbba6e329ef2f4ef7a29a0ccaeb74a75d7b8"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_convtranspose_1d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_convtranspose_1d/test_data_set_0",
   "operators": [
     "ConvTranspose"
   ],
   "opset_version": 22,
-  "generated_checksum": "5f3c53d8a3c9f5d9ec98468a0e164aa052d76416287317124635d64612573dd7"
+  "generated_checksum": "fd858e9ee80e18e5f9f3094c72004edb601ba86e9bcd762ae5a1dae29dc06ca4"
 }

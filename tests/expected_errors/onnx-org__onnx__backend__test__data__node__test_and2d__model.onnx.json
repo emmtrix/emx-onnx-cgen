@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_and2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_and2d/test_data_set_0",
   "operators": [
     "And"
   ],
   "opset_version": 7,
-  "generated_checksum": "5462e425adc6905fe5bc04c791fb9a2c476aaa85b2cdba9a7ef4cbb2de234afc"
+  "generated_checksum": "2449227764985dd2a5c7e513e747bee88716a5936a5b2ffdc4e65f9a26b25d89"
 }

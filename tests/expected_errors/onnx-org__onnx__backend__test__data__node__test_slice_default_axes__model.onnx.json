@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_default_axes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_default_axes/test_data_set_0",
   "operators": [
     "Slice"
   ],
   "opset_version": 13,
-  "generated_checksum": "e5a40246a81a8fb5e56c63549d9e29b08bd79ddedcf6bb7a519d698ca7262b5f"
+  "generated_checksum": "46fa8a4f7e26fb8f6065dead6c6451b2a37437854d24d906605b624bc26608f1"
 }

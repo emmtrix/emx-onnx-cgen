@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d/test_data_set_0",
   "operators": [
     "PRelu"
   ],
   "opset_version": 6,
-  "generated_checksum": "c68f308679e4dce4be21df7fdaf516955bb95ba305780ee190e5096359f4118e"
+  "generated_checksum": "408981e364f23f67480553575b9283b664c35a2b95683cefa401db3c7535bf49"
 }

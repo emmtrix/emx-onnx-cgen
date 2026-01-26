@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -10,5 +10,5 @@
     "Log"
   ],
   "opset_version": 13,
-  "generated_checksum": "ab3d254a1c561e4bbf81fb38afbd31f1565db4bac0481d7b164f551bd71726ea"
+  "generated_checksum": "29813767c7d563c582a189688629e418afe239de8f264405cebd393c7626bb5e"
 }

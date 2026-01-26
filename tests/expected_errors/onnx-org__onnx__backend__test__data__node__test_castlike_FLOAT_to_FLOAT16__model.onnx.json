@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16/test_data_set_0",
   "operators": [
     "CastLike"
   ],
   "opset_version": 25,
-  "generated_checksum": "08bf9c4292d6690217b64c4f471763806821c652ad7d1f2140bcf238ffc00c1a"
+  "generated_checksum": "f96b311427c947dc327ce4e1ada0f0986e7094c004280fa1ec17148b4fbe4e4f"
 }

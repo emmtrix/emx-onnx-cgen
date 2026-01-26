@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 50389)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_densenet121.onnx",
   "operators": [
     "ConstantOfShape",
@@ -15,5 +15,5 @@
     "GlobalAveragePool"
   ],
   "opset_version": 9,
-  "generated_checksum": "ccace2538bbb1e02836ef29dfc7461839e261c570b207ca8d724649109d9d008"
+  "generated_checksum": "70370f22ad2184a486980481cad3fea98e26764be48fa669e180b2b826821a60"
 }

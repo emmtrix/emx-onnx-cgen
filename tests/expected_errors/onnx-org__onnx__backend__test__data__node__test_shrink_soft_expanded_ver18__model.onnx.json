@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shrink_soft_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_shrink_soft_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
@@ -11,5 +11,5 @@
     "Where"
   ],
   "opset_version": 18,
-  "generated_checksum": "c2916fcc3b29cbc676b58695b2395e0668711f05f20f1d5145ca1ad6d495c18e"
+  "generated_checksum": "642bfd16958dd3ea76d8ea3100cb6d252d13c667f6f1e7099644b0ec2d121b8c"
 }

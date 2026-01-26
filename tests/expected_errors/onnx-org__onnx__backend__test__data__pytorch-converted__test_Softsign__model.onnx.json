@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign/test_data_set_0",
   "operators": [
     "Abs",
@@ -8,5 +8,5 @@
     "Div"
   ],
   "opset_version": 6,
-  "generated_checksum": "cabdbe205ae3f748d4375937cea5a9582aa6b8c20f17d18c0af4eb674d37437d"
+  "generated_checksum": "fba650de379f79a2e5ba09861a8224041be6d9b274c025e09ff413adec49b342"
 }

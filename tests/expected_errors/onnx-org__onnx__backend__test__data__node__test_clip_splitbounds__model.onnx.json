@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_splitbounds/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_splitbounds/test_data_set_0",
   "operators": [
     "Clip"
   ],
   "opset_version": 13,
-  "generated_checksum": "51806caf627f19a463caca6f3ec6e719be98847608860a1841a87ce09d865032"
+  "generated_checksum": "43e55a91ae5f65601d5b757e01eb60cd5b6769e809a67b661d18e1aab06d97df"
 }

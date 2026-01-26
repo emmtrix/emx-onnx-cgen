@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l1_empty_set_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l1_empty_set_expanded/test_data_set_0",
   "operators": [
     "Abs",
     "ReduceSum"
   ],
   "opset_version": 18,
-  "generated_checksum": "59269edb20d1b97f931ddc2dac65629aa06f97bd91b8eda20e9ea09275d40666"
+  "generated_checksum": "2112155e56fe6a37e24759b60269434bf1e5b909de8cce8a0e3f011f5a8cc7f1"
 }

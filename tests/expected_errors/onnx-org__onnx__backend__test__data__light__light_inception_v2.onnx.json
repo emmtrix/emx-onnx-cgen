@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx",
   "operators": [
     "ConstantOfShape",
@@ -17,5 +17,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "f5d9f752396253c9affb6048212a87fe65e4c60918ea58bcfdebd15e101ced96"
+  "generated_checksum": "63463f3bfd7066280e50fd73b1ace303d12dc819d2a79acad25117a937950493"
 }

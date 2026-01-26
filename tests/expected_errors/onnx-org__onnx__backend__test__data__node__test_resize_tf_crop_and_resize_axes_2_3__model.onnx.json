@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_axes_2_3/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_axes_2_3/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "de56330e3203eb91c9eca528aebdafebb1240633195f0456308e1796f52b5aa5"
+  "generated_checksum": "fc37e5d30c3104b06b76b276142d55853ee445cd20d9bc7ac7d5ccf7cbc691f1"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_empty_set/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_empty_set/test_data_set_0",
   "operators": [
     "ReduceSumSquare"
   ],
   "opset_version": 18,
-  "generated_checksum": "71d87c16ba38b662bf01cbd45c285e67c8636a3ad47c7e17f610096b6f811296"
+  "generated_checksum": "b14654f2c0616acb217f156915e365253f4cf09333720438f568b9258d87bd03"
 }

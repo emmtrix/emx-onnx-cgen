@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/test_data_set_0",
   "operators": [
     "Mul",
     "ReduceSum"
   ],
   "opset_version": 18,
-  "generated_checksum": "5de7292056949b3d49fc4c8053752310972244bc5667e58d0dcde8bb3418a84f"
+  "generated_checksum": "993d4c37e20c9060f6fe28ff25ae085b722d243a62671f8dc79cbbabeb81699a"
 }

@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -14,5 +14,5 @@
     "Div"
   ],
   "opset_version": 23,
-  "generated_checksum": "bf7978e08739bf4e5c036558a0ac1640f4574e2c5b4eeeb031deb8a2891d31e1"
+  "generated_checksum": "31a12b4aeca7c70153a4705297e3d671423e0a32dbcd7e476921291d121cc412"
 }

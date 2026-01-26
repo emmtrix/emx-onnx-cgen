@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_lastdim/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_lastdim/test_data_set_0",
   "operators": [
     "LogSoftmax"
   ],
   "opset_version": 6,
-  "generated_checksum": "b09472441c1dabcba9a9637fb8b54cce5c7ca7d2ad0db85cfa30c2fd6843ce31"
+  "generated_checksum": "97f33872a9d8dd98857b22f225fb6644783c371cffa3bf88bfaaeb161a5dc768"
 }

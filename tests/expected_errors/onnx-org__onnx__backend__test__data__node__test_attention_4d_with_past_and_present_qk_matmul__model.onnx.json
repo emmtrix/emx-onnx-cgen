@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "6724d89889f5d8973c2f90e4721aefca63b7dd933ca1114692e58dbdc5c0a2d4"
+  "generated_checksum": "eae736b42918832a15ac80a52ee2dddedba741f453f3061bbd515c40345b8bfd"
 }

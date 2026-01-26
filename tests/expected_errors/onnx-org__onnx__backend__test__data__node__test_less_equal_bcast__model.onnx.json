@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_less_equal_bcast/test_data_set_0",
   "operators": [
     "LessOrEqual"
   ],
   "opset_version": 16,
-  "generated_checksum": "037fa02c47904119688475539eb7766d999cdd8d9f22ff3ca1d3a5d87daf2b27"
+  "generated_checksum": "6b82cca5c60bd315c32f9473407b6ca99e6a4cdb1dae3ca9967877012d0cb4f9"
 }

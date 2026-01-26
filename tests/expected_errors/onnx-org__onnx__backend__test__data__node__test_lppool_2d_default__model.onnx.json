@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/test_data_set_0",
   "operators": [
     "LpPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "a7bd2af35057a6964f10bb5adeabe900a55b4c642df2e1d055dd067e353b7c1e"
+  "generated_checksum": "42173a1206d4536427168234b789474d5dffb1df84cae53eb77540cdc25fc437"
 }

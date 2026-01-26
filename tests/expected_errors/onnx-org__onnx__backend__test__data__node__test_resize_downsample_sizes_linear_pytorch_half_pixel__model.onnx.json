@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_linear_pytorch_half_pixel/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_linear_pytorch_half_pixel/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "17351228a979806be46dd2b733399ef1b35feda8aae53c5504d59acc6fb2b0cb"
+  "generated_checksum": "029c5774be38b59c3dcf95882f5fc6eaf7a4b38c3ede0077dc9ee221f7d15121"
 }

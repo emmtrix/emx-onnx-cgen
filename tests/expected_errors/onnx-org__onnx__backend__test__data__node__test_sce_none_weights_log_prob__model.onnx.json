@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sce_none_weights_log_prob/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sce_none_weights_log_prob/test_data_set_0",
   "operators": [
     "SoftmaxCrossEntropyLoss"
   ],
   "opset_version": 13,
-  "generated_checksum": "79f2ff58c83b3315422c93d64f1d3039ef7482e3ba78045b1dca7a8a811b83f7"
+  "generated_checksum": "1215f30e5467d28f94f845802a53564506d26c31b426cf7e9a6c4cf5576e0a25"
 }

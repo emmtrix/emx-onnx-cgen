@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_default_int8_min/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_default_int8_min/test_data_set_0",
   "operators": [
     "Clip"
   ],
   "opset_version": 13,
-  "generated_checksum": "89b699f9c59d190202ef16a544a210c84449ca3b036fec327987d59c97a08df5"
+  "generated_checksum": "511adbcf03fbb19e3d3d48be325e4423eddd05c3ed21cea656a7c84d7cdacee2"
 }

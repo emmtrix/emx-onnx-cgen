@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_example_expanded/test_data_set_0",
   "operators": [
     "Cast",
@@ -9,5 +9,5 @@
     "CastLike"
   ],
   "opset_version": 18,
-  "generated_checksum": "dff82a7c471090d7fccda755c0774d9c605aee6672c1fb54acbb2a78044c3a1c"
+  "generated_checksum": "bde716ba7d80258f5966bde7c5ffd5f4d2625da343fd39b731759002fef8af00"
 }

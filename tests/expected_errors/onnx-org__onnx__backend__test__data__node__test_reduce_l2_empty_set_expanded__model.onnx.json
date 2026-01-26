@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded/test_data_set_0",
   "operators": [
     "Mul",
@@ -9,5 +9,5 @@
     "CastLike"
   ],
   "opset_version": 18,
-  "generated_checksum": "037397442c8ef69d8864803de735fb6cfe5efc84185e25eb5925418260fbb3f9"
+  "generated_checksum": "c16b41d4f0f90f40e64439fe6a85dc9970e86ad0312d4af6e436ac61636632db"
 }

@@ -1,8 +1,8 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_qlinearmul_int8/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_qlinearmul_int8/test_data_set_0",
   "operators": [
     "com.microsoft::QLinearMul"
   ],
-  "generated_checksum": "cd00dbcb3c2d20e4449981a9291be2957126327c2e5fa8ef11272b5c71d91611"
+  "generated_checksum": "8e00456716073df83c4d2a009cc9c01cc35834cbda6d04ca3b817d629916ec39"
 }
