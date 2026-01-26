@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -297,17 +296,6 @@ def _ensure_local_onnx_files_present(data_root: Path) -> None:
         )
 
 
-def _resolve_compiler() -> list[str] | None:
-    compiler = os.environ.get("CC")
-    if compiler:
-        return [compiler]
-    for candidate in ("cc", "gcc", "clang"):
-        resolved = shutil.which(candidate)
-        if resolved:
-            return [resolved]
-    return None
-
-
 def _find_test_data_dir(model_path: Path) -> Path | None:
     test_data_dir = model_path.parent / "test_data_set_0"
     if not test_data_dir.exists():
@@ -328,23 +316,15 @@ def _skip_expected_checksum() -> bool:
     return value in {"1", "true", "yes", "on"}
 
 
-@pytest.mark.order(1)
-@pytest.mark.parametrize(
-    "repo_relative_path",
-    _official_onnx_file_paths(),
-)
-def test_official_onnx_expected_errors(
+def _run_expected_error_test(
+    *,
+    repo_root: Path,
     repo_relative_path: str,
+    model_path: Path,
+    expectation: OnnxFileExpectation,
+    expectation_path: str,
 ) -> None:
-    data_root = _official_data_root()
-    _ensure_official_onnx_files_present(data_root)
-    repo_root = _repo_root()
-    if _resolve_compiler() is None:
-        pytest.skip("C compiler not available (set CC or install gcc/clang)")
-    rel_path = _normalize_official_path(repo_relative_path)
-    expectation = _load_expectation_for_repo_relative(rel_path)
     expected_error = expectation.error
-    model_path = repo_root / rel_path
     test_data_dir = _find_test_data_dir(model_path)
     verify_args = [
         "emx-onnx-cgen",
@@ -365,9 +345,7 @@ def test_official_onnx_expected_errors(
                 str(test_data_dir.relative_to(repo_root)),
             ]
         )
-    cli_result = cli.run_cli_command(
-        verify_args
-    )
+    cli_result = cli.run_cli_command(verify_args)
     if cli_result.exit_code != 0:
         actual_error = cli_result.error or ""
     else:
@@ -375,7 +353,7 @@ def test_official_onnx_expected_errors(
         if actual_error == "CHECKSUM":
             actual_error = expected_error
     actual_expectation = OnnxFileExpectation(
-        path=rel_path,
+        path=expectation_path,
         error=actual_error,
         command_line=cli_result.command_line,
         operators=cli_result.operators,
@@ -385,12 +363,35 @@ def test_official_onnx_expected_errors(
     if os.getenv("UPDATE_REFS"):
         _write_expectation_file(
             actual_expectation,
-            repo_relative_path=actual_expectation.path,
+            repo_relative_path=repo_relative_path,
         )
         return
     assert _errors_match(actual_error, expected_error), (
-        f"Unexpected result for {rel_path}. Expected: {expected_error!r}. "
+        f"Unexpected result for {expectation_path}. Expected: {expected_error!r}. "
         f"Got: {actual_error!r}."
+    )
+
+
+@pytest.mark.order(1)
+@pytest.mark.parametrize(
+    "repo_relative_path",
+    _official_onnx_file_paths(),
+)
+def test_official_onnx_expected_errors(
+    repo_relative_path: str,
+) -> None:
+    data_root = _official_data_root()
+    _ensure_official_onnx_files_present(data_root)
+    repo_root = _repo_root()
+    rel_path = _normalize_official_path(repo_relative_path)
+    expectation = _load_expectation_for_repo_relative(rel_path)
+    model_path = repo_root / rel_path
+    _run_expected_error_test(
+        repo_root=repo_root,
+        repo_relative_path=rel_path,
+        model_path=model_path,
+        expectation=expectation,
+        expectation_path=Path(rel_path).as_posix(),
     )
 
 
@@ -406,60 +407,17 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
     data_root = LOCAL_ONNX_DATA_ROOT
     _ensure_local_onnx_files_present(data_root)
     repo_root = _repo_root()
-    if _resolve_compiler() is None:
-        pytest.skip("C compiler not available (set CC or install gcc/clang)")
     expectation = _load_expectation_for_repo_relative(
         repo_relative_path
     )
     rel_path = Path(repo_relative_path).relative_to(
         data_root.relative_to(repo_root)
     )
-    expected_error = expectation.error
     model_path = data_root / rel_path
-    test_data_dir = _find_test_data_dir(model_path)
-    verify_args = [
-        "emx-onnx-cgen",
-        "verify",
-        str(model_path.relative_to(repo_root)),
-    ]
-    if expectation.generated_checksum is not None and not _skip_expected_checksum():
-        verify_args.extend(
-            [
-                "--expected-checksum",
-                expectation.generated_checksum,
-            ]
-        )
-    if test_data_dir is not None:
-        verify_args.extend(
-            [
-                "--test-data-dir",
-                str(test_data_dir.relative_to(repo_root)),
-            ]
-        )
-    cli_result = cli.run_cli_command(
-        verify_args
-    )
-    if cli_result.exit_code != 0:
-        actual_error = cli_result.error or ""
-    else:
-        actual_error = cli_result.success_message or ""
-        if actual_error == "CHECKSUM":
-            actual_error = expected_error
-    actual_expectation = OnnxFileExpectation(
-        path=rel_path.as_posix(),
-        error=actual_error,
-        command_line=cli_result.command_line,
-        operators=cli_result.operators,
-        opset_version=cli_result.opset_version,
-        generated_checksum=cli_result.generated_checksum,
-    )
-    if os.getenv("UPDATE_REFS"):
-        _write_expectation_file(
-            actual_expectation,
-            repo_relative_path=repo_relative_path,
-        )
-        return
-    assert _errors_match(actual_error, expected_error), (
-        f"Unexpected result for {rel_path}. Expected: {expected_error!r}. "
-        f"Got: {actual_error!r}."
+    _run_expected_error_test(
+        repo_root=repo_root,
+        repo_relative_path=repo_relative_path,
+        model_path=model_path,
+        expectation=expectation,
+        expectation_path=rel_path.as_posix(),
     )
