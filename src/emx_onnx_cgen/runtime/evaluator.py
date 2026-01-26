@@ -1735,18 +1735,24 @@ def _eval_qlinear_matmul(evaluator: Evaluator, node: Node) -> None:
     input0_zero = _scalar_int(input0_zero_point)
     input1_zero = _scalar_int(input1_zero_point)
     output_zero = _scalar_int(output_zero_point)
-    scale = _scalar_value(input0_scale) * _scalar_value(
-        input1_scale
-    ) / _scalar_value(output_scale)
+    scale_dtype = np.result_type(
+        input0_scale, input1_scale, output_scale
+    )
+    scale = (
+        input0_scale.astype(scale_dtype)
+        * input1_scale.astype(scale_dtype)
+        / output_scale.astype(scale_dtype)
+    )
+    scale_value = float(np.asarray(scale).reshape(-1)[0])
     acc = _apply_matmul(
         input0.astype(np.int32) - input0_zero,
         input1.astype(np.int32) - input1_zero,
     )
-    scaled = acc.astype(np.float64) * scale + output_zero
+    scaled = acc.astype(np.float64) * scale_value + output_zero
     rounded = np.rint(scaled)
-    info = np.iinfo(op.dtype.np_dtype)
-    clipped = np.clip(rounded, info.min, info.max)
-    evaluator.values[op.output] = clipped.astype(op.dtype.np_dtype)
+    evaluator.values[op.output] = rounded.astype(
+        op.dtype.np_dtype, copy=False
+    )
 
 
 @register_evaluator("QLinearMul")
