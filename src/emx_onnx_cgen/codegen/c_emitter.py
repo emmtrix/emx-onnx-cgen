@@ -10594,7 +10594,8 @@ class CEmitter:
         | ExpandOp
         | RangeOp
         | OneHotOp
-        | SplitOp,
+        | SplitOp
+        | RotaryEmbeddingOp,
     ) -> tuple[tuple[str, tuple[int, ...], ScalarType], ...]:
         if isinstance(
             op,
@@ -10813,7 +10814,8 @@ class CEmitter:
         | RangeOp
         | OneHotOp
         | SplitOp
-        | PadOp,
+        | PadOp
+        | RotaryEmbeddingOp,
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return self._ctx_shape(op.output)
@@ -10937,6 +10939,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, OneHotOp):
             return op.output_shape
+        if isinstance(op, RotaryEmbeddingOp):
+            return op.input_shape
         if op.output_rank == 3:
             return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
         return (op.batch, op.q_heads, op.q_seq, op.v_head_size)
@@ -10996,7 +11000,8 @@ class CEmitter:
         | RangeOp
         | OneHotOp
         | SplitOp
-        | PadOp,
+        | PadOp
+        | RotaryEmbeddingOp,
     ) -> ScalarType:
         if isinstance(op, ArgReduceOp):
             return self._ctx_dtype(op.output)
