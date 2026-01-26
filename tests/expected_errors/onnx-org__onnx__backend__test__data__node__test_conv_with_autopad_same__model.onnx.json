@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 22,
-  "generated_checksum": "0ca2a3ad9e15739303a9ab39ab4d87d8841eb935ad74b729c4da0765f72a4d89"
+  "generated_checksum": "5f7bc90c704dc2bdb6aed97d3bf0a723acb8a3c8278606b2c34305122c08c044"
 }

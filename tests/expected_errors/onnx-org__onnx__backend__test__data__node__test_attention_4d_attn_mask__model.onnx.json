@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "6c3ad6d03bc777bf6820a9fcee082c81eca0680ff52131ae9d86e1f531c92257"
+  "generated_checksum": "072052bcf7f49307c4d6fad40f2cbe210b61866626afde0107bb05470da61e4d"
 }

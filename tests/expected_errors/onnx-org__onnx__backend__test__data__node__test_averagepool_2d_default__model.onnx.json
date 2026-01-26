@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_default/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "b978bfc2fe0b784d17d3009199b7b759f6c7d0a766680c375a1d73b8e816d897"
+  "generated_checksum": "28f95ea20d3c317a6621ad51018e9877968aeca3ddf4707a672ae5fc4bf546b9"
 }

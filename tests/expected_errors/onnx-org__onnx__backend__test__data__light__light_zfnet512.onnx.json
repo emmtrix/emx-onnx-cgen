@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 981668463)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx",
   "operators": [
     "ConstantOfShape",
@@ -12,5 +12,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "ffba169bd848d573e41547529c52f346b5d0bdd6cbefe3df0ff782d4bfedcc9d"
+  "generated_checksum": "7baff1ccaf985cc13152d983ea4e91d4c57ed4e66bdc6316ca1b17c80acdae02"
 }

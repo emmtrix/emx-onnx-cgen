@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1/test_data_set_0",
   "operators": [
     "RMSNormalization"
   ],
   "opset_version": 23,
-  "generated_checksum": "a10f55211121710be76359a1a5e1a45f703892451a3e7d9c880587586493c29a"
+  "generated_checksum": "dfe947c8ec4a7987dd779d655e5d8ff6c86fd494f13b7b79b3aba72a66861296"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lstm_with_initial_bias/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_lstm_with_initial_bias/test_data_set_0",
   "operators": [
     "LSTM"
   ],
   "opset_version": 22,
-  "generated_checksum": "94e10d138ff82b2d84ed76a2099dfd481a2499861102821349c797594be6736a"
+  "generated_checksum": "90527ef7478c596a46b2df9e0a869becbec61737359bf7c8e4704a8081354a25"
 }

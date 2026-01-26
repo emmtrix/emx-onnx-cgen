@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_flipped_coordinates/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_flipped_coordinates/test_data_set_0",
   "operators": [
     "NonMaxSuppression"
   ],
   "opset_version": 11,
-  "generated_checksum": "f74678563a883e4af6db351497551d2f578f6b39b328122f2b81ddf75bbddeba"
+  "generated_checksum": "feec815c4fc3857e6950c3a9f85d2bab9f76546834f9e6485e4c47efd2bc485b"
 }

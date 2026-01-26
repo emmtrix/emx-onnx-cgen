@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 32)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_elu_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_elu_default/test_data_set_0",
   "operators": [
     "Elu"
   ],
   "opset_version": 22,
-  "generated_checksum": "47880242699ff2adb6f8bcd327d25288a17b5a6a435c80497483ee336ce05a96"
+  "generated_checksum": "98e1514aa115a2119ad391d5e1979b191caf728cdcd92b3c5962bc32035eb278"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx2c-org/test/local_ops/test_gemm_CMx1_transA/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_gemm_CMx1_transA/test_data_set_0",
   "operators": [
     "Gemm"
   ],
   "opset_version": 12,
-  "generated_checksum": "2ea8cade7b04edd30452621c3718298e502951f2cee31b8810efabd744bdb7c3"
+  "generated_checksum": "46d6d1a76428ccc2ca9eabcb3cb24ce586b32262a792db4cc6516d6fea6ee2df"
 }

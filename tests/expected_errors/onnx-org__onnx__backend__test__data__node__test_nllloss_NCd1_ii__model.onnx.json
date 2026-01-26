@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_ii/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_ii/test_data_set_0",
   "operators": [
     "NegativeLogLikelihoodLoss"
   ],
   "opset_version": 22,
-  "generated_checksum": "277234c4135781c70ce09c80030039da52f93dbd734b8e7b9dcb892fa21a7629"
+  "generated_checksum": "680160c1f4453a39f02d094697834d42f75fc59302e39b107318e900b45c814b"
 }

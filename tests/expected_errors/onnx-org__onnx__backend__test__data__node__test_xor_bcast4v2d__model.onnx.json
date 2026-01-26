@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_xor_bcast4v2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_xor_bcast4v2d/test_data_set_0",
   "operators": [
     "Xor"
   ],
   "opset_version": 7,
-  "generated_checksum": "1fa44d3d7fc6d36aefa8c5f38a19126d381560b44828d5fcc30eedd973dfdfcf"
+  "generated_checksum": "4217d3c1e6b8c2f41b9de7a7c03b89aeb368b708200f6f9838f620626d359c04"
 }

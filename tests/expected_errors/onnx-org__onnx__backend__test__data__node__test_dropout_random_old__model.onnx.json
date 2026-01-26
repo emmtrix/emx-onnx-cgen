@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dropout_random_old/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_dropout_random_old/test_data_set_0",
   "operators": [
     "Dropout"
   ],
   "opset_version": 11,
-  "generated_checksum": "a11b75b33146d3bdcc436aac311a5031f08566dbfad8dd77baf52fde45f28eff"
+  "generated_checksum": "c49b4a327e826756732c0fa9babd97c4ac9617a16a4dcd30890895f1169d37da"
 }

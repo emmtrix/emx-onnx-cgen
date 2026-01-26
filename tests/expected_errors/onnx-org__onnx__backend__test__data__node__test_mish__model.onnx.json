@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mish/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_mish/test_data_set_0",
   "operators": [
     "Mish"
   ],
   "opset_version": 22,
-  "generated_checksum": "fd91eb827dbd4b7101191e0daa075431c270a0f734889a1832d5b6c030f5377d"
+  "generated_checksum": "7c2e038801e91edf04af697f16287f7c39cfe0e3cc509e41b6292510ebfd7aa9"
 }

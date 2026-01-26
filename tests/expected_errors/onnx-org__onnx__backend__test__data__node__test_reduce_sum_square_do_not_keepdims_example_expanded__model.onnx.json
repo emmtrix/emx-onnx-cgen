@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example_expanded/test_data_set_0",
   "operators": [
     "Mul",
     "ReduceSum"
   ],
   "opset_version": 18,
-  "generated_checksum": "d5b674579ede8705db55db6097a9aace1af432d43c3b0fa9744ccc3da191ec23"
+  "generated_checksum": "e240cd68facf5772179f25f357d3748db5ab0cfa566e1e83809d51494908592c"
 }

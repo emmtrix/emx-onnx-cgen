@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_celu_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_celu_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -8,5 +8,5 @@
     "Mul"
   ],
   "opset_version": 12,
-  "generated_checksum": "31a809e12ed91fdb04ac27fc43e6de639efa1d2e93470200587dd5bff4d8fa57"
+  "generated_checksum": "280c4d2b3208d783acc7062e5cd03ec16b476fe18ceca044d7a0a8ea6f42c5cc"
 }

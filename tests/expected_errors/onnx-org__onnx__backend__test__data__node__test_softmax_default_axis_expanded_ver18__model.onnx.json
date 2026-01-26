@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 3)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softmax_default_axis_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_softmax_default_axis_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
@@ -10,5 +10,5 @@
     "Div"
   ],
   "opset_version": 18,
-  "generated_checksum": "27b0f474fbd1e5414584771f22f70bcaf2653d9805a9a7d410b63e4c38b7b172"
+  "generated_checksum": "fac6a989becdd2d156aa0f2120e604c303ca813ee2ac2e1bfb3f2207c78dfd31"
 }

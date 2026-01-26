@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 981668463)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_bvlc_alexnet.onnx",
   "operators": [
     "ConstantOfShape",
@@ -13,5 +13,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "799cf3acf286ed12250093ea4cd06f373d8e38002e135f0a3ca01e0022011f3c"
+  "generated_checksum": "a6a0441a86441036618593542d291ad7ff5860aece873b63ac4506ebd749938b"
 }

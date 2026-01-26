@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 3)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softmax_axis_1/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_softmax_axis_1/test_data_set_0",
   "operators": [
     "Softmax"
   ],
   "opset_version": 13,
-  "generated_checksum": "82331d3778e8bd7e7c5398998d71f8920b1696411e79db221e2d00328e188a4b"
+  "generated_checksum": "865646c22131665df6e3da2f263d387b6f310dab2694e423d52ab7219a8a75e6"
 }

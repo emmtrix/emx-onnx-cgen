@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mish_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_mish_expanded/test_data_set_0",
   "operators": [
     "Softplus",
@@ -7,5 +7,5 @@
     "Mul"
   ],
   "opset_version": 22,
-  "generated_checksum": "3f54ab818e3641b0027eab6551ecd898ff61af12f79d3bd16345d2ae4c2a69b1"
+  "generated_checksum": "5350717378166fdb140935c9ac5a3e74b313833f7164f59b850ff7db46bdcbd9"
 }

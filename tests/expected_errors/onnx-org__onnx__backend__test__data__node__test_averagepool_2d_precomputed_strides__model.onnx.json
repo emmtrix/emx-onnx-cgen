@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_strides/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_strides/test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "45f70113a7e1395c575791d3bf72320d67739652c2cb3212ef768eeb3f8e0e48"
+  "generated_checksum": "535a239629311a029f70643111ccf4cca0e218aa52961c0bfafed1e8ed08a767"
 }

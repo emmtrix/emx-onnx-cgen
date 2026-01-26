@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_asc_axes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_asc_axes/test_data_set_0",
   "operators": [
     "ReduceLogSum"
   ],
   "opset_version": 18,
-  "generated_checksum": "0070cce4abd00ddd5251209f79d7b89dcb34363e04e73f1afca32d761fb24d81"
+  "generated_checksum": "0171557f8bb0a9f01d4a6ad04498999f6f1af703c1d71fc270e0d22927a15af7"
 }

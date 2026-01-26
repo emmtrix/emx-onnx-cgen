@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -16,5 +16,5 @@
     "QuantizeLinear"
   ],
   "opset_version": 11,
-  "generated_checksum": "cccc5f0b247a832b28d01faefc99fae2af93702c3d29cea0578883f58e495c26"
+  "generated_checksum": "0c58979377650ba17005b90c7bf9deaea3cd267044f52a2fc009cdebac0f9abd"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU/test_data_set_0",
   "operators": [
     "NonMaxSuppression"
   ],
   "opset_version": 11,
-  "generated_checksum": "1648b5899fcdcf30d235a8bd61acf68e0039bef7290d06ad64ffc0e768602a81"
+  "generated_checksum": "4eeacb25cf9c63da39063f481d0cd12a03fe7fbc1e2b69400fb87bec7531cd52"
 }

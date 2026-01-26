@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool1d_stride/test_data_set_0",
   "operators": [
     "Unsqueeze",
@@ -7,5 +7,5 @@
     "Squeeze"
   ],
   "opset_version": 6,
-  "generated_checksum": "7b09cc0d190639afa148ba1da8ec9e27a201566589087411661494d4950b6a7d"
+  "generated_checksum": "b78d27193b440a9881eb2f3b41b33f9e991c28dbfdca7e6da591ca6b934d3122"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_max_two_inputs/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_max_two_inputs/test_data_set_0",
   "operators": [
     "Max"
   ],
   "opset_version": 13,
-  "generated_checksum": "9b5b29d38d4cb0e435716ec57a0908dd025ec7649248580af4f8e00a2159bdea"
+  "generated_checksum": "d87a4e3eb78cb227cba8d337eff1009f4643ac12b9f899eeaff8ad6d717e2bd7"
 }

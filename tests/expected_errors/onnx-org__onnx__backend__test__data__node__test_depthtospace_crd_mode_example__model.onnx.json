@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/test_data_set_0",
   "operators": [
     "DepthToSpace"
   ],
   "opset_version": 13,
-  "generated_checksum": "272a0eb65c4465b84bb0464993cf07374073560b0576471c6b5d1c58e23f013e"
+  "generated_checksum": "addb5ec4244a8b44140a435700678cd717f3c114cda4e7ef8ffe9e7d6715f4f7"
 }

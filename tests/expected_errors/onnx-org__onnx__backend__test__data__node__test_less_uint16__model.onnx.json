@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_less_uint16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_less_uint16/test_data_set_0",
   "operators": [
     "Less"
   ],
   "opset_version": 13,
-  "generated_checksum": "f1f8d6428664016a557ff29c341bc8759c68b2185fa29f7a0f4233be3526d876"
+  "generated_checksum": "4d50f440e838fea30508ff0bc9158b3462c3f5d8eea47397f3037629f2a08fda"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_gather_scalar_axis1/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_gather_scalar_axis1/test_data_set_0",
   "operators": [
     "Gather"
   ],
   "opset_version": 22,
-  "generated_checksum": "0bfcf49ffd603823bde6a2fbbd841626013b1195641fd561e92bc5a406cc3178"
+  "generated_checksum": "257346002cd0bbd19dfb5e01a0498bb603f454aeadea8e533e25b9e4a4bae35d"
 }

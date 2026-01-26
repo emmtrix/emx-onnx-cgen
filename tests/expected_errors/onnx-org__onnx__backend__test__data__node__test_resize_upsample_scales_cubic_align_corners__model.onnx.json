@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_upsample_scales_cubic_align_corners/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_upsample_scales_cubic_align_corners/test_data_set_0",
   "operators": [
     "Resize"
   ],
   "opset_version": 19,
-  "generated_checksum": "4e896da7077361f36d4da906652604c1947b9d0b99e62372e3186e0fd9f240e0"
+  "generated_checksum": "184f3fca1a9e191f480252b29652ef3d333a2a8f7a5a808ede528b2e24ba3554"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_where_long_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_where_long_example/test_data_set_0",
   "operators": [
     "Where"
   ],
   "opset_version": 16,
-  "generated_checksum": "2dd51d98366c05bbf6065280b6b19f4bffa1f447813989045be27555b7e98ab9"
+  "generated_checksum": "6fe46d283ff6dbbc63331880af815cb065f144aaecb9478ebd85401ced8e4d69"
 }

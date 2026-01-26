@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_sqrt/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_sqrt/test_data_set_0",
   "operators": [
     "Sqrt"
   ],
   "opset_version": 6,
-  "generated_checksum": "33e02555e7ba56ac1b033d4a8e2584407952889cb5b64f905f9fd20db9b4adc2"
+  "generated_checksum": "ee49488b708c764f18562bbc1673fd0c7a788bc0bae3a7c5023b4ff0ad037670"
 }

@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -15,5 +15,5 @@
     "Sqrt"
   ],
   "opset_version": 21,
-  "generated_checksum": "d1769787096d6f1d102e66e1d79f6daef62c8cb461581058b174b424ea95e53a"
+  "generated_checksum": "921233147c91789354aaaf4eb58561f63387757ccab1728b74c31477c83da83b"
 }

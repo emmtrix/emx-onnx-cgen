@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_conv_with_strides_no_padding/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_conv_with_strides_no_padding/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 22,
-  "generated_checksum": "26eb7cc3c82e7eb440960628ee7a8d513e437d4dd99658521cebadac49178c1d"
+  "generated_checksum": "3d9f900e4aa262188ea8e7f89aa6360711a06861c832fd27ffd8672503be58de"
 }

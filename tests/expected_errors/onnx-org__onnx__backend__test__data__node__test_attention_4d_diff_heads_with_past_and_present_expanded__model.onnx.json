@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 3)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/test_data_set_0",
   "operators": [
     "Shape",
@@ -24,5 +24,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "08eb2fc847d0c6b184bba9a6bfdee65b50d8a05eeafdbb360a458d1a2fd8133d"
+  "generated_checksum": "d727d1e32fc2887444f64b3c67750dc1c4ccf692d77d86e24fe712834535e72a"
 }

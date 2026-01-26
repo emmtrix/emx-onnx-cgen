@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reciprocal/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reciprocal/test_data_set_0",
   "operators": [
     "Reciprocal"
   ],
   "opset_version": 13,
-  "generated_checksum": "c8024348a888fab4849452e952d7a27ec4a4c7313e55b1d9013fcfaff22c9814"
+  "generated_checksum": "ee200317af69e81cdda6c1d03281b5fa7d01d827886c4c017ccdcb7e084d4319"
 }

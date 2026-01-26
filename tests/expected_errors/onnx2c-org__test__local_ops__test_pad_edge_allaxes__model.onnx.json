@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_pad_edge_allaxes/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_pad_edge_allaxes/test_data_set_0",
   "operators": [
     "Pad",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "d9567cf254ee56f3849bbf23a7b55f9522e82049b2b46e314c6bef5fb02167bf"
+  "generated_checksum": "b78871722d27d269ef70807987b5444d68f5ed2a939f4cf507e98797c3c4f502"
 }

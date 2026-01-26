@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_swish/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_swish/test_data_set_0",
   "operators": [
     "Swish"
   ],
   "opset_version": 24,
-  "generated_checksum": "885fb5fa7d0642400a4575631682e14f5488d74daa0407adaaf47dd0deea07b4"
+  "generated_checksum": "0b47b091a6ccb7f70996d6d89e3572c5409a972b361eec683b4c445a5847fa60"
 }

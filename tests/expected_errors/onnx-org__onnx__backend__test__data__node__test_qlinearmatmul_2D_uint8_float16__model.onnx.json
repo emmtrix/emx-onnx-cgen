@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float16/test_data_set_0",
   "operators": [
     "QLinearMatMul"
   ],
   "opset_version": 21,
-  "generated_checksum": "03acb63d2560f8955d5de1212f4b9c9dcba21ca84189b4ecc55c9d2de9353f84"
+  "generated_checksum": "13dda85cbf9e307d9df1a14f9f55d73bc4954fea562ec36559e51f3a7ef9a30d"
 }

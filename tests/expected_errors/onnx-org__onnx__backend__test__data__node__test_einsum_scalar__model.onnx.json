@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Failed to build testbench.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_einsum_scalar/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_einsum_scalar/test_data_set_0",
   "operators": [
     "Einsum"
   ],
   "opset_version": 12,
-  "generated_checksum": "7ecc369c78c1c32eac48b91bad880a89b489f0b1958d8da0fcb9e0182e5f0494"
+  "generated_checksum": "bb27f1801f76e230e356773acccf0434fff3f5f40fc21ff71c0599db550072de"
 }

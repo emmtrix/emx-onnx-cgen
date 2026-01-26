@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 9)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_default_2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_2/test_data_set_0",
   "operators": [
     "Gelu"
   ],
   "opset_version": 20,
-  "generated_checksum": "abc8b86676e4daf1404e8525385dd5463afd1aef683c9cba9b70e5a093bc6f55"
+  "generated_checksum": "e785a183e879e1d31182cb2e2c5600907c8241a761a7e9941e183e5289e24cf5"
 }

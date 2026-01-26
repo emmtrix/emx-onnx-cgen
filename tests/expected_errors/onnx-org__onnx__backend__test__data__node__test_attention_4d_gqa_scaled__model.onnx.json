@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 3)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_scaled/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "712aa744da8031c2471571b62b5b30b65cebbab1028d46f673573807fbd7064f"
+  "generated_checksum": "042cde0a42d3398184d6a780ebfb12fbfd04b95323de1a3dd01b92b7782e9b8d"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sqrt/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sqrt/test_data_set_0",
   "operators": [
     "Sqrt"
   ],
   "opset_version": 13,
-  "generated_checksum": "9f357ac55386c0d54e81209a3b40aca5db5d3d55645fd266533242186cedfc9c"
+  "generated_checksum": "1442fbda73d8667d7f8744e9b0cf64b353e13d5bb9c4fecaf7a7b34cb036edbc"
 }

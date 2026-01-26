@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 16)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -20,5 +20,5 @@
     "Reciprocal"
   ],
   "opset_version": 17,
-  "generated_checksum": "7fcb410e9b9d5bc66fb225f540da4810c5f6fb2b97eb30bcd35117f30a22281a"
+  "generated_checksum": "ba1e3b6405722578bac35a42f17d338f9cc8e972b50e6932b0a100d7215dca2d"
 }

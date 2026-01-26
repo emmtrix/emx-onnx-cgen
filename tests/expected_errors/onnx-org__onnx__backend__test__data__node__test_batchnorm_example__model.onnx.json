@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 8)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_batchnorm_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_batchnorm_example/test_data_set_0",
   "operators": [
     "BatchNormalization"
   ],
   "opset_version": 15,
-  "generated_checksum": "7c6b2bf481fe8c0fded7a13191f7e54b11fccbe753611773f42db798a274cac0"
+  "generated_checksum": "73daa24617fa554145488b8fa9d979da48cc7f69c5661016117d5bd80c2851fc"
 }

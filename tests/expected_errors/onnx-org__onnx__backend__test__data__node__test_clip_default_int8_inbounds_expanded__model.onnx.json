@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_clip_default_int8_inbounds_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_clip_default_int8_inbounds_expanded/test_data_set_0",
   "operators": [
     "Identity"
   ],
   "opset_version": 13,
-  "generated_checksum": "f801f5ab4c5bcc1534ea7a859173e4f129153994cc6b49de70425581669ed77a"
+  "generated_checksum": "8acdb920b8d5a591a82cf011c5f42807fc4179eb9cad9f6cb1f2e89cead4e9ae"
 }

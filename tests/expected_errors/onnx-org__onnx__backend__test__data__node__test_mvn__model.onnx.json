@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 4)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mvn/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_mvn/test_data_set_0",
   "operators": [
     "MeanVarianceNormalization"
   ],
   "opset_version": 13,
-  "generated_checksum": "dfdf6b47a8764dcfa8e17639eef665b9074ad553f62e2bdbe745447133729304"
+  "generated_checksum": "d14f5fd40189e2fc12976c5e5d2391540370c01bb652ed5ce2e4b0c99631ce77"
 }

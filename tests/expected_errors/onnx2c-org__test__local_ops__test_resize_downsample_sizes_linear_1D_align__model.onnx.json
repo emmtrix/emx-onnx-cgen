@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/test_data_set_0",
   "operators": [
     "Resize",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "efdd65feeabcbd7c0db50b933b97ad4758fe657ead6f26ab105e6bcb631265b6"
+  "generated_checksum": "6ddf224ae169422967d9f41bf947b2a0e743cc2b7ff7fbca885a1344f84664ee"
 }

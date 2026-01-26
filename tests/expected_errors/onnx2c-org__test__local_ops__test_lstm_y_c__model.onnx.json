@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx2c-org/test/local_ops/test_lstm_y_c/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_lstm_y_c/test_data_set_0",
   "operators": [
     "LSTM"
   ],
   "opset_version": 11,
-  "generated_checksum": "da8583e26bff22d777c5dd5fd0bff2e2888d561d0328212cd53857003737fc66"
+  "generated_checksum": "940f18ddae36e4d9ec52ff510c311ce32304243048afb3648e0b6d180073edd8"
 }

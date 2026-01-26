@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_equal_parts_1d_opset13/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_equal_parts_1d_opset13/test_data_set_0",
   "operators": [
     "Split"
   ],
   "opset_version": 13,
-  "generated_checksum": "8147ebbf18b1fb33d2fc5985b79387ae48215b5df33225589888793a201d8591"
+  "generated_checksum": "c75296da08a11321602c8c0b40a7474acde62b643375e5454f07b8e4b7132f9d"
 }

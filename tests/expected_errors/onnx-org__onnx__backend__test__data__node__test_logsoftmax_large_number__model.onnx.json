@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_logsoftmax_large_number/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_large_number/test_data_set_0",
   "operators": [
     "LogSoftmax"
   ],
   "opset_version": 13,
-  "generated_checksum": "33b827cdf331dd44cadf1ec7ae385bbed8da68d8d2eb46cec7dfae5c7cdb6b69"
+  "generated_checksum": "f7c4d2261cf4f17c1d9700040929e52d2251737f3347874a22b5fb715fb4dbcf"
 }

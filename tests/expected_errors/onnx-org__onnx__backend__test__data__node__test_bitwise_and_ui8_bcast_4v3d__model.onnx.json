@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/test_data_set_0",
   "operators": [
     "BitwiseAnd"
   ],
   "opset_version": 18,
-  "generated_checksum": "f1ee7e872d46841ffef25247c642aef4b499249ae078760b58d44ba2340c5e4a"
+  "generated_checksum": "ec73fc83cb211044ce1c30b993ffa57b011579da6ec71428a03af8febc160002"
 }

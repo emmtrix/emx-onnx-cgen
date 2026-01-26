@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_slice_end_INT64_MAX/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_slice_end_INT64_MAX/test_data_set_0",
   "operators": [
     "Slice",
     "Constant"
   ],
   "opset_version": 12,
-  "generated_checksum": "212dc6b881c8c0c26c00b06026e51c16ea9915072ebe3ddc5a37abc276940ff8"
+  "generated_checksum": "58bc2e81ce35d2d56e06ebe83096c5764b0d2ef3c4263fd616db3b3447ec030a"
 }

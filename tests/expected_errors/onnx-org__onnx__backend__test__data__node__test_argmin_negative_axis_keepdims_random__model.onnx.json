@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_argmin_negative_axis_keepdims_random/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_argmin_negative_axis_keepdims_random/test_data_set_0",
   "operators": [
     "ArgMin"
   ],
   "opset_version": 13,
-  "generated_checksum": "bc59a7dc2b952b3cc5b0dfd409ede72c76cf5e39f470cda66ce85e3c24350647"
+  "generated_checksum": "7fa8a0f06d0b71c5bbdb7c07f0d9bc36875e7f82e0baa39a35d70f1fa4c68aa0"
 }

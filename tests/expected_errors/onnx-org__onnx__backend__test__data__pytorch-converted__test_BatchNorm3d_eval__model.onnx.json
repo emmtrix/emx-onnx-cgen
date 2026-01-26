@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_eval/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_eval/test_data_set_0",
   "operators": [
     "BatchNormalization"
   ],
   "opset_version": 6,
-  "generated_checksum": "7796a0d273fe838644d67c766d53748bbe3b91e50f3a8aab0507cf77f0b891b9"
+  "generated_checksum": "724ba3f424234153ab50fc08a4f8298021d5293f298cbdd7a2c9316825c8b94e"
 }

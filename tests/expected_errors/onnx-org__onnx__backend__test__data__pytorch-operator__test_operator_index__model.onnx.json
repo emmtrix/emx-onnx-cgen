@@ -1,10 +1,10 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_index/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_index/test_data_set_0",
   "operators": [
     "Slice",
     "Squeeze"
   ],
   "opset_version": 6,
-  "generated_checksum": "7f7e85ad3239e1a5c2ac94e447db3972c81183eb6a082573f97849ef102533ea"
+  "generated_checksum": "7f050f5558ae648db1beaf33c4d6fb8755370d31c916e725f4d43f74d61ca74b"
 }

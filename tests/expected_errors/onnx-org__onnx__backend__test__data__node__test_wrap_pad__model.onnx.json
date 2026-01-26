@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_wrap_pad/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_wrap_pad/test_data_set_0",
   "operators": [
     "Pad"
   ],
   "opset_version": 25,
-  "generated_checksum": "faeb4024b76e590f735aea33beddc6da08a732364dfc056801e114029688cc9b"
+  "generated_checksum": "4f7cea8b811029c668d1d276989d997f16c26b30b6bb34e2fe9080eedcb14ed5"
 }

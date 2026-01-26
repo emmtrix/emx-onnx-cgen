@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample/test_data_set_0",
   "operators": [
     "GridSample"
   ],
   "opset_version": 22,
-  "generated_checksum": "0aaa120a5737831874c5d8c9d11e82af92d3a036c69829bd65cb8cc800fc7ce6"
+  "generated_checksum": "fa1d7ae9f00b851c4c6e2420899dd412cc3e97da653d34bee32399a0bd7324cc"
 }

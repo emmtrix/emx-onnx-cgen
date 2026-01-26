@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_instancenorm_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_instancenorm_example/test_data_set_0",
   "operators": [
     "InstanceNormalization"
   ],
   "opset_version": 22,
-  "generated_checksum": "279c153946a0a6c0d4c353513d1406b59c59114de14c7f17a989339ec6ba473b"
+  "generated_checksum": "78cb797b4bc963a55bedd47cd49b7d4e1e974c1f4e2a1493a71ece7a5f9fd449"
 }

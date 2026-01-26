@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_with_argmax_2d_precomputed_strides/test_data_set_0",
   "operators": [
     "MaxPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "c69e7680ebe53e04832d98c9d3d5a37972d251468b598bf1e7cf5472817086f4"
+  "generated_checksum": "54112105950ede802131e1536cbb9765a789501fdcef9981a60c39f7b46246eb"
 }

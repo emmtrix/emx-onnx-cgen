@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_onehot_negative_indices/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_onehot_negative_indices/test_data_set_0",
   "operators": [
     "OneHot"
   ],
   "opset_version": 11,
-  "generated_checksum": "2dfefd8390d7eb54deca474876c4166580eac9a1624c2552b1f291fb24cf3387"
+  "generated_checksum": "0d4d13407838bb47087eea0d4372695f938d73b22dea0aafbb52dda26fe8a772"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx2c-org/test/local_ops/test_matmul_precision/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_matmul_precision/test_data_set_0",
   "operators": [
     "MatMul"
   ],
   "opset_version": 12,
-  "generated_checksum": "20f856ce8bd24b04c99d8a1e5514025492b367a44fc68c6a53799bcd277235b8"
+  "generated_checksum": "aa8b2a4c99aea5fe4dfeb8611dd4ce0ff01295bf800de9a3ceb714b83478c428"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_globalmaxpool/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_globalmaxpool/test_data_set_0",
   "operators": [
     "GlobalMaxPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "485bede276c0549a1fc4672a1a2ae31cea8c1c3733b09466e31d85ab9c6b8ba6"
+  "generated_checksum": "2d162fcb25369317e6989f31f050b7fd3cf6f01cecd61abc8fccb4d85f39d682"
 }

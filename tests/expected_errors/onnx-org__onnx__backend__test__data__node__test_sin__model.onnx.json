@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 1)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sin/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sin/test_data_set_0",
   "operators": [
     "Sin"
   ],
   "opset_version": 22,
-  "generated_checksum": "907528df594d230530e77f9f66f421fa089716cbc065dd1c4488388980933f2e"
+  "generated_checksum": "58ca4f1305f53d38d636a65e6eee1565475b1674906577fe33095ab6472d219f"
 }

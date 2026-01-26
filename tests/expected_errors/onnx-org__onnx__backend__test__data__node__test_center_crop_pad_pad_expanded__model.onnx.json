@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -13,5 +13,5 @@
     "Slice"
   ],
   "opset_version": 18,
-  "generated_checksum": "901c1fe620ffef28c19ef061d3ed64f09eeb46499f1e3d1d216429b063e1e060"
+  "generated_checksum": "22eebb16ad1b4b3c263a59c25137f5f66c10708ab839861053e77086b109113f"
 }

@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shrink_soft/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_shrink_soft/test_data_set_0",
   "operators": [
     "Shrink"
   ],
   "opset_version": 9,
-  "generated_checksum": "2658d3bddda6cad599d5a0a589bb1b1ff7ac6ad565867820d6b07cd3ac0f5e29"
+  "generated_checksum": "3bf78e85016d24f27234337ac7ee47a87398dcf733bf92750fd0e28ffdcd5723"
 }

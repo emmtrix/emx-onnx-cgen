@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 2)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sce_none_weights_log_prob_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sce_none_weights_log_prob_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -11,5 +11,5 @@
     "NegativeLogLikelihoodLoss"
   ],
   "opset_version": 13,
-  "generated_checksum": "1fc259883477c521b42d0b092d40aeec0ab3821c4d78768125702f8a8f434c4c"
+  "generated_checksum": "6bfbfb13e2651bfc8dbd40aa3ff0d902db631f44246a5061035ef4e4f73f635f"
 }

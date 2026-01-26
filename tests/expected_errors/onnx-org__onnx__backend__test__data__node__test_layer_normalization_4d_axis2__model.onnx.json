@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 112)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/test_data_set_0",
   "operators": [
     "LayerNormalization"
   ],
   "opset_version": 17,
-  "generated_checksum": "774c10acd5d1775b7f0e2304a60fcf321f6ea34d71fcecd0624e7b2e2c2bbac6"
+  "generated_checksum": "7c5ffdf4a5ee8bb2e9a280d347e6fd4b7454db3fb8f7dd32aa5be76846b03283"
 }

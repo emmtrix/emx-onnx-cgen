@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 17525756)",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/test_data_set_0",
   "operators": [
     "Clip"
   ],
   "opset_version": 6,
-  "generated_checksum": "2dd51c16bc5fd37f6ec1dc0bf0d107e47f8378452fd5a6cee76142a063a12c40"
+  "generated_checksum": "b45f3e101621411b494ade4d47c982e7429bc18d92809027920cba82a29a612e"
 }

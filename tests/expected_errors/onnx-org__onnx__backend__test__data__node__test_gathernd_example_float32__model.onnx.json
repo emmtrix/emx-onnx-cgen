@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gathernd_example_float32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gathernd_example_float32/test_data_set_0",
   "operators": [
     "GatherND"
   ],
   "opset_version": 13,
-  "generated_checksum": "5f024374612cac7165b247976d8e656f1ca0e0311690fb1a7c211b73a45e1e76"
+  "generated_checksum": "ee7dd1060086f2bae3a88cc7b393154634fde311cb97dd2810528c62f3051960"
 }

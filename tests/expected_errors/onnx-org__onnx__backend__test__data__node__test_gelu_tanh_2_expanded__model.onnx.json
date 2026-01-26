@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 20)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_tanh_2_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -11,5 +11,5 @@
     "Tanh"
   ],
   "opset_version": 20,
-  "generated_checksum": "24857c374f29ed5d2e02f72a1d29de8fda74997cf6c60a9ba599746eb361bd0f"
+  "generated_checksum": "f5159d99b48c59a336906d34a80fa2d8b3202e5ab43ba5299d109b9939bca85d"
 }

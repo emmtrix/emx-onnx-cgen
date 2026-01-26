@@ -1,9 +1,9 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isinf_float16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_isinf_float16/test_data_set_0",
   "operators": [
     "IsInf"
   ],
   "opset_version": 20,
-  "generated_checksum": "4979a553502b2ef902c64eaedcb3800778e2533a33f356cd331d1b2c6430915a"
+  "generated_checksum": "1ef43537262b5182dcfa62d532e9d2a625198fd241b5cf9ebe2f6448e8fc365f"
 }
