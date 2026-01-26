@@ -306,8 +306,6 @@ def _find_test_data_dir(model_path: Path) -> Path | None:
 
 
 def _errors_match(actual_error: str, expected_error: str) -> bool:
-    if expected_error.startswith("OK"):
-        return actual_error.startswith("OK")
     return actual_error == expected_error
 
 
@@ -345,31 +343,37 @@ def _run_expected_error_test(
                 str(test_data_dir.relative_to(repo_root)),
             ]
         )
+
     cli_result = cli.run_cli_command(verify_args)
+
     if cli_result.exit_code != 0:
-        actual_error = cli_result.error or ""
+        actual_error = cli_result.error or "ERROR UNKNOWN"
     else:
-        actual_error = cli_result.success_message or ""
-        if actual_error == "CHECKSUM":
-            actual_error = expected_error
-    actual_expectation = OnnxFileExpectation(
-        path=expectation_path,
-        error=actual_error,
-        command_line=cli_result.command_line,
-        operators=cli_result.operators,
-        opset_version=cli_result.opset_version,
-        generated_checksum=cli_result.generated_checksum,
-    )
+        actual_error = cli_result.success_message or "OK UNKNOWN"
+
+    if actual_error == "CHECKSUM":
+        actual_error = expected_error
+
     if os.getenv("UPDATE_REFS"):
+        actual_expectation = OnnxFileExpectation(
+            path=expectation_path,
+            error=actual_error,
+            command_line=cli_result.command_line,
+            operators=cli_result.operators,
+            opset_version=cli_result.opset_version,
+            generated_checksum=cli_result.generated_checksum,
+        )
+
         _write_expectation_file(
             actual_expectation,
             repo_relative_path=repo_relative_path,
         )
         return
-    assert _errors_match(actual_error, expected_error), (
-        f"Unexpected result for {expectation_path}. Expected: {expected_error!r}. "
-        f"Got: {actual_error!r}."
-    )
+    else:
+        assert _errors_match(actual_error, expected_error), (
+            f"Unexpected result for {expectation_path}. Expected: {expected_error!r}. "
+            f"Got: {actual_error!r}."
+        )
 
 
 @pytest.mark.order(1)
