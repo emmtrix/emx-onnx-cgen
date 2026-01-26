@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 64)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_instancenorm_epsilon/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_instancenorm_epsilon/test_data_set_0",
   "operators": [
     "InstanceNormalization"

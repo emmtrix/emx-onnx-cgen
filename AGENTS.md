@@ -231,6 +231,11 @@ UPDATE_REFS=1 pytest -n auto -q --maxfail=10
 * Default level: INFO.
 * Provide debug dumps behind flags.
 
+## Code comments
+
+- Add comments only where they add durable value: intent/why, invariants/assumptions, non-obvious trade-offs, external constraints/workarounds.
+- Do not comment obvious code or restate what the code already shows. Keep comments brief and keep them updated when changing related code.
+
 ## Testing Guidelines
 
 ### Requirements for new features

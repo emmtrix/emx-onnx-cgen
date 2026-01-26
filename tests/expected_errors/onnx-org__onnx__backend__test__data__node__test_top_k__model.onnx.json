@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_top_k/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_top_k/test_data_set_0",
   "operators": [
     "TopK"

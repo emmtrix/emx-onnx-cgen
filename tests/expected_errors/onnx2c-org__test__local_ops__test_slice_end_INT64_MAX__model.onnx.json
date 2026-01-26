@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx2c-org/test/local_ops/test_slice_end_INT64_MAX/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_slice_end_INT64_MAX/test_data_set_0",
   "operators": [
     "Slice",
