@@ -101,6 +101,12 @@ def main() -> None:
         "codegen/runtime match the backend tests."
     )
     prompt_lines.append(
+        "Numerical accuracy hint: if verification fails with small ULP deltas, "
+        "compare accumulation order/precision against the ONNX reference (e.g., "
+        "GEMM/col2im-based ConvTranspose) and consider higher-precision "
+        "accumulators or output-based accumulation."
+    )
+    prompt_lines.append(
         "Window op hint: for Blackman/Hann/Hamming window ops, the output length "
         "must match the scalar size input, periodic=1 uses denom=size, periodic=0 "
         "uses denom=size-1, and output_datatype controls the output dtype."

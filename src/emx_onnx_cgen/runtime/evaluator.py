@@ -2781,45 +2781,47 @@ def _apply_conv_transpose(
     pad_begin = spec.pads[: spec.spatial_rank]
     group_in_channels = spec.in_channels // spec.group
     group_out_channels = spec.out_channels // spec.group
+    acc_dtype = np.float32 if data.dtype == np.float16 else data.dtype
     for n in range(spec.batch):
         for g in range(spec.group):
             oc_base = g * group_out_channels
             ic_base = g * group_in_channels
-            for ic in range(group_in_channels):
-                ic_global = ic_base + ic
-                for in_index in np.ndindex(*spec.in_spatial):
-                    value = data[(n, ic_global, *in_index)]
-                    for oc in range(group_out_channels):
-                        oc_global = oc_base + oc
-                        for kernel_index in np.ndindex(*spec.kernel_shape):
-                            out_index = []
-                            valid = True
-                            for (
-                                in_dim,
-                                kernel_dim,
-                                stride,
-                                dilation,
-                                pad,
-                                out_size,
-                            ) in zip(
-                                in_index,
-                                kernel_index,
-                                spec.strides,
-                                spec.dilations,
-                                pad_begin,
-                                spec.out_spatial,
-                            ):
-                                out_dim = (
-                                    in_dim * stride + kernel_dim * dilation - pad
-                                )
-                                if out_dim < 0 or out_dim >= out_size:
-                                    valid = False
-                                    break
-                                out_index.append(out_dim)
-                            if valid:
-                                output[(n, oc_global, *out_index)] += (
-                                    value * weights[(ic_global, oc, *kernel_index)]
-                                )
+            for oc in range(group_out_channels):
+                oc_global = oc_base + oc
+                for kernel_index in np.ndindex(*spec.kernel_shape):
+                    for in_index in np.ndindex(*spec.in_spatial):
+                        acc = acc_dtype(0.0)
+                        for ic in range(group_in_channels):
+                            ic_global = ic_base + ic
+                            acc += data[(n, ic_global, *in_index)] * weights[
+                                (ic_global, oc, *kernel_index)
+                            ]
+                        out_index = []
+                        valid = True
+                        for (
+                            in_dim,
+                            kernel_dim,
+                            stride,
+                            dilation,
+                            pad,
+                            out_size,
+                        ) in zip(
+                            in_index,
+                            kernel_index,
+                            spec.strides,
+                            spec.dilations,
+                            pad_begin,
+                            spec.out_spatial,
+                        ):
+                            out_dim = (
+                                in_dim * stride + kernel_dim * dilation - pad
+                            )
+                            if out_dim < 0 or out_dim >= out_size:
+                                valid = False
+                                break
+                            out_index.append(out_dim)
+                        if valid:
+                            output[(n, oc_global, *out_index)] += acc
     return output
 
 
