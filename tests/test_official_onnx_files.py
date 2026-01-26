@@ -316,6 +316,16 @@ def _skip_expected_checksum() -> bool:
     return value in {"1", "true", "yes", "on"}
 
 
+def _should_use_expected_checksum(
+    expectation: OnnxFileExpectation,
+) -> bool:
+    if os.getenv("UPDATE_REFS"):
+        return False
+    if expectation.generated_checksum is None:
+        return False
+    return not _skip_expected_checksum()
+
+
 def _run_expected_error_test(
     *,
     repo_root: Path,
@@ -331,7 +341,7 @@ def _run_expected_error_test(
         "verify",
         str(model_path.relative_to(repo_root)),
     ]
-    if expectation.generated_checksum is not None and not _skip_expected_checksum():
+    if _should_use_expected_checksum(expectation):
         verify_args.extend(
             [
                 "--expected-checksum",

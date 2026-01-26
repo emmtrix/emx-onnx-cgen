@@ -1,5 +1,5 @@
 {
-  "error": "OK CHECKSUM",
+  "error": "Out of tolerance (max ULP 50389)",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_densenet121.onnx",
   "operators": [
     "ConstantOfShape",
