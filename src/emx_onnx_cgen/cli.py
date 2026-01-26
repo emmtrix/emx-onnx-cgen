@@ -623,7 +623,7 @@ def _verify_model(
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
-            command_line=args.command_line,
+            command_line=None,
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
             truncate_weights_after=args.truncate_weights_after,
