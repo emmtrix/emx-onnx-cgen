@@ -32,6 +32,7 @@ from ..lowering.grid_sample import lower_grid_sample
 from ..lowering.instance_normalization import lower_instance_normalization
 from ..lowering.group_normalization import lower_group_normalization
 from ..lowering.layer_normalization import lower_layer_normalization
+from ..lowering.hamming_window import lower_hamming_window
 from ..lowering.non_max_suppression import lower_non_max_suppression
 from ..lowering.mean_variance_normalization import (
     lower_mean_variance_normalization,
@@ -1735,18 +1736,24 @@ def _eval_qlinear_matmul(evaluator: Evaluator, node: Node) -> None:
     input0_zero = _scalar_int(input0_zero_point)
     input1_zero = _scalar_int(input1_zero_point)
     output_zero = _scalar_int(output_zero_point)
-    scale = _scalar_value(input0_scale) * _scalar_value(
-        input1_scale
-    ) / _scalar_value(output_scale)
+    scale_dtype = np.result_type(
+        input0_scale, input1_scale, output_scale
+    )
+    scale = (
+        input0_scale.astype(scale_dtype)
+        * input1_scale.astype(scale_dtype)
+        / output_scale.astype(scale_dtype)
+    )
+    scale_value = float(np.asarray(scale).reshape(-1)[0])
     acc = _apply_matmul(
         input0.astype(np.int32) - input0_zero,
         input1.astype(np.int32) - input1_zero,
     )
-    scaled = acc.astype(np.float64) * scale + output_zero
+    scaled = acc.astype(np.float64) * scale_value + output_zero
     rounded = np.rint(scaled)
-    info = np.iinfo(op.dtype.np_dtype)
-    clipped = np.clip(rounded, info.min, info.max)
-    evaluator.values[op.output] = clipped.astype(op.dtype.np_dtype)
+    evaluator.values[op.output] = rounded.astype(
+        op.dtype.np_dtype, copy=False
+    )
 
 
 @register_evaluator("QLinearMul")
@@ -2132,6 +2139,21 @@ def _eval_range(evaluator: Evaluator, node: Node) -> None:
     indices = np.arange(op.length, dtype=op.dtype.np_dtype)
     output = start_value + indices * delta_value
     evaluator.values[op.output] = output
+
+
+@register_evaluator("HammingWindow")
+def _eval_hamming_window(evaluator: Evaluator, node: Node) -> None:
+    op = lower_hamming_window(evaluator.graph, node)
+    size_value = evaluator.values[op.size].reshape(-1)[0]
+    size = int(size_value)
+    if size < 0:
+        raise UnsupportedOpError("HammingWindow size must be non-negative")
+    denom = size if op.periodic else size - 1
+    alpha = 25.0 / 46.0
+    beta = 1.0 - alpha
+    indices = np.arange(size, dtype=op.dtype.np_dtype)
+    values = alpha - np.cos(indices * np.pi * 2 / denom) * beta
+    evaluator.values[op.output] = values.astype(op.dtype.np_dtype)
 
 
 @register_evaluator("OneHot")
@@ -2839,13 +2861,21 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                             acc = 0.0
                             count = 0
                             for kd in range(op.kernel_d):
-                                id_ = od * op.stride_d + kd - op.pad_front
+                                id_ = (
+                                    od * op.stride_d
+                                    + kd * op.dilation_d
+                                    - op.pad_front
+                                )
                                 if id_ < 0 or id_ >= op.in_d:
                                     if op.count_include_pad:
                                         count += op.kernel_h * op.kernel_w
                                 else:
                                     for kh in range(op.kernel_h):
-                                        ih = oh * op.stride_h + kh - op.pad_top
+                                        ih = (
+                                            oh * op.stride_h
+                                            + kh * op.dilation_h
+                                            - op.pad_top
+                                        )
                                         if ih < 0 or ih >= op.in_h:
                                             if op.count_include_pad:
                                                 count += op.kernel_w
@@ -2853,7 +2883,7 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                                             for kw in range(op.kernel_w):
                                                 iw = (
                                                     ow * op.stride_w
-                                                    + kw
+                                                    + kw * op.dilation_w
                                                     - op.pad_left
                                                 )
                                                 if iw < 0 or iw >= op.in_w:
@@ -2876,13 +2906,21 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                     acc = 0.0
                     count = 0
                     for kh in range(op.kernel_h):
-                        ih = oh * op.stride_h + kh - op.pad_top
+                        ih = (
+                            oh * op.stride_h
+                            + kh * op.dilation_h
+                            - op.pad_top
+                        )
                         if ih < 0 or ih >= op.in_h:
                             if op.count_include_pad:
                                 count += op.kernel_w
                         else:
                             for kw in range(op.kernel_w):
-                                iw = ow * op.stride_w + kw - op.pad_left
+                                iw = (
+                                    ow * op.stride_w
+                                    + kw * op.dilation_w
+                                    - op.pad_left
+                                )
                                 if iw < 0 or iw >= op.in_w:
                                     if op.count_include_pad:
                                         count += 1

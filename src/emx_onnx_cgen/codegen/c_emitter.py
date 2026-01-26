@@ -56,6 +56,7 @@ from ..ir.ops import (
     GemmOp,
     GridSampleOp,
     GroupNormalizationOp,
+    HammingWindowOp,
     HardmaxOp,
     IdentityOp,
     InstanceNormalizationOp,
@@ -507,6 +508,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> tuple[str, ...]:
@@ -724,6 +726,8 @@ class CEmitter:
             return tuple(names)
         if isinstance(op, RangeOp):
             return (op.start, op.limit, op.delta, op.output)
+        if isinstance(op, HammingWindowOp):
+            return (op.size, op.output)
         if isinstance(op, OneHotOp):
             return (op.indices, op.depth, op.values, op.output)
         if isinstance(op, SplitOp):
@@ -895,6 +899,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
         name_map: dict[str, str],
@@ -962,6 +967,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp
     ):
@@ -1262,6 +1268,9 @@ class CEmitter:
                 kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
                 stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
@@ -1918,6 +1927,15 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, HammingWindowOp):
+            return HammingWindowOp(
+                size=name_map.get(op.size, op.size),
+                output=name_map.get(op.output, op.output),
+                output_shape=op.output_shape,
+                periodic=op.periodic,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=name_map.get(op.indices, op.indices),
@@ -2124,6 +2142,9 @@ class CEmitter:
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
+                "hamming_window": self._env.get_template(
+                    "hamming_window_op.c.j2"
+                ),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "split": self._env.get_template("split_op.c.j2"),
             }
@@ -2766,6 +2787,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3034,6 +3056,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3151,6 +3174,8 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
+        if any(isinstance(op, HammingWindowOp) for op in resolved_ops):
+            return True
         return False
 
     @staticmethod
@@ -3212,6 +3237,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3315,6 +3341,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -3432,6 +3459,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
         dim_order: Sequence[str],
@@ -3526,6 +3554,13 @@ class CEmitter:
                 call_parts.append(op.output_present_value)
             if op.output_qk_matmul is not None:
                 call_parts.append(op.output_qk_matmul)
+            args.extend(call_parts)
+            return ", ".join(args)
+        if isinstance(op, RotaryEmbeddingOp):
+            call_parts = [op.input0, op.cos_cache, op.sin_cache]
+            if op.position_ids is not None:
+                call_parts.append(op.position_ids)
+            call_parts.append(op.output)
             args.extend(call_parts)
             return ", ".join(args)
         if isinstance(op, ConvOp):
@@ -3698,6 +3733,9 @@ class CEmitter:
         if isinstance(op, RangeOp):
             args.extend([op.start, op.limit, op.delta, op.output])
             return ", ".join(args)
+        if isinstance(op, HammingWindowOp):
+            args.extend([op.size, op.output])
+            return ", ".join(args)
         if isinstance(op, OneHotOp):
             args.extend([op.indices, op.depth, op.values, op.output])
             return ", ".join(args)
@@ -3869,6 +3907,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
         temp_map: dict[str, str],
@@ -3934,6 +3973,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp
     ):
@@ -4351,6 +4391,9 @@ class CEmitter:
                 kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
                 stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
@@ -4763,6 +4806,15 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, HammingWindowOp):
+            return HammingWindowOp(
+                size=temp_map.get(op.size, op.size),
+                output=temp_map.get(op.output, op.output),
+                output_shape=op.output_shape,
+                periodic=op.periodic,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=temp_map.get(op.indices, op.indices),
@@ -5117,6 +5169,7 @@ class CEmitter:
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
             range_template=templates["range"],
+            hamming_window_template=templates["hamming_window"],
             one_hot_template=templates["one_hot"],
             split_template=templates["split"],
             scalar_registry=state.scalar_registry,
@@ -5200,6 +5253,7 @@ class CEmitter:
         expand_template,
         cumsum_template,
         range_template,
+        hamming_window_template,
         one_hot_template,
         split_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
@@ -6328,6 +6382,9 @@ class CEmitter:
                 kernel_d=op.kernel_d,
                 kernel_h=op.kernel_h,
                 kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
                 stride_d=op.stride_d,
                 stride_h=op.stride_h,
                 stride_w=op.stride_w,
@@ -9377,6 +9434,38 @@ class CEmitter:
                 length=op.length,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, HammingWindowOp):
+            params = self._shared_param_map(
+                [
+                    ("size", op.size),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["size"],
+                        op.input_dtype.c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = hamming_window_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=op.output_shape[0],
+                periodic_literal="1" if op.periodic else "0",
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
             params = self._shared_param_map(
                 [
@@ -9803,10 +9892,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearMatMulOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QLinearMatMul."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9926,32 +10011,28 @@ class CEmitter:
                     ),
                 ]
             )
-            compute_dtype = (
-                ScalarType.F64
-                if ScalarType.F64
-                in {
-                    op.input0_scale_dtype,
-                    op.input1_scale_dtype,
-                    op.output_scale_dtype,
-                }
-                else ScalarType.F32
-            )
+            if ScalarType.F64 in {
+                op.input0_scale_dtype,
+                op.input1_scale_dtype,
+                op.output_scale_dtype,
+            }:
+                scale_dtype = ScalarType.F64
+            elif ScalarType.F32 in {
+                op.input0_scale_dtype,
+                op.input1_scale_dtype,
+                op.output_scale_dtype,
+            }:
+                scale_dtype = ScalarType.F32
+            else:
+                scale_dtype = ScalarType.F16
+            compute_dtype = ScalarType.F64
             compute_type = (
                 "double" if compute_dtype == ScalarType.F64 else "float"
             )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearMatMul."
-                )
             round_fn = CEmitter._math_fn(
                 compute_dtype, "nearbyintf", "nearbyint"
             )
+            mod_fn = CEmitter._math_fn(compute_dtype, "fmodf", "fmod")
             scale_index = "0"
             rendered = qlinear_matmul_template.render(
                 model_name=model.name,
@@ -9966,6 +10047,8 @@ class CEmitter:
                 output_zero_point=params["output_zero_point"],
                 output=params["output"],
                 params=param_decls,
+                scale_type=scale_dtype.c_type,
+                scale_is_float16=scale_dtype == ScalarType.F16,
                 compute_type=compute_type,
                 output_c_type=op.dtype.c_type,
                 input0_index_expr=input0_index_expr,
@@ -9981,10 +10064,8 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                min_literal=op.dtype.min_literal,
-                max_literal=op.dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                mod_fn=mod_fn,
+                output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -10251,6 +10332,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> str:
@@ -10318,6 +10400,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
@@ -10444,6 +10527,8 @@ class CEmitter:
             return ((op.input0, op.input_shape),)
         if isinstance(op, RangeOp):
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
+        if isinstance(op, HammingWindowOp):
+            return ((op.size, ()),)
         if isinstance(op, OneHotOp):
             return (
                 (op.indices, op.indices_shape),
@@ -10519,6 +10604,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | HammingWindowOp
             | OneHotOp
             | SplitOp
         ],
@@ -10593,6 +10679,7 @@ class CEmitter:
         | NonMaxSuppressionOp
         | ExpandOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...], ScalarType], ...]:
@@ -10811,7 +10898,9 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
+        | RotaryEmbeddingOp
         | SplitOp
         | PadOp,
     ) -> tuple[int, ...]:
@@ -10935,8 +11024,12 @@ class CEmitter:
             return op.input_shape
         if isinstance(op, RangeOp):
             return op.output_shape
+        if isinstance(op, HammingWindowOp):
+            return op.output_shape
         if isinstance(op, OneHotOp):
             return op.output_shape
+        if isinstance(op, RotaryEmbeddingOp):
+            return op.input_shape
         if op.output_rank == 3:
             return (op.batch, op.q_seq, op.q_heads * op.v_head_size)
         return (op.batch, op.q_heads, op.q_seq, op.v_head_size)
@@ -10994,6 +11087,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | HammingWindowOp
         | OneHotOp
         | SplitOp
         | PadOp,

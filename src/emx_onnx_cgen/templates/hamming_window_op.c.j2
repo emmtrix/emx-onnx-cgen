@@ -1,0 +1,12 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const double size_value = (double){{ size }}[0];
+    const double denom = {{ periodic_literal }} ? size_value : (size_value - 1.0);
+    const double alpha = 25.0 / 46.0;
+    const double beta = 1.0 - alpha;
+    const double pi = 3.14159265358979323846;
+    for (idx_t idx = 0; idx < {{ length }}; ++idx) {
+        const double phase = (2.0 * pi * (double)idx) / denom;
+        const double value = alpha - beta * cos(phase);
+        {{ output }}[idx] = ({{ c_type }})value;
+    }
+}

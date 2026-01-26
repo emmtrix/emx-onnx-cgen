@@ -14,9 +14,7 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
-| Iteration of zero-sized operands is not enabled | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
-| '*' object has no attribute '*' | 8 | ███████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
 | tuple index out of range | 8 | ███████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
@@ -47,7 +45,6 @@
 | Unsupported op RandomUniformLike | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
 | name '*' is not defined | 3 | ██ |
-| Arrays are not equal (max abs diff 148) | 2 | ██ |
 | AveragePool supports ceil_mode=0 only | 2 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
 | Failed to build testbench. | 2 | ██ |
@@ -59,14 +56,12 @@
 | QuantizeLinear block_size is not supported | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
-| Tile repeats input must be a constant initializer | 2 | ██ |
 | Unsupported op Adam | 2 | ██ |
 | Unsupported op BitwiseNot | 2 | ██ |
 | Unsupported op BlackmanWindow | 2 | ██ |
 | Unsupported op ConvInteger | 2 | ██ |
 | Unsupported op Det | 2 | ██ |
 | Unsupported op Gradient | 2 | ██ |
-| Unsupported op HammingWindow | 2 | ██ |
 | Unsupported op HannWindow | 2 | ██ |
 | Unsupported op MaxUnpool | 2 | ██ |
 | Unsupported op ReverseSequence | 2 | ██ |
@@ -74,8 +69,6 @@
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
-| Arrays are not equal (max abs diff 247) | 1 | █ |
-| Arrays are not equal (max abs diff 248) | 1 | █ |
 | AveragePool supports 2D/3D inputs only | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |

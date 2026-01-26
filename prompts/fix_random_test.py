@@ -107,6 +107,11 @@ def main() -> None:
         "accumulators or output-based accumulation."
     )
     prompt_lines.append(
+        "Window op hint: for Blackman/Hann/Hamming window ops, the output length "
+        "must match the scalar size input, periodic=1 uses denom=size, periodic=0 "
+        "uses denom=size-1, and output_datatype controls the output dtype."
+    )
+    prompt_lines.append(
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )

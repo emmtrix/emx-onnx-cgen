@@ -1,4 +1,9 @@
 {
-  "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/test_data_set_0",
+  "operators": [
+    "Slice"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "d5d346a41c8df112c9ba8a5d2d4a87dd3e16da7d8fec0ead20518d87dbdb0f3c"
 }

@@ -1,4 +1,9 @@
 {
-  "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/test_data_set_0",
+  "operators": [
+    "Reshape"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "0252d956fdaf8dd0a6df26a5006902c659665b0c6a9f1c876b5870291c58b050"
 }

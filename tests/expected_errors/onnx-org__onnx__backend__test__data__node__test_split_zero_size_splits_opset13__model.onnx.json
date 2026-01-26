@@ -1,4 +1,9 @@
 {
-  "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_zero_size_splits_opset13/test_data_set_0",
+  "operators": [
+    "Split"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "8a393d16633f3c56c4b3bc43d44936e0988ab36121371551941f5e299d458555"
 }
