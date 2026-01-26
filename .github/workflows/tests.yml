@@ -37,7 +37,7 @@ jobs:
 
       - name: Run tests (update refs for PRs)
         if: github.event_name == 'pull_request'
-        run: UPDATE_REFS=1 pytest -n auto -q
+        run: UPDATE_REFS=3 pytest -n auto -q
 
       - name: Commit updated references
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository

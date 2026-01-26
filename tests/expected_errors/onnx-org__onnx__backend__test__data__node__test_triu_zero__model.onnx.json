@@ -1,9 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_triu_zero/test_data_set_0",
-  "operators": [
-    "Trilu"
-  ],
-  "opset_version": 14,
-  "generated_checksum": "e21f2d41df11000fe98d4e9546bbcb974143347f2b5a89ca87b45562d9862584"
+  "error": "Iteration of zero-sized operands is not enabled",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_triu_zero/test_data_set_0"
 }

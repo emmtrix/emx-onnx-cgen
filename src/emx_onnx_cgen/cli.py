@@ -56,6 +56,16 @@ class _WorstDiff:
     ulp: int
 
 
+@dataclass(frozen=True)
+class _WorstAbsDiff:
+    output_name: str
+    node_name: str | None
+    index: tuple[int, ...]
+    got: object
+    reference: object
+    abs_diff: float | int
+
+
 class _VerifyReporter:
     def __init__(self, stream: TextIO | None = None) -> None:
         self._stream = stream or sys.stdout
@@ -144,6 +154,43 @@ def _worst_ulp_diff(
                 iterator.multi_index,
                 float(actual_value[()]),
                 float(expected_value[()]),
+            )
+    return max_diff, worst
+
+
+def _worst_abs_diff(
+    actual: "np.ndarray", expected: "np.ndarray"
+) -> tuple[float | int, tuple[tuple[int, ...], object, object] | None]:
+    if actual.shape != expected.shape:
+        raise ValueError(
+            f"Shape mismatch for diff calculation: {actual.shape} vs {expected.shape}"
+        )
+    dtype = expected.dtype
+    actual_cast = actual.astype(dtype, copy=False)
+    expected_cast = expected.astype(dtype, copy=False)
+    max_diff: float | int = 0
+    worst: tuple[tuple[int, ...], object, object] | None = None
+    iterator = np.nditer(
+        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
+    )
+    for actual_value, expected_value in iterator:
+        actual_scalar = actual_value[()]
+        expected_scalar = expected_value[()]
+        if actual_scalar == expected_scalar:
+            continue
+        try:
+            if np.issubdtype(dtype, np.integer) or np.issubdtype(dtype, np.bool_):
+                diff: float | int = abs(int(actual_scalar) - int(expected_scalar))
+            else:
+                diff = float(abs(actual_scalar - expected_scalar))
+        except Exception:
+            diff = 1
+        if diff > max_diff:
+            max_diff = diff
+            worst = (
+                iterator.multi_index,
+                actual_scalar,
+                expected_scalar,
             )
     return max_diff, worst
 
@@ -900,6 +947,8 @@ def _verify_model(
     payload_outputs = payload.get("outputs", {})
     max_ulp = 0
     worst_diff: _WorstDiff | None = None
+    max_abs_diff: float | int = 0
+    worst_abs_diff: _WorstAbsDiff | None = None
     output_nodes = {
         output_name: node
         for node in graph.nodes
@@ -937,10 +986,44 @@ def _verify_model(
                             ulp=output_max,
                         )
             else:
-                np.testing.assert_array_equal(output_data, runtime_out)
+                output_max, output_worst = _worst_abs_diff(
+                    output_data, runtime_out
+                )
+                if output_max > max_abs_diff:
+                    max_abs_diff = output_max
+                    if output_worst is not None:
+                        node = output_nodes.get(value.name)
+                        worst_abs_diff = _WorstAbsDiff(
+                            output_name=value.name,
+                            node_name=node.name if node else None,
+                            index=output_worst[0],
+                            got=output_worst[1],
+                            reference=output_worst[2],
+                            abs_diff=output_max,
+                        )
     except AssertionError as exc:
         active_reporter.step_fail(str(exc))
         return None, str(exc), operators, opset_version, generated_checksum
+    if max_abs_diff > 0:
+        active_reporter.step_fail(f"max abs diff {max_abs_diff}")
+        if worst_abs_diff is not None:
+            node_label = worst_abs_diff.node_name or "(unknown)"
+            index_display = ", ".join(str(dim) for dim in worst_abs_diff.index)
+            active_reporter.info(
+                "  Worst diff: output="
+                f"{worst_abs_diff.output_name} node={node_label} "
+                f"index=[{index_display}] "
+                f"got={worst_abs_diff.got} "
+                f"ref={worst_abs_diff.reference} "
+                f"abs_diff={worst_abs_diff.abs_diff}"
+            )
+        return (
+            None,
+            f"Arrays are not equal (max abs diff {max_abs_diff})",
+            operators,
+            opset_version,
+            generated_checksum,
+        )
     if max_ulp > args.max_ulp:
         active_reporter.step_fail(f"max ULP {max_ulp}")
         if worst_diff is not None:

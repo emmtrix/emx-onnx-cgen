@@ -14,6 +14,7 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
+| Iteration of zero-sized operands is not enabled | 9 | ████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | '*' object has no attribute '*' | 8 | ███████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
@@ -25,7 +26,6 @@
 | Unsupported op DFT | 6 | █████ |
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
-| Iteration of zero-sized operands is not enabled | 5 | ████ |
 | Unsupported op Col2Im | 5 | ████ |
 | Unsupported op DequantizeLinear | 5 | ████ |
 | Unsupported op If | 5 | ████ |
@@ -47,16 +47,7 @@
 | Unsupported op RandomUniformLike | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
 | name '*' is not defined | 3 | ██ |
-| 
-Arrays are not equal
-
-Mismatched elements: 1 / 6 (16.7%)
-Max absolute difference among violations: 108
-Max relative difference among violations: 5.4
- ACTUAL: array([[  41,  -12,   -9],
-       [   1,  -75, -128]], dtype=int8)
- DESIRED: array([[ 41, -12,  -9],
-       [  1, -75,  20]], dtype=int8) | 2 | ██ |
+| Arrays are not equal (max abs diff 148) | 2 | ██ |
 | AveragePool supports ceil_mode=0 only | 2 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
 | Failed to build testbench. | 2 | ██ |
@@ -83,30 +74,8 @@ Max relative difference among violations: 5.4
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
-| 
-Arrays are not equal
-
-Mismatched elements: 4 / 12 (33.3%)
-Max absolute difference among violations: 11
-Max relative difference among violations: 0.09401709
- ACTUAL: array([[[ -86, -128, -128],
-        [ 115,   39, -121]],
-...
- DESIRED: array([[[ -86,  117,  120],
-        [ 115,   39, -121]],
-... | 1 | █ |
-| 
-Arrays are not equal
-
-Mismatched elements: 4 / 12 (33.3%)
-Max absolute difference among violations: 12
-Max relative difference among violations: 0.10344828
- ACTUAL: array([[[ -86, -128, -128],
-        [ 115,   39, -121]],
-...
- DESIRED: array([[[ -86,  116,  119],
-        [ 115,   39, -121]],
-... | 1 | █ |
+| Arrays are not equal (max abs diff 247) | 1 | █ |
+| Arrays are not equal (max abs diff 248) | 1 | █ |
 | AveragePool supports 2D/3D inputs only | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |
