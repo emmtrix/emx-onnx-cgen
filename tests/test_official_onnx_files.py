@@ -314,6 +314,34 @@ def _skip_expected_checksum() -> bool:
     return value in {"1", "true", "yes", "on"}
 
 
+def _update_refs_mode() -> int:
+    value = os.getenv("UPDATE_REFS", "").strip()
+    if not value:
+        return 0
+    if value.isdigit():
+        return int(value)
+    return 1
+
+
+def _is_failure_expectation(expectation: OnnxFileExpectation) -> bool:
+    if not expectation.error:
+        return False
+    return not expectation.error.startswith("OK")
+
+
+def _should_use_expected_checksum(expectation: OnnxFileExpectation) -> bool:
+    if expectation.generated_checksum is None:
+        return False
+    if _skip_expected_checksum():
+        return False
+    update_refs_mode = _update_refs_mode()
+    if update_refs_mode >= 3:
+        return False
+    if update_refs_mode == 2 and _is_failure_expectation(expectation):
+        return False
+    return True
+
+
 def _run_expected_error_test(
     *,
     repo_root: Path,
@@ -329,7 +357,7 @@ def _run_expected_error_test(
         "verify",
         str(model_path.relative_to(repo_root)),
     ]
-    if expectation.generated_checksum is not None and not _skip_expected_checksum():
+    if _should_use_expected_checksum(expectation):
         verify_args.extend(
             [
                 "--expected-checksum",

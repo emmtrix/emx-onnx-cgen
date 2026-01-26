@@ -121,6 +121,8 @@ export DISABLE_CHECKSUM=1
 ```
 
 When `UPDATE_REFS=1` is set, expected checksums may still be passed if present.
+Set `UPDATE_REFS=2` to skip checksum usage for tests that are already expected
+to fail (non-OK expectations), or `UPDATE_REFS=3` to skip checksums entirely.
 
 ### Full suite
 
