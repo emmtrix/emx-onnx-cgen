@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 981668463)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/light/light_vgg19.onnx",
   "operators": [
     "ConstantOfShape",

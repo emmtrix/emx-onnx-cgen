@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_pads/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_pads/test_data_set_0",
   "operators": [
     "MaxPool"

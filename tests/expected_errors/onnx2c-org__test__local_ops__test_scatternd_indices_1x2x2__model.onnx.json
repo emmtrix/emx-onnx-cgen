@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx2c-org/test/local_ops/test_scatternd_indices_1x2x2/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_scatternd_indices_1x2x2/test_data_set_0",
   "operators": [
     "ScatterND"

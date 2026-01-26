@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Sigmoid/test_data_set_0",
   "operators": [
     "Sigmoid"

@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 28928)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_averagepool_3d_default/test_data_set_0",
   "operators": [
     "AveragePool"
