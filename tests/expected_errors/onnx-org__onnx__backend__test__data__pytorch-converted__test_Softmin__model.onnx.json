@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmin/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Softmin/test_data_set_0",
   "operators": [
     "Neg",

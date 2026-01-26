@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 2)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_weight/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_weight/test_data_set_0",
   "operators": [
     "NegativeLogLikelihoodLoss"

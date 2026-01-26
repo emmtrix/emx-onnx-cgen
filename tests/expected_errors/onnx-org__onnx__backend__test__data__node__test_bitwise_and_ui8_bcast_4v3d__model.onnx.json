@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d/test_data_set_0",
   "operators": [
     "BitwiseAnd"

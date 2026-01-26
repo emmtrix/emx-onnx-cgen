@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx2c-org/test/local_ops/test_lstm_activations/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_lstm_activations/test_data_set_0",
   "operators": [
     "LSTM"

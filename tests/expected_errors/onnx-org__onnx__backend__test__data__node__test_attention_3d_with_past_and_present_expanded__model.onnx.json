@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded/test_data_set_0",
   "operators": [
     "Shape",

@@ -351,7 +351,11 @@ def test_official_onnx_expected_errors(
         "verify",
         str(model_path.relative_to(repo_root)),
     ]
-    if expectation.generated_checksum is not None and not _skip_expected_checksum():
+    if (
+        expectation.generated_checksum is not None
+        and expected_error.startswith("OK")
+        and not _skip_expected_checksum()
+    ):
         verify_args.extend(
             [
                 "--expected-checksum",

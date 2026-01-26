@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_axes_2_3/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_axes_2_3/test_data_set_0",
   "operators": [
     "Resize"

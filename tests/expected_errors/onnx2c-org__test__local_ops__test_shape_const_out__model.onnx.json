@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx2c-org/test/local_ops/test_shape_const_out/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_shape_const_out/test_data_set_0",
   "operators": [
     "Shape",

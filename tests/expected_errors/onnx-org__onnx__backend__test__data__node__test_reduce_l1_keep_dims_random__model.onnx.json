@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l1_keep_dims_random/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l1_keep_dims_random/test_data_set_0",
   "operators": [
     "ReduceL1"
