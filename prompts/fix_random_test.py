@@ -106,6 +106,11 @@ def main() -> None:
         "shape formulas and padding logic to keep behavior consistent."
     )
     prompt_lines.append(
+        "Codegen hint: if an op lowers successfully but codegen later fails with "
+        "missing attributes, check helper methods like _op_output_shape/_op_output_dtype "
+        "for missing RotaryEmbedding-style cases."
+    )
+    prompt_lines.append(
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )

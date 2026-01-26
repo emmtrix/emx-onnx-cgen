@@ -1,4 +1,9 @@
 {
-  "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/test_data_set_0",
+  "operators": [
+    "ConstantOfShape"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "5f32bb5eaa2ab19f0d4f1af275c2801f43c760553a0dd6089c657f94f3f5b0d3"
 }
