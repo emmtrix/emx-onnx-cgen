@@ -20,7 +20,7 @@ expecttest>=0.1.6
 PyYAML==6.0.2
 
 # Model simplification / optimization (optional but recommended)
-onnxsim>=0.4.36
+# onnxsim>=0.4.36
 onnxoptimizer>=0.3.13
 
 # Dev tooling (recommended)
