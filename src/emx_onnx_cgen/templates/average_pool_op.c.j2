@@ -8,21 +8,21 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         {{ c_type }} acc = {{ zero_literal }};
                         idx_t count = 0;
                         for (idx_t kd = 0; kd < {{ kernel_d }}; ++kd) {
-                            const idx_t id = od * {{ stride_d }} + kd - {{ pad_front }};
+                            const idx_t id = od * {{ stride_d }} + kd * {{ dilation_d }} - {{ pad_front }};
                             if (id < 0 || id >= {{ in_d }}) {
                                 if ({{ count_include_pad }}) {
                                     count += {{ kernel_h }} * {{ kernel_w }};
                                 }
                             } else {
                                 for (idx_t kh = 0; kh < {{ kernel_h }}; ++kh) {
-                                    const idx_t ih = oh * {{ stride_h }} + kh - {{ pad_top }};
+                                    const idx_t ih = oh * {{ stride_h }} + kh * {{ dilation_h }} - {{ pad_top }};
                                     if (ih < 0 || ih >= {{ in_h }}) {
                                         if ({{ count_include_pad }}) {
                                             count += {{ kernel_w }};
                                         }
                                     } else {
                                         for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
-                                            const idx_t iw = ow * {{ stride_w }} + kw - {{ pad_left }};
+                                            const idx_t iw = ow * {{ stride_w }} + kw * {{ dilation_w }} - {{ pad_left }};
                                             if (iw < 0 || iw >= {{ in_w }}) {
                                                 if ({{ count_include_pad }}) {
                                                     count += 1;
@@ -50,14 +50,14 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     {{ c_type }} acc = {{ zero_literal }};
                     idx_t count = 0;
                     for (idx_t kh = 0; kh < {{ kernel_h }}; ++kh) {
-                        const idx_t ih = oh * {{ stride_h }} + kh - {{ pad_top }};
+                        const idx_t ih = oh * {{ stride_h }} + kh * {{ dilation_h }} - {{ pad_top }};
                         if (ih < 0 || ih >= {{ in_h }}) {
                             if ({{ count_include_pad }}) {
                                 count += {{ kernel_w }};
                             }
                         } else {
                             for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
-                                const idx_t iw = ow * {{ stride_w }} + kw - {{ pad_left }};
+                                const idx_t iw = ow * {{ stride_w }} + kw * {{ dilation_w }} - {{ pad_left }};
                                 if (iw < 0 || iw >= {{ in_w }}) {
                                     if ({{ count_include_pad }}) {
                                         count += 1;
