@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from ..ir.ops import AveragePoolOp
@@ -22,6 +23,9 @@ class _AveragePoolSpec:
     kernel_d: int
     kernel_h: int
     kernel_w: int
+    dilation_d: int
+    dilation_h: int
+    dilation_w: int
     stride_d: int
     stride_h: int
     stride_w: int
@@ -61,6 +65,7 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
         "auto_pad",
         "ceil_mode",
         "count_include_pad",
+        "dilations",
         "kernel_shape",
         "pads",
         "strides",
@@ -73,8 +78,8 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     if auto_pad not in ("", "NOTSET"):
         raise UnsupportedOpError("AveragePool supports auto_pad=NOTSET only")
     ceil_mode = int(node.attrs.get("ceil_mode", 0))
-    if ceil_mode != 0:
-        raise UnsupportedOpError("AveragePool supports ceil_mode=0 only")
+    if ceil_mode not in (0, 1):
+        raise UnsupportedOpError("AveragePool supports ceil_mode 0 or 1")
     count_include_pad = int(node.attrs.get("count_include_pad", 0))
     if count_include_pad not in (0, 1):
         raise UnsupportedOpError("AveragePool supports count_include_pad 0 or 1")
@@ -98,6 +103,11 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     )
     if len(strides) != spatial_rank:
         raise UnsupportedOpError("AveragePool stride rank mismatch")
+    dilations = tuple(
+        int(value) for value in node.attrs.get("dilations", (1,) * spatial_rank)
+    )
+    if len(dilations) != spatial_rank:
+        raise UnsupportedOpError("AveragePool dilation rank mismatch")
     pads = tuple(
         int(value) for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
     )
@@ -108,10 +118,19 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     out_spatial = []
     pad_begin = pads[:spatial_rank]
     pad_end = pads[spatial_rank:]
-    for dim, stride, kernel, pad_start, pad_finish in zip(
-        in_spatial, strides, kernel_shape, pad_begin, pad_end
+    for dim, stride, kernel, dilation, pad_start, pad_finish in zip(
+        in_spatial, strides, kernel_shape, dilations, pad_begin, pad_end
     ):
-        out_dim = (dim + pad_start + pad_finish - kernel) // stride + 1
+        numerator = (
+            dim + pad_start + pad_finish - dilation * (kernel - 1) - 1
+        )
+        out_dim = numerator / stride + 1
+        if ceil_mode:
+            out_dim = int(math.ceil(out_dim))
+            if (out_dim - 1) * stride >= dim + pad_start:
+                out_dim -= 1
+        else:
+            out_dim = int(math.floor(out_dim))
         if out_dim < 0:
             raise ShapeInferenceError(
                 "AveragePool output shape must be non-negative"
@@ -133,6 +152,9 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     kernel_d = kernel_shape[0] if spatial_rank == 3 else 1
     kernel_h = kernel_shape[-2]
     kernel_w = kernel_shape[-1]
+    dilation_d = dilations[0] if spatial_rank == 3 else 1
+    dilation_h = dilations[-2]
+    dilation_w = dilations[-1]
     stride_d = strides[0] if spatial_rank == 3 else 1
     stride_h = strides[-2]
     stride_w = strides[-1]
@@ -155,6 +177,9 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
         kernel_d=kernel_d,
         kernel_h=kernel_h,
         kernel_w=kernel_w,
+        dilation_d=dilation_d,
+        dilation_h=dilation_h,
+        dilation_w=dilation_w,
         stride_d=stride_d,
         stride_h=stride_h,
         stride_w=stride_w,
@@ -206,6 +231,9 @@ def _resolve_global_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolS
         kernel_d=in_d,
         kernel_h=in_h,
         kernel_w=in_w,
+        dilation_d=1,
+        dilation_h=1,
+        dilation_w=1,
         stride_d=1,
         stride_h=1,
         stride_w=1,
@@ -248,6 +276,9 @@ def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
         kernel_d=spec.kernel_d,
         kernel_h=spec.kernel_h,
         kernel_w=spec.kernel_w,
+        dilation_d=spec.dilation_d,
+        dilation_h=spec.dilation_h,
+        dilation_w=spec.dilation_w,
         stride_d=spec.stride_d,
         stride_h=spec.stride_h,
         stride_w=spec.stride_w,
@@ -291,6 +322,9 @@ def lower_global_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
         kernel_d=spec.kernel_d,
         kernel_h=spec.kernel_h,
         kernel_w=spec.kernel_w,
+        dilation_d=spec.dilation_d,
+        dilation_h=spec.dilation_h,
+        dilation_w=spec.dilation_w,
         stride_d=spec.stride_d,
         stride_h=spec.stride_h,
         stride_w=spec.stride_w,

@@ -2834,35 +2834,66 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                 for od in range(op.out_d):
                     for oh in range(op.out_h):
                         for ow in range(op.out_w):
-                            acc = 0.0
+                            vals: list[np.ndarray] = []
                             count = 0
                             for kd in range(op.kernel_d):
-                                id_ = od * op.stride_d + kd - op.pad_front
+                                id_ = (
+                                    od * op.stride_d
+                                    + kd * op.dilation_d
+                                    - op.pad_front
+                                )
                                 if id_ < 0 or id_ >= op.in_d:
-                                    if op.count_include_pad:
+                                    if (
+                                        op.count_include_pad
+                                        and id_ < op.in_d + op.pad_back
+                                    ):
                                         count += op.kernel_h * op.kernel_w
                                 else:
                                     for kh in range(op.kernel_h):
-                                        ih = oh * op.stride_h + kh - op.pad_top
+                                        ih = (
+                                            oh * op.stride_h
+                                            + kh * op.dilation_h
+                                            - op.pad_top
+                                        )
                                         if ih < 0 or ih >= op.in_h:
-                                            if op.count_include_pad:
+                                            if (
+                                                op.count_include_pad
+                                                and ih < op.in_h + op.pad_bottom
+                                            ):
                                                 count += op.kernel_w
                                         else:
                                             for kw in range(op.kernel_w):
                                                 iw = (
                                                     ow * op.stride_w
-                                                    + kw
+                                                    + kw * op.dilation_w
                                                     - op.pad_left
                                                 )
                                                 if iw < 0 or iw >= op.in_w:
-                                                    if op.count_include_pad:
+                                                    if (
+                                                        op.count_include_pad
+                                                        and iw
+                                                        < op.in_w + op.pad_right
+                                                    ):
                                                         count += 1
                                                 else:
-                                                    acc += data[n, c, id_, ih, iw]
+                                                    vals.append(
+                                                        data[n, c, id_, ih, iw]
+                                                    )
                                                     count += 1
-                            output[n, c, od, oh, ow] = (
-                                0.0 if count == 0 else acc / float(count)
-                            )
+                            if count == 0:
+                                output[n, c, od, oh, ow] = 0.0
+                            else:
+                                acc = (
+                                    np.sum(
+                                        np.asarray(vals, dtype=data.dtype),
+                                        dtype=data.dtype,
+                                    )
+                                    if vals
+                                    else data.dtype.type(0)
+                                )
+                                output[n, c, od, oh, ow] = acc / data.dtype.type(
+                                    count
+                                )
         return output
     output = np.zeros(
         (op.batch, op.channels, op.out_h, op.out_w), dtype=data.dtype
@@ -2871,25 +2902,48 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
         for c in range(op.channels):
             for oh in range(op.out_h):
                 for ow in range(op.out_w):
-                    acc = 0.0
+                    vals: list[np.ndarray] = []
                     count = 0
                     for kh in range(op.kernel_h):
-                        ih = oh * op.stride_h + kh - op.pad_top
+                        ih = (
+                            oh * op.stride_h
+                            + kh * op.dilation_h
+                            - op.pad_top
+                        )
                         if ih < 0 or ih >= op.in_h:
-                            if op.count_include_pad:
+                            if (
+                                op.count_include_pad
+                                and ih < op.in_h + op.pad_bottom
+                            ):
                                 count += op.kernel_w
                         else:
                             for kw in range(op.kernel_w):
-                                iw = ow * op.stride_w + kw - op.pad_left
+                                iw = (
+                                    ow * op.stride_w
+                                    + kw * op.dilation_w
+                                    - op.pad_left
+                                )
                                 if iw < 0 or iw >= op.in_w:
-                                    if op.count_include_pad:
+                                    if (
+                                        op.count_include_pad
+                                        and iw < op.in_w + op.pad_right
+                                    ):
                                         count += 1
                                 else:
-                                    acc += data[n, c, ih, iw]
+                                    vals.append(data[n, c, ih, iw])
                                     count += 1
-                    output[n, c, oh, ow] = (
-                        0.0 if count == 0 else acc / float(count)
-                    )
+                    if count == 0:
+                        output[n, c, oh, ow] = 0.0
+                    else:
+                        acc = (
+                            np.sum(
+                                np.asarray(vals, dtype=data.dtype),
+                                dtype=data.dtype,
+                            )
+                            if vals
+                            else data.dtype.type(0)
+                        )
+                        output[n, c, oh, ow] = acc / data.dtype.type(count)
     return output
 
 

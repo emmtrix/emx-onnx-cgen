@@ -101,6 +101,13 @@ def main() -> None:
         "codegen/runtime match the backend tests."
     )
     prompt_lines.append(
+        "Pooling hint: for AveragePool/MaxPool with ceil_mode or dilations, "
+        "compare against onnx-org/onnx/reference/ops/op_pool_common.py, which "
+        "computes output shapes with get_output_shape_explicit_padding and may "
+        "add extra pads for ceil_mode while excluding padding beyond the "
+        "requested pads when count_include_pad is enabled."
+    )
+    prompt_lines.append(
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )

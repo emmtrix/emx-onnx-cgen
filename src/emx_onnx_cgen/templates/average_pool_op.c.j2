@@ -1,3 +1,43 @@
+static inline {{ c_type }} {{ op_name }}_pairwise_sum(const {{ c_type }} *values, idx_t n) {
+    if (n < 8) {
+        {{ c_type }} res = {{ neg_zero_literal }};
+        for (idx_t i = 0; i < n; ++i) {
+            res += values[i];
+        }
+        return res;
+    }
+    if (n <= {{ pairwise_blocksize }}) {
+        {{ c_type }} r[8];
+        r[0] = values[0];
+        r[1] = values[1];
+        r[2] = values[2];
+        r[3] = values[3];
+        r[4] = values[4];
+        r[5] = values[5];
+        r[6] = values[6];
+        r[7] = values[7];
+        idx_t i = 8;
+        for (; i < n - (n % 8); i += 8) {
+            r[0] += values[i + 0];
+            r[1] += values[i + 1];
+            r[2] += values[i + 2];
+            r[3] += values[i + 3];
+            r[4] += values[i + 4];
+            r[5] += values[i + 5];
+            r[6] += values[i + 6];
+            r[7] += values[i + 7];
+        }
+        {{ c_type }} res = ((r[0] + r[1]) + (r[2] + r[3])) + ((r[4] + r[5]) + (r[6] + r[7]));
+        for (; i < n; ++i) {
+            res += values[i];
+        }
+        return res;
+    }
+    idx_t n2 = n / 2;
+    n2 -= n2 % 8;
+    return {{ op_name }}_pairwise_sum(values, n2) + {{ op_name }}_pairwise_sum(values + n2, n - n2);
+}
+
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if spatial_rank == 3 %}
     for (idx_t n = 0; n < {{ batch }}; ++n) {
@@ -5,30 +45,31 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             for (idx_t od = 0; od < {{ out_d }}; ++od) {
                 for (idx_t oh = 0; oh < {{ out_h }}; ++oh) {
                     for (idx_t ow = 0; ow < {{ out_w }}; ++ow) {
-                        {{ c_type }} acc = {{ zero_literal }};
+                        {{ c_type }} window_vals[{{ kernel_elems }}];
+                        idx_t value_count = 0;
                         idx_t count = 0;
                         for (idx_t kd = 0; kd < {{ kernel_d }}; ++kd) {
-                            const idx_t id = od * {{ stride_d }} + kd - {{ pad_front }};
+                            const idx_t id = od * {{ stride_d }} + kd * {{ dilation_d }} - {{ pad_front }};
                             if (id < 0 || id >= {{ in_d }}) {
-                                if ({{ count_include_pad }}) {
+                                if ({{ count_include_pad }} && id < {{ in_d }} + {{ pad_back }}) {
                                     count += {{ kernel_h }} * {{ kernel_w }};
                                 }
                             } else {
                                 for (idx_t kh = 0; kh < {{ kernel_h }}; ++kh) {
-                                    const idx_t ih = oh * {{ stride_h }} + kh - {{ pad_top }};
+                                    const idx_t ih = oh * {{ stride_h }} + kh * {{ dilation_h }} - {{ pad_top }};
                                     if (ih < 0 || ih >= {{ in_h }}) {
-                                        if ({{ count_include_pad }}) {
+                                        if ({{ count_include_pad }} && ih < {{ in_h }} + {{ pad_bottom }}) {
                                             count += {{ kernel_w }};
                                         }
                                     } else {
                                         for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
-                                            const idx_t iw = ow * {{ stride_w }} + kw - {{ pad_left }};
+                                            const idx_t iw = ow * {{ stride_w }} + kw * {{ dilation_w }} - {{ pad_left }};
                                             if (iw < 0 || iw >= {{ in_w }}) {
-                                                if ({{ count_include_pad }}) {
+                                                if ({{ count_include_pad }} && iw < {{ in_w }} + {{ pad_right }}) {
                                                     count += 1;
                                                 }
                                             } else {
-                                                acc += {{ input0 }}[n][c][id][ih][iw];
+                                                window_vals[value_count++] = {{ input0 }}[n][c][id][ih][iw];
                                                 count += 1;
                                             }
                                         }
@@ -36,7 +77,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                 }
                             }
                         }
-                        {{ output }}[n][c][od][oh][ow] = count ? acc / ({{ c_type }})count : {{ zero_literal }};
+                        {{ output }}[n][c][od][oh][ow] = count ? ({{ c_type }})({{ op_name }}_pairwise_sum(window_vals, value_count) / ({{ c_type }})count) : {{ zero_literal }};
                     }
                 }
             }
@@ -47,29 +88,30 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         for (idx_t c = 0; c < {{ channels }}; ++c) {
             for (idx_t oh = 0; oh < {{ out_h }}; ++oh) {
                 for (idx_t ow = 0; ow < {{ out_w }}; ++ow) {
-                    {{ c_type }} acc = {{ zero_literal }};
+                    {{ c_type }} window_vals[{{ kernel_elems }}];
+                    idx_t value_count = 0;
                     idx_t count = 0;
                     for (idx_t kh = 0; kh < {{ kernel_h }}; ++kh) {
-                        const idx_t ih = oh * {{ stride_h }} + kh - {{ pad_top }};
+                        const idx_t ih = oh * {{ stride_h }} + kh * {{ dilation_h }} - {{ pad_top }};
                         if (ih < 0 || ih >= {{ in_h }}) {
-                            if ({{ count_include_pad }}) {
+                            if ({{ count_include_pad }} && ih < {{ in_h }} + {{ pad_bottom }}) {
                                 count += {{ kernel_w }};
                             }
                         } else {
                             for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
-                                const idx_t iw = ow * {{ stride_w }} + kw - {{ pad_left }};
+                                const idx_t iw = ow * {{ stride_w }} + kw * {{ dilation_w }} - {{ pad_left }};
                                 if (iw < 0 || iw >= {{ in_w }}) {
-                                    if ({{ count_include_pad }}) {
+                                    if ({{ count_include_pad }} && iw < {{ in_w }} + {{ pad_right }}) {
                                         count += 1;
                                     }
                                 } else {
-                                    acc += {{ input0 }}[n][c][ih][iw];
+                                    window_vals[value_count++] = {{ input0 }}[n][c][ih][iw];
                                     count += 1;
                                 }
                             }
                         }
                     }
-                    {{ output }}[n][c][oh][ow] = count ? acc / ({{ c_type }})count : {{ zero_literal }};
+                    {{ output }}[n][c][oh][ow] = count ? ({{ c_type }})({{ op_name }}_pairwise_sum(window_vals, value_count) / ({{ c_type }})count) : {{ zero_literal }};
                 }
             }
         }
