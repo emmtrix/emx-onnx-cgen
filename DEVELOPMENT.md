@@ -113,6 +113,15 @@ Prefer running a focused subset while developing:
 pytest -q tests/test_some_module.py -n auto
 ```
 
+If you need to exercise full verification (instead of the early-exit checksum
+path) in the official/local ONNX file tests, you can set:
+
+```bash
+export DISABLE_CHECKSUM=1
+```
+
+When `UPDATE_REFS=1` is set, expected checksums may still be passed if present.
+
 ### Full suite
 
 ```bash

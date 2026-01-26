@@ -323,6 +323,11 @@ def _errors_match(actual_error: str, expected_error: str) -> bool:
     return actual_error == expected_error
 
 
+def _skip_expected_checksum() -> bool:
+    value = os.getenv("DISABLE_CHECKSUM", "").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
 @pytest.mark.order(1)
 @pytest.mark.parametrize(
     "repo_relative_path",
@@ -346,10 +351,7 @@ def test_official_onnx_expected_errors(
         "verify",
         str(model_path.relative_to(repo_root)),
     ]
-    if (
-        expectation.generated_checksum is not None
-        and not os.getenv("UPDATE_REFS")
-    ):
+    if expectation.generated_checksum is not None and not _skip_expected_checksum():
         verify_args.extend(
             [
                 "--expected-checksum",
@@ -423,10 +425,7 @@ def test_local_onnx_expected_errors(repo_relative_path: str) -> None:
         "verify",
         str(model_path.relative_to(repo_root)),
     ]
-    if (
-        expectation.generated_checksum is not None
-        and not os.getenv("UPDATE_REFS")
-    ):
+    if expectation.generated_checksum is not None and not _skip_expected_checksum():
         verify_args.extend(
             [
                 "--expected-checksum",
