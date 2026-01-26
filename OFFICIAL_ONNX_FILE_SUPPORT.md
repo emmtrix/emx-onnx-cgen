@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1300 / 1802 official ONNX files.
+Support 1302 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -595,7 +595,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_dropout_default_ratio/model.onnx | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_dropout_random_old/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
-| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_expanded/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 1 / 6 (16.7%) Max absolute difference among violations: 1 Max relative difference among violations: 0.00558659  ACTUAL: array([153, 255,   0,  26, 221, 178], dtype=uint8)  DESIRED: array([153, 255,   0,  26, 221, 179], dtype=uint8) |
+| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted/model.onnx | ❌ | Unsupported op DynamicQuantizeLinear |
@@ -1104,7 +1104,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_int16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_int2/model.onnx | ❌ | Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_int4/model.onnx | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint16/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 2 / 12 (16.7%) Max absolute difference among violations: 1 Max relative difference among violations: 3.05203723e-05  ACTUAL: array([32767, 32703, 32768, 32766, 32768, 32766, 32769, 32765, 65535,            0, 65535,     0], dtype=uint16)  DESIRED: array([32767, 32703, 32769, 32765, 32768, 32766, 32769, 32765, 65535,            0, 65535,     0], dtype=uint16) |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta/model.onnx | ✅ | OK (max ULP 0) |

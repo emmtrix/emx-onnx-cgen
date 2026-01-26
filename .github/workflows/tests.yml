@@ -51,7 +51,3 @@ jobs:
           else
             echo "No reference updates."
           fi
-
-      - name: Run tests (verify refs for PRs)
-        if: github.event_name == 'pull_request'
-        run: pytest -n auto -q

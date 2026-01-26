@@ -86,24 +86,6 @@ Max relative difference among violations: 5.4
 | 
 Arrays are not equal
 
-Mismatched elements: 1 / 6 (16.7%)
-Max absolute difference among violations: 1
-Max relative difference among violations: 0.00558659
- ACTUAL: array([153, 255,   0,  26, 221, 178], dtype=uint8)
- DESIRED: array([153, 255,   0,  26, 221, 179], dtype=uint8) | 1 | █ |
-| 
-Arrays are not equal
-
-Mismatched elements: 2 / 12 (16.7%)
-Max absolute difference among violations: 1
-Max relative difference among violations: 3.05203723e-05
- ACTUAL: array([32767, 32703, 32768, 32766, 32768, 32766, 32769, 32765, 65535,
-           0, 65535,     0], dtype=uint16)
- DESIRED: array([32767, 32703, 32769, 32765, 32768, 32766, 32769, 32765, 65535,
-           0, 65535,     0], dtype=uint16) | 1 | █ |
-| 
-Arrays are not equal
-
 Mismatched elements: 4 / 12 (33.3%)
 Max absolute difference among violations: 11
 Max relative difference among violations: 0.09401709

@@ -585,9 +585,8 @@ def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] 
     if env_cc:
         return resolve_tokens(shlex.split(env_cc))
     for candidate in ("cc", "gcc", "clang"):
-        resolved = shutil.which(candidate)
-        if resolved:
-            return maybe_prefix_ccache([resolved])
+        if shutil.which(candidate):
+            return maybe_prefix_ccache([candidate])
     return None
 
 
@@ -797,7 +796,6 @@ def _verify_model(
                 str(exe_path.name),
                 "-lm",
             ]
-            active_reporter.note(f"Compile command: {shlex.join(compile_cmd)}")
             compile_started = active_reporter.start_step("Compiling C code")
             subprocess.run(
                 compile_cmd,
@@ -807,6 +805,9 @@ def _verify_model(
                 cwd=temp_path,
             )
             active_reporter.step_ok(compile_started)
+            active_reporter.info(
+                f"  Compile command: {shlex.join(compile_cmd)}"
+            )
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
             if include_build_details:

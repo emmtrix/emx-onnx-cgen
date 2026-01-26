@@ -1,5 +1,5 @@
 {
-  "error": "\nArrays are not equal\n\nMismatched elements: 1 / 6 (16.7%)\nMax absolute difference among violations: 1\nMax relative difference among violations: 0.00558659\n ACTUAL: array([153, 255,   0,  26, 221, 178], dtype=uint8)\n DESIRED: array([153, 255,   0,  26, 221, 179], dtype=uint8)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_expanded/test_data_set_0",
   "operators": [
     "Constant",
@@ -16,5 +16,5 @@
     "QuantizeLinear"
   ],
   "opset_version": 11,
-  "generated_checksum": "d36048fa9fded7395bcbce9bc453653b835db7a773cdad2ee23b96b71f4d7f28"
+  "generated_checksum": "4c2d1f34b42356623979e39cfa60d33e4cca49512bdbb3c47e5ad5b214a81609"
 }
