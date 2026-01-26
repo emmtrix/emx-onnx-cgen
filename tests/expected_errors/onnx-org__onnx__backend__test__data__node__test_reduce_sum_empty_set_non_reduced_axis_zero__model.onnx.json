@@ -1,4 +1,9 @@
 {
-  "error": "Iteration of zero-sized operands is not enabled",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_set_non_reduced_axis_zero/test_data_set_0",
+  "operators": [
+    "ReduceSum"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "1097492b47f9f1664bf7a277629807d78025e9aa444405a1e606dee84eca2210"
 }
