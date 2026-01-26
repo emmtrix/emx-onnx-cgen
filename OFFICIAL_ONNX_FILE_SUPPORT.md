@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1302 / 1802 official ONNX files.
+Support 1298 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -12,7 +12,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | ❌ | Out of tolerance (max ULP 50389) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx | ❌ | Out of tolerance (max ULP 981668463) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Out of tolerance (max ULP 539) |
+| onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | ❌ | Out of tolerance (max ULP 553) |
 | onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | ✅ | OK (max ULP 10) |
 | onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | ❌ | Out of tolerance (max ULP 981668463) |
@@ -521,7 +521,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_constant_pad_axes/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_constant_pad_negative_axes/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_constantofshape_float_ones/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_constantofshape_int_shape_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_constantofshape_int_zeros/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_conv_with_autopad_same/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/model.onnx | ✅ | OK (max ULP 0) |
@@ -1086,12 +1086,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_prelu_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_prelu_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearconv/model.onnx | ❌ | Unsupported op QLinearConv |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 1 / 6 (16.7%) Max absolute difference among violations: 108 Max relative difference among violations: 5.4  ACTUAL: array([[  41,  -12,   -9],        [   1,  -75, -128]], dtype=int8)  DESIRED: array([[ 41, -12,  -9],        [  1, -75,  20]], dtype=int8) |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 1 / 6 (16.7%) Max absolute difference among violations: 108 Max relative difference among violations: 5.4  ACTUAL: array([[  41,  -12,   -9],        [   1,  -75, -128]], dtype=int8)  DESIRED: array([[ 41, -12,  -9],        [  1, -75,  20]], dtype=int8) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx | ❌ | Arrays are not equal (max abs diff 148) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx | ❌ | Arrays are not equal (max abs diff 148) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_uint8_float32/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float16/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 4 / 12 (33.3%) Max absolute difference among violations: 12 Max relative difference among violations: 0.10344828  ACTUAL: array([[[ -86, -128, -128],         [ 115,   39, -121]], ...  DESIRED: array([[[ -86,  116,  119],         [ 115,   39, -121]], ... |
-| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float32/model.onnx | ❌ | Arrays are not equal  Mismatched elements: 4 / 12 (33.3%) Max absolute difference among violations: 11 Max relative difference among violations: 0.09401709  ACTUAL: array([[[ -86, -128, -128],         [ 115,   39, -121]], ...  DESIRED: array([[[ -86,  117,  120],         [ 115,   39, -121]], ... |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float16/model.onnx | ❌ | Arrays are not equal (max abs diff 247) |
+| onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_int8_float32/model.onnx | ❌ | Arrays are not equal (max abs diff 248) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear/model.onnx | ✅ | OK (max ULP 0) |
@@ -1472,7 +1472,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_shape_start_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_start_1_end_2/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_start_1_end_negative_1/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_shape_start_greater_than_end/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_shape_start_negative_1/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shrink_hard/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shrink_hard_expanded_ver18/model.onnx | ✅ | OK (max ULP 0) |
@@ -1635,7 +1635,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_tril_pos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tril_square/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tril_square_neg/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tril_zero/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_tril_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_triu/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_neg/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_one_row/model.onnx | ✅ | OK (max ULP 0) |
@@ -1644,7 +1644,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_triu_pos/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_square/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_square_neg/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx | ❌ | Iteration of zero-sized operands is not enabled |
 | onnx-org/onnx/backend/test/data/node/test_unique_length_1/model.onnx | ❌ | Unsupported op Unique |
 | onnx-org/onnx/backend/test/data/node/test_unique_not_sorted_without_axis/model.onnx | ❌ | Unsupported op Unique |
 | onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_axis/model.onnx | ❌ | Unsupported op Unique |
