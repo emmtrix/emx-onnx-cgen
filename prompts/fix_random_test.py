@@ -104,6 +104,11 @@ def main() -> None:
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
+    prompt_lines.append(
+        "Type import hint: non-tensor value types (sequence/optional/map) currently "
+        "raise from src/emx_onnx_cgen/onnx_import.py before lowering, so changing "
+        "those error messages requires updating tests/expected_errors expectations."
+    )
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
     prompt_lines.append(
         "At the end, reflect on what general information would have helped you fix "

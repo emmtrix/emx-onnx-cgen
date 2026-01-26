@@ -35,9 +35,13 @@ def _unsupported_value_type(value_info: onnx.ValueInfoProto) -> UnsupportedOpErr
     value_kind = value_info.type.WhichOneof("value")
     if value_kind is None:
         value_kind = "unknown"
+    hint = "Hint: export the model with tensor inputs/outputs."
+    if value_kind == "sequence_type":
+        hint = "Hint: sequence inputs/outputs are not supported yet."
+    elif value_kind == "optional_type":
+        hint = "Hint: optional inputs/outputs are not supported yet."
     return UnsupportedOpError(
-        f"Unsupported value type '{value_kind}' for '{value_info.name}'. "
-        "Hint: export the model with tensor inputs/outputs."
+        f"Unsupported value type '{value_kind}' for '{value_info.name}'. {hint}"
     )
 
 

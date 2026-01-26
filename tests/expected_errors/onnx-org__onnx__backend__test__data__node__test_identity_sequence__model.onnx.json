@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs.",
+  "error": "Unsupported value type 'sequence_type' for 'x'. Hint: sequence inputs/outputs are not supported yet.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_identity_sequence/test_data_set_0",
   "operators": [
     "Identity"

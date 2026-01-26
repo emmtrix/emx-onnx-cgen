@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs.",
+  "error": "Unsupported value type 'sequence_type' for 'x0'. Hint: sequence inputs/outputs are not supported yet.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/test_data_set_0",
   "operators": [
     "SequenceLength",

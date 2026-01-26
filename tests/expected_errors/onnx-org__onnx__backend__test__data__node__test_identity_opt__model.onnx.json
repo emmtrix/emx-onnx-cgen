@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported value type 'optional_type' for 'opt_in'. Hint: export the model with tensor inputs/outputs.",
+  "error": "Unsupported value type 'optional_type' for 'opt_in'. Hint: optional inputs/outputs are not supported yet.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_identity_opt/test_data_set_0",
   "operators": [
     "Identity"

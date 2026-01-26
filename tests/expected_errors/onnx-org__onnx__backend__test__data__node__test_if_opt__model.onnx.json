@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported value type 'optional_type' for 'sequence'. Hint: export the model with tensor inputs/outputs.",
+  "error": "Unsupported value type 'optional_type' for 'sequence'. Hint: optional inputs/outputs are not supported yet.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_if_opt/test_data_set_0",
   "operators": [
     "If"

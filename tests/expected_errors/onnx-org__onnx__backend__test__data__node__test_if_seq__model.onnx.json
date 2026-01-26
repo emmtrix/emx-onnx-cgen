@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported value type 'sequence_type' for 'res'. Hint: export the model with tensor inputs/outputs.",
+  "error": "Unsupported value type 'sequence_type' for 'res'. Hint: sequence inputs/outputs are not supported yet.",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_if_seq/test_data_set_0",
   "operators": [
     "If"
