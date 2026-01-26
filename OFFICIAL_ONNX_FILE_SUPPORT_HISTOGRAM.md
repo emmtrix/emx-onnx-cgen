@@ -3,7 +3,7 @@
 | Error message | Count | Histogram |
 | --- | --- | --- |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ██████████████████████████████ |
-| Out of tolerance | 32 | ███████████████████████████ |
+| Out of tolerance | 34 | ████████████████████████████ |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
