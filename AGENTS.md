@@ -328,6 +328,7 @@ When acting as an agent in this repo:
     * Use ripgrep (`rg -n "<OpName>" onnx-org`) to locate the relevant sections.
 12. When implementing min/max selection in templates, use scalar min/max helpers
     from the scalar function registry instead of `if`-based comparisons.
+13. Do not modify `onnx-org/` or any other submodule contents.
 
 ## Adding an operator (checklist)
 
