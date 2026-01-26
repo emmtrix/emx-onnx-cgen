@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 3)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_scaled/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "5640059d8fbfe88afa65a9bc85e13839c1eee485f5d2f6be6c4ceb54d2aec958"
+  "generated_checksum": "43c489d2ed7acb84e6bc561628a73d54145ca808ecf5749988e8fd348b1ef7d6"
 }

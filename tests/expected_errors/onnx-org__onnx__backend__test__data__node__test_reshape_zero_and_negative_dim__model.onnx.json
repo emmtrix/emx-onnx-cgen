@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reshape_zero_and_negative_dim/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reshape_zero_and_negative_dim/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reshape_zero_and_negative_dim/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reshape_zero_and_negative_dim/test_data_set_0",
   "operators": [
     "Reshape"
   ],
   "opset_version": 25,
-  "generated_checksum": "f95a7a3d949d5a6ab59c457695508bea8f7412f293c6294888c0a5c4966a6e78"
+  "generated_checksum": "17291746532383962e9da61d58aa5b72c12bf09e4bf52ea3fe16722083d84e57"
 }

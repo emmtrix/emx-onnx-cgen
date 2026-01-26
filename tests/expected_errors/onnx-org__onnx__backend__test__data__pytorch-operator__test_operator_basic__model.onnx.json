@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/test_data_set_0",
   "operators": [
     "Add",
     "Mul",
@@ -9,5 +9,5 @@
     "Neg"
   ],
   "opset_version": 6,
-  "generated_checksum": "e0c7681c7e98c23d5317b7ab86c671089a8a2cf0549eaba91ba98941401919cc"
+  "generated_checksum": "e6f1070999272e29be6e75d11a9bdf3db5f2b58198cc0545d196d538e8e1a50b"
 }

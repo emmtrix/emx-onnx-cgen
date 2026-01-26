@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NC_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NC_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NC_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NC_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Unsqueeze",
@@ -10,5 +10,5 @@
     "Squeeze"
   ],
   "opset_version": 22,
-  "generated_checksum": "f8829868c7c1343a2c1ffe2d13e2340f82f3674fc60702da7d8c7033a412f57d"
+  "generated_checksum": "180eaae93e13e45cd4688487e2c0aba1863a440bcae5b1e7edc8b9eb80a246f0"
 }

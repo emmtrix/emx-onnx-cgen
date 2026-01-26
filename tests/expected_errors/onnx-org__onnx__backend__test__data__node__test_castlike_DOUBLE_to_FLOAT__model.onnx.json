@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT/test_data_set_0",
   "operators": [
     "CastLike"
   ],
   "opset_version": 25,
-  "generated_checksum": "5fda529931ec5fbc8d3ecc2c04d170d3ec7f7df6245e59b2c3e42e8c72fbf4d8"
+  "generated_checksum": "41d477eb75255b633f00582b4a1900040a615177b6a7ad82ee74c68ebd2cf30f"
 }

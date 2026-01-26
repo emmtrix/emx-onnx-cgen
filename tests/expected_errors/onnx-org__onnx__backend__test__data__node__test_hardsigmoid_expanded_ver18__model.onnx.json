@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -10,5 +10,5 @@
     "Max"
   ],
   "opset_version": 18,
-  "generated_checksum": "4afc9f08825165a76e60c09b02857686c8e078cd0eac8d7674e9888495ff44ec"
+  "generated_checksum": "992ed381001a9b31972de441e2699e208a1b311a35d724a28eeb7f1d756d787a"
 }

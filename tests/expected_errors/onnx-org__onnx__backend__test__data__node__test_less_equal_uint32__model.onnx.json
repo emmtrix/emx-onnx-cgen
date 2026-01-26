@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_less_equal_uint32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_less_equal_uint32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_less_equal_uint32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_less_equal_uint32/test_data_set_0",
   "operators": [
     "LessOrEqual"
   ],
   "opset_version": 16,
-  "generated_checksum": "29060ac68b514e09b00271b43079c2084e7e88f943a3636069aae3e559b19c7d"
+  "generated_checksum": "d03e2cbc657c68cebf61b0d3693c8f108f2bec9eab76af1060375eb27d4cb941"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_min_float16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_min_float16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_min_float16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_min_float16/test_data_set_0",
   "operators": [
     "Min"
   ],
   "opset_version": 13,
-  "generated_checksum": "9166c153171d2d05f3f67868a15fa43563e877af0fce50e212682bfcb6ac3ba2"
+  "generated_checksum": "5e0433a790e9408d04674553cfbb6d45a9232ab653120cde9bbb299d74978133"
 }

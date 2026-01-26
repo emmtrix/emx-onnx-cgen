@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op TreeEnsemble",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/test_data_set_0",
   "operators": [
     "ai.onnx.ml::TreeEnsemble"
   ]

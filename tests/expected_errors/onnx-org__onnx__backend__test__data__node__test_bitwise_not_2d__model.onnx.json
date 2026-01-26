@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_not_2d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_not_2d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitwise_not_2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitwise_not_2d/test_data_set_0",
   "operators": [
     "BitwiseNot"
   ],
   "opset_version": 18,
-  "generated_checksum": "3a2b7a6878a96fff8bda5d1dd03a20f0b34b746237215f4567bba498b7e0ff05"
+  "generated_checksum": "91cd170e090b06b3dd47693a6f9951b18929bcc644c686042d7a71a17e6c41ac"
 }

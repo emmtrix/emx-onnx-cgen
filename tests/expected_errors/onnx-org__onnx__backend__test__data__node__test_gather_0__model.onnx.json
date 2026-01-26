@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gather_0/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gather_0/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gather_0/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gather_0/test_data_set_0",
   "operators": [
     "Gather"
   ],
   "opset_version": 13,
-  "generated_checksum": "5cfb2d7cc4c8ca6dadea7813e1e7e660881dae93c3a4aa918f937a0d49b55951"
+  "generated_checksum": "95dab7905a8b03bffcf775e52ca980c34d925497d79e95e8a4ecf6fdff2af85a"
 }

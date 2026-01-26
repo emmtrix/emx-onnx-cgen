@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_softmax_lastdim/test_data_set_0",
   "operators": [
     "Softmax"
   ],
   "opset_version": 6,
-  "generated_checksum": "d42af6e10ff53310c317a60444b33e9971c5a0d936549f9f4190e3d569054640"
+  "generated_checksum": "14e6d1451c19af8a5479e2c66049f21385c62a5463aace0c5b2ab868fdcca390"
 }

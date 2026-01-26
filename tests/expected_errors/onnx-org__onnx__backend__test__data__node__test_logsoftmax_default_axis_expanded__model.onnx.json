@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 4)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "ReduceMax",
@@ -10,5 +10,5 @@
     "Log"
   ],
   "opset_version": 13,
-  "generated_checksum": "579936bf6f2914287754646dc6ef2e2844f852e05a033269c5bcb93939279ccb"
+  "generated_checksum": "eb8c112796a579ef56c6e0b9f6c4a906381981c02c24fdaeb8c74eaa60e5b781"
 }

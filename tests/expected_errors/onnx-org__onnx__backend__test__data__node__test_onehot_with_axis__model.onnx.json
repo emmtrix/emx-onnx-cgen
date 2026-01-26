@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/test_data_set_0",
   "operators": [
     "OneHot"
   ],
   "opset_version": 11,
-  "generated_checksum": "b185141a817c407ac0d84dfbb6fb742205d300d497a2f87a948e11f7391f48c5"
+  "generated_checksum": "31a4d395ce4d0d98791b865f8b6444c47c47d311a32763d119ac7ebc472d7440"
 }

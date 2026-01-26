@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_identity/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_identity/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_identity/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_identity/test_data_set_0",
   "operators": [
     "Identity"
   ],
   "opset_version": 25,
-  "generated_checksum": "a560c4891e5e9158773d7874c99770e23cc0709bf76e8a58fb990b45becdde29"
+  "generated_checksum": "bcff5c2bd26e5303c27a7f6316888a91ca244bf5d9cb7a4a12c89b4591b17a35"
 }

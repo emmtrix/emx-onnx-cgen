@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_limit_output_size/test_data_set_0",
   "operators": [
     "NonMaxSuppression"
   ],
   "opset_version": 11,
-  "generated_checksum": "714fc9c88f04fdb7cc3c3f3e0caaa53d056c3eaef482b3d1bdc7b79ca653ec9f"
+  "generated_checksum": "1520b58e44ab83ee10c4d52ec01ece9c30a8590b2eee1b135a83237a26e01a4f"
 }

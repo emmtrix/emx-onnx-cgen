@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random/test_data_set_0",
   "operators": [
     "ReduceSumSquare"
   ],
   "opset_version": 18,
-  "generated_checksum": "bdf1b1642745a783dd6739352c7fb3a606c08bef79d294d58ba9d83ece23e1ee"
+  "generated_checksum": "3b0507e770c089375655cead7502c8043cc610cf223ee0eece8aca7ef1f2096f"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isinf_positive/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_isinf_positive/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_isinf_positive/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_isinf_positive/test_data_set_0",
   "operators": [
     "IsInf"
   ],
   "opset_version": 20,
-  "generated_checksum": "d0e0353a3ab52c1cfd6c6bb0cc87be8010ee0303e0466f3e77f2da2f6d878b42"
+  "generated_checksum": "0d632be29293c0443bb330fd9f7a1a769a9d8e7d7dba333e74a6b44622436e97"
 }

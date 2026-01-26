@@ -1,9 +1,9 @@
 {
   "error": "Out of tolerance (max ULP 1520)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "32441ec202f279b39fdb9e1b91b48323d96b1c0885c3f6a5e6f3774b9aa6de78"
+  "generated_checksum": "617a79ddb2c8751f5e3df2809e3b494c8bc5103035d71790496c3313218c22b3"
 }

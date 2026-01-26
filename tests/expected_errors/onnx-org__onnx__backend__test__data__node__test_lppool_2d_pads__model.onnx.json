@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lppool_2d_pads/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_lppool_2d_pads/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_lppool_2d_pads/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_lppool_2d_pads/test_data_set_0",
   "operators": [
     "LpPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "c77ecad8dab68385e0bb597ee17216e1c43bbcc30a3820df04ee06cdab416bc8"
+  "generated_checksum": "bd906fc29c39092200df576ab140064ea0426a4041045694543e0d8919c38f55"
 }

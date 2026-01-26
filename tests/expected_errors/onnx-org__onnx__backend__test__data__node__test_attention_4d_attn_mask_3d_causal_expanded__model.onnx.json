@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded/test_data_set_0",
   "operators": [
     "Shape",
     "Identity",
@@ -28,5 +28,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "67b4a8b7ee08c91a177fc2bec0bea98ee777cc1b67f956299edc2afc0d42b18a"
+  "generated_checksum": "aacffa5b105eaade7a46d7504e3b73540da38e6f307f296305d0e8a2c3192692"
 }

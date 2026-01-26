@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reciprocal/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reciprocal/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reciprocal/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reciprocal/test_data_set_0",
   "operators": [
     "Reciprocal"
   ],
   "opset_version": 13,
-  "generated_checksum": "4b30973ca41db0a8954a0193fe5720dde1403436fd72578a17c4b92ed5e5c1d1"
+  "generated_checksum": "c8024348a888fab4849452e952d7a27ec4a4c7313e55b1d9013fcfaff22c9814"
 }

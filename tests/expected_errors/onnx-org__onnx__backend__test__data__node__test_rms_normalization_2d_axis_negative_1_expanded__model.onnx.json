@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis_negative_1_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Cast",
@@ -14,5 +14,5 @@
     "Div"
   ],
   "opset_version": 23,
-  "generated_checksum": "dee2c5d052e12ba188ef60e0f129c1c2989e6a9e98daf475ebd2ac53551d5bc2"
+  "generated_checksum": "bf7978e08739bf4e5c036558a0ac1640f4574e2c5b4eeeb031deb8a2891d31e1"
 }

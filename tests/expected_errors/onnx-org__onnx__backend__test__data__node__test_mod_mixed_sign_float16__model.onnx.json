@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mod_mixed_sign_float16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mod_mixed_sign_float16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mod_mixed_sign_float16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_mod_mixed_sign_float16/test_data_set_0",
   "operators": [
     "Mod"
   ],
   "opset_version": 13,
-  "generated_checksum": "fd8db9f0005ca3f4c09dbb1c29e22b969640cd4b35653336777e883a8ab23a80"
+  "generated_checksum": "022f54dfb9d7879d0bf39abfe63ad24113f85a3e90cfb0d82ad92b84c1482673"
 }

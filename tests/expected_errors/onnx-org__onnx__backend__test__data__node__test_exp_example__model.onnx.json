@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_exp_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_exp_example/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_exp_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_exp_example/test_data_set_0",
   "operators": [
     "Exp"
   ],
   "opset_version": 13,
-  "generated_checksum": "fadb269740ce8726803d13127d42781f298bafd3c2d455ee4f114a755bf65a83"
+  "generated_checksum": "76db48db2546063597cda4e1615e6118bd77f07cc70a21d4de976fceefd526fd"
 }

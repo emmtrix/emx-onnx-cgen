@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d/test_data_set_0",
   "operators": [
     "Pad"
   ],
   "opset_version": 6,
-  "generated_checksum": "951713a345887b0a960e8770801c156cb2dab199ca74e5a69b110cd23ac94dd7"
+  "generated_checksum": "712ccb466b0d83cf6cd2b94cfceedf7e29eef6d101cde90e581fa83169f0427c"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shrink_hard/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_shrink_hard/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_shrink_hard/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_shrink_hard/test_data_set_0",
   "operators": [
     "Shrink"
   ],
   "opset_version": 9,
-  "generated_checksum": "f17a715b25ff773b57d1a91dbf94e83ec58bd34d11e1762b94aacdeadd1edc3f"
+  "generated_checksum": "411f3bab981da18f8b902c4df8caca42e70284879f6ab5d1b8b65a81801fdf4e"
 }

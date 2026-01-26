@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sce_mean_3d_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sce_mean_3d_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sce_mean_3d_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sce_mean_3d_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Reshape",
@@ -10,5 +10,5 @@
     "NegativeLogLikelihoodLoss"
   ],
   "opset_version": 13,
-  "generated_checksum": "17846c926fe8bb3fde76baacf8412badd763452dd2f88a1b26068f1a1f63e43f"
+  "generated_checksum": "36cccb20694adffb10b9568bf6289176f3350bb74677cab5206aa076a32ff001"
 }

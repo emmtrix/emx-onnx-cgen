@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 3)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/test_data_set_0",
   "operators": [
     "Shape",
     "Identity",
@@ -24,5 +24,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "c2e3d64067a375c08f67429fe10d4bf9683d11dbec7a5d5ed85f667bc4b8ed40"
+  "generated_checksum": "b93324077250abe6ecf54a6288967306308b0c83445208e1cb440be1506aac11"
 }

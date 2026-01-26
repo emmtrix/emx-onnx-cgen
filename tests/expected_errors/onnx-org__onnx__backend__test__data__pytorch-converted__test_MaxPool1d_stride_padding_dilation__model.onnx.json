@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride_padding_dilation/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride_padding_dilation/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool1d_stride_padding_dilation/test_data_set_0",
   "operators": [
     "MaxPool"
   ],
   "opset_version": 12,
-  "generated_checksum": "224719762a3693d6c976f4e49cf2389420bc21e55bceffb3a445e64359580a08"
+  "generated_checksum": "7bf79416007251a0209097564441b7f5182b9b833582095465ce9920cc8edd0d"
 }

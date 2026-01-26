@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/test_data_set_0",
   "operators": [
     "LeakyRelu"
   ],
   "opset_version": 6,
-  "generated_checksum": "02ef5e4a4cb1548909c701f76e6353596427200e54ddb33fbe6ebf6590d38f0f"
+  "generated_checksum": "c91656593e9eb11ce288584f3e014b757794fd5183c89ffd9df9837fb92d7ae4"
 }

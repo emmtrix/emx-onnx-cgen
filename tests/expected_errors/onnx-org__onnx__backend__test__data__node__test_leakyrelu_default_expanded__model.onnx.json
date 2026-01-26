@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_leakyrelu_default_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu_default_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_leakyrelu_default_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu_default_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -9,5 +9,5 @@
     "Where"
   ],
   "opset_version": 16,
-  "generated_checksum": "b7dca8044540e43dffc9e365ed5f9ab9400c964a8eadc26b77e377665d82db06"
+  "generated_checksum": "a19fd6d6dead1e2f7cda26d4c51ea4c6869de4bb2405992675fa46b75f8397e5"
 }

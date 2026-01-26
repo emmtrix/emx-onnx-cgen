@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_argmin_negative_axis_keepdims_random_select_last_index/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_argmin_negative_axis_keepdims_random_select_last_index/test_data_set_0",
   "operators": [
     "ArgMin"
   ],
   "opset_version": 13,
-  "generated_checksum": "85b826033cb5ebdb367e4c63229d89cf2035d1c430afe1a6df2b7e7a16bf6cc8"
+  "generated_checksum": "87e486c96a313825853efeb30a988524aa4ed285bebabc6ea00072582c7f7154"
 }

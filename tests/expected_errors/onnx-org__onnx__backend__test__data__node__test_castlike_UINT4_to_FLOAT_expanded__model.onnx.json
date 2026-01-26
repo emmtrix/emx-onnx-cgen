@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 21 (UINT4) for tensor 'input'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT_expanded/test_data_set_0",
   "operators": [
     "Cast"
   ],

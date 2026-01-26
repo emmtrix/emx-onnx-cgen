@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_tanh_1_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -11,5 +11,5 @@
     "Tanh"
   ],
   "opset_version": 20,
-  "generated_checksum": "d96d8d758c855141fa20aa4c6e90fcbc5449b91dd3693d00010d4686e97fc7d7"
+  "generated_checksum": "357c56baed22ee29b760eda7d0fdf9c15b5626051355a51ffb4861df57094158"
 }

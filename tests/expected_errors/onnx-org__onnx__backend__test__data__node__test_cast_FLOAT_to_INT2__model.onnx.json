@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 26 (INT2) for tensor 'output'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT2/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT2/test_data_set_0",
   "operators": [
     "Cast"
   ],

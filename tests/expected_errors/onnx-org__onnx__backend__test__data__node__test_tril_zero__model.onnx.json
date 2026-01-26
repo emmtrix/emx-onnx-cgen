@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tril_zero/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_tril_zero/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tril_zero/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_tril_zero/test_data_set_0",
   "operators": [
     "Trilu"
   ],
   "opset_version": 14,
-  "generated_checksum": "b4c1a42deff8b7985daff482270528672e7e4c45fdd1b8f68bd23186122f1422"
+  "generated_checksum": "3f0405b61be4f58c627e4ba51aac3255a9da427a05e736fe89d19d368cca0d65"
 }

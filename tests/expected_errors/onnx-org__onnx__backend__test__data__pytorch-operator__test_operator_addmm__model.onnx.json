@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/test_data_set_0",
   "operators": [
     "Gemm"
   ],
   "opset_version": 6,
-  "generated_checksum": "f6abe9320680624b9e548c409b4afd637d92f0b279b002a18285617c83a0dc76"
+  "generated_checksum": "36f01fc4e7b97e38d9889ef27785439b3050deac300885c4f35e362f24d79949"
 }

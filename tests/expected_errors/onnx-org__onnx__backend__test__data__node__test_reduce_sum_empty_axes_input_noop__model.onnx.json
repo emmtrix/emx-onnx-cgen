@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop/test_data_set_0",
   "operators": [
     "ReduceSum"
   ],
   "opset_version": 13,
-  "generated_checksum": "6ec544b81710f6f1c2c08cd1a4557ac35f86a7f89ca5403adee332c065dbcb01"
+  "generated_checksum": "57191df0bb3188e8bebd5906b6c7c98af3e0d27e93ef6f46b64a19aadf00fab5"
 }

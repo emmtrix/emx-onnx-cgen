@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 50389)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_densenet121.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_densenet121.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -15,5 +15,5 @@
     "GlobalAveragePool"
   ],
   "opset_version": 9,
-  "generated_checksum": "d27707dda87e4941a8514bb6c289542d2ee3f45c3570cccf91be316ac1503ec4"
+  "generated_checksum": "ccace2538bbb1e02836ef29dfc7461839e261c570b207ca8d724649109d9d008"
 }

@@ -1,6 +1,6 @@
 {
   "error": "Dynamic dim for tensor 'out'",
-  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_sequence_model1/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model1/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_sequence_model1/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model1/test_data_set_0",
   "operators": [
     "SequenceEmpty",
     "SequenceInsert",

@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Unsqueeze",
@@ -14,5 +14,5 @@
     "Div"
   ],
   "opset_version": 22,
-  "generated_checksum": "0b275e98a7f43bfa1d83964955fb0f2fbb21a40254df1b504028931618c230cb"
+  "generated_checksum": "bfcf4320f4c57f0c7ec823ecbe9c4c4882a682fce5e089793d305c34a5655c3d"
 }

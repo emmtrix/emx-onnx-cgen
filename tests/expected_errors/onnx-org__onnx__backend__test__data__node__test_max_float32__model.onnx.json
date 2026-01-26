@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_max_float32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_max_float32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_max_float32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_max_float32/test_data_set_0",
   "operators": [
     "Max"
   ],
   "opset_version": 13,
-  "generated_checksum": "2c5eddeea97c68625d01a9564f4a716c03e1dca1d11303c4368b57c526758a20"
+  "generated_checksum": "bc47b3a876c386d628af0a3cf2b7eee7494e518775e33dfd8972ead685070b9d"
 }

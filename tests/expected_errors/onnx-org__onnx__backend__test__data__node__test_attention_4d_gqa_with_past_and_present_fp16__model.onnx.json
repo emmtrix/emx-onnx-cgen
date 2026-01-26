@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 4)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "8b3b2c1ed3221ead32fdc026f7f8950b45b9fecdcf24a0d60af9f7afb63c48de"
+  "generated_checksum": "75acceb0929288054786b63ee20cfbfefa538fdd227a9fe561d4edf79e57012b"
 }

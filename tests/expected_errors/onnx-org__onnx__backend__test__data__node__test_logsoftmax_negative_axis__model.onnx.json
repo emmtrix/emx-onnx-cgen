@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis/test_data_set_0",
   "operators": [
     "LogSoftmax"
   ],
   "opset_version": 13,
-  "generated_checksum": "11cf2858070affb0132399015d3da57383ca4a294eebf1a653ecd6492ec950b9"
+  "generated_checksum": "799534e8909849239f347fd3cb07c5ee667dea8ae121f200dcc1146173862210"
 }

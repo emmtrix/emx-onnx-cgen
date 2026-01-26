@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_2d_ceil_output_size_reduce_by_one/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_2d_ceil_output_size_reduce_by_one/test_data_set_0",
   "operators": [
     "MaxPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "3c27f8627bde161b0a840fce89d6f7f8c735ea5f0fe041275253f529e72d01d8"
+  "generated_checksum": "2ec9fddc7758d4aac79d8b6681af2a3b2daad27c223ccac75089959089880aa6"
 }

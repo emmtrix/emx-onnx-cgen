@@ -1,9 +1,9 @@
 {
   "error": "\nArrays are not equal\n\nMismatched elements: 2 / 12 (16.7%)\nMax absolute difference among violations: 1\nMax relative difference among violations: 3.05203723e-05\n ACTUAL: array([32767, 32703, 32768, 32766, 32768, 32766, 32769, 32765, 65535,\n           0, 65535,     0], dtype=uint16)\n DESIRED: array([32767, 32703, 32769, 32765, 32768, 32766, 32769, 32765, 65535,\n           0, 65535,     0], dtype=uint16)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint16/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint16/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint16/test_data_set_0",
   "operators": [
     "QuantizeLinear"
   ],
   "opset_version": 25,
-  "generated_checksum": "9d9f33c95f0aedf43b485c64efee137e21675bcf4b8068ff81f5aeec507db406"
+  "generated_checksum": "7e6b29646d3c0406cac8183f1423c2e614c083b7740ce246585742df38c09652"
 }

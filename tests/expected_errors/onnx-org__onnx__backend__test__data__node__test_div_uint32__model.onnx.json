@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_div_uint32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_div_uint32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_div_uint32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_div_uint32/test_data_set_0",
   "operators": [
     "Div"
   ],
   "opset_version": 14,
-  "generated_checksum": "39a6ab527f476e037863a65c523fe7ffa68ad07a164e50ad806f436a15edd25f"
+  "generated_checksum": "42945d4aa1cf1d293db225529455e204966692c07365c3e9a9ade8e0e5a9650f"
 }

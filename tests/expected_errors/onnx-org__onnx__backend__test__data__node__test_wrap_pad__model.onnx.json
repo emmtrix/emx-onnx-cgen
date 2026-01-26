@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_wrap_pad/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_wrap_pad/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_wrap_pad/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_wrap_pad/test_data_set_0",
   "operators": [
     "Pad"
   ],
   "opset_version": 25,
-  "generated_checksum": "b666a752301d8f6775796b8223d2e490e15dadde01f0fa136cbc88c422318726"
+  "generated_checksum": "faeb4024b76e590f735aea33beddc6da08a732364dfc056801e114029688cc9b"
 }

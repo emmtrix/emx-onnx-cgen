@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_keep_dims_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_keep_dims_example/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_keep_dims_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_keep_dims_example/test_data_set_0",
   "operators": [
     "ReduceL2"
   ],
   "opset_version": 18,
-  "generated_checksum": "17ae7ee3c6860712e827d1583d231c885512c032990c6ba87bfda0c4f11234d4"
+  "generated_checksum": "3bdea0396abcd376fdce40bbe8a008d217b0a73ff1fdfbdbbc786971cabb17b2"
 }

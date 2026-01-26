@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tanh_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_tanh_example/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_tanh_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_tanh_example/test_data_set_0",
   "operators": [
     "Tanh"
   ],
   "opset_version": 13,
-  "generated_checksum": "6bc05845a14665b7e40bff869a4d4a75738831b49538f2651077067106faeeae"
+  "generated_checksum": "9b151ee9ebca3bb8a83a90f9695e4635178a7097d3368eed8182815c2a862756"
 }

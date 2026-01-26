@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_asin/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_asin/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_asin/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_asin/test_data_set_0",
   "operators": [
     "Asin"
   ],
   "opset_version": 22,
-  "generated_checksum": "a8f1187cfda0aa6f17edb64193bb59fcc7b3a3d17b984dc2b39edc1c51121119"
+  "generated_checksum": "07a4bd8e4170b46c939cf435fcf8bce26d673c63f758a0b5a14f042656e48f9c"
 }

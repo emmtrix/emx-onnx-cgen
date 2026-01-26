@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Unsqueeze",
@@ -11,5 +11,5 @@
     "ReduceMean"
   ],
   "opset_version": 22,
-  "generated_checksum": "fe58937d36c7770b713bb56ab87dcf3310c0050bed64c4c0360626cb3cbee1d6"
+  "generated_checksum": "894d3183bb12bac7d50bf90e506ab8f4a0c0c9697c6e5faabf2facd05361688a"
 }

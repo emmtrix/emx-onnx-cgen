@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_expand_dim_unchanged/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_expand_dim_unchanged/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_expand_dim_unchanged/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_expand_dim_unchanged/test_data_set_0",
   "operators": [
     "Expand"
   ],
   "opset_version": 13,
-  "generated_checksum": "dbbeccab5a9f39cd1b63c0a88470404db66426c423e1e8ac91aa1bfb3bda455d"
+  "generated_checksum": "dba09f99420213acdff21848d88e1e455586b6c132cfea16cc02063827d01daf"
 }

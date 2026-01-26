@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_not_3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_not_3d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_not_3d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_not_3d/test_data_set_0",
   "operators": [
     "Not"
   ],
   "opset_version": 1,
-  "generated_checksum": "9ceec5b7f5b38ffae1222a9ea459a2286447da3dd7f7bdac20a1e7677994e362"
+  "generated_checksum": "73e0598c46b0e2a1b5a4cf5bc4d42bdbfe3657e308476266dca7a5745f7f0aeb"
 }

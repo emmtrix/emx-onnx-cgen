@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op Gradient",
-  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_gradient_of_add/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/simple/test_gradient_of_add/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/simple/test_gradient_of_add/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/simple/test_gradient_of_add/test_data_set_0",
   "operators": [
     "Add",
     "ai.onnx.preview.training::Gradient"

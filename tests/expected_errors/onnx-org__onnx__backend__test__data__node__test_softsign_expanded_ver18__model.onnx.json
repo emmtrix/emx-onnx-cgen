@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softsign_expanded_ver18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_softsign_expanded_ver18/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softsign_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_softsign_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -9,5 +9,5 @@
     "Div"
   ],
   "opset_version": 18,
-  "generated_checksum": "32632cc3ee9d8b88a8ad3cac5a138cae308722d8c93ffd0489c6e2fd385765e2"
+  "generated_checksum": "95ec7d4b61360854977e425faf597cdbf0307921f355a816e2d37b8d03762b5d"
 }

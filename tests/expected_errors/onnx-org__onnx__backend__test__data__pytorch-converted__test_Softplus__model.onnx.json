@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus/test_data_set_0",
   "operators": [
     "Softplus"
   ],
   "opset_version": 6,
-  "generated_checksum": "6339f69a12407211499e96cac1a6a5af538f94966844a865ca8960c89d534f16"
+  "generated_checksum": "9573e6de7c055d9a0b426ef338202a47b65b09794578d5d7c120f9c72e3da7a9"
 }

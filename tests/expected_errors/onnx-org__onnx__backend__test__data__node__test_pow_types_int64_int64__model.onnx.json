@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_pow_types_int64_int64/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_pow_types_int64_int64/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_pow_types_int64_int64/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_pow_types_int64_int64/test_data_set_0",
   "operators": [
     "Pow"
   ],
   "opset_version": 15,
-  "generated_checksum": "291b590578ebcc3cd38e312cad8512a38974023073a951e127507394e7d9e8da"
+  "generated_checksum": "0f581dacc69239f7f582d43f069f113b4ff7a27de3d67c4267494d0f5afad757"
 }

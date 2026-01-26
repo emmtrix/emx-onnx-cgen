@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 8)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Cast",
@@ -12,5 +12,5 @@
     "Cos"
   ],
   "opset_version": 17,
-  "generated_checksum": "4fd56a38fed1c5222a72874bfa28ae654583aa9b336d24afb668f43569fbc40b"
+  "generated_checksum": "de5a5c542d42c1edafcdfc43d43f759865539539f7c8151860d765ff4544dcda"
 }

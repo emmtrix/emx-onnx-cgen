@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sce_none_weights_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sce_none_weights_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sce_none_weights_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sce_none_weights_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Reshape",
@@ -10,5 +10,5 @@
     "NegativeLogLikelihoodLoss"
   ],
   "opset_version": 13,
-  "generated_checksum": "f024209fd5ad4085591373108ec0135effe4525cbd943ed8b4653b6c9f3907f0"
+  "generated_checksum": "4c7cc35e37b2a5d8cfdeb30997428c2f795e345810845ec848b452cc26a5ea22"
 }

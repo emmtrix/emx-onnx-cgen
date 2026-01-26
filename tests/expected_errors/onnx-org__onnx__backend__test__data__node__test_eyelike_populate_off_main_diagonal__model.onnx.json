@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_eyelike_populate_off_main_diagonal/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_eyelike_populate_off_main_diagonal/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_eyelike_populate_off_main_diagonal/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_eyelike_populate_off_main_diagonal/test_data_set_0",
   "operators": [
     "EyeLike"
   ],
   "opset_version": 22,
-  "generated_checksum": "ac2936db55fdcf9be81a21d75e4c16b6558afda0f0231007d5e19bd7136f6f9c"
+  "generated_checksum": "f890a685fb8cf0c475dc0cd7bf1c9c359de2995914101019f8c9e5fcc7525401"
 }

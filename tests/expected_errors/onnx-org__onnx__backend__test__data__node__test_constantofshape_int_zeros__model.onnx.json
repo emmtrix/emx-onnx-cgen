@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constantofshape_int_zeros/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_constantofshape_int_zeros/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constantofshape_int_zeros/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_constantofshape_int_zeros/test_data_set_0",
   "operators": [
     "ConstantOfShape"
   ],
   "opset_version": 25,
-  "generated_checksum": "5c237c796d78d0c3ab37f2304674f771be5ee3bf705804eabbbefc341c7d79be"
+  "generated_checksum": "b13039c4acddec30277ca32e736b51c63c9a6b4589d12e7e89de7914885781f5"
 }

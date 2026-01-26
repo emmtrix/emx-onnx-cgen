@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/test_data_set_0",
   "operators": [
     "Constant",
     "Add"
   ],
   "opset_version": 6,
-  "generated_checksum": "07800afaa3dd28343586d0215283cc8449e273873e139d3c6c5fcfec2ded3df1"
+  "generated_checksum": "d32939baab5eb297886487f83d261d35714a68ddda8e437f141d412b6da5ce18"
 }

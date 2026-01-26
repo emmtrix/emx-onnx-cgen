@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/test_data_set_0",
   "operators": [
     "ConvTranspose"
   ],
   "opset_version": 6,
-  "generated_checksum": "67ea2e9c482283508e78617ba7f04b7c5834443ee9e6b292c3c8a250c017ba5b"
+  "generated_checksum": "37d414ce4a3153e1d4de81ebf61e95eafcaa0e5ac70ef4edc7f45592dd897509"
 }

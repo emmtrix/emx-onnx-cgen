@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -17,5 +17,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "c725cef62e4d0638221f1bc1008dbd6102506919287536133c6da8f4499db4a4"
+  "generated_checksum": "f5d9f752396253c9affb6048212a87fe65e4c60918ea58bcfdebd15e101ced96"
 }

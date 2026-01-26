@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_broadcast/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_broadcast/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_broadcast/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_broadcast/test_data_set_0",
   "operators": [
     "Add"
   ],
   "opset_version": 6,
-  "generated_checksum": "a4e637e957769792c70944e642b3146c4eced7b70137330b64dcc6240db153c7"
+  "generated_checksum": "12a2929ebbbf3637c6ffbfd404908ac95d800d837db6208feeb40997c9e5fa2f"
 }

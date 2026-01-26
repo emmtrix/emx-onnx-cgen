@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_do_not_keepdims_example_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_do_not_keepdims_example_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_do_not_keepdims_example_expanded/test_data_set_0",
   "operators": [
     "Mul",
     "ReduceSum",
@@ -9,5 +9,5 @@
     "CastLike"
   ],
   "opset_version": 18,
-  "generated_checksum": "64393e6e2735702a2f41cde1dab46ad3069e163ed517941ebe7b842074ce493b"
+  "generated_checksum": "6495f2c2fc03c12665f22eef6f0190303c5d8ca5d269b72ada21c24a037d4232"
 }

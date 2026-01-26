@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_scaled_expanded/test_data_set_0",
   "operators": [
     "Shape",
     "Constant",
@@ -25,5 +25,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "fdf6dc483ade901cce1725b21f57e760dce7493af3dca2832e8b9dfbad525778"
+  "generated_checksum": "35252aef5f34fa2d2e6d5c4e8ddf5f1d36beffd04605fe7d7f6279dcf67442c5"
 }

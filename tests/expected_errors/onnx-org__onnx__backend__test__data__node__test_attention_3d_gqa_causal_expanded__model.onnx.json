@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded/test_data_set_0",
   "operators": [
     "Shape",
     "Constant",
@@ -29,5 +29,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "5021f5a83edf940da95d14b2913b93271cf1eda08b9cfd5432a8ea72295d2f93"
+  "generated_checksum": "7ba84fbec1f50bd55995b761daaf88465c8f2397796d08d9286dc4397bfe64de"
 }

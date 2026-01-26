@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cumsum_1d_reverse_exclusive/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cumsum_1d_reverse_exclusive/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cumsum_1d_reverse_exclusive/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cumsum_1d_reverse_exclusive/test_data_set_0",
   "operators": [
     "CumSum"
   ],
   "opset_version": 14,
-  "generated_checksum": "e246c581d82133a11a556663a82ad91cd599b35128fa5a49707856c199a7ad53"
+  "generated_checksum": "ea10b70c04d2bbfc3cdfbeef1b565df9dc345723e7d997505c6bdb4d55824300"
 }

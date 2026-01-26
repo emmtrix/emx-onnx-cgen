@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softsign/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_softsign/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_softsign/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_softsign/test_data_set_0",
   "operators": [
     "Softsign"
   ],
   "opset_version": 22,
-  "generated_checksum": "2455173955d4ec5f5074b0577b9769b81a9ea322c1c8c646261468c6f4c7f18b"
+  "generated_checksum": "8d07fdade4607aef5b9ae22055a881f3f32b61731c7e1486db127e7b3929539e"
 }

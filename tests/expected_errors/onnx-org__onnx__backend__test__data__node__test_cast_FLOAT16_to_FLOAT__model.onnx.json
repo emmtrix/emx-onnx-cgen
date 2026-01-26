@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT/test_data_set_0",
   "operators": [
     "Cast"
   ],
   "opset_version": 25,
-  "generated_checksum": "f2b2b6e8cdd5157e56140c35f030b18171b7e518ece1f96762cff66874b66ef6"
+  "generated_checksum": "7cf30bb5104a317e5e114b81364947639a8f902ff0cb8e35e5ba8d6a6e729be1"
 }

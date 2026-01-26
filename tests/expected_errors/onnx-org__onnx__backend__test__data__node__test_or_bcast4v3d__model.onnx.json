@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_or_bcast4v3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_or_bcast4v3d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_or_bcast4v3d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_or_bcast4v3d/test_data_set_0",
   "operators": [
     "Or"
   ],
   "opset_version": 7,
-  "generated_checksum": "26a500490da71ce1a0fa932c85dc7c57bf60c1bb3cdd134b6ab5568cb0f4cf35"
+  "generated_checksum": "c457f6677d809e03d17a7552af8cc5350701a64fbbeb43cc561b9f6f6b6786e6"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_same_upper/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_same_upper/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_same_upper/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_maxpool_2d_precomputed_same_upper/test_data_set_0",
   "operators": [
     "MaxPool"
   ],
   "opset_version": 22,
-  "generated_checksum": "83f41bd62964c999ad11856033a22e0b845a0584456bee541b22b74745107377"
+  "generated_checksum": "452277866f97d652a7b2907dc81be8b83e5f9f87a9ffee3067f527784ad59241"
 }

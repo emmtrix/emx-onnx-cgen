@@ -1,9 +1,9 @@
 {
   "error": "\nArrays are not equal\n\nMismatched elements: 1 / 6 (16.7%)\nMax absolute difference among violations: 108\nMax relative difference among violations: 5.4\n ACTUAL: array([[  41,  -12,   -9],\n       [   1,  -75, -128]], dtype=int8)\n DESIRED: array([[ 41, -12,  -9],\n       [  1, -75,  20]], dtype=int8)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32/test_data_set_0",
   "operators": [
     "QLinearMatMul"
   ],
   "opset_version": 21,
-  "generated_checksum": "ecefc6ffd88dc7e068b0e457b29162c79e62b9f2eec18a164cf2e78b8d2055de"
+  "generated_checksum": "4640f73a58758e28a935e21c545acb1e2ae9f0a2b8b3e884b6fd4a6b4e19783d"
 }

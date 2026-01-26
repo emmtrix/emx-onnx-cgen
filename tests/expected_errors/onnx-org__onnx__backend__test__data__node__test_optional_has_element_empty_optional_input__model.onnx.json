@@ -1,6 +1,6 @@
 {
   "error": "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/test_data_set_0",
   "operators": [
     "OptionalHasElement"
   ],

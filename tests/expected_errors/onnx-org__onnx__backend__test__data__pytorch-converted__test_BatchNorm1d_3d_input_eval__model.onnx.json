@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm1d_3d_input_eval/test_data_set_0",
   "operators": [
     "BatchNormalization"
   ],
   "opset_version": 6,
-  "generated_checksum": "157da35ec1b40df2639911c8ff970a6aa3f3100394c674a5349baf2b87db7d6f"
+  "generated_checksum": "a3fa9973cc118c6d961e2075b8ec6d619ce5f0e34318c51ec39a018462605bfa"
 }

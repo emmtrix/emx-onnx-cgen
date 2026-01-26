@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2/test_data_set_0",
   "operators": [
     "LayerNormalization"
   ],
   "opset_version": 17,
-  "generated_checksum": "5a370135f3f10bd06ea45db52dab87593b42e69e7f378d6725148084dd444986"
+  "generated_checksum": "45dffce04645ee061a9db430170e9ed13053aee803f220069a2cd710ebd54568"
 }

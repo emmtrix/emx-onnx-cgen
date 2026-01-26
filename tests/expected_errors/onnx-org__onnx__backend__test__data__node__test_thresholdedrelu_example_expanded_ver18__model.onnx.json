@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example_expanded_ver18/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example_expanded_ver18/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",
     "CastLike",
@@ -8,5 +8,5 @@
     "Where"
   ],
   "opset_version": 18,
-  "generated_checksum": "b1e21259d64ba55662b926bc47f8a0dcbe10c7d9630b09e7f5ecb1b74087f595"
+  "generated_checksum": "7de4109bbd33fe623e9d34cf9ba923ba3f274af748a81dc10e29e53e19a3d24d"
 }

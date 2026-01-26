@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example_expanded/test_data_set_0",
   "operators": [
     "Mul",
     "ReduceSum"
   ],
   "opset_version": 18,
-  "generated_checksum": "35627e5f46e5c56a13babb7c06340035b3abc6a939e41063279e0a6ef68dd5f5"
+  "generated_checksum": "d5b674579ede8705db55db6097a9aace1af432d43c3b0fa9744ccc3da191ec23"
 }

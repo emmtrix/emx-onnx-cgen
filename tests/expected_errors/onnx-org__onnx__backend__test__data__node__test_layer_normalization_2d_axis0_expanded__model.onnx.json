@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Cast",
@@ -20,5 +20,5 @@
     "Reciprocal"
   ],
   "opset_version": 17,
-  "generated_checksum": "e898958c2392502c8e1cbde4e6b56009f2258bfd7c7b9655f01bde1fc519c5cd"
+  "generated_checksum": "434acfe3d98927d05d27d90f28addf9fcb9aed240236d2497193bd6429e1d5ee"
 }

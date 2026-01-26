@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 981668463)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx --cc /usr/bin/cc",
+  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",
@@ -12,5 +12,5 @@
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "8925754cd1c0e6d5a95b1d44b45447593e476d98fe6035066f58458c2da4554d"
+  "generated_checksum": "ffba169bd848d573e41547529c52f346b5d0bdd6cbefe3df0ff782d4bfedcc9d"
 }

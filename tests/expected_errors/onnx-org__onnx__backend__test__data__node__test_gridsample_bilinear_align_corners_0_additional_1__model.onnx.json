@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_0_additional_1/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_0_additional_1/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_0_additional_1/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_0_additional_1/test_data_set_0",
   "operators": [
     "GridSample"
   ],
   "opset_version": 22,
-  "generated_checksum": "02bbe9dd9aed35f0e0ef9e969a73b7a24f851724da442be2eb69d87b7fb69d14"
+  "generated_checksum": "a431894fec1861a8a03f9b99de5664c7ac4e69637e18247772ba8498930f8577"
 }

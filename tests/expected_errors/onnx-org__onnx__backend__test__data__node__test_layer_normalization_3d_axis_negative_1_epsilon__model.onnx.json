@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 8)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon/test_data_set_0",
   "operators": [
     "LayerNormalization"
   ],
   "opset_version": 17,
-  "generated_checksum": "a953e267c50e1edafe1c2ac3f29924cd9f80a44d53c8925cdcfd3db190755860"
+  "generated_checksum": "2a46fd890b1c5522d42647ad8c2407c71fd4edd4bc65adccb1b790b4693df73d"
 }

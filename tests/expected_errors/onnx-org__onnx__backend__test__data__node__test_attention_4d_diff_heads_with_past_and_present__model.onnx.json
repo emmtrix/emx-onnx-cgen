@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 3)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/test_data_set_0",
   "operators": [
     "Attention"
   ],
   "opset_version": 23,
-  "generated_checksum": "9d9b3ac87df44f80871fd97f36c4aa72e841f648034ce8404d86975d61002e50"
+  "generated_checksum": "fa9b465c6d15e6bacf7a4860f988eebc0507adad49121bf7c72501723250597e"
 }

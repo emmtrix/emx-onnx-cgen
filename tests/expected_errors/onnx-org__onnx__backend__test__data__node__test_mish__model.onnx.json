@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 4)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mish/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_mish/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_mish/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_mish/test_data_set_0",
   "operators": [
     "Mish"
   ],
   "opset_version": 22,
-  "generated_checksum": "2895801334f23d8dfa6c89e415d4cea931f15d9d0954ce77f782d4fd10c4be87"
+  "generated_checksum": "fd91eb827dbd4b7101191e0daa075431c270a0f734889a1832d5b6c030f5377d"
 }

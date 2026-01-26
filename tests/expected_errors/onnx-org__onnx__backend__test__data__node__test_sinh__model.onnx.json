@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sinh/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_sinh/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_sinh/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_sinh/test_data_set_0",
   "operators": [
     "Sinh"
   ],
   "opset_version": 22,
-  "generated_checksum": "d4733f49fcc89b83297ca165fcf69222ba6e379270bd314b3816536a291f45d0"
+  "generated_checksum": "9bb6dde553b20c32351fbb7f00f8fe8053ef53cc35808bc502b1e77ee00f3df4"
 }

@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitshift_left_uint8/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitshift_left_uint8/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_bitshift_left_uint8/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_bitshift_left_uint8/test_data_set_0",
   "operators": [
     "BitShift"
   ],
   "opset_version": 11,
-  "generated_checksum": "611471bbddad7909b3bece88ddf3345250ad5770b8d930bf355ad5603faa3e86"
+  "generated_checksum": "92e074fbbe3789077761a8e1053a244676705418b56dba4a2eda2dc607a687d9"
 }

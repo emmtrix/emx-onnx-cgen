@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_xor3d/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_xor3d/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_xor3d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_xor3d/test_data_set_0",
   "operators": [
     "Xor"
   ],
   "opset_version": 7,
-  "generated_checksum": "8fc1805f78fc20bc2b986a7b0f22b07e68341ba020ebcc274e5b10f6e2323499"
+  "generated_checksum": "a9d6f67c19d8629e10a756892738ef9b7bc896b329d3e714a45cb1d45c373a01"
 }

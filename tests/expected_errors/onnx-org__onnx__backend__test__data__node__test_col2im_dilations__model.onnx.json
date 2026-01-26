@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op Col2Im",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_col2im_dilations/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_col2im_dilations/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_col2im_dilations/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_col2im_dilations/test_data_set_0",
   "operators": [
     "Col2Im"
   ],

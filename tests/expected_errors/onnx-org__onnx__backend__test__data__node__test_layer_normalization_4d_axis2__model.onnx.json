@@ -1,9 +1,9 @@
 {
   "error": "Out of tolerance (max ULP 112)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/test_data_set_0",
   "operators": [
     "LayerNormalization"
   ],
   "opset_version": 17,
-  "generated_checksum": "c51e9e270e38b69923985cb2333360df7a81fc681502bd08ad772e04751cba1e"
+  "generated_checksum": "774c10acd5d1775b7f0e2304a60fcf321f6ea34d71fcecd0624e7b2e2c2bbac6"
 }

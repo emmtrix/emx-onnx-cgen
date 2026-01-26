@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_equal_uint32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_equal_uint32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_equal_uint32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_equal_uint32/test_data_set_0",
   "operators": [
     "Equal"
   ],
   "opset_version": 19,
-  "generated_checksum": "ebed65a451dcc952bb4913f8efed131880b9b6173450ed597db8a67967baaeed"
+  "generated_checksum": "f6d3ad33a45c10b99751adf438270d7ff73c9404f6364755d36ae5d95b9be588"
 }

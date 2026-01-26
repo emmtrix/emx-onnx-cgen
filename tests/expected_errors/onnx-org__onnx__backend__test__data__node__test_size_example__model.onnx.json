@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_size_example/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_size_example/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_size_example/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_size_example/test_data_set_0",
   "operators": [
     "Size"
   ],
   "opset_version": 25,
-  "generated_checksum": "95a06a954241e8145ecdc19c0edbd34520de3b696a0d382b1101385c95cbd1b0"
+  "generated_checksum": "9852f03dd3c6d1ba466d2179f8c88d0e341a17ebb1ba482588079e60bdadb707"
 }

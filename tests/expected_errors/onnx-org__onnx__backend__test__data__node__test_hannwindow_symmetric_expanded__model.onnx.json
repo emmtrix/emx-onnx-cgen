@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 612368384)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded/test_data_set_0",
   "operators": [
     "Constant",
     "Cast",
@@ -12,5 +12,5 @@
     "Cos"
   ],
   "opset_version": 17,
-  "generated_checksum": "cd879deb3c97790210d13ae7c64d9473926687c66ba40b8e63ec13d23c5e4e92"
+  "generated_checksum": "a4045dde696ce505dad95ff25646a0d520ec7c01d28e350c1cdf3b6d1d684805"
 }

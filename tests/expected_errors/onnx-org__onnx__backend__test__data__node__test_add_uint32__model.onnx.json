@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_uint32/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_uint32/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_add_uint32/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_add_uint32/test_data_set_0",
   "operators": [
     "Add"
   ],
   "opset_version": 14,
-  "generated_checksum": "2646d9cfdf906fc27160982bd81233e99b11e273e6c738d33c98a6381d011f45"
+  "generated_checksum": "a3e83552683c8774ae83f5fe1dc8fb0a5420e70b499399a025d4d69cfa6842ab"
 }

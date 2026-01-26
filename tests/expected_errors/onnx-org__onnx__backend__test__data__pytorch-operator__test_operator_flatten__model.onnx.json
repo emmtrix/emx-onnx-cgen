@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/test_data_set_0",
   "operators": [
     "Flatten"
   ],
   "opset_version": 6,
-  "generated_checksum": "77222cf7c9be410723b85e1489e7248b9b7597f1813a878a0f9b48c88a6d8316"
+  "generated_checksum": "42b47205feb410bc189194e062647b3a70c20c5102090034ea82353b2d33d484"
 }

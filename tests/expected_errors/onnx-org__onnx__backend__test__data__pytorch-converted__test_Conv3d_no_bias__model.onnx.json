@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "e79b2f71635a1811de752a8e1bf4fb37e1c91a6f95d7b6c60b6571aa3dae0661"
+  "generated_checksum": "e7d14e9f075736023535296c28beb8fe54b82a4fbe0da5a38a2df73a8fd54b46"
 }

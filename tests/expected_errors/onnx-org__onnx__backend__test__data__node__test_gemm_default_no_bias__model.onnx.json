@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 2)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gemm_default_no_bias/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_gemm_default_no_bias/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gemm_default_no_bias/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gemm_default_no_bias/test_data_set_0",
   "operators": [
     "Gemm"
   ],
   "opset_version": 13,
-  "generated_checksum": "b1ee240bc09b4c9edb696b482bbab06a3b51923cbb001cc61ac04e92d2dea2c1"
+  "generated_checksum": "f70d3485e1c6927c287d195a644962826315996dfb8ab4fd9d349f5ed11ca904"
 }

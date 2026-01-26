@@ -1,10 +1,10 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_scalar_input_to_node/model.onnx --cc /usr/bin/cc --test-data-dir onnx2c-org/test/local_ops/test_scalar_input_to_node/test_data_set_0",
+  "command_line": "verify onnx2c-org/test/local_ops/test_scalar_input_to_node/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_scalar_input_to_node/test_data_set_0",
   "operators": [
     "Constant",
     "Mul"
   ],
   "opset_version": 13,
-  "generated_checksum": "2071a500f10234c3eb07b364d11f91dcc796e15eb52c275f563a129ff4f42b17"
+  "generated_checksum": "f0e689c62a54097e17bd621f50a3c76c64e03dc773ddb5a776e3e05abcc93167"
 }

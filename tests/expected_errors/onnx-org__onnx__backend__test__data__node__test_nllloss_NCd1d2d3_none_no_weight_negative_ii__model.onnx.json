@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/test_data_set_0",
   "operators": [
     "NegativeLogLikelihoodLoss"
   ],
   "opset_version": 22,
-  "generated_checksum": "538064065b70948aaa165861ea9cc17d6147639893accc5558672acdd2ec27d5"
+  "generated_checksum": "168f8b06f9ac88ede391f8c58844b17fc7f880a533cd5a2b176a684565917e36"
 }

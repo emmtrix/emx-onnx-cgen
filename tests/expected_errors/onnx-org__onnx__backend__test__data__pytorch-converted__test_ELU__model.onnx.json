@@ -1,6 +1,6 @@
 {
   "error": "Elu only supports alpha=1.0",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/test_data_set_0",
   "operators": [
     "Elu"
   ],

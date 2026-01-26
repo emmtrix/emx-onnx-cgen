@@ -1,9 +1,9 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/model.onnx --cc /usr/bin/cc --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/test_data_set_0",
+  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/test_data_set_0",
   "operators": [
     "Slice"
   ],
   "opset_version": 13,
-  "generated_checksum": "966271d850a601034184e566b6306a1a3d1be9e5ba06ffa2be2e2f23b19a09b5"
+  "generated_checksum": "c7ed4f072cf4ebf5de086f29c2f163d798748b94d35d35de49c8e69a8404cea4"
 }
