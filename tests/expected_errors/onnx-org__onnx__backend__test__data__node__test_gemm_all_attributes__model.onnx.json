@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 2)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gemm_all_attributes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gemm_all_attributes/test_data_set_0",
   "operators": [
     "Gemm"

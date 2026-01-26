@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 80)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d/test_data_set_0",
   "operators": [
     "Conv"

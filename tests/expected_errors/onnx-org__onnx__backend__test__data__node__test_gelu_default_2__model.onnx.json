@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 9)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gelu_default_2/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_2/test_data_set_0",
   "operators": [
     "Gelu"

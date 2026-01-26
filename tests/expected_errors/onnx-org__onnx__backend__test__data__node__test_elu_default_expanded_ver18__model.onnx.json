@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 32)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_elu_default_expanded_ver18/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_elu_default_expanded_ver18/test_data_set_0",
   "operators": [
     "Constant",

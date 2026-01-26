@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gemm_default_single_elem_vector_bias/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gemm_default_single_elem_vector_bias/test_data_set_0",
   "operators": [
     "Gemm"

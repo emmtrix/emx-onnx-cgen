@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D_align/test_data_set_0",
   "operators": [
     "Resize",

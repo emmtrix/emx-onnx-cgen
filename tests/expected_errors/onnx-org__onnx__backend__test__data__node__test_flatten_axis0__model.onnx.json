@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_flatten_axis0/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_flatten_axis0/test_data_set_0",
   "operators": [
     "Flatten"

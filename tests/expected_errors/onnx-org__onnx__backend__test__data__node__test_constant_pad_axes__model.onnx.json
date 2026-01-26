@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK CHECKSUM",
   "command_line": "verify onnx-org/onnx/backend/test/data/node/test_constant_pad_axes/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_constant_pad_axes/test_data_set_0",
   "operators": [
     "Pad"
