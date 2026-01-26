@@ -1700,14 +1700,13 @@ def _eval_quantize_linear(evaluator: Evaluator, node: Node) -> None:
     else:
         zero_point = evaluator.values[zero_point_name]
     if spec.axis is None:
-        scaled = data / scale + zero_point
+        scaled = data / scale
+        rounded = np.rint(scaled) + np.asarray(zero_point)
     else:
         shape = [1] * data.ndim
         shape[spec.axis] = scale.shape[0]
-        scaled = data / scale.reshape(shape) + np.asarray(zero_point).reshape(
-            shape
-        )
-    rounded = np.rint(scaled)
+        scaled = data / scale.reshape(shape)
+        rounded = np.rint(scaled) + np.asarray(zero_point).reshape(shape)
     info = np.iinfo(spec.output_dtype.np_dtype)
     clipped = np.clip(rounded, info.min, info.max)
     evaluator.values[node.outputs[0]] = clipped.astype(
