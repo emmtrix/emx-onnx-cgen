@@ -47,7 +47,6 @@
 | Unsupported op RandomUniformLike | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
 | name '*' is not defined | 3 | ██ |
-| Arrays are not equal (max abs diff 148) | 2 | ██ |
 | AveragePool supports ceil_mode=0 only | 2 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
 | Failed to build testbench. | 2 | ██ |
@@ -74,8 +73,6 @@
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
-| Arrays are not equal (max abs diff 247) | 1 | █ |
-| Arrays are not equal (max abs diff 248) | 1 | █ |
 | AveragePool supports 2D/3D inputs only | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
 | Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |
