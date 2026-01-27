@@ -315,6 +315,14 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_verbose_flag(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--verbose",
+            "-v",
+            action="store_true",
+            help="Enable verbose logging (includes codegen timing).",
+        )
+
     def add_restrict_flags(subparser: argparse.ArgumentParser) -> None:
         restrict_group = subparser.add_mutually_exclusive_group()
         restrict_group.add_argument(
@@ -335,6 +343,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "compile", help="Compile an ONNX model into C source"
     )
     add_color_flag(compile_parser)
+    add_verbose_flag(compile_parser)
     compile_parser.add_argument(
         "--model-base-dir",
         "-B",
@@ -410,6 +419,7 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Compile an ONNX model and verify outputs against ONNX Runtime",
     )
     add_color_flag(verify_parser)
+    add_verbose_flag(verify_parser)
     verify_parser.add_argument(
         "--model-base-dir",
         "-B",
@@ -644,7 +654,8 @@ def _compile_model(
             generated, weight_data = compiler.compile_with_weight_data(model)
             data_source = None
         active_reporter.step_ok(codegen_started)
-        _report_codegen_timings(active_reporter, timings=timings)
+        if args.verbose:
+            _report_codegen_timings(active_reporter, timings=timings)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         active_reporter.step_fail(str(exc))
         return None, None, None, str(exc)
@@ -841,7 +852,8 @@ def _verify_model(
         compiler = Compiler(options)
         generated, weight_data = compiler.compile_with_weight_data(model)
         active_reporter.step_ok(codegen_started)
-        _report_codegen_timings(active_reporter, timings=timings)
+        if args.verbose:
+            _report_codegen_timings(active_reporter, timings=timings)
         artifacts = [("model.c", len(generated.encode("utf-8")))]
         if weight_data is not None:
             artifacts.append((f"{model_name}.bin", len(weight_data)))
