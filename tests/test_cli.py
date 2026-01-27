@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 
 import onnx
+import pytest
 
 from onnx import TensorProto
 
@@ -15,6 +16,7 @@ from test_ops import (
     _make_reduce_model,
     _reduce_output_shape,
 )
+from emx_onnx_cgen import cli
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = PROJECT_ROOT / "src"
@@ -69,3 +71,68 @@ def test_cli_verify_reduce_model() -> None:
         dtype=TensorProto.FLOAT,
     )
     _run_cli_verify(model)
+
+
+def test_cli_model_base_dir_resolves_relative_paths(tmp_path: Path) -> None:
+    base_dir = tmp_path / "base"
+    base_dir.mkdir()
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        ["compile", "model.onnx", "out.c", "--model-base-dir", str(base_dir)]
+    )
+    cli._apply_base_dir(args, parser)
+    assert args.model == base_dir / "model.onnx"
+    assert args.output == Path("out.c")
+
+
+def test_cli_model_base_dir_absolute_passthrough(tmp_path: Path) -> None:
+    base_dir = tmp_path / "base"
+    base_dir.mkdir()
+    model_path = tmp_path / "model.onnx"
+    output_path = tmp_path / "out.c"
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        [
+            "compile",
+            str(model_path),
+            str(output_path),
+            "--model-base-dir",
+            str(base_dir),
+        ]
+    )
+    cli._apply_base_dir(args, parser)
+    assert args.model == model_path
+    assert args.output == output_path
+
+
+def test_cli_model_base_dir_invalid(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        ["compile", "model.onnx", "--model-base-dir", str(tmp_path / "missing")]
+    )
+    with pytest.raises(SystemExit):
+        cli._apply_base_dir(args, parser)
+    err = capsys.readouterr().err
+    assert "--model-base-dir" in err
+    assert "does not exist or is not a directory" in err
+
+
+def test_cli_model_base_dir_resolves_test_data(tmp_path: Path) -> None:
+    base_dir = tmp_path / "base"
+    base_dir.mkdir()
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        [
+            "verify",
+            "model.onnx",
+            "--test-data-dir",
+            "inputs",
+            "--model-base-dir",
+            str(base_dir),
+        ]
+    )
+    cli._apply_base_dir(args, parser)
+    assert args.model == base_dir / "model.onnx"
+    assert args.test_data_dir == base_dir / "inputs"

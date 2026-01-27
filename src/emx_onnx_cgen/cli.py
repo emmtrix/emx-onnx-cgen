@@ -211,6 +211,7 @@ def run_cli_command(
     parser = _build_parser()
     args = parser.parse_args(parse_argv)
     args.command_line = _format_command_line(raw_argv)
+    _apply_base_dir(args, parser)
 
     try:
         if args.command != "compile":
@@ -283,6 +284,16 @@ def _build_parser() -> argparse.ArgumentParser:
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
+    compile_parser.add_argument(
+        "--model-base-dir",
+        "-B",
+        type=Path,
+        default=None,
+        help=(
+            "Base directory for resolving the model path "
+            "(example: tool --model-base-dir /data model.onnx)"
+        ),
+    )
     compile_parser.add_argument("model", type=Path, help="Path to the ONNX model")
     compile_parser.add_argument(
         "output",
@@ -346,6 +357,16 @@ def _build_parser() -> argparse.ArgumentParser:
     verify_parser = subparsers.add_parser(
         "verify",
         help="Compile an ONNX model and verify outputs against ONNX Runtime",
+    )
+    verify_parser.add_argument(
+        "--model-base-dir",
+        "-B",
+        type=Path,
+        default=None,
+        help=(
+            "Base directory for resolving the model and test data paths "
+            "(example: tool --model-base-dir /data model.onnx --test-data-dir inputs)"
+        ),
     )
     verify_parser.add_argument("model", type=Path, help="Path to the ONNX model")
     verify_parser.add_argument(
@@ -448,11 +469,38 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _resolve_with_base_dir(base_dir: Path, path: Path) -> Path:
+    if path.is_absolute():
+        return path
+    return Path(os.path.normpath(os.path.join(base_dir, path)))
+
+
+def _apply_base_dir(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> None:
+    model_base_dir: Path | None = args.model_base_dir
+    if model_base_dir is None:
+        return
+    if not model_base_dir.exists() or not model_base_dir.is_dir():
+        parser.error(
+            f"--model-base-dir {model_base_dir} does not exist or is not a directory"
+        )
+    path_fields = ("model", "test_data_dir")
+    for field in path_fields:
+        value = getattr(args, field, None)
+        if value is None:
+            continue
+        if not isinstance(value, Path):
+            continue
+        setattr(args, field, _resolve_with_base_dir(model_base_dir, value))
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO)
     parser = _build_parser()
     args = parser.parse_args(argv)
     args.command_line = _format_command_line(argv)
+    _apply_base_dir(args, parser)
 
     if args.command == "compile":
         return _handle_compile(args)
