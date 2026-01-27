@@ -82,6 +82,7 @@ emx-onnx-cgen compile <model.onnx> <output.c> [options]
 
 Options:
 
+- `--model-base-dir`, `-B`: Base directory for resolving the model path (example: `emx-onnx-cgen compile --model-base-dir /data model.onnx out.c`).
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
@@ -97,6 +98,7 @@ emx-onnx-cgen verify <model.onnx> [options]
 
 Options:
 
+- `--model-base-dir`, `-B`: Base directory for resolving the model and test data paths (example: `emx-onnx-cgen verify --model-base-dir /data model.onnx --test-data-dir inputs`).
 - `--model-name`: Override the generated model name (default: model file stem).
 - `--cc`: Explicit C compiler command for building the testbench binary.
 - `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`).
@@ -147,4 +149,3 @@ See [`SUPPORT_OPS.md`](SUPPORT_OPS.md) for operator-level support derived from t
 ## Maintained by
 
 This project is maintained by [emmtrix](https://www.emmtrix.com).
-
