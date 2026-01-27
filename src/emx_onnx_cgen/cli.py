@@ -737,6 +737,60 @@ def _verify_model(
             None,
             None,
         )
+    temp_dir_root: Path | None = args.temp_dir_root
+    explicit_temp_dir: Path | None = args.temp_dir
+    if temp_dir_root is not None and explicit_temp_dir is not None:
+        return (
+            None,
+            "Cannot set both --temp-dir-root and --temp-dir.",
+            operators,
+            opset_version,
+            generated_checksum,
+        )
+    if temp_dir_root is not None:
+        if temp_dir_root.exists() and not temp_dir_root.is_dir():
+            return (
+                None,
+                f"Verification temp dir root is not a directory: {temp_dir_root}",
+                operators,
+                opset_version,
+                generated_checksum,
+            )
+        temp_dir_root.mkdir(parents=True, exist_ok=True)
+    if explicit_temp_dir is not None:
+        if explicit_temp_dir.exists() and not explicit_temp_dir.is_dir():
+            return (
+                None,
+                f"Verification temp dir is not a directory: {explicit_temp_dir}",
+                operators,
+                opset_version,
+                generated_checksum,
+            )
+    temp_dir: tempfile.TemporaryDirectory | None = None
+    cleanup_created_dir = False
+    if explicit_temp_dir is not None:
+        temp_path = explicit_temp_dir
+        if not temp_path.exists():
+            temp_path.mkdir(parents=True, exist_ok=True)
+            cleanup_created_dir = not args.keep_temp_dir
+    elif args.keep_temp_dir:
+        temp_path = Path(
+            tempfile.mkdtemp(
+                dir=str(temp_dir_root) if temp_dir_root is not None else None
+            )
+        )
+    else:
+        temp_dir = tempfile.TemporaryDirectory(
+            dir=str(temp_dir_root) if temp_dir_root is not None else None
+        )
+        temp_path = Path(temp_dir.name)
+    keep_label = (
+        "--keep-temp-dir set" if args.keep_temp_dir else "--keep-temp-dir not set"
+    )
+    active_reporter.note(
+        f"Using temporary folder [{keep_label}]: {temp_path}"
+    )
+    active_reporter.info("")
     load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     try:
         model, model_checksum = _load_model_and_checksum(model_path)
@@ -807,66 +861,13 @@ def _verify_model(
             None,
         )
 
-    temp_dir_root: Path | None = args.temp_dir_root
-    explicit_temp_dir: Path | None = args.temp_dir
-    if temp_dir_root is not None and explicit_temp_dir is not None:
-        return (
-            None,
-            "Cannot set both --temp-dir-root and --temp-dir.",
-            operators,
-            opset_version,
-            generated_checksum,
-        )
-    if temp_dir_root is not None:
-        if temp_dir_root.exists() and not temp_dir_root.is_dir():
-            return (
-                None,
-                f"Verification temp dir root is not a directory: {temp_dir_root}",
-                operators,
-                opset_version,
-                generated_checksum,
-            )
-        temp_dir_root.mkdir(parents=True, exist_ok=True)
-    if explicit_temp_dir is not None:
-        if explicit_temp_dir.exists() and not explicit_temp_dir.is_dir():
-            return (
-                None,
-                f"Verification temp dir is not a directory: {explicit_temp_dir}",
-                operators,
-                opset_version,
-                generated_checksum,
-            )
-    temp_dir: tempfile.TemporaryDirectory | None = None
-    cleanup_created_dir = False
-    if explicit_temp_dir is not None:
-        temp_path = explicit_temp_dir
-        if not temp_path.exists():
-            temp_path.mkdir(parents=True, exist_ok=True)
-            cleanup_created_dir = not args.keep_temp_dir
-    elif args.keep_temp_dir:
-        temp_path = Path(
-            tempfile.mkdtemp(
-                dir=str(temp_dir_root) if temp_dir_root is not None else None
-            )
-        )
-    else:
-        temp_dir = tempfile.TemporaryDirectory(
-            dir=str(temp_dir_root) if temp_dir_root is not None else None
-        )
-        temp_path = Path(temp_dir.name)
-    active_reporter.info(f"  Using temporary folder: {temp_path}")
     def _cleanup_temp() -> None:
         if temp_dir is None and not cleanup_created_dir:
-            active_reporter.note("Keeping temporary folder")
             return
-        delete_started = active_reporter.start_step(
-            "Deleting temporary folder [--keep-temp-dir not set]"
-        )
         if temp_dir is None:
             shutil.rmtree(temp_path)
         else:
             temp_dir.cleanup()
-        active_reporter.step_ok(delete_started)
 
     try:
         payload: dict[str, Any] | None = None
