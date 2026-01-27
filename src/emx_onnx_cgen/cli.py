@@ -120,6 +120,10 @@ class _VerifyReporter:
     def info(self, message: str) -> None:
         print(message, file=self._stream)
 
+    def result(self, message: str, *, ok: bool) -> None:
+        colored = self._color(message, "32" if ok else "31")
+        print(f"Result: {colored}", file=self._stream)
+
 
 class _NullVerifyReporter(_VerifyReporter):
     def __init__(self) -> None:
@@ -144,6 +148,9 @@ class _NullVerifyReporter(_VerifyReporter):
         return None
 
     def info(self, message: str) -> None:
+        return None
+
+    def result(self, message: str, *, ok: bool) -> None:
         return None
 
 
@@ -565,7 +572,7 @@ def _handle_compile(args: argparse.Namespace) -> int:
     )
     if error:
         reporter.info("")
-        reporter.info(f"Result: {error}")
+        reporter.result(error, ok=False)
         return 1
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -699,11 +706,11 @@ def _handle_verify(args: argparse.Namespace) -> int:
     ) = _verify_model(args, include_build_details=True, reporter=reporter)
     if error is not None:
         reporter.info("")
-        reporter.info(f"Result: {error}")
+        reporter.result(error, ok=False)
         return 1
     if success_message:
         reporter.info("")
-        reporter.info(f"Result: {success_message}")
+        reporter.result(success_message, ok=True)
     return 0
 
 
