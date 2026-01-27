@@ -78,6 +78,9 @@ class _VerifyReporter:
         duration = time.perf_counter() - started_at
         print(f"OK ({duration:.3f}s)", file=self._stream)
 
+    def step_ok_simple(self) -> None:
+        print("OK", file=self._stream)
+
     def step_ok_detail(self, detail: str) -> None:
         print(f"OK ({detail})", file=self._stream)
 
@@ -99,6 +102,9 @@ class _NullVerifyReporter(_VerifyReporter):
         return time.perf_counter()
 
     def step_ok(self, started_at: float) -> None:
+        return None
+
+    def step_ok_simple(self) -> None:
         return None
 
     def step_ok_detail(self, detail: str) -> None:
@@ -808,28 +814,41 @@ def _verify_model(
         )
         temp_path = Path(temp_dir.name)
     active_reporter.info(f"  Using temporary folder: {temp_path}")
-    payload: dict[str, Any] | None = None
-    testbench_input_path: Path | None = None
-    if testbench_inputs:
-        input_order = [value.name for value in graph.inputs]
-        testbench_input_path = temp_path / "testbench_inputs.bin"
-        with testbench_input_path.open("wb") as handle:
-            for name in input_order:
-                array = testbench_inputs.get(name)
-                if array is None:
-                    return (
-                        None,
-                        f"Missing testbench input data for {name}.",
-                        operators,
-                        opset_version,
-                        generated_checksum,
-                    )
-                dtype = input_dtypes[name].np_dtype
-                blob = np.ascontiguousarray(
-                    array.astype(dtype, copy=False)
-                ).tobytes(order="C")
-                handle.write(blob)
+    def _cleanup_temp() -> None:
+        if temp_dir is None and not cleanup_created_dir:
+            active_reporter.note("Keeping temporary folder")
+            return
+        delete_started = active_reporter.start_step(
+            "Deleting temporary folder [--keep-temp-dir not set]"
+        )
+        if temp_dir is None:
+            shutil.rmtree(temp_path)
+        else:
+            temp_dir.cleanup()
+        active_reporter.step_ok(delete_started)
+
     try:
+        payload: dict[str, Any] | None = None
+        testbench_input_path: Path | None = None
+        if testbench_inputs:
+            input_order = [value.name for value in graph.inputs]
+            testbench_input_path = temp_path / "testbench_inputs.bin"
+            with testbench_input_path.open("wb") as handle:
+                for name in input_order:
+                    array = testbench_inputs.get(name)
+                    if array is None:
+                        return (
+                            None,
+                            f"Missing testbench input data for {name}.",
+                            operators,
+                            opset_version,
+                            generated_checksum,
+                        )
+                    dtype = input_dtypes[name].np_dtype
+                    blob = np.ascontiguousarray(
+                        array.astype(dtype, copy=False)
+                    ).tobytes(order="C")
+                    handle.write(blob)
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
         exe_path = temp_path / "model"
@@ -860,6 +879,14 @@ def _verify_model(
             active_reporter.info(
                 f"  Compile command: {shlex.join(compile_cmd)}"
             )
+            if args.test_data_dir is not None:
+                active_reporter.info(
+                    f"Verifying using test data set: {args.test_data_dir.name}"
+                )
+            else:
+                active_reporter.info(
+                    "Verifying using generated random inputs"
+                )
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
             if include_build_details:
@@ -869,7 +896,9 @@ def _verify_model(
             active_reporter.step_fail(message)
             return None, message, operators, opset_version, generated_checksum
         try:
-            run_started = active_reporter.start_step("Running generated binary")
+            run_started = active_reporter.start_step(
+                "  Running generated binary"
+            )
             run_cmd = [str(exe_path)]
             if testbench_input_path is not None:
                 run_cmd.append(str(testbench_input_path))
@@ -898,212 +927,203 @@ def _verify_model(
             return None, (
                 "Testbench execution failed: " + describe_exit_code(exc.returncode)
             ), operators, opset_version, generated_checksum
-    finally:
-        if temp_dir is None and not cleanup_created_dir:
-            active_reporter.note("Keeping temporary folder")
-        elif temp_dir is None:
-            delete_started = active_reporter.start_step(
-                "Deleting temporary folder [--keep-temp-dir not set]"
-            )
-            shutil.rmtree(temp_path)
-            active_reporter.step_ok(delete_started)
-        else:
-            delete_started = active_reporter.start_step(
-                "Deleting temporary folder [--keep-temp-dir not set]"
-            )
-            temp_dir.cleanup()
-            active_reporter.step_ok(delete_started)
-    if payload is None:
-        return (
-            None,
-            "Failed to parse testbench JSON: missing output.",
-            operators,
-            opset_version,
-            generated_checksum,
-        )
-
-    if testbench_inputs:
-        inputs = {
-            name: values.astype(input_dtypes[name].np_dtype, copy=False)
-            for name, values in testbench_inputs.items()
-        }
-    else:
-        inputs = {
-            name: decode_testbench_array(
-                value["data"], input_dtypes[name].np_dtype
-            )
-            for name, value in payload["inputs"].items()
-        }
-    runtime_outputs: dict[str, np.ndarray] | None = None
-    if testbench_outputs is not None:
-        runtime_outputs = {
-            name: output.astype(output_dtypes[name].np_dtype, copy=False)
-            for name, output in testbench_outputs.items()
-        }
-        active_reporter.note("Using expected outputs from test data files.")
-    else:
-        runtime_name = args.runtime
-        custom_domains = sorted(
-            {
-                opset.domain
-                for opset in model.opset_import
-                if opset.domain not in {"", "ai.onnx"}
-            }
-        )
-        if runtime_name == "onnx-reference" and custom_domains:
-            active_reporter.note(
-                "Runtime: switching to onnxruntime for custom domains "
-                f"{', '.join(custom_domains)}"
-            )
-            runtime_name = "onnxruntime"
-        runtime_started = active_reporter.start_step(f"Running {runtime_name}")
-        try:
-            if runtime_name == "onnxruntime":
-                import onnxruntime as ort
-
-                sess_options = make_deterministic_session_options(ort)
-                sess = ort.InferenceSession(
-                    model.SerializeToString(),
-                    sess_options=sess_options,
-                    providers=["CPUExecutionProvider"],
-                )
-                runtime_outputs_list = sess.run(None, inputs)
-            else:
-                from onnx.reference import ReferenceEvaluator
-
-                with deterministic_reference_runtime():
-                    evaluator = ReferenceEvaluator(model)
-                    runtime_outputs_list = evaluator.run(None, inputs)
-        except Exception as exc:
-            active_reporter.step_fail(str(exc))
-            message = str(exc)
-            if runtime_name == "onnxruntime" and "NOT_IMPLEMENTED" in message:
-                active_reporter.note(
-                    f"Skipping verification for {model_path}: "
-                    "ONNX Runtime does not support the model "
-                    f"({message})"
-                )
-                return "", None, operators, opset_version, generated_checksum
+        if payload is None:
             return (
                 None,
-                f"{runtime_name} failed to run {model_path}: {message}",
+                "Failed to parse testbench JSON: missing output.",
                 operators,
                 opset_version,
                 generated_checksum,
             )
-        active_reporter.step_ok(runtime_started)
-        runtime_outputs = {
-            value.name: output
-            for value, output in zip(graph.outputs, runtime_outputs_list)
+
+        if testbench_inputs:
+            inputs = {
+                name: values.astype(input_dtypes[name].np_dtype, copy=False)
+                for name, values in testbench_inputs.items()
+            }
+        else:
+            inputs = {
+                name: decode_testbench_array(
+                    value["data"], input_dtypes[name].np_dtype
+                )
+                for name, value in payload["inputs"].items()
+            }
+        runtime_outputs: dict[str, np.ndarray] | None = None
+        if testbench_outputs is not None:
+            runtime_outputs = {
+                name: output.astype(output_dtypes[name].np_dtype, copy=False)
+                for name, output in testbench_outputs.items()
+            }
+        else:
+            runtime_name = args.runtime
+            custom_domains = sorted(
+                {
+                    opset.domain
+                    for opset in model.opset_import
+                    if opset.domain not in {"", "ai.onnx"}
+                }
+            )
+            if runtime_name == "onnx-reference" and custom_domains:
+                active_reporter.note(
+                    "Runtime: switching to onnxruntime for custom domains "
+                    f"{', '.join(custom_domains)}"
+                )
+                runtime_name = "onnxruntime"
+            runtime_started = active_reporter.start_step(
+                f"  Running {runtime_name}"
+            )
+            try:
+                if runtime_name == "onnxruntime":
+                    import onnxruntime as ort
+
+                    sess_options = make_deterministic_session_options(ort)
+                    sess = ort.InferenceSession(
+                        model.SerializeToString(),
+                        sess_options=sess_options,
+                        providers=["CPUExecutionProvider"],
+                    )
+                    runtime_outputs_list = sess.run(None, inputs)
+                else:
+                    from onnx.reference import ReferenceEvaluator
+
+                    with deterministic_reference_runtime():
+                        evaluator = ReferenceEvaluator(model)
+                        runtime_outputs_list = evaluator.run(None, inputs)
+            except Exception as exc:
+                active_reporter.step_fail(str(exc))
+                message = str(exc)
+                if runtime_name == "onnxruntime" and "NOT_IMPLEMENTED" in message:
+                    active_reporter.note(
+                        f"Skipping verification for {model_path}: "
+                        "ONNX Runtime does not support the model "
+                        f"({message})"
+                    )
+                    return "", None, operators, opset_version, generated_checksum
+                return (
+                    None,
+                    f"{runtime_name} failed to run {model_path}: {message}",
+                    operators,
+                    opset_version,
+                    generated_checksum,
+                )
+            active_reporter.step_ok(runtime_started)
+            runtime_outputs = {
+                value.name: output
+                for value, output in zip(graph.outputs, runtime_outputs_list)
+            }
+        payload_outputs = payload.get("outputs", {})
+        max_ulp = 0
+        worst_diff: _WorstDiff | None = None
+        max_abs_diff: float | int = 0
+        worst_abs_diff: _WorstAbsDiff | None = None
+        output_nodes = {
+            output_name: node
+            for node in graph.nodes
+            for output_name in node.outputs
         }
-    payload_outputs = payload.get("outputs", {})
-    max_ulp = 0
-    worst_diff: _WorstDiff | None = None
-    max_abs_diff: float | int = 0
-    worst_abs_diff: _WorstAbsDiff | None = None
-    output_nodes = {
-        output_name: node
-        for node in graph.nodes
-        for output_name in node.outputs
-    }
-    active_reporter.start_step(
-        f"Verifying outputs [--max-ulp={args.max_ulp}]"
-    )
-    try:
-        for value in graph.outputs:
-            runtime_out = runtime_outputs[value.name]
-            output_payload = payload_outputs.get(value.name)
-            if output_payload is None:
-                raise AssertionError(f"Missing output {value.name} in testbench data")
-            info = output_dtypes[value.name]
-            output_data = decode_testbench_array(
-                output_payload["data"], info.np_dtype
-            ).astype(info.np_dtype, copy=False)
-            runtime_out = runtime_out.astype(info.np_dtype, copy=False)
-            output_data = output_data.reshape(runtime_out.shape)
-            if np.issubdtype(info.np_dtype, np.floating):
-                output_max, output_worst = _worst_ulp_diff(
-                    output_data, runtime_out
+        active_reporter.start_step(
+            f"  Comparing outputs [--max-ulp={args.max_ulp}]"
+        )
+        try:
+            for value in graph.outputs:
+                runtime_out = runtime_outputs[value.name]
+                output_payload = payload_outputs.get(value.name)
+                if output_payload is None:
+                    raise AssertionError(
+                        f"Missing output {value.name} in testbench data"
+                    )
+                info = output_dtypes[value.name]
+                output_data = decode_testbench_array(
+                    output_payload["data"], info.np_dtype
+                ).astype(info.np_dtype, copy=False)
+                runtime_out = runtime_out.astype(info.np_dtype, copy=False)
+                output_data = output_data.reshape(runtime_out.shape)
+                if np.issubdtype(info.np_dtype, np.floating):
+                    output_max, output_worst = _worst_ulp_diff(
+                        output_data, runtime_out
+                    )
+                    if output_max > max_ulp:
+                        max_ulp = output_max
+                        if output_worst is not None:
+                            node = output_nodes.get(value.name)
+                            worst_diff = _WorstDiff(
+                                output_name=value.name,
+                                node_name=node.name if node else None,
+                                index=output_worst[0],
+                                got=float(output_worst[1]),
+                                reference=float(output_worst[2]),
+                                ulp=output_max,
+                            )
+                else:
+                    output_max, output_worst = _worst_abs_diff(
+                        output_data, runtime_out
+                    )
+                    if output_max > max_abs_diff:
+                        max_abs_diff = output_max
+                        if output_worst is not None:
+                            node = output_nodes.get(value.name)
+                            worst_abs_diff = _WorstAbsDiff(
+                                output_name=value.name,
+                                node_name=node.name if node else None,
+                                index=output_worst[0],
+                                got=output_worst[1],
+                                reference=output_worst[2],
+                                abs_diff=output_max,
+                            )
+        except AssertionError as exc:
+            active_reporter.step_fail(str(exc))
+            return None, str(exc), operators, opset_version, generated_checksum
+        if max_abs_diff > 0:
+            active_reporter.step_fail(f"max abs diff {max_abs_diff}")
+            if worst_abs_diff is not None:
+                node_label = worst_abs_diff.node_name or "(unknown)"
+                index_display = ", ".join(str(dim) for dim in worst_abs_diff.index)
+                active_reporter.info(
+                    "  Worst diff: output="
+                    f"{worst_abs_diff.output_name} node={node_label} "
+                    f"index=[{index_display}] "
+                    f"got={worst_abs_diff.got} "
+                    f"ref={worst_abs_diff.reference} "
+                    f"abs_diff={worst_abs_diff.abs_diff}"
                 )
-                if output_max > max_ulp:
-                    max_ulp = output_max
-                    if output_worst is not None:
-                        node = output_nodes.get(value.name)
-                        worst_diff = _WorstDiff(
-                            output_name=value.name,
-                            node_name=node.name if node else None,
-                            index=output_worst[0],
-                            got=float(output_worst[1]),
-                            reference=float(output_worst[2]),
-                            ulp=output_max,
-                        )
-            else:
-                output_max, output_worst = _worst_abs_diff(
-                    output_data, runtime_out
-                )
-                if output_max > max_abs_diff:
-                    max_abs_diff = output_max
-                    if output_worst is not None:
-                        node = output_nodes.get(value.name)
-                        worst_abs_diff = _WorstAbsDiff(
-                            output_name=value.name,
-                            node_name=node.name if node else None,
-                            index=output_worst[0],
-                            got=output_worst[1],
-                            reference=output_worst[2],
-                            abs_diff=output_max,
-                        )
-    except AssertionError as exc:
-        active_reporter.step_fail(str(exc))
-        return None, str(exc), operators, opset_version, generated_checksum
-    if max_abs_diff > 0:
-        active_reporter.step_fail(f"max abs diff {max_abs_diff}")
-        if worst_abs_diff is not None:
-            node_label = worst_abs_diff.node_name or "(unknown)"
-            index_display = ", ".join(str(dim) for dim in worst_abs_diff.index)
-            active_reporter.info(
-                "  Worst diff: output="
-                f"{worst_abs_diff.output_name} node={node_label} "
-                f"index=[{index_display}] "
-                f"got={worst_abs_diff.got} "
-                f"ref={worst_abs_diff.reference} "
-                f"abs_diff={worst_abs_diff.abs_diff}"
+            return (
+                None,
+                f"Arrays are not equal (max abs diff {max_abs_diff})",
+                operators,
+                opset_version,
+                generated_checksum,
             )
+        if max_ulp > args.max_ulp:
+            active_reporter.step_fail(f"max ULP {max_ulp}")
+            if worst_diff is not None:
+                node_label = worst_diff.node_name or "(unknown)"
+                index_display = ", ".join(str(dim) for dim in worst_diff.index)
+                active_reporter.info(
+                    "  Worst diff: output="
+                    f"{worst_diff.output_name} node={node_label} "
+                    f"index=[{index_display}] "
+                    f"got={worst_diff.got:.8g} "
+                    f"ref={worst_diff.reference:.8g} "
+                    f"ulp={worst_diff.ulp}"
+                )
+            return (
+                None,
+                f"Out of tolerance (max ULP {max_ulp})",
+                operators,
+                opset_version,
+                generated_checksum,
+            )
+        active_reporter.step_ok_simple()
+        active_reporter.info(f"    Maximum ULP: {max_ulp}")
         return (
+            format_success_message(max_ulp),
             None,
-            f"Arrays are not equal (max abs diff {max_abs_diff})",
             operators,
             opset_version,
             generated_checksum,
         )
-    if max_ulp > args.max_ulp:
-        active_reporter.step_fail(f"max ULP {max_ulp}")
-        if worst_diff is not None:
-            node_label = worst_diff.node_name or "(unknown)"
-            index_display = ", ".join(str(dim) for dim in worst_diff.index)
-            active_reporter.info(
-                "  Worst diff: output="
-                f"{worst_diff.output_name} node={node_label} "
-                f"index=[{index_display}] "
-                f"got={worst_diff.got:.8g} "
-                f"ref={worst_diff.reference:.8g} "
-                f"ulp={worst_diff.ulp}"
-            )
-        return (
-            None,
-            f"Out of tolerance (max ULP {max_ulp})",
-            operators,
-            opset_version,
-            generated_checksum,
-        )
-    active_reporter.step_ok_detail(f"max ULP {max_ulp}")
-    return (
-        format_success_message(max_ulp),
-        None,
-        operators,
-        opset_version,
-        generated_checksum,
-    )
+    finally:
+        _cleanup_temp()
 
 
 def _load_test_data_inputs(
