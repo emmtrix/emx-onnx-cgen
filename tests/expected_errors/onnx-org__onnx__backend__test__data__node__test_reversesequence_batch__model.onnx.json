@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op ReverseSequence",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reversesequence_batch/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reversesequence_batch/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reversesequence_batch model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ReverseSequence"
   ],

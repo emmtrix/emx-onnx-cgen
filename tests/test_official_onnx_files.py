@@ -355,10 +355,20 @@ def _run_expected_error_test(
     global _VERBOSE_FLAGS_REPORTED
     expected_error = expectation.error
     test_data_dir = _find_test_data_dir(model_path)
+    base_dir = model_path.parent
+    model_argument = model_path.name
+    test_data_argument = None
+    if test_data_dir is not None:
+        try:
+            test_data_argument = str(test_data_dir.relative_to(base_dir))
+        except ValueError:
+            test_data_argument = str(test_data_dir.relative_to(repo_root))
     verify_args = [
         "emx-onnx-cgen",
         "verify",
-        str(model_path.relative_to(repo_root)),
+        "--model-base-dir",
+        str(base_dir.relative_to(repo_root)),
+        model_argument,
     ]
     if _should_use_expected_checksum(expectation):
         verify_args.extend(
@@ -367,11 +377,11 @@ def _run_expected_error_test(
                 expectation.generated_checksum,
             ]
         )
-    if test_data_dir is not None:
+    if test_data_argument is not None:
         verify_args.extend(
             [
                 "--test-data-dir",
-                str(test_data_dir.relative_to(repo_root)),
+                test_data_argument,
             ]
         )
 

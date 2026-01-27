@@ -1,6 +1,6 @@
 {
   "error": "Unsupported elem_type 16 (BFLOAT16) for tensor 'output'.",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_BFLOAT16/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_BFLOAT16/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_BFLOAT16 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Cast"
   ],

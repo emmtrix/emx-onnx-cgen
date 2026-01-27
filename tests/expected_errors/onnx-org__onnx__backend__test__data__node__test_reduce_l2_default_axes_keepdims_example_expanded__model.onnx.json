@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_l2_default_axes_keepdims_example_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_default_axes_keepdims_example_expanded/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_default_axes_keepdims_example_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Mul",
     "ReduceSum",

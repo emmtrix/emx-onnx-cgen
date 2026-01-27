@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx2c-org/test/local_ops/test_lstm_intermediate_h/model.onnx --test-data-dir onnx2c-org/test/local_ops/test_lstm_intermediate_h/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_lstm_intermediate_h model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "LSTM"
   ],

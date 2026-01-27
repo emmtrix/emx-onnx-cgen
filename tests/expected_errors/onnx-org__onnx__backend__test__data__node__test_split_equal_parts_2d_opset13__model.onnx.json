@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_split_equal_parts_2d_opset13/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_split_equal_parts_2d_opset13/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_equal_parts_2d_opset13 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Split"
   ],

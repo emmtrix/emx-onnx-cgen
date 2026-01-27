@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_top_k_same_values_2d model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "TopK"
   ],

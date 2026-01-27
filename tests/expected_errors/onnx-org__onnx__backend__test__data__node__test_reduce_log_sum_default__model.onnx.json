@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ReduceLogSum"
   ],

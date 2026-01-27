@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op BlackmanWindow",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "BlackmanWindow"
   ],

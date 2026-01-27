@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 3)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_selu model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Selu"
   ],

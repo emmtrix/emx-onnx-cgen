@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 553)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/light/light_resnet50.onnx",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_resnet50.onnx",
   "operators": [
     "ConstantOfShape",
     "Conv",

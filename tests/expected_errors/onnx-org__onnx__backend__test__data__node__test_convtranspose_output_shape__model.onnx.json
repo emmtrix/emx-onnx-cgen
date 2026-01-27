@@ -1,6 +1,6 @@
 {
   "error": "ConvTranspose output shape must be fully defined and non-negative",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_convtranspose_output_shape/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_convtranspose_output_shape/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_convtranspose_output_shape model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ConvTranspose"
   ],

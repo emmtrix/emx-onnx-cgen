@@ -1,6 +1,6 @@
 {
   "error": "LeakyRelu only supports alpha=0.01",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_leakyrelu/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "LeakyRelu"
   ],

@@ -1,6 +1,6 @@
 {
   "error": "Dropout supports only the data input and 1 or 2 outputs",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_training_dropout_zero_ratio/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_training_dropout_zero_ratio/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_training_dropout_zero_ratio model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Dropout"
   ],

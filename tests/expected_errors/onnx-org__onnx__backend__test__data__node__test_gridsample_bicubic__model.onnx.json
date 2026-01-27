@@ -1,6 +1,6 @@
 {
   "error": "Out of tolerance (max ULP 1678)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gridsample_bicubic model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "GridSample"
   ],

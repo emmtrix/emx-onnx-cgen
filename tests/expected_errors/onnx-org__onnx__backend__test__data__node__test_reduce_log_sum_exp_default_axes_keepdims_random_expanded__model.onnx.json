@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_default_axes_keepdims_random_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Cast",
     "Exp",

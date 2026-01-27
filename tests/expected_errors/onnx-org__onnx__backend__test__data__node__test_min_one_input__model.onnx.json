@@ -1,6 +1,6 @@
 {
   "error": "Min must have at least 2 inputs",
-  "command_line": "verify onnx-org/onnx/backend/test/data/node/test_min_one_input/model.onnx --test-data-dir onnx-org/onnx/backend/test/data/node/test_min_one_input/test_data_set_0",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_min_one_input model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Min"
   ],
