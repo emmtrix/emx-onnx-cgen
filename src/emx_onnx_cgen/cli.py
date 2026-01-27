@@ -67,8 +67,28 @@ class _WorstAbsDiff:
 
 
 class _VerifyReporter:
-    def __init__(self, stream: TextIO | None = None) -> None:
+    def __init__(
+        self,
+        stream: TextIO | None = None,
+        *,
+        color_mode: str = "auto",
+    ) -> None:
         self._stream = stream or sys.stdout
+        self._use_color = self._should_use_color(color_mode)
+
+    def _should_use_color(self, color_mode: str) -> bool:
+        if color_mode == "always":
+            return True
+        if color_mode == "never":
+            return False
+        if not hasattr(self._stream, "isatty"):
+            return False
+        return bool(self._stream.isatty())
+
+    def _color(self, text: str, code: str) -> str:
+        if not self._use_color:
+            return text
+        return f"\x1b[{code}m{text}\x1b[0m"
 
     def start_step(self, label: str) -> float:
         print(f"{label} ...", end=" ", file=self._stream, flush=True)
@@ -76,19 +96,26 @@ class _VerifyReporter:
 
     def step_ok(self, started_at: float) -> None:
         duration = time.perf_counter() - started_at
-        print(f"OK ({duration:.3f}s)", file=self._stream)
+        ok = self._color("OK", "32")
+        dim = self._color(f"({duration:.3f}s)", "90")
+        print(f"{ok} {dim}", file=self._stream)
 
     def step_ok_simple(self) -> None:
-        print("OK", file=self._stream)
+        ok = self._color("OK", "32")
+        print(ok, file=self._stream)
 
     def step_ok_detail(self, detail: str) -> None:
-        print(f"OK ({detail})", file=self._stream)
+        ok = self._color("OK", "32")
+        dim = self._color(f"({detail})", "90")
+        print(f"{ok} {dim}", file=self._stream)
 
     def step_fail(self, reason: str) -> None:
-        print(f"FAIL ({reason})", file=self._stream)
+        fail = self._color("FAIL", "31")
+        print(f"{fail} ({reason})", file=self._stream)
 
     def note(self, message: str) -> None:
-        print(f"Note: {message}", file=self._stream)
+        label = self._color("Note:", "33")
+        print(f"{label} {message}", file=self._stream)
 
     def info(self, message: str) -> None:
         print(message, file=self._stream)
@@ -96,7 +123,7 @@ class _VerifyReporter:
 
 class _NullVerifyReporter(_VerifyReporter):
     def __init__(self) -> None:
-        super().__init__(stream=sys.stdout)
+        super().__init__(stream=sys.stdout, color_mode="never")
 
     def start_step(self, label: str) -> float:
         return time.perf_counter()
@@ -271,6 +298,16 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="emx-onnx-cgen", description=description)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    def add_color_flag(subparser: argparse.ArgumentParser) -> None:
+        subparser.add_argument(
+            "--color",
+            choices=("auto", "always", "never"),
+            default="auto",
+            help=(
+                "Colorize CLI output (default: auto; options: auto, always, never)"
+            ),
+        )
+
     def add_restrict_flags(subparser: argparse.ArgumentParser) -> None:
         restrict_group = subparser.add_mutually_exclusive_group()
         restrict_group.add_argument(
@@ -290,6 +327,7 @@ def _build_parser() -> argparse.ArgumentParser:
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
+    add_color_flag(compile_parser)
     compile_parser.add_argument(
         "--model-base-dir",
         "-B",
@@ -364,6 +402,7 @@ def _build_parser() -> argparse.ArgumentParser:
         "verify",
         help="Compile an ONNX model and verify outputs against ONNX Runtime",
     )
+    add_color_flag(verify_parser)
     verify_parser.add_argument(
         "--model-base-dir",
         "-B",
@@ -517,7 +556,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 
 def _handle_compile(args: argparse.Namespace) -> int:
-    reporter = _VerifyReporter()
+    reporter = _VerifyReporter(color_mode=args.color)
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
     model_name = args.model_name or "model"
@@ -574,6 +613,7 @@ def _compile_model(
         input_count=len(model.graph.input),
         output_count=len(model.graph.output),
     )
+    active_reporter.info("")
     codegen_started = active_reporter.start_step("Generating C code")
     try:
         options = CompilerOptions(
@@ -649,7 +689,7 @@ def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] 
 
 
 def _handle_verify(args: argparse.Namespace) -> int:
-    reporter = _VerifyReporter()
+    reporter = _VerifyReporter(color_mode=args.color)
     (
         success_message,
         error,
@@ -721,6 +761,7 @@ def _verify_model(
 
     timings: dict[str, float] = {}
     try:
+        active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
         testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
         testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
@@ -867,6 +908,7 @@ def _verify_model(
                 str(exe_path.name),
                 "-lm",
             ]
+            active_reporter.info("")
             compile_started = active_reporter.start_step("Compiling C code")
             subprocess.run(
                 compile_cmd,
@@ -879,6 +921,7 @@ def _verify_model(
             active_reporter.info(
                 f"  Compile command: {shlex.join(compile_cmd)}"
             )
+            active_reporter.info("")
             if args.test_data_dir is not None:
                 active_reporter.info(
                     f"Verifying using test data set: {args.test_data_dir.name}"
@@ -970,7 +1013,7 @@ def _verify_model(
                 )
                 runtime_name = "onnxruntime"
             runtime_started = active_reporter.start_step(
-                f"  Running {runtime_name}"
+                f"  Running {runtime_name} [--runtime={args.runtime}]"
             )
             try:
                 if runtime_name == "onnxruntime":
@@ -1123,6 +1166,7 @@ def _verify_model(
             generated_checksum,
         )
     finally:
+        active_reporter.info("")
         _cleanup_temp()
 
 
