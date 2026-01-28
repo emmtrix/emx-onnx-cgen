@@ -106,7 +106,7 @@ Options:
 - `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`).
 - `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
-- `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnx-reference`).
+- `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
 - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
