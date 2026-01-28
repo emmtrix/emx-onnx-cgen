@@ -53,7 +53,7 @@ def _lower_variadic(graph: Graph, node: Node) -> MultiInputBinaryOp:
         output=node.outputs[0],
         function=VARIADIC_OP_FUNCTIONS[node.op_type],
         operator_kind=VARIADIC_OP_OPERATOR_KINDS[node.op_type],
-        min_inputs=2,
+        min_inputs=1 if node.op_type not in BINARY_ONLY_OPS else 2,
         max_inputs=2 if node.op_type in BINARY_ONLY_OPS else None,
     )
 
