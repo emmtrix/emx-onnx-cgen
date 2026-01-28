@@ -75,7 +75,6 @@
 | Dropout mask output is not supported | 1 | █ |
 | Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
-| LpPool supports dilations=1 only | 1 | █ |
 | Max must have at least 2 inputs | 1 | █ |
 | Mean must have at least 2 inputs | 1 | █ |
 | Min must have at least 2 inputs | 1 | █ |

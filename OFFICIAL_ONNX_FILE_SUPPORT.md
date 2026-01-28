@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1333 / 1802 official ONNX files.
+Support 1334 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -892,7 +892,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | ❌ | LpPool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_lppool_2d_dilations/model.onnx | ❌ | LpPool supports dilations=1 only |
+| onnx-org/onnx/backend/test/data/node/test_lppool_2d_dilations/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_pads/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_same_lower/model.onnx | ❌ | LpPool supports auto_pad=NOTSET only |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_same_upper/model.onnx | ❌ | LpPool supports auto_pad=NOTSET only |
