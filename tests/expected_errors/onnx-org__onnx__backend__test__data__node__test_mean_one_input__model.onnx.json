@@ -1,8 +1,9 @@
 {
-  "error": "Mean must have at least 2 inputs",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_mean_one_input model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Mean"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "d04d7ad5447e87c1299421573095c41b2870ab9754a0d5b60c72b9325a5b307c"
 }

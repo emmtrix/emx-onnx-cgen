@@ -76,15 +76,11 @@
 | Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | LpPool supports dilations=1 only | 1 | █ |
-| Max must have at least 2 inputs | 1 | █ |
-| Mean must have at least 2 inputs | 1 | █ |
-| Min must have at least 2 inputs | 1 | █ |
 | Pad value input must be a scalar | 1 | █ |
 | Pow expects matching dtypes, got float, uint32 | 1 | █ |
 | Pow expects matching dtypes, got float, uint64 | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
-| Sum must have at least 2 inputs | 1 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
