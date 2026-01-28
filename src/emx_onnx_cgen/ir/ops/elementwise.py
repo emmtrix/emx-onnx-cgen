@@ -6,7 +6,13 @@ from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ...ops import COMPARE_FUNCTIONS, OperatorKind, binary_op_symbol
-from ..op_base import ElementwiseOpBase, RenderableOpBase, VariadicLikeOpBase
+from ...errors import ShapeInferenceError
+from ..op_base import (
+    BroadcastingOpBase,
+    ElementwiseOpBase,
+    RenderableOpBase,
+    VariadicLikeOpBase,
+)
 from ..op_context import OpContext
 
 
@@ -26,6 +32,29 @@ class BinaryOp(ElementwiseOpBase):
 
     def _elementwise_compare(self) -> bool:
         return self.function in COMPARE_FUNCTIONS
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        if self.function != ScalarFunction.PRELU:
+            return super().infer_shapes(ctx)
+        input_shape = ctx.shape(self.input0)
+        slope_shape = ctx.shape(self.input1)
+        output_name = self.output
+        if BroadcastingOpBase.unidirectional_broadcastable(
+            slope_shape, input_shape
+        ):
+            ctx.set_shape(output_name, input_shape)
+            return None
+        channel_axis = BroadcastingOpBase.prelu_channel_axis(
+            input_shape, slope_shape
+        )
+        if channel_axis is not None:
+            ctx.set_shape(output_name, input_shape)
+            ctx.set_derived(self, "prelu_slope_axis", channel_axis)
+            return None
+        raise ShapeInferenceError(
+            "Broadcasting mismatch for shapes: "
+            + ", ".join(str(shape) for shape in (input_shape, slope_shape))
+        )
 
 
 @dataclass(frozen=True)

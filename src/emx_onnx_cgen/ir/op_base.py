@@ -471,6 +471,30 @@ class ReduceOpBase(RenderableOpBase):
 
 class BroadcastingOpBase(RenderableOpBase):
     @staticmethod
+    def unidirectional_broadcastable(
+        source: tuple[int, ...],
+        target: tuple[int, ...],
+    ) -> bool:
+        if len(source) > len(target):
+            return False
+        padded = (1,) * (len(target) - len(source)) + source
+        for source_dim, target_dim in zip(padded, target):
+            if source_dim not in {1, target_dim}:
+                return False
+        return True
+
+    @staticmethod
+    def prelu_channel_axis(
+        input_shape: tuple[int, ...],
+        slope_shape: tuple[int, ...],
+    ) -> int | None:
+        if len(input_shape) < 2 or len(slope_shape) != 1:
+            return None
+        if slope_shape[0] != input_shape[1]:
+            return None
+        return 1
+
+    @staticmethod
     def broadcast_shapes(
         *shapes: tuple[int, ...],
     ) -> tuple[int, ...]:
