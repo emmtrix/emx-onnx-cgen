@@ -68,9 +68,6 @@
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
 | AveragePool supports 2D/3D inputs only | 1 | █ |
-| Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
-| Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |
-| Broadcasting mismatch for shapes: (2, 3, 4, 5, 6), (3,) | 1 | █ |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Dynamic dim for tensor '*' | 1 | █ |

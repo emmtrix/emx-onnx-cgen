@@ -2354,6 +2354,26 @@ def _eval_topk(evaluator: Evaluator, node: Node) -> None:
     )
 
 
+def _prelu_broadcast_slope(
+    input_shape: tuple[int, ...], slope: np.ndarray
+) -> np.ndarray:
+    slope_shape = slope.shape
+    if BroadcastingOpBase.unidirectional_broadcastable(
+        slope_shape, input_shape
+    ):
+        return slope
+    channel_axis = BroadcastingOpBase.prelu_channel_axis(
+        input_shape, slope_shape
+    )
+    if channel_axis is None:
+        raise UnsupportedOpError(
+            "PRelu expects slope to be unidirectionally broadcastable to input"
+        )
+    expanded_shape = [1] * len(input_shape)
+    expanded_shape[channel_axis] = slope_shape[0]
+    return slope.reshape(expanded_shape)
+
+
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
     if node.op_type == "BitShift":
         if len(node.inputs) != 2 or len(node.outputs) != 1:
@@ -2431,6 +2451,8 @@ def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
             )
         left = evaluator.values[node.inputs[0]]
         right = evaluator.values[node.inputs[1]]
+        if node.op_type == "PRelu":
+            right = _prelu_broadcast_slope(left.shape, right)
         evaluator.values[node.outputs[0]] = apply_binary_op(
             op_spec, left, right
         )

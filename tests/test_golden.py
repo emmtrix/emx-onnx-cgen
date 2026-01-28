@@ -34,6 +34,24 @@ def _make_binary_model(op_type: str, shape: list[int]) -> onnx.ModelProto:
     return model
 
 
+def _make_prelu_channel_model() -> onnx.ModelProto:
+    input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3, 4])
+    input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [3])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3, 4])
+    node = helper.make_node("PRelu", inputs=["a", "b"], outputs=["out"])
+    graph = helper.make_graph(
+        [node], "prelu_channel_graph", [input_a, input_b], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 6)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_mod_model() -> onnx.ModelProto:
     input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3])
     input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2, 3])
@@ -445,6 +463,20 @@ def test_binary_ops_match_numpy(
         right = np.random.uniform(0.1, 1.0, size=(2, 3)).astype(np.float32)
     expected = expected_fn(left, right)
     compiled = compiler.run(model, {"a": left, "b": right})
+    np.testing.assert_allclose(compiled["out"], expected, rtol=1e-4, atol=1e-5)
+
+
+def test_prelu_channel_broadcast_matches_numpy() -> None:
+    model = _make_prelu_channel_model()
+    compiler = Compiler()
+    left = np.random.uniform(-1.0, 1.0, size=(2, 3, 4)).astype(np.float32)
+    slope = np.random.uniform(0.1, 1.0, size=(3,)).astype(np.float32)
+    expected = np.where(
+        left > 0.0,
+        left,
+        left * slope.reshape(1, 3, 1),
+    )
+    compiled = compiler.run(model, {"a": left, "b": slope})
     np.testing.assert_allclose(compiled["out"], expected, rtol=1e-4, atol=1e-5)
 
 
