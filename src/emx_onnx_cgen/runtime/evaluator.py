@@ -901,9 +901,9 @@ def _validate_variadic_inputs(
             raise UnsupportedOpError(
                 f"{node.op_type} must have exactly 2 inputs"
             )
-    elif len(node.inputs) < 2:
+    elif len(node.inputs) < 1:
         raise UnsupportedOpError(
-            f"{node.op_type} must have at least 2 inputs"
+            f"{node.op_type} must have at least 1 input"
         )
     for name in node.inputs:
         if not name:
