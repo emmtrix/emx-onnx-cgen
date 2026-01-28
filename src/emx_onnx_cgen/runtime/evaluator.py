@@ -891,6 +891,52 @@ _VARIADIC_COMBINE_FUNCS: dict[
 }
 
 
+_POW_BASE_DTYPES = {
+    ScalarType.F16,
+    ScalarType.F32,
+    ScalarType.F64,
+    ScalarType.I32,
+    ScalarType.I64,
+}
+_POW_EXPONENT_DTYPES = {
+    ScalarType.F16,
+    ScalarType.F32,
+    ScalarType.F64,
+    ScalarType.I8,
+    ScalarType.I16,
+    ScalarType.I32,
+    ScalarType.I64,
+    ScalarType.U8,
+    ScalarType.U16,
+    ScalarType.U32,
+    ScalarType.U64,
+}
+
+
+def _validate_pow_dtypes(
+    base_dtype: ScalarType,
+    exponent_dtype: ScalarType,
+    output_dtype: ScalarType,
+) -> None:
+    if base_dtype not in _POW_BASE_DTYPES:
+        raise UnsupportedOpError(
+            "Pow base dtype must be one of "
+            f"{', '.join(dtype.onnx_name for dtype in sorted(_POW_BASE_DTYPES, key=str))}, "
+            f"got {base_dtype.onnx_name}"
+        )
+    if exponent_dtype not in _POW_EXPONENT_DTYPES:
+        raise UnsupportedOpError(
+            "Pow exponent dtype must be one of "
+            f"{', '.join(dtype.onnx_name for dtype in sorted(_POW_EXPONENT_DTYPES, key=str))}, "
+            f"got {exponent_dtype.onnx_name}"
+        )
+    if output_dtype != base_dtype:
+        raise UnsupportedOpError(
+            "Pow expects output dtype "
+            f"{base_dtype.onnx_name}, got {output_dtype.onnx_name}"
+        )
+
+
 def _validate_variadic_inputs(
     evaluator: Evaluator, node: Node, *, function: ScalarFunction
 ) -> tuple[ScalarType, tuple[int, ...]]:
@@ -2355,6 +2401,27 @@ def _eval_topk(evaluator: Evaluator, node: Node) -> None:
 
 
 def _eval_binary_unary(evaluator: Evaluator, node: Node) -> None:
+    if node.op_type == "Pow":
+        if len(node.inputs) != 2 or len(node.outputs) != 1:
+            raise UnsupportedOpError("Pow must have 2 inputs and 1 output")
+        base_dtype = value_dtype(evaluator.graph, node.inputs[0], node)
+        exponent_dtype = value_dtype(evaluator.graph, node.inputs[1], node)
+        output_dtype = value_dtype(evaluator.graph, node.outputs[0], node)
+        _validate_pow_dtypes(base_dtype, exponent_dtype, output_dtype)
+        op_spec = binary_op_symbol(
+            ScalarFunction.POW, node.attrs, dtype=base_dtype
+        )
+        if op_spec is None:
+            raise UnsupportedOpError("Unsupported op Pow")
+        left = evaluator.values[node.inputs[0]]
+        right = evaluator.values[node.inputs[1]]
+        if exponent_dtype != base_dtype:
+            right = right.astype(base_dtype.np_dtype)
+        result = apply_binary_op(op_spec, left, right)
+        if result.dtype != base_dtype.np_dtype:
+            result = result.astype(base_dtype.np_dtype)
+        evaluator.values[node.outputs[0]] = result
+        return
     if node.op_type == "BitShift":
         if len(node.inputs) != 2 or len(node.outputs) != 1:
             raise UnsupportedOpError("BitShift must have 2 inputs and 1 output")

@@ -76,6 +76,7 @@ from ..ir.ops import (
     OneHotOp,
     PadOp,
     QuantizeLinearOp,
+    PowOp,
     QLinearMulOp,
     QLinearMatMulOp,
     RangeOp,
@@ -5276,6 +5277,11 @@ class CEmitter:
             input1_shape = self._ctx_shape(op.input1)
             output_shape = self._ctx_shape(op.output)
             input_dtype = self._ctx_dtype(op.input0)
+            input1_dtype = (
+                self._ctx_dtype(op.input1)
+                if isinstance(op, PowOp)
+                else input_dtype
+            )
             output_dtype = self._ctx_dtype(op.output)
             params = self._shared_param_map(
                 [
@@ -5314,11 +5320,12 @@ class CEmitter:
                 input1_shape, _dim_names_for(op.input1)
             )
             input_c_type = input_dtype.c_type
+            input1_c_type = input1_dtype.c_type
             output_c_type = output_dtype.c_type
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], input_c_type, input0_suffix, True),
-                    (params["input1"], input_c_type, input1_suffix, True),
+                    (params["input1"], input1_c_type, input1_suffix, True),
                     (params["output"], output_c_type, output_suffix, False),
                 ]
             )

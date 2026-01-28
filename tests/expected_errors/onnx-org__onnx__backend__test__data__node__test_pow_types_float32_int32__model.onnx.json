@@ -1,5 +1,5 @@
 {
-  "error": "Pow expects matching dtypes, got float, int32",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_pow_types_float32_int32 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Pow"
