@@ -110,34 +110,35 @@ def _render_error_histogram_markdown(
             return "ONNX Runtime failed to run"
         return re.sub(r"'[^']*'", "'*'", error)
 
-    errors = [
-        _sanitize_error(expectation.error)
-        for expectation in expectations
-        if expectation.error and not _is_success_message(expectation.error)
-    ]
+    errors: list[str] = []
+    error_opsets: dict[str, set[int]] = {}
+    for expectation in expectations:
+        if not expectation.error or _is_success_message(expectation.error):
+            continue
+        sanitized_error = _sanitize_error(expectation.error)
+        errors.append(sanitized_error)
+        if expectation.opset_version is None:
+            continue
+        error_opsets.setdefault(sanitized_error, set()).add(
+            expectation.opset_version
+        )
     counts = Counter(errors)
     if not counts:
         return ""
-    max_count = max(counts.values())
-    bar_width = 30
-
-    def bar(count: int) -> str:
-        if max_count == 0:
-            return ""
-        length = max(1, round(count / max_count * bar_width))
-        return "█" * length
-
     lines = [
         title,
         "",
-        "| Error message | Count | Histogram |",
+        "| Error message | Count | Opset versions |",
         "| --- | --- | --- |",
     ]
     for error, count in sorted(
         counts.items(),
         key=lambda item: (-item[1], item[0]),
     ):
-        lines.append(f"| {error} | {count} | {bar(count)} |")
+        opset_versions = ", ".join(
+            str(opset) for opset in sorted(error_opsets.get(error, set()))
+        )
+        lines.append(f"| {error} | {count} | {opset_versions} |")
     lines.append("")
     return "\n".join(lines)
 
