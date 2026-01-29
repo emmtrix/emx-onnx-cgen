@@ -365,6 +365,51 @@ class SizeOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
+@dataclass(frozen=True)
+class OptionalHasElementOp(RenderableOpBase):
+    input0: str
+    output: str
+
+    def validate(self, ctx: OpContext) -> None:
+        value = ctx.graph.find_value(self.input0)
+        if not value.type.is_optional:
+            raise UnsupportedOpError(
+                f"{self.kind} expects optional input, got non-optional tensor."
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            return None
+        if output_dtype != ScalarType.BOOL:
+            raise UnsupportedOpError(
+                f"{self.kind} expects bool output, got {output_dtype.onnx_name}"
+            )
+        return None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, ScalarType.BOOL)
+            return None
+        if output_dtype != ScalarType.BOOL:
+            raise UnsupportedOpError(
+                f"{self.kind} expects bool output, got {output_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        try:
+            output_shape = ctx.shape(self.output)
+        except ShapeInferenceError:
+            ctx.set_shape(self.output, ())
+            return None
+        if output_shape not in {(), (1,)}:
+            raise UnsupportedOpError(
+                f"{self.kind} expects scalar output, got shape {output_shape}"
+            )
+
 @dataclass(frozen=True)
 class NonZeroOp(RenderableOpBase):
     input0: str
