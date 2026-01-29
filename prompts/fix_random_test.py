@@ -102,14 +102,23 @@ def main() -> None:
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
     prompt_lines.append(
-        "Expectation update hint: after changing support status or outputs, update the "
-        "matching tests/expected_errors/*.json entry (or run with UPDATE_REFS=1) so "
-        "the expectation matches the new behavior."
-    )
-    prompt_lines.append(
         "Codegen wiring hint: new ops usually need updates in name mapping and temp "
         "buffer resolution paths; if codegen crashes on missing attributes, check "
         "the emit-time mapping helpers for that op."
+    )
+    prompt_lines.append(
+        "Artifact hint: pass `--keep-temp-dir` during verification to inspect the "
+        "generated C/testbench files when narrowing down failures."
+    )
+    prompt_lines.append(
+        "Shape inference hint: run ONNX shape inference and compare graph inputs "
+        "against initializers to confirm which shapes and dtypes are truly dynamic "
+        "before adjusting lowering or codegen."
+    )
+    prompt_lines.append(
+        "Pattern hint: locate a similar op in lowering/codegen and mirror its "
+        "registration, template wiring, and output-shape handling to avoid "
+        "integration gaps."
     )
 
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")

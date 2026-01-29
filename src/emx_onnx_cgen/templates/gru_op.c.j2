@@ -1,0 +1,152 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    {% for dir in range(num_directions) %}
+    {
+        const int dir = {{ dir }};
+        const int reverse = {% if direction == "reverse" %}1{% elif direction == "bidirectional" and dir == 1 %}1{% else %}0{% endif %};
+        {% set act_f = activation_functions[dir * 2] %}
+        {% set act_g = activation_functions[dir * 2 + 1] %}
+        {{ c_type }} H_prev[{{ batch_size }}][{{ hidden_size }}];
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if input_initial_h %}
+                {% if layout == 0 %}
+                H_prev[b][h] = {{ input_initial_h }}[dir][b][h];
+                {% else %}
+                H_prev[b][h] = {{ input_initial_h }}[b][dir][h];
+                {% endif %}
+                {% else %}
+                H_prev[b][h] = {{ zero_literal }};
+                {% endif %}
+            }
+        }
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            int seq_limit = {{ seq_length }};
+            {% if input_sequence_lens %}
+            seq_limit = (int){{ input_sequence_lens }}[b];
+            if (seq_limit < 0) {
+                seq_limit = 0;
+            }
+            if (seq_limit > {{ seq_length }}) {
+                seq_limit = {{ seq_length }};
+            }
+            {% endif %}
+            for (int step = 0; step < seq_limit; ++step) {
+                int t = reverse ? (seq_limit - 1 - step) : step;
+                {{ c_type }} Z_gate[{{ hidden_size }}];
+                {{ c_type }} R_gate[{{ hidden_size }}];
+                {{ c_type }} H_next[{{ hidden_size }}];
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {{ c_type }} gate_z = {{ zero_literal }};
+                    {{ c_type }} gate_r = {{ zero_literal }};
+                    for (int i = 0; i < {{ input_size }}; ++i) {
+                        {% if layout == 0 %}
+                        {{ c_type }} x_val = {{ input_x }}[t][b][i];
+                        {% else %}
+                        {{ c_type }} x_val = {{ input_x }}[b][t][i];
+                        {% endif %}
+                        gate_z += x_val * {{ input_w }}[dir][h][i];
+                        gate_r += x_val * {{ input_w }}[dir][{{ hidden_size }} + h][i];
+                    }
+                    for (int i = 0; i < {{ hidden_size }}; ++i) {
+                        {{ c_type }} h_val = H_prev[b][i];
+                        gate_z += h_val * {{ input_r }}[dir][h][i];
+                        gate_r += h_val * {{ input_r }}[dir][{{ hidden_size }} + h][i];
+                    }
+                    {% if input_b %}
+                    gate_z += {{ input_b }}[dir][h] + {{ input_b }}[dir][{{ hidden_size }} * 3 + h];
+                    gate_r += {{ input_b }}[dir][{{ hidden_size }} + h] + {{ input_b }}[dir][{{ hidden_size }} * 4 + h];
+                    {% endif %}
+                    {% if use_clip %}
+                    if (gate_z > {{ clip_literal }}) {
+                        gate_z = {{ clip_literal }};
+                    } else if (gate_z < -{{ clip_literal }}) {
+                        gate_z = -{{ clip_literal }};
+                    }
+                    if (gate_r > {{ clip_literal }}) {
+                        gate_r = {{ clip_literal }};
+                    } else if (gate_r < -{{ clip_literal }}) {
+                        gate_r = -{{ clip_literal }};
+                    }
+                    {% endif %}
+                    Z_gate[h] = {{ act_f }}(gate_z);
+                    R_gate[h] = {{ act_f }}(gate_r);
+                }
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {{ c_type }} gate_h = {{ zero_literal }};
+                    for (int i = 0; i < {{ input_size }}; ++i) {
+                        {% if layout == 0 %}
+                        {{ c_type }} x_val = {{ input_x }}[t][b][i];
+                        {% else %}
+                        {{ c_type }} x_val = {{ input_x }}[b][t][i];
+                        {% endif %}
+                        gate_h += x_val * {{ input_w }}[dir][{{ hidden_size }} * 2 + h][i];
+                    }
+                    {% if linear_before_reset %}
+                    {{ c_type }} recur = {{ zero_literal }};
+                    for (int i = 0; i < {{ hidden_size }}; ++i) {
+                        recur += H_prev[b][i] * {{ input_r }}[dir][{{ hidden_size }} * 2 + h][i];
+                    }
+                    {% if input_b %}
+                    recur += {{ input_b }}[dir][{{ hidden_size }} * 5 + h];
+                    {% endif %}
+                    gate_h += R_gate[h] * recur;
+                    {% if input_b %}
+                    gate_h += {{ input_b }}[dir][{{ hidden_size }} * 2 + h];
+                    {% endif %}
+                    {% else %}
+                    for (int i = 0; i < {{ hidden_size }}; ++i) {
+                        gate_h += (R_gate[i] * H_prev[b][i]) * {{ input_r }}[dir][{{ hidden_size }} * 2 + h][i];
+                    }
+                    {% if input_b %}
+                    gate_h += {{ input_b }}[dir][{{ hidden_size }} * 2 + h] + {{ input_b }}[dir][{{ hidden_size }} * 5 + h];
+                    {% endif %}
+                    {% endif %}
+                    {% if use_clip %}
+                    if (gate_h > {{ clip_literal }}) {
+                        gate_h = {{ clip_literal }};
+                    } else if (gate_h < -{{ clip_literal }}) {
+                        gate_h = -{{ clip_literal }};
+                    }
+                    {% endif %}
+                    {{ c_type }} h_candidate = {{ act_g }}(gate_h);
+                    {{ c_type }} h_prev = H_prev[b][h];
+                    {{ c_type }} h_new = ({{ one_literal }} - Z_gate[h]) * h_candidate + Z_gate[h] * h_prev;
+                    H_next[h] = h_new;
+                    {% if output_y %}
+                    {% if layout == 0 %}
+                    {{ output_y }}[step][dir][b][h] = h_new;
+                    {% else %}
+                    {{ output_y }}[b][step][dir][h] = h_new;
+                    {% endif %}
+                    {% endif %}
+                }
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    H_prev[b][h] = H_next[h];
+                }
+            }
+            {% if output_y %}
+            for (int step = seq_limit; step < {{ seq_length }}; ++step) {
+                for (int h = 0; h < {{ hidden_size }}; ++h) {
+                    {% if layout == 0 %}
+                    {{ output_y }}[step][dir][b][h] = {{ zero_literal }};
+                    {% else %}
+                    {{ output_y }}[b][step][dir][h] = {{ zero_literal }};
+                    {% endif %}
+                }
+            }
+            {% endif %}
+        }
+        {% if output_y_h %}
+        for (int b = 0; b < {{ batch_size }}; ++b) {
+            for (int h = 0; h < {{ hidden_size }}; ++h) {
+                {% if layout == 0 %}
+                {{ output_y_h }}[dir][b][h] = H_prev[b][h];
+                {% else %}
+                {{ output_y_h }}[b][dir][h] = H_prev[b][h];
+                {% endif %}
+            }
+        }
+        {% endif %}
+    }
+    {% endfor %}
+}

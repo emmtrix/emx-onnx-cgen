@@ -30,6 +30,7 @@ _LOWERING_MODULES = [
     "gemm",
     "global_max_pool",
     "grid_sample",
+    "gru",
     "group_normalization",
     "hardmax",
     "hamming_window",
