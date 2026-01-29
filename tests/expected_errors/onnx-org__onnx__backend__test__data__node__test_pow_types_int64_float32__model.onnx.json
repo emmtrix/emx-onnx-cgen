@@ -1,8 +1,9 @@
 {
-  "error": "Pow expects matching dtypes, got float, int64",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_pow_types_int64_float32 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Pow"
   ],
-  "opset_version": 15
+  "opset_version": 15,
+  "generated_checksum": "ff452702ca341975ee2654f370942efdb70bd97fccbf4b72f1db4ba08433dc7c"
 }

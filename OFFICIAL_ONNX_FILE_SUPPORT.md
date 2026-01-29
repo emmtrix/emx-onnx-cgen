@@ -1,8 +1,6 @@
 # Official ONNX file support
 
-Support 1334 / 1802 official ONNX files.
-Support 1336 / 1802 official ONNX files.
-Support 1337 / 1802 official ONNX files.
+Support 1339 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1075,17 +1073,17 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_pow_bcast_array/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_bcast_scalar/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_int32/model.onnx | ❌ | Pow expects matching dtypes, got float, int32 |
-| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_int64/model.onnx | ❌ | Pow expects matching dtypes, got float, int64 |
-| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_uint32/model.onnx | ❌ | Pow expects matching dtypes, got float, uint32 |
-| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_uint64/model.onnx | ❌ | Pow expects matching dtypes, got float, uint64 |
-| onnx-org/onnx/backend/test/data/node/test_pow_types_int32_float32/model.onnx | ❌ | Pow expects matching dtypes, got float, int32 |
+| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_int32/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_int64/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_uint32/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_pow_types_float32_uint64/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_pow_types_int32_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_types_int32_int32/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_pow_types_int64_float32/model.onnx | ❌ | Pow expects matching dtypes, got float, int64 |
+| onnx-org/onnx/backend/test/data/node/test_pow_types_int64_float32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_pow_types_int64_int64/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_prelu_broadcast/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_prelu_broadcast/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
 | onnx-org/onnx/backend/test/data/node/test_prelu_broadcast_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_prelu_example/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_prelu_example/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
 | onnx-org/onnx/backend/test/data/node/test_prelu_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_qlinearconv/model.onnx | ❌ | Unsupported op QLinearConv |
 | onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16/model.onnx | ✅ | OK (max ULP 0) |
@@ -1731,12 +1729,12 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride_padding/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d_multiparam/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d_multiparam/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d_multiparam/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d_multiparam/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d_multiparam/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d_multiparam/model.onnx | ❌ | name 'BroadcastingOpBase' is not defined |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/model.onnx | ✅ | OK (max ULP 0) |
