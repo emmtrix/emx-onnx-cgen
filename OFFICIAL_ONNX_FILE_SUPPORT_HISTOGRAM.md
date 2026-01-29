@@ -72,7 +72,6 @@
 | Dropout mask output is not supported | 1 | █ |
 | Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
-| LpPool supports dilations=1 only | 1 | █ |
 | Pad value input must be a scalar | 1 | █ |
 | Pow expects matching dtypes, got float, uint32 | 1 | █ |
 | Pow expects matching dtypes, got float, uint64 | 1 | █ |

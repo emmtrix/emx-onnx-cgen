@@ -19,6 +19,8 @@ class LpPoolSpec:
     out_w: int
     kernel_h: int
     kernel_w: int
+    dilation_h: int
+    dilation_w: int
     stride_h: int
     stride_w: int
     pad_top: int
@@ -51,8 +53,10 @@ def _resolve_lp_pool_spec(graph: Graph, node: Node) -> LpPoolSpec:
     if ceil_mode != 0:
         raise UnsupportedOpError("LpPool supports ceil_mode=0 only")
     dilations = tuple(int(value) for value in node.attrs.get("dilations", (1, 1)))
-    if any(value != 1 for value in dilations):
-        raise UnsupportedOpError("LpPool supports dilations=1 only")
+    if len(dilations) != 2:
+        raise UnsupportedOpError("LpPool expects 2D dilations")
+    if any(value < 1 for value in dilations):
+        raise UnsupportedOpError("LpPool requires dilations >= 1")
     kernel_shape = node.attrs.get("kernel_shape")
     if kernel_shape is None:
         raise UnsupportedOpError("LpPool requires kernel_shape")
@@ -75,8 +79,11 @@ def _resolve_lp_pool_spec(graph: Graph, node: Node) -> LpPoolSpec:
         raise UnsupportedOpError("LpPool supports NCHW 2D inputs only")
     batch, channels, in_h, in_w = input_shape
     stride_h, stride_w = strides
-    out_h = (in_h + pad_top + pad_bottom - kernel_h) // stride_h + 1
-    out_w = (in_w + pad_left + pad_right - kernel_w) // stride_w + 1
+    dilation_h, dilation_w = dilations
+    effective_kernel_h = dilation_h * (kernel_h - 1) + 1
+    effective_kernel_w = dilation_w * (kernel_w - 1) + 1
+    out_h = (in_h + pad_top + pad_bottom - effective_kernel_h) // stride_h + 1
+    out_w = (in_w + pad_left + pad_right - effective_kernel_w) // stride_w + 1
     if out_h < 0 or out_w < 0:
         raise ShapeInferenceError("LpPool output shape must be non-negative")
     output_shape = _value_shape(graph, node.outputs[0], node)
@@ -95,6 +102,8 @@ def _resolve_lp_pool_spec(graph: Graph, node: Node) -> LpPoolSpec:
         out_w=out_w,
         kernel_h=kernel_h,
         kernel_w=kernel_w,
+        dilation_h=dilation_h,
+        dilation_w=dilation_w,
         stride_h=stride_h,
         stride_w=stride_w,
         pad_top=pad_top,
@@ -130,6 +139,8 @@ def lower_lp_pool(graph: Graph, node: Node) -> LpPoolOp:
         out_w=spec.out_w,
         kernel_h=spec.kernel_h,
         kernel_w=spec.kernel_w,
+        dilation_h=spec.dilation_h,
+        dilation_w=spec.dilation_w,
         stride_h=spec.stride_h,
         stride_w=spec.stride_w,
         pad_top=spec.pad_top,

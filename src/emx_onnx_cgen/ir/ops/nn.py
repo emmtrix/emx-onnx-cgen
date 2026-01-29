@@ -486,6 +486,8 @@ class LpPoolOp(RenderableOpBase):
     out_w: int
     kernel_h: int
     kernel_w: int
+    dilation_h: int
+    dilation_w: int
     stride_h: int
     stride_w: int
     pad_top: int
