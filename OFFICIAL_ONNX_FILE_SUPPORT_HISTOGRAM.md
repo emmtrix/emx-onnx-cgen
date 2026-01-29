@@ -2,26 +2,26 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 33 | ██████████████████████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████████ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ██████████████████ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ████████████████ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ████████████████ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ███████████████ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ███████████████ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ███████████████ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ██████████████████████████████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 28 | ██████████████████████████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | █████████████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ███████████████████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | █████████████████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | █████████████████ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ████████████████ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ████████████████ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ████████████████ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ████████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
-| Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
-| Out of tolerance | 8 | ███████ |
-| Unsupported op TfIdfVectorizer | 7 | ██████ |
-| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
-| Unsupported op CenterCropPad | 6 | █████ |
-| Unsupported op DFT | 6 | █████ |
-| Unsupported op ScatterElements | 6 | █████ |
-| Unsupported op Unique | 6 | █████ |
+| Dropout supports only the data input and 1 or 2 outputs | 8 | ████████ |
+| Out of tolerance | 8 | ████████ |
+| Unsupported op TfIdfVectorizer | 7 | ███████ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | ██████ |
+| Unsupported op CenterCropPad | 6 | ██████ |
+| Unsupported op DFT | 6 | ██████ |
+| Unsupported op ScatterElements | 6 | ██████ |
+| Unsupported op Unique | 6 | ██████ |
 | Unsupported op Col2Im | 5 | █████ |
 | Unsupported op DequantizeLinear | 5 | █████ |
 | Unsupported op If | 5 | █████ |
@@ -31,10 +31,10 @@
 | Unsupported op Compress | 4 | ████ |
 | Unsupported op DeformConv | 4 | ████ |
 | Unsupported op RNN | 4 | ████ |
+| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | ████ |
 | Elu only supports alpha=1.0 | 3 | ███ |
 | HardSigmoid only supports alpha=0.2 | 3 | ███ |
 | LeakyRelu only supports alpha=0.01 | 3 | ███ |
-| Unsupported op Bernoulli | 3 | ███ |
 | Unsupported op DynamicQuantizeLinear | 3 | ███ |
 | Unsupported op Loop | 3 | ███ |
 | Unsupported op Momentum | 3 | ███ |
@@ -57,6 +57,7 @@
 | Unsupported op Gradient | 2 | ██ |
 | Unsupported op HannWindow | 2 | ██ |
 | Unsupported op MaxUnpool | 2 | ██ |
+| Unsupported op OptionalGetElement | 2 | ██ |
 | Unsupported op ReverseSequence | 2 | ██ |
 | Unsupported op STFT | 2 | ██ |
 | Unsupported op Scan | 2 | ██ |
@@ -73,7 +74,6 @@
 | Unsupported op Binarizer | 1 | █ |
 | Unsupported op MatMulInteger | 1 | █ |
 | Unsupported op MelWeightMatrix | 1 | █ |
-| Unsupported op OptionalGetElement | 1 | █ |
 | Unsupported op QLinearConv | 1 | █ |
 | Unsupported op Upsample | 1 | █ |
 

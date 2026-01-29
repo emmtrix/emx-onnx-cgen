@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 146 / 198
+Supported operators: 147 / 198
 
 | Operator | Supported |
 | --- | --- |
@@ -21,7 +21,7 @@ Supported operators: 146 / 198
 | Attention | ✅ |
 | AveragePool | ✅ |
 | BatchNormalization | ✅ |
-| Bernoulli | ❌ |
+| Bernoulli | ✅ |
 | BitShift | ✅ |
 | BitwiseAnd | ✅ |
 | BitwiseNot | ✅ |
