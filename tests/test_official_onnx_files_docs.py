@@ -35,13 +35,20 @@ def _render_onnx_file_support_table(
     expectations: list[OnnxFileExpectation],
 ) -> list[str]:
     lines = [
-        "| File | Supported | Error |",
-        "| --- | --- | --- |",
+        "| File | Opset | Supported | Error |",
+        "| --- | --- | --- | --- |",
     ]
     for expectation in sorted(expectations, key=lambda item: item.path):
         supported = "✅" if _is_success_message(expectation.error) else "❌"
+        opset = (
+            str(expectation.opset_version)
+            if expectation.opset_version is not None
+            else ""
+        )
         message = expectation.error.replace("\n", " ").strip()
-        lines.append(f"| {expectation.path} | {supported} | {message} |")
+        lines.append(
+            f"| {expectation.path} | {opset} | {supported} | {message} |"
+        )
     return lines
 
 
@@ -215,6 +222,8 @@ def test_official_onnx_file_support_doc() -> None:
                 path=local_path,
                 error=expectation.error,
                 command_line=expectation.command_line,
+                operators=expectation.operators,
+                opset_version=expectation.opset_version,
             )
         )
     expected_markdown = _render_onnx_file_support_markdown(
