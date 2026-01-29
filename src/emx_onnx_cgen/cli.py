@@ -189,13 +189,15 @@ def _worst_ulp_diff(
         [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
     )
     for actual_value, expected_value in iterator:
+        actual_scalar = float(actual_value[()])
+        expected_scalar = float(expected_value[()])
         diff = ulp_intdiff_float(actual_value[()], expected_value[()])
         if diff > max_diff:
             max_diff = diff
             worst = (
                 iterator.multi_index,
-                float(actual_value[()]),
-                float(expected_value[()]),
+                actual_scalar,
+                expected_scalar,
             )
     return max_diff, worst
 
