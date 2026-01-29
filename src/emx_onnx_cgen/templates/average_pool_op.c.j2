@@ -42,6 +42,27 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             }
         }
     }
+{% elif spatial_rank == 1 %}
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            for (idx_t ow = 0; ow < {{ out_w }}; ++ow) {
+                {{ c_type }} acc = {{ zero_literal }};
+                idx_t count = 0;
+                for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
+                    const idx_t iw = ow * {{ stride_w }} + kw * {{ dilation_w }} - {{ pad_left }};
+                    if (iw < 0 || iw >= {{ in_w }}) {
+                        if ({{ count_include_pad }}) {
+                            count += 1;
+                        }
+                    } else {
+                        acc += {{ input0 }}[n][c][iw];
+                        count += 1;
+                    }
+                }
+                {{ output }}[n][c][ow] = count ? acc / ({{ c_type }})count : {{ zero_literal }};
+            }
+        }
+    }
 {% else %}
     for (idx_t n = 0; n < {{ batch }}; ++n) {
         for (idx_t c = 0; c < {{ channels }}; ++c) {

@@ -2919,6 +2919,29 @@ def _apply_average_pool(op, data: np.ndarray) -> np.ndarray:
                                 0.0 if count == 0 else acc / float(count)
                             )
         return output
+    if op.spatial_rank == 1:
+        output = np.zeros((op.batch, op.channels, op.out_w), dtype=data.dtype)
+        for n in range(op.batch):
+            for c in range(op.channels):
+                for ow in range(op.out_w):
+                    acc = 0.0
+                    count = 0
+                    for kw in range(op.kernel_w):
+                        iw = (
+                            ow * op.stride_w
+                            + kw * op.dilation_w
+                            - op.pad_left
+                        )
+                        if iw < 0 or iw >= op.in_w:
+                            if op.count_include_pad:
+                                count += 1
+                        else:
+                            acc += data[n, c, iw]
+                            count += 1
+                    output[n, c, ow] = (
+                        0.0 if count == 0 else acc / float(count)
+                    )
+        return output
     output = np.zeros(
         (op.batch, op.channels, op.out_h, op.out_w), dtype=data.dtype
     )
