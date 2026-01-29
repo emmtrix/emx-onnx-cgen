@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_tensor_input model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "OptionalHasElement"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "afd93753c1e590781fa5ff327536bc56bb57d379c5e9af70a9b26d1f8ab17e9e"
 }

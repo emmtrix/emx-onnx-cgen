@@ -2,17 +2,17 @@
 
 | Error message | Count | Histogram |
 | --- | --- | --- |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 36 | ██████████████████████████████ |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | ███████████████████████████ |
-| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ██████████████████ |
-| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | █████████████████ |
-| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ███████████████ |
-| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ███████████████ |
-| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ██████████████ |
-| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ██████████████ |
-| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
-| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
-| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
+| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 33 | ██████████████████████████████ |
+| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | █████████████████████████████ |
+| Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | ████████████████████ |
+| Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | ██████████████████ |
+| Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | ████████████████ |
+| Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | ████████████████ |
+| Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ███████████████ |
+| Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
 | Out of tolerance | 8 | ███████ |
@@ -22,25 +22,25 @@
 | Unsupported op DFT | 6 | █████ |
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
-| Unsupported op Col2Im | 5 | ████ |
-| Unsupported op DequantizeLinear | 5 | ████ |
-| Unsupported op If | 5 | ████ |
-| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
-| Unsupported op AffineGrid | 4 | ███ |
-| Unsupported op Compress | 4 | ███ |
-| Unsupported op DeformConv | 4 | ███ |
-| Unsupported op OptionalHasElement | 4 | ███ |
-| Unsupported op RNN | 4 | ███ |
-| Elu only supports alpha=1.0 | 3 | ██ |
-| HardSigmoid only supports alpha=0.2 | 3 | ██ |
-| LeakyRelu only supports alpha=0.01 | 3 | ██ |
-| Unsupported op Bernoulli | 3 | ██ |
-| Unsupported op DynamicQuantizeLinear | 3 | ██ |
-| Unsupported op Loop | 3 | ██ |
-| Unsupported op Momentum | 3 | ██ |
-| Unsupported op RandomUniformLike | 3 | ██ |
-| Unsupported op RoiAlign | 3 | ██ |
-| name '*' is not defined | 3 | ██ |
+| Unsupported op Col2Im | 5 | █████ |
+| Unsupported op DequantizeLinear | 5 | █████ |
+| Unsupported op If | 5 | █████ |
+| OptionalHasElement expects exactly one non-empty input. | 4 | ████ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ████ |
+| Unsupported op AffineGrid | 4 | ████ |
+| Unsupported op Compress | 4 | ████ |
+| Unsupported op DeformConv | 4 | ████ |
+| Unsupported op RNN | 4 | ████ |
+| Elu only supports alpha=1.0 | 3 | ███ |
+| HardSigmoid only supports alpha=0.2 | 3 | ███ |
+| LeakyRelu only supports alpha=0.01 | 3 | ███ |
+| Unsupported op Bernoulli | 3 | ███ |
+| Unsupported op DynamicQuantizeLinear | 3 | ███ |
+| Unsupported op Loop | 3 | ███ |
+| Unsupported op Momentum | 3 | ███ |
+| Unsupported op RandomUniformLike | 3 | ███ |
+| Unsupported op RoiAlign | 3 | ███ |
+| name '*' is not defined | 3 | ███ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
 | Failed to build testbench. | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |

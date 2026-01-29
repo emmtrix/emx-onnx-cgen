@@ -41,21 +41,19 @@ def _unsupported_value_type(value_info: onnx.ValueInfoProto) -> UnsupportedOpErr
     )
 
 
-def _tensor_type(
-    value_info: onnx.ValueInfoProto,
+def _tensor_type_from_proto(
+    tensor_type: onnx.TypeProto.Tensor,
+    name: str,
     *,
     dim_param_override: tuple[str | None, ...] | None = None,
 ) -> TensorType:
-    if value_info.type.WhichOneof("value") != "tensor_type":
-        raise _unsupported_value_type(value_info)
-    tensor_type = value_info.type.tensor_type
     if not tensor_type.HasField("elem_type"):
-        raise ShapeInferenceError(f"Missing elem_type for tensor '{value_info.name}'")
+        raise ShapeInferenceError(f"Missing elem_type for tensor '{name}'")
     dtype = scalar_type_from_onnx(tensor_type.elem_type)
     if dtype is None:
         raise UnsupportedOpError(
             "Unsupported elem_type "
-            f"{_format_elem_type(tensor_type.elem_type)} for tensor '{value_info.name}'."
+            f"{_format_elem_type(tensor_type.elem_type)} for tensor '{name}'."
         )
     shape = []
     dim_params = []
@@ -72,13 +70,47 @@ def _tensor_type(
             if dim_param:
                 shape.append(1)
                 continue
-            raise ShapeInferenceError(f"Dynamic dim for tensor '{value_info.name}'")
+            raise ShapeInferenceError(f"Dynamic dim for tensor '{name}'")
         shape.append(dim.dim_value)
     return TensorType(
         dtype=dtype,
         shape=tuple(shape),
         dim_params=tuple(dim_params),
     )
+
+
+def _value_type(
+    value_info: onnx.ValueInfoProto,
+    *,
+    dim_param_override: tuple[str | None, ...] | None = None,
+) -> TensorType:
+    value_kind = value_info.type.WhichOneof("value")
+    if value_kind == "tensor_type":
+        return _tensor_type_from_proto(
+            value_info.type.tensor_type,
+            value_info.name,
+            dim_param_override=dim_param_override,
+        )
+    if value_kind == "optional_type":
+        elem_type = value_info.type.optional_type.elem_type
+        elem_kind = elem_type.WhichOneof("value")
+        if elem_kind != "tensor_type":
+            raise UnsupportedOpError(
+                f"Unsupported optional element type '{elem_kind}' for '{value_info.name}'. "
+                "Hint: export the model with optional tensor inputs/outputs."
+            )
+        tensor_type = _tensor_type_from_proto(
+            elem_type.tensor_type,
+            value_info.name,
+            dim_param_override=dim_param_override,
+        )
+        return TensorType(
+            dtype=tensor_type.dtype,
+            shape=tensor_type.shape,
+            dim_params=tensor_type.dim_params,
+            is_optional=True,
+        )
+    raise _unsupported_value_type(value_info)
 
 
 def _values(
@@ -90,7 +122,7 @@ def _values(
     return tuple(
         Value(
             name=vi.name,
-            type=_tensor_type(
+            type=_value_type(
                 vi, dim_param_override=dim_param_by_name.get(vi.name)
             ),
         )
@@ -103,8 +135,18 @@ def _collect_dim_params(
 ) -> dict[str, tuple[str | None, ...]]:
     dim_params: dict[str, tuple[str | None, ...]] = {}
     for value_info in value_infos:
+        value_kind = value_info.type.WhichOneof("value")
+        if value_kind == "tensor_type":
+            tensor_type = value_info.type.tensor_type
+        elif value_kind == "optional_type":
+            elem_type = value_info.type.optional_type.elem_type
+            if elem_type.WhichOneof("value") != "tensor_type":
+                continue
+            tensor_type = elem_type.tensor_type
+        else:
+            continue
         dims = []
-        for dim in value_info.type.tensor_type.shape.dim:
+        for dim in tensor_type.shape.dim:
             dim_param = dim.dim_param if dim.HasField("dim_param") else ""
             dims.append(dim_param or None)
         if any(dims):
@@ -113,9 +155,16 @@ def _collect_dim_params(
 
 
 def _value_info_complete(value_info: onnx.ValueInfoProto) -> bool:
-    if value_info.type.WhichOneof("value") != "tensor_type":
+    value_kind = value_info.type.WhichOneof("value")
+    if value_kind == "tensor_type":
+        tensor_type = value_info.type.tensor_type
+    elif value_kind == "optional_type":
+        elem_type = value_info.type.optional_type.elem_type
+        if elem_type.WhichOneof("value") != "tensor_type":
+            return False
+        tensor_type = elem_type.tensor_type
+    else:
         return False
-    tensor_type = value_info.type.tensor_type
     if not tensor_type.HasField("elem_type"):
         return False
     if not tensor_type.HasField("shape"):

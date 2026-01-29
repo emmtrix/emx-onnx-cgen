@@ -113,6 +113,32 @@ def _make_matmul_model() -> onnx.ModelProto:
     )
 
 
+def _make_optional_has_element_model() -> onnx.ModelProto:
+    elem_type = helper.make_tensor_type_proto(TensorProto.FLOAT, [4])
+    optional_type = helper.make_optional_type_proto(elem_type)
+    input_info = helper.make_value_info("optional_input", optional_type)
+    output = helper.make_tensor_value_info("output", TensorProto.BOOL, [])
+    node = helper.make_node(
+        "OptionalHasElement",
+        inputs=[input_info.name],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "optional_has_element_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 18)],
+    )
+    model.ir_version = 8
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_gemm_model() -> onnx.ModelProto:
     return _make_operator_model(
         op_type="Gemm",
@@ -408,6 +434,7 @@ OP_GOLDEN_CASES = [
     ("clip", "clip", _make_clip_model),
     ("cast", "cast", _make_cast_model),
     ("matmul", "matmul", _make_matmul_model),
+    ("optionalhaselement", "optional_has_element", _make_optional_has_element_model),
     ("gemm", "gemm", _make_gemm_model),
     ("attention", "attention", _make_attention_model),
     ("conv", "conv", _make_conv_model),

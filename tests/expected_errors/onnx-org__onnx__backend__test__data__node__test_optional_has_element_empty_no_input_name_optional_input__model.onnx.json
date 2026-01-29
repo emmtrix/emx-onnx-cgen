@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op OptionalHasElement",
+  "error": "OptionalHasElement expects exactly one non-empty input.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_optional_input model.onnx",
   "operators": [
     "OptionalHasElement"

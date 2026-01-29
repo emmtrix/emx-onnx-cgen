@@ -47,6 +47,7 @@ _LOWERING_MODULES = [
     "negative_log_likelihood_loss",
     "non_max_suppression",
     "nonzero",
+    "optional_has_element",
     "one_hot",
     "pad",
     "qlinear_matmul",

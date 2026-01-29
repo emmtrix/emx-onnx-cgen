@@ -844,7 +844,9 @@ def _verify_model(
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
-        testbench_inputs = _load_test_data_inputs(model, args.test_data_dir)
+        testbench_inputs, testbench_optional_inputs = _load_test_data_inputs(
+            model, args.test_data_dir
+        )
         testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
         options = CompilerOptions(
             model_name=model_name,
@@ -856,6 +858,7 @@ def _verify_model(
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
             testbench_inputs=testbench_inputs,
+            testbench_optional_inputs=testbench_optional_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
@@ -1203,9 +1206,9 @@ def _verify_model(
 
 def _load_test_data_inputs(
     model: onnx.ModelProto, data_dir: Path | None
-) -> dict[str, "np.ndarray"] | None:
+) -> tuple[dict[str, "np.ndarray"] | None, dict[str, bool] | None]:
     if data_dir is None:
-        return None
+        return None, None
     if not data_dir.exists():
         raise CodegenError(f"Test data directory not found: {data_dir}")
     input_files = sorted(
@@ -1230,19 +1233,63 @@ def _load_test_data_inputs(
         )
     for value_info in model_inputs:
         value_kind = value_info.type.WhichOneof("value")
-        if value_kind != "tensor_type":
+        if value_kind not in {"tensor_type", "optional_type"}:
             LOGGER.warning(
                 "Skipping test data load for non-tensor input %s (type %s).",
                 value_info.name,
                 value_kind or "unknown",
             )
-            return None
+            return None, None
     inputs: dict[str, np.ndarray] = {}
+    optional_flags: dict[str, bool] = {}
     for index, path in enumerate(input_files):
-        tensor = onnx.TensorProto()
-        tensor.ParseFromString(path.read_bytes())
-        inputs[model_inputs[index].name] = numpy_helper.to_array(tensor)
-    return inputs
+        value_info = model_inputs[index]
+        value_kind = value_info.type.WhichOneof("value")
+        if value_kind == "tensor_type":
+            tensor = onnx.TensorProto()
+            tensor.ParseFromString(path.read_bytes())
+            inputs[value_info.name] = numpy_helper.to_array(tensor)
+            continue
+        optional = onnx.OptionalProto()
+        optional.ParseFromString(path.read_bytes())
+        elem_type = value_info.type.optional_type.elem_type
+        if elem_type.WhichOneof("value") != "tensor_type":
+            LOGGER.warning(
+                "Skipping test data load for non-tensor optional input %s.",
+                value_info.name,
+            )
+            return None, None
+        tensor_type = elem_type.tensor_type
+        if optional.HasField("tensor_value"):
+            inputs[value_info.name] = numpy_helper.to_array(
+                optional.tensor_value
+            )
+            optional_flags[value_info.name] = True
+            continue
+        if not tensor_type.HasField("elem_type"):
+            raise CodegenError(
+                f"Optional input {value_info.name} is missing elem_type."
+            )
+        dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+        if dtype_info is None:
+            raise CodegenError(
+                f"Optional input {value_info.name} has unsupported elem_type."
+            )
+        shape: list[int] = []
+        for dim in tensor_type.shape.dim:
+            if dim.HasField("dim_value"):
+                shape.append(dim.dim_value)
+            elif dim.HasField("dim_param"):
+                shape.append(1)
+            else:
+                raise CodegenError(
+                    f"Optional input {value_info.name} has unknown shape."
+                )
+        inputs[value_info.name] = np.zeros(
+            tuple(shape), dtype=dtype_info.np_dtype
+        )
+        optional_flags[value_info.name] = False
+    return inputs, optional_flags
 
 
 def _load_test_data_outputs(
