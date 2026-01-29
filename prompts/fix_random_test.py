@@ -101,6 +101,14 @@ def main() -> None:
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
+    prompt_lines.append(
+        "Debugging hint: use `--keep-temp-dir` (or the printed temp dir path) to "
+        "inspect generated C code and compile commands without rerunning the pipeline."
+    )
+    prompt_lines.append(
+        "Workflow hint: locate `register_lowering(...)` for the failing op and follow "
+        "the path into codegen templates to trace end-to-end integration points."
+    )
 
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
 
