@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 144 / 198
+Supported operators: 143 / 197
 
 | Operator | Supported |
 | --- | --- |
@@ -118,7 +118,6 @@ Supported operators: 144 / 198
 | OptionalGetElement | ❌ |
 | OptionalHasElement | ❌ |
 | Or | ✅ |
-| PRelu | ✅ |
 | Pad | ✅ |
 | Pow | ✅ |
 | QLinearConv | ❌ |

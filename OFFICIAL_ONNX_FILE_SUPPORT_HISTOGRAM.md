@@ -14,6 +14,7 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ██████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
+| name '*' is not defined | 11 | █████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
 | tuple index out of range | 8 | ███████ |
@@ -43,14 +44,11 @@
 | Unsupported op Momentum | 3 | ██ |
 | Unsupported op RandomUniformLike | 3 | ██ |
 | Unsupported op RoiAlign | 3 | ██ |
-| name '*' is not defined | 3 | ██ |
 | BatchNormalization must have 5 inputs and 1 output | 2 | ██ |
 | Failed to build testbench. | 2 | ██ |
 | Gelu only supports approximate=none | 2 | ██ |
 | LpPool expects 2D kernel_shape | 2 | ██ |
 | LpPool supports auto_pad=NOTSET only | 2 | ██ |
-| Pow expects matching dtypes, got float, int32 | 2 | ██ |
-| Pow expects matching dtypes, got float, int64 | 2 | ██ |
 | QuantizeLinear block_size is not supported | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
@@ -73,8 +71,6 @@
 | Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Pad value input must be a scalar | 1 | █ |
-| Pow expects matching dtypes, got float, uint32 | 1 | █ |
-| Pow expects matching dtypes, got float, uint64 | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |

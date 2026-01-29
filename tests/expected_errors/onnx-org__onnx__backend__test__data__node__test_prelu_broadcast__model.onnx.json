@@ -1,9 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_prelu_broadcast model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "PRelu"
-  ],
-  "opset_version": 16,
-  "generated_checksum": "35ddf21708d4d05fa885d016ef15f98aaefef44930263a7480005f685c880666"
+  "error": "name 'BroadcastingOpBase' is not defined",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_prelu_broadcast model.onnx --test-data-dir test_data_set_0"
 }

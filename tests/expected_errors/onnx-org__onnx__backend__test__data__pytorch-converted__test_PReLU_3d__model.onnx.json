@@ -1,9 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "PRelu"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "7eba11b8a95f8d775e03fd7aeca4a19effd5fd9208bcad2171273ef282d6b810"
+  "error": "name 'BroadcastingOpBase' is not defined",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d model.onnx --test-data-dir test_data_set_0"
 }
