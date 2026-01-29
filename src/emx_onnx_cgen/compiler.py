@@ -41,6 +41,7 @@ class CompilerOptions:
     model_checksum: str | None = None
     restrict_arrays: bool = True
     testbench_inputs: Mapping[str, np.ndarray] | None = None
+    testbench_optional_inputs: Mapping[str, bool] | None = None
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
     large_weight_threshold: int = 100 * 1024
@@ -55,6 +56,10 @@ def _onnx_elem_type(dtype: np.dtype) -> int:
         if info.np_dtype == dtype:
             return elem_type
     raise UnsupportedOpError(f"Unsupported dtype {dtype} for ONNX output")
+
+
+def _optional_flag_name(name: str) -> str:
+    return f"{name}_present"
 
 
 class Compiler:
@@ -101,6 +106,7 @@ class Compiler:
                 lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_inputs=testbench_inputs,
+                testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=variable_dim_inputs,
                 variable_dim_outputs=variable_dim_outputs,
             ),
@@ -127,6 +133,7 @@ class Compiler:
                 lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_inputs=testbench_inputs,
+                testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=variable_dim_inputs,
                 variable_dim_outputs=variable_dim_outputs,
             ),
@@ -155,6 +162,7 @@ class Compiler:
                 lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_inputs=testbench_inputs,
+                testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=variable_dim_inputs,
                 variable_dim_outputs=variable_dim_outputs,
             ),
@@ -188,6 +196,7 @@ class Compiler:
                 lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_inputs=testbench_inputs,
+                testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=variable_dim_inputs,
                 variable_dim_outputs=variable_dim_outputs,
             ),
@@ -224,9 +233,11 @@ class Compiler:
         self._validate_graph(graph)
         (
             input_names,
+            input_optional_names,
             input_shapes,
             input_dtypes,
             output_names,
+            output_optional_names,
             output_shapes,
             output_dtypes,
         ) = self._collect_io_specs(graph)
@@ -279,9 +290,11 @@ class Compiler:
         return LoweredModel(
             name=self._options.model_name,
             input_names=input_names,
+            input_optional_names=input_optional_names,
             input_shapes=input_shapes,
             input_dtypes=input_dtypes,
             output_names=output_names,
+            output_optional_names=output_optional_names,
             output_shapes=output_shapes,
             output_dtypes=output_dtypes,
             constants=constants,
@@ -393,6 +406,7 @@ class Compiler:
                     dtype=value.type.dtype,
                     shape=shape,
                     dim_params=(None,) * len(shape),
+                    is_optional=value.type.is_optional,
                 ),
             )
 
@@ -417,27 +431,39 @@ class Compiler:
         self, graph: Graph
     ) -> tuple[
         tuple[str, ...],
+        tuple[str | None, ...],
         tuple[tuple[int, ...], ...],
         tuple[ScalarType, ...],
         tuple[str, ...],
+        tuple[str | None, ...],
         tuple[tuple[int, ...], ...],
         tuple[ScalarType, ...],
     ]:
         input_names = tuple(value.name for value in graph.inputs)
+        input_optional_names = tuple(
+            _optional_flag_name(value.name) if value.type.is_optional else None
+            for value in graph.inputs
+        )
         input_shapes = tuple(value.type.shape for value in graph.inputs)
         input_dtypes = tuple(
             value_dtype(graph, value.name) for value in graph.inputs
         )
         output_names = tuple(value.name for value in graph.outputs)
+        output_optional_names = tuple(
+            _optional_flag_name(value.name) if value.type.is_optional else None
+            for value in graph.outputs
+        )
         output_shapes = tuple(value.type.shape for value in graph.outputs)
         output_dtypes = tuple(
             value_dtype(graph, value.name) for value in graph.outputs
         )
         return (
             input_names,
+            input_optional_names,
             input_shapes,
             input_dtypes,
             output_names,
+            output_optional_names,
             output_shapes,
             output_dtypes,
         )
