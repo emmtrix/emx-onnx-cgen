@@ -103,6 +103,13 @@ def _render_error_histogram_markdown(
     expectations: list[OnnxFileExpectation],
     title: str = "# Error frequency",
 ) -> str:
+    def _next_heading(title_text: str, default_level: int = 2) -> str:
+        match = re.match(r"(#+)\\s+", title_text)
+        if match:
+            next_level = len(match.group(1)) + 1
+            return f"{'#' * next_level} Error frequency by opset"
+        return f"{'#' * default_level} Error frequency by opset"
+
     def _sanitize_error(error: str) -> str:
         if error.startswith("Out of tolerance"):
             return "Out of tolerance"
@@ -112,6 +119,7 @@ def _render_error_histogram_markdown(
 
     errors: list[str] = []
     error_opsets: dict[str, set[int]] = {}
+    error_opset_pairs: list[tuple[str, int]] = []
     for expectation in expectations:
         if not expectation.error or _is_success_message(expectation.error):
             continue
@@ -121,6 +129,9 @@ def _render_error_histogram_markdown(
             continue
         error_opsets.setdefault(sanitized_error, set()).add(
             expectation.opset_version
+        )
+        error_opset_pairs.append(
+            (sanitized_error, expectation.opset_version)
         )
     counts = Counter(errors)
     if not counts:
@@ -139,6 +150,22 @@ def _render_error_histogram_markdown(
             str(opset) for opset in sorted(error_opsets.get(error, set()))
         )
         lines.append(f"| {error} | {count} | {opset_versions} |")
+    if error_opset_pairs:
+        pair_counts = Counter(error_opset_pairs)
+        lines.extend(
+            [
+                "",
+                _next_heading(title),
+                "",
+                "| Error message | Opset | Count |",
+                "| --- | --- | --- |",
+            ]
+        )
+        for (error, opset), count in sorted(
+            pair_counts.items(),
+            key=lambda item: (item[0][1], -item[1], item[0][0]),
+        ):
+            lines.append(f"| {error} | {opset} | {count} |")
     lines.append("")
     return "\n".join(lines)
 
