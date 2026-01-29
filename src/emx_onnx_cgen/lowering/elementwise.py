@@ -134,6 +134,29 @@ def lower_pow(graph: Graph, node: Node) -> PowOp:
     )
 
 
+def _infer_binary_output_shape(
+    *,
+    function: ScalarFunction,
+    input0_shape: tuple[int, ...],
+    input1_shape: tuple[int, ...],
+) -> tuple[int, ...]:
+    if function != ScalarFunction.PRELU:
+        return BroadcastingOpBase.broadcast_shapes(input0_shape, input1_shape)
+    if BroadcastingOpBase.unidirectional_broadcastable(
+        input1_shape, input0_shape
+    ):
+        return input0_shape
+    channel_axis = BroadcastingOpBase.prelu_channel_axis(
+        input0_shape, input1_shape
+    )
+    if channel_axis is None:
+        raise ShapeInferenceError(
+            "Broadcasting mismatch for shapes: "
+            + ", ".join(str(shape) for shape in (input0_shape, input1_shape))
+        )
+    return input0_shape
+
+
 def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | UnaryOp:
     if node.op_type == "BitShift":
         if len(node.inputs) != 2 or len(node.outputs) != 1:
@@ -208,8 +231,10 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             operator_kind=op_spec.kind,
         )
         if isinstance(graph, GraphContext):
-            inferred_shape = BroadcastingOpBase.broadcast_shapes(
-                input0_shape, input1_shape
+            inferred_shape = _infer_binary_output_shape(
+                function=function,
+                input0_shape=input0_shape,
+                input1_shape=input1_shape,
             )
             graph.set_shape(node.outputs[0], inferred_shape)
         return op
@@ -234,8 +259,10 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             operator_kind=op_spec.kind,
         )
         if isinstance(graph, GraphContext):
-            inferred_shape = BroadcastingOpBase.broadcast_shapes(
-                input0_shape, input1_shape
+            inferred_shape = _infer_binary_output_shape(
+                function=function,
+                input0_shape=input0_shape,
+                input1_shape=input1_shape,
             )
             graph.set_shape(node.outputs[0], inferred_shape)
         return op
