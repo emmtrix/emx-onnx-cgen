@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 148 / 198
+Supported operators: 149 / 200
 
 | Operator | Supported |
 | --- | --- |
@@ -204,3 +204,5 @@ Supported operators: 148 / 198
 | ai.onnx.preview.training::Adam | ❌ |
 | ai.onnx.preview.training::Gradient | ❌ |
 | ai.onnx.preview.training::Momentum | ❌ |
+| com.microsoft::QLinearAdd | ❌ |
+| com.microsoft::QLinearMul | ✅ |
