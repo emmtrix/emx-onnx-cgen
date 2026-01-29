@@ -68,15 +68,12 @@ def main() -> None:
         prompt_lines.append(f"Operator(s): {selection['operators']}")
     if selection["command_line"]:
         prompt_lines.append(f"Reproduction: {selection['command_line']}")
+
+    # High-signal, operator-agnostic references and workflow hints.
     prompt_lines.append(
-        "Helpful references: onnx-org/docs/Operators.md for operator specs, "
-        "onnx-org/onnx/reference/ops/op_<op>.py for numpy reference behavior, "
-        "and onnx-org/onnx/backend/test/case/node for test inputs."
-    )
-    prompt_lines.append(
-        "Local ops hint: for com.microsoft operators or local test cases, "
-        "check onnx2c-org/test/local_ops for the model generator and "
-        "onnx2c-org/src/nodes for a reference implementation."
+        "Helpful references: onnx-org/docs/Operators.md for general operator specs, "
+        "onnx-org/onnx/reference/ops/ for numpy reference behavior, "
+        "and onnx-org/onnx/backend/test/case/node for backend test inputs."
     )
     prompt_lines.append(
         "Implementation map: add/adjust lowering in src/emx_onnx_cgen/lowering/, "
@@ -85,41 +82,39 @@ def main() -> None:
         "and refresh tests/expected_errors entries when support status changes."
     )
     prompt_lines.append(
-        "Model inspection hint: when an input is dynamic (e.g., scalar tensors like "
-        "TopK's k), check the model's input/output shapes via onnx.load(...) to "
-        "see if the value can be inferred from value_info or output shapes."
+        "Model inspection hint: use onnx.load(...) and inspect graph.input, "
+        "graph.initializer, value_info, and node attributes to understand what is "
+        "static vs. dynamic, and what shapes/types are inferred."
     )
     prompt_lines.append(
-        "Input loading hint: ONNX graphs list initializers in graph.input, but "
-        "backend test data only includes non-initializer inputs. When matching "
-        "test_data_set_* input_*.pb files to model inputs, filter out initializers "
-        "(including sparse initializers) before comparing counts or assigning data."
+        "Input loading hint: backend test data only includes non-initializer inputs. "
+        "When matching test_data_set_* input_*.pb files to model inputs, filter out "
+        "initializers (including sparse initializers) before comparing counts or "
+        "assigning data."
     )
     prompt_lines.append(
-        "Operator behavior hint: consult the ONNX reference op implementation to "
-        "capture tie-break rules, optional input defaults, and output ordering so "
-        "codegen/runtime match the backend tests."
-    )
-    prompt_lines.append(
-        "Numerical accuracy hint: if verification fails with small ULP deltas, "
-        "compare accumulation order/precision against the ONNX reference (e.g., "
-        "GEMM/col2im-based ConvTranspose) and consider higher-precision "
-        "accumulators or output-based accumulation."
-    )
-    prompt_lines.append(
-        "Window op hint: for Blackman/Hann/Hamming window ops, the output length "
-        "must match the scalar size input, periodic=1 uses denom=size, periodic=0 "
-        "uses denom=size-1, and output_datatype controls the output dtype."
+        "Numerical accuracy hint: if verification fails with small deltas, compare "
+        "precision and accumulation order against the ONNX reference implementation "
+        "and consider higher-precision accumulators where appropriate."
     )
     prompt_lines.append(
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
+
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
+
+    # Improved reflection prompt: strictly operator-agnostic, small, actionable.
     prompt_lines.append(
-        "At the end, reflect on what general information would have helped you fix "
-        "the issue more efficiently, and update this script to include that "
-        "information in future prompts."
+        "At the end, propose up to 3 additions to the 'Helpful references / hints' "
+        "section that would have made this fix faster.\n"
+        "Constraints:\n"
+        "- Must be operator-agnostic (no operator names, attributes, shapes, or special cases).\n"
+        "- Must be broadly applicable to many failing tests in this repo.\n"
+        "- Prefer actionable workflow guidance (inspection, repro, narrowing root cause, "
+        "where to apply changes).\n"
+        "- If nothing broadly applicable, write: 'No general additions.'\n"
+        "Output format: bullets, each with 'Hint:', 'Why it helps:', 'Where to apply:'."
     )
 
     print("\n".join(prompt_lines))
