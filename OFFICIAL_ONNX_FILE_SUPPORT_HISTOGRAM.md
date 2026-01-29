@@ -16,7 +16,6 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | ████████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
-| tuple index out of range | 8 | ███████ |
 | Unsupported op TfIdfVectorizer | 7 | ██████ |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
 | Unsupported op CenterCropPad | 6 | █████ |
@@ -64,6 +63,9 @@
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
+| Broadcasting mismatch for shapes: (2, 3, 4), (3,) | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) | 1 | █ |
+| Broadcasting mismatch for shapes: (2, 3, 4, 5, 6), (3,) | 1 | █ |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Dynamic dim for tensor '*' | 1 | █ |

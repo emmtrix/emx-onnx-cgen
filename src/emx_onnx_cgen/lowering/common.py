@@ -50,6 +50,8 @@ def value_shape(
     if isinstance(graph, GraphContext):
         shape = graph.shape(name, node)
         value = graph.find_value(name)
+        if graph.has_shape(name):
+            return shape
     else:
         try:
             value = graph.find_value(name)
@@ -219,6 +221,37 @@ def _shape_values_from_input(
                 return [int(l / r) if r != 0 else 0 for l, r in zip(left, right)]
             if source_node.op_type == "Mod":
                 return [l % r if r != 0 else 0 for l, r in zip(left, right)]
+        if source_node.op_type in {"Add", "Sub", "Mul"}:
+            if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
+                raise UnsupportedOpError(
+                    f"{source_node.op_type} must have 2 inputs and 1 output"
+                )
+            left = _shape_values_from_input(
+                graph,
+                source_node.inputs[0],
+                node,
+                _visited=_visited,
+            )
+            right = _shape_values_from_input(
+                graph,
+                source_node.inputs[1],
+                node,
+                _visited=_visited,
+            )
+            if left is None or right is None:
+                return None
+            if len(left) == 1 and len(right) != 1:
+                left = left * len(right)
+            if len(right) == 1 and len(left) != 1:
+                right = right * len(left)
+            if len(left) != len(right):
+                return None
+            if source_node.op_type == "Add":
+                return [l + r for l, r in zip(left, right)]
+            if source_node.op_type == "Sub":
+                return [l - r for l, r in zip(left, right)]
+            if source_node.op_type == "Mul":
+                return [l * r for l, r in zip(left, right)]
         if source_node.op_type == "Not":
             if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Not must have 1 input and 1 output")
@@ -465,3 +498,18 @@ def optional_name(names: Sequence[str], index: int) -> str | None:
         return None
     name = names[index]
     return name or None
+
+
+def resolve_int_list_from_value(
+    graph: Graph | GraphContext,
+    name: str,
+    node: Node | None = None,
+) -> list[int] | None:
+    return _shape_values_from_input(graph, name, node)
+
+
+def value_has_dim_params(
+    graph: Graph | GraphContext,
+    name: str,
+) -> bool:
+    return any(graph.find_value(name).type.dim_params)

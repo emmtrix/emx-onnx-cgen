@@ -2,31 +2,20 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..ir.ops import ReshapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
-from .common import value_shape as resolved_value_shape
+from ..ir.ops import ReshapeOp
+from .common import value_dtype, value_shape as resolved_value_shape
 from .registry import register_lowering
 
 
 def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
-    try:
-        return graph.find_value(name).type.shape
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
+    return resolved_value_shape(graph, name, node)
 
 
 def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
-    try:
-        return graph.find_value(name).type.dtype
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing dtype for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
+    return value_dtype(graph, name, node)
 
 
 def _shape_product(shape: tuple[int, ...]) -> int:
@@ -350,6 +339,8 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
     for dim in output_shape:
         if dim < 0:
             raise ShapeInferenceError("Dynamic dims are not supported")
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], output_shape)
     return ReshapeOp(
         input0=node.inputs[0],
         output=node.outputs[0],

@@ -6,10 +6,16 @@ import numpy as np
 
 from shared.scalar_types import ScalarType
 
-from ..ir.ops import SliceOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
-from ..lowering.common import value_dtype, value_shape
+from ..ir.ops import SliceOp
+from ..lowering.common import (
+    resolve_int_list_from_value,
+    value_has_dim_params,
+    value_dtype,
+    value_shape,
+)
 from ..validation import normalize_axis
 from .registry import register_lowering
 
@@ -70,7 +76,7 @@ def _maybe_read_int_list(
 ) -> list[int] | None:
     initializer = _find_initializer(graph, name)
     if initializer is None:
-        return None
+        return resolve_int_list_from_value(graph, name, node)
     return _read_int_list(graph, name, node, label=label)
 
 
@@ -335,6 +341,8 @@ def resolve_slice_spec(graph: Graph, node: Node) -> SliceSpec:
 def lower_slice(graph: Graph, node: Node) -> SliceOp:
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    if value_has_dim_params(graph, node.outputs[0]):
+        output_shape = ()
     input_dtype = value_dtype(graph, node.inputs[0], node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if input_dtype != output_dtype:
@@ -356,6 +364,8 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
                 f"{node.op_type} output shape must be "
                 f"{computed_output_shape}, got {output_shape}"
             )
+        if isinstance(graph, GraphContext):
+            graph.set_shape(node.outputs[0], computed_output_shape)
         return SliceOp(
             input0=node.inputs[0],
             output=node.outputs[0],
@@ -379,7 +389,7 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
             dtype=input_dtype,
             input_dtype=input_dtype,
         )
-    if len(output_shape) != len(input_shape):
+    if output_shape and len(output_shape) != len(input_shape):
         raise ShapeInferenceError(
             f"{node.op_type} output rank must match input rank"
         )

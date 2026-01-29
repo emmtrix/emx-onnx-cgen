@@ -6,8 +6,14 @@ from shared.scalar_types import ScalarType
 
 from ..ir.ops import SplitOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
-from ..lowering.common import optional_name, value_dtype, value_shape
+from ..lowering.common import (
+    optional_name,
+    resolve_int_list_from_value,
+    value_dtype,
+    value_shape,
+)
 from ..validation import normalize_axis
 from .registry import register_lowering
 
@@ -46,6 +52,22 @@ def _validate_static_dims(shape: tuple[int, ...], node: Node) -> None:
         )
 
 
+def _validate_output_ranks(
+    output_shapes: list[tuple[int, ...]],
+    input_shape: tuple[int, ...],
+    node: Node,
+) -> None:
+    expected_rank = len(input_shape)
+    for output_shape in output_shapes:
+        if not output_shape:
+            continue
+        if len(output_shape) != expected_rank:
+            raise ShapeInferenceError(
+                f"{node.op_type} output rank must match input rank "
+                f"{expected_rank}, got {len(output_shape)}"
+            )
+
+
 def _normalize_num_outputs(node: Node, output_count: int) -> int:
     num_outputs_attr = node.attrs.get("num_outputs")
     if num_outputs_attr is None:
@@ -75,6 +97,7 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
     output_shapes = [
         value_shape(graph, output, node) for output in node.outputs
     ]
+    _validate_output_ranks(output_shapes, input_shape, node)
     input_dtype = value_dtype(graph, input_name, node)
     output_dtypes = {value_dtype(graph, output, node) for output in node.outputs}
     if output_dtypes != {input_dtype}:
@@ -107,7 +130,15 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
                 raise ShapeInferenceError(
                     f"Split expects {len(node.outputs)} outputs, got {split_shape[0]}"
                 )
-            split_sizes = [shape[axis] for shape in output_shapes]
+            split_sizes = resolve_int_list_from_value(graph, split_name, node)
+            if split_sizes is None:
+                if all(output_shape for output_shape in output_shapes):
+                    split_sizes = [shape[axis] for shape in output_shapes]
+                else:
+                    raise ShapeInferenceError(
+                        "Split sizes must be constant when output shapes "
+                        "are unavailable"
+                    )
         if len(split_sizes) != len(node.outputs):
             raise ShapeInferenceError(
                 f"Split expects {len(split_sizes)} outputs, got {len(node.outputs)}"
@@ -133,11 +164,14 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
         shape = list(input_shape)
         shape[axis] = size
         computed_shape = tuple(shape)
-        if output_shape != computed_shape:
+        if output_shape and output_shape != computed_shape:
             raise ShapeInferenceError(
                 f"Split output shape must be {computed_shape}, got {output_shape}"
             )
         computed_shapes.append(computed_shape)
+    if isinstance(graph, GraphContext):
+        for output_name, shape in zip(node.outputs, computed_shapes):
+            graph.set_shape(output_name, shape)
     return SplitOp(
         input0=input_name,
         outputs=tuple(node.outputs),

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from ..ir.ops import IdentityOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
-from .common import value_dtype, value_shape
+from ..ir.ops import IdentityOp
+from .common import value_dtype, value_has_dim_params, value_shape
 from .registry import register_lowering
 
 
@@ -13,6 +14,8 @@ def lower_identity(graph: Graph, node: Node) -> IdentityOp:
         raise UnsupportedOpError("Identity must have 1 input and 1 output")
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    if value_has_dim_params(graph, node.outputs[0]) or not output_shape:
+        output_shape = ()
     input_dim_params = graph.find_value(node.inputs[0]).type.dim_params
     output_dim_params = graph.find_value(node.outputs[0]).type.dim_params
     if input_shape and output_shape:
@@ -34,6 +37,8 @@ def lower_identity(graph: Graph, node: Node) -> IdentityOp:
             "Identity expects matching input/output dtypes, "
             f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], input_shape)
     return IdentityOp(
         input0=node.inputs[0],
         output=node.outputs[0],

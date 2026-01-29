@@ -1,9 +1,8 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d_multiparam model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "PRelu"
   ],
-  "opset_version": 6,
-  "generated_checksum": "0a65fd22fe020a94a429084cf9cb3ee39be3253128a9c9e4b05bc6c766a3d259"
+  "opset_version": 6
 }
