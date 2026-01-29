@@ -82,6 +82,10 @@ def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
     return tuple(reversed(strides))
 
 
+def _is_scalar_shape(shape: tuple[int, ...]) -> bool:
+    return len(shape) == 0 or all(dim == 1 for dim in shape)
+
+
 @register_lowering("Pad")
 def lower_pad(graph: Graph, node: Node) -> PadOp:
     if not node.inputs or len(node.outputs) != 1:
@@ -240,7 +244,7 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
                     "Pad value input must match input dtype, "
                     f"got {input_value_dtype.onnx_name}"
                 )
-            if value_input_shape:
+            if not _is_scalar_shape(value_input_shape):
                 raise UnsupportedOpError("Pad value input must be a scalar")
             value_input = value_name
     elif "value" in node.attrs:

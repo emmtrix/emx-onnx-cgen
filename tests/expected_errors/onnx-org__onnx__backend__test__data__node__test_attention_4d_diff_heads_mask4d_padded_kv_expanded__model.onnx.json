@@ -1,5 +1,5 @@
 {
-  "error": "Pad value input must be a scalar",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_mask4d_padded_kv_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Shape",
@@ -29,5 +29,6 @@
     "MatMul",
     "Softmax"
   ],
-  "opset_version": 24
+  "opset_version": 24,
+  "generated_checksum": "60062acc0aab13684de468b862d9b08325fe29f3dcb45ac703787572a7e052cc"
 }

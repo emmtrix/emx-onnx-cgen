@@ -68,6 +68,16 @@ class GraphContext:
                 f"Missing shape for value '{name}' in op {op_type}. "
                 "Hint: run ONNX shape inference or export with static shapes."
             ) from exc
+        if any(value.type.dim_params):
+            try:
+                from ..lowering.common import _resolve_value_shape
+            except Exception:
+                resolved = None
+            else:
+                resolved = _resolve_value_shape(self, name, node)
+            if resolved is not None:
+                self._shape_cache[name] = resolved
+                return resolved
         self._shape_cache[name] = value.type.shape
         return value.type.shape
 

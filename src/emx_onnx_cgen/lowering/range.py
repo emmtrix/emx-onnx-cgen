@@ -9,7 +9,7 @@ from shared.scalar_types import ScalarType
 from ..ir.ops import RangeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Initializer, Node
-from ..lowering.common import node_dtype, value_shape
+from ..lowering.common import node_dtype, value_shape, _shape_values_from_input
 from .registry import register_lowering
 
 
@@ -43,6 +43,22 @@ def _read_scalar_initializer(
     return data.reshape(-1)[0].item()
 
 
+def _read_scalar_value(
+    graph: Graph, name: str, node: Node, label: str
+) -> float | int | None:
+    initializer_value = _read_scalar_initializer(graph, name, node, label)
+    if initializer_value is not None:
+        return initializer_value
+    shape_values = _shape_values_from_input(graph, name, node)
+    if shape_values is None:
+        return None
+    if len(shape_values) != 1:
+        raise UnsupportedOpError(
+            f"{node.op_type} {label} input must be a scalar"
+        )
+    return int(shape_values[0])
+
+
 def _is_scalar_shape(shape: tuple[int, ...]) -> bool:
     return shape == () or shape == (1,)
 
@@ -68,9 +84,9 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
     output_shape = value_shape(graph, node.outputs[0], node)
     if len(output_shape) != 1:
         raise ShapeInferenceError("Range output must be 1D")
-    start_value = _read_scalar_initializer(graph, node.inputs[0], node, "start")
-    limit_value = _read_scalar_initializer(graph, node.inputs[1], node, "limit")
-    delta_value = _read_scalar_initializer(graph, node.inputs[2], node, "delta")
+    start_value = _read_scalar_value(graph, node.inputs[0], node, "start")
+    limit_value = _read_scalar_value(graph, node.inputs[1], node, "limit")
+    delta_value = _read_scalar_value(graph, node.inputs[2], node, "delta")
     if (
         start_value is not None
         and limit_value is not None
@@ -84,7 +100,11 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
         length = max(int(math.ceil(raw_count)), 0)
         if length < 0:
             raise ShapeInferenceError("Range output length must be non-negative")
-        if output_shape[0] != length:
+        output_value = graph.find_value(node.outputs[0])
+        output_dim_param = output_value.type.dim_params[0]
+        if output_shape[0] != length and output_dim_param:
+            output_shape = (length,)
+        elif output_shape[0] != length:
             raise ShapeInferenceError(
                 f"Range output length must be {length}, got {output_shape[0]}"
             )

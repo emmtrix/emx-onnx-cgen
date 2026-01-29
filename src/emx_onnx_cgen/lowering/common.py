@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+import math
 
 from shared.scalar_types import ScalarType
 
@@ -175,6 +176,15 @@ def _shape_values_from_input(
                 node,
                 _visited=_visited,
             )
+        if source_node.op_type == "Squeeze":
+            if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
+                raise UnsupportedOpError("Squeeze must have 1 input and 1 output")
+            return _shape_values_from_input(
+                graph,
+                source_node.inputs[0],
+                node,
+                _visited=_visited,
+            )
         if source_node.op_type == "Identity":
             if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Identity must have 1 input and 1 output")
@@ -184,7 +194,7 @@ def _shape_values_from_input(
                 node,
                 _visited=_visited,
             )
-        if source_node.op_type in {"Equal", "And", "Or", "Div", "Mod"}:
+        if source_node.op_type in {"Equal", "And", "Or", "Div", "Mod", "Add", "Sub"}:
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError(
                     f"{source_node.op_type} must have 2 inputs and 1 output"
@@ -219,6 +229,10 @@ def _shape_values_from_input(
                 return [int(l / r) if r != 0 else 0 for l, r in zip(left, right)]
             if source_node.op_type == "Mod":
                 return [l % r if r != 0 else 0 for l, r in zip(left, right)]
+            if source_node.op_type == "Add":
+                return [l + r for l, r in zip(left, right)]
+            if source_node.op_type == "Sub":
+                return [l - r for l, r in zip(left, right)]
         if source_node.op_type == "Not":
             if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Not must have 1 input and 1 output")
@@ -323,6 +337,67 @@ def _resolve_value_shape(
             if shape_values is not None and all(dim >= 0 for dim in shape_values):
                 return tuple(shape_values)
             return None
+        if source_node.op_type == "Identity":
+            if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
+                raise UnsupportedOpError("Identity must have 1 input and 1 output")
+            return _resolve_value_shape(
+                graph,
+                source_node.inputs[0],
+                node,
+                _visited=_visited,
+            )
+        if source_node.op_type == "Cast":
+            if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
+                raise UnsupportedOpError("Cast must have 1 input and 1 output")
+            return _resolve_value_shape(
+                graph,
+                source_node.inputs[0],
+                node,
+                _visited=_visited,
+            )
+        if source_node.op_type == "Unsqueeze":
+            if len(source_node.inputs) not in {1, 2} or len(source_node.outputs) != 1:
+                raise UnsupportedOpError(
+                    "Unsqueeze must have 1 or 2 inputs and 1 output"
+                )
+            input_shape = _resolve_value_shape(
+                graph,
+                source_node.inputs[0],
+                node,
+                _visited=_visited,
+            )
+            if input_shape is None:
+                return None
+            axes_values = source_node.attrs.get("axes")
+            if axes_values is None and len(source_node.inputs) == 2:
+                axes_values = _shape_values_from_input(
+                    graph,
+                    source_node.inputs[1],
+                    node,
+                    _visited=_visited,
+                )
+            if axes_values is None:
+                return None
+            axes = [int(value) for value in axes_values]
+            output_rank = len(input_shape) + len(axes)
+            normalized_axes: list[int] = []
+            for axis in axes:
+                if axis < 0:
+                    axis += output_rank
+                if axis < 0 or axis >= output_rank:
+                    return None
+                normalized_axes.append(axis)
+            if len(set(normalized_axes)) != len(normalized_axes):
+                return None
+            output_dims: list[int] = []
+            input_index = 0
+            for axis_index in range(output_rank):
+                if axis_index in normalized_axes:
+                    output_dims.append(1)
+                else:
+                    output_dims.append(input_shape[input_index])
+                    input_index += 1
+            return tuple(output_dims)
         if source_node.op_type == "Reshape":
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Reshape must have 2 inputs and 1 output")
@@ -412,6 +487,12 @@ def _resolve_value_shape(
         if source_node.op_type == "Where":
             if len(source_node.inputs) != 3 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Where must have 3 inputs and 1 output")
+            condition = _resolve_value_shape(
+                graph,
+                source_node.inputs[0],
+                node,
+                _visited=_visited,
+            )
             on_true = _resolve_value_shape(
                 graph,
                 source_node.inputs[1],
@@ -424,9 +505,97 @@ def _resolve_value_shape(
                 node,
                 _visited=_visited,
             )
-            if on_true is None or on_false is None:
+            if condition is None or on_true is None or on_false is None:
                 return None
-            return _broadcast_shapes(on_true, on_false)
+            combined = _broadcast_shapes(condition, on_true)
+            if combined is None:
+                return None
+            return _broadcast_shapes(combined, on_false)
+        if source_node.op_type == "Range":
+            if len(source_node.inputs) != 3 or len(source_node.outputs) != 1:
+                raise UnsupportedOpError("Range must have 3 inputs and 1 output")
+            start_values = _shape_values_from_input(
+                graph, source_node.inputs[0], node, _visited=_visited
+            )
+            limit_values = _shape_values_from_input(
+                graph, source_node.inputs[1], node, _visited=_visited
+            )
+            delta_values = _shape_values_from_input(
+                graph, source_node.inputs[2], node, _visited=_visited
+            )
+            if (
+                start_values is None
+                or limit_values is None
+                or delta_values is None
+                or len(start_values) != 1
+                or len(limit_values) != 1
+                or len(delta_values) != 1
+            ):
+                return None
+            start_value = float(start_values[0])
+            limit_value = float(limit_values[0])
+            delta_value = float(delta_values[0])
+            if delta_value == 0.0:
+                return None
+            raw_count = (limit_value - start_value) / delta_value
+            length = max(int(math.ceil(raw_count)), 0)
+            return (length,)
+        if source_node.op_type == "Pad":
+            if not source_node.inputs or len(source_node.outputs) != 1:
+                raise UnsupportedOpError("Pad must have 1 output")
+            input_name = source_node.inputs[0]
+            if not input_name:
+                return None
+            input_shape = _resolve_value_shape(
+                graph, input_name, node, _visited=_visited
+            )
+            if input_shape is None:
+                return None
+            pads_values = None
+            pads_attr = source_node.attrs.get("pads")
+            if len(source_node.inputs) > 1 and source_node.inputs[1]:
+                pads_values = _shape_values_from_input(
+                    graph, source_node.inputs[1], node, _visited=_visited
+                )
+            elif pads_attr is not None:
+                pads_values = [int(value) for value in pads_attr]
+            if pads_values is None:
+                pads_values = [0] * (2 * len(input_shape))
+            axes_values = None
+            if len(source_node.inputs) > 3 and source_node.inputs[3]:
+                axes_values = _shape_values_from_input(
+                    graph, source_node.inputs[3], node, _visited=_visited
+                )
+            if axes_values is None:
+                if len(pads_values) != 2 * len(input_shape):
+                    return None
+                pads_begin = pads_values[: len(input_shape)]
+                pads_end = pads_values[len(input_shape) :]
+            else:
+                axes = []
+                for axis in axes_values:
+                    axis_value = int(axis)
+                    if axis_value < 0:
+                        axis_value += len(input_shape)
+                    if axis_value < 0 or axis_value >= len(input_shape):
+                        return None
+                    axes.append(axis_value)
+                if len(pads_values) != 2 * len(axes):
+                    return None
+                pads_begin = [0] * len(input_shape)
+                pads_end = [0] * len(input_shape)
+                for index, axis in enumerate(axes):
+                    pads_begin[axis] = int(pads_values[index])
+                    pads_end[axis] = int(pads_values[index + len(axes)])
+            if any(dim < 0 for dim in input_shape):
+                return None
+            output_shape = tuple(
+                dim + pad_before + pad_after
+                for dim, pad_before, pad_after in zip(
+                    input_shape, pads_begin, pads_end
+                )
+            )
+            return output_shape
         return None
     finally:
         _visited.remove(name)
