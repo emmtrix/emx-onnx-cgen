@@ -30,7 +30,6 @@ from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product, value_dtype
 from .lowering.registry import get_lowering_registry
 from .onnx_import import import_onnx
-from .runtime.evaluator import Evaluator
 
 
 @dataclass(frozen=True)
@@ -495,14 +494,6 @@ class Compiler:
             node_count=len(graph.nodes),
             initializer_count=len(graph.initializers),
         )
-
-    def run(
-        self, model: onnx.ModelProto, feeds: Mapping[str, np.ndarray]
-    ) -> dict[str, np.ndarray]:
-        graph = import_onnx(model)
-        evaluator = Evaluator(graph)
-        return evaluator.run(feeds)
-
 
 def _lowered_constants(graph: Graph | GraphContext) -> tuple[ConstTensor, ...]:
     used_initializers = {value.name for value in graph.outputs}
