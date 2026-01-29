@@ -1,4 +1,22 @@
 {
-  "error": "tuple index out of range",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "Constant",
+    "Transpose",
+    "Shape",
+    "Sub",
+    "Concat",
+    "Split",
+    "Gather",
+    "Div",
+    "Cast",
+    "Slice",
+    "Unsqueeze",
+    "Mul",
+    "Add",
+    "Reshape"
+  ],
+  "opset_version": 23,
+  "generated_checksum": "74cc3ea9e095d5ac09a6a8fdae8d5af26512374b09c378d3956b090538b23619"
 }
