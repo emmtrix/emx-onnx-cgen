@@ -18,10 +18,10 @@ from test_official_onnx_files import (
 )
 
 OFFICIAL_ONNX_FILE_SUPPORT_PATH = (
-    Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT.md"
+    Path(__file__).resolve().parents[1] / "ONNX_SUPPORT.md"
 )
 OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
-    Path(__file__).resolve().parents[1] / "OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md"
+    Path(__file__).resolve().parents[1] / "ONNX_ERRORS_HISTOGRAM.md"
 )
 SUPPORT_OPS_PATH = Path(__file__).resolve().parents[1] / "SUPPORT_OPS.md"
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
@@ -76,7 +76,7 @@ def _render_onnx_file_support_markdown(
         "",
         f"ONNX version: {onnx_version}",
         "",
-        "See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md) for the error histogram.",
+        "See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.",
         "",
         (
             "Floating-point verification first ignores very small differences up to "
