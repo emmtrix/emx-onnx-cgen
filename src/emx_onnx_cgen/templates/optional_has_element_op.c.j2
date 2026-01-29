@@ -1,0 +1,4 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    (void){{ input0 }};
+    {{ output }}[0] = {{ input_present }};
+}

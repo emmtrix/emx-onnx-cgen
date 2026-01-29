@@ -13,6 +13,7 @@ class TensorType:
     dtype: ScalarType
     shape: tuple[int, ...]
     dim_params: tuple[str | None, ...]
+    is_optional: bool = False
 
 
 @dataclass(frozen=True)

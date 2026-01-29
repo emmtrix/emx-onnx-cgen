@@ -53,6 +53,9 @@ int main(int argc, char **argv) {
 {% endfor %}
 
 {% for input in inputs %}
+{% if input.optional_flag_name %}
+    _Bool {{ input.optional_flag_name }} = {{ "true" if input.optional_present else "false" }};
+{% endif %}
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
 {% if input.constant_name %}
 {% if input.rank == 0 %}
@@ -100,7 +103,7 @@ int main(int argc, char **argv) {
     if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
         return 1;
     }
-    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
 
     printf("{\"inputs\":{");
 {% for input in inputs %}

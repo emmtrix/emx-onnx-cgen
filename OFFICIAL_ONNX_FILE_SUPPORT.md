@@ -2,6 +2,7 @@
 
 Support 1388 / 1802 official ONNX files.
 Support 1387 / 1802 official ONNX files.
+Support 1393 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -253,11 +254,11 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_batchnorm_epsilon_training_mode/model.onnx | ❌ | BatchNormalization must have 5 inputs and 1 output |
 | onnx-org/onnx/backend/test/data/node/test_batchnorm_example/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_batchnorm_example_training_mode/model.onnx | ❌ | BatchNormalization must have 5 inputs and 1 output |
-| onnx-org/onnx/backend/test/data/node/test_bernoulli/model.onnx | ❌ | Unsupported op Bernoulli |
-| onnx-org/onnx/backend/test/data/node/test_bernoulli_double/model.onnx | ❌ | Unsupported op Bernoulli |
+| onnx-org/onnx/backend/test/data/node/test_bernoulli/model.onnx | ✅ | OK (non-deterministic output) |
+| onnx-org/onnx/backend/test/data/node/test_bernoulli_double/model.onnx | ✅ | OK (non-deterministic output) |
 | onnx-org/onnx/backend/test/data/node/test_bernoulli_double_expanded/model.onnx | ❌ | Unsupported op RandomUniformLike |
 | onnx-org/onnx/backend/test/data/node/test_bernoulli_expanded/model.onnx | ❌ | Unsupported op RandomUniformLike |
-| onnx-org/onnx/backend/test/data/node/test_bernoulli_seed/model.onnx | ❌ | Unsupported op Bernoulli |
+| onnx-org/onnx/backend/test/data/node/test_bernoulli_seed/model.onnx | ✅ | OK (non-deterministic output) |
 | onnx-org/onnx/backend/test/data/node/test_bernoulli_seed_expanded/model.onnx | ❌ | Unsupported op RandomUniformLike |
 | onnx-org/onnx/backend/test/data/node/test_bitshift_left_uint16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitshift_left_uint32/model.onnx | ✅ | OK (max ULP 0) |
@@ -752,10 +753,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_hardswish/model.onnx | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_hardswish_expanded/model.onnx | ❌ | HardSigmoid only supports alpha=0.2 |
 | onnx-org/onnx/backend/test/data/node/test_identity/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_in'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | ❌ | Unsupported optional element type 'sequence_type' for 'opt_in'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'x'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_if/model.onnx | ❌ | Unsupported op If |
-| onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | ❌ | Unsupported value type 'optional_type' for 'sequence'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | ❌ | Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'res'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_bmp_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | ❌ | Unsupported op ImageDecoder |
@@ -891,7 +892,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'seq_empty'. Hint: export the model with tensor inputs/outputs. |
-| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | ❌ | Unsupported value type 'optional_type' for 'opt_seq'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | ❌ | Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | ❌ | LpPool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | ✅ | OK (max ULP 0) |
@@ -1053,17 +1054,17 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_negative_axis/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_without_axis/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
-| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_tensor/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | ❌ | Unsupported optional element type 'sequence_type' for 'optional_input'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_tensor/model.onnx | ❌ | Unsupported op OptionalGetElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence/model.onnx | ❌ | Unsupported value type 'sequence_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_tensor/model.onnx | ❌ | Unsupported op OptionalGetElement |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_optional_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | ❌ | Unsupported op OptionalHasElement |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_optional_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
-| onnx-org/onnx/backend/test/data/node/test_optional_has_element_tensor_input/model.onnx | ❌ | Unsupported value type 'optional_type' for 'optional_input'. Hint: export the model with tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | ❌ | OptionalHasElement expects exactly one non-empty input. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | ❌ | OptionalHasElement expects exactly one non-empty input. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_optional_input/model.onnx | ❌ | OptionalHasElement expects exactly one non-empty input. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | ❌ | OptionalHasElement expects exactly one non-empty input. |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_empty_optional_input/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_optional_input/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_optional_has_element_tensor_input/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_or2d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_or3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_or4d/model.onnx | ✅ | OK (max ULP 0) |

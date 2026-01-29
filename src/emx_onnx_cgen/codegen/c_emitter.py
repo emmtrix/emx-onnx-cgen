@@ -77,6 +77,7 @@ from ..ir.ops import (
     NonMaxSuppressionOp,
     NonZeroOp,
     OneHotOp,
+    OptionalHasElementOp,
     PadOp,
     QuantizeLinearOp,
     PowOp,
@@ -284,9 +285,11 @@ class ModelHeader:
 class LoweredModel:
     name: str
     input_names: tuple[str, ...]
+    input_optional_names: tuple[str | None, ...]
     input_shapes: tuple[tuple[int, ...], ...]
     input_dtypes: tuple[ScalarType, ...]
     output_names: tuple[str, ...]
+    output_optional_names: tuple[str | None, ...]
     output_shapes: tuple[tuple[int, ...], ...]
     output_dtypes: tuple[ScalarType, ...]
     constants: tuple[ConstTensor, ...]
@@ -516,6 +519,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | OptionalHasElementOp
         | NonZeroOp
         | NonMaxSuppressionOp
         | ExpandOp
@@ -839,6 +843,12 @@ class CEmitter:
         names = [model.name]
         names.extend(model.input_names)
         names.extend(model.output_names)
+        names.extend(
+            name for name in model.input_optional_names if name is not None
+        )
+        names.extend(
+            name for name in model.output_optional_names if name is not None
+        )
         for op in model.ops:
             names.extend(
                 name for name in self._op_names(op) if name not in constant_names
@@ -931,6 +941,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | OptionalHasElementOp
         | NonZeroOp
         | NonMaxSuppressionOp
         | ExpandOp
@@ -1002,6 +1013,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | OptionalHasElementOp
         | NonZeroOp
         | NonMaxSuppressionOp
         | ExpandOp
@@ -1953,6 +1965,11 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, OptionalHasElementOp):
+            return OptionalHasElementOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+            )
         if isinstance(op, NonZeroOp):
             return NonZeroOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2093,10 +2110,18 @@ class CEmitter:
             input_names=tuple(
                 name_map.get(name, name) for name in model.input_names
             ),
+            input_optional_names=tuple(
+                name_map.get(name, name) if name is not None else None
+                for name in model.input_optional_names
+            ),
             input_shapes=model.input_shapes,
             input_dtypes=model.input_dtypes,
             output_names=tuple(
                 name_map.get(name, name) for name in model.output_names
+            ),
+            output_optional_names=tuple(
+                name_map.get(name, name) if name is not None else None
+                for name in model.output_optional_names
             ),
             output_shapes=model.output_shapes,
             output_dtypes=model.output_dtypes,
@@ -2142,6 +2167,18 @@ class CEmitter:
         return {
             name_map.get(name, name): values
             for name, values in testbench_inputs.items()
+        }
+
+    @staticmethod
+    def _sanitize_testbench_optional_inputs(
+        testbench_optional_inputs: Mapping[str, bool] | None,
+        name_map: Mapping[str, str],
+    ) -> Mapping[str, bool] | None:
+        if not testbench_optional_inputs:
+            return None
+        return {
+            name_map.get(name, name): value
+            for name, value in testbench_optional_inputs.items()
         }
 
     def _load_templates(self, emit_testbench: bool) -> dict[str, Template]:
@@ -2242,6 +2279,9 @@ class CEmitter:
                 ),
                 "shape": self._env.get_template("shape_op.c.j2"),
                 "size": self._env.get_template("size_op.c.j2"),
+                "optional_has_element": self._env.get_template(
+                    "optional_has_element_op.c.j2"
+                ),
                 "nonzero": self._env.get_template("nonzero_op.c.j2"),
                 "nonmax_suppression": self._env.get_template(
                     "nonmax_suppression_op.c.j2"
@@ -2267,6 +2307,7 @@ class CEmitter:
         *,
         emit_testbench: bool = False,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
     ) -> str:
@@ -2275,6 +2316,9 @@ class CEmitter:
         self._copy_derived(model.op_context, original_model.ops, model.ops)
         testbench_inputs = self._sanitize_testbench_inputs(
             testbench_inputs, name_map
+        )
+        testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
+            testbench_optional_inputs, name_map
         )
         inline_constants, large_constants = self._partition_constants(
             model.constants
@@ -2313,6 +2357,8 @@ class CEmitter:
             model.name,
             *model.input_names,
             *model.output_names,
+            *(name for name in model.input_optional_names if name is not None),
+            *(name for name in model.output_optional_names if name is not None),
             *(const.name for const in model.constants),
         }
         temp_buffers = self._temp_buffers(model, reserved_names=reserved_names)
@@ -2407,6 +2453,7 @@ class CEmitter:
                         model,
                         testbench_template,
                         testbench_inputs=testbench_inputs,
+                        testbench_optional_inputs=testbench_optional_inputs,
                         dim_order=dim_order,
                         dim_values=dim_values,
                         weight_data_filename=self._weight_data_filename(model),
@@ -2425,6 +2472,7 @@ class CEmitter:
         *,
         emit_testbench: bool = False,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
     ) -> tuple[str, str]:
@@ -2433,6 +2481,9 @@ class CEmitter:
         self._copy_derived(model.op_context, original_model.ops, model.ops)
         testbench_inputs = self._sanitize_testbench_inputs(
             testbench_inputs, name_map
+        )
+        testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
+            testbench_optional_inputs, name_map
         )
         inline_constants, large_constants = self._partition_constants(
             model.constants
@@ -2471,6 +2522,8 @@ class CEmitter:
             model.name,
             *model.input_names,
             *model.output_names,
+            *(name for name in model.input_optional_names if name is not None),
+            *(name for name in model.output_optional_names if name is not None),
             *(const.name for const in model.constants),
         }
         temp_buffers = self._temp_buffers(model, reserved_names=reserved_names)
@@ -2559,6 +2612,7 @@ class CEmitter:
                         model,
                         testbench_template,
                         testbench_inputs=testbench_inputs,
+                        testbench_optional_inputs=testbench_optional_inputs,
                         dim_order=dim_order,
                         dim_values=dim_values,
                         weight_data_filename=self._weight_data_filename(model),
@@ -2891,6 +2945,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | OptionalHasElementOp
             | NonZeroOp
             | NonMaxSuppressionOp
             | ExpandOp
@@ -3162,6 +3217,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | OptionalHasElementOp
             | NonZeroOp
             | NonMaxSuppressionOp
             | ExpandOp
@@ -3346,6 +3402,7 @@ class CEmitter:
             | ConstantOfShapeOp
             | ShapeOp
             | SizeOp
+            | OptionalHasElementOp
             | NonZeroOp
             | NonMaxSuppressionOp
             | ExpandOp
@@ -3468,6 +3525,7 @@ class CEmitter:
         output_dim_names: Mapping[int, Mapping[int, str]],
     ) -> str:
         params = []
+        optional_flags = self._optional_input_flag_map(model)
         if dim_order:
             params.extend(self._format_dim_args(dim_order))
         for index, (name, shape, dtype) in enumerate(
@@ -3477,6 +3535,9 @@ class CEmitter:
                 f"const {dtype.c_type} {name}"
                 f"{self._param_array_suffix(shape, input_dim_names.get(index), use_restrict=True)}"
             )
+            optional_flag = optional_flags.get(name)
+            if optional_flag is not None:
+                params.append(f"_Bool {optional_flag}")
         for index, (name, shape, dtype) in enumerate(
             zip(model.output_names, model.output_shapes, model.output_dtypes)
         ):
@@ -3499,7 +3560,7 @@ class CEmitter:
             )
         for index, op in enumerate(resolved_ops):
             op_name = self._op_function_name(model, index)
-            call = self._build_op_call(op, dim_order)
+            call = self._build_op_call(op, dim_order, optional_flags)
             lines.append(f"    {op_name}({call});")
         lines.append("}")
         return "\n".join(lines)
@@ -3511,8 +3572,8 @@ class CEmitter:
             element_count *= dim
         return element_count * temp.dtype.np_dtype.itemsize
 
-    @staticmethod
     def _build_op_call(
+        self,
         op: BinaryOp
         | WhereOp
         | UnaryOp
@@ -3572,6 +3633,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | OptionalHasElementOp
         | NonZeroOp
         | NonMaxSuppressionOp
         | ExpandOp
@@ -3579,10 +3641,13 @@ class CEmitter:
         | RangeOp
         | HammingWindowOp
         | OneHotOp
-        | SplitOp,
+        | SplitOp
+        | OptionalHasElementOp,
         dim_order: Sequence[str],
+        optional_flags: Mapping[str, str] | None = None,
     ) -> str:
         args: list[str] = []
+        optional_flags = optional_flags or {}
         if dim_order:
             args.extend(dim_order)
         if isinstance(op, BinaryOp):
@@ -3839,6 +3904,14 @@ class CEmitter:
             return ", ".join(args)
         if isinstance(op, SizeOp):
             args.extend([op.input0, op.output])
+            return ", ".join(args)
+        if isinstance(op, OptionalHasElementOp):
+            input_flag = optional_flags.get(op.input0)
+            if input_flag is None:
+                raise CodegenError(
+                    "OptionalHasElement expects an optional input flag."
+                )
+            args.extend([op.input0, input_flag, op.output])
             return ", ".join(args)
         if isinstance(op, NonZeroOp):
             args.extend([op.input0, op.output])
@@ -4957,6 +5030,11 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, OptionalHasElementOp):
+            return OptionalHasElementOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+            )
         if isinstance(op, NonZeroOp):
             return NonZeroOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5394,6 +5472,7 @@ class CEmitter:
             constant_of_shape_template=templates["constant_of_shape"],
             shape_template=templates["shape"],
             size_template=templates["size"],
+            optional_has_element_template=templates["optional_has_element"],
             nonzero_template=templates["nonzero"],
             nonmax_suppression_template=templates["nonmax_suppression"],
             expand_template=templates["expand"],
@@ -5481,6 +5560,7 @@ class CEmitter:
         constant_of_shape_template,
         shape_template,
         size_template,
+        optional_has_element_template,
         nonzero_template,
         nonmax_suppression_template,
         expand_template,
@@ -9608,6 +9688,44 @@ class CEmitter:
                 value=CEmitter._format_literal(op.dtype, op.value),
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, OptionalHasElementOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            input_dim_names = _dim_names_for(op.input0)
+            output_dim_names = _dim_names_for(op.output)
+            input_suffix = self._param_array_suffix(input_shape, input_dim_names)
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            optional_flags = self._optional_input_flag_map(model)
+            input_flag = optional_flags.get(op.input0)
+            if input_flag is None:
+                raise CodegenError(
+                    "OptionalHasElement expects an optional input flag."
+                )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (input_flag, "_Bool", "", True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
+                ]
+            )
+            rendered = optional_has_element_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input_present=input_flag,
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, NonZeroOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -10889,6 +11007,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | OptionalHasElementOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -10959,6 +11078,7 @@ class CEmitter:
         | ConstantOfShapeOp
         | ShapeOp
         | SizeOp
+        | OptionalHasElementOp
         | ExpandOp
         | CumSumOp
         | RangeOp
@@ -11020,6 +11140,8 @@ class CEmitter:
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, NonZeroOp):
             return ((op.input0, op.input_shape),)
+        if isinstance(op, OptionalHasElementOp):
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, NonMaxSuppressionOp):
             inputs = [
                 (op.boxes, op.boxes_shape),
@@ -11263,6 +11385,14 @@ class CEmitter:
         | OneHotOp
         | SplitOp,
     ) -> tuple[tuple[str, tuple[int, ...], ScalarType], ...]:
+        if isinstance(op, OptionalHasElementOp):
+            return (
+                (
+                    op.output,
+                    self._op_output_shape(op),
+                    self._op_output_dtype(op),
+                ),
+            )
         if isinstance(
             op,
             (
@@ -11634,6 +11764,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, SizeOp):
             return op.output_shape
+        if isinstance(op, OptionalHasElementOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, NonZeroOp):
             return op.output_shape
         if isinstance(op, NonMaxSuppressionOp):
@@ -11718,6 +11850,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, TopKOp):
             return self._ctx_dtype(op.output_values)
+        if isinstance(op, OptionalHasElementOp):
+            return self._ctx_dtype(op.output)
         if isinstance(op, NonMaxSuppressionOp):
             return op.output_dtype
         if isinstance(
@@ -11788,6 +11922,16 @@ class CEmitter:
             return ""
         return ", ".join(f"int {dim_name}" for dim_name in dim_order) + ", "
 
+    @staticmethod
+    def _optional_input_flag_map(model: LoweredModel) -> dict[str, str]:
+        return {
+            name: flag
+            for name, flag in zip(
+                model.input_names, model.input_optional_names
+            )
+            if flag is not None
+        }
+
     def _build_variable_dim_names(
         self,
         model: LoweredModel,
@@ -11805,6 +11949,12 @@ class CEmitter:
         dim_vars: dict[tuple[str, int, int], str] = {}
         dim_values: dict[str, int] = {}
         reserved_names = set(model.input_names) | set(model.output_names)
+        reserved_names.update(
+            name for name in model.input_optional_names if name is not None
+        )
+        reserved_names.update(
+            name for name in model.output_optional_names if name is not None
+        )
         used_names = set(reserved_names)
         dim_aliases: dict[str, str] = {}
 
@@ -12018,6 +12168,7 @@ class CEmitter:
         testbench_template,
         *,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_optional_inputs: Mapping[str, bool] | None = None,
         dim_order: Sequence[str],
         dim_values: Mapping[str, int],
         weight_data_filename: str,
@@ -12026,13 +12177,18 @@ class CEmitter:
             self._element_count(shape) for shape in model.input_shapes
         )
         testbench_inputs = testbench_inputs or {}
+        testbench_optional_inputs = testbench_optional_inputs or {}
         rng_requires_u64 = False
         rng_requires_float = False
         rng_requires_double = False
         rng_requires_i64 = False
         inputs = []
-        for name, shape, count, dtype in zip(
-            model.input_names, model.input_shapes, input_counts, model.input_dtypes
+        for name, shape, count, dtype, optional_flag in zip(
+            model.input_names,
+            model.input_shapes,
+            input_counts,
+            model.input_dtypes,
+            model.input_optional_names,
         ):
             json_name = self._ctx_name(name)
             codegen_shape = self._codegen_shape(shape)
@@ -12068,6 +12224,11 @@ class CEmitter:
                     ]
                 else:
                     constant_lines = [self._format_value(0, dtype)]
+            optional_present = (
+                testbench_optional_inputs.get(name, True)
+                if optional_flag is not None
+                else None
+            )
             inputs.append(
                 {
                     "name": name,
@@ -12089,6 +12250,8 @@ class CEmitter:
                     "constant_name": constant_name,
                     "constant_lines": constant_lines,
                     "json_name": json_name,
+                    "optional_flag_name": optional_flag,
+                    "optional_present": optional_present,
                 }
             )
         outputs = []
