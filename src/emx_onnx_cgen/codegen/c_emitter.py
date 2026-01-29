@@ -46,6 +46,7 @@ from ..ir.ops import (
     ConvTransposeOp,
     CumSumOp,
     DepthToSpaceOp,
+    DequantizeLinearOp,
     EinsumKind,
     EinsumOp,
     ExpandOp,
@@ -461,6 +462,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
@@ -538,6 +540,12 @@ class CEmitter:
         if isinstance(op, CastOp):
             return (op.input0, op.output)
         if isinstance(op, QuantizeLinearOp):
+            names = [op.input0, op.scale]
+            if op.zero_point is not None:
+                names.append(op.zero_point)
+            names.append(op.output)
+            return tuple(names)
+        if isinstance(op, DequantizeLinearOp):
             names = [op.input0, op.scale]
             if op.zero_point is not None:
                 names.append(op.zero_point)
@@ -851,6 +859,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
@@ -920,6 +929,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
@@ -1043,6 +1053,19 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 input_shape=op.input_shape,
                 axis=op.axis,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                scale_dtype=op.scale_dtype,
+            )
+        if isinstance(op, DequantizeLinearOp):
+            return DequantizeLinearOp(
+                input0=name_map.get(op.input0, op.input0),
+                scale=name_map.get(op.scale, op.scale),
+                zero_point=self._map_optional_name(name_map, op.zero_point),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                axis=op.axis,
+                block_size=op.block_size,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 scale_dtype=op.scale_dtype,
@@ -2075,6 +2098,9 @@ class CEmitter:
                 "quantize_linear": self._env.get_template(
                     "quantize_linear_op.c.j2"
                 ),
+                "dequantize_linear": self._env.get_template(
+                    "dequantize_linear_op.c.j2"
+                ),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template(
                     "qlinear_matmul_op.c.j2"
@@ -2752,6 +2778,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | DequantizeLinearOp
             | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
@@ -3021,6 +3048,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | DequantizeLinearOp
             | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
@@ -3205,6 +3233,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | DequantizeLinearOp
             | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
@@ -3309,6 +3338,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | DequantizeLinearOp
             | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
@@ -3422,6 +3452,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
@@ -3550,6 +3581,13 @@ class CEmitter:
             args.extend(call_parts)
             return ", ".join(args)
         if isinstance(op, QuantizeLinearOp):
+            call_parts = [op.input0, op.scale]
+            if op.zero_point is not None:
+                call_parts.append(op.zero_point)
+            call_parts.append(op.output)
+            args.extend(call_parts)
+            return ", ".join(args)
+        if isinstance(op, DequantizeLinearOp):
             call_parts = [op.input0, op.scale]
             if op.zero_point is not None:
                 call_parts.append(op.zero_point)
@@ -3872,6 +3910,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
@@ -3940,6 +3979,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
@@ -4085,6 +4125,23 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 input_shape=op.input_shape,
                 axis=op.axis,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                scale_dtype=op.scale_dtype,
+            )
+        if isinstance(op, DequantizeLinearOp):
+            return DequantizeLinearOp(
+                input0=temp_map.get(op.input0, op.input0),
+                scale=temp_map.get(op.scale, op.scale),
+                zero_point=(
+                    temp_map.get(op.zero_point, op.zero_point)
+                    if op.zero_point is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                axis=op.axis,
+                block_size=op.block_size,
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
                 scale_dtype=op.scale_dtype,
@@ -5141,6 +5198,7 @@ class CEmitter:
             clip_template=templates["clip"],
             cast_template=templates["cast"],
             quantize_linear_template=templates["quantize_linear"],
+            dequantize_linear_template=templates["dequantize_linear"],
             qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
             matmul_template=templates["matmul"],
@@ -5227,6 +5285,7 @@ class CEmitter:
         clip_template,
         cast_template,
         quantize_linear_template,
+        dequantize_linear_template,
         qlinear_mul_template,
         qlinear_matmul_template,
         matmul_template,
@@ -9772,6 +9831,107 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, DequantizeLinearOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("scale", op.scale),
+                    ("zero_point", op.zero_point),
+                    ("output", op.output),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.input_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.input_shape)
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            if op.axis is None:
+                scale_shape = ()
+            elif op.block_size:
+                scale_shape_list = list(op.input_shape)
+                scale_shape_list[op.axis] = (
+                    op.input_shape[op.axis] // op.block_size
+                )
+                scale_shape = tuple(scale_shape_list)
+            else:
+                scale_shape = (op.input_shape[op.axis],)
+            scale_suffix = self._param_array_suffix(
+                scale_shape, _dim_names_for(op.scale)
+            )
+            zero_point_suffix = self._param_array_suffix(
+                scale_shape, _dim_names_for(op.zero_point or "")
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["scale"], op.scale_dtype.c_type, scale_suffix, True),
+                    (
+                        params["zero_point"],
+                        op.input_dtype.c_type,
+                        zero_point_suffix,
+                        True,
+                    )
+                    if params["zero_point"]
+                    else (None, "", "", True),
+                    (params["output"], op.dtype.c_type, input_suffix, False),
+                ]
+            )
+            compute_type = "double" if op.dtype == ScalarType.F64 else "float"
+            input_expr = f"{params['input0']}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            output_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            if op.axis is None:
+                scale_expr = f"{params['scale']}[0]"
+            elif op.block_size:
+                scale_indices = list(loop_vars)
+                scale_indices[op.axis] = (
+                    f"({loop_vars[op.axis]}) / {op.block_size}"
+                )
+                scale_expr = f"{params['scale']}" + "".join(
+                    f"[{index}]" for index in scale_indices
+                )
+            else:
+                scale_index = loop_vars[op.axis]
+                scale_expr = f"{params['scale']}[{scale_index}]"
+            if params["zero_point"]:
+                if op.axis is None:
+                    zero_expr = f"{params['zero_point']}[0]"
+                elif op.block_size:
+                    scale_indices = list(loop_vars)
+                    scale_indices[op.axis] = (
+                        f"({loop_vars[op.axis]}) / {op.block_size}"
+                    )
+                    zero_expr = f"{params['zero_point']}" + "".join(
+                        f"[{index}]" for index in scale_indices
+                    )
+                else:
+                    zero_expr = f"{params['zero_point']}[{scale_index}]"
+            else:
+                zero_expr = "0"
+            rendered = dequantize_linear_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                scale=params["scale"],
+                zero_point=params["zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                input_c_type=op.input_dtype.c_type,
+                output_c_type=op.dtype.c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                scale_expr=scale_expr,
+                zero_expr=zero_expr,
+                output_expr=output_expr,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, QLinearMulOp):
             if scalar_registry is None:
                 raise CodegenError(
@@ -10401,6 +10561,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -10543,6 +10704,20 @@ class CEmitter:
             if op.zero_point is not None:
                 inputs.append((op.zero_point, scale_shape))
             return tuple(inputs)
+        if isinstance(op, DequantizeLinearOp):
+            if op.axis is None:
+                scale_shape = ()
+            elif op.block_size:
+                input_shape = self._ctx_shape(op.input0)
+                scale_shape_list = list(input_shape)
+                scale_shape_list[op.axis] = input_shape[op.axis] // op.block_size
+                scale_shape = tuple(scale_shape_list)
+            else:
+                scale_shape = (self._ctx_shape(op.input0)[op.axis],)
+            inputs = [(op.input0, self._ctx_shape(op.input0)), (op.scale, scale_shape)]
+            if op.zero_point is not None:
+                inputs.append((op.zero_point, scale_shape))
+            return tuple(inputs)
         if isinstance(op, IdentityOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, EyeLikeOp):
@@ -10606,6 +10781,7 @@ class CEmitter:
             | ClipOp
             | CastOp
             | QuantizeLinearOp
+            | DequantizeLinearOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -10679,6 +10855,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -10902,6 +11079,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | QLinearMatMulOp
         | MatMulOp
         | EinsumOp
@@ -10965,6 +11143,8 @@ class CEmitter:
         if isinstance(op, ClipOp):
             return self._ctx_shape(op.output)
         if isinstance(op, QuantizeLinearOp):
+            return op.input_shape
+        if isinstance(op, DequantizeLinearOp):
             return op.input_shape
         if isinstance(op, CastOp):
             return self._ctx_shape(op.output)
@@ -11093,6 +11273,7 @@ class CEmitter:
         | ClipOp
         | CastOp
         | QuantizeLinearOp
+        | DequantizeLinearOp
         | MatMulOp
         | EinsumOp
         | GemmOp

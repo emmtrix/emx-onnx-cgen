@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 144 / 198
+Supported operators: 145 / 198
 
 | Operator | Supported |
 | --- | --- |
@@ -49,7 +49,7 @@ Supported operators: 144 / 198
 | DFT | ❌ |
 | DeformConv | ❌ |
 | DepthToSpace | ✅ |
-| DequantizeLinear | ❌ |
+| DequantizeLinear | ✅ |
 | Det | ❌ |
 | Div | ✅ |
 | Dropout | ✅ |

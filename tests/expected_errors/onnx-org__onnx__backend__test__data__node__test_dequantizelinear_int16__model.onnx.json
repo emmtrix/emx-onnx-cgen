@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op DequantizeLinear",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int16 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "DequantizeLinear"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "cd2540a6264b1655f9a916ab41f389e10a9e4b8f5230a802526cfe917fcb2889"
 }
