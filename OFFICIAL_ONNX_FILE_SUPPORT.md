@@ -1,6 +1,8 @@
 # Official ONNX file support
 
 Support 1334 / 1802 official ONNX files.
+Support 1336 / 1802 official ONNX files.
+Support 1337 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -920,7 +922,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_max_int32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_int64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_int8/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_max_one_input/model.onnx | ❌ | Max must have at least 2 inputs |
+| onnx-org/onnx/backend/test/data/node/test_max_one_input/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_two_inputs/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_uint16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_uint32/model.onnx | ✅ | OK (max ULP 0) |
@@ -948,7 +950,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_maxunpool_export_with_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | onnx-org/onnx/backend/test/data/node/test_maxunpool_export_without_output_shape/model.onnx | ❌ | Unsupported op MaxUnpool |
 | onnx-org/onnx/backend/test/data/node/test_mean_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_mean_one_input/model.onnx | ❌ | Mean must have at least 2 inputs |
+| onnx-org/onnx/backend/test/data/node/test_mean_one_input/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mean_two_inputs/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_melweightmatrix/model.onnx | ❌ | Unsupported op MelWeightMatrix |
 | onnx-org/onnx/backend/test/data/node/test_min_example/model.onnx | ✅ | OK (max ULP 0) |
@@ -959,7 +961,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_min_int32/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_int64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_int8/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_min_one_input/model.onnx | ❌ | Min must have at least 2 inputs |
+| onnx-org/onnx/backend/test/data/node/test_min_one_input/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_two_inputs/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_uint16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_min_uint32/model.onnx | ✅ | OK (max ULP 0) |
@@ -1581,7 +1583,7 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_sub_uint64/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub_uint8/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sum_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sum_one_input/model.onnx | ❌ | Sum must have at least 2 inputs |
+| onnx-org/onnx/backend/test/data/node/test_sum_one_input/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sum_two_inputs/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_swish/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_swish_expanded/model.onnx | ✅ | OK (max ULP 0) |
@@ -1730,11 +1732,11 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_MaxPool3d_stride_padding/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d_multiparam/model.onnx | ❌ | Broadcasting mismatch for shapes: (2, 3, 4), (3,) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_1d_multiparam/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d_multiparam/model.onnx | ❌ | Broadcasting mismatch for shapes: (2, 3, 4, 5), (3,) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_2d_multiparam/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d_multiparam/model.onnx | ❌ | Broadcasting mismatch for shapes: (2, 3, 4, 5, 6), (3,) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d_multiparam/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce/model.onnx | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ReLU/model.onnx | ✅ | OK (max ULP 0) |
