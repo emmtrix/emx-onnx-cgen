@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op GRU",
+  "error": "",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gru_defaults model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "GRU"
