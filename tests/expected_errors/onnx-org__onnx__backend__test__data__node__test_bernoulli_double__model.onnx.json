@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Bernoulli",
+  "error": "OK (non-deterministic output)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bernoulli_double model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Bernoulli"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "da281ba8e9ae8a20f748fd54b5eb791455e26f2325f1c045e74ce590749c4c97"
 }

@@ -101,6 +101,16 @@ def main() -> None:
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
+    prompt_lines.append(
+        "Expectation update hint: after changing support status or outputs, update the "
+        "matching tests/expected_errors/*.json entry (or run with UPDATE_REFS=1) so "
+        "the expectation matches the new behavior."
+    )
+    prompt_lines.append(
+        "Codegen wiring hint: new ops usually need updates in name mapping and temp "
+        "buffer resolution paths; if codegen crashes on missing attributes, check "
+        "the emit-time mapping helpers for that op."
+    )
 
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
 

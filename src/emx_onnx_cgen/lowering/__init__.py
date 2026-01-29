@@ -10,6 +10,7 @@ _LOWERING_MODULES = [
     "attention",
     "average_pool",
     "batch_normalization",
+    "bernoulli",
     "cast",
     "concat",
     "constant_of_shape",
