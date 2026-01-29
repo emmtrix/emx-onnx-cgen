@@ -53,6 +53,19 @@ class QuantizeLinearOp(RenderableOpBase):
     input_dtype: ScalarType
     scale_dtype: ScalarType
 
+
+@dataclass(frozen=True)
+class DequantizeLinearOp(RenderableOpBase):
+    input0: str
+    scale: str
+    zero_point: str | None
+    output: str
+    input_shape: tuple[int, ...]
+    axis: int | None
+    dtype: ScalarType
+    input_dtype: ScalarType
+    scale_dtype: ScalarType
+
 @dataclass(frozen=True)
 class ConcatOp(RenderableOpBase):
     inputs: tuple[str, ...]
