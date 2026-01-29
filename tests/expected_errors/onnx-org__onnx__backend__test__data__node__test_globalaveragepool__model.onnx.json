@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_globalaveragepool model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "GlobalAveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "080ebf2d2e07fb9f7bce2eb0b63e4518765ef8b177ece327ad061807eb3e9b17"
+  "generated_checksum": "a4f28d0a0145740e4baa6da6d5cdf5973b4f411e7e005a76050857c7270872e4"
 }

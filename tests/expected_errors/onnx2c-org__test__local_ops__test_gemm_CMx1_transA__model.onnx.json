@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_gemm_CMx1_transA model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Gemm"

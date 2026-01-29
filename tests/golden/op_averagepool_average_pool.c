@@ -47,29 +47,38 @@ static inline void node0_averagepool(const float input0[1][1][4][4], float outpu
         for (idx_t c = 0; c < 1; ++c) {
             for (idx_t oh = 0; oh < 2; ++oh) {
                 for (idx_t ow = 0; ow < 2; ++ow) {
-                    float acc = 0.0f;
+                    float values[4];
                     idx_t count = 0;
                     for (idx_t kh = 0; kh < 2; ++kh) {
                         const idx_t ih = oh * 2 + kh * 1 - 0;
-                        if (ih < 0 || ih >= 4) {
-                            if (0) {
-                                count += 2;
-                            }
-                        } else {
-                            for (idx_t kw = 0; kw < 2; ++kw) {
-                                const idx_t iw = ow * 2 + kw * 1 - 0;
-                                if (iw < 0 || iw >= 4) {
-                                    if (0) {
-                                        count += 1;
-                                    }
-                                } else {
-                                    acc += input0[n][c][ih][iw];
-                                    count += 1;
-                                }
+                        for (idx_t kw = 0; kw < 2; ++kw) {
+                            const idx_t iw = ow * 2 + kw * 1 - 0;
+                            if (ih >= 0 && ih < 4 && iw >= 0 && iw < 4) {
+                                values[count++] = input0[n][c][ih][iw];
+                            } else if (0) {
+                                values[count++] = 0.0f;
                             }
                         }
                     }
-                    output[n][c][oh][ow] = count ? acc / (float)count : 0.0f;
+                    const idx_t denom = 0
+                    ? 4
+                    : count;
+                    float acc = 0.0f;
+                    if (count > 0) {
+                        idx_t reduce_count = count;
+                        while (reduce_count > 1) {
+                            idx_t next = 0;
+                            for (idx_t i = 0; i + 1 < reduce_count; i += 2) {
+                                values[next++] = values[i] + values[i + 1];
+                            }
+                            if (reduce_count % 2) {
+                                values[next++] = values[reduce_count - 1];
+                            }
+                            reduce_count = next;
+                        }
+                        acc = values[0];
+                    }
+                    output[n][c][oh][ow] = denom ? acc / (float)denom : 0.0f;
                 }
             }
         }

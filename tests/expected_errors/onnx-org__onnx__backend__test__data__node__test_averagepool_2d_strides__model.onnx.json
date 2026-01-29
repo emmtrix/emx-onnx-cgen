@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 164)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_strides model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "b7aeaf09ae41ae12f1e46d8ea9b2ea44ecfd87d4946a78285ed1eb82bd53ff6d"
+  "generated_checksum": "19080d6f9e6b661342680f5c359b4d50d383b1a2ec8492509e6b94f201d84f72"
 }

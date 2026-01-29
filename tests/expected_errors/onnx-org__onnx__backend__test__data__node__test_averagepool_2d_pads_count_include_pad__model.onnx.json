@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 683)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads_count_include_pad model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "c3f54b3d17eeeb81b9189bb4d27b788ede9a5475bc19925228de77742ce9b8c2"
+  "generated_checksum": "7b1b7300e4993d888eb8f8d0f5b2438618d10db35f29eb69702697eeff044514"
 }

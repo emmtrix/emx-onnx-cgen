@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 13631)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "AveragePool"
   ],
   "opset_version": 22,
-  "generated_checksum": "9cdec77b5f75ba01bb56b885c52590e6f1490cc015bc89a2931155c78f6a3419"
+  "generated_checksum": "1ccd2ae14acaf8986cfd493ea0048892ec08f84bae180b438c1ab5b06b0db1a7"
 }
