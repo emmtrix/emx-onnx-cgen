@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 from ..ir.ops import AveragePoolOp
@@ -74,8 +75,6 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     auto_pad = node.attrs.get("auto_pad", b"NOTSET")
     if isinstance(auto_pad, bytes):
         auto_pad = auto_pad.decode("utf-8", errors="ignore")
-    if auto_pad not in ("", "NOTSET"):
-        raise UnsupportedOpError("AveragePool supports auto_pad=NOTSET only")
     ceil_mode = int(node.attrs.get("ceil_mode", 0))
     if ceil_mode not in (0, 1):
         raise UnsupportedOpError("AveragePool supports ceil_mode=0 or 1 only")
@@ -90,8 +89,8 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     if len(input_shape) < 3:
         raise UnsupportedOpError("AveragePool expects NCHW inputs with spatial dims")
     spatial_rank = len(input_shape) - 2
-    if spatial_rank not in {2, 3}:
-        raise UnsupportedOpError("AveragePool supports 2D/3D inputs only")
+    if spatial_rank not in {1, 2, 3}:
+        raise UnsupportedOpError("AveragePool supports 1D/2D/3D inputs only")
     if len(kernel_shape) != spatial_rank:
         raise ShapeInferenceError(
             "AveragePool kernel_shape must have "
@@ -113,11 +112,34 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     )
     if len(pads) != 2 * spatial_rank:
         raise UnsupportedOpError("AveragePool pads rank mismatch")
+    if auto_pad in ("", "NOTSET"):
+        pad_begin = pads[:spatial_rank]
+        pad_end = pads[spatial_rank:]
+    elif auto_pad == "VALID":
+        pad_begin = (0,) * spatial_rank
+        pad_end = (0,) * spatial_rank
+    elif auto_pad in {"SAME_UPPER", "SAME_LOWER"}:
+        pad_begin = []
+        pad_end = []
+        for dim, stride, dilation, kernel in zip(
+            input_shape[2:], strides, dilations, kernel_shape
+        ):
+            effective_kernel = dilation * (kernel - 1) + 1
+            out_dim = math.ceil(dim / stride)
+            pad_needed = max(0, (out_dim - 1) * stride + effective_kernel - dim)
+            if auto_pad == "SAME_UPPER":
+                pad_start = pad_needed // 2
+            else:
+                pad_start = (pad_needed + 1) // 2
+            pad_begin.append(pad_start)
+            pad_end.append(pad_needed - pad_start)
+        pad_begin = tuple(pad_begin)
+        pad_end = tuple(pad_end)
+    else:
+        raise UnsupportedOpError("AveragePool has unsupported auto_pad mode")
     batch, channels = input_shape[:2]
     in_spatial = input_shape[2:]
     out_spatial = []
-    pad_begin = pads[:spatial_rank]
-    pad_end = pads[spatial_rank:]
     for dim, stride, dilation, kernel, pad_start, pad_finish in zip(
         in_spatial, strides, dilations, kernel_shape, pad_begin, pad_end
     ):
@@ -142,25 +164,25 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
             f"{expected_output_shape}, got {output_shape}"
         )
     in_d = in_spatial[0] if spatial_rank == 3 else 1
-    in_h = in_spatial[-2]
+    in_h = in_spatial[-2] if spatial_rank >= 2 else 1
     in_w = in_spatial[-1]
     out_d = out_spatial[0] if spatial_rank == 3 else 1
-    out_h = out_spatial[-2]
+    out_h = out_spatial[-2] if spatial_rank >= 2 else 1
     out_w = out_spatial[-1]
     kernel_d = kernel_shape[0] if spatial_rank == 3 else 1
-    kernel_h = kernel_shape[-2]
+    kernel_h = kernel_shape[-2] if spatial_rank >= 2 else 1
     kernel_w = kernel_shape[-1]
     dilation_d = dilations[0] if spatial_rank == 3 else 1
-    dilation_h = dilations[-2]
+    dilation_h = dilations[-2] if spatial_rank >= 2 else 1
     dilation_w = dilations[-1]
     stride_d = strides[0] if spatial_rank == 3 else 1
-    stride_h = strides[-2]
+    stride_h = strides[-2] if spatial_rank >= 2 else 1
     stride_w = strides[-1]
     pad_front = pad_begin[0] if spatial_rank == 3 else 0
-    pad_top = pad_begin[-2]
+    pad_top = pad_begin[-2] if spatial_rank >= 2 else 0
     pad_left = pad_begin[-1]
     pad_back = pad_end[0] if spatial_rank == 3 else 0
-    pad_bottom = pad_end[-2]
+    pad_bottom = pad_end[-2] if spatial_rank >= 2 else 0
     pad_right = pad_end[-1]
     return _AveragePoolSpec(
         batch=batch,
@@ -202,8 +224,8 @@ def _resolve_global_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolS
             "GlobalAveragePool expects NCHW inputs with spatial dims"
         )
     spatial_rank = len(input_shape) - 2
-    if spatial_rank not in {2, 3}:
-        raise UnsupportedOpError("GlobalAveragePool supports 2D/3D inputs only")
+    if spatial_rank not in {1, 2, 3}:
+        raise UnsupportedOpError("GlobalAveragePool supports 1D/2D/3D inputs only")
     batch, channels = input_shape[:2]
     in_spatial = input_shape[2:]
     output_shape = _value_shape(graph, node.outputs[0], node)
@@ -214,7 +236,7 @@ def _resolve_global_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolS
             f"{expected_output_shape}, got {output_shape}"
         )
     in_d = in_spatial[0] if spatial_rank == 3 else 1
-    in_h = in_spatial[-2]
+    in_h = in_spatial[-2] if spatial_rank >= 2 else 1
     in_w = in_spatial[-1]
     return _AveragePoolSpec(
         batch=batch,

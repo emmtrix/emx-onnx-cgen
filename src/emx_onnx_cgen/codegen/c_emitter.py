@@ -6367,6 +6367,9 @@ class CEmitter:
                     op.out_h,
                     op.out_w,
                 )
+            elif op.spatial_rank == 1:
+                input_shape = (op.batch, op.channels, op.in_w)
+                output_shape = (op.batch, op.channels, op.out_w)
             else:
                 input_shape = (op.batch, op.channels, op.in_h, op.in_w)
                 output_shape = (op.batch, op.channels, op.out_h, op.out_w)

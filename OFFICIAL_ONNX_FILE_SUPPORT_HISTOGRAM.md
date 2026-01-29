@@ -33,7 +33,6 @@
 | Unsupported op GRU | 4 | ███ |
 | Unsupported op OptionalHasElement | 4 | ███ |
 | Unsupported op RNN | 4 | ███ |
-| AveragePool supports auto_pad=NOTSET only | 3 | ██ |
 | Elu only supports alpha=1.0 | 3 | ██ |
 | HardSigmoid only supports alpha=0.2 | 3 | ██ |
 | LeakyRelu only supports alpha=0.01 | 3 | ██ |
@@ -67,7 +66,6 @@
 | Unsupported op Scan | 2 | ██ |
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
-| AveragePool supports 2D/3D inputs only | 1 | █ |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Dynamic dim for tensor '*' | 1 | █ |

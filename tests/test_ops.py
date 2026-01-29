@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -2310,11 +2311,72 @@ def _average_pool_output_shape(
     strides: list[int],
     pads: list[int],
 ) -> list[int]:
-    batch, channels, in_h, in_w = input_shape
-    pad_top, pad_left, pad_bottom, pad_right = pads
-    out_h = (in_h + pad_top + pad_bottom - kernel_shape[0]) // strides[0] + 1
-    out_w = (in_w + pad_left + pad_right - kernel_shape[1]) // strides[1] + 1
-    return [batch, channels, out_h, out_w]
+    spatial_rank = len(input_shape) - 2
+    if spatial_rank not in {1, 2, 3}:
+        raise ValueError(f"Unsupported AveragePool spatial rank {spatial_rank}")
+    batch, channels = input_shape[:2]
+    in_spatial = input_shape[2:]
+    pad_begin = pads[:spatial_rank]
+    pad_end = pads[spatial_rank:]
+    out_spatial = []
+    for dim, kernel, stride, pad_start, pad_finish in zip(
+        in_spatial, kernel_shape, strides, pad_begin, pad_end
+    ):
+        out_dim = (dim + pad_start + pad_finish - kernel) // stride + 1
+        out_spatial.append(out_dim)
+    return [batch, channels, *out_spatial]
+
+
+def _average_pool_output_shape_auto_pad(
+    input_shape: list[int],
+    kernel_shape: list[int],
+    strides: list[int],
+    auto_pad: str,
+    *,
+    dilations: list[int] | None = None,
+    ceil_mode: int = 0,
+) -> list[int]:
+    spatial_rank = len(input_shape) - 2
+    if spatial_rank not in {1, 2, 3}:
+        raise ValueError(f"Unsupported AveragePool spatial rank {spatial_rank}")
+    if auto_pad not in {"SAME_UPPER", "SAME_LOWER", "VALID"}:
+        raise ValueError(f"Unsupported auto_pad {auto_pad}")
+    if dilations is None:
+        dilations = [1] * spatial_rank
+    batch, channels = input_shape[:2]
+    in_spatial = input_shape[2:]
+    pad_begin = []
+    pad_end = []
+    for dim, stride, dilation, kernel in zip(
+        in_spatial, strides, dilations, kernel_shape
+    ):
+        effective_kernel = dilation * (kernel - 1) + 1
+        if auto_pad == "VALID":
+            pad_begin.append(0)
+            pad_end.append(0)
+            continue
+        out_dim = math.ceil(dim / stride)
+        pad_needed = max(0, (out_dim - 1) * stride + effective_kernel - dim)
+        if auto_pad == "SAME_UPPER":
+            pad_start = pad_needed // 2
+        else:
+            pad_start = (pad_needed + 1) // 2
+        pad_begin.append(pad_start)
+        pad_end.append(pad_needed - pad_start)
+    out_spatial = []
+    for dim, stride, dilation, kernel, pad_start, pad_finish in zip(
+        in_spatial, strides, dilations, kernel_shape, pad_begin, pad_end
+    ):
+        effective_kernel = dilation * (kernel - 1) + 1
+        numerator = dim + pad_start + pad_finish - effective_kernel
+        if ceil_mode:
+            out_dim = (numerator + stride - 1) // stride + 1
+            if (out_dim - 1) * stride >= dim + pad_start:
+                out_dim -= 1
+        else:
+            out_dim = numerator // stride + 1
+        out_spatial.append(out_dim)
+    return [batch, channels, *out_spatial]
 
 
 def _tensorproto_to_dtype(elem_type: int) -> np.dtype:
@@ -3207,6 +3269,22 @@ AVG_POOL_CASES = [
         "pads": [0, 1, 0, 1],
         "count_include_pad": 1,
     },
+    {
+        "name": "Kernel2Stride2_1d",
+        "input_shape": [1, 2, 6],
+        "kernel_shape": [2],
+        "strides": [2],
+        "pads": [0, 1],
+        "count_include_pad": 0,
+    },
+    {
+        "name": "Kernel2Stride2_3d",
+        "input_shape": [1, 1, 4, 4, 4],
+        "kernel_shape": [2, 2, 2],
+        "strides": [2, 2, 2],
+        "pads": [0, 0, 0, 0, 0, 0],
+        "count_include_pad": 0,
+    },
 ]
 
 MAXPOOL_CASES = [
@@ -3963,6 +4041,31 @@ def test_average_pool_matches_onnxruntime(case: dict[str, object]) -> None:
             "strides": case["strides"],
             "pads": case["pads"],
             "count_include_pad": case["count_include_pad"],
+        },
+    )
+    _run_ort_compare(model)
+
+
+def test_average_pool_auto_pad_matches_onnxruntime() -> None:
+    input_shape = [1, 1, 5, 5]
+    kernel_shape = [3, 3]
+    strides = [2, 2]
+    auto_pad = "SAME_UPPER"
+    output_shape = _average_pool_output_shape_auto_pad(
+        input_shape,
+        kernel_shape,
+        strides,
+        auto_pad,
+    )
+    model = _make_operator_model(
+        op_type="AveragePool",
+        input_shapes=[input_shape],
+        output_shape=output_shape,
+        dtype=TensorProto.FLOAT,
+        attrs={
+            "kernel_shape": kernel_shape,
+            "strides": strides,
+            "auto_pad": auto_pad,
         },
     )
     _run_ort_compare(model)
