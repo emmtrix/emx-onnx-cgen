@@ -101,6 +101,20 @@ def main() -> None:
         "CLI hint: use `python -m emx_onnx_cgen ...` (or the emx-onnx-cgen entrypoint) "
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
+    prompt_lines.append(
+        "Artifact hint: pass `--keep-temp-dir` during verification to inspect the "
+        "generated C/testbench files when narrowing down failures."
+    )
+    prompt_lines.append(
+        "Shape inference hint: run ONNX shape inference and compare graph inputs "
+        "against initializers to confirm which shapes and dtypes are truly dynamic "
+        "before adjusting lowering or codegen."
+    )
+    prompt_lines.append(
+        "Pattern hint: locate a similar op in lowering/codegen and mirror its "
+        "registration, template wiring, and output-shape handling to avoid "
+        "integration gaps."
+    )
 
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
 

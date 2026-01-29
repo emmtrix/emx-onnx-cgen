@@ -786,6 +786,31 @@ class LrnOp(RenderableOpBase):
     dtype: ScalarType
 
 @dataclass(frozen=True)
+class GruOp(RenderableOpBase):
+    input_x: str
+    input_w: str
+    input_r: str
+    input_b: str | None
+    input_sequence_lens: str | None
+    input_initial_h: str | None
+    output_y: str | None
+    output_y_h: str | None
+    seq_length: int
+    batch_size: int
+    input_size: int
+    hidden_size: int
+    num_directions: int
+    direction: str
+    layout: int
+    linear_before_reset: int
+    clip: float | None
+    activation_kinds: tuple[int, ...]
+    activation_alphas: tuple[float, ...]
+    activation_betas: tuple[float, ...]
+    dtype: ScalarType
+    sequence_lens_dtype: ScalarType | None
+
+@dataclass(frozen=True)
 class LstmOp(RenderableOpBase):
     input_x: str
     input_w: str
