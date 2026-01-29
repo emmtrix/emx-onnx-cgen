@@ -3,6 +3,7 @@ from __future__ import annotations
 from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from shared.scalar_types import ScalarType
 
+from ..ir.op_base import BroadcastingOpBase
 from ..ir.ops import BinaryOp, ClipOp, UnaryOp
 from ..errors import UnsupportedOpError
 from ..ir.context import GraphContext
@@ -182,13 +183,19 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         input0_shape = value_shape(graph, node.inputs[0], node)
         input1_shape = value_shape(graph, node.inputs[1], node)
         output_shape = value_shape(graph, node.outputs[0], node)
-        return BinaryOp(
+        op = BinaryOp(
             input0=node.inputs[0],
             input1=node.inputs[1],
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
         )
+        if isinstance(graph, GraphContext):
+            inferred_shape = BroadcastingOpBase.broadcast_shapes(
+                input0_shape, input1_shape
+            )
+            graph.set_shape(node.outputs[0], inferred_shape)
+        return op
     op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
     op_spec = binary_op_symbol(function, node.attrs, dtype=op_dtype)
     unary_symbol = unary_op_symbol(function, dtype=op_dtype)
@@ -202,24 +209,34 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         input0_shape = value_shape(graph, node.inputs[0], node)
         input1_shape = value_shape(graph, node.inputs[1], node)
         output_shape = value_shape(graph, node.outputs[0], node)
-        return BinaryOp(
+        op = BinaryOp(
             input0=node.inputs[0],
             input1=node.inputs[1],
             output=node.outputs[0],
             function=function,
             operator_kind=op_spec.kind,
         )
+        if isinstance(graph, GraphContext):
+            inferred_shape = BroadcastingOpBase.broadcast_shapes(
+                input0_shape, input1_shape
+            )
+            graph.set_shape(node.outputs[0], inferred_shape)
+        return op
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError(
             f"{node.op_type} must have 1 input and 1 output"
         )
     output_shape = value_shape(graph, node.outputs[0], node)
-    return UnaryOp(
+    op = UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
         function=function,
         params=(),
     )
+    if isinstance(graph, GraphContext):
+        inferred_shape = value_shape(graph, node.inputs[0], node)
+        graph.set_shape(node.outputs[0], inferred_shape)
+    return op
 
 
 _DEFAULT_ELEMENTWISE_TYPES = (
