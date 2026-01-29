@@ -124,7 +124,7 @@ How verification works:
    The compiler no longer ships a Python runtime evaluator.
 4. **Compare outputs**: floating outputs are compared by maximum ULP distance.
    Floating-point verification first ignores very small differences up to
-   **1.0 × [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) of
+   **--atol-eps × [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) of
    the evaluated floating-point type**, treating such values as equal. For
    values with a larger absolute difference, the ULP distance is computed, and
    the maximum ULP distance is reported; non-floating outputs must match
