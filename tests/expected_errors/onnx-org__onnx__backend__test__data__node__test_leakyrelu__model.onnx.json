@@ -1,8 +1,9 @@
 {
-  "error": "LeakyRelu only supports alpha=0.01",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "LeakyRelu"
   ],
-  "opset_version": 16
+  "opset_version": 16,
+  "generated_checksum": "566575722b41826e44ea8990987845c8d023c8d835178b34e60e657b431034a5"
 }

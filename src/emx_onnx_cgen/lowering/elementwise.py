@@ -82,6 +82,54 @@ def lower_celu(graph: Graph, node: Node) -> UnaryOp:
     )
 
 
+@register_lowering("Elu")
+def lower_elu(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Elu must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("Elu only supports floating-point inputs")
+    for key in node.attrs:
+        if key != "alpha":
+            raise UnsupportedOpError(f"Elu does not support attribute {key}")
+    try:
+        alpha = float(node.attrs.get("alpha", 1.0))
+    except (TypeError, ValueError) as exc:
+        raise UnsupportedOpError("Elu alpha must be numeric") from exc
+    output_shape = value_shape(graph, node.outputs[0], node)
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=ScalarFunction.ELU,
+        params=(alpha,),
+    )
+
+
+@register_lowering("LeakyRelu")
+def lower_leaky_relu(graph: Graph, node: Node) -> UnaryOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("LeakyRelu must have 1 input and 1 output")
+    dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
+    if not dtype.is_float:
+        raise UnsupportedOpError("LeakyRelu only supports floating-point inputs")
+    for key in node.attrs:
+        if key != "alpha":
+            raise UnsupportedOpError(
+                f"LeakyRelu does not support attribute {key}"
+            )
+    try:
+        alpha = float(node.attrs.get("alpha", 0.01))
+    except (TypeError, ValueError) as exc:
+        raise UnsupportedOpError("LeakyRelu alpha must be numeric") from exc
+    output_shape = value_shape(graph, node.outputs[0], node)
+    return UnaryOp(
+        input0=node.inputs[0],
+        output=node.outputs[0],
+        function=ScalarFunction.LEAKY_RELU,
+        params=(alpha,),
+    )
+
+
 @register_lowering("Swish")
 def lower_swish(graph: Graph, node: Node) -> UnaryOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
