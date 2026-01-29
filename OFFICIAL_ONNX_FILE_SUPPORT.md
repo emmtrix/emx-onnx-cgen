@@ -1,5 +1,6 @@
 # Official ONNX file support
 
+Support 1353 / 1802 official ONNX files.
 Support 1351 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
@@ -280,9 +281,9 @@ See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTO
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx | ❌ | Out of tolerance (max ULP 251658240) |
+| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded/model.onnx | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric/model.onnx | ❌ | Unsupported op BlackmanWindow |
-| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx | ❌ | Out of tolerance (max ULP 847249409) |
+| onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_BFLOAT16_to_FLOAT/model.onnx | ❌ | Unsupported elem_type 16 (BFLOAT16) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT16/model.onnx | ✅ | OK (max ULP 0) |

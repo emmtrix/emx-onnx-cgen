@@ -20,8 +20,6 @@ import numpy as np
 import onnx
 from onnx import numpy_helper
 
-from shared.ulp import ulp_intdiff_float
-
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
@@ -29,7 +27,7 @@ from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
 from .testbench import decode_testbench_array
-from .verification import format_success_message
+from .verification import format_success_message, worst_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
 
@@ -510,6 +508,15 @@ def _build_parser() -> argparse.ArgumentParser:
         type=int,
         default=100,
         help="Maximum allowed ULP difference for floating outputs (default: 100)",
+    )
+    verify_parser.add_argument(
+        "--atol-eps",
+        type=float,
+        default=1.0,
+        help=(
+            "Absolute tolerance as a multiple of machine epsilon for ULP checks "
+            "(default: 1.0)"
+        ),
     )
     verify_parser.add_argument(
         "--runtime",
@@ -1104,8 +1111,10 @@ def _verify_model(
                 runtime_out = runtime_out.astype(info.np_dtype, copy=False)
                 output_data = output_data.reshape(runtime_out.shape)
                 if np.issubdtype(info.np_dtype, np.floating):
-                    output_max, output_worst = _worst_ulp_diff(
-                        output_data, runtime_out
+                    output_max, output_worst = worst_ulp_diff(
+                        output_data,
+                        runtime_out,
+                        atol_eps=args.atol_eps,
                     )
                     if output_max > max_ulp:
                         max_ulp = output_max
