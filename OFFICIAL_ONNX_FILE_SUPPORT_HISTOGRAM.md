@@ -23,7 +23,6 @@
 | Unsupported op ScatterElements | 6 | ██████ |
 | Unsupported op Unique | 6 | ██████ |
 | Unsupported op Col2Im | 5 | █████ |
-| Unsupported op DequantizeLinear | 5 | █████ |
 | Unsupported op If | 5 | █████ |
 | OptionalHasElement expects exactly one non-empty input. | 4 | ████ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ████ |
