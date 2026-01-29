@@ -167,6 +167,39 @@ def _report_generated_artifacts(
         reporter.info(f"  {name} ({_format_artifact_size(size_bytes)})")
 
 
+def _worst_ulp_diff(
+    actual: "np.ndarray", expected: "np.ndarray"
+) -> tuple[int, tuple[tuple[int, ...], float, float] | None]:
+    if actual.shape != expected.shape:
+        raise ValueError(
+            f"Shape mismatch for ULP calculation: {actual.shape} vs {expected.shape}"
+        )
+    if not np.issubdtype(expected.dtype, np.floating):
+        return 0, None
+    if actual.size == 0:
+        return 0, None
+    dtype = expected.dtype
+    actual_cast = actual.astype(dtype, copy=False)
+    expected_cast = expected.astype(dtype, copy=False)
+    max_diff = 0
+    worst: tuple[tuple[int, ...], float, float] | None = None
+    iterator = np.nditer(
+        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
+    )
+    for actual_value, expected_value in iterator:
+        actual_scalar = float(actual_value[()])
+        expected_scalar = float(expected_value[()])
+        diff = ulp_intdiff_float(actual_value[()], expected_value[()])
+        if diff > max_diff:
+            max_diff = diff
+            worst = (
+                iterator.multi_index,
+                actual_scalar,
+                expected_scalar,
+            )
+    return max_diff, worst
+
+
 def _worst_abs_diff(
     actual: "np.ndarray", expected: "np.ndarray"
 ) -> tuple[float | int, tuple[tuple[int, ...], object, object] | None]:
