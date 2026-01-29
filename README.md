@@ -35,7 +35,7 @@ Key characteristics:
 - Minimal C runtime templates in `src/emx_onnx_cgen/templates/`.
 - ONNX Runtime comparison for end-to-end validation.
 - Official ONNX operator coverage tracking.
-- Support for a wide range of ONNX operators (see `OFFICIAL_ONNX_FILE_SUPPORT.md`).
+- Support for a wide range of ONNX operators (see `ONNX_SUPPORT.md`).
 - Supported data types:
   - `float`, `double`, `float16`
   - `int8_t`, `uint8_t`, `int16_t`, `uint16_t`, `int32_t`, `uint32_t`, `int64_t`, `uint64_t`
@@ -151,7 +151,7 @@ runtime.
 
 ## Official ONNX test coverage
 
-See [`OFFICIAL_ONNX_FILE_SUPPORT.md`](OFFICIAL_ONNX_FILE_SUPPORT.md) for the generated support matrix.
+See [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) for the generated support matrix.
 See [`SUPPORT_OPS.md`](SUPPORT_OPS.md) for operator-level support derived from the expectation JSON files.
 
 ## Maintained by
