@@ -23,7 +23,6 @@
 | Unsupported op ScatterElements | 6 | █████ |
 | Unsupported op Unique | 6 | █████ |
 | Unsupported op Col2Im | 5 | ████ |
-| Unsupported op DequantizeLinear | 5 | ████ |
 | Unsupported op If | 5 | ████ |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
 | Unsupported op AffineGrid | 4 | ███ |
@@ -64,6 +63,7 @@
 | Unsupported op Scatter | 2 | ██ |
 | Unsupported op TreeEnsemble | 2 | ██ |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | █ |
+| DequantizeLinear has unsupported attributes | 1 | █ |
 | Dropout mask output is not supported | 1 | █ |
 | Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |

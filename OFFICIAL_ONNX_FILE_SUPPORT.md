@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1383 / 1802 official ONNX files.
+Support 1387 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -559,18 +559,18 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_deform_conv_with_multiple_offset_groups/model.onnx | ❌ | Unsupported op DeformConv |
 | onnx-org/onnx/backend/test/data/node/test_depthtospace_crd_mode_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_depthtospace_example/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear/model.onnx | ❌ | Unsupported op DequantizeLinear |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_axis/model.onnx | ❌ | Unsupported op DequantizeLinear |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_blocked/model.onnx | ❌ | Unsupported op DequantizeLinear |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_axis/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_blocked/model.onnx | ❌ | DequantizeLinear has unsupported attributes |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn_float16/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e5m2/model.onnx | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_float4e2m1/model.onnx | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int16/model.onnx | ❌ | Unsupported op DequantizeLinear |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int2/model.onnx | ❌ | Unsupported elem_type 26 (INT2) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int4/model.onnx | ❌ | Unsupported elem_type 22 (INT4) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint16/model.onnx | ❌ | Unsupported op DequantizeLinear |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint16/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint2/model.onnx | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint4/model.onnx | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_det_2d/model.onnx | ❌ | Unsupported op Det |
