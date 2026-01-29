@@ -6,7 +6,7 @@ from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ...ops import COMPARE_FUNCTIONS, OperatorKind, binary_op_symbol
-from ...errors import ShapeInferenceError
+from ...errors import ShapeInferenceError, UnsupportedOpError
 from ..op_base import (
     BroadcastingOpBase,
     ElementwiseOpBase,
@@ -55,6 +55,84 @@ class BinaryOp(ElementwiseOpBase):
             "Broadcasting mismatch for shapes: "
             + ", ".join(str(shape) for shape in (input_shape, slope_shape))
         )
+
+
+_POW_BASE_DTYPES = {
+    ScalarType.F16,
+    ScalarType.F32,
+    ScalarType.F64,
+    ScalarType.I32,
+    ScalarType.I64,
+}
+_POW_EXPONENT_DTYPES = {
+    ScalarType.F16,
+    ScalarType.F32,
+    ScalarType.F64,
+    ScalarType.I8,
+    ScalarType.I16,
+    ScalarType.I32,
+    ScalarType.I64,
+    ScalarType.U8,
+    ScalarType.U16,
+    ScalarType.U32,
+    ScalarType.U64,
+}
+
+
+@dataclass(frozen=True)
+class PowOp(BinaryOp):
+    def validate(self, ctx: OpContext) -> None:
+        base_dtype = ctx.dtype(self.input0)
+        exponent_dtype = ctx.dtype(self.input1)
+        if base_dtype not in _POW_BASE_DTYPES:
+            raise UnsupportedOpError(
+                "Pow base dtype must be one of "
+                f"{', '.join(dtype.onnx_name for dtype in sorted(_POW_BASE_DTYPES, key=str))}, "
+                f"got {base_dtype.onnx_name}"
+            )
+        if exponent_dtype not in _POW_EXPONENT_DTYPES:
+            raise UnsupportedOpError(
+                "Pow exponent dtype must be one of "
+                f"{', '.join(dtype.onnx_name for dtype in sorted(_POW_EXPONENT_DTYPES, key=str))}, "
+                f"got {exponent_dtype.onnx_name}"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            return None
+        if output_dtype != base_dtype:
+            raise UnsupportedOpError(
+                "Pow expects output dtype "
+                f"{base_dtype.onnx_name}, got {output_dtype.onnx_name}"
+            )
+        return None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        base_dtype = ctx.dtype(self.input0)
+        exponent_dtype = ctx.dtype(self.input1)
+        if base_dtype not in _POW_BASE_DTYPES:
+            raise UnsupportedOpError(
+                "Pow base dtype must be one of "
+                f"{', '.join(dtype.onnx_name for dtype in sorted(_POW_BASE_DTYPES, key=str))}, "
+                f"got {base_dtype.onnx_name}"
+            )
+        if exponent_dtype not in _POW_EXPONENT_DTYPES:
+            raise UnsupportedOpError(
+                "Pow exponent dtype must be one of "
+                f"{', '.join(dtype.onnx_name for dtype in sorted(_POW_EXPONENT_DTYPES, key=str))}, "
+                f"got {exponent_dtype.onnx_name}"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, base_dtype)
+            return None
+        if output_dtype != base_dtype:
+            raise UnsupportedOpError(
+                "Pow expects output dtype "
+                f"{base_dtype.onnx_name}, got {output_dtype.onnx_name}"
+            )
+        return None
 
 
 @dataclass(frozen=True)

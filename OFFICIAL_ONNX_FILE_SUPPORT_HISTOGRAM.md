@@ -48,8 +48,6 @@
 | Gelu only supports approximate=none | 2 | ██ |
 | LpPool expects 2D kernel_shape | 2 | ██ |
 | LpPool supports auto_pad=NOTSET only | 2 | ██ |
-| Pow expects matching dtypes, got float, int32 | 2 | ██ |
-| Pow expects matching dtypes, got float, int64 | 2 | ██ |
 | QuantizeLinear block_size is not supported | 2 | ██ |
 | Selu only supports alpha=1.6732632423543772 | 2 | ██ |
 | ThresholdedRelu only supports alpha=1.0 | 2 | ██ |
@@ -71,8 +69,6 @@
 | Dynamic dim for tensor '*' | 1 | █ |
 | Graph must contain at least one node | 1 | █ |
 | Pad value input must be a scalar | 1 | █ |
-| Pow expects matching dtypes, got float, uint32 | 1 | █ |
-| Pow expects matching dtypes, got float, uint64 | 1 | █ |
 | ReduceMax does not support dtype bool | 1 | █ |
 | ReduceMin does not support dtype bool | 1 | █ |
 | Unsupported op ArrayFeatureExtractor | 1 | █ |

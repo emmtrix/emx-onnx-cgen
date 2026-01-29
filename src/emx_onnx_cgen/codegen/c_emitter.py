@@ -76,6 +76,7 @@ from ..ir.ops import (
     OneHotOp,
     PadOp,
     QuantizeLinearOp,
+    PowOp,
     QLinearMulOp,
     QLinearMatMulOp,
     RangeOp,
@@ -843,6 +844,7 @@ class CEmitter:
     def _map_op_names(
         self,
         op: BinaryOp
+        | PowOp
         | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
@@ -911,6 +913,7 @@ class CEmitter:
         name_map: dict[str, str],
     ) -> (
         BinaryOp
+        | PowOp
         | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
@@ -977,6 +980,14 @@ class CEmitter:
         | OneHotOp
         | SplitOp
     ):
+        if isinstance(op, PowOp):
+            return PowOp(
+                input0=name_map.get(op.input0, op.input0),
+                input1=name_map.get(op.input1, op.input1),
+                output=name_map.get(op.output, op.output),
+                function=op.function,
+                operator_kind=op.operator_kind,
+            )
         if isinstance(op, BinaryOp):
             return BinaryOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -3854,6 +3865,7 @@ class CEmitter:
     @staticmethod
     def _resolve_op(
         op: BinaryOp
+        | PowOp
         | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
@@ -3921,6 +3933,7 @@ class CEmitter:
         temp_map: dict[str, str],
     ) -> (
         BinaryOp
+        | PowOp
         | MultiInputBinaryOp
         | WhereOp
         | UnaryOp
@@ -3985,6 +3998,14 @@ class CEmitter:
         | OneHotOp
         | SplitOp
     ):
+        if isinstance(op, PowOp):
+            return PowOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input1=temp_map.get(op.input1, op.input1),
+                output=temp_map.get(op.output, op.output),
+                function=op.function,
+                operator_kind=op.operator_kind,
+            )
         if isinstance(op, BinaryOp):
             return BinaryOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5286,6 +5307,11 @@ class CEmitter:
             input1_shape = self._ctx_shape(op.input1)
             output_shape = self._ctx_shape(op.output)
             input_dtype = self._ctx_dtype(op.input0)
+            input1_dtype = (
+                self._ctx_dtype(op.input1)
+                if isinstance(op, PowOp)
+                else input_dtype
+            )
             output_dtype = self._ctx_dtype(op.output)
             params = self._shared_param_map(
                 [
@@ -5324,11 +5350,12 @@ class CEmitter:
                 input1_shape, _dim_names_for(op.input1)
             )
             input_c_type = input_dtype.c_type
+            input1_c_type = input1_dtype.c_type
             output_c_type = output_dtype.c_type
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], input_c_type, input0_suffix, True),
-                    (params["input1"], input_c_type, input1_suffix, True),
+                    (params["input1"], input1_c_type, input1_suffix, True),
                     (params["output"], output_c_type, output_suffix, False),
                 ]
             )

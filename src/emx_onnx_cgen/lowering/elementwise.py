@@ -3,7 +3,7 @@ from __future__ import annotations
 from shared.scalar_functions import ScalarFunction, ScalarFunctionError
 from shared.scalar_types import ScalarType
 
-from ..ir.ops import BinaryOp, ClipOp, UnaryOp
+from ..ir.ops import BinaryOp, ClipOp, PowOp, UnaryOp
 from ..errors import UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
@@ -113,6 +113,23 @@ def lower_shrink(graph: Graph, node: Node) -> UnaryOp:
         output=node.outputs[0],
         function=ScalarFunction.SHRINK,
         params=(bias, lambd),
+    )
+
+
+@register_lowering("Pow")
+def lower_pow(graph: Graph, node: Node) -> PowOp:
+    if len(node.inputs) != 2 or len(node.outputs) != 1:
+        raise UnsupportedOpError("Pow must have 2 inputs and 1 output")
+    op_dtype = value_dtype(graph, node.inputs[0], node)
+    op_spec = binary_op_symbol(ScalarFunction.POW, node.attrs, dtype=op_dtype)
+    if op_spec is None:
+        raise UnsupportedOpError("Unsupported op Pow")
+    return PowOp(
+        input0=node.inputs[0],
+        input1=node.inputs[1],
+        output=node.outputs[0],
+        function=ScalarFunction.POW,
+        operator_kind=op_spec.kind,
     )
 
 
