@@ -1,8 +1,9 @@
 {
-  "error": "",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gru_batchwise model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "GRU"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "ea0a6d6647e06a3eea1d52fdb0e48d6db018cef2e0d41cbd527d57f9b8213ca0"
 }
