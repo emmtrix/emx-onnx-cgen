@@ -1,11 +1,12 @@
 # Official ONNX file support
 
-Support 1356 / 1802 official ONNX files.
-Support 1375 / 1802 official ONNX files.
+Support 1380 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
 See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md) for the error histogram.
+
+Floating-point verification first ignores very small differences up to **1.0 × [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) of the evaluated floating-point type**, treating such values as equal. For values with a larger absolute difference, the ULP distance is computed, and the maximum ULP distance is reported.
 
 | File | Supported | Error |
 | --- | --- | --- |

@@ -71,6 +71,14 @@ def _render_onnx_file_support_markdown(
         "",
         "See [`OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md`](OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM.md) for the error histogram.",
         "",
+        (
+            "Floating-point verification first ignores very small differences up to "
+            "**1.0 × [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) "
+            "of the evaluated floating-point type**, treating such values as equal. "
+            "For values with a larger absolute difference, the ULP distance is "
+            "computed, and the maximum ULP distance is reported."
+        ),
+        "",
         *_render_onnx_file_support_table(official_expectations),
         "",
         "## Local ONNX file support",

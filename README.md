@@ -106,6 +106,7 @@ Options:
 - `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`).
 - `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
+- `--atol-eps`: Absolute tolerance as a multiple of machine epsilon for floating outputs (default: `1.0`).
 - `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
@@ -121,9 +122,13 @@ How verification works:
 3. **Run runtime backend**: the JSON inputs from the testbench are fed to the
    selected runtime (`onnxruntime` or `onnx-reference`) using the same model.
    The compiler no longer ships a Python runtime evaluator.
-4. **Compare outputs**: floating outputs are compared by maximum ULP distance
-   (see https://www.emmtrix.com/wiki/ULP_Difference_of_Float_Numbers for the
-   ULP definition and algorithm); non-floating outputs must match exactly.
+4. **Compare outputs**: floating outputs are compared by maximum ULP distance.
+   Floating-point verification first ignores very small differences up to
+   **1.0 × [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) of
+   the evaluated floating-point type**, treating such values as equal. For
+   values with a larger absolute difference, the ULP distance is computed, and
+   the maximum ULP distance is reported; non-floating outputs must match
+   exactly.
    Missing outputs or mismatches are treated as failures.
 5. **ORT unsupported models**: when using `onnxruntime`, if ORT reports
    `NOT_IMPLEMENTED`, verification is skipped with a warning (exit code 0).
