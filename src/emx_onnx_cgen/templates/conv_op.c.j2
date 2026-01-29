@@ -6,7 +6,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 {% for dim in range(spatial_rank) %}
                 for (idx_t {{ out_indices[dim] }} = 0; {{ out_indices[dim] }} < {{ out_spatial[dim] }}; ++{{ out_indices[dim] }}) {
                 {% endfor %}
-                    {{ c_type }} acc = {% if bias %}{{ bias }}[oc_global]{% else %}{{ zero_literal }}{% endif %};
+                    {{ acc_type }} acc = {% if bias %}({{ acc_type }}){{ bias }}[oc_global]{% else %}{{ acc_zero_literal }}{% endif %};
                     for (idx_t ic = 0; ic < {{ group_in_channels }}; ++ic) {
                         const idx_t ic_global = g * {{ group_in_channels }} + ic;
                         {% for dim in range(spatial_rank) %}
@@ -16,13 +16,13 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             const idx_t {{ in_indices[dim] }} = {{ out_indices[dim] }} * {{ strides[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }} - {{ pads_begin[dim] }};
                             {% endfor %}
                             if ({% for dim in range(spatial_rank) %}{{ in_indices[dim] }} >= 0 && {{ in_indices[dim] }} < {{ in_spatial[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
-                                acc += {{ input0 }}[n][ic_global]{% for dim in range(spatial_rank) %}[{{ in_indices[dim] }}]{% endfor %} * {{ weights }}[oc_global][ic]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %};
+                                acc += ({{ acc_type }}){{ input0 }}[n][ic_global]{% for dim in range(spatial_rank) %}[{{ in_indices[dim] }}]{% endfor %} * ({{ acc_type }}){{ weights }}[oc_global][ic]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %};
                             }
                         {% for dim in range(spatial_rank) %}
                         }
                         {% endfor %}
                     }
-                    {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} = acc;
+                    {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} = ({{ c_type }})acc;
                 {% for dim in range(spatial_rank) %}
                 }
                 {% endfor %}

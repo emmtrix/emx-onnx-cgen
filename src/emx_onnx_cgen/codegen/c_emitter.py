@@ -6516,6 +6516,13 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
+            acc_dtype = (
+                ScalarType.F64
+                if op.dtype in {ScalarType.F16, ScalarType.F32}
+                else op.dtype
+            )
+            acc_type = acc_dtype.c_type
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             input_shape = (op.batch, op.in_channels, *op.in_spatial)
             weight_shape = (
                 op.out_channels,
@@ -6559,6 +6566,8 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
                 zero_literal=zero_literal,
                 input_suffix=input_suffix,
                 weight_suffix=weight_suffix,
