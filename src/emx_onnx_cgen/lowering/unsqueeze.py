@@ -2,30 +2,20 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..ir.ops import ReshapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
+from ..ir.ops import ReshapeOp
+from ..lowering.common import value_dtype, value_has_dim_params, value_shape
 from .registry import register_lowering
 
 
 def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
-    try:
-        return graph.find_value(name).type.shape
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
+    return value_shape(graph, name, node)
 
 
 def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
-    try:
-        return graph.find_value(name).type.dtype
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing dtype for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
+    return value_dtype(graph, name, node)
 
 
 def _find_initializer(graph: Graph, name: str) -> Initializer | None:
@@ -105,6 +95,8 @@ def lower_unsqueeze(graph: Graph, node: Node) -> ReshapeOp:
         raise UnsupportedOpError("Unsqueeze must have 1 or 2 inputs and 1 output")
     input_shape = _value_shape(graph, node.inputs[0], node)
     output_shape = _value_shape(graph, node.outputs[0], node)
+    if value_has_dim_params(graph, node.outputs[0]):
+        output_shape = ()
     _validate_shape(input_shape, node, "input")
     _validate_shape(output_shape, node, "output")
     input_dtype = _value_dtype(graph, node.inputs[0], node)
@@ -142,11 +134,14 @@ def lower_unsqueeze(graph: Graph, node: Node) -> ReshapeOp:
             )
     else:
         expected_shape = _expected_output_shape(input_shape, axes, node)
-        if expected_shape != output_shape:
+        if output_shape and expected_shape != output_shape:
             raise ShapeInferenceError(
                 "Unsqueeze output shape must be "
                 f"{expected_shape}, got {output_shape}"
             )
+        output_shape = expected_shape
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], output_shape)
     return ReshapeOp(
         input0=node.inputs[0],
         output=node.outputs[0],

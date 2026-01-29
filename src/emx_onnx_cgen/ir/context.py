@@ -74,6 +74,9 @@ class GraphContext:
     def set_shape(self, name: str, shape: tuple[int, ...]) -> None:
         self._shape_cache[name] = shape
 
+    def has_shape(self, name: str) -> bool:
+        return name in self._shape_cache
+
     def initializer(self, name: str) -> Initializer | None:
         return self._initializer_cache.get(name)
 
