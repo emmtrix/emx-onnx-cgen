@@ -1,8 +1,9 @@
 {
-  "error": "AveragePool supports auto_pad=NOTSET only",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_precomputed_same_upper model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "AveragePool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "123b5f327322f1bc218589c5351b940395a9f71b6c4a5b30492c57cf5b19565a"
 }
