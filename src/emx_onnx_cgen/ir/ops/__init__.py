@@ -10,6 +10,7 @@ from .elementwise import (
     WhereOp,
 )
 from .misc import (
+    BernoulliOp,
     CastOp,
     ConcatOp,
     ConstantOfShapeOp,
@@ -80,6 +81,7 @@ __all__ = [
     "AttentionOp",
     "AveragePoolOp",
     "BatchNormOp",
+    "BernoulliOp",
     "BinaryOp",
     "CastOp",
     "ClipOp",

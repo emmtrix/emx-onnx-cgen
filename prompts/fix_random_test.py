@@ -102,6 +102,11 @@ def main() -> None:
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
     prompt_lines.append(
+        "Codegen wiring hint: new ops usually need updates in name mapping and temp "
+        "buffer resolution paths; if codegen crashes on missing attributes, check "
+        "the emit-time mapping helpers for that op."
+    )
+    prompt_lines.append(
         "Artifact hint: pass `--keep-temp-dir` during verification to inspect the "
         "generated C/testbench files when narrowing down failures."
     )

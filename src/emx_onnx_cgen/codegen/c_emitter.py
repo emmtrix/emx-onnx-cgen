@@ -37,6 +37,7 @@ from ..ir.ops import (
     AttentionOp,
     AveragePoolOp,
     BatchNormOp,
+    BernoulliOp,
     BinaryOp,
     CastOp,
     ClipOp,
@@ -497,6 +498,7 @@ class CEmitter:
         | TransposeOp
         | ReshapeOp
         | IdentityOp
+        | BernoulliOp
         | EyeLikeOp
         | TriluOp
         | TileOp
@@ -757,6 +759,8 @@ class CEmitter:
         if isinstance(op, ReshapeOp):
             return (op.input0, op.output)
         if isinstance(op, IdentityOp):
+            return (op.input0, op.output)
+        if isinstance(op, BernoulliOp):
             return (op.input0, op.output)
         if isinstance(op, EyeLikeOp):
             return (op.input0, op.output)
@@ -2001,6 +2005,16 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, BernoulliOp):
+            return BernoulliOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_dtype=op.input_dtype,
+                dtype=op.dtype,
+                seed=op.seed,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=name_map.get(op.indices, op.indices),
@@ -2178,6 +2192,7 @@ class CEmitter:
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
+                "bernoulli": self._env.get_template("bernoulli_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
@@ -5225,6 +5240,16 @@ class CEmitter:
                 largest=op.largest,
                 sorted=op.sorted,
             )
+        if isinstance(op, BernoulliOp):
+            return BernoulliOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_dtype=op.input_dtype,
+                dtype=op.dtype,
+                seed=op.seed,
+            )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
@@ -5293,6 +5318,7 @@ class CEmitter:
             transpose_template=templates["transpose"],
             reshape_template=templates["reshape"],
             identity_template=templates["identity"],
+            bernoulli_template=templates["bernoulli"],
             eye_like_template=templates["eye_like"],
             trilu_template=templates["trilu"],
             tile_template=templates["tile"],
@@ -5378,6 +5404,7 @@ class CEmitter:
         transpose_template,
         reshape_template,
         identity_template,
+        bernoulli_template,
         eye_like_template,
         trilu_template,
         tile_template,
@@ -8376,6 +8403,56 @@ class CEmitter:
                 loop_vars=loop_vars,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, BernoulliOp):
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.output_shape)
+            output_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            output_dtype = op.dtype
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
+                ]
+            )
+            one_literal = (
+                "true"
+                if output_dtype == ScalarType.BOOL
+                else f"({output_dtype.c_type})1"
+            )
+            zero_literal = (
+                "false"
+                if output_dtype == ScalarType.BOOL
+                else output_dtype.zero_literal
+            )
+            rendered = bernoulli_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                input_index_expr="".join(
+                    f"[{var}]" for var in loop_vars
+                ),
+                output_index_expr="".join(
+                    f"[{var}]" for var in loop_vars
+                ),
+                shape=shape,
+                loop_vars=loop_vars,
+                seed=op.seed if op.seed is not None else 0,
+                one_literal=one_literal,
+                zero_literal=zero_literal,
+                dim_args=dim_args,
+                params=param_decls,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
             input_c_type = op.input_dtype.c_type
             params = self._shared_param_map(
@@ -11241,6 +11318,7 @@ class CEmitter:
         | TransposeOp
         | ReshapeOp
         | IdentityOp
+        | BernoulliOp
         | EyeLikeOp
         | TriluOp
         | TileOp
@@ -11344,6 +11422,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, IdentityOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, BernoulliOp):
+            return op.output_shape
         if isinstance(op, EyeLikeOp):
             return op.output_shape
         if isinstance(op, TriluOp):
@@ -11432,6 +11512,7 @@ class CEmitter:
         | TransposeOp
         | ReshapeOp
         | IdentityOp
+        | BernoulliOp
         | EyeLikeOp
         | TriluOp
         | TileOp

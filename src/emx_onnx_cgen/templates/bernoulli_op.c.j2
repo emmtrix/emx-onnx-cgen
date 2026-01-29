@@ -1,0 +1,34 @@
+static inline uint64_t {{ op_name }}_rng_next_u64(uint64_t *state) {
+    uint64_t x = *state;
+    x ^= x >> 12;
+    x ^= x << 25;
+    x ^= x >> 27;
+    *state = x;
+    return x * 0x2545f4914f6cdd1dull;
+}
+
+static inline double {{ op_name }}_rng_next_double(uint64_t *state) {
+    return (double){{ op_name }}_rng_next_u64(state) * (1.0 / 18446744073709551616.0);
+}
+
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    uint64_t rng_state = {{ seed }}ull;
+    if (!rng_state) {
+        rng_state = 0x243f6a8885a308d3ull;
+    }
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+    const double prob = (double){{ input0 }}{{ input_index_expr }};
+    int is_one = 0;
+    if (prob >= 1.0) {
+        is_one = 1;
+    } else if (prob > 0.0) {
+        const double sample = {{ op_name }}_rng_next_double(&rng_state);
+        is_one = sample < prob;
+    }
+    {{ output }}{{ output_index_expr }} = is_one ? {{ one_literal }} : {{ zero_literal }};
+{% for _ in shape %}
+    }
+{% endfor %}
+}
