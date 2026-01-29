@@ -31,9 +31,7 @@
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
-| Elu only supports alpha=1.0 | 3 | 6, 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
-| LeakyRelu only supports alpha=0.01 | 3 | 6, 16 |
 | Unsupported op DynamicQuantizeLinear | 3 | 11 |
 | Unsupported op Loop | 3 | 11 |
 | Unsupported op Momentum | 3 |  |
@@ -81,8 +79,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 6 | 2 |
-| Elu only supports alpha=1.0 | 6 | 1 |
-| LeakyRelu only supports alpha=0.01 | 6 | 1 |
 | Unsupported op Scan | 8 | 1 |
 | Unsupported op TfIdfVectorizer | 9 | 7 |
 | Out of tolerance | 9 | 1 |
@@ -107,7 +103,6 @@
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 13 | 2 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
-| LeakyRelu only supports alpha=0.01 | 16 | 2 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 17 | 12 |
 | Unsupported op BlackmanWindow | 17 | 2 |
 | Unsupported op HannWindow | 17 | 2 |
@@ -139,7 +134,6 @@
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
-| Elu only supports alpha=1.0 | 22 | 2 |
 | LpPool expects 2D kernel_shape | 22 | 2 |
 | LpPool supports auto_pad=NOTSET only | 22 | 2 |
 | Selu only supports alpha=1.6732632423543772 | 22 | 2 |

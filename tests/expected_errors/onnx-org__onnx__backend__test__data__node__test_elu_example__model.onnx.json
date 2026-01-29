@@ -1,8 +1,9 @@
 {
-  "error": "Elu only supports alpha=1.0",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_elu_example model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Elu"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "d4516c00295bc8456c0f33ec6f5e414a52363853108184486f38eb1dd041e123"
 }
