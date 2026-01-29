@@ -102,10 +102,6 @@ def main() -> None:
         "to run the CLI, since `python -m emx_onnx_cgen.cli` does not invoke main()."
     )
     prompt_lines.append(
-        "Debugging hint: use `--keep-temp-dir` (or the printed temp dir path) to "
-        "inspect generated C code and compile commands without rerunning the pipeline."
-    )
-    prompt_lines.append(
         "Codegen wiring hint: new ops usually need updates in name mapping and temp "
         "buffer resolution paths; if codegen crashes on missing attributes, check "
         "the emit-time mapping helpers for that op."
