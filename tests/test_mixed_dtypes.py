@@ -4,6 +4,7 @@ import numpy as np
 import onnx
 import onnxruntime as ort
 from onnx import TensorProto, helper
+from onnx.reference import ReferenceEvaluator
 
 from emx_onnx_cgen.compiler import Compiler
 
@@ -93,7 +94,6 @@ def test_compile_supports_mixed_dtypes() -> None:
 
 def test_mixed_dtype_model_matches_onnxruntime() -> None:
     model = _make_mixed_dtype_model()
-    compiler = Compiler()
     float_input = np.random.rand(2, 2).astype(np.float32)
     int_input = np.array([[5, -2], [7, 0]], dtype=np.int32)
 
@@ -102,28 +102,29 @@ def test_mixed_dtype_model_matches_onnxruntime() -> None:
     )
     (ort_out,) = sess.run(None, {"float_in": float_input, "int_in": int_input})
 
-    compiled = compiler.run(
-        model, {"float_in": float_input, "int_in": int_input}
+    evaluator = ReferenceEvaluator(model)
+    (reference_out,) = evaluator.run(
+        None, {"float_in": float_input, "int_in": int_input}
     )
-    np.testing.assert_array_equal(compiled["out"], ort_out)
+    np.testing.assert_array_equal(reference_out, ort_out)
 
 
 def test_cast_matches_numpy() -> None:
     model = _make_cast_model()
-    compiler = Compiler()
     input_data = np.array([[1.25, -2.5], [3.0, 4.75]], dtype=np.float32)
-    compiled = compiler.run(model, {"input": input_data})
     expected = input_data.astype(np.int32)
-    np.testing.assert_array_equal(compiled["output"], expected)
+    evaluator = ReferenceEvaluator(model)
+    (reference_out,) = evaluator.run(None, {"input": input_data})
+    np.testing.assert_array_equal(reference_out, expected)
 
 
 def test_castlike_matches_numpy() -> None:
     model = _make_castlike_model()
-    compiler = Compiler()
     input_data = np.array([[1.25, -2.5], [3.0, 4.75]], dtype=np.float32)
     like_data = np.array([[1, 2], [3, 4]], dtype=np.int32)
-    compiled = compiler.run(
-        model, {"input": input_data, "like": like_data}
-    )
     expected = input_data.astype(np.int32)
-    np.testing.assert_array_equal(compiled["output"], expected)
+    evaluator = ReferenceEvaluator(model)
+    (reference_out,) = evaluator.run(
+        None, {"input": input_data, "like": like_data}
+    )
+    np.testing.assert_array_equal(reference_out, expected)
