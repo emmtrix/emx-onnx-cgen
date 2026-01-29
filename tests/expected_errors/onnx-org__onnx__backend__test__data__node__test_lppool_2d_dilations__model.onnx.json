@@ -1,8 +1,9 @@
 {
-  "error": "LpPool supports dilations=1 only",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_lppool_2d_dilations model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "LpPool"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "af3e5c1b6bf5dd21db2e8c294ede14abf78cdba44648c1aa8d1fa61e7fbf2167"
 }

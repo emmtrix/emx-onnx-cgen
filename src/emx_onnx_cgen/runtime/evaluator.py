@@ -1678,8 +1678,8 @@ def _eval_lp_pool(evaluator: Evaluator, node: Node) -> None:
                     acc = 0.0
                     for kh in range(op.kernel_h):
                         for kw in range(op.kernel_w):
-                            in_h = h_start + kh
-                            in_w = w_start + kw
+                            in_h = h_start + kh * op.dilation_h
+                            in_w = w_start + kw * op.dilation_w
                             if (
                                 0 <= in_h < op.in_h
                                 and 0 <= in_w < op.in_w

@@ -8,8 +8,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     const idx_t w_start = ow * {{ stride_w }} - {{ pad_left }};
                     for (idx_t kh = 0; kh < {{ kernel_h }}; ++kh) {
                         for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
-                            const idx_t in_h = h_start + kh;
-                            const idx_t in_w = w_start + kw;
+                            const idx_t in_h = h_start + kh * {{ dilation_h }};
+                            const idx_t in_w = w_start + kw * {{ dilation_w }};
                             if (in_h >= 0 && in_h < {{ in_h }} && in_w >= 0 && in_w < {{ in_w }}) {
                                 {{ c_type }} value = {{ input0 }}[n][c][in_h][in_w];
                                 acc += {{ pow_fn }}({{ abs_fn }}(value), ({{ c_type }}){{ p }});
