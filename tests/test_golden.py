@@ -10,10 +10,22 @@ import onnxruntime as ort
 import pytest
 from typing import Callable
 from onnx import TensorProto, helper
+from onnx.reference import ReferenceEvaluator
 
 from emx_onnx_cgen import Compiler
 from emx_onnx_cgen.compiler import CompilerOptions
 from golden_utils import assert_golden
+
+
+def _run_reference(
+    model: onnx.ModelProto, inputs: dict[str, np.ndarray]
+) -> dict[str, np.ndarray]:
+    evaluator = ReferenceEvaluator(model)
+    outputs = evaluator.run(None, inputs)
+    return {
+        output.name: value
+        for output, value in zip(model.graph.output, outputs)
+    }
 
 
 def _make_binary_model(op_type: str, shape: list[int]) -> onnx.ModelProto:
@@ -335,26 +347,28 @@ def test_codegen_golden_dynamic_dims() -> None:
 
 def test_tanh_matches_onnxruntime() -> None:
     model = _make_tanh_model()
-    compiler = Compiler()
     input_x = np.random.rand(2, 3).astype(np.float32)
 
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"x": input_x})
 
-    compiled = compiler.run(model, {"x": input_x})
-    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"x": input_x})
+    np.testing.assert_allclose(
+        reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_relu_matches_onnxruntime() -> None:
     model = _make_relu_model()
-    compiler = Compiler()
     input_x = np.random.randn(2, 3).astype(np.float32)
 
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"x": input_x})
 
-    compiled = compiler.run(model, {"x": input_x})
-    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"x": input_x})
+    np.testing.assert_allclose(
+        reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_codegen_golden_add() -> None:
@@ -403,15 +417,16 @@ def test_codegen_golden_large_weight_loader() -> None:
 
 def test_add_matches_onnxruntime() -> None:
     model = _make_add_model()
-    compiler = Compiler()
     input_a = np.random.rand(2, 3, 4).astype(np.float32)
     input_b = np.random.rand(2, 3, 4).astype(np.float32)
 
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"a": input_a, "b": input_b})
 
-    compiled = compiler.run(model, {"a": input_a, "b": input_b})
-    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"a": input_a, "b": input_b})
+    np.testing.assert_allclose(
+        reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_codegen_golden_mul() -> None:
@@ -424,15 +439,16 @@ def test_codegen_golden_mul() -> None:
 
 def test_mul_matches_onnxruntime() -> None:
     model = _make_mul_model()
-    compiler = Compiler()
     input_a = np.random.rand(2, 3).astype(np.float32)
     input_b = np.random.rand(2, 3).astype(np.float32)
 
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"a": input_a, "b": input_b})
 
-    compiled = compiler.run(model, {"a": input_a, "b": input_b})
-    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"a": input_a, "b": input_b})
+    np.testing.assert_allclose(
+        reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5
+    )
 
 
 @pytest.mark.parametrize(
@@ -453,7 +469,6 @@ def test_binary_ops_match_numpy(
     op_type: str, expected_fn: Callable[[np.ndarray, np.ndarray], np.ndarray]
 ) -> None:
     model = _make_binary_model(op_type, [2, 3])
-    compiler = Compiler()
     left = np.random.uniform(-1.0, 1.0, size=(2, 3)).astype(np.float32)
     right = np.random.uniform(0.1, 2.0, size=(2, 3)).astype(np.float32)
     if op_type in {"Div", "Pow"}:
@@ -462,13 +477,14 @@ def test_binary_ops_match_numpy(
         left = np.random.uniform(-1.0, 1.0, size=(2, 3)).astype(np.float32)
         right = np.random.uniform(0.1, 1.0, size=(2, 3)).astype(np.float32)
     expected = expected_fn(left, right)
-    compiled = compiler.run(model, {"a": left, "b": right})
-    np.testing.assert_allclose(compiled["out"], expected, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"a": left, "b": right})
+    np.testing.assert_allclose(
+        reference_outputs["out"], expected, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_prelu_channel_broadcast_matches_numpy() -> None:
     model = _make_prelu_channel_model()
-    compiler = Compiler()
     left = np.random.uniform(-1.0, 1.0, size=(2, 3, 4)).astype(np.float32)
     slope = np.random.uniform(0.1, 1.0, size=(3,)).astype(np.float32)
     expected = np.where(
@@ -476,18 +492,21 @@ def test_prelu_channel_broadcast_matches_numpy() -> None:
         left,
         left * slope.reshape(1, 3, 1),
     )
-    compiled = compiler.run(model, {"a": left, "b": slope})
-    np.testing.assert_allclose(compiled["out"], expected, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"a": left, "b": slope})
+    np.testing.assert_allclose(
+        reference_outputs["out"], expected, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_mod_matches_numpy() -> None:
     model = _make_mod_model()
-    compiler = Compiler()
     left = np.random.uniform(0.1, 2.0, size=(2, 3)).astype(np.float32)
     right = np.random.uniform(0.1, 2.0, size=(2, 3)).astype(np.float32)
     expected = np.fmod(left, right)
-    compiled = compiler.run(model, {"a": left, "b": right})
-    np.testing.assert_allclose(compiled["out"], expected, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"a": left, "b": right})
+    np.testing.assert_allclose(
+        reference_outputs["out"], expected, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_codegen_golden_mul_add() -> None:
@@ -522,7 +541,6 @@ def test_codegen_golden_large_temp_static() -> None:
 
 def test_mul_add_matches_onnxruntime() -> None:
     model = _make_mul_add_model()
-    compiler = Compiler()
     input_a = np.random.rand(2, 3).astype(np.float32)
     input_b = np.random.rand(2, 3).astype(np.float32)
     input_c = np.random.rand(2, 3).astype(np.float32)
@@ -530,13 +548,16 @@ def test_mul_add_matches_onnxruntime() -> None:
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"a": input_a, "b": input_b, "c": input_c})
 
-    compiled = compiler.run(model, {"a": input_a, "b": input_b, "c": input_c})
-    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(
+        model, {"a": input_a, "b": input_b, "c": input_c}
+    )
+    np.testing.assert_allclose(
+        reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_mul_add_relu_matches_onnxruntime() -> None:
     model = _make_mul_add_relu_model()
-    compiler = Compiler()
     input_a = np.random.rand(2, 3).astype(np.float32)
     input_b = np.random.rand(2, 3).astype(np.float32)
     input_c = np.random.rand(2, 3).astype(np.float32)
@@ -544,8 +565,12 @@ def test_mul_add_relu_matches_onnxruntime() -> None:
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"a": input_a, "b": input_b, "c": input_c})
 
-    compiled = compiler.run(model, {"a": input_a, "b": input_b, "c": input_c})
-    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(
+        model, {"a": input_a, "b": input_b, "c": input_c}
+    )
+    np.testing.assert_allclose(
+        reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5
+    )
 
 
 def test_codegen_golden_matmul() -> None:
@@ -567,12 +592,13 @@ def test_codegen_includes_testbench() -> None:
 
 def test_matmul_matches_onnxruntime() -> None:
     model = _make_matmul_model()
-    compiler = Compiler()
     input_a = np.random.rand(2, 3).astype(np.float32)
     input_b = np.random.rand(3, 4).astype(np.float32)
 
     sess = ort.InferenceSession(model.SerializeToString(), providers=["CPUExecutionProvider"])
     (ort_out,) = sess.run(None, {"a": input_a, "b": input_b})
 
-    compiled = compiler.run(model, {"a": input_a, "b": input_b})
-    np.testing.assert_allclose(compiled["out"], ort_out, rtol=1e-4, atol=1e-5)
+    reference_outputs = _run_reference(model, {"a": input_a, "b": input_b})
+    np.testing.assert_allclose(
+        reference_outputs["out"], ort_out, rtol=1e-4, atol=1e-5
+    )

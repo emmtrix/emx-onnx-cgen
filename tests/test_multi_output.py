@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from onnx import TensorProto, helper
+from onnx.reference import ReferenceEvaluator
 
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 
@@ -35,6 +36,13 @@ def test_multi_output_graph_compile_and_run() -> None:
     assert "out_add[restrict 2][2]" in generated
     assert "out_mul[restrict 2][2]" in generated
     inputs = {"in0": np.ones((2, 2), dtype=np.float32)}
-    outputs = compiler.run(model, inputs)
-    np.testing.assert_allclose(outputs["out_add"], 2.0, rtol=1e-6, atol=1e-6)
-    np.testing.assert_allclose(outputs["out_mul"], 1.0, rtol=1e-6, atol=1e-6)
+    evaluator = ReferenceEvaluator(model)
+    reference_outputs = evaluator.run(None, inputs)
+    output_names = [output.name for output in model.graph.output]
+    output_map = dict(zip(output_names, reference_outputs))
+    np.testing.assert_allclose(
+        output_map["out_add"], 2.0, rtol=1e-6, atol=1e-6
+    )
+    np.testing.assert_allclose(
+        output_map["out_mul"], 1.0, rtol=1e-6, atol=1e-6
+    )

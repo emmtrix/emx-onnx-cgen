@@ -120,6 +120,7 @@ How verification works:
    directory.
 3. **Run runtime backend**: the JSON inputs from the testbench are fed to the
    selected runtime (`onnxruntime` or `onnx-reference`) using the same model.
+   The compiler no longer ships a Python runtime evaluator.
 4. **Compare outputs**: floating outputs are compared by maximum ULP distance
    (see https://www.emmtrix.com/wiki/ULP_Difference_of_Float_Numbers for the
    ULP definition and algorithm); non-floating outputs must match exactly.
