@@ -18,6 +18,7 @@ _LOWERING_MODULES = [
     "conv_transpose",
     "cumsum",
     "depth_space",
+    "dequantize_linear",
     "dropout",
     "einsum",
     "elementwise",

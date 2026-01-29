@@ -14,6 +14,32 @@
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | ████████████████ |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | █████████████ |
 | Unsupported op ImageDecoder | 9 | ████████ |
+| Dropout supports only the data input and 1 or 2 outputs | 8 | ███████ |
+| Out of tolerance | 8 | ███████ |
+| Unsupported op TfIdfVectorizer | 7 | ██████ |
+| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | █████ |
+| Unsupported op CenterCropPad | 6 | █████ |
+| Unsupported op DFT | 6 | █████ |
+| Unsupported op ScatterElements | 6 | █████ |
+| Unsupported op Unique | 6 | █████ |
+| Unsupported op Col2Im | 5 | ████ |
+| Unsupported op If | 5 | ████ |
+| Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | ███ |
+| Unsupported op AffineGrid | 4 | ███ |
+| Unsupported op Compress | 4 | ███ |
+| Unsupported op DeformConv | 4 | ███ |
+| Unsupported op OptionalHasElement | 4 | ███ |
+| Unsupported op RNN | 4 | ███ |
+| Elu only supports alpha=1.0 | 3 | ██ |
+| HardSigmoid only supports alpha=0.2 | 3 | ██ |
+| LeakyRelu only supports alpha=0.01 | 3 | ██ |
+| Unsupported op Bernoulli | 3 | ██ |
+| Unsupported op DynamicQuantizeLinear | 3 | ██ |
+| Unsupported op Loop | 3 | ██ |
+| Unsupported op Momentum | 3 | ██ |
+| Unsupported op RandomUniformLike | 3 | ██ |
+| Unsupported op RoiAlign | 3 | ██ |
+| name '*' is not defined | 3 | ██ |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | ████████ |
 | Out of tolerance | 8 | ████████ |
 | Unsupported op TfIdfVectorizer | 7 | ███████ |

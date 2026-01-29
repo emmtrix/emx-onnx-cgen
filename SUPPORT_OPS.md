@@ -49,7 +49,7 @@ Supported operators: 147 / 198
 | DFT | ❌ |
 | DeformConv | ❌ |
 | DepthToSpace | ✅ |
-| DequantizeLinear | ❌ |
+| DequantizeLinear | ✅ |
 | Det | ❌ |
 | Div | ✅ |
 | Dropout | ✅ |
