@@ -28,7 +28,6 @@
 | Unsupported op AffineGrid | 4 | ███ |
 | Unsupported op Compress | 4 | ███ |
 | Unsupported op DeformConv | 4 | ███ |
-| Unsupported op GRU | 4 | ███ |
 | Unsupported op OptionalHasElement | 4 | ███ |
 | Unsupported op RNN | 4 | ███ |
 | Elu only supports alpha=1.0 | 3 | ██ |

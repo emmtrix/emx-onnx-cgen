@@ -37,6 +37,7 @@ from ..ir.ops import (
     AttentionOp,
     AveragePoolOp,
     BatchNormOp,
+    BernoulliOp,
     BinaryOp,
     CastOp,
     ClipOp,
@@ -55,6 +56,7 @@ from ..ir.ops import (
     GatherNDOp,
     GatherOp,
     GemmOp,
+    GruOp,
     GridSampleOp,
     GroupNormalizationOp,
     HammingWindowOp,
@@ -480,6 +482,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | AdagradOp
         | SoftmaxOp
@@ -497,6 +500,7 @@ class CEmitter:
         | TransposeOp
         | ReshapeOp
         | IdentityOp
+        | BernoulliOp
         | EyeLikeOp
         | TriluOp
         | TileOp
@@ -647,6 +651,19 @@ class CEmitter:
             return (op.input0, op.output)
         if isinstance(op, RMSNormalizationOp):
             return (op.input0, op.scale, op.output)
+        if isinstance(op, GruOp):
+            names = [op.input_x, op.input_w, op.input_r]
+            if op.input_b is not None:
+                names.append(op.input_b)
+            if op.input_sequence_lens is not None:
+                names.append(op.input_sequence_lens)
+            if op.input_initial_h is not None:
+                names.append(op.input_initial_h)
+            if op.output_y is not None:
+                names.append(op.output_y)
+            if op.output_y_h is not None:
+                names.append(op.output_y_h)
+            return tuple(names)
         if isinstance(op, LstmOp):
             names = [op.input_x, op.input_w, op.input_r]
             if op.input_b is not None:
@@ -750,6 +767,8 @@ class CEmitter:
         if isinstance(op, ReshapeOp):
             return (op.input0, op.output)
         if isinstance(op, IdentityOp):
+            return (op.input0, op.output)
+        if isinstance(op, BernoulliOp):
             return (op.input0, op.output)
         if isinstance(op, EyeLikeOp):
             return (op.input0, op.output)
@@ -879,6 +898,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | AdagradOp
         | SoftmaxOp
@@ -949,6 +969,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | AdagradOp
         | SoftmaxOp
@@ -1452,6 +1473,35 @@ class CEmitter:
                 beta=op.beta,
                 bias=op.bias,
                 dtype=op.dtype,
+            )
+        if isinstance(op, GruOp):
+            return GruOp(
+                input_x=name_map.get(op.input_x, op.input_x),
+                input_w=name_map.get(op.input_w, op.input_w),
+                input_r=name_map.get(op.input_r, op.input_r),
+                input_b=self._map_optional_name(name_map, op.input_b),
+                input_sequence_lens=self._map_optional_name(
+                    name_map, op.input_sequence_lens
+                ),
+                input_initial_h=self._map_optional_name(
+                    name_map, op.input_initial_h
+                ),
+                output_y=self._map_optional_name(name_map, op.output_y),
+                output_y_h=self._map_optional_name(name_map, op.output_y_h),
+                seq_length=op.seq_length,
+                batch_size=op.batch_size,
+                input_size=op.input_size,
+                hidden_size=op.hidden_size,
+                num_directions=op.num_directions,
+                direction=op.direction,
+                layout=op.layout,
+                linear_before_reset=op.linear_before_reset,
+                clip=op.clip,
+                activation_kinds=op.activation_kinds,
+                activation_alphas=op.activation_alphas,
+                activation_betas=op.activation_betas,
+                dtype=op.dtype,
+                sequence_lens_dtype=op.sequence_lens_dtype,
             )
         if isinstance(op, LstmOp):
             return LstmOp(
@@ -1978,6 +2028,16 @@ class CEmitter:
                 dtype=op.dtype,
                 input_dtype=op.input_dtype,
             )
+        if isinstance(op, BernoulliOp):
+            return BernoulliOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_dtype=op.input_dtype,
+                dtype=op.dtype,
+                seed=op.seed,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=name_map.get(op.indices, op.indices),
@@ -2134,6 +2194,7 @@ class CEmitter:
                 ),
                 "rms_norm": self._env.get_template("rms_normalization_op.c.j2"),
                 "lrn": self._env.get_template("lrn_op.c.j2"),
+                "gru": self._env.get_template("gru_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
                 "softmax": self._env.get_template("softmax_op.c.j2"),
@@ -2157,6 +2218,7 @@ class CEmitter:
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
+                "bernoulli": self._env.get_template("bernoulli_op.c.j2"),
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
@@ -2739,7 +2801,7 @@ class CEmitter:
         except ScalarFunctionError:
             return None
 
-    def _lstm_activation_function_name(
+    def _rnn_activation_function_name(
         self,
         kind: int,
         alpha: float,
@@ -2750,7 +2812,7 @@ class CEmitter:
         spec = _LSTM_ACTIVATION_SPECS.get(kind)
         if spec is None:
             raise CodegenError(
-                f"Unsupported LSTM activation kind for codegen: {kind}"
+                f"Unsupported RNN activation kind for codegen: {kind}"
             )
         function, param_count = spec
         if param_count == 0:
@@ -2764,7 +2826,7 @@ class CEmitter:
         )
         if name is None:
             raise CodegenError(
-                f"Failed to resolve scalar function for LSTM activation kind {kind}"
+                f"Failed to resolve scalar function for RNN activation kind {kind}"
             )
         return name
 
@@ -2797,6 +2859,7 @@ class CEmitter:
             | MeanVarianceNormalizationOp
             | RMSNormalizationOp
             | LrnOp
+            | GruOp
             | LstmOp
             | AdagradOp
             | SoftmaxOp
@@ -3067,6 +3130,7 @@ class CEmitter:
             | MeanVarianceNormalizationOp
             | RMSNormalizationOp
             | LrnOp
+            | GruOp
             | LstmOp
             | AdagradOp
             | SoftmaxOp
@@ -3178,6 +3242,7 @@ class CEmitter:
                     MeanVarianceNormalizationOp,
                     RMSNormalizationOp,
                     LrnOp,
+                    GruOp,
                     LstmOp,
                     AdagradOp,
                     SoftmaxOp,
@@ -3252,6 +3317,7 @@ class CEmitter:
             | MeanVarianceNormalizationOp
             | RMSNormalizationOp
             | LrnOp
+            | GruOp
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
@@ -3357,6 +3423,7 @@ class CEmitter:
             | MeanVarianceNormalizationOp
             | RMSNormalizationOp
             | LrnOp
+            | GruOp
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
@@ -3472,6 +3539,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | AdagradOp
         | SoftmaxOp
@@ -3668,6 +3736,20 @@ class CEmitter:
             return ", ".join(args)
         if isinstance(op, RMSNormalizationOp):
             args.extend([op.input0, op.scale, op.output])
+            return ", ".join(args)
+        if isinstance(op, GruOp):
+            call_parts = [op.input_x, op.input_w, op.input_r]
+            if op.input_b is not None:
+                call_parts.append(op.input_b)
+            if op.input_sequence_lens is not None:
+                call_parts.append(op.input_sequence_lens)
+            if op.input_initial_h is not None:
+                call_parts.append(op.input_initial_h)
+            if op.output_y is not None:
+                call_parts.append(op.output_y)
+            if op.output_y_h is not None:
+                call_parts.append(op.output_y_h)
+            args.extend(call_parts)
             return ", ".join(args)
         if isinstance(op, LstmOp):
             call_parts = [op.input_x, op.input_w, op.input_r]
@@ -3930,6 +4012,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | AdagradOp
         | SoftmaxOp
@@ -3998,6 +4081,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | AdagradOp
         | SoftmaxOp
@@ -4334,6 +4418,51 @@ class CEmitter:
                 batch=op.batch,
                 input_rank=op.input_rank,
                 interleaved=op.interleaved,
+            )
+        if isinstance(op, GruOp):
+            return GruOp(
+                input_x=temp_map.get(op.input_x, op.input_x),
+                input_w=temp_map.get(op.input_w, op.input_w),
+                input_r=temp_map.get(op.input_r, op.input_r),
+                input_b=(
+                    temp_map.get(op.input_b, op.input_b)
+                    if op.input_b is not None
+                    else None
+                ),
+                input_sequence_lens=(
+                    temp_map.get(op.input_sequence_lens, op.input_sequence_lens)
+                    if op.input_sequence_lens is not None
+                    else None
+                ),
+                input_initial_h=(
+                    temp_map.get(op.input_initial_h, op.input_initial_h)
+                    if op.input_initial_h is not None
+                    else None
+                ),
+                output_y=(
+                    temp_map.get(op.output_y, op.output_y)
+                    if op.output_y is not None
+                    else None
+                ),
+                output_y_h=(
+                    temp_map.get(op.output_y_h, op.output_y_h)
+                    if op.output_y_h is not None
+                    else None
+                ),
+                seq_length=op.seq_length,
+                batch_size=op.batch_size,
+                input_size=op.input_size,
+                hidden_size=op.hidden_size,
+                num_directions=op.num_directions,
+                direction=op.direction,
+                layout=op.layout,
+                linear_before_reset=op.linear_before_reset,
+                clip=op.clip,
+                activation_kinds=op.activation_kinds,
+                activation_alphas=op.activation_alphas,
+                activation_betas=op.activation_betas,
+                dtype=op.dtype,
+                sequence_lens_dtype=op.sequence_lens_dtype,
             )
         if isinstance(op, LstmOp):
             return LstmOp(
@@ -5168,6 +5297,16 @@ class CEmitter:
                 largest=op.largest,
                 sorted=op.sorted,
             )
+        if isinstance(op, BernoulliOp):
+            return BernoulliOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_dtype=op.input_dtype,
+                dtype=op.dtype,
+                seed=op.seed,
+            )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
@@ -5218,6 +5357,7 @@ class CEmitter:
             mean_variance_norm_template=templates["mean_variance_norm"],
             rms_norm_template=templates["rms_norm"],
             lrn_template=templates["lrn"],
+            gru_template=templates["gru"],
             lstm_template=templates["lstm"],
             adagrad_template=templates["adagrad"],
             softmax_template=templates["softmax"],
@@ -5236,6 +5376,7 @@ class CEmitter:
             transpose_template=templates["transpose"],
             reshape_template=templates["reshape"],
             identity_template=templates["identity"],
+            bernoulli_template=templates["bernoulli"],
             eye_like_template=templates["eye_like"],
             trilu_template=templates["trilu"],
             tile_template=templates["tile"],
@@ -5305,6 +5446,7 @@ class CEmitter:
         mean_variance_norm_template,
         rms_norm_template,
         lrn_template,
+        gru_template,
         lstm_template,
         adagrad_template,
         softmax_template,
@@ -5321,6 +5463,7 @@ class CEmitter:
         transpose_template,
         reshape_template,
         identity_template,
+        bernoulli_template,
         eye_like_template,
         trilu_template,
         tile_template,
@@ -6968,6 +7111,162 @@ class CEmitter:
                 pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, GruOp):
+            params = self._shared_param_map(
+                [
+                    ("input_x", op.input_x),
+                    ("input_w", op.input_w),
+                    ("input_r", op.input_r),
+                    ("input_b", op.input_b),
+                    ("input_sequence_lens", op.input_sequence_lens),
+                    ("input_initial_h", op.input_initial_h),
+                    ("output_y", op.output_y),
+                    ("output_y_h", op.output_y_h),
+                ]
+            )
+            input_x_shape = (
+                (op.seq_length, op.batch_size, op.input_size)
+                if op.layout == 0
+                else (op.batch_size, op.seq_length, op.input_size)
+            )
+            w_shape = (op.num_directions, 3 * op.hidden_size, op.input_size)
+            r_shape = (op.num_directions, 3 * op.hidden_size, op.hidden_size)
+            b_shape = (
+                (op.num_directions, 6 * op.hidden_size)
+                if op.input_b is not None
+                else None
+            )
+            seq_shape = (
+                (op.batch_size,) if op.input_sequence_lens is not None else None
+            )
+            state_shape = (
+                (op.num_directions, op.batch_size, op.hidden_size)
+                if op.layout == 0
+                else (op.batch_size, op.num_directions, op.hidden_size)
+            )
+            h_shape = (
+                state_shape
+                if op.input_initial_h is not None or op.output_y_h is not None
+                else None
+            )
+            y_shape = (
+                (op.seq_length, op.num_directions, op.batch_size, op.hidden_size)
+                if op.layout == 0
+                else (op.batch_size, op.seq_length, op.num_directions, op.hidden_size)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input_x"],
+                        c_type,
+                        self._param_array_suffix(input_x_shape),
+                        True,
+                    ),
+                    (
+                        params["input_w"],
+                        c_type,
+                        self._param_array_suffix(w_shape),
+                        True,
+                    ),
+                    (
+                        params["input_r"],
+                        c_type,
+                        self._param_array_suffix(r_shape),
+                        True,
+                    ),
+                    (
+                        params["input_b"],
+                        c_type,
+                        self._param_array_suffix(b_shape),
+                        True,
+                    )
+                    if params["input_b"]
+                    else (None, "", "", True),
+                    (
+                        params["input_sequence_lens"],
+                        (op.sequence_lens_dtype or ScalarType.I64).c_type,
+                        self._param_array_suffix(seq_shape),
+                        True,
+                    )
+                    if params["input_sequence_lens"]
+                    else (None, "", "", True),
+                    (
+                        params["input_initial_h"],
+                        c_type,
+                        self._param_array_suffix(h_shape),
+                        True,
+                    )
+                    if params["input_initial_h"]
+                    else (None, "", "", True),
+                    (
+                        params["output_y"],
+                        c_type,
+                        self._param_array_suffix(y_shape),
+                        False,
+                    )
+                    if params["output_y"]
+                    else (None, "", "", False),
+                    (
+                        params["output_y_h"],
+                        c_type,
+                        self._param_array_suffix(h_shape),
+                        False,
+                    )
+                    if params["output_y_h"]
+                    else (None, "", "", False),
+                ]
+            )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for GRU codegen."
+                )
+            activation_functions = tuple(
+                self._rnn_activation_function_name(
+                    kind,
+                    alpha,
+                    beta,
+                    op.dtype,
+                    scalar_registry,
+                )
+                for kind, alpha, beta in zip(
+                    op.activation_kinds,
+                    op.activation_alphas,
+                    op.activation_betas,
+                )
+            )
+            rendered = gru_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input_x=params["input_x"],
+                input_w=params["input_w"],
+                input_r=params["input_r"],
+                input_b=params["input_b"],
+                input_sequence_lens=params["input_sequence_lens"],
+                input_initial_h=params["input_initial_h"],
+                output_y=params["output_y"],
+                output_y_h=params["output_y_h"],
+                params=param_decls,
+                c_type=c_type,
+                seq_c_type=(op.sequence_lens_dtype or ScalarType.I64).c_type,
+                zero_literal=zero_literal,
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+                clip_literal=(
+                    CEmitter._format_floating(op.clip, op.dtype)
+                    if op.clip is not None
+                    else CEmitter._format_literal(op.dtype, 0)
+                ),
+                use_clip=int(op.clip is not None and op.clip > 0),
+                seq_length=op.seq_length,
+                batch_size=op.batch_size,
+                input_size=op.input_size,
+                hidden_size=op.hidden_size,
+                num_directions=op.num_directions,
+                layout=op.layout,
+                direction=op.direction,
+                linear_before_reset=op.linear_before_reset,
+                activation_functions=activation_functions,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, LstmOp):
             params = self._shared_param_map(
                 [
@@ -7113,7 +7412,7 @@ class CEmitter:
                     "Scalar function registry is required for LSTM codegen."
                 )
             activation_functions = tuple(
-                self._lstm_activation_function_name(
+                self._rnn_activation_function_name(
                     kind,
                     alpha,
                     beta,
@@ -8161,6 +8460,56 @@ class CEmitter:
                 output_suffix=output_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, BernoulliOp):
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(op.output_shape)
+            output_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0)
+            )
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            output_dtype = op.dtype
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
+                ]
+            )
+            one_literal = (
+                "true"
+                if output_dtype == ScalarType.BOOL
+                else f"({output_dtype.c_type})1"
+            )
+            zero_literal = (
+                "false"
+                if output_dtype == ScalarType.BOOL
+                else output_dtype.zero_literal
+            )
+            rendered = bernoulli_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                input_index_expr="".join(
+                    f"[{var}]" for var in loop_vars
+                ),
+                output_index_expr="".join(
+                    f"[{var}]" for var in loop_vars
+                ),
+                shape=shape,
+                loop_vars=loop_vars,
+                seed=op.seed if op.seed is not None else 0,
+                one_literal=one_literal,
+                zero_literal=zero_literal,
+                dim_args=dim_args,
+                params=param_decls,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
@@ -10509,6 +10858,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
@@ -10578,6 +10928,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
@@ -10798,6 +11149,7 @@ class CEmitter:
             | MeanVarianceNormalizationOp
             | RMSNormalizationOp
             | LrnOp
+            | GruOp
             | LstmOp
             | SoftmaxOp
             | LogSoftmaxOp
@@ -10872,6 +11224,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
@@ -10963,6 +11316,39 @@ class CEmitter:
                         op.dtype,
                     )
             )
+            return tuple(outputs)
+        if isinstance(op, GruOp):
+            outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
+            if op.output_y is not None:
+                if op.layout == 0:
+                    y_shape = (
+                        op.seq_length,
+                        op.num_directions,
+                        op.batch_size,
+                        op.hidden_size,
+                    )
+                else:
+                    y_shape = (
+                        op.batch_size,
+                        op.seq_length,
+                        op.num_directions,
+                        op.hidden_size,
+                    )
+                outputs.append((op.output_y, y_shape, op.dtype))
+            if op.output_y_h is not None:
+                if op.layout == 0:
+                    state_shape = (
+                        op.num_directions,
+                        op.batch_size,
+                        op.hidden_size,
+                    )
+                else:
+                    state_shape = (
+                        op.batch_size,
+                        op.num_directions,
+                        op.hidden_size,
+                    )
+                outputs.append((op.output_y_h, state_shape, op.dtype))
             return tuple(outputs)
         if isinstance(op, LstmOp):
             outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
@@ -11095,6 +11481,7 @@ class CEmitter:
         | MeanVarianceNormalizationOp
         | RMSNormalizationOp
         | LrnOp
+        | GruOp
         | LstmOp
         | SoftmaxOp
         | LogSoftmaxOp
@@ -11109,6 +11496,7 @@ class CEmitter:
         | TransposeOp
         | ReshapeOp
         | IdentityOp
+        | BernoulliOp
         | EyeLikeOp
         | TriluOp
         | TileOp
@@ -11214,6 +11602,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, IdentityOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, BernoulliOp):
+            return op.output_shape
         if isinstance(op, EyeLikeOp):
             return op.output_shape
         if isinstance(op, TriluOp):
@@ -11303,6 +11693,7 @@ class CEmitter:
         | TransposeOp
         | ReshapeOp
         | IdentityOp
+        | BernoulliOp
         | EyeLikeOp
         | TriluOp
         | TileOp

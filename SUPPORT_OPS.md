@@ -63,7 +63,7 @@ Supported operators: 145 / 198
 | EyeLike | ✅ |
 | Flatten | ✅ |
 | Floor | ✅ |
-| GRU | ❌ |
+| GRU | ✅ |
 | Gather | ✅ |
 | GatherElements | ✅ |
 | GatherND | ✅ |

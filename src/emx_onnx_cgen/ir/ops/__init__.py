@@ -10,6 +10,7 @@ from .elementwise import (
     WhereOp,
 )
 from .misc import (
+    BernoulliOp,
     CastOp,
     ConcatOp,
     ConstantOfShapeOp,
@@ -53,6 +54,7 @@ from .nn import (
     EinsumKind,
     EinsumOp,
     GemmOp,
+    GruOp,
     GroupNormalizationOp,
     HardmaxOp,
     InstanceNormalizationOp,
@@ -80,6 +82,7 @@ __all__ = [
     "AttentionOp",
     "AveragePoolOp",
     "BatchNormOp",
+    "BernoulliOp",
     "BinaryOp",
     "CastOp",
     "ClipOp",
@@ -99,6 +102,7 @@ __all__ = [
     "GatherOp",
     "GemmOp",
     "GridSampleOp",
+    "GruOp",
     "HammingWindowOp",
     "GroupNormalizationOp",
     "HardmaxOp",

@@ -1,6 +1,7 @@
 # Official ONNX file support
 
 Support 1388 / 1802 official ONNX files.
+Support 1387 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -723,10 +724,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_example/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_example_expanded/model.onnx | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_gru_batchwise/model.onnx | ❌ | Unsupported op GRU |
-| onnx-org/onnx/backend/test/data/node/test_gru_defaults/model.onnx | ❌ | Unsupported op GRU |
-| onnx-org/onnx/backend/test/data/node/test_gru_seq_length/model.onnx | ❌ | Unsupported op GRU |
-| onnx-org/onnx/backend/test/data/node/test_gru_with_initial_bias/model.onnx | ❌ | Unsupported op GRU |
+| onnx-org/onnx/backend/test/data/node/test_gru_batchwise/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_gru_defaults/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_gru_seq_length/model.onnx | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_gru_with_initial_bias/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hammingwindow/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded/model.onnx | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric/model.onnx | ✅ | OK (max ULP 5) |

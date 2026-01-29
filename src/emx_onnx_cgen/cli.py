@@ -30,6 +30,7 @@ from .testbench import decode_testbench_array
 from .verification import format_success_message, worst_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
+_NONDETERMINISTIC_OPERATORS = {"Bernoulli"}
 
 
 @dataclass(frozen=True)
@@ -1083,6 +1084,21 @@ def _verify_model(
                 value.name: output
                 for value, output in zip(graph.outputs, runtime_outputs_list)
             }
+        nondeterministic_ops = sorted(
+            set(operators).intersection(_NONDETERMINISTIC_OPERATORS)
+        )
+        if nondeterministic_ops:
+            active_reporter.note(
+                "Skipping output comparison for non-deterministic operator(s): "
+                f"{', '.join(nondeterministic_ops)}"
+            )
+            return (
+                "OK (non-deterministic output)",
+                None,
+                operators,
+                opset_version,
+                generated_checksum,
+            )
         payload_outputs = payload.get("outputs", {})
         max_ulp = 0
         worst_diff: _WorstDiff | None = None

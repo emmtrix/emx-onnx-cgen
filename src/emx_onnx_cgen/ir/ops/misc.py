@@ -199,6 +199,16 @@ class EyeLikeOp(RenderableOpBase):
     input_dtype: ScalarType
 
 @dataclass(frozen=True)
+class BernoulliOp(RenderableOpBase):
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    input_dtype: ScalarType
+    dtype: ScalarType
+    seed: int | None
+
+@dataclass(frozen=True)
 class TriluOp(RenderableOpBase):
     input0: str
     output: str

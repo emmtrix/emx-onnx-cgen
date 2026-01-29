@@ -106,8 +106,23 @@ def main() -> None:
         "inspect generated C code and compile commands without rerunning the pipeline."
     )
     prompt_lines.append(
-        "Workflow hint: locate `register_lowering(...)` for the failing op and follow "
-        "the path into codegen templates to trace end-to-end integration points."
+        "Codegen wiring hint: new ops usually need updates in name mapping and temp "
+        "buffer resolution paths; if codegen crashes on missing attributes, check "
+        "the emit-time mapping helpers for that op."
+    )
+    prompt_lines.append(
+        "Artifact hint: pass `--keep-temp-dir` during verification to inspect the "
+        "generated C/testbench files when narrowing down failures."
+    )
+    prompt_lines.append(
+        "Shape inference hint: run ONNX shape inference and compare graph inputs "
+        "against initializers to confirm which shapes and dtypes are truly dynamic "
+        "before adjusting lowering or codegen."
+    )
+    prompt_lines.append(
+        "Pattern hint: locate a similar op in lowering/codegen and mirror its "
+        "registration, template wiring, and output-shape handling to avoid "
+        "integration gaps."
     )
 
     prompt_lines.append("\nAnalyze the root cause and implement a fix.")
