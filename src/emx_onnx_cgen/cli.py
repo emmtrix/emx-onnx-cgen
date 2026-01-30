@@ -340,6 +340,19 @@ def _build_parser() -> argparse.ArgumentParser:
         )
         subparser.set_defaults(restrict_arrays=True)
 
+    def add_fp32_accumulation_strategy_flag(
+        subparser: argparse.ArgumentParser,
+    ) -> None:
+        subparser.add_argument(
+            "--fp32-accumulation-strategy",
+            choices=("simple", "fp64"),
+            default="fp64",
+            help=(
+                "Accumulation strategy for float32 inputs "
+                "(simple uses float32, fp64 uses double; default: fp64)"
+            ),
+        )
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -414,6 +427,7 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     add_restrict_flags(compile_parser)
+    add_fp32_accumulation_strategy_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -538,6 +552,7 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     add_restrict_flags(verify_parser)
+    add_fp32_accumulation_strategy_flag(verify_parser)
     return parser
 
 
@@ -649,6 +664,7 @@ def _compile_model(
             command_line=args.command_line,
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
+            fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
@@ -855,6 +871,7 @@ def _verify_model(
             command_line=None,
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
+            fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,

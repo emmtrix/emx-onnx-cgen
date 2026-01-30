@@ -316,6 +316,7 @@ class CEmitter:
         template_dir: Path | None,
         *,
         restrict_arrays: bool = True,
+        fp32_accumulation_strategy: str = "fp64",
         truncate_weights_after: int | None = None,
         large_temp_threshold_bytes: int = 1024,
         large_weight_threshold: int = 1024,
@@ -332,6 +333,11 @@ class CEmitter:
             lstrip_blocks=True,
         )
         self._restrict_arrays = restrict_arrays
+        if fp32_accumulation_strategy not in {"simple", "fp64"}:
+            raise CodegenError(
+                "fp32_accumulation_strategy must be 'simple' or 'fp64'"
+            )
+        self._fp32_accumulation_strategy = fp32_accumulation_strategy
         if truncate_weights_after is not None and truncate_weights_after < 1:
             raise CodegenError("truncate_weights_after must be >= 1")
         self._truncate_weights_after = truncate_weights_after
@@ -6516,6 +6522,16 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
+            if op.dtype in {ScalarType.F16, ScalarType.F32}:
+                acc_dtype = (
+                    ScalarType.F32
+                    if self._fp32_accumulation_strategy == "simple"
+                    else ScalarType.F64
+                )
+            else:
+                acc_dtype = op.dtype
+            acc_type = acc_dtype.c_type
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             input_shape = (op.batch, op.in_channels, *op.in_spatial)
             weight_shape = (
                 op.out_channels,
@@ -6559,6 +6575,8 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
                 zero_literal=zero_literal,
                 input_suffix=input_suffix,
                 weight_suffix=weight_suffix,

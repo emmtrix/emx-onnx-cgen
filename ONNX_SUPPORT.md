@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1404 / 1802 official ONNX files.
+Support 1405 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -11,7 +11,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
 | onnx-org/onnx/backend/test/data/light/light_bvlc_alexnet.onnx | 9 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | 9 | ✅ | OK (max ULP 73) |
+| onnx-org/onnx/backend/test/data/light/light_densenet121.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v1.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | 9 | ✅ | OK (max ULP 0) |
@@ -1685,32 +1685,32 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_eval/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm3d_momentum_eval/model.onnx | 6 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConstantPad2d/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d/model.onnx | 6 | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d/model.onnx | 6 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_dilated/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_groups/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad1size1/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2/model.onnx | 6 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2/model.onnx | 6 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_pad2size1/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d/model.onnx | 6 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv1d_stride/model.onnx | 6 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d/model.onnx | 6 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_padded/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_strided/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_with_multiplier/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_dilated/model.onnx | 6 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_dilated/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx | 6 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_no_bias/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_padding/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_strided/model.onnx | 6 | ✅ | OK (max ULP 9) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx | 6 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx | 6 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | 6 | ❌ | Out of tolerance (max ULP 576) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_groups/model.onnx | 6 | ✅ | OK (max ULP 9) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | 6 | ✅ | OK (max ULP 5) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | 6 | ✅ | OK (max ULP 7) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_groups_thnn/model.onnx | 6 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_no_bias/model.onnx | 6 | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_padding/model.onnx | 6 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_strided/model.onnx | 6 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx | 6 | ✅ | OK (max ULP 17) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx | 6 | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | 6 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_groups/model.onnx | 6 | ✅ | OK (max ULP 5) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | 6 | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | 6 | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | 6 | ✅ | OK (max ULP 6) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx | 6 | ✅ | OK (max ULP 0) |
@@ -1764,7 +1764,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx | 6 | ❌ | Out of tolerance (max ULP 17525756) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_concat2/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx | 6 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx | 6 | ✅ | OK (max ULP 10) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_exp/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_flatten/model.onnx | 6 | ✅ | OK (max ULP 0) |
