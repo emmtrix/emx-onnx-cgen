@@ -1,6 +1,7 @@
 # Official ONNX file support
 
 Support 1399 / 1802 official ONNX files.
+Support 1404 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -609,10 +610,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_einsum_scalar/model.onnx | 12 | ❌ | Failed to build testbench. |
 | onnx-org/onnx/backend/test/data/node/test_einsum_sum/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_einsum_transpose/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_elu/model.onnx | 22 | ❌ | Elu only supports alpha=1.0 |
+| onnx-org/onnx/backend/test/data/node/test_elu/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_elu_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_elu_default_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_elu_example/model.onnx | 22 | ❌ | Elu only supports alpha=1.0 |
+| onnx-org/onnx/backend/test/data/node/test_elu_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_elu_example_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_elu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal/model.onnx | 19 | ✅ | OK (max ULP 0) |
@@ -835,10 +836,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis/model.onnx | 17 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded/model.onnx | 17 | ✅ | OK (max ULP 8) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/node/test_leakyrelu/model.onnx | 16 | ❌ | LeakyRelu only supports alpha=0.01 |
+| onnx-org/onnx/backend/test/data/node/test_leakyrelu/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_leakyrelu_default/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_leakyrelu_default_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_leakyrelu_example/model.onnx | 16 | ❌ | LeakyRelu only supports alpha=0.01 |
+| onnx-org/onnx/backend/test/data/node/test_leakyrelu_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_leakyrelu_example_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_leakyrelu_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_less/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1713,13 +1714,13 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding/model.onnx | 6 | ✅ | OK (max ULP 6) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_ConvTranspose2d_no_bias/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx | 6 | ❌ | Elu only supports alpha=1.0 |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU_with_negval/model.onnx | 6 | ❌ | LeakyRelu only supports alpha=0.01 |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_LeakyReLU_with_negval/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_LogSoftmax/model.onnx | 6 | ✅ | OK (max ULP 2) |
