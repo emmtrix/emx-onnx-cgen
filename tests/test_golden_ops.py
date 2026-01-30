@@ -8,6 +8,7 @@ from onnx import TensorProto, helper
 
 from golden_utils import assert_golden
 from emx_onnx_cgen import Compiler
+from emx_onnx_cgen.compiler import CompilerOptions
 from test_ops import (
     _make_arg_reduce_model,
     _make_batchnorm_model,
@@ -409,8 +410,13 @@ def _make_argmax_model() -> onnx.ModelProto:
     )
 
 
-def _compile_and_assert_golden(model: onnx.ModelProto, filename: str) -> None:
-    compiler = Compiler()
+def _compile_and_assert_golden(
+    model: onnx.ModelProto,
+    filename: str,
+    *,
+    options: CompilerOptions | None = None,
+) -> None:
+    compiler = Compiler(options) if options is not None else Compiler()
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / filename
     assert_golden(generated, golden_path)
@@ -421,6 +427,16 @@ def _make_test_case(model_fn: Callable[[], onnx.ModelProto], filename: str) -> C
         _compile_and_assert_golden(model_fn(), filename)
 
     return _test
+
+
+def test_codegen_golden_conv_simple_accumulation() -> None:
+    model = _make_conv_model()
+    options = CompilerOptions(fp32_accumulation_strategy="simple")
+    _compile_and_assert_golden(
+        model,
+        "op_conv_conv_simple.c",
+        options=options,
+    )
 
 
 # Each entry is (class_name, op_name, model_factory). class_name must be a single

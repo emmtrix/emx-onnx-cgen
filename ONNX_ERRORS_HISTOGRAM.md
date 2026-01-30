@@ -15,7 +15,7 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 8 | 6, 9, 19, 22 |
+| Out of tolerance | 7 | 6, 9, 19, 22 |
 | Unsupported op TfIdfVectorizer | 7 | 9 |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | 25 |
 | Unsupported op CenterCropPad | 6 | 18 |
@@ -78,7 +78,9 @@
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Out of tolerance | 6 | 2 |
+| Elu only supports alpha=1.0 | 6 | 1 |
+| LeakyRelu only supports alpha=0.01 | 6 | 1 |
+| Out of tolerance | 6 | 1 |
 | Unsupported op Scan | 8 | 1 |
 | Unsupported op TfIdfVectorizer | 9 | 7 |
 | Out of tolerance | 9 | 1 |

@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 5)",
+  "error": "OK (max ULP 6)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "7e71138a1866525d08247e6527211fe1516348021c5d46eff8dad860c9444e0d"
+  "generated_checksum": "c223fcfa0a66e56c708b61efc627762af6f112b5ff348ef78d514c3899e9c43d"
 }
