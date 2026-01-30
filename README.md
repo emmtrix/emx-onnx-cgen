@@ -90,6 +90,8 @@ Options:
 - `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`; set to `0` to disable).
 - `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
+- `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
+- `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 
 ### `verify`
 
@@ -111,6 +113,8 @@ Options:
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
 - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
+- `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
+- `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 
 How verification works:
 
