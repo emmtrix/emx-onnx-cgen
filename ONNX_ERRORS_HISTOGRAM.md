@@ -78,8 +78,6 @@
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Elu only supports alpha=1.0 | 6 | 1 |
-| LeakyRelu only supports alpha=0.01 | 6 | 1 |
 | Out of tolerance | 6 | 1 |
 | Unsupported op Scan | 8 | 1 |
 | Unsupported op TfIdfVectorizer | 9 | 7 |
