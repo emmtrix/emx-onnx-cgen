@@ -431,7 +431,7 @@ def _make_test_case(model_fn: Callable[[], onnx.ModelProto], filename: str) -> C
 
 def test_codegen_golden_conv_simple_accumulation() -> None:
     model = _make_conv_model()
-    options = CompilerOptions(conv_accumulation="simple")
+    options = CompilerOptions(fp32_accumulation_strategy="simple")
     _compile_and_assert_golden(
         model,
         "op_conv_conv_simple.c",
