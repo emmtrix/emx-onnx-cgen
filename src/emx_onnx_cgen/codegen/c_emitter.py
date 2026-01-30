@@ -317,6 +317,7 @@ class CEmitter:
         *,
         restrict_arrays: bool = True,
         fp32_accumulation_strategy: str = "fp64",
+        fp16_accumulation_strategy: str = "fp32",
         truncate_weights_after: int | None = None,
         large_temp_threshold_bytes: int = 1024,
         large_weight_threshold: int = 1024,
@@ -338,6 +339,11 @@ class CEmitter:
                 "fp32_accumulation_strategy must be 'simple' or 'fp64'"
             )
         self._fp32_accumulation_strategy = fp32_accumulation_strategy
+        if fp16_accumulation_strategy not in {"simple", "fp32"}:
+            raise CodegenError(
+                "fp16_accumulation_strategy must be 'simple' or 'fp32'"
+            )
+        self._fp16_accumulation_strategy = fp16_accumulation_strategy
         if truncate_weights_after is not None and truncate_weights_after < 1:
             raise CodegenError("truncate_weights_after must be >= 1")
         self._truncate_weights_after = truncate_weights_after
@@ -409,6 +415,21 @@ class CEmitter:
             name_map[key] = unique
             mapped[key] = unique
         return mapped
+
+    def _accumulation_dtype(self, dtype: ScalarType) -> ScalarType:
+        if dtype == ScalarType.F32:
+            return (
+                ScalarType.F32
+                if self._fp32_accumulation_strategy == "simple"
+                else ScalarType.F64
+            )
+        if dtype == ScalarType.F16:
+            return (
+                ScalarType.F16
+                if self._fp16_accumulation_strategy == "simple"
+                else ScalarType.F32
+            )
+        return dtype
 
     def _ctx_name(self, name: str) -> str:
         if self._emit_state is None:
@@ -6522,14 +6543,7 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            if op.dtype in {ScalarType.F16, ScalarType.F32}:
-                acc_dtype = (
-                    ScalarType.F32
-                    if self._fp32_accumulation_strategy == "simple"
-                    else ScalarType.F64
-                )
-            else:
-                acc_dtype = op.dtype
+            acc_dtype = self._accumulation_dtype(op.dtype)
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             input_shape = (op.batch, op.in_channels, *op.in_spatial)

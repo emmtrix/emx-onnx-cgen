@@ -41,6 +41,7 @@ class CompilerOptions:
     model_checksum: str | None = None
     restrict_arrays: bool = True
     fp32_accumulation_strategy: str = "fp64"
+    fp16_accumulation_strategy: str = "fp32"
     testbench_inputs: Mapping[str, np.ndarray] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
     truncate_weights_after: int | None = None
@@ -72,6 +73,7 @@ class Compiler:
             options.template_dir,
             restrict_arrays=options.restrict_arrays,
             fp32_accumulation_strategy=options.fp32_accumulation_strategy,
+            fp16_accumulation_strategy=options.fp16_accumulation_strategy,
             truncate_weights_after=options.truncate_weights_after,
             large_temp_threshold_bytes=options.large_temp_threshold_bytes,
             large_weight_threshold=options.large_weight_threshold,
