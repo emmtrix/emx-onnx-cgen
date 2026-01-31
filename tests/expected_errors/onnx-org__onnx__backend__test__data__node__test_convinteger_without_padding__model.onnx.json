@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op ConvInteger",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_convinteger_without_padding model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ConvInteger"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "5509d9f3749b01ffb119caab1017e8885596dd9c35f09e7feba6f169136b3437"
 }

@@ -44,6 +44,7 @@ from ..ir.ops import (
     ConcatOp,
     ConstantOfShapeOp,
     ConvOp,
+    ConvIntegerOp,
     ConvTransposeOp,
     CumSumOp,
     DepthToSpaceOp,
@@ -504,6 +505,7 @@ class CEmitter:
         | AttentionOp
         | RotaryEmbeddingOp
         | ConvOp
+        | ConvIntegerOp
         | AveragePoolOp
         | BatchNormOp
         | LpNormalizationOp
@@ -649,6 +651,14 @@ class CEmitter:
             names = [op.input0, op.weights]
             if op.bias is not None:
                 names.append(op.bias)
+            names.append(op.output)
+            return tuple(names)
+        if isinstance(op, ConvIntegerOp):
+            names = [op.input0, op.weights]
+            if op.x_zero_point is not None:
+                names.append(op.x_zero_point)
+            if op.w_zero_point is not None:
+                names.append(op.w_zero_point)
             names.append(op.output)
             return tuple(names)
         if isinstance(op, ConvTransposeOp):
@@ -927,6 +937,7 @@ class CEmitter:
         | AttentionOp
         | RotaryEmbeddingOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -1000,6 +1011,7 @@ class CEmitter:
         | AttentionOp
         | RotaryEmbeddingOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -1338,6 +1350,35 @@ class CEmitter:
                 dilations=op.dilations,
                 group=op.group,
                 dtype=op.dtype,
+            )
+        if isinstance(op, ConvIntegerOp):
+            return ConvIntegerOp(
+                input0=name_map.get(op.input0, op.input0),
+                weights=name_map.get(op.weights, op.weights),
+                x_zero_point=self._map_optional_name(
+                    name_map, op.x_zero_point
+                ),
+                w_zero_point=self._map_optional_name(
+                    name_map, op.w_zero_point
+                ),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                group=op.group,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                dtype=op.dtype,
+                x_zero_point_shape=op.x_zero_point_shape,
+                w_zero_point_shape=op.w_zero_point_shape,
+                w_zero_point_per_channel=op.w_zero_point_per_channel,
             )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
@@ -2261,6 +2302,7 @@ class CEmitter:
                     "rotary_embedding_op.c.j2"
                 ),
                 "conv": self._env.get_template("conv_op.c.j2"),
+                "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
                 "conv_transpose": self._env.get_template(
                     "conv_transpose_op.c.j2"
                 ),
@@ -2956,6 +2998,7 @@ class CEmitter:
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvIntegerOp
             | ConvTransposeOp
             | AveragePoolOp
             | LpPoolOp
@@ -3228,6 +3271,7 @@ class CEmitter:
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvIntegerOp
             | ConvTransposeOp
             | AveragePoolOp
             | LpPoolOp
@@ -3416,6 +3460,7 @@ class CEmitter:
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvIntegerOp
             | ConvTransposeOp
             | AveragePoolOp
             | LpPoolOp
@@ -3523,6 +3568,7 @@ class CEmitter:
             | GemmOp
             | AttentionOp
             | ConvOp
+            | ConvIntegerOp
             | ConvTransposeOp
             | AveragePoolOp
             | LpPoolOp
@@ -3643,6 +3689,7 @@ class CEmitter:
         | AttentionOp
         | RotaryEmbeddingOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -3812,6 +3859,14 @@ class CEmitter:
                 args.extend([op.input0, op.weights, op.output])
                 return ", ".join(args)
             args.extend([op.input0, op.weights, op.bias, op.output])
+            return ", ".join(args)
+        if isinstance(op, ConvIntegerOp):
+            args.extend([op.input0, op.weights])
+            if op.x_zero_point is not None:
+                args.append(op.x_zero_point)
+            if op.w_zero_point is not None:
+                args.append(op.w_zero_point)
+            args.append(op.output)
             return ", ".join(args)
         if isinstance(op, ConvTransposeOp):
             if op.bias is None:
@@ -4128,6 +4183,7 @@ class CEmitter:
         | AttentionOp
         | RotaryEmbeddingOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -4198,6 +4254,7 @@ class CEmitter:
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -4700,6 +4757,35 @@ class CEmitter:
                 dilations=op.dilations,
                 group=op.group,
                 dtype=op.dtype,
+            )
+        if isinstance(op, ConvIntegerOp):
+            return ConvIntegerOp(
+                input0=temp_map.get(op.input0, op.input0),
+                weights=temp_map.get(op.weights, op.weights),
+                x_zero_point=temp_map.get(op.x_zero_point, op.x_zero_point)
+                if op.x_zero_point
+                else None,
+                w_zero_point=temp_map.get(op.w_zero_point, op.w_zero_point)
+                if op.w_zero_point
+                else None,
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                group=op.group,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                dtype=op.dtype,
+                x_zero_point_shape=op.x_zero_point_shape,
+                w_zero_point_shape=op.w_zero_point_shape,
+                w_zero_point_per_channel=op.w_zero_point_per_channel,
             )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
@@ -5499,6 +5585,7 @@ class CEmitter:
             attention_template=templates["attention"],
             rotary_embedding_template=templates["rotary_embedding"],
             conv_template=templates["conv"],
+            conv_integer_template=templates["conv_integer"],
             conv_transpose_template=templates["conv_transpose"],
             avg_pool_template=templates["avg_pool"],
             lp_pool_template=templates["lp_pool"],
@@ -5590,6 +5677,7 @@ class CEmitter:
         attention_template,
         rotary_embedding_template,
         conv_template,
+        conv_integer_template,
         conv_transpose_template,
         avg_pool_template,
         lp_pool_template,
@@ -6668,6 +6756,129 @@ class CEmitter:
                 out_indices=out_indices,
                 kernel_indices=kernel_indices,
                 in_indices=in_indices,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, ConvIntegerOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("weights", op.weights),
+                    ("x_zero_point", op.x_zero_point),
+                    ("w_zero_point", op.w_zero_point),
+                    ("output", op.output),
+                ]
+            )
+            acc_dtype = op.dtype
+            acc_type = acc_dtype.c_type
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
+            input_shape = (op.batch, op.in_channels, *op.in_spatial)
+            weight_shape = (
+                op.out_channels,
+                op.in_channels // op.group,
+                *op.kernel_shape,
+            )
+            output_shape = (op.batch, op.out_channels, *op.out_spatial)
+            out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
+            kernel_indices = tuple(
+                f"kd{dim}" for dim in range(op.spatial_rank)
+            )
+            in_indices = tuple(f"id{dim}" for dim in range(op.spatial_rank))
+            pad_begin = op.pads[: op.spatial_rank]
+            group_in_channels = op.in_channels // op.group
+            group_out_channels = op.out_channels // op.group
+            input_suffix = self._param_array_suffix(input_shape)
+            weight_suffix = self._param_array_suffix(weight_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            x_zero_suffix = (
+                self._param_array_suffix(op.x_zero_point_shape)
+                if op.x_zero_point_shape is not None
+                else ""
+            )
+            w_zero_suffix = (
+                self._param_array_suffix(op.w_zero_point_shape)
+                if op.w_zero_point_shape is not None
+                else ""
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input0"],
+                        op.input_dtype.c_type,
+                        input_suffix,
+                        True,
+                    ),
+                    (
+                        params["weights"],
+                        op.weight_dtype.c_type,
+                        weight_suffix,
+                        True,
+                    ),
+                    (
+                        params["x_zero_point"],
+                        op.input_dtype.c_type,
+                        x_zero_suffix,
+                        True,
+                    )
+                    if params["x_zero_point"]
+                    else (None, "", "", True),
+                    (
+                        params["w_zero_point"],
+                        op.weight_dtype.c_type,
+                        w_zero_suffix,
+                        True,
+                    )
+                    if params["w_zero_point"]
+                    else (None, "", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            x_zero_expr = (
+                f"{params['x_zero_point']}[0]"
+                if params["x_zero_point"]
+                else "0"
+            )
+            if params["w_zero_point"]:
+                if op.w_zero_point_per_channel:
+                    w_zero_expr = f"{params['w_zero_point']}[oc_global]"
+                else:
+                    w_zero_expr = f"{params['w_zero_point']}[0]"
+            else:
+                w_zero_expr = "0"
+            rendered = conv_integer_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                weights=params["weights"],
+                x_zero_point=params["x_zero_point"],
+                w_zero_point=params["w_zero_point"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                input_suffix=input_suffix,
+                weight_suffix=weight_suffix,
+                x_zero_suffix=x_zero_suffix,
+                w_zero_suffix=w_zero_suffix,
+                output_suffix=output_suffix,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads_begin=pad_begin,
+                dilations=op.dilations,
+                group=op.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                in_indices=in_indices,
+                x_zero_expr=x_zero_expr,
+                w_zero_expr=w_zero_expr,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvTransposeOp):
@@ -11108,6 +11319,7 @@ class CEmitter:
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -11179,6 +11391,7 @@ class CEmitter:
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -11478,6 +11691,7 @@ class CEmitter:
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp
@@ -11745,6 +11959,7 @@ class CEmitter:
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvIntegerOp
         | AveragePoolOp
         | BatchNormOp
         | LpNormalizationOp
@@ -11821,6 +12036,8 @@ class CEmitter:
         if isinstance(op, GemmOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ConvOp):
+            return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, ConvIntegerOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
@@ -11947,6 +12164,7 @@ class CEmitter:
         | GemmOp
         | AttentionOp
         | ConvOp
+        | ConvIntegerOp
         | ConvTransposeOp
         | AveragePoolOp
         | LpPoolOp

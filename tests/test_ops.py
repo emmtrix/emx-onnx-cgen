@@ -29,6 +29,7 @@ from emx_onnx_cgen.ir.ops import ResizeOp
 from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
+from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.shape import lower_shape
@@ -1904,6 +1905,61 @@ def _make_conv_model() -> onnx.ModelProto:
     return model
 
 
+def _make_convinteger_model(*, per_channel_zero_point: bool = False) -> onnx.ModelProto:
+    input_shape = [1, 1, 3, 3]
+    weight_shape = [2, 1, 2, 2]
+    output_shape = [1, 2, 4, 4]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.UINT8, input_shape
+    )
+    weight_values = np.arange(8, dtype=np.uint8).reshape(weight_shape)
+    weight_tensor = helper.make_tensor(
+        "weight",
+        TensorProto.UINT8,
+        dims=weight_shape,
+        vals=weight_values.flatten().tolist(),
+    )
+    x_zero_point = helper.make_tensor(
+        "x_zero_point", TensorProto.UINT8, dims=[], vals=[1]
+    )
+    if per_channel_zero_point:
+        w_zero_point = helper.make_tensor(
+            "w_zero_point",
+            TensorProto.UINT8,
+            dims=[2],
+            vals=[0, 1],
+        )
+    else:
+        w_zero_point = helper.make_tensor(
+            "w_zero_point", TensorProto.UINT8, dims=[], vals=[0]
+        )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.INT32, output_shape
+    )
+    conv_node = helper.make_node(
+        "ConvInteger",
+        inputs=["in0", "weight", "x_zero_point", "w_zero_point"],
+        outputs=[output.name],
+        pads=[1, 1, 1, 1],
+        strides=[1, 1],
+    )
+    graph = helper.make_graph(
+        [conv_node],
+        "convinteger_graph",
+        [input_info],
+        [output],
+        initializer=[weight_tensor, x_zero_point, w_zero_point],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 10)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_conv_transpose_model() -> onnx.ModelProto:
     input_shape = [1, 1, 3, 3]
     weight_shape = [1, 1, 3, 3]
@@ -3601,6 +3657,17 @@ def test_lower_onehot_axis_normalization() -> None:
     assert op.depth_dim == 4
 
 
+def test_lower_convinteger_per_channel_zero_point() -> None:
+    model = _make_convinteger_model(per_channel_zero_point=True)
+    graph = import_onnx(model)
+    op = lower_conv_integer(graph, graph.nodes[0])
+    assert op.dtype == ScalarType.I32
+    assert op.input_dtype == ScalarType.U8
+    assert op.weight_dtype == ScalarType.U8
+    assert op.w_zero_point_per_channel is True
+    assert op.out_spatial == (4, 4)
+
+
 def test_lower_pad_dynamic_axes_input() -> None:
     input_info = helper.make_tensor_value_info(
         "input", TensorProto.FLOAT, [2, 3]
@@ -4374,6 +4441,11 @@ def test_unsqueeze_op_matches_onnxruntime() -> None:
 def test_conv_op_matches_onnxruntime() -> None:
     model = _make_conv_model()
     _run_ort_compare(model)
+
+
+def test_convinteger_op_matches_onnxruntime() -> None:
+    model = _make_convinteger_model(per_channel_zero_point=False)
+    _run_testbench_compare(model)
 
 
 def test_conv_transpose_op_matches_onnxruntime() -> None:
