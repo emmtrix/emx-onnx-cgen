@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1415 / 1802 official ONNX files.
+Support 1417 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -529,8 +529,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_conv_with_strides_and_asymmetric_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_conv_with_strides_no_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_conv_with_strides_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_convinteger_with_padding/model.onnx | 10 | ❌ | Unsupported op ConvInteger |
-| onnx-org/onnx/backend/test/data/node/test_convinteger_without_padding/model.onnx | 10 | ❌ | Unsupported op ConvInteger |
+| onnx-org/onnx/backend/test/data/node/test_convinteger_with_padding/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_convinteger_without_padding/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_convtranspose/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_convtranspose_1d/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_convtranspose_3d/model.onnx | 22 | ✅ | OK (max ULP 0) |

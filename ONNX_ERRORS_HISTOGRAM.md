@@ -48,7 +48,6 @@
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op BlackmanWindow | 2 | 17 |
-| Unsupported op ConvInteger | 2 | 10 |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op Gradient | 2 | 12 |
 | Unsupported op HannWindow | 2 | 17 |
@@ -77,7 +76,6 @@
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 10 | 12 |
-| Unsupported op ConvInteger | 10 | 2 |
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
 | Unsupported op MatMulInteger | 10 | 1 |

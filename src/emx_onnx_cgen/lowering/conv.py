@@ -26,9 +26,14 @@ class ConvSpec:
     group: int
 
 
-def resolve_conv_spec(graph: Graph, node: Node) -> ConvSpec:
-    if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-        raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
+def resolve_conv_spec(
+    graph: Graph,
+    node: Node,
+    *,
+    input_name: str,
+    weight_name: str,
+    bias_name: str | None,
+) -> ConvSpec:
     supported_attrs = {
         "auto_pad",
         "dilations",
@@ -39,8 +44,8 @@ def resolve_conv_spec(graph: Graph, node: Node) -> ConvSpec:
     }
     if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("Conv has unsupported attributes")
-    input_shape = _value_shape(graph, node.inputs[0], node)
-    weight_shape = _value_shape(graph, node.inputs[1], node)
+    input_shape = _value_shape(graph, input_name, node)
+    weight_shape = _value_shape(graph, weight_name, node)
     if len(input_shape) < 3:
         raise UnsupportedOpError("Conv expects NCHW inputs with spatial dims")
     spatial_rank = len(input_shape) - 2
@@ -79,8 +84,8 @@ def resolve_conv_spec(graph: Graph, node: Node) -> ConvSpec:
             "Conv input channels must match weight channels, "
             f"got {in_channels} and {weight_in_channels * group}"
         )
-    if len(node.inputs) == 3:
-        bias_shape = _value_shape(graph, node.inputs[2], node)
+    if bias_name is not None:
+        bias_shape = _value_shape(graph, bias_name, node)
         if bias_shape != (out_channels,):
             raise ShapeInferenceError(
                 f"Conv bias shape must be {(out_channels,)}, got {bias_shape}"
@@ -171,7 +176,13 @@ def lower_conv(graph: Graph, node: Node) -> ConvOp:
         raise UnsupportedOpError(
             "Conv supports float16, float, and double inputs only"
         )
-    spec = resolve_conv_spec(graph, node)
+    spec = resolve_conv_spec(
+        graph,
+        node,
+        input_name=node.inputs[0],
+        weight_name=node.inputs[1],
+        bias_name=node.inputs[2] if len(node.inputs) == 3 else None,
+    )
     return ConvOp(
         input0=node.inputs[0],
         weights=node.inputs[1],

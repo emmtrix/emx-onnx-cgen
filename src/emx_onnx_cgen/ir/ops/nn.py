@@ -424,6 +424,31 @@ class ConvOp(ConvLikeOpBase):
         return self.out_spatial[1]
 
 @dataclass(frozen=True)
+class ConvIntegerOp(ConvLikeOpBase):
+    input0: str
+    weights: str
+    x_zero_point: str | None
+    w_zero_point: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    group: int
+    input_dtype: ScalarType
+    weight_dtype: ScalarType
+    dtype: ScalarType
+    x_zero_point_shape: tuple[int, ...] | None
+    w_zero_point_shape: tuple[int, ...] | None
+    w_zero_point_per_channel: bool
+
+@dataclass(frozen=True)
 class ConvTransposeOp(ConvLikeOpBase):
     input0: str
     weights: str
