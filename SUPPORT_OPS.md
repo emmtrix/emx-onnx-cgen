@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 149 / 200
+Supported operators: 150 / 200
 
 | Operator | Supported |
 | --- | --- |
@@ -148,7 +148,7 @@ Supported operators: 149 / 200
 | RotaryEmbedding | ✅ |
 | Round | ✅ |
 | STFT | ❌ |
-| Scan | ❌ |
+| Scan | ✅ |
 | Scatter | ❌ |
 | ScatterElements | ❌ |
 | ScatterND | ✅ |

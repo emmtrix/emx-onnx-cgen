@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1405 / 1802 official ONNX files.
+Support 1407 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1362,8 +1362,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_round/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_scan9_sum/model.onnx | 9 | ❌ | Unsupported op Scan |
-| onnx-org/onnx/backend/test/data/node/test_scan_sum/model.onnx | 8 | ❌ | Unsupported op Scan |
+| onnx-org/onnx/backend/test/data/node/test_scan9_sum/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_scan_sum/model.onnx | 8 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_axis/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_duplicate_indices/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_negative_indices/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
