@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 8)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Constant",
@@ -20,5 +20,5 @@
     "Reciprocal"
   ],
   "opset_version": 17,
-  "generated_checksum": "07a6b056e2d1807f511a4f5eb1b49c99868150d43c27e3a323cdf444725298e4"
+  "generated_checksum": "9c4b9b8c1405604773b46aded63cf6e2787516508f09a32904b3b84105f4ac61"
 }

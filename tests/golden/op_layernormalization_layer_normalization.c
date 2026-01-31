@@ -45,35 +45,25 @@
  */
 static inline void node0_layernormalization(const float input0[2][3][4], const float scale[3][4], const float bias[3][4], float output[2][3][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
-        float sum = 0.0f;
-        float sum_comp = 0.0f;
+        double sum = 0.0;
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                float kahan_value = (float)input0[i0][i1][i2];
-                float kahan_y = kahan_value - sum_comp;
-                float kahan_t = sum + kahan_y;
-                sum_comp = (kahan_t - sum) - kahan_y;
-                sum = kahan_t;
+                sum += (double)input0[i0][i1][i2];
             }
         }
-        float mean = sum / 12;
-        float var = 0.0f;
-        float var_comp = 0.0f;
+        double mean = sum / 12;
+        double var = 0.0;
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                float diff = (float)input0[i0][i1][i2] - mean;
-                float kahan_value = diff * diff;
-                float kahan_y = kahan_value - var_comp;
-                float kahan_t = var + kahan_y;
-                var_comp = (kahan_t - var) - kahan_y;
-                var = kahan_t;
+                double diff = (double)input0[i0][i1][i2] - mean;
+                var += diff * diff;
             }
         }
         var = var / 12;
-        float inv_std = 1.0f / sqrtf(var + 9.99999975e-06f);
+        double inv_std = 1.0 / sqrt(var + 9.9999997473787516e-06);
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                float value = ((float)input0[i0][i1][i2] - mean) * inv_std;
+                double value = ((double)input0[i0][i1][i2] - mean) * inv_std;
                 value = value * scale[i1][i2] + bias[i1][i2];
                 output[i0][i1][i2] = value;
             }

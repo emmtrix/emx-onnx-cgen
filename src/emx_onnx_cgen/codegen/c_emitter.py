@@ -5978,6 +5978,8 @@ class CEmitter:
             input0_suffix = self._param_array_suffix(input0_shape)
             input1_suffix = self._param_array_suffix(input1_shape)
             output_suffix = self._param_array_suffix(self._ctx_shape(op.output))
+            acc_dtype = self._accumulation_dtype(self._ctx_dtype(op.output))
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], c_type, input0_suffix, True),
@@ -5996,8 +5998,8 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 c_type=c_type,
-                acc_type=c_type,
-                zero_literal=zero_literal,
+                acc_type=acc_dtype.c_type,
+                zero_literal=acc_zero_literal,
                 input0_suffix=input0_suffix,
                 input1_suffix=input1_suffix,
                 output_suffix=output_suffix,
@@ -6059,6 +6061,8 @@ class CEmitter:
                     ),
                 ]
             )
+            acc_dtype = self._accumulation_dtype(self._ctx_dtype(op.output))
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             input_loop_vars: tuple[str, ...] = ()
             input_loop_bounds: tuple[str | int, ...] = ()
             reduce_loop_var = "k"
@@ -6131,8 +6135,8 @@ class CEmitter:
                 output_loop_vars=output_loop_vars,
                 output_loop_bounds=output_shape,
                 output_expr=output_expr,
-                acc_type=op.dtype.c_type,
-                zero_literal=zero_literal,
+                acc_type=acc_dtype.c_type,
+                zero_literal=acc_zero_literal,
                 input_loop_vars=input_loop_vars,
                 input_loop_bounds=input_loop_bounds,
                 reduce_loop_var=reduce_loop_var,
@@ -6189,6 +6193,8 @@ class CEmitter:
             beta_literal = CEmitter._format_literal(
                 dtype, self._derived(op, "beta")
             )
+            acc_dtype = self._accumulation_dtype(dtype)
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             if c_shape is None:
                 c_rank = 0
                 c_dim0 = 0
@@ -6214,8 +6220,8 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 c_type=dtype.c_type,
-                acc_type=dtype.c_type,
-                zero_literal=zero_literal,
+                acc_type=acc_dtype.c_type,
+                zero_literal=acc_zero_literal,
                 alpha_literal=alpha_literal,
                 beta_literal=beta_literal,
                 trans_a=int(trans_a),
@@ -6976,11 +6982,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LayerNormalizationOp):
-            acc_dtype = (
-                ScalarType.F32
-                if op.dtype in {ScalarType.F16, ScalarType.F32}
-                else op.dtype
-            )
+            acc_dtype = self._accumulation_dtype(op.dtype)
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
@@ -6988,7 +6990,7 @@ class CEmitter:
                 op.epsilon, acc_dtype
             )
             acc_sqrt_fn = CEmitter._math_fn(acc_dtype, "sqrtf", "sqrt")
-            use_kahan = op.dtype in {ScalarType.F16, ScalarType.F32}
+            use_kahan = False
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -7813,11 +7815,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
-            acc_dtype = (
-                ScalarType.F64
-                if op.dtype in {ScalarType.F16, ScalarType.F32}
-                else op.dtype
-            )
+            acc_dtype = self._accumulation_dtype(op.dtype)
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
@@ -7874,11 +7872,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
-            acc_dtype = (
-                ScalarType.F64
-                if op.dtype in {ScalarType.F16, ScalarType.F32}
-                else op.dtype
-            )
+            acc_dtype = self._accumulation_dtype(op.dtype)
             if scalar_registry is None:
                 raise CodegenError(
                     "Scalar function registry is required for SoftmaxCrossEntropyLoss."
@@ -9251,8 +9245,6 @@ class CEmitter:
             update_expr = None
             init_literal = None
             final_expr = "acc"
-            use_kahan = False
-            kahan_value_expr = None
             fabs_fn = CEmitter._math_fn(output_dtype, "fabsf", "fabs")
             exp_fn = CEmitter._math_fn(output_dtype, "expf", "exp")
             log_fn = CEmitter._math_fn(output_dtype, "logf", "log")
@@ -9298,24 +9290,6 @@ class CEmitter:
                 raise CodegenError(
                     f"Unsupported reduce kind {op.reduce_kind}"
                 )
-            if output_dtype in {ScalarType.F16, ScalarType.F32} and op.reduce_kind in {
-                "sum",
-                "mean",
-                "logsum",
-                "logsumexp",
-                "l1",
-                "l2",
-                "sumsquare",
-            }:
-                use_kahan = True
-                if op.reduce_kind == "logsumexp":
-                    kahan_value_expr = f"{exp_fn}({value_expr})"
-                elif op.reduce_kind == "l1":
-                    kahan_value_expr = f"{fabs_fn}({value_expr})"
-                elif op.reduce_kind in {"l2", "sumsquare"}:
-                    kahan_value_expr = f"{value_expr} * {value_expr}"
-                else:
-                    kahan_value_expr = value_expr
             input_suffix = self._param_array_suffix(input_shape)
             output_suffix = self._param_array_suffix(output_shape_raw)
             param_decls = self._build_param_decls(
@@ -9342,8 +9316,8 @@ class CEmitter:
                 zero_literal=zero_literal,
                 update_expr=update_expr,
                 final_expr=final_expr,
-                use_kahan=use_kahan,
-                kahan_value_expr=kahan_value_expr,
+                use_kahan=False,
+                kahan_value_expr=None,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ArgReduceOp):

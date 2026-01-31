@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Shape",
@@ -24,5 +24,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "ac4dad3f449df73d46561b105dcdf5ecf17f2524da0e0de4a710d47c57a5f5c2"
+  "generated_checksum": "a1b5677fd65fc4483683db7ee93804c23a03e08af5b0a97f713f073ce8dfb9b0"
 }
