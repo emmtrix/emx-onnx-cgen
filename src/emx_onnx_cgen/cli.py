@@ -346,10 +346,10 @@ def _build_parser() -> argparse.ArgumentParser:
         subparser.add_argument(
             "--fp32-accumulation-strategy",
             choices=("simple", "fp64"),
-            default="fp64",
+            default="simple",
             help=(
                 "Accumulation strategy for float32 inputs "
-                "(simple uses float32, fp64 uses double; default: fp64)"
+                "(simple uses float32, fp64 uses double; default: simple)"
             ),
         )
 

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Shape",
@@ -24,5 +24,5 @@
     "Softmax"
   ],
   "opset_version": 23,
-  "generated_checksum": "c4c00e141a605757c61b8345358238f7732da4ecc507809a185228d711232024"
+  "generated_checksum": "55abbb96d285a0692bccdfe90197f80a230faa6e5b06e3bb5cc2f28f1ff29c01"
 }
