@@ -193,7 +193,7 @@ Supported operators: 151 / 200
 | Trilu | ✅ |
 | Unique | ❌ |
 | Unsqueeze | ✅ |
-| Upsample | ❌ |
+| Upsample | ✅ |
 | Where | ✅ |
 | Xor | ✅ |
 | ai.onnx.ml::ArrayFeatureExtractor | ❌ |
