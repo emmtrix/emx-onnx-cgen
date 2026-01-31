@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 73)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_densenet121.onnx",
   "operators": [
     "ConstantOfShape",
@@ -15,5 +15,5 @@
     "GlobalAveragePool"
   ],
   "opset_version": 9,
-  "generated_checksum": "152cb9d697cbad03d8dd4d2a5eb3b687a05a038cf67eb7ad3f608ec4098f5b2c"
+  "generated_checksum": "7746948345924b487a7b36532ef8784719ea7c1ed0f6686552ea44d57b6597fd"
 }

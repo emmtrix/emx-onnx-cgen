@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sce_NCd1_mean_weight_negative_ii_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Constant",
@@ -10,5 +10,5 @@
     "NegativeLogLikelihoodLoss"
   ],
   "opset_version": 13,
-  "generated_checksum": "510b5efefafeddf43c7c811cbfb9b9c17d1c67cb74d245a74b25d5f972103e92"
+  "generated_checksum": "91640e87fd749cb036ed4e310a2fcf09f4aad6d5c1050924937f67cb7ae55072"
 }

@@ -19,6 +19,14 @@ LOCAL_ONNX_DATA_ROOT = (
 )
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
+FP32_ACCUMULATION_FP64_MODELS = {
+    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx",
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx",
+    "onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx",
+}
 
 
 @dataclass(frozen=True)
@@ -382,6 +390,13 @@ def _run_expected_error_test(
             [
                 "--test-data-dir",
                 test_data_argument,
+            ]
+        )
+    if repo_relative_path in FP32_ACCUMULATION_FP64_MODELS:
+        verify_args.extend(
+            [
+                "--fp32-accumulation-strategy",
+                "fp64",
             ]
         )
 

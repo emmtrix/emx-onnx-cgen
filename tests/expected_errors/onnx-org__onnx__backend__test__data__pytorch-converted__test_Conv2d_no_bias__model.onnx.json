@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 5)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_no_bias model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "76d9eb8279b7329ea3a777c3eba439009fa1bf4d97f0fd67b95e94451a4f3237"
+  "generated_checksum": "ecf102bd0d194af6efc9231ce86db6ac85ea67644ce57c24cff7dde7328affcf"
 }
