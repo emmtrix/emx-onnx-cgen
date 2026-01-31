@@ -9,6 +9,7 @@ import pytest
 
 from test_official_onnx_files import (
     LOCAL_ONNX_DATA_ROOT,
+    MODEL_EXTRA_VERIFY_ARGS,
     OnnxFileExpectation,
     _load_expectation_for_repo_relative,
     _local_onnx_file_paths,
@@ -46,6 +47,10 @@ def _render_onnx_file_support_table(
             else ""
         )
         message = expectation.error.replace("\n", " ").strip()
+        extra_args = MODEL_EXTRA_VERIFY_ARGS.get(expectation.path)
+        if extra_args:
+            flag_text = " ".join(extra_args)
+            message = f"{message} (flags: {flag_text})".strip()
         lines.append(
             f"| {expectation.path} | {opset} | {supported} | {message} |"
         )
