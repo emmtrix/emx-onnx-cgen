@@ -70,6 +70,7 @@ _LOWERING_MODULES = [
     "split",
     "squeeze",
     "tensor_scatter",
+    "tfidf_vectorizer",
     "tile",
     "topk",
     "transpose",
