@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1404 / 1802 official ONNX files.
+Support 1405 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1762,7 +1762,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx | 6 | ❌ | Out of tolerance (max ULP 17525756) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_concat2/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_conv/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_convtranspose/model.onnx | 6 | ✅ | OK (max ULP 0) |

@@ -8,7 +8,13 @@ from ..ir.ops import BinaryOp, ClipOp, PowOp, UnaryOp
 from ..errors import UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
-from ..lowering.common import node_dtype, optional_name, value_dtype, value_shape
+from ..lowering.common import (
+    node_dtype,
+    onnx_opset_version,
+    optional_name,
+    value_dtype,
+    value_shape,
+)
 from ..lowering.registry import register_lowering, register_lowering_if_missing
 from ..ops import (
     BINARY_OP_TYPES,
@@ -30,6 +36,24 @@ def lower_clip(graph: Graph, node: Node) -> ClipOp:
         raise UnsupportedOpError("Clip input must be provided")
     min_name = optional_name(node.inputs, 1)
     max_name = optional_name(node.inputs, 2)
+    min_value = None
+    max_value = None
+    opset_version = onnx_opset_version(graph)
+    if opset_version is None or opset_version < 11:
+        if min_name is None and "min" in node.attrs:
+            try:
+                min_value = float(node.attrs["min"])
+            except (TypeError, ValueError) as exc:
+                raise UnsupportedOpError(
+                    "Clip min attribute must be numeric"
+                ) from exc
+        if max_name is None and "max" in node.attrs:
+            try:
+                max_value = float(node.attrs["max"])
+            except (TypeError, ValueError) as exc:
+                raise UnsupportedOpError(
+                    "Clip max attribute must be numeric"
+                ) from exc
     input_dtype = value_dtype(graph, input_name, node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if input_dtype != output_dtype:
@@ -62,6 +86,8 @@ def lower_clip(graph: Graph, node: Node) -> ClipOp:
         input_min=min_name,
         input_max=max_name,
         output=node.outputs[0],
+        min_value=min_value,
+        max_value=max_value,
     )
 
 
