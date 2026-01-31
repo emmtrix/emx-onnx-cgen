@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "LayerNormalization"
   ],
   "opset_version": 17,
-  "generated_checksum": "6346eb1bdfdf8f30370bbf6d338c24d50cac68da4d76eaf2d34b72e4c918689b"
+  "generated_checksum": "10415140c8e0785c7737bd4b093a6195d2c010c5a1821e84d95836ca2c549142"
 }

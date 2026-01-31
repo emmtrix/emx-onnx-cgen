@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_matmul_3d model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "MatMul"
   ],
   "opset_version": 13,
-  "generated_checksum": "61d193315d77ceb8a64e9f2f237a6efdd041f6443e5fc3c3e25f6b5d180340da"
+  "generated_checksum": "ac94785a9b4310d49d3448fe8ad1b96aaf6db791f8ed6c8eac703b0bb465aef7"
 }

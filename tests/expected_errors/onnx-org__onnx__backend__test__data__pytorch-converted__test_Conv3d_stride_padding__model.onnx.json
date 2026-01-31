@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 6)",
+  "error": "OK (max ULP 7)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride_padding model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Conv"
   ],
   "opset_version": 6,
-  "generated_checksum": "1dd9dcc9faf572623d1c799075bb3bae44ded3469667224aa5d0a27a21562b7f"
+  "generated_checksum": "a04aa7202fbde602156035c5c43a311451d1f2d8dffa31f33a7eb7862270f8cc"
 }

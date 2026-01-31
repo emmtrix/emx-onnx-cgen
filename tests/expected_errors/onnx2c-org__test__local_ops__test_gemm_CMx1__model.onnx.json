@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_gemm_CMx1 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Gemm"
   ],
   "opset_version": 12,
-  "generated_checksum": "ec6dd3a4e42f3a28623c8d6381b21f2c3ef86aa0c9e96a7df7f64d87376eb76a"
+  "generated_checksum": "1f580596a05669c9899a1412a222829805867caa12adf575b91b09cd49c8c127"
 }
