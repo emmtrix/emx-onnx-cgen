@@ -13,9 +13,9 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 9 | 9, 19, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
+| Out of tolerance | 7 | 9, 19, 22 |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | 25 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -76,7 +76,7 @@
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Out of tolerance | 9 | 3 |
+| Out of tolerance | 9 | 1 |
 | Unsupported op Upsample | 9 | 1 |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 10 | 12 |
 | Unsupported op ConvInteger | 10 | 2 |

@@ -32,7 +32,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         if (num_ngrams == 0) {
             continue;
         }
-        for (idx_t skip = 0; skip <= max_skip; ++skip) {
+        const idx_t skip_limit = gram_len == 1 ? 0 : max_skip;
+        for (idx_t skip = 0; skip <= skip_limit; ++skip) {
             const idx_t stride = skip + 1;
             if (seq_len < (gram_len - 1) * stride + 1) {
                 continue;
@@ -96,7 +97,8 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             if (num_ngrams == 0) {
                 continue;
             }
-            for (idx_t skip = 0; skip <= max_skip; ++skip) {
+            const idx_t skip_limit = gram_len == 1 ? 0 : max_skip;
+            for (idx_t skip = 0; skip <= skip_limit; ++skip) {
                 const idx_t stride = skip + 1;
                 if (seq_len < (gram_len - 1) * stride + 1) {
                     continue;
