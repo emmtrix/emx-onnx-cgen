@@ -20,6 +20,10 @@ LOCAL_ONNX_DATA_ROOT = (
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
 MODEL_EXTRA_VERIFY_ARGS = {
+    "onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx": (
+        "--runtime",
+        "onnx-reference",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",

@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1415 / 1802 official ONNX files.
+Support 1416 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/light/light_inception_v2.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_resnet50.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_shufflenet.onnx | 9 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | 9 | ❌ | Out of tolerance (max ULP 83684753) |
+| onnx-org/onnx/backend/test/data/light/light_squeezenet.onnx | 9 | ✅ | OK (max ULP 0) (flags: --runtime onnx-reference) |
 | onnx-org/onnx/backend/test/data/light/light_vgg19.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/light/light_zfnet512.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_abs/model.onnx | 13 | ✅ | OK (max ULP 0) |
