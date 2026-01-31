@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 152 / 200
+Supported operators: 153 / 200
 
 | Operator | Supported |
 | --- | --- |
@@ -41,7 +41,7 @@ Supported operators: 152 / 200
 | Constant | ✅ |
 | ConstantOfShape | ✅ |
 | Conv | ✅ |
-| ConvInteger | ❌ |
+| ConvInteger | ✅ |
 | ConvTranspose | ✅ |
 | Cos | ✅ |
 | Cosh | ✅ |

@@ -15,6 +15,7 @@ _LOWERING_MODULES = [
     "concat",
     "constant_of_shape",
     "conv",
+    "conv_integer",
     "conv_transpose",
     "cumsum",
     "depth_space",
