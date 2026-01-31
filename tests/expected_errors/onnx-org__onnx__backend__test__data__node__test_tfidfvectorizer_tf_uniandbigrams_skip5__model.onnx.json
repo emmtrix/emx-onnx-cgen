@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op TfIdfVectorizer",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_uniandbigrams_skip5 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "TfIdfVectorizer"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "1e25ed703395687030abe6979b6d7bb6306272054a11289234b5afcc9a6257e7"
 }

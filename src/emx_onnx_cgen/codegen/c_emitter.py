@@ -98,6 +98,7 @@ from ..ir.ops import (
     SpaceToDepthOp,
     SplitOp,
     TensorScatterOp,
+    TfIdfVectorizerOp,
     TileOp,
     TopKOp,
     TransposeOp,
@@ -793,6 +794,8 @@ class CEmitter:
             return (op.size, op.output)
         if isinstance(op, OneHotOp):
             return (op.indices, op.depth, op.values, op.output)
+        if isinstance(op, TfIdfVectorizerOp):
+            return (op.input0, op.output)
         if isinstance(op, SplitOp):
             return (op.input0, *op.outputs)
         if isinstance(op, ReshapeOp):
@@ -976,6 +979,7 @@ class CEmitter:
         | RangeOp
         | HammingWindowOp
         | OneHotOp
+        | TfIdfVectorizerOp
         | SplitOp,
         name_map: dict[str, str],
     ) -> (
@@ -1049,6 +1053,7 @@ class CEmitter:
         | HammingWindowOp
         | OneHotOp
         | SplitOp
+        | TfIdfVectorizerOp
     ):
         if isinstance(op, PowOp):
             return PowOp(
@@ -2099,6 +2104,23 @@ class CEmitter:
                 indices_dtype=op.indices_dtype,
                 depth_dtype=op.depth_dtype,
             )
+        if isinstance(op, TfIdfVectorizerOp):
+            return TfIdfVectorizerOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_dtype=op.input_dtype,
+                output_dtype=op.output_dtype,
+                min_gram_length=op.min_gram_length,
+                max_gram_length=op.max_gram_length,
+                max_skip_count=op.max_skip_count,
+                mode=op.mode,
+                ngram_counts=op.ngram_counts,
+                ngram_indexes=op.ngram_indexes,
+                pool_int64s=op.pool_int64s,
+                weights=op.weights,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2322,6 +2344,9 @@ class CEmitter:
                     "hamming_window_op.c.j2"
                 ),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
+                "tfidf_vectorizer": self._env.get_template(
+                    "tfidf_vectorizer_op.c.j2"
+                ),
                 "split": self._env.get_template("split_op.c.j2"),
             }
             if emit_testbench:
@@ -4153,6 +4178,7 @@ class CEmitter:
         | RangeOp
         | HammingWindowOp
         | OneHotOp
+        | TfIdfVectorizerOp
         | SplitOp,
         temp_map: dict[str, str],
     ) -> (
@@ -4223,6 +4249,7 @@ class CEmitter:
         | HammingWindowOp
         | OneHotOp
         | SplitOp
+        | TfIdfVectorizerOp
     ):
         if isinstance(op, PowOp):
             return PowOp(
@@ -5156,6 +5183,23 @@ class CEmitter:
                 indices_dtype=op.indices_dtype,
                 depth_dtype=op.depth_dtype,
             )
+        if isinstance(op, TfIdfVectorizerOp):
+            return TfIdfVectorizerOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_dtype=op.input_dtype,
+                output_dtype=op.output_dtype,
+                min_gram_length=op.min_gram_length,
+                max_gram_length=op.max_gram_length,
+                max_skip_count=op.max_skip_count,
+                mode=op.mode,
+                ngram_counts=op.ngram_counts,
+                ngram_indexes=op.ngram_indexes,
+                pool_int64s=op.pool_int64s,
+                weights=op.weights,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5511,6 +5555,7 @@ class CEmitter:
             range_template=templates["range"],
             hamming_window_template=templates["hamming_window"],
             one_hot_template=templates["one_hot"],
+            tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             split_template=templates["split"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
@@ -5599,6 +5644,7 @@ class CEmitter:
         range_template,
         hamming_window_template,
         one_hot_template,
+        tfidf_vectorizer_template,
         split_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
@@ -10120,6 +10166,85 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, TfIdfVectorizerOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_dim_names = _dim_names_for(op.input0)
+            output_dim_names = _dim_names_for(op.output)
+            input_suffix = self._param_array_suffix(
+                op.input_shape, input_dim_names
+            )
+            output_suffix = self._param_array_suffix(
+                op.output_shape, output_dim_names
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input0"],
+                        op.input_dtype.c_type,
+                        input_suffix,
+                        True,
+                    ),
+                    (
+                        params["output"],
+                        op.output_dtype.c_type,
+                        output_suffix,
+                        False,
+                    ),
+                ]
+            )
+            output_dim = op.output_shape[-1] if op.output_shape else 0
+            mode_id = {"TF": 0, "IDF": 1, "TFIDF": 2}[op.mode]
+            pool_values = [
+                CEmitter._format_literal(ScalarType.I64, value)
+                for value in op.pool_int64s
+            ]
+            ngram_counts_values = [
+                CEmitter._format_literal(ScalarType.I64, value)
+                for value in op.ngram_counts
+            ]
+            ngram_indexes_values = [
+                CEmitter._format_literal(ScalarType.I64, value)
+                for value in op.ngram_indexes
+            ]
+            weights_values = (
+                [
+                    CEmitter._format_literal(op.output_dtype, value)
+                    for value in op.weights
+                ]
+                if op.weights is not None
+                else None
+            )
+            rendered = tfidf_vectorizer_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                input_rank=len(op.input_shape),
+                output_dim=output_dim,
+                min_gram_length=op.min_gram_length,
+                max_gram_length=op.max_gram_length,
+                max_skip_count=op.max_skip_count,
+                mode_id=mode_id,
+                ngram_counts_len=len(op.ngram_counts),
+                pool_size=len(op.pool_int64s),
+                ngram_index_len=len(op.ngram_indexes),
+                pool_values=pool_values,
+                ngram_counts_values=ngram_counts_values,
+                ngram_indexes_values=ngram_indexes_values,
+                weights_values=weights_values,
+                zero_literal=op.output_dtype.zero_literal,
+                one_literal=CEmitter._format_literal(op.output_dtype, 1.0),
+                c_type=op.output_dtype.c_type,
+                input_c_type=op.input_dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SplitOp):
             output_params = [
                 (f"output_{index}", name)
@@ -11664,6 +11789,7 @@ class CEmitter:
         | RangeOp
         | HammingWindowOp
         | OneHotOp
+        | TfIdfVectorizerOp
         | RotaryEmbeddingOp
         | SplitOp
         | PadOp,
@@ -11798,6 +11924,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, OneHotOp):
             return op.output_shape
+        if isinstance(op, TfIdfVectorizerOp):
+            return op.output_shape
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -11861,6 +11989,7 @@ class CEmitter:
         | RangeOp
         | HammingWindowOp
         | OneHotOp
+        | TfIdfVectorizerOp
         | SplitOp
         | PadOp,
     ) -> ScalarType:
@@ -11871,6 +12000,8 @@ class CEmitter:
         if isinstance(op, OptionalHasElementOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, NonMaxSuppressionOp):
+            return op.output_dtype
+        if isinstance(op, TfIdfVectorizerOp):
             return op.output_dtype
         if isinstance(
             op,

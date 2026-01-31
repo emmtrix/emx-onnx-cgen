@@ -16,7 +16,6 @@
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 7 | 9, 19, 22 |
-| Unsupported op TfIdfVectorizer | 7 | 9 |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | 25 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -77,7 +76,6 @@
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Unsupported op TfIdfVectorizer | 9 | 7 |
 | Out of tolerance | 9 | 1 |
 | Unsupported op Upsample | 9 | 1 |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 10 | 12 |

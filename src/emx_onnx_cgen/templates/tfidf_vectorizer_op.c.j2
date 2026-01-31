@@ -1,0 +1,144 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const int64_t pool[{{ pool_size if pool_size > 0 else 1 }}] = { {% if pool_values %}{{ pool_values | join(', ') }}{% else %}0{% endif %} };
+    const int64_t ngram_counts[{{ ngram_counts_len if ngram_counts_len > 0 else 1 }}] = { {% if ngram_counts_values %}{{ ngram_counts_values | join(', ') }}{% else %}0{% endif %} };
+    const int64_t ngram_indexes[{{ ngram_index_len if ngram_index_len > 0 else 1 }}] = { {% if ngram_indexes_values %}{{ ngram_indexes_values | join(', ') }}{% else %}0{% endif %} };
+    {% if weights_values %}
+    const {{ c_type }} weights[{{ weights_values | length if weights_values | length > 0 else 1 }}] = { {% if weights_values %}{{ weights_values | join(', ') }}{% else %}{{ one_literal }}{% endif %} };
+    {% endif %}
+    const idx_t output_dim = {{ output_dim }};
+    const idx_t pool_size = {{ pool_size }};
+    const idx_t ngram_counts_len = {{ ngram_counts_len }};
+    const idx_t max_skip = {{ max_skip_count }};
+    const idx_t min_gram = {{ min_gram_length }};
+    const idx_t max_gram = {{ max_gram_length }};
+{% if input_rank == 1 %}
+    const idx_t seq_len = {{ input_shape[0] }};
+    for (idx_t o = 0; o < output_dim; ++o) {
+        {{ output }}[o] = {{ zero_literal }};
+    }
+    idx_t ngram_index_offset = 0;
+    for (idx_t gram_len = 1; gram_len < min_gram; ++gram_len) {
+        const idx_t count_start = (idx_t)ngram_counts[gram_len - 1];
+        const idx_t count_end =
+            gram_len < ngram_counts_len ? (idx_t)ngram_counts[gram_len] : pool_size;
+        const idx_t num_ngrams = (count_end - count_start) / gram_len;
+        ngram_index_offset += num_ngrams;
+    }
+    for (idx_t gram_len = min_gram; gram_len <= max_gram; ++gram_len) {
+        const idx_t count_start = (idx_t)ngram_counts[gram_len - 1];
+        const idx_t count_end =
+            gram_len < ngram_counts_len ? (idx_t)ngram_counts[gram_len] : pool_size;
+        const idx_t num_ngrams = (count_end - count_start) / gram_len;
+        if (num_ngrams == 0) {
+            continue;
+        }
+        const idx_t skip_limit = gram_len == 1 ? 0 : max_skip;
+        for (idx_t skip = 0; skip <= skip_limit; ++skip) {
+            const idx_t stride = skip + 1;
+            if (seq_len < (gram_len - 1) * stride + 1) {
+                continue;
+            }
+            const idx_t max_start = seq_len - (gram_len - 1) * stride;
+            for (idx_t start = 0; start < max_start; ++start) {
+                for (idx_t ngram_idx = 0; ngram_idx < num_ngrams; ++ngram_idx) {
+                    const idx_t pool_offset = count_start + ngram_idx * gram_len;
+                    int match = 1;
+                    for (idx_t pos = 0; pos < gram_len; ++pos) {
+                        const int64_t token = (int64_t){{ input0 }}[start + pos * stride];
+                        if (token != pool[pool_offset + pos]) {
+                            match = 0;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        const idx_t out_index =
+                            (idx_t)ngram_indexes[ngram_index_offset + ngram_idx];
+                        {{ output }}[out_index] += ({{ c_type }})1;
+                    }
+                }
+            }
+        }
+        ngram_index_offset += num_ngrams;
+    }
+{% if mode_id != 0 %}
+    for (idx_t o = 0; o < output_dim; ++o) {
+        {{ c_type }} value = {{ output }}[o];
+{% if mode_id == 1 %}
+        value = value > {{ zero_literal }} ? {{ one_literal }} : {{ zero_literal }};
+{% endif %}
+{% if weights_values %}
+        value *= weights[o];
+{% else %}
+        value *= {{ one_literal }};
+{% endif %}
+        {{ output }}[o] = value;
+    }
+{% endif %}
+{% else %}
+    const idx_t batch = {{ input_shape[0] }};
+    const idx_t seq_len = {{ input_shape[1] }};
+    for (idx_t b = 0; b < batch; ++b) {
+        for (idx_t o = 0; o < output_dim; ++o) {
+            {{ output }}[b][o] = {{ zero_literal }};
+        }
+        idx_t ngram_index_offset = 0;
+        for (idx_t gram_len = 1; gram_len < min_gram; ++gram_len) {
+            const idx_t count_start = (idx_t)ngram_counts[gram_len - 1];
+            const idx_t count_end =
+                gram_len < ngram_counts_len ? (idx_t)ngram_counts[gram_len] : pool_size;
+            const idx_t num_ngrams = (count_end - count_start) / gram_len;
+            ngram_index_offset += num_ngrams;
+        }
+        for (idx_t gram_len = min_gram; gram_len <= max_gram; ++gram_len) {
+            const idx_t count_start = (idx_t)ngram_counts[gram_len - 1];
+            const idx_t count_end =
+                gram_len < ngram_counts_len ? (idx_t)ngram_counts[gram_len] : pool_size;
+            const idx_t num_ngrams = (count_end - count_start) / gram_len;
+            if (num_ngrams == 0) {
+                continue;
+            }
+            const idx_t skip_limit = gram_len == 1 ? 0 : max_skip;
+            for (idx_t skip = 0; skip <= skip_limit; ++skip) {
+                const idx_t stride = skip + 1;
+                if (seq_len < (gram_len - 1) * stride + 1) {
+                    continue;
+                }
+                const idx_t max_start = seq_len - (gram_len - 1) * stride;
+                for (idx_t start = 0; start < max_start; ++start) {
+                    for (idx_t ngram_idx = 0; ngram_idx < num_ngrams; ++ngram_idx) {
+                        const idx_t pool_offset = count_start + ngram_idx * gram_len;
+                        int match = 1;
+                        for (idx_t pos = 0; pos < gram_len; ++pos) {
+                            const int64_t token = (int64_t){{ input0 }}[b][start + pos * stride];
+                            if (token != pool[pool_offset + pos]) {
+                                match = 0;
+                                break;
+                            }
+                        }
+                        if (match) {
+                            const idx_t out_index =
+                                (idx_t)ngram_indexes[ngram_index_offset + ngram_idx];
+                            {{ output }}[b][out_index] += ({{ c_type }})1;
+                        }
+                    }
+                }
+            }
+            ngram_index_offset += num_ngrams;
+        }
+{% if mode_id != 0 %}
+        for (idx_t o = 0; o < output_dim; ++o) {
+            {{ c_type }} value = {{ output }}[b][o];
+{% if mode_id == 1 %}
+            value = value > {{ zero_literal }} ? {{ one_literal }} : {{ zero_literal }};
+{% endif %}
+{% if weights_values %}
+            value *= weights[o];
+{% else %}
+            value *= {{ one_literal }};
+{% endif %}
+            {{ output }}[b][o] = value;
+        }
+{% endif %}
+    }
+{% endif %}
+}
