@@ -25,6 +25,7 @@ from emx_onnx_cgen.codegen.c_emitter import (
 )
 from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.errors import ShapeInferenceError, UnsupportedOpError
+from emx_onnx_cgen.ir.ops import ResizeOp
 from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
@@ -32,6 +33,7 @@ from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
+from emx_onnx_cgen.lowering.upsample import lower_upsample
 from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
 from emx_onnx_cgen.lowering.registry import get_lowering
 from emx_onnx_cgen.onnx_import import import_onnx
@@ -1538,6 +1540,45 @@ def _make_resize_model() -> onnx.ModelProto:
         graph,
         producer_name="onnx2c",
         opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_upsample_model() -> onnx.ModelProto:
+    input_shape = [1, 1, 2, 2]
+    output_shape = [1, 1, 4, 6]
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.FLOAT, input_shape
+    )
+    output = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    scales_values = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float32)
+    scales_tensor = helper.make_tensor(
+        "scales",
+        TensorProto.FLOAT,
+        dims=scales_values.shape,
+        vals=scales_values.tolist(),
+    )
+    node = helper.make_node(
+        "Upsample",
+        inputs=["in0", "scales"],
+        outputs=[output.name],
+        mode="nearest",
+    )
+    graph = helper.make_graph(
+        [node],
+        "upsample_graph",
+        [input_info],
+        [output],
+        initializer=[scales_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 9)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -3651,6 +3692,17 @@ def test_lower_gridsample_builds_spec() -> None:
     assert op.mode == "linear"
 
 
+def test_lower_upsample_scales_initializer() -> None:
+    model = _make_upsample_model()
+    graph = import_onnx(model)
+    op = lower_upsample(graph, graph.nodes[0])
+    assert isinstance(op, ResizeOp)
+    assert op.scales == (1.0, 1.0, 2.0, 3.0)
+    assert op.mode == "nearest"
+    assert op.coordinate_transformation_mode == "asymmetric"
+    assert op.nearest_mode == "floor"
+
+
 def test_lower_variadic_sum_uses_multi_input_op() -> None:
     model = _make_operator_model(
         op_type="Sum",
@@ -4253,6 +4305,11 @@ def test_cast_op_matches_onnxruntime() -> None:
 
 def test_resize_op_matches_onnxruntime() -> None:
     model = _make_resize_model()
+    _run_testbench_compare(model)
+
+
+def test_upsample_op_matches_onnxruntime() -> None:
+    model = _make_upsample_model()
     _run_testbench_compare(model)
 
 
