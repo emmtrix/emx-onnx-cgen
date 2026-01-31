@@ -57,7 +57,6 @@
 | Unsupported op OptionalGetElement | 2 | 18 |
 | Unsupported op ReverseSequence | 2 | 10 |
 | Unsupported op STFT | 2 | 17 |
-| Unsupported op Scan | 2 | 8, 9 |
 | Unsupported op Scatter | 2 | 10 |
 | Unsupported op TreeEnsemble | 2 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
@@ -78,10 +77,8 @@
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Unsupported op Scan | 8 | 1 |
 | Unsupported op TfIdfVectorizer | 9 | 7 |
 | Out of tolerance | 9 | 1 |
-| Unsupported op Scan | 9 | 1 |
 | Unsupported op Upsample | 9 | 1 |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 10 | 12 |
 | Unsupported op ConvInteger | 10 | 2 |
