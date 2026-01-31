@@ -571,6 +571,23 @@ class OneHotOp(RenderableOpBase):
     depth_dtype: ScalarType
 
 @dataclass(frozen=True)
+class TfIdfVectorizerOp(RenderableOpBase):
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    input_dtype: ScalarType
+    output_dtype: ScalarType
+    min_gram_length: int
+    max_gram_length: int
+    max_skip_count: int
+    mode: str
+    ngram_counts: tuple[int, ...]
+    ngram_indexes: tuple[int, ...]
+    pool_int64s: tuple[int, ...]
+    weights: tuple[float, ...] | None
+
+@dataclass(frozen=True)
 class SplitOp(RenderableOpBase):
     input0: str
     outputs: tuple[str, ...]

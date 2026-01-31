@@ -83,6 +83,52 @@ def _make_operator_model(
     return model
 
 
+def _make_tfidf_vectorizer_model(
+    *,
+    input_shape: list[int],
+    output_shape: list[int],
+    mode: str,
+    min_gram_length: int,
+    max_gram_length: int,
+    max_skip_count: int,
+    ngram_counts: list[int],
+    ngram_indexes: list[int],
+    pool_int64s: list[int],
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.INT32, input_shape
+    )
+    output_info = helper.make_tensor_value_info(
+        "out", TensorProto.FLOAT, output_shape
+    )
+    node = helper.make_node(
+        "TfIdfVectorizer",
+        inputs=["in0"],
+        outputs=["out"],
+        mode=mode,
+        min_gram_length=min_gram_length,
+        max_gram_length=max_gram_length,
+        max_skip_count=max_skip_count,
+        ngram_counts=ngram_counts,
+        ngram_indexes=ngram_indexes,
+        pool_int64s=pool_int64s,
+    )
+    graph = helper.make_graph(
+        [node],
+        "tfidf_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 9)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _flatten_output_shape(input_shape: list[int], axis: int) -> list[int]:
     rank = len(input_shape)
     if axis < 0:
@@ -2677,6 +2723,33 @@ def _run_testbench_compare(model: onnx.ModelProto) -> None:
             )
         else:
             np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_tfidf_vectorizer_testbench_match() -> None:
+    model = _make_tfidf_vectorizer_model(
+        input_shape=[4],
+        output_shape=[3],
+        mode="TF",
+        min_gram_length=1,
+        max_gram_length=1,
+        max_skip_count=0,
+        ngram_counts=[0],
+        ngram_indexes=[0, 1, 2],
+        pool_int64s=[1, 2, 3],
+    )
+    inputs = {"in0": np.array([1, 2, 1, 4], dtype=np.int32)}
+    reference_outputs = _run_reference(model, inputs)
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    output_payload = payload.get("outputs", {}).get("out")
+    if output_payload is None:
+        raise AssertionError("Missing output out in testbench data")
+    output_data = decode_testbench_array(
+        output_payload["data"], reference_outputs["out"].dtype
+    )
+    output_data = output_data.reshape(reference_outputs["out"].shape)
+    np.testing.assert_allclose(
+        output_data, reference_outputs["out"], rtol=1e-5, atol=1e-6
+    )
 
 
 OPERATOR_CASES = [

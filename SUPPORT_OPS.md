@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 150 / 200
+Supported operators: 151 / 200
 
 | Operator | Supported |
 | --- | --- |
@@ -185,7 +185,7 @@ Supported operators: 150 / 200
 | Swish | ✅ |
 | Tan | ✅ |
 | Tanh | ✅ |
-| TfIdfVectorizer | ❌ |
+| TfIdfVectorizer | ✅ |
 | ThresholdedRelu | ✅ |
 | Tile | ✅ |
 | TopK | ✅ |
