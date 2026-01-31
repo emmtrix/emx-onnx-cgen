@@ -45,7 +45,7 @@
 static inline void node0_gemm(const float input_a[2][3], const float input_b[3][4], const float input_c[2][4], float output[2][4]) {
     for (idx_t i = 0; i < 2; ++i) {
         for (idx_t j = 0; j < 4; ++j) {
-            float acc = 0.0f;
+            double acc = 0.0;
             for (idx_t k = 0; k < 3; ++k) {
                 const float a_val = input_a[i][k];
                 const float b_val = input_b[k][j];

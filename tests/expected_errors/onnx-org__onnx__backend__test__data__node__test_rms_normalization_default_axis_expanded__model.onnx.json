@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 2)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Constant",
@@ -14,5 +14,5 @@
     "Div"
   ],
   "opset_version": 23,
-  "generated_checksum": "7e1f3c12cb6e7b0bec9088d369d5bea5df2c4a04f339050825d9a9f2ff557604"
+  "generated_checksum": "88bcc10203ce0997f2b066e735aeb8c1e31516dec6aa1bea10d64c076d63d1cf"
 }

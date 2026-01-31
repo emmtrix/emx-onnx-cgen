@@ -15,7 +15,7 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 7 | 6, 9, 19, 22 |
+| Out of tolerance | 8 | 6, 9, 19, 22 |
 | Unsupported op TfIdfVectorizer | 7 | 9 |
 | Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | 25 |
 | Unsupported op CenterCropPad | 6 | 18 |
@@ -128,10 +128,10 @@
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
+| Out of tolerance | 22 | 4 |
 | Unsupported op DeformConv | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |
-| Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
 | LpPool expects 2D kernel_shape | 22 | 2 |

@@ -5978,7 +5978,7 @@ class CEmitter:
             input0_suffix = self._param_array_suffix(input0_shape)
             input1_suffix = self._param_array_suffix(input1_shape)
             output_suffix = self._param_array_suffix(self._ctx_shape(op.output))
-            acc_dtype = self._accumulation_dtype(op.dtype)
+            acc_dtype = self._accumulation_dtype(self._ctx_dtype(op.output))
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             param_decls = self._build_param_decls(
                 [
@@ -6061,7 +6061,7 @@ class CEmitter:
                     ),
                 ]
             )
-            acc_dtype = self._accumulation_dtype(op.dtype)
+            acc_dtype = self._accumulation_dtype(self._ctx_dtype(op.output))
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             input_loop_vars: tuple[str, ...] = ()
             input_loop_bounds: tuple[str | int, ...] = ()
