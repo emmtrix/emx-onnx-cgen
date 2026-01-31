@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 151 / 200
+Supported operators: 152 / 200
 
 | Operator | Supported |
 | --- | --- |
