@@ -220,6 +220,8 @@ class ClipOp(ElementwiseOpBase):
     input_min: str | None
     input_max: str | None
     output: str
+    min_value: float | None = None
+    max_value: float | None = None
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
         inputs = [self.input0]

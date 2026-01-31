@@ -1096,6 +1096,8 @@ class CEmitter:
                 input_min=self._map_optional_name(name_map, op.input_min),
                 input_max=self._map_optional_name(name_map, op.input_max),
                 output=name_map.get(op.output, op.output),
+                min_value=op.min_value,
+                max_value=op.max_value,
             )
         if isinstance(op, CastOp):
             return CastOp(
@@ -4272,6 +4274,8 @@ class CEmitter:
                 if op.input_max is not None
                 else None,
                 output=temp_map.get(op.output, op.output),
+                min_value=op.min_value,
+                max_value=op.max_value,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -10808,7 +10812,11 @@ class CEmitter:
                     loop_vars,
                 )
                 if op.input_min is not None
-                else output_dtype.min_literal
+                else (
+                    CEmitter._format_literal(output_dtype, op.min_value)
+                    if op.min_value is not None
+                    else output_dtype.min_literal
+                )
             )
             max_expr = (
                 CEmitter._broadcast_index_expr(
@@ -10818,7 +10826,11 @@ class CEmitter:
                     loop_vars,
                 )
                 if op.input_max is not None
-                else output_dtype.max_literal
+                else (
+                    CEmitter._format_literal(output_dtype, op.max_value)
+                    if op.max_value is not None
+                    else output_dtype.max_literal
+                )
             )
             input_suffix = self._param_array_suffix(
                 input_shape, _dim_names_for(op.input0)
