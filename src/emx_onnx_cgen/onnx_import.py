@@ -233,6 +233,471 @@ def _node_attrs(node: onnx.NodeProto) -> dict[str, object]:
     return {attr.name: helper.get_attribute_value(attr) for attr in node.attribute}
 
 
+def _find_value_info(
+    graph: onnx.GraphProto, name: str
+) -> onnx.ValueInfoProto | None:
+    for value_info in graph.input:
+        if value_info.name == name:
+            return value_info
+    for value_info in graph.value_info:
+        if value_info.name == name:
+            return value_info
+    for value_info in graph.output:
+        if value_info.name == name:
+            return value_info
+    return None
+
+
+def _tensor_shape_from_value_info(
+    graph: onnx.GraphProto, name: str
+) -> tuple[int, ...]:
+    value_info = _find_value_info(graph, name)
+    if value_info is None:
+        for initializer in graph.initializer:
+            if initializer.name == name:
+                return tuple(int(dim) for dim in initializer.dims)
+        raise ShapeInferenceError(
+            f"Missing shape for '{name}' in Scan expansion. "
+            "Hint: run ONNX shape inference or export with static shapes."
+        )
+    tensor_type = value_info.type.tensor_type
+    if not tensor_type.HasField("shape"):
+        raise ShapeInferenceError(
+            f"Missing shape for '{name}' in Scan expansion. "
+            "Hint: run ONNX shape inference or export with static shapes."
+        )
+    dims: list[int] = []
+    for dim in tensor_type.shape.dim:
+        if not dim.HasField("dim_value"):
+            raise ShapeInferenceError(
+                f"Dynamic dim for '{name}' in Scan expansion. "
+                "Hint: export with static shapes."
+            )
+        dims.append(int(dim.dim_value))
+    return tuple(dims)
+
+
+def _scan_attr_ints(
+    attrs: dict[str, object],
+    key: str,
+    *,
+    default: tuple[int, ...],
+) -> tuple[int, ...]:
+    value = attrs.get(key)
+    if value is None:
+        return default
+    return tuple(int(item) for item in value)
+
+
+def _onnx_opset_version(model: onnx.ModelProto) -> int | None:
+    for opset in model.opset_import:
+        if opset.domain in {"", "ai.onnx"}:
+            return int(opset.version)
+    return None
+
+
+def _scan_expected_axis(is_opset8: bool) -> int:
+    return 1 if is_opset8 else 0
+
+
+def _scan_axes_and_directions(
+    attrs: dict[str, object],
+    *,
+    num_scan_inputs: int,
+    scan_output_count: int,
+    is_opset8: bool,
+) -> None:
+    default_axis = _scan_expected_axis(is_opset8)
+    scan_input_axes = _scan_attr_ints(
+        attrs,
+        "scan_input_axes",
+        default=(default_axis,) * num_scan_inputs,
+    )
+    scan_output_axes = _scan_attr_ints(
+        attrs,
+        "scan_output_axes",
+        default=(default_axis,) * scan_output_count,
+    )
+    scan_input_directions = _scan_attr_ints(
+        attrs,
+        "scan_input_directions",
+        default=(0,) * num_scan_inputs,
+    )
+    scan_output_directions = _scan_attr_ints(
+        attrs,
+        "scan_output_directions",
+        default=(0,) * scan_output_count,
+    )
+    if any(axis != default_axis for axis in scan_input_axes):
+        raise UnsupportedOpError(
+            f"Scan only supports scan_input_axes={default_axis}"
+        )
+    if any(axis != default_axis for axis in scan_output_axes):
+        raise UnsupportedOpError(
+            f"Scan only supports scan_output_axes={default_axis}"
+        )
+    if any(direction != 0 for direction in scan_input_directions):
+        raise UnsupportedOpError(
+            "Scan only supports scan_input_directions=0"
+        )
+    if any(direction != 0 for direction in scan_output_directions):
+        raise UnsupportedOpError(
+            "Scan only supports scan_output_directions=0"
+        )
+
+
+def _scan_sequence_length(
+    graph: onnx.GraphProto,
+    scan_input_names: list[str],
+    *,
+    is_opset8: bool,
+) -> tuple[int, int | None]:
+    scan_input_shapes = [
+        _tensor_shape_from_value_info(graph, name)
+        for name in scan_input_names
+    ]
+    if not scan_input_shapes:
+        raise UnsupportedOpError("Scan requires scan inputs")
+    if is_opset8:
+        if any(len(shape) < 2 for shape in scan_input_shapes):
+            raise UnsupportedOpError(
+                "Scan opset 8 inputs must include batch and sequence dims"
+            )
+        batch_size = scan_input_shapes[0][0]
+        sequence_len = scan_input_shapes[0][1]
+        if batch_size != 1:
+            raise UnsupportedOpError(
+                "Scan opset 8 currently supports batch size 1 only"
+            )
+        if sequence_len <= 0:
+            raise UnsupportedOpError("Scan requires positive sequence length")
+        if any(
+            shape[0] != batch_size or shape[1] != sequence_len
+            for shape in scan_input_shapes
+        ):
+            raise UnsupportedOpError(
+                "Scan inputs must share the same batch and sequence length"
+            )
+        return sequence_len, batch_size
+    sequence_len = scan_input_shapes[0][0]
+    if sequence_len <= 0:
+        raise UnsupportedOpError("Scan requires positive sequence length")
+    if any(shape[0] != sequence_len for shape in scan_input_shapes):
+        raise UnsupportedOpError(
+            "Scan inputs must share the same sequence length"
+        )
+    return sequence_len, None
+
+
+def _scan_body_initializers(
+    body: onnx.GraphProto,
+    *,
+    prefix: str,
+    new_initializers: list[onnx.TensorProto],
+) -> dict[str, str]:
+    initializer_map: dict[str, str] = {}
+    for initializer in body.initializer:
+        new_name = f"{prefix}_init_{initializer.name}"
+        initializer_map[initializer.name] = new_name
+        array = numpy_helper.to_array(initializer)
+        new_initializers.append(numpy_helper.from_array(array, name=new_name))
+    return initializer_map
+
+
+def _scan_state_inputs(
+    graph: onnx.GraphProto,
+    *,
+    prefix: str,
+    state_input_names: list[str],
+    new_nodes: list[onnx.NodeProto],
+    is_opset8: bool,
+    batch_size: int | None,
+) -> list[str]:
+    state_names = list(state_input_names)
+    if is_opset8 and state_input_names:
+        for state_index, state_name in enumerate(state_input_names):
+            state_shape = _tensor_shape_from_value_info(graph, state_name)
+            if not state_shape:
+                raise UnsupportedOpError(
+                    "Scan opset 8 state inputs must be tensors"
+                )
+            if batch_size is not None and state_shape[0] != batch_size:
+                raise UnsupportedOpError(
+                    "Scan opset 8 state inputs must match batch size"
+                )
+            squeezed_name = f"{prefix}_state{state_index}_squeezed"
+            new_nodes.append(
+                helper.make_node(
+                    "Squeeze",
+                    inputs=[state_name],
+                    outputs=[squeezed_name],
+                    name=f"{squeezed_name}_node",
+                    axes=[0],
+                )
+            )
+            state_names[state_index] = squeezed_name
+    return state_names
+
+
+def _scan_iteration_inputs(
+    *,
+    prefix: str,
+    iter_index: int,
+    scan_input_names: list[str],
+    new_nodes: list[onnx.NodeProto],
+    is_opset8: bool,
+) -> list[str]:
+    scan_iter_inputs: list[str] = []
+    slice_axis = _scan_expected_axis(is_opset8)
+    squeeze_axes = [0, 1] if is_opset8 else [0]
+    for scan_index, scan_name in enumerate(scan_input_names):
+        slice_out = f"{prefix}_iter{iter_index}_scan{scan_index}_slice"
+        squeeze_out = f"{prefix}_iter{iter_index}_scan{scan_index}_value"
+        new_nodes.append(
+            helper.make_node(
+                "Slice",
+                inputs=[scan_name],
+                outputs=[slice_out],
+                name=f"{slice_out}_node",
+                starts=[iter_index],
+                ends=[iter_index + 1],
+                axes=[slice_axis],
+            )
+        )
+        new_nodes.append(
+            helper.make_node(
+                "Squeeze",
+                inputs=[slice_out],
+                outputs=[squeeze_out],
+                name=f"{squeeze_out}_node",
+                axes=squeeze_axes,
+            )
+        )
+        scan_iter_inputs.append(squeeze_out)
+    return scan_iter_inputs
+
+
+def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+    graph = model.graph
+    opset_version = _onnx_opset_version(model)
+    if opset_version is None:
+        return model, False
+
+    new_nodes: list[onnx.NodeProto] = []
+    new_initializers: list[onnx.TensorProto] = []
+    scan_index = 0
+    expanded = False
+    is_opset8 = opset_version <= 8
+
+    for node in graph.node:
+        if node.op_type != "Scan":
+            new_nodes.append(node)
+            continue
+
+        expanded = True
+        scan_index += 1
+        attrs = _node_attrs(node)
+        body = attrs.get("body")
+        if not isinstance(body, onnx.GraphProto):
+            raise UnsupportedOpError("Scan requires a body graph")
+        num_scan_inputs = int(attrs.get("num_scan_inputs", 0))
+        if num_scan_inputs <= 0:
+            raise UnsupportedOpError("Scan requires num_scan_inputs")
+        input_names = list(node.input)
+        if is_opset8:
+            if not input_names:
+                raise UnsupportedOpError("Scan in opset 8 requires inputs")
+            sequence_lens = input_names.pop(0)
+            if sequence_lens:
+                raise UnsupportedOpError(
+                    "Scan sequence_lens input is not supported"
+                )
+        num_state_inputs = len(input_names) - num_scan_inputs
+        if num_state_inputs < 0:
+            raise UnsupportedOpError("Scan input count is invalid")
+        if len(body.input) != num_state_inputs + num_scan_inputs:
+            raise UnsupportedOpError(
+                "Scan body input count must match state and scan inputs"
+            )
+        if len(body.output) != len(node.output):
+            raise UnsupportedOpError(
+                "Scan body output count must match Scan outputs"
+            )
+        scan_output_count = len(node.output) - num_state_inputs
+        _scan_axes_and_directions(
+            attrs,
+            num_scan_inputs=num_scan_inputs,
+            scan_output_count=scan_output_count,
+            is_opset8=is_opset8,
+        )
+
+        state_input_names = input_names[:num_state_inputs]
+        scan_input_names = input_names[num_state_inputs:]
+        sequence_len, batch_size = _scan_sequence_length(
+            graph,
+            scan_input_names,
+            is_opset8=is_opset8,
+        )
+
+        prefix = node.name or f"scan_{scan_index}"
+        initializer_map = _scan_body_initializers(
+            body,
+            prefix=prefix,
+            new_initializers=new_initializers,
+        )
+
+        state_names = _scan_state_inputs(
+            graph,
+            prefix=prefix,
+            state_input_names=state_input_names,
+            new_nodes=new_nodes,
+            is_opset8=is_opset8,
+            batch_size=batch_size,
+        )
+        scan_output_buffers: list[list[str]] = [
+            [] for _ in range(scan_output_count)
+        ]
+
+        for iter_index in range(sequence_len):
+            scan_iter_inputs = _scan_iteration_inputs(
+                prefix=prefix,
+                iter_index=iter_index,
+                scan_input_names=scan_input_names,
+                new_nodes=new_nodes,
+                is_opset8=is_opset8,
+            )
+            name_map: dict[str, str] = {}
+            for index, value in enumerate(body.input[:num_state_inputs]):
+                name_map[value.name] = state_names[index]
+            for index, value in enumerate(
+                body.input[num_state_inputs : num_state_inputs + num_scan_inputs]
+            ):
+                name_map[value.name] = scan_iter_inputs[index]
+            for original, mapped in initializer_map.items():
+                name_map[original] = mapped
+
+            for body_node in body.node:
+                body_attrs = _node_attrs(body_node)
+                mapped_inputs = [
+                    name_map.get(input_name, input_name)
+                    for input_name in body_node.input
+                ]
+                mapped_outputs: list[str] = []
+                for output_name in body_node.output:
+                    if not output_name:
+                        mapped_outputs.append("")
+                        continue
+                    mapped_name = (
+                        f"{prefix}_iter{iter_index}_{output_name}"
+                    )
+                    name_map[output_name] = mapped_name
+                    mapped_outputs.append(mapped_name)
+                new_nodes.append(
+                    helper.make_node(
+                        body_node.op_type,
+                        inputs=mapped_inputs,
+                        outputs=mapped_outputs,
+                        name=(
+                            f"{prefix}_iter{iter_index}_{body_node.name}"
+                            if body_node.name
+                            else ""
+                        ),
+                        domain=body_node.domain,
+                        **body_attrs,
+                    )
+                )
+
+            for index, output in enumerate(body.output[:num_state_inputs]):
+                mapped_output = name_map.get(output.name)
+                if mapped_output is None:
+                    raise UnsupportedOpError(
+                        "Scan body did not produce a required state output"
+                    )
+                state_names[index] = mapped_output
+
+            for output_index, output in enumerate(
+                body.output[
+                    num_state_inputs : num_state_inputs + scan_output_count
+                ]
+            ):
+                mapped_output = name_map.get(output.name)
+                if mapped_output is None:
+                    raise UnsupportedOpError(
+                        "Scan body did not produce a required scan output"
+                    )
+                unsqueeze_out = (
+                    f"{prefix}_iter{iter_index}_scanout{output_index}"
+                )
+                unsqueeze_axes = [0, 1] if is_opset8 else [0]
+                new_nodes.append(
+                    helper.make_node(
+                        "Unsqueeze",
+                        inputs=[mapped_output],
+                        outputs=[unsqueeze_out],
+                        name=f"{unsqueeze_out}_node",
+                        axes=unsqueeze_axes,
+                    )
+                )
+                scan_output_buffers[output_index].append(unsqueeze_out)
+
+        for index, output_name in enumerate(node.output[:num_state_inputs]):
+            state_value = state_names[index]
+            if is_opset8:
+                expanded_state = f"{prefix}_state_output_{index}_expanded"
+                new_nodes.append(
+                    helper.make_node(
+                        "Unsqueeze",
+                        inputs=[state_value],
+                        outputs=[expanded_state],
+                        name=f"{expanded_state}_node",
+                        axes=[0],
+                    )
+                )
+                state_value = expanded_state
+            if state_value == output_name:
+                continue
+            new_nodes.append(
+                helper.make_node(
+                    "Identity",
+                    inputs=[state_value],
+                    outputs=[output_name],
+                    name=f"{prefix}_state_output_{index}",
+                )
+            )
+
+        for output_index, output_name in enumerate(
+            node.output[num_state_inputs : num_state_inputs + scan_output_count]
+        ):
+            buffer = scan_output_buffers[output_index]
+            concat_axis = _scan_expected_axis(is_opset8)
+            if len(buffer) == 1:
+                new_nodes.append(
+                    helper.make_node(
+                        "Identity",
+                        inputs=buffer,
+                        outputs=[output_name],
+                        name=f"{prefix}_scan_output_{output_index}",
+                    )
+                )
+            else:
+                new_nodes.append(
+                    helper.make_node(
+                        "Concat",
+                        inputs=buffer,
+                        outputs=[output_name],
+                        name=f"{prefix}_scan_output_{output_index}",
+                        axis=concat_axis,
+                    )
+                )
+
+    if expanded:
+        del graph.node[:]
+        graph.node.extend(new_nodes)
+        if new_initializers:
+            graph.initializer.extend(new_initializers)
+    return model, expanded
+
+
 def _constant_initializer(node: onnx.NodeProto) -> Initializer:
     if len(node.output) != 1:
         raise UnsupportedOpError("Constant must have exactly one output")
@@ -306,6 +771,7 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
 
 
 def import_onnx(model: onnx.ModelProto) -> Graph:
+    model, _ = _expand_scan_nodes(model)
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)
     )

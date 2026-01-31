@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Scan",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_scan9_sum model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Scan"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "1b72d2a2d236e60f3c507a360bbdbd4d3cb7a5e34ed485493868d0fea8dac6ee"
 }
