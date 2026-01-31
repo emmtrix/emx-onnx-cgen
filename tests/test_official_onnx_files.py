@@ -19,13 +19,31 @@ LOCAL_ONNX_DATA_ROOT = (
 )
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
-FP32_ACCUMULATION_FP64_MODELS = {
-    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx",
-    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx",
-    "onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx",
+MODEL_EXTRA_VERIFY_ARGS = {
+    "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
+    "onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx": (
+        "--fp32-accumulation-strategy",
+        "fp64",
+    ),
 }
 
 
@@ -392,13 +410,9 @@ def _run_expected_error_test(
                 test_data_argument,
             ]
         )
-    if repo_relative_path in FP32_ACCUMULATION_FP64_MODELS:
-        verify_args.extend(
-            [
-                "--fp32-accumulation-strategy",
-                "fp64",
-            ]
-        )
+    extra_args = MODEL_EXTRA_VERIFY_ARGS.get(repo_relative_path)
+    if extra_args:
+        verify_args.extend(extra_args)
 
     cli_result = cli.run_cli_command(verify_args)
 

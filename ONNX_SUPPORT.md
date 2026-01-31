@@ -1031,7 +1031,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | 22 | ✅ | OK (max ULP 0) (flags: --fp32-accumulation-strategy fp64) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | ❌ | Out of tolerance (max ULP 357) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1389,10 +1389,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob/model.onnx | 13 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_sum_weight_high_ii_log_prob_expanded/model.onnx | 13 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | 13 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | 13 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight/model.onnx | 13 | ✅ | OK (max ULP 0) (flags: --fp32-accumulation-strategy fp64) |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) (flags: --fp32-accumulation-strategy fp64) |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob/model.onnx | 13 | ✅ | OK (max ULP 2) (flags: --fp32-accumulation-strategy fp64) |
+| onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded/model.onnx | 13 | ✅ | OK (max ULP 3) (flags: --fp32-accumulation-strategy fp64) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_none_no_weight/model.onnx | 13 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | 13 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_none_no_weight_log_prob/model.onnx | 13 | ✅ | OK (max ULP 3) |
@@ -1706,7 +1706,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_strided/model.onnx | 6 | ✅ | OK (max ULP 9) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d/model.onnx | 6 | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated/model.onnx | 6 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | 6 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided/model.onnx | 6 | ✅ | OK (max ULP 0) (flags: --fp32-accumulation-strategy fp64) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_groups/model.onnx | 6 | ✅ | OK (max ULP 9) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_stride/model.onnx | 6 | ✅ | OK (max ULP 5) |
