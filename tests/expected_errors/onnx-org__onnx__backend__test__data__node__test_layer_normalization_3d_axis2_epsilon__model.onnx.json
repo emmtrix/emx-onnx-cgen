@@ -1,9 +1,9 @@
 {
-  "error": "OK (max ULP 3)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "LayerNormalization"
   ],
   "opset_version": 17,
-  "generated_checksum": "fd52d222115d758e36f5dcf3ea870eee454606780c4470522d0c88ff5a1ac9a4"
+  "generated_checksum": "798ea4a07f3ab583785d89d9ff24e9635d2744e1288717b1d3e6396dc57008d2"
 }

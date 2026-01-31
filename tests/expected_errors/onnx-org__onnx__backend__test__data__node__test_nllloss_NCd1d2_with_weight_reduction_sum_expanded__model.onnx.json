@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Constant",
@@ -13,5 +13,5 @@
     "ReduceSum"
   ],
   "opset_version": 22,
-  "generated_checksum": "26504cefa4d03b8c1dfdc6c4baa338259c04a7a8259f8f9d9755d5d28bda644e"
+  "generated_checksum": "182fd50308b4e3fa184e69e0ddf07f444169fd6186e2f3e982e7c4c40d107b4c"
 }

@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1405 / 1802 official ONNX files.
+Support 1404 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -127,7 +127,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap/model.onnx | 23 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_softcap_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_with_past_and_present/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_with_past_and_present_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_scaled/model.onnx | 23 | ✅ | OK (max ULP 3) |
@@ -141,7 +141,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softmax/model.onnx | 23 | ✅ | OK (max ULP 3) |
@@ -178,9 +178,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present/model.onnx | 23 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d/model.onnx | 23 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d/model.onnx | 23 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_fp16_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
@@ -195,33 +195,33 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_softcap_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present/model.onnx | 23 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16/model.onnx | 23 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | 23 | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_scaled_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_softcap_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present/model.onnx | 23 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal/model.onnx | 23 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_causal_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_3d_mask_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal/model.onnx | 23 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_causal_expanded/model.onnx | 23 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_4d_mask_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded/model.onnx | 23 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias/model.onnx | 23 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | 23 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_bias_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap/model.onnx | 23 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softcap_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_attention_4d_with_qk_matmul_softmax_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -666,7 +666,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_gemm_alpha/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_beta/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_default_matrix_bias/model.onnx | 13 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_gemm_default_no_bias/model.onnx | 13 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_gemm_default_no_bias/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_default_scalar_bias/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_default_single_elem_vector_bias/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_gemm_default_vector_bias/model.onnx | 13 | ✅ | OK (max ULP 1) |
@@ -720,9 +720,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_1/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gridsample_zeros_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded/model.onnx | 21 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded/model.onnx | 21 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_group_normalization_example/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_group_normalization_example_expanded/model.onnx | 21 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_group_normalization_example_expanded/model.onnx | 21 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_gru_batchwise/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gru_defaults/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_gru_seq_length/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -778,63 +778,63 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_l1normalization_axis_last/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_0/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_l2normalization_axis_1/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0/model.onnx | 17 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded/model.onnx | 17 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis0_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1/model.onnx | 17 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1_expanded/model.onnx | 17 | ✅ | OK (max ULP 24) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1/model.onnx | 17 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded/model.onnx | 17 | ✅ | OK (max ULP 80) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 80) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis_negative_2_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon/model.onnx | 17 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon/model.onnx | 17 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis0_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon/model.onnx | 17 | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 16) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis1_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 16) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon/model.onnx | 17 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 40) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 40) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | 17 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | 17 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis2_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon/model.onnx | 17 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_1_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon/model.onnx | 17 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 4) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_2_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded/model.onnx | 17 | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon/model.onnx | 17 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded/model.onnx | 17 | ✅ | OK (max ULP 9) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_3d_axis_negative_3_epsilon_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 9) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0/model.onnx | 17 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded/model.onnx | 17 | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1/model.onnx | 17 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded/model.onnx | 17 | ✅ | OK (max ULP 12) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 12) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2/model.onnx | 17 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2_expanded/model.onnx | 17 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3/model.onnx | 17 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded/model.onnx | 17 | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 6) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1/model.onnx | 17 | ✅ | OK (max ULP 40) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | 17 | ✅ | OK (max ULP 16) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 16) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2/model.onnx | 17 | ✅ | OK (max ULP 24) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2_expanded/model.onnx | 17 | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis2_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3/model.onnx | 17 | ✅ | OK (max ULP 7) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded/model.onnx | 17 | ✅ | OK (max ULP 12) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis3_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 12) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1/model.onnx | 17 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded/model.onnx | 17 | ✅ | OK (max ULP 24) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2/model.onnx | 17 | ✅ | OK (max ULP 23) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded/model.onnx | 17 | ✅ | OK (max ULP 24) |
 | onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_2_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3/model.onnx | 17 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | 17 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | 17 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis/model.onnx | 17 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded/model.onnx | 17 | ✅ | OK (max ULP 8) |
-| onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 8) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3/model.onnx | 17 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded/model.onnx | 17 | ✅ | OK (max ULP 48) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 48) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4/model.onnx | 17 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded/model.onnx | 17 | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_4_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis/model.onnx | 17 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded/model.onnx | 17 | ✅ | OK (max ULP 6) |
+| onnx-org/onnx/backend/test/data/node/test_layer_normalization_default_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 6) |
 | onnx-org/onnx/backend/test/data/node/test_leakyrelu/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_leakyrelu_default/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_leakyrelu_default_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
@@ -871,14 +871,14 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_0_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_0_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1/model.onnx | 13 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1_expanded/model.onnx | 13 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1_expanded/model.onnx | 13 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_2/model.onnx | 13 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_2_expanded/model.onnx | 13 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_2_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_2_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_2_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis/model.onnx | 13 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_default_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_example_1/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_example_1_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_example_1_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
@@ -886,8 +886,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_large_number_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_large_number_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis/model.onnx | 13 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 4) |
-| onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 4) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | 11 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | 13 | ❌ | Unsupported value type 'sequence_type' for 'seq_empty'. Hint: export the model with tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs. |
@@ -909,7 +909,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_matmul_1d_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_1d_3d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_2d/model.onnx | 13 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_matmul_3d/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_matmul_3d/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_4d/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_4d_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_bcast/model.onnx | 13 | ✅ | OK (max ULP 2) |
@@ -994,8 +994,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_mul_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mul_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_mvn/model.onnx | 13 | ✅ | OK (max ULP 3) |
-| onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_mvn_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_mvn_expanded/model.onnx | 13 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_mvn_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_neg/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_neg_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nesterov_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
@@ -1018,21 +1018,21 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_sum/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_sum_expanded/model.onnx | 22 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_mean/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_mean_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_expanded/model.onnx | 22 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii/model.onnx | 22 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | 22 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum_ii_expanded/model.onnx | 22 | ✅ | OK (max ULP 3) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_none_no_weight_negative_ii_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_sum_weight_high_ii/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3_sum_weight_high_ii_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | ❌ | Out of tolerance (max ULP 357) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_center_point_box_format/model.onnx | 11 | ✅ | OK (max ULP 0) |
@@ -1155,8 +1155,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_asc_axes_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_default_expanded/model.onnx | 18 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_desc_axes/model.onnx | 18 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_desc_axes_expanded/model.onnx | 18 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_desc_axes/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_desc_axes_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_empty_set/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_empty_set_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1190,7 +1190,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_reduce_max_negative_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_max_negative_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_mean_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_mean_default_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_mean_default_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_mean_do_not_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_mean_do_not_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_mean_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1217,7 +1217,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_reduce_prod_negative_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_prod_negative_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_default_axes_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_sum_default_axes_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_sum_default_axes_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_do_not_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_do_not_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_empty_axes_input_noop/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1230,8 +1230,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_negative_axes_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_example_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx | 18 | ✅ | OK (max ULP 1) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_default_axes_keepdims_random_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_example_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_do_not_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1316,7 +1316,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis1_epsilon/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis1_epsilon_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis2_epsilon/model.onnx | 23 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | 23 | ✅ | OK (max ULP 3) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis2_epsilon_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_1_epsilon/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_1_epsilon_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_3d_axis_negative_2_epsilon/model.onnx | 23 | ✅ | OK (max ULP 2) |
@@ -1328,7 +1328,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis2/model.onnx | 23 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis2_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis2_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis3/model.onnx | 23 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis3_expanded/model.onnx | 23 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_1/model.onnx | 23 | ✅ | OK (max ULP 2) |
@@ -1340,7 +1340,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_4/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis_negative_4_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis/model.onnx | 23 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis_expanded/model.onnx | 23 | ✅ | OK (max ULP 2) |
+| onnx-org/onnx/backend/test/data/node/test_rms_normalization_default_axis_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rnn_seq_length/model.onnx | 22 | ❌ | Unsupported op RNN |
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_false/model.onnx | 22 | ❌ | Unsupported op RoiAlign |
 | onnx-org/onnx/backend/test/data/node/test_roialign_aligned_true/model.onnx | 22 | ❌ | Unsupported op RoiAlign |
@@ -1759,7 +1759,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_right_broadcast/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_add_size1_singleton_broadcast/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addconstant/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx | 6 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_addmm/model.onnx | 6 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_clip/model.onnx | 6 | ❌ | Out of tolerance (max ULP 17525756) |
@@ -1826,23 +1826,23 @@ Support 69 / 74 local ONNX files.
 | test_gather_scalar_axis0/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | test_gather_scalar_axis1/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | test_gemm_C1/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1x1/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| test_gemm_C1_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| test_gemm_C1_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| test_gemm_C1x1/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | test_gemm_C1x1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_gemm_C1xN/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_gemm_C1xN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | test_gemm_CM_transA/model.onnx | 12 | ❌ | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) |
-| test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_gemm_CMx1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_gemm_CMx1_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_gemm_CMxN/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CMxN_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| test_gemm_CMxN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | test_gemm_CMxN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_gemm_CMxN_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CN/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_CN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| test_gemm_CN/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| test_gemm_CN_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_gemm_CN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | test_gemm_CN_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_lstm_activations/model.onnx | 11 | ✅ | OK (max ULP 0) |

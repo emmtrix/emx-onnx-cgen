@@ -43,7 +43,7 @@
 static inline void node0_matmul(const float input0[2][3], const float input1[3][4], float output[2][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 4; ++i1) {
-            float acc = 0.0f;
+            double acc = 0.0;
             for (idx_t k = 0; k < 3; ++k) {
                 acc += input0[i0][k] * input1[k][i1];
             }
