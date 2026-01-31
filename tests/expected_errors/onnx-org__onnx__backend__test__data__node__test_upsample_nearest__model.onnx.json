@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Upsample",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_upsample_nearest model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Upsample"
   ],
-  "opset_version": 9
+  "opset_version": 9,
+  "generated_checksum": "88d6102c6118aa32a8d4047a6b32dfbfa6eb0549ea9b7afc4dc8e57c667cc246"
 }

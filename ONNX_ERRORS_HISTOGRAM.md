@@ -70,14 +70,12 @@
 | Unsupported op MatMulInteger | 1 | 10 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op QLinearConv | 1 | 10 |
-| Unsupported op Upsample | 1 | 9 |
 
 ## Error frequency by opset
 
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op Upsample | 9 | 1 |
 | Unsupported elem_type 8 (STRING) for tensor '*'. | 10 | 12 |
 | Unsupported op ConvInteger | 10 | 2 |
 | Unsupported op ReverseSequence | 10 | 2 |
