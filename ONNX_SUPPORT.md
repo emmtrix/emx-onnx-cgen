@@ -1660,7 +1660,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_unsqueeze_three_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_unsqueeze_two_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_unsqueeze_unsorted_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_upsample_nearest/model.onnx | 9 | ❌ | Unsupported op Upsample |
+| onnx-org/onnx/backend/test/data/node/test_upsample_nearest/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_where_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_where_long_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_wrap_pad/model.onnx | 25 | ✅ | OK (max ULP 0) |

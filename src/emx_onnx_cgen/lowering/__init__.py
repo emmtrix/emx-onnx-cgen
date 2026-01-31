@@ -76,6 +76,7 @@ _LOWERING_MODULES = [
     "transpose",
     "trilu",
     "unsqueeze",
+    "upsample",
     "variadic",
     "where",
 ]
