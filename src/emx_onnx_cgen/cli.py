@@ -967,7 +967,8 @@ def _verify_model(
             compile_cmd = [
                 *compiler_cmd,
                 "-std=c99",
-                "-O2",
+                "-O1",
+                "-fsanitize=address,undefined",
                 "-Wall",
                 "-Werror",
                 str(c_path.name),
