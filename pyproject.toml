@@ -29,3 +29,4 @@ where = ["src"]
 
 [tool.setuptools_scm]
 write_to = "src/emx_onnx_cgen/_version.py"
+local_scheme = "no-local-version"
