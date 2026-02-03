@@ -1,14 +1,22 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
+import re
 import subprocess
+from urllib.parse import urlsplit
 
 from setuptools import build_meta as _build_meta
+from setuptools_scm import get_version
 
 BUILD_INFO_MODULE = (
     Path(__file__).resolve().parent / "src" / "emx_onnx_cgen" / "_build_info.py"
 )
+README_PATH = Path(__file__).resolve().parent / "README.md"
+REPO_URL = "https://github.com/emmtrix/emx-onnx-cgen"
+
+MARKDOWN_LINK_PATTERN = re.compile(r"(!?\[[^\]]*])\(([^)]+)\)")
 
 
 def _write_build_info() -> None:
@@ -39,13 +47,94 @@ def _read_git_version() -> str:
     return result.stdout.strip() or "unknown"
 
 
+def _read_git_tag() -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "describe", "--tags", "--exact-match"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return result.stdout.strip() or None
+
+
+def _resolve_release_tag() -> str:
+    tag = _read_git_tag()
+    if tag:
+        return tag
+
+    version = get_version(root=Path(__file__).resolve().parent)
+    if "+" in version:
+        return "main"
+    if version.startswith("v"):
+        return version
+    return f"v{version}"
+
+
+def _is_relative_link(url: str) -> bool:
+    if url.startswith("#"):
+        return False
+    parsed = urlsplit(url)
+    if parsed.scheme or parsed.netloc:
+        return False
+    return True
+
+
+def _build_absolute_url(url: str, is_image: bool, tag: str) -> str:
+    parsed = urlsplit(url)
+    path = parsed.path.lstrip("./")
+    if is_image:
+        base = f"https://raw.githubusercontent.com/emmtrix/emx-onnx-cgen/{tag}/"
+    else:
+        base = f"{REPO_URL}/blob/{tag}/"
+    absolute = f"{base}{path}"
+    if parsed.query:
+        absolute = f"{absolute}?{parsed.query}"
+    if parsed.fragment:
+        absolute = f"{absolute}#{parsed.fragment}"
+    return absolute
+
+
+def _render_pypi_readme(readme_text: str) -> str:
+    tag = _resolve_release_tag()
+
+    def replace_link(match: re.Match[str]) -> str:
+        label = match.group(1)
+        target = match.group(2).strip()
+        parts = target.split(maxsplit=1)
+        url = parts[0]
+        title = f" {parts[1]}" if len(parts) > 1 else ""
+        if not _is_relative_link(url):
+            return match.group(0)
+        absolute = _build_absolute_url(url, label.startswith("!"), tag)
+        return f"{label}({absolute}{title})"
+
+    return MARKDOWN_LINK_PATTERN.sub(replace_link, readme_text)
+
+
+@contextmanager
+def _temporary_pypi_readme() -> None:
+    original = README_PATH.read_text(encoding="utf-8")
+    updated = _render_pypi_readme(original)
+    if updated != original:
+        README_PATH.write_text(updated, encoding="utf-8")
+    try:
+        yield
+    finally:
+        if README_PATH.read_text(encoding="utf-8") != original:
+            README_PATH.write_text(original, encoding="utf-8")
+
+
 def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
     _write_build_info()
-    return _build_meta.build_wheel(
-        wheel_directory,
-        config_settings=config_settings,
-        metadata_directory=metadata_directory,
-    )
+    with _temporary_pypi_readme():
+        return _build_meta.build_wheel(
+            wheel_directory,
+            config_settings=config_settings,
+            metadata_directory=metadata_directory,
+        )
 
 
 def build_editable(wheel_directory, config_settings=None, metadata_directory=None):
@@ -58,7 +147,8 @@ def build_editable(wheel_directory, config_settings=None, metadata_directory=Non
 
 
 def build_sdist(sdist_directory, config_settings=None):
-    return _build_meta.build_sdist(sdist_directory, config_settings=config_settings)
+    with _temporary_pypi_readme():
+        return _build_meta.build_sdist(sdist_directory, config_settings=config_settings)
 
 
 def get_requires_for_build_wheel(config_settings=None):
@@ -70,9 +160,10 @@ def get_requires_for_build_editable(config_settings=None):
 
 
 def prepare_metadata_for_build_wheel(metadata_directory, config_settings=None):
-    return _build_meta.prepare_metadata_for_build_wheel(
-        metadata_directory, config_settings=config_settings
-    )
+    with _temporary_pypi_readme():
+        return _build_meta.prepare_metadata_for_build_wheel(
+            metadata_directory, config_settings=config_settings
+        )
 
 
 def prepare_metadata_for_build_editable(metadata_directory, config_settings=None):
