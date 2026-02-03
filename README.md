@@ -50,10 +50,14 @@ Install the package directly from PyPI (recommended):
 pip install emx-onnx-cgen
 ```
 
+Required at runtime (both `compile` and `verify`):
+
+- `onnx`
+- `numpy`
+
 Optional for verification and tests:
 
 - `onnxruntime`
-- `numpy`
 - A C compiler (`cc`, `gcc`, `clang` or via `--cc`)
 
 ## Quickstart

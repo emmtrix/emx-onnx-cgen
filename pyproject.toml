@@ -9,6 +9,15 @@ description = "emmtrix ONNX-to-C Code Generator"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 dynamic = ["version"]
+dependencies = [
+    "numpy",
+    "onnx",
+]
+
+[project.optional-dependencies]
+verify = [
+    "onnxruntime",
+]
 
 [project.urls]
 Homepage = "https://github.com/emmtrix/emx-onnx-cgen"
