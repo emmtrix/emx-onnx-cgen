@@ -1,6 +1,6 @@
 # emmtrix ONNX-to-C Code Generator (emx-onnx-cgen)
 
-<p align="center"><img width="40%" src="https://raw.githubusercontent.com/emmtrix/emx-onnx-cgen/main/logo.png" /></p>
+<p align="center"><img width="50%" src="https://raw.githubusercontent.com/emmtrix/emx-onnx-cgen/main/logo.png" /></p>
 
 [![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx-cgen.svg)](https://pypi.org/project/emx-onnx-cgen)
 [![CI](https://github.com/emmtrix/emx-onnx-cgen/actions/workflows/tests.yml/badge.svg)](https://github.com/emmtrix/emx-onnx-cgen/actions/workflows/tests.yml)
