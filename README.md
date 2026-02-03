@@ -57,6 +57,7 @@ Required at runtime (both `compile` and `verify`):
 
 - `onnx`
 - `numpy`
+- `jinja2`
 
 Optional for verification and tests:
 
