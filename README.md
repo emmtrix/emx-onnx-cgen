@@ -224,6 +224,15 @@ runtime.
 See [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) for the generated support matrix.
 See [`SUPPORT_OPS.md`](SUPPORT_OPS.md) for operator-level support derived from the expectation JSON files.
 
+## Related Projects
+
+- **emx-pytorch-cgen**  
+  A PyTorch-to-C compiler following the same design principles as emx-onnx-cgen, but operating directly on PyTorch models instead of ONNX graphs.  
+  https://github.com/emmtrix/emx-pytorch-cgen
+- **onnx2c**  
+  An ONNX-to-C code generator with a different design focus and code generation approach.  
+  https://github.com/kraiskil/onnx2c
+  
 ## Maintained by
 
 This project is maintained by [emmtrix](https://www.emmtrix.com).
