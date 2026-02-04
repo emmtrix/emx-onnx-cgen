@@ -22,7 +22,7 @@ verify = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/emmtrix/emx-onnx-cgen"
+Homepage = "https://www.emmtrix.com/wiki/emmtrix_ONNX-to-C_Code_Generator"
 Repository = "https://github.com/emmtrix/emx-onnx-cgen"
 Issues = "https://github.com/emmtrix/emx-onnx-cgen/issues"
 
