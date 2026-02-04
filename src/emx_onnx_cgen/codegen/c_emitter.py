@@ -264,7 +264,6 @@ class TempBuffer:
 @dataclass(frozen=True)
 class ModelHeader:
     generator: str
-    command_line: str | None
     model_checksum: str | None
     model_name: str | None
     graph_name: str | None
@@ -281,6 +280,7 @@ class ModelHeader:
     output_count: int
     node_count: int
     initializer_count: int
+    codegen_settings: tuple[tuple[str, str], ...]
 
 
 @dataclass(frozen=True)
@@ -2739,7 +2739,12 @@ class CEmitter:
     @staticmethod
     def _emit_header_comment(header: ModelHeader) -> str:
         lines: list[str] = [header.generator, ""]
-        lines.append(f"Command line: {header.command_line or 'n/a'}")
+        lines.append("Codegen settings:")
+        if header.codegen_settings:
+            for key, value in header.codegen_settings:
+                lines.append(f"  {key}: {value}")
+        else:
+            lines.append("  n/a")
         lines.append(f"Model checksum (sha256): {header.model_checksum or 'n/a'}")
         lines.append(f"Model name: {header.model_name or 'n/a'}")
         lines.append(f"Graph name: {header.graph_name or 'n/a'}")
