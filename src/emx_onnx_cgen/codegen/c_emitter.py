@@ -318,7 +318,7 @@ class CEmitter:
         template_dir: Path | None,
         *,
         restrict_arrays: bool = True,
-        fp32_accumulation_strategy: str = "fp64",
+        fp32_accumulation_strategy: str = "simple",
         fp16_accumulation_strategy: str = "fp32",
         truncate_weights_after: int | None = None,
         large_temp_threshold_bytes: int = 1024,

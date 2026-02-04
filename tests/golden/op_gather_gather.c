@@ -4,7 +4,7 @@
  * Codegen settings:
  *   emit_testbench: False
  *   restrict_arrays: True
- *   fp32_accumulation_strategy: fp64
+ *   fp32_accumulation_strategy: simple
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400

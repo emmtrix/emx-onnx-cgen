@@ -4,7 +4,7 @@
  * Codegen settings:
  *   emit_testbench: False
  *   restrict_arrays: True
- *   fp32_accumulation_strategy: fp64
+ *   fp32_accumulation_strategy: simple
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
@@ -51,25 +51,25 @@
  */
 static inline void node0_layernormalization(const float input0[2][3][4], const float scale[3][4], const float bias[3][4], float output[2][3][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
-        double sum = 0.0;
+        float sum = 0.0f;
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                sum += (double)input0[i0][i1][i2];
+                sum += (float)input0[i0][i1][i2];
             }
         }
-        double mean = sum / 12;
-        double var = 0.0;
+        float mean = sum / 12;
+        float var = 0.0f;
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                double diff = (double)input0[i0][i1][i2] - mean;
+                float diff = (float)input0[i0][i1][i2] - mean;
                 var += diff * diff;
             }
         }
         var = var / 12;
-        double inv_std = 1.0 / sqrt(var + 9.9999997473787516e-06);
+        float inv_std = 1.0f / sqrtf(var + 9.99999975e-06f);
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
-                double value = ((double)input0[i0][i1][i2] - mean) * inv_std;
+                float value = ((float)input0[i0][i1][i2] - mean) * inv_std;
                 value = value * scale[i1][i2] + bias[i1][i2];
                 output[i0][i1][i2] = value;
             }
