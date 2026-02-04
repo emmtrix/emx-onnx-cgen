@@ -45,6 +45,62 @@ Key characteristics:
   - `bool`
 - Optional support for dynamic dimensions using C99 variable-length arrays (VLAs), when the target compiler supports them.
 
+## Usage Scenarios
+
+### 1. Fully Embedded, Standalone C Firmware
+
+The generated C code can be embedded directly into a bare-metal C firmware or application where **all model weights and parameters are compiled into the C source**.
+
+Typical characteristics:
+
+* No file system or OS required.
+* All weights stored as `static const` arrays in flash/ROM.
+* Deterministic memory usage with no runtime allocation.
+* Suitable for:
+
+  * Microcontrollers
+  * Safety-critical firmware
+  * Systems with strict certification requirements
+
+This scenario is enabled by default and requires no additional runtime support beyond a C compiler.
+
+### 2. Embedded or Host C/C++ Application with External Weights
+
+The generated C code can be embedded into C or C++ applications where **large model weights are stored externally and loaded from a binary file at runtime**.
+
+Typical characteristics:
+
+* Code and control logic compiled into the application.
+* Large constant tensors packed into a separate `.bin` file.
+* Explicit, generated loader functions handle weight initialization.
+* Suitable for:
+
+  * Embedded Linux or RTOS systems
+  * Applications with limited flash but available external storage
+  * Larger models where code size must be minimized
+
+This scenario is enabled via `--large-weight-threshold`, which automatically offloads large weights into a binary file.
+
+### 3. Target-Optimized Code Generation via emmtrix Source-to-Source Tooling
+
+In both of the above scenarios, the generated C code can serve as **input to emmtrix source-to-source compilation and optimization tools**, enabling target-specific optimizations while preserving functional correctness.
+
+Examples of applied transformations include:
+
+* Kernel fusion and loop restructuring
+* Memory layout optimization and buffer reuse
+* Reduction of internal temporary memory
+* Utilization of SIMD / vector instruction sets
+* Offloading of large weights to external memory
+* Dynamic loading of weights or activations via DMA
+
+This workflow allows a clear separation between:
+
+* **Correctness-first, deterministic ONNX lowering**, and
+* **Target-specific performance and memory optimization**,
+
+while keeping the generated C code readable, auditable, and traceable.
+
 ## Installation
 
 Install the package directly from PyPI (recommended):
