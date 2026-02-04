@@ -6,7 +6,7 @@
  *   restrict_arrays: True
  *   fp32_accumulation_strategy: fp64
  *   fp16_accumulation_strategy: fp32
- *   large_temp_threshold_bytes: 1024
+ *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
  * Model checksum (sha256): 938c1e16f4b3198de5de30c681a58e664dec09781b2df8da766c647f442b5067
  * Model name: model

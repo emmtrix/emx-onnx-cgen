@@ -523,7 +523,7 @@ class Compiler:
         codegen_settings.extend(
             [
                 (
-                    "large_temp_threshold_bytes",
+                    "large_temp_threshold",
                     str(self._options.large_temp_threshold_bytes),
                 ),
                 (
