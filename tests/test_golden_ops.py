@@ -67,7 +67,7 @@ def _make_where_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -96,7 +96,7 @@ def _make_clip_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -132,7 +132,7 @@ def _make_optional_has_element_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 18)],
     )
     model.ir_version = 8
@@ -183,7 +183,7 @@ def _make_average_pool_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -235,7 +235,7 @@ def _make_negative_log_likelihood_loss_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -268,7 +268,7 @@ def _make_softmax_cross_entropy_loss_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
