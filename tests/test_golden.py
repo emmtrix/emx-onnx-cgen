@@ -38,7 +38,7 @@ def _make_binary_model(op_type: str, shape: list[int]) -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -56,7 +56,7 @@ def _make_prelu_channel_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 6)],
     )
     model.ir_version = 7
@@ -74,7 +74,7 @@ def _make_mod_model() -> onnx.ModelProto:
     graph = helper.make_graph([node], "mod_graph", [input_a, input_b], [output])
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -90,7 +90,7 @@ def _make_add_model() -> onnx.ModelProto:
     graph = helper.make_graph([node], "add_graph", [input_a, input_b], [output])
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -106,7 +106,7 @@ def _make_mul_model() -> onnx.ModelProto:
     graph = helper.make_graph([node], "mul_graph", [input_a, input_b], [output])
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -129,7 +129,7 @@ def _make_mul_add_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -153,7 +153,7 @@ def _make_mul_add_relu_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -176,7 +176,7 @@ def _make_large_temp_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -191,7 +191,7 @@ def _make_tanh_model() -> onnx.ModelProto:
     graph = helper.make_graph([node], "tanh_graph", [input_x], [output])
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -206,7 +206,7 @@ def _make_relu_model() -> onnx.ModelProto:
     graph = helper.make_graph([node], "relu_graph", [input_x], [output])
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -222,7 +222,7 @@ def _make_matmul_model() -> onnx.ModelProto:
     graph = helper.make_graph([node], "matmul_graph", [input_a, input_b], [output])
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -251,7 +251,7 @@ def _make_add_initializer_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
@@ -284,7 +284,7 @@ def _make_large_weight_initializer_model() -> onnx.ModelProto:
     )
     model = helper.make_model(
         graph,
-        producer_name="onnx2c",
+        producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
