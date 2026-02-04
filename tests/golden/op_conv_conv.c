@@ -4,7 +4,7 @@
  * Codegen settings:
  *   emit_testbench: False
  *   restrict_arrays: True
- *   fp32_accumulation_strategy: fp64
+ *   fp32_accumulation_strategy: simple
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
@@ -92,7 +92,7 @@ static inline void node0_conv(const float input0[1][1][4][4], const float weight
                 const idx_t oc_global = g * 1 + oc;
                 for (idx_t od0 = 0; od0 < 4; ++od0) {
                     for (idx_t od1 = 0; od1 < 4; ++od1) {
-                        double acc = (double)bias[oc_global];
+                        float acc = (float)bias[oc_global];
                         for (idx_t ic = 0; ic < 1; ++ic) {
                             const idx_t ic_global = g * 1 + ic;
                             for (idx_t kd0 = 0; kd0 < 3; ++kd0) {
@@ -100,7 +100,7 @@ static inline void node0_conv(const float input0[1][1][4][4], const float weight
                                     const idx_t id0 = od0 * 1 + kd0 * 1 - 1;
                                     const idx_t id1 = od1 * 1 + kd1 * 1 - 1;
                                     if (id0 >= 0 && id0 < 4 && id1 >= 0 && id1 < 4) {
-                                        acc += (double)input0[n][ic_global][id0][id1] * (double)weights[oc_global][ic][kd0][kd1];
+                                        acc += (float)input0[n][ic_global][id0][id1] * (float)weights[oc_global][ic][kd0][kd1];
                                     }
                                 }
                             }

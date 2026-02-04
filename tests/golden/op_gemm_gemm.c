@@ -4,7 +4,7 @@
  * Codegen settings:
  *   emit_testbench: False
  *   restrict_arrays: True
- *   fp32_accumulation_strategy: fp64
+ *   fp32_accumulation_strategy: simple
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
@@ -51,7 +51,7 @@
 static inline void node0_gemm(const float input_a[2][3], const float input_b[3][4], const float input_c[2][4], float output[2][4]) {
     for (idx_t i = 0; i < 2; ++i) {
         for (idx_t j = 0; j < 4; ++j) {
-            double acc = 0.0;
+            float acc = 0.0f;
             for (idx_t k = 0; k < 3; ++k) {
                 const float a_val = input_a[i][k];
                 const float b_val = input_b[k][j];
