@@ -40,7 +40,7 @@ class CompilerOptions:
     command_line: str | None = None
     model_checksum: str | None = None
     restrict_arrays: bool = True
-    fp32_accumulation_strategy: str = "fp64"
+    fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
     testbench_inputs: Mapping[str, np.ndarray] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None

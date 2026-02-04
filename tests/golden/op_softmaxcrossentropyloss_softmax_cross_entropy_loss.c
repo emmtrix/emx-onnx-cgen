@@ -4,7 +4,7 @@
  * Codegen settings:
  *   emit_testbench: False
  *   restrict_arrays: True
- *   fp32_accumulation_strategy: fp64
+ *   fp32_accumulation_strategy: simple
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
@@ -40,8 +40,8 @@
 #endif
 #endif
 
-static inline double ref_scalar_f64_fmax(double a, double b) {
-    return fmax(a, b);
+static inline float ref_scalar_f32_fmax(float a, float b) {
+    return fmaxf(a, b);
 }
 
 /*
@@ -61,27 +61,27 @@ static inline void node0_softmaxcrossentropyloss(const float input0[2][3], const
     const idx_t n = 2;
     const idx_t c = 3;
     const idx_t d = 1;
-    double loss_sum = 0.0;
+    float loss_sum = 0.0f;
     for (idx_t n_idx = 0; n_idx < n; ++n_idx) {
         for (idx_t d_idx = 0; d_idx < d; ++d_idx) {
             idx_t target_index = n_idx * d + d_idx;
             int64_t target_value = target_flat[target_index];
             idx_t class_index = (idx_t)target_value;
             idx_t base = (n_idx * c * d) + d_idx;
-            double max_value = (double)input_flat[base];
+            float max_value = (float)input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
-                double value = (double)input_flat[base + c_idx * d];
-                max_value = ref_scalar_f64_fmax(max_value, value);
+                float value = (float)input_flat[base + c_idx * d];
+                max_value = ref_scalar_f32_fmax(max_value, value);
             }
-            double sum = 0.0;
+            float sum = 0.0f;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                double value = (double)input_flat[base + c_idx * d] - max_value;
-                sum += exp(value);
+                float value = (float)input_flat[base + c_idx * d] - max_value;
+                sum += expf(value);
             }
-            double logsum = log(sum);
-            double loss_value = 0.0;
+            float logsum = logf(sum);
+            float loss_value = 0.0f;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
-                double log_prob_value = (double)input_flat[base + c_idx * d] - max_value - logsum;
+                float log_prob_value = (float)input_flat[base + c_idx * d] - max_value - logsum;
                 log_prob_flat[base + c_idx * d] = (float)log_prob_value;
                 if (c_idx == class_index) {
                     loss_value = -log_prob_value;
