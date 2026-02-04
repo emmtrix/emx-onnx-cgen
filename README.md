@@ -18,6 +18,8 @@ Key characteristics:
 - **Readable, auditable C code** suitable for certification and code reviews
 - Designed for **bare-metal and RTOS-based systems**
 
+For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.com/emmtrix/emx-pytorch-cgen).
+
 ## Goals
 
 - Correctness-first compilation with outputs comparable to ONNX Runtime.
