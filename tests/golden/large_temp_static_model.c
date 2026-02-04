@@ -8,14 +8,14 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 2f0e4324e14da66040e7ca5deeee256dd77ed24c463ab98099791bb1de560c76
+ * Model checksum (sha256): a0b9d86b5a9a265cc81d744549c4c2dd68c6428f528209de8d1b12ffb09dce6d
  * Model name: large_temp_static_model
  * Graph name: large_temp_graph
  * Inputs: 2 Outputs: 1 Nodes: 2 Initializers: 0
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
- * Producer: onnx2c (version: n/a)
+ * Producer: emx-onnx-cgen (version: n/a)
  * Opset imports: ai.onnx=13
  * Description:
  *   n/a

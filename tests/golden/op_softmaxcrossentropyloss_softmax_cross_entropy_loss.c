@@ -8,14 +8,14 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): e81edfa56657356b36eeffec726961c5c46dcabae77911de9496c6dad4da16c2
+ * Model checksum (sha256): ef7ad6a1649c61dd99010deea4a13d38923197f959cbda921d7dc573fc29b353
  * Model name: model
  * Graph name: softmax_cross_entropy_loss_graph
  * Inputs: 2 Outputs: 2 Nodes: 1 Initializers: 0
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
- * Producer: onnx2c (version: n/a)
+ * Producer: emx-onnx-cgen (version: n/a)
  * Opset imports: ai.onnx=13
  * Description:
  *   n/a

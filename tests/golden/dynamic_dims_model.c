@@ -8,14 +8,14 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 8f95375285b39b185f94504c4e73b7144b27843901db46fd29fa71f6738e21ee
+ * Model checksum (sha256): e1230dbe10f508bb16efa3b5338183ee4082a095cf45c7c808c443438076df23
  * Model name: dynamic_dims_model
  * Graph name: relu_graph
  * Inputs: 1 Outputs: 1 Nodes: 1 Initializers: 0
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
- * Producer: onnx2c (version: n/a)
+ * Producer: emx-onnx-cgen (version: n/a)
  * Opset imports: ai.onnx=13
  * Description:
  *   n/a

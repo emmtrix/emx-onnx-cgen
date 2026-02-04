@@ -8,14 +8,14 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): cacaf121665f8f4f8bda3b154f45e8ddb1550c335cda7eb63323efd2693a9e0e
+ * Model checksum (sha256): 0db53428f335ae4a9489d98202084a5207e7b8b43fbbe7e8be9b2c742a820959
  * Model name: model
  * Graph name: matmul_graph
  * Inputs: 2 Outputs: 1 Nodes: 1 Initializers: 0
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
- * Producer: onnx2c (version: n/a)
+ * Producer: emx-onnx-cgen (version: n/a)
  * Opset imports: ai.onnx=13
  * Description:
  *   n/a

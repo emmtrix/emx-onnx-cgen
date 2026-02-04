@@ -8,14 +8,14 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): b7558848b92d9b90edc707d66ae6f3236a37b215ec9aa67f9376408b6b78061c
+ * Model checksum (sha256): 7f30a57eebb5c9ae99b2a7e26899f206f8d9d623a8e0a2518c4f271128c51d8c
  * Model name: model
  * Graph name: where_graph
  * Inputs: 3 Outputs: 1 Nodes: 1 Initializers: 0
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
- * Producer: onnx2c (version: n/a)
+ * Producer: emx-onnx-cgen (version: n/a)
  * Opset imports: ai.onnx=13
  * Description:
  *   n/a

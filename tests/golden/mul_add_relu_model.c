@@ -8,14 +8,14 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 9197725352e1899c9988f056545c09f78c03acaef539a8995262e8f9cd3b0671
+ * Model checksum (sha256): 66a53faa4385eceb4eb2172a98dcdaee5d7632797b8544defc1048d92d984cae
  * Model name: model
  * Graph name: mul_add_relu_graph
  * Inputs: 3 Outputs: 1 Nodes: 3 Initializers: 0
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
- * Producer: onnx2c (version: n/a)
+ * Producer: emx-onnx-cgen (version: n/a)
  * Opset imports: ai.onnx=13
  * Description:
  *   n/a

@@ -8,14 +8,14 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 9ccb2802c0f63a1d1d9a1945af432d6a93e3606d565c11c95f577d83ff9ae018
+ * Model checksum (sha256): 85fed05d5f1cafcee645deb5eca02c4b40f366a7bc3261b5dfddbd454079c699
  * Model name: model
  * Graph name: average_pool_graph
  * Inputs: 1 Outputs: 1 Nodes: 1 Initializers: 0
  * IR version: 7
  * Model version: n/a
  * Domain: n/a
- * Producer: onnx2c (version: n/a)
+ * Producer: emx-onnx-cgen (version: n/a)
  * Opset imports: ai.onnx=13
  * Description:
  *   n/a
