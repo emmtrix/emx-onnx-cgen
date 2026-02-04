@@ -57,12 +57,11 @@ Typical characteristics:
 * All weights stored as `static const` arrays in flash/ROM.
 * Deterministic memory usage with no runtime allocation.
 * Suitable for:
-
   * Microcontrollers
   * Safety-critical firmware
   * Systems with strict certification requirements
 
-This scenario is enabled by default and requires no additional runtime support beyond a C compiler.
+This scenario is enabled via `--large-weight-threshold 0` and requires no additional runtime support beyond a C compiler.
 
 ### 2. Embedded or Host C/C++ Application with External Weights
 
@@ -74,12 +73,11 @@ Typical characteristics:
 * Large constant tensors packed into a separate `.bin` file.
 * Explicit, generated loader functions handle weight initialization.
 * Suitable for:
-
   * Embedded Linux or RTOS systems
   * Applications with limited flash but available external storage
   * Larger models where code size must be minimized
 
-This scenario is enabled via `--large-weight-threshold`, which automatically offloads large weights into a binary file.
+This scenario is enabled by default, which automatically offloads large weights (configurable via `--large-weight-threshold`) into a binary file.
 
 ### 3. Target-Optimized Code Generation via emmtrix Source-to-Source Tooling
 
