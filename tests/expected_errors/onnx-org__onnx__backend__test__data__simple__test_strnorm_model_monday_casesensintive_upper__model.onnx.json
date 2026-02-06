@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported elem_type 8 (STRING) for tensor 'x'.",
+  "error": "Unsupported op StringNormalizer",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "StringNormalizer"

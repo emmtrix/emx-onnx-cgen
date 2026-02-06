@@ -2507,6 +2507,7 @@ class CEmitter:
             "",
             self._emit_index_type_define(),
             self._emit_unused_define(),
+            self._emit_string_max_len_define(),
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
@@ -2671,6 +2672,7 @@ class CEmitter:
             *includes,
             "",
             self._emit_index_type_define(),
+            self._emit_string_max_len_define(),
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
@@ -3234,6 +3236,16 @@ class CEmitter:
         )
 
     @staticmethod
+    def _emit_string_max_len_define() -> str:
+        return "\n".join(
+            (
+                "#ifndef EMX_STRING_MAX_LEN",
+                "#define EMX_STRING_MAX_LEN 256",
+                "#endif",
+            )
+        )
+
+    @staticmethod
     def _needs_stdint(
         model_dtypes: set[ScalarType],
         targets: tuple[set[ScalarType], ...],
@@ -3638,7 +3650,7 @@ class CEmitter:
         ):
             params.append(
                 f"const {dtype.c_type} {name}"
-                f"{self._param_array_suffix(shape, input_dim_names.get(index), use_restrict=True)}"
+                f"{self._param_array_suffix(shape, input_dim_names.get(index), use_restrict=True, dtype=dtype)}"
             )
             optional_flag = optional_flags.get(name)
             if optional_flag is not None:
@@ -3648,7 +3660,7 @@ class CEmitter:
         ):
             params.append(
                 f"{dtype.c_type} {name}"
-                f"{self._param_array_suffix(shape, output_dim_names.get(index), use_restrict=True)}"
+                f"{self._param_array_suffix(shape, output_dim_names.get(index), use_restrict=True, dtype=dtype)}"
             )
         signature = ", ".join(params)
         lines = [f"void {model.name}({signature}) {{"]
@@ -3661,7 +3673,7 @@ class CEmitter:
                 else ""
             )
             lines.append(
-                f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape)};"
+                f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape, temp.dtype)};"
             )
         for index, op in enumerate(resolved_ops):
             op_name = self._op_function_name(model, index)
@@ -8809,11 +8821,12 @@ class CEmitter:
                 output_shape_raw, output_dim_names
             )
             loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_dtype = self._ctx_dtype(op.output)
             output_suffix = self._param_array_suffix(
-                output_shape_raw, output_dim_names
+                output_shape_raw, output_dim_names, dtype=output_dtype
             )
             input_suffix = self._param_array_suffix(
-                output_shape_raw, _dim_names_for(op.input0)
+                output_shape_raw, _dim_names_for(op.input0), dtype=output_dtype
             )
             param_decls = self._build_param_decls(
                 [
@@ -8821,18 +8834,27 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
-            rendered = identity_template.render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                shape=shape,
-                loop_vars=loop_vars,
-            ).rstrip()
+            if c_type == "char":
+                rendered = "\n".join(
+                    (
+                        f"static inline void {op_name}({dim_args}{', '.join(param_decls)}) {{",
+                        f"    memcpy({params['output']}, {params['input0']}, sizeof(char) * {CEmitter._element_count_expr(shape)} * EMX_STRING_MAX_LEN);",
+                        "}",
+                    )
+                )
+            else:
+                rendered = identity_template.render(
+                    model_name=model.name,
+                    op_name=op_name,
+                    input0=params["input0"],
+                    output=params["output"],
+                    params=param_decls,
+                    c_type=c_type,
+                    input_suffix=input_suffix,
+                    output_suffix=output_suffix,
+                    shape=shape,
+                    loop_vars=loop_vars,
+                ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BernoulliOp):
             output_dim_names = _dim_names_for(op.output)
@@ -12258,9 +12280,14 @@ class CEmitter:
         return tuple(max(1, dim) if isinstance(dim, int) else dim for dim in shape)
 
     @staticmethod
-    def _array_suffix(shape: tuple[int, ...]) -> str:
+    def _array_suffix(
+        shape: tuple[int, ...], dtype: ScalarType | None = None
+    ) -> str:
         shape = CEmitter._codegen_shape(shape)
-        return "".join(f"[{dim}]" for dim in shape)
+        suffix = "".join(f"[{dim}]" for dim in shape)
+        if dtype == ScalarType.STRING:
+            suffix += "[EMX_STRING_MAX_LEN]"
+        return suffix
 
     def _param_array_suffix(
         self,
@@ -12268,21 +12295,28 @@ class CEmitter:
         dim_names: Mapping[int, str] | None = None,
         *,
         use_restrict: bool = False,
+        dtype: ScalarType | None = None,
     ) -> str:
         shape = CEmitter._codegen_shape(shape)
         dim_names = dim_names or {}
         if not (self._restrict_arrays and use_restrict):
-            return "".join(
+            suffix = "".join(
                 f"[{dim_names.get(index, dim)}]"
                 for index, dim in enumerate(shape)
             )
+            if dtype == ScalarType.STRING:
+                suffix += "[EMX_STRING_MAX_LEN]"
+            return suffix
         first, *rest = shape
         first_dim = dim_names.get(0, first)
         rest_dims = "".join(
             f"[{dim_names.get(index + 1, dim)}]"
             for index, dim in enumerate(rest)
         )
-        return f"[restrict {first_dim}]{rest_dims}"
+        suffix = f"[restrict {first_dim}]{rest_dims}"
+        if dtype == ScalarType.STRING:
+            suffix += "[EMX_STRING_MAX_LEN]"
+        return suffix
 
     @staticmethod
     def _format_dim_args(dim_order: Sequence[str]) -> list[str]:

@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported elem_type 8 (STRING) for tensor 'X'.",
+  "error": "Unsupported op RegexFullMatch",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_regex_full_match_basic model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "RegexFullMatch"

@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported elem_type 8 (STRING) for tensor 'x'.",
+  "error": "Unsupported op StringSplit",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_split_basic model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "StringSplit"
