@@ -46,10 +46,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx | 20 | ❌ | Unsupported op If |
 | onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | ❌ | Unsupported op ArrayFeatureExtractor |
 | onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_binarizer/model.onnx |  | ❌ | Unsupported op Binarizer |
-| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
-| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx |  | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
-| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx |  | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
-| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx |  | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
+| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | ❌ | Unsupported op LabelEncoder |
+| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx |  | ❌ | Unsupported op LabelEncoder |
+| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx |  | ❌ | Unsupported op LabelEncoder |
+| onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx |  | ❌ | Unsupported op LabelEncoder |
 | onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx |  | ❌ | Unsupported op TreeEnsemble |
 | onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx |  | ❌ | Unsupported op TreeEnsemble |
 | onnx-org/onnx/backend/test/data/node/test_and2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
@@ -619,8 +619,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_equal_bcast/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_int16/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_int8/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_equal_string/model.onnx | 19 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_equal_string_broadcast/model.onnx | 19 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_equal_string/model.onnx | 19 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_equal_string_broadcast/model.onnx | 19 | ❌ | Unsupported dtype string |
 | onnx-org/onnx/backend/test/data/node/test_equal_uint16/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_uint32/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_uint64/model.onnx | 19 | ✅ | OK (max ULP 0) |
@@ -1247,9 +1247,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reflect_pad/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_regex_full_match_basic/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
-| onnx-org/onnx/backend/test/data/node/test_regex_full_match_email_domain/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
-| onnx-org/onnx/backend/test/data/node/test_regex_full_match_empty/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'X'. |
+| onnx-org/onnx/backend/test/data/node/test_regex_full_match_basic/model.onnx | 20 | ❌ | Unsupported op RegexFullMatch |
+| onnx-org/onnx/backend/test/data/node/test_regex_full_match_email_domain/model.onnx | 20 | ❌ | Unsupported op RegexFullMatch |
+| onnx-org/onnx/backend/test/data/node/test_regex_full_match_empty/model.onnx | 20 | ❌ | Unsupported op RegexFullMatch |
 | onnx-org/onnx/backend/test/data/node/test_relu/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_relu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reshape_allowzero_reordered/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -1556,23 +1556,23 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_squeeze_negative_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_stft/model.onnx | 17 | ❌ | Unsupported op STFT |
 | onnx-org/onnx/backend/test/data/node/test_stft_with_window/model.onnx | 17 | ❌ | Unsupported op STFT |
-| onnx-org/onnx/backend/test/data/node/test_string_concat/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_concat_broadcasting/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_concat_empty_string/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_concat_utf8/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_concat_zero_dimensional/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_split_basic/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_split_consecutive_delimiters/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_split_empty_string_delimiter/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_split_empty_tensor/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_string_split_no_delimiter/model.onnx | 20 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_string_concat/model.onnx | 20 | ❌ | Unsupported op StringConcat |
+| onnx-org/onnx/backend/test/data/node/test_string_concat_broadcasting/model.onnx | 20 | ❌ | Unsupported op StringConcat |
+| onnx-org/onnx/backend/test/data/node/test_string_concat_empty_string/model.onnx | 20 | ❌ | Unsupported op StringConcat |
+| onnx-org/onnx/backend/test/data/node/test_string_concat_utf8/model.onnx | 20 | ❌ | Unsupported op StringConcat |
+| onnx-org/onnx/backend/test/data/node/test_string_concat_zero_dimensional/model.onnx | 20 | ❌ | Unsupported op StringConcat |
+| onnx-org/onnx/backend/test/data/node/test_string_split_basic/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| onnx-org/onnx/backend/test/data/node/test_string_split_consecutive_delimiters/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| onnx-org/onnx/backend/test/data/node/test_string_split_empty_string_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| onnx-org/onnx/backend/test/data/node/test_string_split_empty_tensor/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| onnx-org/onnx/backend/test/data/node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| onnx-org/onnx/backend/test/data/node/test_string_split_no_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
 | onnx-org/onnx/backend/test/data/node/test_sub/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1806,12 +1806,12 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_shrink/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sign_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_single_relu_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported elem_type 8 (STRING) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
 
 ## Local ONNX file support
 

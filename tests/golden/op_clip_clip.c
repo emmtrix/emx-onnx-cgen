@@ -39,6 +39,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_STRING_MAX_LEN
+#define EMX_STRING_MAX_LEN 256
+#endif
 
 extern const float weight1_min[1];
 extern const float weight2_max[1];
