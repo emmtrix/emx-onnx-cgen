@@ -195,6 +195,19 @@ class ScalarType(str, Enum):
         True,
         None,
     )
+    STRING = (
+        "str",
+        "string",
+        "char",
+        np.dtype("O"),
+        '""',
+        '""',
+        '""',
+        False,
+        False,
+        False,
+        None,
+    )
 
     @property
     def is_integer(self) -> bool:
@@ -224,6 +237,7 @@ class ScalarType(str, Enum):
             "uint32": cls.U32,
             "uint64": cls.U64,
             "bool": cls.BOOL,
+            "string": cls.STRING,
         }
         try:
             return mapping[normalized]
