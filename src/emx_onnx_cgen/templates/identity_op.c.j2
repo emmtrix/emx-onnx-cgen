@@ -1,4 +1,15 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if is_string %}
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+    for (idx_t str_idx = 0; str_idx < EMX_STRING_MAX; ++str_idx) {
+        {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %}[str_idx] = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %}[str_idx];
+    }
+{% for _ in shape %}
+    }
+{% endfor %}
+{% else %}
 {% for dim in shape %}
     for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
@@ -6,4 +17,5 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for _ in shape %}
     }
 {% endfor %}
+{% endif %}
 }

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported elem_type 8 (STRING) for tensor 'x'.",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_equal_string model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Equal"
   ],
-  "opset_version": 19
+  "opset_version": 19,
+  "generated_checksum": "df3f51ead2bafd35d2e79d04716ae4dee9cde28f1fcc60fc9e53f8a790a1d0a1"
 }

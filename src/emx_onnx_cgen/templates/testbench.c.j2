@@ -29,6 +29,23 @@ static int64_t rng_next_i64(void) {
 }
 {% endif %}
 
+{% if has_string_inputs %}
+static void emx_string_copy(emx_string_t dst, const emx_string_t src) {
+    for (idx_t i = 0; i < EMX_STRING_MAX; ++i) {
+        dst[i] = src[i];
+        if (!src[i]) {
+            break;
+        }
+    }
+}
+
+static void emx_string_clear(emx_string_t dst) {
+    for (idx_t i = 0; i < EMX_STRING_MAX; ++i) {
+        dst[i] = '\0';
+    }
+}
+{% endif %}
+
 {% for input in inputs %}
 {% if input.constant_lines %}
 static const {{ input.c_type }} {{ input.constant_name }}[] = {
@@ -59,12 +76,20 @@ int main(int argc, char **argv) {
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
 {% if input.constant_name %}
 {% if input.rank == 0 %}
+{% if input.is_string %}
+    emx_string_copy({{ input.name }}, {{ input.constant_name }}[0]);
+{% else %}
     {{ input.name }} = {{ input.constant_name }}[0];
+{% endif %}
 {% else %}
 {% for depth in range(input.rank) %}
     for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
+{% if input.is_string %}
+        emx_string_copy({{ input.name }}{{ input.array_index_expr }}, {{ input.constant_name }}[{{ input.index_expr }}]);
+{% else %}
         {{ input.name }}{{ input.array_index_expr }} = {{ input.constant_name }}[{{ input.index_expr }}];
+{% endif %}
 {% for depth in range(input.rank - 1, -1, -1) %}
     }
 {% endfor %}
@@ -85,7 +110,11 @@ int main(int argc, char **argv) {
 {% for depth in range(input.rank) %}
     for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
+{% if input.is_string %}
+        emx_string_clear({{ input.name }}{{ input.array_index_expr }});
+{% else %}
         {{ input.name }}{{ input.array_index_expr }} = {{ input.random_expr }};
+{% endif %}
 {% for depth in range(input.rank - 1, -1, -1) %}
     }
 {% endfor %}

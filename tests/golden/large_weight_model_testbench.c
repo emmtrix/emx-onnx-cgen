@@ -117,6 +117,7 @@ static float rng_next_float(void) {
 
 
 
+
 int main(int argc, char **argv) {
     FILE *input_file = NULL;
     if (argc > 1) {

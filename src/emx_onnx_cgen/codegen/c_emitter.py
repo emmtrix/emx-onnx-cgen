@@ -12,7 +12,7 @@ from typing import Mapping, Sequence
 from jinja2 import Environment, FileSystemLoader, PackageLoader, Template, select_autoescape
 import numpy as np
 
-from ..errors import CodegenError
+from ..errors import CodegenError, ShapeInferenceError
 from ..ops import (
     COMPARE_FUNCTIONS,
     OperatorKind,
@@ -2251,9 +2251,10 @@ class CEmitter:
 
     @staticmethod
     def _sanitize_testbench_inputs(
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None,
+        testbench_inputs: Mapping[str, tuple[float | int | bool | str, ...]]
+        | None,
         name_map: Mapping[str, str],
-    ) -> Mapping[str, tuple[float | int | bool, ...]] | None:
+    ) -> Mapping[str, tuple[float | int | bool | str, ...]] | None:
         if not testbench_inputs:
             return None
         return {
@@ -2402,7 +2403,10 @@ class CEmitter:
         model: LoweredModel,
         *,
         emit_testbench: bool = False,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_inputs: Mapping[
+            str, tuple[float | int | bool | str, ...]
+        ]
+        | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -2500,6 +2504,9 @@ class CEmitter:
             extra_includes=scalar_includes | testbench_math_include,
             needs_weight_loader=bool(large_constants),
         )
+        model_dtypes, _, _, _ = self._collect_model_dtypes(
+            original_model, list(original_model.ops)
+        )
         sections = [
             self._emit_header_comment(model.header),
             "",
@@ -2508,6 +2515,8 @@ class CEmitter:
             self._emit_index_type_define(),
             self._emit_unused_define(),
         ]
+        if ScalarType.STRING in model_dtypes:
+            sections.append(self._emit_string_type_define())
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
         sections.append("")
@@ -2567,7 +2576,10 @@ class CEmitter:
         model: LoweredModel,
         *,
         emit_testbench: bool = False,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_inputs: Mapping[
+            str, tuple[float | int | bool | str, ...]
+        ]
+        | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
         variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -2665,6 +2677,9 @@ class CEmitter:
             extra_includes=scalar_includes | testbench_math_include,
             needs_weight_loader=bool(large_constants),
         )
+        model_dtypes, _, _, _ = self._collect_model_dtypes(
+            original_model, list(original_model.ops)
+        )
         sections = [
             self._emit_header_comment(model.header),
             "",
@@ -2672,6 +2687,8 @@ class CEmitter:
             "",
             self._emit_index_type_define(),
         ]
+        if ScalarType.STRING in model_dtypes:
+            sections.append(self._emit_string_type_define())
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
         sections.append("")
@@ -2986,7 +3003,109 @@ class CEmitter:
         return name
 
     @staticmethod
+    @staticmethod
+    def _collect_model_dtypes(
+        model: LoweredModel,
+        resolved_ops: Sequence[OpBase],
+    ) -> tuple[set[ScalarType], set[ScalarType], set[ScalarType], set[ScalarType]]:
+        constant_of_shape_inputs = {
+            op.input_dtype
+            for op in resolved_ops
+            if isinstance(op, ConstantOfShapeOp)
+        }
+        model_dtypes: set[ScalarType] = {
+            *model.input_dtypes,
+            *model.output_dtypes,
+            *(const.dtype for const in model.constants),
+            *constant_of_shape_inputs,
+        }
+
+        def _resolved_output_dtype(op: OpBase) -> ScalarType:
+            if isinstance(op, MultiInputBinaryOp):
+                return model.op_context.dtype(op.inputs[0])
+            if isinstance(op, GatherOp):
+                return model.op_context.dtype(op.data)
+            if isinstance(op, ExpandOp):
+                return model.op_context.dtype(op.input0)
+            if hasattr(op, "output") and isinstance(op.output, str):
+                try:
+                    return model.op_context.dtype(op.output)
+                except ShapeInferenceError:
+                    if hasattr(op, "input0"):
+                        return model.op_context.dtype(op.input0)
+                    if hasattr(op, "inputs") and op.inputs:
+                        return model.op_context.dtype(op.inputs[0])
+                    if hasattr(op, "data"):
+                        return model.op_context.dtype(op.data)
+                    if hasattr(op, "dtype"):
+                        return op.dtype
+                    raise
+            return op.dtype
+
+        model_dtypes.update(
+            _resolved_output_dtype(op)
+            for op in resolved_ops
+            if not isinstance(op, (ArgReduceOp, TopKOp))
+        )
+        arg_reduce_dtypes = {
+            dtype
+            for op in resolved_ops
+            if isinstance(op, ArgReduceOp)
+            for dtype in (
+                model.op_context.dtype(op.input0),
+                model.op_context.dtype(op.output),
+            )
+        }
+        model_dtypes.update(arg_reduce_dtypes)
+        topk_dtypes = {
+            dtype
+            for op in resolved_ops
+            if isinstance(op, TopKOp)
+            for dtype in (
+                model.op_context.dtype(op.input0),
+                model.op_context.dtype(op.output_values),
+                model.op_context.dtype(op.output_indices),
+            )
+        }
+        model_dtypes.update(topk_dtypes)
+        slice_input_dtypes = {
+            dtype
+            for op in resolved_ops
+            if isinstance(op, SliceOp)
+            for dtype in (
+                op.starts_dtype,
+                op.ends_dtype,
+                op.axes_dtype,
+                op.steps_dtype,
+            )
+            if dtype is not None
+        }
+        trilu_k_dtypes = {
+            op.k_input_dtype
+            for op in resolved_ops
+            if isinstance(op, TriluOp) and op.k_input_dtype is not None
+        }
+        maxpool_indices_dtypes = {
+            op.indices_dtype
+            for op in resolved_ops
+            if isinstance(op, MaxPoolOp) and op.indices_dtype is not None
+        }
+        model_dtypes.update(maxpool_indices_dtypes)
+        model_dtypes.update(trilu_k_dtypes)
+        nll_target_dtypes = {
+            op.target_dtype
+            for op in resolved_ops
+            if isinstance(op, NegativeLogLikelihoodLossOp)
+        }
+        sce_target_dtypes = {
+            op.target_dtype
+            for op in resolved_ops
+            if isinstance(op, SoftmaxCrossEntropyLossOp)
+        }
+        return model_dtypes, nll_target_dtypes, sce_target_dtypes, slice_input_dtypes
+
     def _collect_includes(
+        self,
         model: LoweredModel,
         resolved_ops: list[
             BinaryOp
@@ -3075,88 +3194,9 @@ class CEmitter:
             for op in resolved_ops
         ):
             includes.add("#include <math.h>")
-        constant_of_shape_inputs = {
-            op.input_dtype
-            for op in resolved_ops
-            if isinstance(op, ConstantOfShapeOp)
-        }
-        model_dtypes = {
-            *model.input_dtypes,
-            *model.output_dtypes,
-            *(const.dtype for const in model.constants),
-            *constant_of_shape_inputs,
-        }
-        def _resolved_output_dtype(op: OpBase) -> ScalarType:
-            if isinstance(op, MultiInputBinaryOp):
-                return model.op_context.dtype(op.inputs[0])
-            if isinstance(op, GatherOp):
-                return model.op_context.dtype(op.data)
-            if isinstance(op, ExpandOp):
-                return model.op_context.dtype(op.input0)
-            if hasattr(op, "output") and isinstance(op.output, str):
-                return model.op_context.dtype(op.output)
-            return op.dtype
-
-        model_dtypes.update(
-            _resolved_output_dtype(op)
-            for op in resolved_ops
-            if not isinstance(op, (ArgReduceOp, TopKOp))
+        model_dtypes, nll_target_dtypes, sce_target_dtypes, slice_input_dtypes = (
+            self._collect_model_dtypes(model, resolved_ops)
         )
-        arg_reduce_dtypes = {
-            dtype
-            for op in resolved_ops
-            if isinstance(op, ArgReduceOp)
-            for dtype in (
-                model.op_context.dtype(op.input0),
-                model.op_context.dtype(op.output),
-            )
-        }
-        model_dtypes.update(arg_reduce_dtypes)
-        topk_dtypes = {
-            dtype
-            for op in resolved_ops
-            if isinstance(op, TopKOp)
-            for dtype in (
-                model.op_context.dtype(op.input0),
-                model.op_context.dtype(op.output_values),
-                model.op_context.dtype(op.output_indices),
-            )
-        }
-        model_dtypes.update(topk_dtypes)
-        slice_input_dtypes = {
-            dtype
-            for op in resolved_ops
-            if isinstance(op, SliceOp)
-            for dtype in (
-                op.starts_dtype,
-                op.ends_dtype,
-                op.axes_dtype,
-                op.steps_dtype,
-            )
-            if dtype is not None
-        }
-        trilu_k_dtypes = {
-            op.k_input_dtype
-            for op in resolved_ops
-            if isinstance(op, TriluOp) and op.k_input_dtype is not None
-        }
-        maxpool_indices_dtypes = {
-            op.indices_dtype
-            for op in resolved_ops
-            if isinstance(op, MaxPoolOp) and op.indices_dtype is not None
-        }
-        model_dtypes.update(maxpool_indices_dtypes)
-        model_dtypes.update(trilu_k_dtypes)
-        nll_target_dtypes = {
-            op.target_dtype
-            for op in resolved_ops
-            if isinstance(op, NegativeLogLikelihoodLossOp)
-        }
-        sce_target_dtypes = {
-            op.target_dtype
-            for op in resolved_ops
-            if isinstance(op, SoftmaxCrossEntropyLossOp)
-        }
         if CEmitter._needs_stdint(
             model_dtypes,
             (nll_target_dtypes, sce_target_dtypes, slice_input_dtypes),
@@ -3216,6 +3256,17 @@ class CEmitter:
                 "#ifndef idx_t",
                 "#define idx_t int32_t",
                 "#endif",
+            )
+        )
+
+    @staticmethod
+    def _emit_string_type_define() -> str:
+        return "\n".join(
+            (
+                "#ifndef EMX_STRING_MAX",
+                "#define EMX_STRING_MAX 256",
+                "#endif",
+                "typedef char emx_string_t[EMX_STRING_MAX];",
             )
         )
 
@@ -8832,6 +8883,7 @@ class CEmitter:
                 output_suffix=output_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
+                is_string=self._ctx_dtype(op.output) == ScalarType.STRING,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BernoulliOp):
@@ -12539,7 +12591,10 @@ class CEmitter:
         model: LoweredModel,
         testbench_template,
         *,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_inputs: Mapping[
+            str, tuple[float | int | bool | str, ...]
+        ]
+        | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         dim_order: Sequence[str],
         dim_values: Mapping[str, int],
@@ -12554,6 +12609,7 @@ class CEmitter:
         rng_requires_float = False
         rng_requires_double = False
         rng_requires_i64 = False
+        has_string_inputs = False
         inputs = []
         for name, shape, count, dtype, optional_flag in zip(
             model.input_names,
@@ -12567,7 +12623,10 @@ class CEmitter:
             loop_shape = (1,) if not shape else shape
             loop_vars = self._loop_vars(loop_shape)
             constant_values = testbench_inputs.get(name)
-            if constant_values is None:
+            is_string = dtype == ScalarType.STRING
+            if is_string:
+                has_string_inputs = True
+            if constant_values is None and not is_string:
                 rng_requires_u64 = True
                 if dtype in {ScalarType.F16, ScalarType.F32}:
                     rng_requires_float = True
@@ -12577,7 +12636,9 @@ class CEmitter:
                     pass
                 else:
                     rng_requires_i64 = True
-            if dtype in {ScalarType.F16, ScalarType.F32}:
+            if is_string:
+                random_expr = None
+            elif dtype in {ScalarType.F16, ScalarType.F32}:
                 random_expr = "rng_next_float()"
             elif dtype == ScalarType.F64:
                 random_expr = "rng_next_double()"
@@ -12595,7 +12656,8 @@ class CEmitter:
                         for value in constant_values
                     ]
                 else:
-                    constant_lines = [self._format_value(0, dtype)]
+                    empty_value = "" if is_string else 0
+                    constant_lines = [self._format_value(empty_value, dtype)]
             optional_present = (
                 testbench_optional_inputs.get(name, True)
                 if optional_flag is not None
@@ -12615,6 +12677,7 @@ class CEmitter:
                     "rank": len(loop_shape),
                     "index_expr": self._index_expr(loop_shape, loop_vars),
                     "dtype": dtype,
+                    "is_string": is_string,
                     "c_type": dtype.c_type,
                     "random_expr": random_expr,
                     "print_format": self._print_format(dtype),
@@ -12660,6 +12723,7 @@ class CEmitter:
             rng_requires_float=rng_requires_float,
             rng_requires_double=rng_requires_double,
             rng_requires_i64=rng_requires_i64,
+            has_string_inputs=has_string_inputs,
             dim_args=[
                 {"name": dim_name, "value": dim_values[dim_name]}
                 for dim_name in dim_order
@@ -12673,7 +12737,10 @@ class CEmitter:
     @staticmethod
     def _testbench_requires_math(
         model: LoweredModel,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None,
+        testbench_inputs: Mapping[
+            str, tuple[float | int | bool | str, ...]
+        ]
+        | None,
     ) -> bool:
         if not testbench_inputs:
             return False
@@ -12924,6 +12991,17 @@ class CEmitter:
         return f"{sign}0x1.{fraction:06x}p{exponent_val:+d}"
 
     @staticmethod
+    def _format_c_string(value: str) -> str:
+        escaped = (
+            value.replace("\\", "\\\\")
+            .replace('"', '\\"')
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+        )
+        return f"\"{escaped}\""
+
+    @staticmethod
     def _format_float64_hex(value: float) -> str:
         bits = struct.unpack("<Q", struct.pack("<d", float(value)))[0]
         sign = "-" if (bits >> 63) else ""
@@ -12980,7 +13058,9 @@ class CEmitter:
         return str(int(value))
 
     @staticmethod
-    def _format_literal(dtype: ScalarType, value: float | int | bool) -> str:
+    def _format_literal(
+        dtype: ScalarType, value: float | int | bool | str
+    ) -> str:
         if dtype == ScalarType.F16:
             return CEmitter._format_float16(float(value))
         if dtype == ScalarType.F32:
@@ -12989,6 +13069,10 @@ class CEmitter:
             return CEmitter._format_double(float(value))
         if dtype == ScalarType.BOOL:
             return "true" if bool(value) else "false"
+        if dtype == ScalarType.STRING:
+            if isinstance(value, str):
+                return CEmitter._format_c_string(value)
+            raise CodegenError("String literal must be a Python str")
         if dtype == ScalarType.U64:
             return CEmitter._format_uint(int(value), 64, "UINT64_MAX")
         if dtype == ScalarType.U32:
@@ -13007,7 +13091,9 @@ class CEmitter:
             return CEmitter._format_int(int(value), 8, "INT8_MIN")
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
-    def _format_value(self, value: float | int | bool, dtype: ScalarType) -> str:
+    def _format_value(
+        self, value: float | int | bool | str, dtype: ScalarType
+    ) -> str:
         if dtype == ScalarType.F16:
             return self._format_float16(float(value))
         if dtype == ScalarType.F32:
@@ -13016,6 +13102,10 @@ class CEmitter:
             return self._format_double(float(value))
         if dtype == ScalarType.BOOL:
             return "true" if bool(value) else "false"
+        if dtype == ScalarType.STRING:
+            if isinstance(value, str):
+                return self._format_c_string(value)
+            raise CodegenError("String literal must be a Python str")
         if dtype == ScalarType.U64:
             return self._format_uint(int(value), 64, "UINT64_MAX")
         if dtype == ScalarType.U32:
@@ -13035,7 +13125,7 @@ class CEmitter:
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
     def _format_weight_value(
-        self, value: float | int | bool, dtype: ScalarType
+        self, value: float | int | bool | str, dtype: ScalarType
     ) -> str:
         if dtype == ScalarType.F16:
             formatted = self._format_float32_hex(float(value))
@@ -13051,6 +13141,10 @@ class CEmitter:
             return self._format_float64_hex(float(value))
         if dtype == ScalarType.BOOL:
             return "true" if bool(value) else "false"
+        if dtype == ScalarType.STRING:
+            if isinstance(value, str):
+                return self._format_c_string(value)
+            raise CodegenError("String literal must be a Python str")
         if dtype == ScalarType.U64:
             return self._format_uint(int(value), 64, "UINT64_MAX")
         if dtype == ScalarType.U32:
@@ -13169,6 +13263,8 @@ class CEmitter:
             return "\\\"%a\\\""
         if dtype == ScalarType.BOOL:
             return "%d"
+        if dtype == ScalarType.STRING:
+            return "\\\"%s\\\""
         if dtype == ScalarType.U64:
             return "%llu"
         if dtype == ScalarType.U32:
@@ -13193,6 +13289,8 @@ class CEmitter:
             return "(double)"
         if dtype == ScalarType.BOOL:
             return "(int)"
+        if dtype == ScalarType.STRING:
+            return ""
         if dtype == ScalarType.U64:
             return "(unsigned long long)"
         if dtype in {ScalarType.U32, ScalarType.U16, ScalarType.U8}:

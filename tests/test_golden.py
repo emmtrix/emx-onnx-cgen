@@ -199,6 +199,23 @@ def _make_tanh_model() -> onnx.ModelProto:
     return model
 
 
+def _make_identity_string_model() -> onnx.ModelProto:
+    input_x = helper.make_tensor_value_info("x", TensorProto.STRING, [2])
+    output = helper.make_tensor_value_info("out", TensorProto.STRING, [2])
+    node = helper.make_node("Identity", inputs=["x"], outputs=["out"])
+    graph = helper.make_graph(
+        [node], "identity_string_graph", [input_x], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_relu_model() -> onnx.ModelProto:
     input_x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3])
     output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
@@ -411,6 +428,20 @@ def test_codegen_golden_large_weight_loader() -> None:
     generated = compiler.compile(model)
     golden_path = (
         Path(__file__).parent / "golden" / "large_weight_model_testbench.c"
+    )
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_identity_string() -> None:
+    model = _make_identity_string_model()
+    compiler = Compiler(
+        CompilerOptions(
+            model_name="identity_string_model",
+        )
+    )
+    generated = compiler.compile(model)
+    golden_path = (
+        Path(__file__).parent / "golden" / "identity_string_model.c"
     )
     assert_golden(generated, golden_path)
 

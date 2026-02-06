@@ -2,7 +2,6 @@
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 32 | 10, 19, 20 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 28 | 11, 12, 13, 17, 18, 24, 25 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | 25 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | 25 |
@@ -13,6 +12,7 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
+| Unsupported op StringNormalizer | 12 | 10 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 7 | 9, 19, 22 |
@@ -20,14 +20,18 @@
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
+| Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Unique | 6 | 11 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op If | 5 | 11, 20 |
+| Unsupported op StringConcat | 5 | 20 |
+| Failed to build testbench. | 4 | 12, 19 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op Compress | 4 | 11 |
 | Unsupported op DeformConv | 4 | 22 |
+| Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
@@ -35,10 +39,10 @@
 | Unsupported op Loop | 3 | 11 |
 | Unsupported op Momentum | 3 |  |
 | Unsupported op RandomUniformLike | 3 | 22 |
+| Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | name '*' is not defined | 3 |  |
 | BatchNormalization must have 5 inputs and 1 output | 2 | 15 |
-| Failed to build testbench. | 2 | 12 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -76,7 +80,7 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 10 | 12 |
+| Unsupported op StringNormalizer | 10 | 12 |
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
 | Unsupported op MatMulInteger | 10 | 1 |
@@ -109,13 +113,15 @@
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 18 | 1 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 18 | 1 |
 | Unsupported op DFT | 19 | 3 |
+| Failed to build testbench. | 19 | 2 |
 | Out of tolerance | 19 | 2 |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 19 | 2 |
-| Unsupported elem_type 8 (STRING) for tensor '*'. | 20 | 14 |
 | Unsupported op ImageDecoder | 20 | 9 |
+| Unsupported op StringSplit | 20 | 6 |
+| Unsupported op StringConcat | 20 | 5 |
 | Unsupported op AffineGrid | 20 | 4 |
 | Unsupported op If | 20 | 4 |
 | Unsupported op DFT | 20 | 3 |
+| Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |

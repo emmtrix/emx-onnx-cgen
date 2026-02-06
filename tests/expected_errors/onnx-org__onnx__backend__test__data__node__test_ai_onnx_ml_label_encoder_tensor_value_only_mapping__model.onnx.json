@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported elem_type 8 (STRING) for tensor 'X'.",
+  "error": "Unsupported op LabelEncoder",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ai.onnx.ml::LabelEncoder"

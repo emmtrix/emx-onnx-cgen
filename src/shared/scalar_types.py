@@ -22,6 +22,7 @@ class ScalarType(str, Enum):
         is_float: bool,
         is_signed: bool,
         is_bool: bool,
+        is_string: bool,
         bits: int | None,
     ) -> "ScalarType":
         obj = str.__new__(cls, suffix)
@@ -36,6 +37,7 @@ class ScalarType(str, Enum):
         obj.is_float = is_float
         obj.is_signed = is_signed
         obj.is_bool = is_bool
+        obj.is_string = is_string
         obj.bits = bits
         return obj
 
@@ -50,6 +52,7 @@ class ScalarType(str, Enum):
         True,
         True,
         False,
+        False,
         16,
     )
     F32 = (
@@ -62,6 +65,7 @@ class ScalarType(str, Enum):
         "INFINITY",
         True,
         True,
+        False,
         False,
         32,
     )
@@ -76,6 +80,7 @@ class ScalarType(str, Enum):
         True,
         True,
         False,
+        False,
         64,
     )
     I8 = (
@@ -88,6 +93,7 @@ class ScalarType(str, Enum):
         "INT8_MAX",
         False,
         True,
+        False,
         False,
         8,
     )
@@ -102,6 +108,7 @@ class ScalarType(str, Enum):
         False,
         True,
         False,
+        False,
         16,
     )
     I32 = (
@@ -114,6 +121,7 @@ class ScalarType(str, Enum):
         "INT32_MAX",
         False,
         True,
+        False,
         False,
         32,
     )
@@ -128,6 +136,7 @@ class ScalarType(str, Enum):
         False,
         True,
         False,
+        False,
         64,
     )
     U8 = (
@@ -138,6 +147,7 @@ class ScalarType(str, Enum):
         "0",
         "0",
         "UINT8_MAX",
+        False,
         False,
         False,
         False,
@@ -154,6 +164,7 @@ class ScalarType(str, Enum):
         False,
         False,
         False,
+        False,
         16,
     )
     U32 = (
@@ -164,6 +175,7 @@ class ScalarType(str, Enum):
         "0",
         "0",
         "UINT32_MAX",
+        False,
         False,
         False,
         False,
@@ -180,6 +192,7 @@ class ScalarType(str, Enum):
         False,
         False,
         False,
+        False,
         64,
     )
     BOOL = (
@@ -193,12 +206,27 @@ class ScalarType(str, Enum):
         False,
         False,
         True,
+        False,
+        None,
+    )
+    STRING = (
+        "str",
+        "string",
+        "emx_string_t",
+        np.dtype("object"),
+        "\"\"",
+        "\"\"",
+        "\"\"",
+        False,
+        False,
+        False,
+        True,
         None,
     )
 
     @property
     def is_integer(self) -> bool:
-        return not self.is_float and not self.is_bool
+        return not self.is_float and not self.is_bool and not self.is_string
 
     @classmethod
     def from_torch_dtype(cls, dtype: object) -> "ScalarType":
