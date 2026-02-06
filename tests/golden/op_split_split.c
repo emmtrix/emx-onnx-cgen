@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_STRING_MAX_LEN
+#define EMX_STRING_MAX_LEN 256
+#endif
 
 extern const int64_t weight1_split[3];
 
