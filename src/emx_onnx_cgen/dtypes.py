@@ -19,6 +19,7 @@ ONNX_TO_SCALAR_TYPE: dict[int, ScalarType] = {
     onnx.TensorProto.INT16: ScalarType.I16,
     onnx.TensorProto.INT32: ScalarType.I32,
     onnx.TensorProto.INT64: ScalarType.I64,
+    onnx.TensorProto.STRING: ScalarType.STRING,
 }
 
 
