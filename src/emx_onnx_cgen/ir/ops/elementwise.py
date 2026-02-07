@@ -18,6 +18,7 @@ from ..op_context import OpContext
 
 @dataclass(frozen=True)
 class BinaryOp(ElementwiseOpBase):
+    __io_inputs__ = ("input0", "input1")
     input0: str
     input1: str
     output: str
@@ -39,14 +40,10 @@ class BinaryOp(ElementwiseOpBase):
         input_shape = ctx.shape(self.input0)
         slope_shape = ctx.shape(self.input1)
         output_name = self.output
-        if BroadcastingOpBase.unidirectional_broadcastable(
-            slope_shape, input_shape
-        ):
+        if BroadcastingOpBase.unidirectional_broadcastable(slope_shape, input_shape):
             ctx.set_shape(output_name, input_shape)
             return None
-        channel_axis = BroadcastingOpBase.prelu_channel_axis(
-            input_shape, slope_shape
-        )
+        channel_axis = BroadcastingOpBase.prelu_channel_axis(input_shape, slope_shape)
         if channel_axis is not None:
             ctx.set_shape(output_name, input_shape)
             ctx.set_derived(self, "prelu_slope_axis", channel_axis)
@@ -165,9 +162,7 @@ class VariadicOp(VariadicLikeOpBase):
 
     def _variadic_supports_dtype(self, dtype: ScalarType) -> bool:
         return (
-            binary_op_symbol(
-                self.function, dtype=dtype, validate_attrs=False
-            )
+            binary_op_symbol(self.function, dtype=dtype, validate_attrs=False)
             is not None
         )
 
@@ -178,6 +173,7 @@ class MultiInputBinaryOp(VariadicOp):
 
 @dataclass(frozen=True)
 class WhereOp(ElementwiseOpBase):
+    __io_inputs__ = ("condition", "input_x", "input_y")
     condition: str
     input_x: str
     input_y: str
@@ -195,6 +191,7 @@ class WhereOp(ElementwiseOpBase):
 
 @dataclass(frozen=True)
 class UnaryOp(ElementwiseOpBase):
+    __io_inputs__ = ("input0",)
     input0: str
     output: str
     function: ScalarFunction
@@ -216,6 +213,7 @@ class UnaryOp(ElementwiseOpBase):
 
 @dataclass(frozen=True)
 class ClipOp(ElementwiseOpBase):
+    __io_inputs__ = ("input0", "input_min", "input_max")
     input0: str
     input_min: str | None
     input_max: str | None
@@ -241,6 +239,7 @@ class ClipOp(ElementwiseOpBase):
 
 @dataclass(frozen=True)
 class IdentityOp(ElementwiseOpBase):
+    __io_inputs__ = ("input0",)
     input0: str
     output: str
 
@@ -257,6 +256,17 @@ class IdentityOp(ElementwiseOpBase):
 
 @dataclass(frozen=True)
 class QLinearMulOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input0_scale",
+        "input0_zero_point",
+        "input1",
+        "input1_scale",
+        "input1_zero_point",
+        "output_scale",
+        "output_zero_point",
+    )
+    __io_outputs__ = ("output",)
     input0: str
     input0_scale: str
     input0_zero_point: str
