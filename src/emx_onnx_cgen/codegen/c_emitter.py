@@ -9,7 +9,13 @@ import re
 import struct
 from typing import Mapping, Sequence
 
-from jinja2 import Environment, FileSystemLoader, PackageLoader, Template, select_autoescape
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    PackageLoader,
+    Template,
+    select_autoescape,
+)
 import numpy as np
 
 from ..errors import CodegenError
@@ -238,6 +244,7 @@ _C_KEYWORDS = {
     "while",
 }
 
+
 @dataclass(frozen=True)
 class NodeInfo:
     op_type: str
@@ -338,14 +345,10 @@ class CEmitter:
         )
         self._restrict_arrays = restrict_arrays
         if fp32_accumulation_strategy not in {"simple", "fp64"}:
-            raise CodegenError(
-                "fp32_accumulation_strategy must be 'simple' or 'fp64'"
-            )
+            raise CodegenError("fp32_accumulation_strategy must be 'simple' or 'fp64'")
         self._fp32_accumulation_strategy = fp32_accumulation_strategy
         if fp16_accumulation_strategy not in {"simple", "fp32"}:
-            raise CodegenError(
-                "fp16_accumulation_strategy must be 'simple' or 'fp32'"
-            )
+            raise CodegenError("fp16_accumulation_strategy must be 'simple' or 'fp32'")
         self._fp16_accumulation_strategy = fp16_accumulation_strategy
         if truncate_weights_after is not None and truncate_weights_after < 1:
             raise CodegenError("truncate_weights_after must be >= 1")
@@ -462,7 +465,7 @@ class CEmitter:
 
     @staticmethod
     def _build_param_decls(
-        specs: Sequence[tuple[str | None, str, str, bool]]
+        specs: Sequence[tuple[str | None, str, str, bool]],
     ) -> list[str]:
         ordered: list[str] = []
         grouped: dict[str, dict[str, object]] = {}
@@ -483,401 +486,15 @@ class CEmitter:
         for name in ordered:
             info = grouped[name]
             const_prefix = "const " if info["is_const"] else ""
-            decls.append(
-                f"{const_prefix}{info['c_type']} {name}{info['suffix']}"
-            )
+            decls.append(f"{const_prefix}{info['c_type']} {name}{info['suffix']}")
         return decls
 
     @staticmethod
-    def _op_names(
-        op: BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | QLinearMulOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | RotaryEmbeddingOp
-        | ConvOp
-        | ConvIntegerOp
-        | AveragePoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | AdagradOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | BernoulliOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | PadOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | SliceOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | OptionalHasElementOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | SplitOp,
-    ) -> tuple[str, ...]:
-        if isinstance(op, BinaryOp):
-            return (op.input0, op.input1, op.output)
-        if isinstance(op, MultiInputBinaryOp):
-            return (*op.inputs, op.output)
-        if isinstance(op, WhereOp):
-            return (op.condition, op.input_x, op.input_y, op.output)
-        if isinstance(op, UnaryOp):
-            return (op.input0, op.output)
-        if isinstance(op, ClipOp):
-            names = [op.input0]
-            if op.input_min is not None:
-                names.append(op.input_min)
-            if op.input_max is not None:
-                names.append(op.input_max)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, CastOp):
-            return (op.input0, op.output)
-        if isinstance(op, QuantizeLinearOp):
-            names = [op.input0, op.scale]
-            if op.zero_point is not None:
-                names.append(op.zero_point)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, DequantizeLinearOp):
-            names = [op.input0, op.scale]
-            if op.zero_point is not None:
-                names.append(op.zero_point)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, QLinearMulOp):
-            return (
-                op.input0,
-                op.input0_scale,
-                op.input0_zero_point,
-                op.input1,
-                op.input1_scale,
-                op.input1_zero_point,
-                op.output_scale,
-                op.output_zero_point,
-                op.output,
-            )
-        if isinstance(op, QLinearMatMulOp):
-            return (
-                op.input0,
-                op.input0_scale,
-                op.input0_zero_point,
-                op.input1,
-                op.input1_scale,
-                op.input1_zero_point,
-                op.output_scale,
-                op.output_zero_point,
-                op.output,
-            )
-        if isinstance(op, MatMulOp):
-            return (op.input0, op.input1, op.output)
-        if isinstance(op, EinsumOp):
-            return (*op.inputs, op.output)
-        if isinstance(op, GemmOp):
-            names = [op.input_a, op.input_b]
-            if op.input_c is not None:
-                names.append(op.input_c)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, AttentionOp):
-            names = [op.input_q, op.input_k, op.input_v]
-            if op.input_attn_mask is not None:
-                names.append(op.input_attn_mask)
-            if op.input_past_key is not None:
-                names.append(op.input_past_key)
-            if op.input_past_value is not None:
-                names.append(op.input_past_value)
-            if op.input_nonpad_kv_seqlen is not None:
-                names.append(op.input_nonpad_kv_seqlen)
-            names.append(op.output)
-            if op.output_present_key is not None:
-                names.append(op.output_present_key)
-            if op.output_present_value is not None:
-                names.append(op.output_present_value)
-            if op.output_qk_matmul is not None:
-                names.append(op.output_qk_matmul)
-            return tuple(names)
-        if isinstance(op, RotaryEmbeddingOp):
-            names = [op.input0, op.cos_cache, op.sin_cache]
-            if op.position_ids is not None:
-                names.append(op.position_ids)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, ConvOp):
-            names = [op.input0, op.weights]
-            if op.bias is not None:
-                names.append(op.bias)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, ConvIntegerOp):
-            names = [op.input0, op.weights]
-            if op.x_zero_point is not None:
-                names.append(op.x_zero_point)
-            if op.w_zero_point is not None:
-                names.append(op.w_zero_point)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, ConvTransposeOp):
-            names = [op.input0, op.weights]
-            if op.bias is not None:
-                names.append(op.bias)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, AveragePoolOp):
-            return (op.input0, op.output)
-        if isinstance(op, LpPoolOp):
-            return (op.input0, op.output)
-        if isinstance(op, BatchNormOp):
-            return (op.input0, op.scale, op.bias, op.mean, op.variance, op.output)
-        if isinstance(op, LpNormalizationOp):
-            return (op.input0, op.output)
-        if isinstance(op, InstanceNormalizationOp):
-            return (op.input0, op.scale, op.bias, op.output)
-        if isinstance(op, GroupNormalizationOp):
-            return (op.input0, op.scale, op.bias, op.output)
-        if isinstance(op, LayerNormalizationOp):
-            names = [op.input0, op.scale]
-            if op.bias is not None:
-                names.append(op.bias)
-            names.append(op.output)
-            if op.mean_output is not None:
-                names.append(op.mean_output)
-            if op.invstd_output is not None:
-                names.append(op.invstd_output)
-            return tuple(names)
-        if isinstance(op, MeanVarianceNormalizationOp):
-            return (op.input0, op.output)
-        if isinstance(op, RMSNormalizationOp):
-            return (op.input0, op.scale, op.output)
-        if isinstance(op, GruOp):
-            names = [op.input_x, op.input_w, op.input_r]
-            if op.input_b is not None:
-                names.append(op.input_b)
-            if op.input_sequence_lens is not None:
-                names.append(op.input_sequence_lens)
-            if op.input_initial_h is not None:
-                names.append(op.input_initial_h)
-            if op.output_y is not None:
-                names.append(op.output_y)
-            if op.output_y_h is not None:
-                names.append(op.output_y_h)
-            return tuple(names)
-        if isinstance(op, LstmOp):
-            names = [op.input_x, op.input_w, op.input_r]
-            if op.input_b is not None:
-                names.append(op.input_b)
-            if op.input_sequence_lens is not None:
-                names.append(op.input_sequence_lens)
-            if op.input_initial_h is not None:
-                names.append(op.input_initial_h)
-            if op.input_initial_c is not None:
-                names.append(op.input_initial_c)
-            if op.input_p is not None:
-                names.append(op.input_p)
-            if op.output_y is not None:
-                names.append(op.output_y)
-            if op.output_y_h is not None:
-                names.append(op.output_y_h)
-            if op.output_y_c is not None:
-                names.append(op.output_y_c)
-            return tuple(names)
-        if isinstance(op, AdagradOp):
-            return (
-                op.rate,
-                op.timestep,
-                *op.inputs,
-                *op.gradients,
-                *op.accumulators,
-                *op.outputs,
-                *op.accumulator_outputs,
-            )
-        if isinstance(op, (SoftmaxOp, LogSoftmaxOp, HardmaxOp)):
-            return (op.input0, op.output)
-        if isinstance(op, NegativeLogLikelihoodLossOp):
-            names = [op.input0, op.target]
-            if op.weight is not None:
-                names.append(op.weight)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, SoftmaxCrossEntropyLossOp):
-            names = [op.input0, op.target]
-            if op.weight is not None:
-                names.append(op.weight)
-            names.append(op.output)
-            if op.log_prob is not None:
-                names.append(op.log_prob)
-            return tuple(names)
-        if isinstance(op, MaxPoolOp):
-            names = [op.input0, op.output]
-            if op.indices is not None:
-                names.append(op.indices)
-            return tuple(names)
-        if isinstance(op, GatherElementsOp):
-            return (op.data, op.indices, op.output)
-        if isinstance(op, GatherOp):
-            return (op.data, op.indices, op.output)
-        if isinstance(op, GatherNDOp):
-            return (op.data, op.indices, op.output)
-        if isinstance(op, ScatterNDOp):
-            return (op.data, op.indices, op.updates, op.output)
-        if isinstance(op, TensorScatterOp):
-            names = [op.past_cache, op.update]
-            if op.write_indices is not None:
-                names.append(op.write_indices)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, ConcatOp):
-            return (*op.inputs, op.output)
-        if isinstance(op, ConstantOfShapeOp):
-            return (op.input0, op.output)
-        if isinstance(op, ShapeOp):
-            return (op.input0, op.output)
-        if isinstance(op, SizeOp):
-            return (op.input0, op.output)
-        if isinstance(op, NonZeroOp):
-            return (op.input0, op.output)
-        if isinstance(op, NonMaxSuppressionOp):
-            names = [op.boxes, op.scores]
-            if op.max_output_boxes_per_class is not None:
-                names.append(op.max_output_boxes_per_class)
-            if op.iou_threshold is not None:
-                names.append(op.iou_threshold)
-            if op.score_threshold is not None:
-                names.append(op.score_threshold)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, ExpandOp):
-            return (op.input0, op.output)
-        if isinstance(op, CumSumOp):
-            names = [op.input0]
-            if op.axis_input is not None:
-                names.append(op.axis_input)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, RangeOp):
-            return (op.start, op.limit, op.delta, op.output)
-        if isinstance(op, HammingWindowOp):
-            return (op.size, op.output)
-        if isinstance(op, OneHotOp):
-            return (op.indices, op.depth, op.values, op.output)
-        if isinstance(op, TfIdfVectorizerOp):
-            return (op.input0, op.output)
-        if isinstance(op, StringNormalizerOp):
-            return (op.input0, op.output)
-        if isinstance(op, SplitOp):
-            return (op.input0, *op.outputs)
-        if isinstance(op, ReshapeOp):
-            return (op.input0, op.output)
-        if isinstance(op, IdentityOp):
-            return (op.input0, op.output)
-        if isinstance(op, BernoulliOp):
-            return (op.input0, op.output)
-        if isinstance(op, EyeLikeOp):
-            return (op.input0, op.output)
-        if isinstance(op, TriluOp):
-            names = [op.input0]
-            if op.k_input is not None:
-                names.append(op.k_input)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, TileOp):
-            return (op.input0, op.output)
-        if isinstance(op, PadOp):
-            names = [op.input0, op.output]
-            if op.pads_input is not None:
-                names.append(op.pads_input)
-            if op.axes_input is not None:
-                names.append(op.axes_input)
-            if op.value_input is not None:
-                names.append(op.value_input)
-            return tuple(names)
-        if isinstance(op, DepthToSpaceOp):
-            return (op.input0, op.output)
-        if isinstance(op, SpaceToDepthOp):
-            return (op.input0, op.output)
-        if isinstance(op, SliceOp):
-            names = [op.input0]
-            if op.starts_input is not None:
-                names.append(op.starts_input)
-            if op.ends_input is not None:
-                names.append(op.ends_input)
-            if op.axes_input is not None:
-                names.append(op.axes_input)
-            if op.steps_input is not None:
-                names.append(op.steps_input)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, ResizeOp):
-            names = [op.input0]
-            if op.roi_input is not None:
-                names.append(op.roi_input)
-            if op.scales_input is not None:
-                names.append(op.scales_input)
-            if op.sizes_input is not None:
-                names.append(op.sizes_input)
-            names.append(op.output)
-            return tuple(names)
-        if isinstance(op, GridSampleOp):
-            return (op.input0, op.grid, op.output)
-        if isinstance(op, TopKOp):
-            return (
-                op.input0,
-                op.k_input,
-                op.output_values,
-                op.output_indices,
-            )
-        if isinstance(op, ReduceOp):
-            names = [op.input0]
-            if op.axes_input is not None:
-                names.append(op.axes_input)
-            names.append(op.output)
-            return tuple(names)
-        return (op.input0, op.output)
+    def _op_names(op: OpBase) -> tuple[str, ...]:
+        names = (*op.input_names, *op.output_names)
+        if any(not isinstance(name, str) for name in names):
+            raise CodegenError(f"{op.kind} inputs/outputs must be tuple[str, ...]")
+        return names
 
     def _build_name_map(self, model: LoweredModel) -> dict[str, str]:
         used: set[str] = set()
@@ -886,12 +503,8 @@ class CEmitter:
         names = [model.name]
         names.extend(model.input_names)
         names.extend(model.output_names)
-        names.extend(
-            name for name in model.input_optional_names if name is not None
-        )
-        names.extend(
-            name for name in model.output_optional_names if name is not None
-        )
+        names.extend(name for name in model.input_optional_names if name is not None)
+        names.extend(name for name in model.output_optional_names if name is not None)
         for op in model.ops:
             names.extend(
                 name for name in self._op_names(op) if name not in constant_names
@@ -914,87 +527,87 @@ class CEmitter:
         return name_map
 
     @staticmethod
-    def _map_optional_name(
-        name_map: dict[str, str], name: str | None
-    ) -> str | None:
+    def _map_optional_name(name_map: dict[str, str], name: str | None) -> str | None:
         if name is None:
             return None
         return name_map.get(name, name)
 
     def _map_op_names(
         self,
-        op: BinaryOp
-        | PowOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | QLinearMulOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | RotaryEmbeddingOp
-        | ConvOp
-        | ConvIntegerOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | AdagradOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | PadOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | SliceOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | OptionalHasElementOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | TfIdfVectorizerOp
-        | SplitOp,
+        op: (
+            BinaryOp
+            | PowOp
+            | MultiInputBinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | DequantizeLinearOp
+            | QLinearMulOp
+            | QLinearMatMulOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | RotaryEmbeddingOp
+            | ConvOp
+            | ConvIntegerOp
+            | ConvTransposeOp
+            | AveragePoolOp
+            | LpPoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | LrnOp
+            | GruOp
+            | LstmOp
+            | AdagradOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | ScatterNDOp
+            | TensorScatterOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | PadOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
+            | SliceOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | TopKOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | OptionalHasElementOp
+            | NonZeroOp
+            | NonMaxSuppressionOp
+            | ExpandOp
+            | CumSumOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | TfIdfVectorizerOp
+            | SplitOp
+        ),
         name_map: dict[str, str],
     ) -> (
         BinaryOp
@@ -1258,15 +871,9 @@ class CEmitter:
                 input_q=name_map.get(op.input_q, op.input_q),
                 input_k=name_map.get(op.input_k, op.input_k),
                 input_v=name_map.get(op.input_v, op.input_v),
-                input_attn_mask=self._map_optional_name(
-                    name_map, op.input_attn_mask
-                ),
-                input_past_key=self._map_optional_name(
-                    name_map, op.input_past_key
-                ),
-                input_past_value=self._map_optional_name(
-                    name_map, op.input_past_value
-                ),
+                input_attn_mask=self._map_optional_name(name_map, op.input_attn_mask),
+                input_past_key=self._map_optional_name(name_map, op.input_past_key),
+                input_past_value=self._map_optional_name(name_map, op.input_past_value),
                 input_nonpad_kv_seqlen=self._map_optional_name(
                     name_map, op.input_nonpad_kv_seqlen
                 ),
@@ -1276,9 +883,7 @@ class CEmitter:
                 output_present_value=self._map_optional_name(
                     name_map, op.output_present_value
                 ),
-                output_qk_matmul=self._map_optional_name(
-                    name_map, op.output_qk_matmul
-                ),
+                output_qk_matmul=self._map_optional_name(name_map, op.output_qk_matmul),
                 output=name_map.get(op.output, op.output),
                 batch=op.batch,
                 q_heads=op.q_heads,
@@ -1316,9 +921,7 @@ class CEmitter:
                 input0=name_map.get(op.input0, op.input0),
                 cos_cache=name_map.get(op.cos_cache, op.cos_cache),
                 sin_cache=name_map.get(op.sin_cache, op.sin_cache),
-                position_ids=self._map_optional_name(
-                    name_map, op.position_ids
-                ),
+                position_ids=self._map_optional_name(name_map, op.position_ids),
                 output=name_map.get(op.output, op.output),
                 input_shape=op.input_shape,
                 cos_shape=op.cos_shape,
@@ -1358,12 +961,8 @@ class CEmitter:
             return ConvIntegerOp(
                 input0=name_map.get(op.input0, op.input0),
                 weights=name_map.get(op.weights, op.weights),
-                x_zero_point=self._map_optional_name(
-                    name_map, op.x_zero_point
-                ),
-                w_zero_point=self._map_optional_name(
-                    name_map, op.w_zero_point
-                ),
+                x_zero_point=self._map_optional_name(name_map, op.x_zero_point),
+                w_zero_point=self._map_optional_name(name_map, op.w_zero_point),
                 output=name_map.get(op.output, op.output),
                 batch=op.batch,
                 in_channels=op.in_channels,
@@ -1573,9 +1172,7 @@ class CEmitter:
                 input_sequence_lens=self._map_optional_name(
                     name_map, op.input_sequence_lens
                 ),
-                input_initial_h=self._map_optional_name(
-                    name_map, op.input_initial_h
-                ),
+                input_initial_h=self._map_optional_name(name_map, op.input_initial_h),
                 output_y=self._map_optional_name(name_map, op.output_y),
                 output_y_h=self._map_optional_name(name_map, op.output_y_h),
                 seq_length=op.seq_length,
@@ -1602,12 +1199,8 @@ class CEmitter:
                 input_sequence_lens=self._map_optional_name(
                     name_map, op.input_sequence_lens
                 ),
-                input_initial_h=self._map_optional_name(
-                    name_map, op.input_initial_h
-                ),
-                input_initial_c=self._map_optional_name(
-                    name_map, op.input_initial_c
-                ),
+                input_initial_h=self._map_optional_name(name_map, op.input_initial_h),
+                input_initial_c=self._map_optional_name(name_map, op.input_initial_c),
                 input_p=self._map_optional_name(name_map, op.input_p),
                 output_y=self._map_optional_name(name_map, op.output_y),
                 output_y_h=self._map_optional_name(name_map, op.output_y_h),
@@ -1632,16 +1225,13 @@ class CEmitter:
                 rate=name_map.get(op.rate, op.rate),
                 timestep=name_map.get(op.timestep, op.timestep),
                 inputs=tuple(name_map.get(name, name) for name in op.inputs),
-                gradients=tuple(
-                    name_map.get(name, name) for name in op.gradients
-                ),
+                gradients=tuple(name_map.get(name, name) for name in op.gradients),
                 accumulators=tuple(
                     name_map.get(name, name) for name in op.accumulators
                 ),
                 outputs=tuple(name_map.get(name, name) for name in op.outputs),
                 accumulator_outputs=tuple(
-                    name_map.get(name, name)
-                    for name in op.accumulator_outputs
+                    name_map.get(name, name) for name in op.accumulator_outputs
                 ),
                 rate_shape=op.rate_shape,
                 timestep_shape=op.timestep_shape,
@@ -1735,9 +1325,7 @@ class CEmitter:
             )
         if isinstance(op, ConcatOp):
             return ConcatOp(
-                inputs=tuple(
-                    name_map.get(name, name) for name in op.inputs
-                ),
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
                 output=name_map.get(op.output, op.output),
                 input_shapes=op.input_shapes,
                 output_shape=op.output_shape,
@@ -2064,12 +1652,8 @@ class CEmitter:
                 max_output_boxes_per_class=self._map_optional_name(
                     name_map, op.max_output_boxes_per_class
                 ),
-                iou_threshold=self._map_optional_name(
-                    name_map, op.iou_threshold
-                ),
-                score_threshold=self._map_optional_name(
-                    name_map, op.score_threshold
-                ),
+                iou_threshold=self._map_optional_name(name_map, op.iou_threshold),
+                score_threshold=self._map_optional_name(name_map, op.score_threshold),
                 output=name_map.get(op.output, op.output),
                 boxes_shape=op.boxes_shape,
                 scores_shape=op.scores_shape,
@@ -2178,9 +1762,7 @@ class CEmitter:
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=name_map.get(op.input0, op.input0),
-                outputs=tuple(
-                    name_map.get(name, name) for name in op.outputs
-                ),
+                outputs=tuple(name_map.get(name, name) for name in op.outputs),
                 input_shape=op.input_shape,
                 output_shapes=op.output_shapes,
                 axis=op.axis,
@@ -2212,18 +1794,14 @@ class CEmitter:
         ops = tuple(self._map_op_names(op, name_map) for op in model.ops)
         sanitized = LoweredModel(
             name=name_map.get(model.name, model.name),
-            input_names=tuple(
-                name_map.get(name, name) for name in model.input_names
-            ),
+            input_names=tuple(name_map.get(name, name) for name in model.input_names),
             input_optional_names=tuple(
                 name_map.get(name, name) if name is not None else None
                 for name in model.input_optional_names
             ),
             input_shapes=model.input_shapes,
             input_dtypes=model.input_dtypes,
-            output_names=tuple(
-                name_map.get(name, name) for name in model.output_names
-            ),
+            output_names=tuple(name_map.get(name, name) for name in model.output_names),
             output_optional_names=tuple(
                 name_map.get(name, name) if name is not None else None
                 for name in model.output_optional_names
@@ -2255,7 +1833,9 @@ class CEmitter:
         name_map: Mapping[str, str],
         temp_name_map: Mapping[str, str],
     ) -> dict[str, str]:
-        reverse_name_map = {sanitized: original for original, sanitized in name_map.items()}
+        reverse_name_map = {
+            sanitized: original for original, sanitized in name_map.items()
+        }
         value_name_map = dict(reverse_name_map)
         for sanitized_name, temp_name in temp_name_map.items():
             original_name = reverse_name_map.get(sanitized_name, sanitized_name)
@@ -2290,35 +1870,25 @@ class CEmitter:
         try:
             templates = {
                 "binary": self._env.get_template("binary_op.c.j2"),
-                "multi_input": self._env.get_template(
-                    "multi_input_op.c.j2"
-                ),
+                "multi_input": self._env.get_template("multi_input_op.c.j2"),
                 "where": self._env.get_template("where_op.c.j2"),
                 "unary": self._env.get_template("unary_op.c.j2"),
                 "clip": self._env.get_template("clip_op.c.j2"),
                 "cast": self._env.get_template("cast_op.c.j2"),
-                "quantize_linear": self._env.get_template(
-                    "quantize_linear_op.c.j2"
-                ),
+                "quantize_linear": self._env.get_template("quantize_linear_op.c.j2"),
                 "dequantize_linear": self._env.get_template(
                     "dequantize_linear_op.c.j2"
                 ),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
-                "qlinear_matmul": self._env.get_template(
-                    "qlinear_matmul_op.c.j2"
-                ),
+                "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
                 "attention": self._env.get_template("attention_op.c.j2"),
-                "rotary_embedding": self._env.get_template(
-                    "rotary_embedding_op.c.j2"
-                ),
+                "rotary_embedding": self._env.get_template("rotary_embedding_op.c.j2"),
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
-                "conv_transpose": self._env.get_template(
-                    "conv_transpose_op.c.j2"
-                ),
+                "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
                 "lp_pool": self._env.get_template("lp_pool_op.c.j2"),
                 "batch_norm": self._env.get_template("batch_norm_op.c.j2"),
@@ -2326,12 +1896,8 @@ class CEmitter:
                 "instance_norm": self._env.get_template(
                     "instance_normalization_op.c.j2"
                 ),
-                "group_norm": self._env.get_template(
-                    "group_normalization_op.c.j2"
-                ),
-                "layer_norm": self._env.get_template(
-                    "layer_normalization_op.c.j2"
-                ),
+                "group_norm": self._env.get_template("group_normalization_op.c.j2"),
+                "layer_norm": self._env.get_template("layer_normalization_op.c.j2"),
                 "mean_variance_norm": self._env.get_template(
                     "mean_variance_normalization_op.c.j2"
                 ),
@@ -2355,9 +1921,7 @@ class CEmitter:
                 "gather": self._env.get_template("gather_op.c.j2"),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
                 "scatter_nd": self._env.get_template("scatter_nd_op.c.j2"),
-                "tensor_scatter": self._env.get_template(
-                    "tensor_scatter_op.c.j2"
-                ),
+                "tensor_scatter": self._env.get_template("tensor_scatter_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
                 "reshape": self._env.get_template("reshape_op.c.j2"),
                 "identity": self._env.get_template("identity_op.c.j2"),
@@ -2369,15 +1933,11 @@ class CEmitter:
                 "depth_to_space": self._env.get_template("depth_to_space_op.c.j2"),
                 "space_to_depth": self._env.get_template("space_to_depth_op.c.j2"),
                 "slice": self._env.get_template("slice_op.c.j2"),
-                "slice_dynamic": self._env.get_template(
-                    "slice_op_dynamic.c.j2"
-                ),
+                "slice_dynamic": self._env.get_template("slice_op_dynamic.c.j2"),
                 "resize": self._env.get_template("resize_op.c.j2"),
                 "grid_sample": self._env.get_template("grid_sample_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
-                "reduce_dynamic": self._env.get_template(
-                    "reduce_op_dynamic.c.j2"
-                ),
+                "reduce_dynamic": self._env.get_template("reduce_op_dynamic.c.j2"),
                 "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
                 "topk": self._env.get_template("topk_op.c.j2"),
                 "constant_of_shape": self._env.get_template(
@@ -2395,13 +1955,9 @@ class CEmitter:
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
-                "hamming_window": self._env.get_template(
-                    "hamming_window_op.c.j2"
-                ),
+                "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
-                "tfidf_vectorizer": self._env.get_template(
-                    "tfidf_vectorizer_op.c.j2"
-                ),
+                "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
@@ -2426,15 +1982,11 @@ class CEmitter:
         original_model = model
         model, name_map = self._sanitize_model_names_with_map(model)
         self._copy_derived(model.op_context, original_model.ops, model.ops)
-        testbench_inputs = self._sanitize_testbench_inputs(
-            testbench_inputs, name_map
-        )
+        testbench_inputs = self._sanitize_testbench_inputs(testbench_inputs, name_map)
         testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
             testbench_optional_inputs, name_map
         )
-        inline_constants, large_constants = self._partition_constants(
-            model.constants
-        )
+        inline_constants, large_constants = self._partition_constants(model.constants)
         (
             dim_order,
             input_dim_names,
@@ -2505,9 +2057,7 @@ class CEmitter:
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
         testbench_math_include = set()
-        if emit_testbench and self._testbench_requires_math(
-            model, testbench_inputs
-        ):
+        if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
             testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
             original_model,
@@ -2531,9 +2081,7 @@ class CEmitter:
         constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
-        storage_declarations = self._emit_constant_storage_declarations(
-            large_constants
-        )
+        storage_declarations = self._emit_constant_storage_declarations(large_constants)
         if storage_declarations:
             sections.extend((storage_declarations.rstrip(), ""))
         constants_section = self._emit_constant_definitions(
@@ -2592,15 +2140,11 @@ class CEmitter:
         original_model = model
         model, name_map = self._sanitize_model_names_with_map(model)
         self._copy_derived(model.op_context, original_model.ops, model.ops)
-        testbench_inputs = self._sanitize_testbench_inputs(
-            testbench_inputs, name_map
-        )
+        testbench_inputs = self._sanitize_testbench_inputs(testbench_inputs, name_map)
         testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
             testbench_optional_inputs, name_map
         )
-        inline_constants, large_constants = self._partition_constants(
-            model.constants
-        )
+        inline_constants, large_constants = self._partition_constants(model.constants)
         (
             dim_order,
             input_dim_names,
@@ -2671,9 +2215,7 @@ class CEmitter:
             line for line in scalar_include_lines if not line.startswith("#include ")
         ]
         testbench_math_include = set()
-        if emit_testbench and self._testbench_requires_math(
-            model, testbench_inputs
-        ):
+        if emit_testbench and self._testbench_requires_math(model, testbench_inputs):
             testbench_math_include.add("#include <math.h>")
         includes = self._collect_includes(
             original_model,
@@ -2696,9 +2238,7 @@ class CEmitter:
         constants_section = self._emit_constant_declarations(inline_constants)
         if constants_section:
             sections.extend((constants_section.rstrip(), ""))
-        storage_declarations = self._emit_constant_storage_declarations(
-            large_constants
-        )
+        storage_declarations = self._emit_constant_storage_declarations(large_constants)
         if storage_declarations:
             sections.extend((storage_declarations.rstrip(), ""))
         large_constants_section = self._emit_constant_storage_definitions(
@@ -2796,9 +2336,7 @@ class CEmitter:
         else:
             lines.append("  n/a")
         comment_lines = ["/*"]
-        comment_lines.extend(
-            f" * {line}" if line else " *" for line in lines
-        )
+        comment_lines.extend(f" * {line}" if line else " *" for line in lines)
         comment_lines.append(" */")
         return "\n".join(comment_lines)
 
@@ -2809,7 +2347,9 @@ class CEmitter:
         if isinstance(value, str):
             return value
         if isinstance(value, (list, tuple)):
-            rendered = ", ".join(CEmitter._format_node_attr_value(item) for item in value)
+            rendered = ", ".join(
+                CEmitter._format_node_attr_value(item) for item in value
+            )
             return f"[{rendered}]"
         if hasattr(value, "tolist"):
             try:
@@ -2824,8 +2364,7 @@ class CEmitter:
             f"Node {index}:",
             f"OpType: {node_info.op_type}",
             f"Name: {node_info.name}" if node_info.name else "Name: n/a",
-            "Inputs: "
-            + (", ".join(node_info.inputs) if node_info.inputs else "n/a"),
+            "Inputs: " + (", ".join(node_info.inputs) if node_info.inputs else "n/a"),
             "Outputs: "
             + (", ".join(node_info.outputs) if node_info.outputs else "n/a"),
         ]
@@ -2837,9 +2376,7 @@ class CEmitter:
         else:
             lines.append("Attrs: n/a")
         comment_lines = ["/*"]
-        comment_lines.extend(
-            f" * {line}" if line else " *" for line in lines
-        )
+        comment_lines.extend(f" * {line}" if line else " *" for line in lines)
         comment_lines.append(" */")
         return "\n".join(comment_lines)
 
@@ -2854,9 +2391,7 @@ class CEmitter:
             f"Dtype: {constant.dtype.onnx_name}",
         ]
         comment_lines = ["/*"]
-        comment_lines.extend(
-            f" * {line}" if line else " *" for line in lines
-        )
+        comment_lines.extend(f" * {line}" if line else " *" for line in lines)
         comment_lines.append(" */")
         return "\n".join(comment_lines)
 
@@ -2984,9 +2519,7 @@ class CEmitter:
     ) -> str:
         spec = _LSTM_ACTIVATION_SPECS.get(kind)
         if spec is None:
-            raise CodegenError(
-                f"Unsupported RNN activation kind for codegen: {kind}"
-            )
+            raise CodegenError(f"Unsupported RNN activation kind for codegen: {kind}")
         function, param_count = spec
         if param_count == 0:
             params = ()
@@ -2994,9 +2527,7 @@ class CEmitter:
             params = (alpha,)
         else:
             params = (alpha, beta)
-        name = self._scalar_function_name(
-            function, dtype, registry, params=params
-        )
+        name = self._scalar_function_name(function, dtype, registry, params=params)
         if name is None:
             raise CodegenError(
                 f"Failed to resolve scalar function for RNN activation kind {kind}"
@@ -3094,9 +2625,7 @@ class CEmitter:
         ):
             includes.add("#include <math.h>")
         constant_of_shape_inputs = {
-            op.input_dtype
-            for op in resolved_ops
-            if isinstance(op, ConstantOfShapeOp)
+            op.input_dtype for op in resolved_ops if isinstance(op, ConstantOfShapeOp)
         }
         model_dtypes = {
             *model.input_dtypes,
@@ -3104,6 +2633,7 @@ class CEmitter:
             *(const.dtype for const in model.constants),
             *constant_of_shape_inputs,
         }
+
         def _resolved_output_dtype(op: OpBase) -> ScalarType:
             if isinstance(op, MultiInputBinaryOp):
                 return model.op_context.dtype(op.inputs[0])
@@ -3189,16 +2719,13 @@ class CEmitter:
         ):
             includes.add("#include <stdbool.h>")
         if any(
-            isinstance(op, SoftmaxCrossEntropyLossOp)
-            and op.ignore_index is not None
+            isinstance(op, SoftmaxCrossEntropyLossOp) and op.ignore_index is not None
             for op in resolved_ops
         ):
             includes.add("#include <stdbool.h>")
         if any(
             isinstance(op, UnaryOp)
-            and unary_op_symbol(
-                op.function, dtype=model.op_context.dtype(op.output)
-            )
+            and unary_op_symbol(op.function, dtype=model.op_context.dtype(op.output))
             in {"llabs", "abs"}
             for op in resolved_ops
         ):
@@ -3391,9 +2918,7 @@ class CEmitter:
 
         if any(
             isinstance(op, UnaryOp)
-            and unary_op_symbol(
-                op.function, dtype=op_context.dtype(op.output)
-            )
+            and unary_op_symbol(op.function, dtype=op_context.dtype(op.output))
             in math_ops
             for op in resolved_ops
         ):
@@ -3418,8 +2943,7 @@ class CEmitter:
         ):
             return True
         if any(
-            isinstance(op, BinaryOp) and is_binary_math_op(op)
-            for op in resolved_ops
+            isinstance(op, BinaryOp) and is_binary_math_op(op) for op in resolved_ops
         ):
             return True
         if any(
@@ -3461,10 +2985,7 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
-        if any(
-            isinstance(op, MaxPoolOp) and op.dtype.is_float
-            for op in resolved_ops
-        ):
+        if any(isinstance(op, MaxPoolOp) and op.dtype.is_float for op in resolved_ops):
             return True
         if any(
             isinstance(
@@ -3690,8 +3211,7 @@ class CEmitter:
             c_type = temp.dtype.c_type
             storage = (
                 "static "
-                if self._temp_buffer_size_bytes(temp)
-                > self._large_temp_threshold_bytes
+                if self._temp_buffer_size_bytes(temp) > self._large_temp_threshold_bytes
                 else ""
             )
             lines.append(
@@ -3713,76 +3233,78 @@ class CEmitter:
 
     def _build_op_call(
         self,
-        op: BinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | QLinearMulOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | RotaryEmbeddingOp
-        | ConvOp
-        | ConvIntegerOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | AdagradOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | PadOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | SliceOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | OptionalHasElementOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | SplitOp
-        | OptionalHasElementOp,
+        op: (
+            BinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | DequantizeLinearOp
+            | QLinearMulOp
+            | QLinearMatMulOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | RotaryEmbeddingOp
+            | ConvOp
+            | ConvIntegerOp
+            | ConvTransposeOp
+            | AveragePoolOp
+            | LpPoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | LrnOp
+            | GruOp
+            | LstmOp
+            | AdagradOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | ScatterNDOp
+            | TensorScatterOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | PadOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
+            | SliceOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | TopKOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | OptionalHasElementOp
+            | NonZeroOp
+            | NonMaxSuppressionOp
+            | ExpandOp
+            | CumSumOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | SplitOp
+            | OptionalHasElementOp
+        ),
         dim_order: Sequence[str],
         optional_flags: Mapping[str, str] | None = None,
     ) -> str:
@@ -3920,9 +3442,7 @@ class CEmitter:
             args.extend([op.input0, op.output])
             return ", ".join(args)
         if isinstance(op, BatchNormOp):
-            args.extend(
-                [op.input0, op.scale, op.bias, op.mean, op.variance, op.output]
-            )
+            args.extend([op.input0, op.scale, op.bias, op.mean, op.variance, op.output])
             return ", ".join(args)
         if isinstance(op, LpNormalizationOp):
             args.extend([op.input0, op.output])
@@ -4056,9 +3576,7 @@ class CEmitter:
         if isinstance(op, OptionalHasElementOp):
             input_flag = optional_flags.get(op.input0)
             if input_flag is None:
-                raise CodegenError(
-                    "OptionalHasElement expects an optional input flag."
-                )
+                raise CodegenError("OptionalHasElement expects an optional input flag.")
             args.extend([op.input0, input_flag, op.output])
             return ", ".join(args)
         if isinstance(op, NonZeroOp):
@@ -4205,76 +3723,78 @@ class CEmitter:
 
     @staticmethod
     def _resolve_op(
-        op: BinaryOp
-        | PowOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | QLinearMulOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | RotaryEmbeddingOp
-        | ConvOp
-        | ConvIntegerOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | AdagradOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | SliceOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | TfIdfVectorizerOp
-        | SplitOp,
+        op: (
+            BinaryOp
+            | PowOp
+            | MultiInputBinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | DequantizeLinearOp
+            | QLinearMulOp
+            | QLinearMatMulOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | RotaryEmbeddingOp
+            | ConvOp
+            | ConvIntegerOp
+            | ConvTransposeOp
+            | AveragePoolOp
+            | LpPoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | LrnOp
+            | GruOp
+            | LstmOp
+            | AdagradOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | ScatterNDOp
+            | TensorScatterOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
+            | SliceOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | TopKOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | NonZeroOp
+            | NonMaxSuppressionOp
+            | ExpandOp
+            | CumSumOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | TfIdfVectorizerOp
+            | SplitOp
+        ),
         temp_map: dict[str, str],
     ) -> (
         BinaryOp
@@ -4390,12 +3910,16 @@ class CEmitter:
         if isinstance(op, ClipOp):
             return ClipOp(
                 input0=temp_map.get(op.input0, op.input0),
-                input_min=temp_map.get(op.input_min, op.input_min)
-                if op.input_min is not None
-                else None,
-                input_max=temp_map.get(op.input_max, op.input_max)
-                if op.input_max is not None
-                else None,
+                input_min=(
+                    temp_map.get(op.input_min, op.input_min)
+                    if op.input_min is not None
+                    else None
+                ),
+                input_max=(
+                    temp_map.get(op.input_max, op.input_max)
+                    if op.input_max is not None
+                    else None
+                ),
                 output=temp_map.get(op.output, op.output),
                 min_value=op.min_value,
                 max_value=op.max_value,
@@ -4567,9 +4091,7 @@ class CEmitter:
                     else None
                 ),
                 input_nonpad_kv_seqlen=(
-                    temp_map.get(
-                        op.input_nonpad_kv_seqlen, op.input_nonpad_kv_seqlen
-                    )
+                    temp_map.get(op.input_nonpad_kv_seqlen, op.input_nonpad_kv_seqlen)
                     if op.input_nonpad_kv_seqlen is not None
                     else None
                 ),
@@ -4756,16 +4278,13 @@ class CEmitter:
                 rate=temp_map.get(op.rate, op.rate),
                 timestep=temp_map.get(op.timestep, op.timestep),
                 inputs=tuple(temp_map.get(name, name) for name in op.inputs),
-                gradients=tuple(
-                    temp_map.get(name, name) for name in op.gradients
-                ),
+                gradients=tuple(temp_map.get(name, name) for name in op.gradients),
                 accumulators=tuple(
                     temp_map.get(name, name) for name in op.accumulators
                 ),
                 outputs=tuple(temp_map.get(name, name) for name in op.outputs),
                 accumulator_outputs=tuple(
-                    temp_map.get(name, name)
-                    for name in op.accumulator_outputs
+                    temp_map.get(name, name) for name in op.accumulator_outputs
                 ),
                 rate_shape=op.rate_shape,
                 timestep_shape=op.timestep_shape,
@@ -4801,12 +4320,16 @@ class CEmitter:
             return ConvIntegerOp(
                 input0=temp_map.get(op.input0, op.input0),
                 weights=temp_map.get(op.weights, op.weights),
-                x_zero_point=temp_map.get(op.x_zero_point, op.x_zero_point)
-                if op.x_zero_point
-                else None,
-                w_zero_point=temp_map.get(op.w_zero_point, op.w_zero_point)
-                if op.w_zero_point
-                else None,
+                x_zero_point=(
+                    temp_map.get(op.x_zero_point, op.x_zero_point)
+                    if op.x_zero_point
+                    else None
+                ),
+                w_zero_point=(
+                    temp_map.get(op.w_zero_point, op.w_zero_point)
+                    if op.w_zero_point
+                    else None
+                ),
                 output=temp_map.get(op.output, op.output),
                 batch=op.batch,
                 in_channels=op.in_channels,
@@ -5234,9 +4757,7 @@ class CEmitter:
                 max_output_boxes_per_class=CEmitter._map_optional_name(
                     temp_map, op.max_output_boxes_per_class
                 ),
-                iou_threshold=CEmitter._map_optional_name(
-                    temp_map, op.iou_threshold
-                ),
+                iou_threshold=CEmitter._map_optional_name(temp_map, op.iou_threshold),
                 score_threshold=CEmitter._map_optional_name(
                     temp_map, op.score_threshold
                 ),
@@ -5338,9 +4859,7 @@ class CEmitter:
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=temp_map.get(op.input0, op.input0),
-                outputs=tuple(
-                    temp_map.get(name, name) for name in op.outputs
-                ),
+                outputs=tuple(temp_map.get(name, name) for name in op.outputs),
                 input_shape=op.input_shape,
                 output_shapes=op.output_shapes,
                 axis=op.axis,
@@ -5476,18 +4995,26 @@ class CEmitter:
                 starts=op.starts,
                 steps=op.steps,
                 axes=op.axes,
-                starts_input=temp_map.get(op.starts_input, op.starts_input)
-                if op.starts_input
-                else None,
-                ends_input=temp_map.get(op.ends_input, op.ends_input)
-                if op.ends_input
-                else None,
-                axes_input=temp_map.get(op.axes_input, op.axes_input)
-                if op.axes_input
-                else None,
-                steps_input=temp_map.get(op.steps_input, op.steps_input)
-                if op.steps_input
-                else None,
+                starts_input=(
+                    temp_map.get(op.starts_input, op.starts_input)
+                    if op.starts_input
+                    else None
+                ),
+                ends_input=(
+                    temp_map.get(op.ends_input, op.ends_input)
+                    if op.ends_input
+                    else None
+                ),
+                axes_input=(
+                    temp_map.get(op.axes_input, op.axes_input)
+                    if op.axes_input
+                    else None
+                ),
+                steps_input=(
+                    temp_map.get(op.steps_input, op.steps_input)
+                    if op.steps_input
+                    else None
+                ),
                 starts_shape=op.starts_shape,
                 ends_shape=op.ends_shape,
                 axes_shape=op.axes_shape,
@@ -5506,15 +5033,19 @@ class CEmitter:
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
                 scales=op.scales,
-                scales_input=temp_map.get(op.scales_input, op.scales_input)
-                if op.scales_input
-                else None,
-                sizes_input=temp_map.get(op.sizes_input, op.sizes_input)
-                if op.sizes_input
-                else None,
-                roi_input=temp_map.get(op.roi_input, op.roi_input)
-                if op.roi_input
-                else None,
+                scales_input=(
+                    temp_map.get(op.scales_input, op.scales_input)
+                    if op.scales_input
+                    else None
+                ),
+                sizes_input=(
+                    temp_map.get(op.sizes_input, op.sizes_input)
+                    if op.sizes_input
+                    else None
+                ),
+                roi_input=(
+                    temp_map.get(op.roi_input, op.roi_input) if op.roi_input else None
+                ),
                 axes=op.axes,
                 scales_shape=op.scales_shape,
                 sizes_shape=op.sizes_shape,
@@ -5557,9 +5088,11 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
                 axes=op.axes,
-                axes_input=temp_map.get(op.axes_input, op.axes_input)
-                if op.axes_input
-                else None,
+                axes_input=(
+                    temp_map.get(op.axes_input, op.axes_input)
+                    if op.axes_input
+                    else None
+                ),
                 keepdims=op.keepdims,
                 noop_with_empty_axes=op.noop_with_empty_axes,
                 reduce_kind=op.reduce_kind,
@@ -5653,9 +5186,7 @@ class CEmitter:
             logsoftmax_template=templates["logsoftmax"],
             hardmax_template=templates["hardmax"],
             nllloss_template=templates["nllloss"],
-            softmax_cross_entropy_loss_template=templates[
-                "softmax_cross_entropy_loss"
-            ],
+            softmax_cross_entropy_loss_template=templates["softmax_cross_entropy_loss"],
             maxpool_template=templates["maxpool"],
             concat_template=templates["concat"],
             gather_elements_template=templates["gather_elements"],
@@ -5806,9 +5337,7 @@ class CEmitter:
             output_shape = self._ctx_shape(op.output)
             input_dtype = self._ctx_dtype(op.input0)
             input1_dtype = (
-                self._ctx_dtype(op.input1)
-                if isinstance(op, PowOp)
-                else input_dtype
+                self._ctx_dtype(op.input1) if isinstance(op, PowOp) else input_dtype
             )
             output_dtype = self._ctx_dtype(op.output)
             params = self._shared_param_map(
@@ -5819,10 +5348,7 @@ class CEmitter:
                 ]
             )
             scalar_operator = None
-            if (
-                scalar_registry is not None
-                and op.function not in COMPARE_FUNCTIONS
-            ):
+            if scalar_registry is not None and op.function not in COMPARE_FUNCTIONS:
                 scalar_operator = self._scalar_function_name(
                     op.function, input_dtype, scalar_registry
                 )
@@ -5838,9 +5364,7 @@ class CEmitter:
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape)
-            output_suffix = self._param_array_suffix(
-                output_shape, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
             input0_suffix = self._param_array_suffix(
                 input0_shape, _dim_names_for(op.input0)
             )
@@ -5918,7 +5442,7 @@ class CEmitter:
             output_dtype = self._ctx_dtype(op.output)
             params = self._shared_param_map(
                 [
-                    *( (f"input{idx}", name) for idx, name in enumerate(op.inputs) ),
+                    *((f"input{idx}", name) for idx, name in enumerate(op.inputs)),
                     ("output", op.output),
                 ]
             )
@@ -5942,22 +5466,16 @@ class CEmitter:
                     f"{op.function.value}"
                 )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(
-                output_shape_raw, output_dim_names
-            )
+            shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
             output_array_suffix = self._param_array_suffix(
                 output_shape_raw, output_dim_names
             )
             input_c_type = input_dtype.c_type
             output_c_type = output_dtype.c_type
-            input_names = [
-                params[f"input{idx}"] for idx in range(len(op.inputs))
-            ]
+            input_names = [params[f"input{idx}"] for idx in range(len(op.inputs))]
             input_shapes = [self._ctx_shape(name) for name in op.inputs]
-            input_dim_names = [
-                _dim_names_for(name) for name in op.inputs
-            ]
+            input_dim_names = [_dim_names_for(name) for name in op.inputs]
             input_array_suffixes = [
                 self._param_array_suffix(shape, dim_names)
                 for shape, dim_names in zip(input_shapes, input_dim_names)
@@ -5966,9 +5484,7 @@ class CEmitter:
                 [
                     *(
                         (name, input_c_type, array_suffix, True)
-                        for name, array_suffix in zip(
-                            input_names, input_array_suffixes
-                        )
+                        for name, array_suffix in zip(input_names, input_array_suffixes)
                     ),
                     (
                         params["output"],
@@ -5992,9 +5508,7 @@ class CEmitter:
                 "params": param_decls,
             }
             input_exprs = [
-                CEmitter._broadcast_index_expr(
-                    name, shape, output_shape_raw, loop_vars
-                )
+                CEmitter._broadcast_index_expr(name, shape, output_shape_raw, loop_vars)
                 for name, shape in zip(input_names, input_shapes)
             ]
             output_expr = f"{params['output']}" + "".join(
@@ -6043,9 +5557,7 @@ class CEmitter:
                 ]
             )
             output_dim_names = _dim_names_for(op.output)
-            output_shape = CEmitter._shape_dim_exprs(
-                output_shape_raw, output_dim_names
-            )
+            output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
             output_array_suffix = self._param_array_suffix(
                 output_shape_raw, output_dim_names
@@ -6205,17 +5717,12 @@ class CEmitter:
         if isinstance(op, EinsumOp):
             params = self._shared_param_map(
                 [
-                    *(
-                        (f"input{idx}", name)
-                        for idx, name in enumerate(op.inputs)
-                    ),
+                    *((f"input{idx}", name) for idx, name in enumerate(op.inputs)),
                     ("output", op.output),
                 ]
             )
             output_dim_names = _dim_names_for(op.output)
-            output_shape = CEmitter._shape_dim_exprs(
-                op.output_shape, output_dim_names
-            )
+            output_shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
             output_loop_vars = CEmitter._loop_vars(op.output_shape)
             if output_loop_vars:
                 output_expr = f"{params['output']}" + "".join(
@@ -6224,9 +5731,7 @@ class CEmitter:
             else:
                 output_expr = f"{params['output']}[0]"
             input_shapes = op.input_shapes
-            input_dim_names = [
-                _dim_names_for(name) for name in op.inputs
-            ]
+            input_dim_names = [_dim_names_for(name) for name in op.inputs]
             input_suffixes = [
                 self._param_array_suffix(shape, dim_names)
                 for shape, dim_names in zip(input_shapes, input_dim_names)
@@ -6262,9 +5767,7 @@ class CEmitter:
             if op.kind == EinsumKind.REDUCE_ALL:
                 input_loop_vars = CEmitter._loop_vars(input_shapes[0])
                 input_loop_bounds = tuple(
-                    CEmitter._shape_dim_exprs(
-                        input_shapes[0], input_dim_names[0]
-                    )
+                    CEmitter._shape_dim_exprs(input_shapes[0], input_dim_names[0])
                 )
                 if input_loop_vars:
                     input_expr = f"{params['input0']}" + "".join(
@@ -6278,8 +5781,7 @@ class CEmitter:
                 )
                 reduce_loop_bound = input_shape_exprs[1]
                 input_expr = (
-                    f"{params['input0']}"
-                    f"[{output_loop_vars[0]}][{reduce_loop_var}]"
+                    f"{params['input0']}" f"[{output_loop_vars[0]}][{reduce_loop_var}]"
                 )
             elif op.kind == EinsumKind.TRANSPOSE:
                 input_expr = (
@@ -6355,33 +5857,27 @@ class CEmitter:
             input_a_suffix = self._param_array_suffix(input_a_shape)
             input_b_suffix = self._param_array_suffix(input_b_shape)
             output_suffix = self._param_array_suffix((m, n))
-            c_suffix = (
-                self._param_array_suffix(c_shape)
-                if c_shape is not None
-                else ""
-            )
+            c_suffix = self._param_array_suffix(c_shape) if c_shape is not None else ""
             param_decls = self._build_param_decls(
                 [
                     (params["input_a"], c_type, input_a_suffix, True),
                     (params["input_b"], c_type, input_b_suffix, True),
                     (
-                        params["input_c"],
-                        c_type,
-                        c_suffix,
-                        True,
-                    )
-                    if params["input_c"]
-                    else (None, "", "", True),
+                        (
+                            params["input_c"],
+                            c_type,
+                            c_suffix,
+                            True,
+                        )
+                        if params["input_c"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
             dtype = self._ctx_dtype(op.output)
-            alpha_literal = CEmitter._format_literal(
-                dtype, self._derived(op, "alpha")
-            )
-            beta_literal = CEmitter._format_literal(
-                dtype, self._derived(op, "beta")
-            )
+            alpha_literal = CEmitter._format_literal(dtype, self._derived(op, "alpha"))
+            beta_literal = CEmitter._format_literal(dtype, self._derived(op, "beta"))
             acc_dtype = self._accumulation_dtype(dtype)
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             if c_shape is None:
@@ -6421,9 +5917,7 @@ class CEmitter:
                 input_a_suffix=input_a_suffix,
                 input_b_suffix=input_b_suffix,
                 output_suffix=output_suffix,
-                c_suffix=(
-                    c_suffix if c_shape is not None else None
-                ),
+                c_suffix=(c_suffix if c_shape is not None else None),
                 c_rank=c_rank,
                 c_dim0=c_dim0,
                 c_dim1=c_dim1,
@@ -6541,62 +6035,76 @@ class CEmitter:
                     (params["input_k"], c_type, input_k_suffix, True),
                     (params["input_v"], c_type, input_v_suffix, True),
                     (
-                        params["input_attn_mask"],
-                        mask_c_type,
-                        input_mask_suffix,
-                        True,
-                    )
-                    if params["input_attn_mask"]
-                    else (None, "", "", True),
+                        (
+                            params["input_attn_mask"],
+                            mask_c_type,
+                            input_mask_suffix,
+                            True,
+                        )
+                        if params["input_attn_mask"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_past_key"],
-                        c_type,
-                        input_past_key_suffix,
-                        True,
-                    )
-                    if params["input_past_key"]
-                    else (None, "", "", True),
+                        (
+                            params["input_past_key"],
+                            c_type,
+                            input_past_key_suffix,
+                            True,
+                        )
+                        if params["input_past_key"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_past_value"],
-                        c_type,
-                        input_past_value_suffix,
-                        True,
-                    )
-                    if params["input_past_value"]
-                    else (None, "", "", True),
+                        (
+                            params["input_past_value"],
+                            c_type,
+                            input_past_value_suffix,
+                            True,
+                        )
+                        if params["input_past_value"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_nonpad_kv_seqlen"],
-                        ScalarType.I64.c_type,
-                        input_nonpad_suffix,
-                        True,
-                    )
-                    if params["input_nonpad_kv_seqlen"]
-                    else (None, "", "", True),
+                        (
+                            params["input_nonpad_kv_seqlen"],
+                            ScalarType.I64.c_type,
+                            input_nonpad_suffix,
+                            True,
+                        )
+                        if params["input_nonpad_kv_seqlen"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                     (
-                        params["output_present_key"],
-                        c_type,
-                        output_present_key_suffix,
-                        False,
-                    )
-                    if params["output_present_key"]
-                    else (None, "", "", False),
+                        (
+                            params["output_present_key"],
+                            c_type,
+                            output_present_key_suffix,
+                            False,
+                        )
+                        if params["output_present_key"]
+                        else (None, "", "", False)
+                    ),
                     (
-                        params["output_present_value"],
-                        c_type,
-                        output_present_value_suffix,
-                        False,
-                    )
-                    if params["output_present_value"]
-                    else (None, "", "", False),
+                        (
+                            params["output_present_value"],
+                            c_type,
+                            output_present_value_suffix,
+                            False,
+                        )
+                        if params["output_present_value"]
+                        else (None, "", "", False)
+                    ),
                     (
-                        params["output_qk_matmul"],
-                        c_type,
-                        output_qk_matmul_suffix,
-                        False,
-                    )
-                    if params["output_qk_matmul"]
-                    else (None, "", "", False),
+                        (
+                            params["output_qk_matmul"],
+                            c_type,
+                            output_qk_matmul_suffix,
+                            False,
+                        )
+                        if params["output_qk_matmul"]
+                        else (None, "", "", False)
+                    ),
                 ]
             )
             rendered = attention_template.render(
@@ -6693,13 +6201,15 @@ class CEmitter:
                     (params["cos_cache"], c_type, cos_suffix, True),
                     (params["sin_cache"], c_type, sin_suffix, True),
                     (
-                        params["position_ids"],
-                        op.position_ids_dtype.c_type,
-                        position_suffix,
-                        True,
-                    )
-                    if params["position_ids"]
-                    else (None, "", "", True),
+                        (
+                            params["position_ids"],
+                            op.position_ids_dtype.c_type,
+                            position_suffix,
+                            True,
+                        )
+                        if params["position_ids"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -6749,9 +6259,7 @@ class CEmitter:
             )
             output_shape = (op.batch, op.out_channels, *op.out_spatial)
             out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
-            kernel_indices = tuple(
-                f"kd{dim}" for dim in range(op.spatial_rank)
-            )
+            kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
             in_indices = tuple(f"id{dim}" for dim in range(op.spatial_rank))
             pad_begin = op.pads[: op.spatial_rank]
             group_in_channels = op.in_channels // op.group
@@ -6765,13 +6273,15 @@ class CEmitter:
                     (params["input0"], c_type, input_suffix, True),
                     (params["weights"], c_type, weight_suffix, True),
                     (
-                        params["bias"],
-                        c_type,
-                        bias_suffix,
-                        True,
-                    )
-                    if params["bias"]
-                    else (None, "", "", True),
+                        (
+                            params["bias"],
+                            c_type,
+                            bias_suffix,
+                            True,
+                        )
+                        if params["bias"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -6830,9 +6340,7 @@ class CEmitter:
             )
             output_shape = (op.batch, op.out_channels, *op.out_spatial)
             out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
-            kernel_indices = tuple(
-                f"kd{dim}" for dim in range(op.spatial_rank)
-            )
+            kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
             in_indices = tuple(f"id{dim}" for dim in range(op.spatial_rank))
             pad_begin = op.pads[: op.spatial_rank]
             group_in_channels = op.in_channels // op.group
@@ -6865,28 +6373,30 @@ class CEmitter:
                         True,
                     ),
                     (
-                        params["x_zero_point"],
-                        op.input_dtype.c_type,
-                        x_zero_suffix,
-                        True,
-                    )
-                    if params["x_zero_point"]
-                    else (None, "", "", True),
+                        (
+                            params["x_zero_point"],
+                            op.input_dtype.c_type,
+                            x_zero_suffix,
+                            True,
+                        )
+                        if params["x_zero_point"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["w_zero_point"],
-                        op.weight_dtype.c_type,
-                        w_zero_suffix,
-                        True,
-                    )
-                    if params["w_zero_point"]
-                    else (None, "", "", True),
+                        (
+                            params["w_zero_point"],
+                            op.weight_dtype.c_type,
+                            w_zero_suffix,
+                            True,
+                        )
+                        if params["w_zero_point"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
             x_zero_expr = (
-                f"{params['x_zero_point']}[0]"
-                if params["x_zero_point"]
-                else "0"
+                f"{params['x_zero_point']}[0]" if params["x_zero_point"] else "0"
             )
             if params["w_zero_point"]:
                 if op.w_zero_point_per_channel:
@@ -6949,9 +6459,7 @@ class CEmitter:
             )
             output_shape = (op.batch, op.out_channels, *op.out_spatial)
             in_indices = tuple(f"id{dim}" for dim in range(op.spatial_rank))
-            kernel_indices = tuple(
-                f"kd{dim}" for dim in range(op.spatial_rank)
-            )
+            kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
             out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
             pad_begin = op.pads[: op.spatial_rank]
             group_in_channels = op.in_channels // op.group
@@ -6965,13 +6473,15 @@ class CEmitter:
                     (params["input0"], c_type, input_suffix, True),
                     (params["weights"], c_type, weight_suffix, True),
                     (
-                        params["bias"],
-                        c_type,
-                        bias_suffix,
-                        True,
-                    )
-                    if params["bias"]
-                    else (None, "", "", True),
+                        (
+                            params["bias"],
+                            c_type,
+                            bias_suffix,
+                            True,
+                        )
+                        if params["bias"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -7298,9 +6808,7 @@ class CEmitter:
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
-            acc_epsilon_literal = CEmitter._format_floating(
-                op.epsilon, acc_dtype
-            )
+            acc_epsilon_literal = CEmitter._format_floating(op.epsilon, acc_dtype)
             acc_sqrt_fn = CEmitter._math_fn(acc_dtype, "sqrtf", "sqrt")
             use_kahan = False
             params = self._shared_param_map(
@@ -7341,16 +6849,14 @@ class CEmitter:
             )
             mean_suffix = (
                 self._param_array_suffix(
-                    op.shape[: op.axis]
-                    + (1,) * len(op.normalized_shape)
+                    op.shape[: op.axis] + (1,) * len(op.normalized_shape)
                 )
                 if op.mean_output is not None
                 else ""
             )
             invstd_suffix = (
                 self._param_array_suffix(
-                    op.shape[: op.axis]
-                    + (1,) * len(op.normalized_shape)
+                    op.shape[: op.axis] + (1,) * len(op.normalized_shape)
                 )
                 if op.invstd_output is not None
                 else ""
@@ -7360,30 +6866,36 @@ class CEmitter:
                     (params["input0"], c_type, input_suffix, True),
                     (params["scale"], c_type, scale_suffix, True),
                     (
-                        params["bias"],
-                        c_type,
-                        bias_suffix,
-                        True,
-                    )
-                    if params["bias"]
-                    else (None, "", "", True),
+                        (
+                            params["bias"],
+                            c_type,
+                            bias_suffix,
+                            True,
+                        )
+                        if params["bias"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                     (
-                        params["mean_output"],
-                        c_type,
-                        mean_suffix,
-                        False,
-                    )
-                    if params["mean_output"]
-                    else (None, "", "", False),
+                        (
+                            params["mean_output"],
+                            c_type,
+                            mean_suffix,
+                            False,
+                        )
+                        if params["mean_output"]
+                        else (None, "", "", False)
+                    ),
                     (
-                        params["invstd_output"],
-                        c_type,
-                        invstd_suffix,
-                        False,
-                    )
-                    if params["invstd_output"]
-                    else (None, "", "", False),
+                        (
+                            params["invstd_output"],
+                            c_type,
+                            invstd_suffix,
+                            False,
+                        )
+                        if params["invstd_output"]
+                        else (None, "", "", False)
+                    ),
                 ]
             )
             rendered = layer_norm_template.render(
@@ -7562,9 +7074,7 @@ class CEmitter:
                 if op.input_b is not None
                 else None
             )
-            seq_shape = (
-                (op.batch_size,) if op.input_sequence_lens is not None else None
-            )
+            seq_shape = (op.batch_size,) if op.input_sequence_lens is not None else None
             state_shape = (
                 (op.num_directions, op.batch_size, op.hidden_size)
                 if op.layout == 0
@@ -7601,45 +7111,55 @@ class CEmitter:
                         True,
                     ),
                     (
-                        params["input_b"],
-                        c_type,
-                        self._param_array_suffix(b_shape),
-                        True,
-                    )
-                    if params["input_b"]
-                    else (None, "", "", True),
+                        (
+                            params["input_b"],
+                            c_type,
+                            self._param_array_suffix(b_shape),
+                            True,
+                        )
+                        if params["input_b"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_sequence_lens"],
-                        (op.sequence_lens_dtype or ScalarType.I64).c_type,
-                        self._param_array_suffix(seq_shape),
-                        True,
-                    )
-                    if params["input_sequence_lens"]
-                    else (None, "", "", True),
+                        (
+                            params["input_sequence_lens"],
+                            (op.sequence_lens_dtype or ScalarType.I64).c_type,
+                            self._param_array_suffix(seq_shape),
+                            True,
+                        )
+                        if params["input_sequence_lens"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_initial_h"],
-                        c_type,
-                        self._param_array_suffix(h_shape),
-                        True,
-                    )
-                    if params["input_initial_h"]
-                    else (None, "", "", True),
+                        (
+                            params["input_initial_h"],
+                            c_type,
+                            self._param_array_suffix(h_shape),
+                            True,
+                        )
+                        if params["input_initial_h"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["output_y"],
-                        c_type,
-                        self._param_array_suffix(y_shape),
-                        False,
-                    )
-                    if params["output_y"]
-                    else (None, "", "", False),
+                        (
+                            params["output_y"],
+                            c_type,
+                            self._param_array_suffix(y_shape),
+                            False,
+                        )
+                        if params["output_y"]
+                        else (None, "", "", False)
+                    ),
                     (
-                        params["output_y_h"],
-                        c_type,
-                        self._param_array_suffix(h_shape),
-                        False,
-                    )
-                    if params["output_y_h"]
-                    else (None, "", "", False),
+                        (
+                            params["output_y_h"],
+                            c_type,
+                            self._param_array_suffix(h_shape),
+                            False,
+                        )
+                        if params["output_y_h"]
+                        else (None, "", "", False)
+                    ),
                 ]
             )
             if scalar_registry is None:
@@ -7768,69 +7288,85 @@ class CEmitter:
                         True,
                     ),
                     (
-                        params["input_b"],
-                        c_type,
-                        self._param_array_suffix(b_shape),
-                        True,
-                    )
-                    if params["input_b"]
-                    else (None, "", "", True),
+                        (
+                            params["input_b"],
+                            c_type,
+                            self._param_array_suffix(b_shape),
+                            True,
+                        )
+                        if params["input_b"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_sequence_lens"],
-                        (op.sequence_lens_dtype or ScalarType.I64).c_type,
-                        self._param_array_suffix(seq_shape),
-                        True,
-                    )
-                    if params["input_sequence_lens"]
-                    else (None, "", "", True),
+                        (
+                            params["input_sequence_lens"],
+                            (op.sequence_lens_dtype or ScalarType.I64).c_type,
+                            self._param_array_suffix(seq_shape),
+                            True,
+                        )
+                        if params["input_sequence_lens"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_initial_h"],
-                        c_type,
-                        self._param_array_suffix(h_shape),
-                        True,
-                    )
-                    if params["input_initial_h"]
-                    else (None, "", "", True),
+                        (
+                            params["input_initial_h"],
+                            c_type,
+                            self._param_array_suffix(h_shape),
+                            True,
+                        )
+                        if params["input_initial_h"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_initial_c"],
-                        c_type,
-                        self._param_array_suffix(c_shape),
-                        True,
-                    )
-                    if params["input_initial_c"]
-                    else (None, "", "", True),
+                        (
+                            params["input_initial_c"],
+                            c_type,
+                            self._param_array_suffix(c_shape),
+                            True,
+                        )
+                        if params["input_initial_c"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_p"],
-                        c_type,
-                        self._param_array_suffix(p_shape),
-                        True,
-                    )
-                    if params["input_p"]
-                    else (None, "", "", True),
+                        (
+                            params["input_p"],
+                            c_type,
+                            self._param_array_suffix(p_shape),
+                            True,
+                        )
+                        if params["input_p"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["output_y"],
-                        c_type,
-                        self._param_array_suffix(y_shape),
-                        False,
-                    )
-                    if params["output_y"]
-                    else (None, "", "", False),
+                        (
+                            params["output_y"],
+                            c_type,
+                            self._param_array_suffix(y_shape),
+                            False,
+                        )
+                        if params["output_y"]
+                        else (None, "", "", False)
+                    ),
                     (
-                        params["output_y_h"],
-                        c_type,
-                        self._param_array_suffix(h_shape),
-                        False,
-                    )
-                    if params["output_y_h"]
-                    else (None, "", "", False),
+                        (
+                            params["output_y_h"],
+                            c_type,
+                            self._param_array_suffix(h_shape),
+                            False,
+                        )
+                        if params["output_y_h"]
+                        else (None, "", "", False)
+                    ),
                     (
-                        params["output_y_c"],
-                        c_type,
-                        self._param_array_suffix(c_shape),
-                        False,
-                    )
-                    if params["output_y_c"]
-                    else (None, "", "", False),
+                        (
+                            params["output_y_c"],
+                            c_type,
+                            self._param_array_suffix(c_shape),
+                            False,
+                        )
+                        if params["output_y_c"]
+                        else (None, "", "", False)
+                    ),
                 ]
             )
             if scalar_registry is None:
@@ -7892,22 +7428,10 @@ class CEmitter:
                 [
                     ("rate", op.rate),
                     ("timestep", op.timestep),
-                    *(
-                        (f"input{idx}", name)
-                        for idx, name in enumerate(op.inputs)
-                    ),
-                    *(
-                        (f"grad{idx}", name)
-                        for idx, name in enumerate(op.gradients)
-                    ),
-                    *(
-                        (f"acc{idx}", name)
-                        for idx, name in enumerate(op.accumulators)
-                    ),
-                    *(
-                        (f"output{idx}", name)
-                        for idx, name in enumerate(op.outputs)
-                    ),
+                    *((f"input{idx}", name) for idx, name in enumerate(op.inputs)),
+                    *((f"grad{idx}", name) for idx, name in enumerate(op.gradients)),
+                    *((f"acc{idx}", name) for idx, name in enumerate(op.accumulators)),
+                    *((f"output{idx}", name) for idx, name in enumerate(op.outputs)),
                     *(
                         (f"acc_output{idx}", name)
                         for idx, name in enumerate(op.accumulator_outputs)
@@ -7962,9 +7486,7 @@ class CEmitter:
                     ]
                 )
                 output_dim_names = _dim_names_for(op.outputs[idx])
-                shape_exprs = CEmitter._shape_dim_exprs(
-                    shape, output_dim_names
-                )
+                shape_exprs = CEmitter._shape_dim_exprs(shape, output_dim_names)
                 loop_vars = CEmitter._loop_vars(shape)
                 index_suffix = "".join(f"[{var}]" for var in loop_vars)
                 tensor_specs.append(
@@ -8148,13 +7670,15 @@ class CEmitter:
                     (params["input0"], c_type, input_suffix, True),
                     (params["target"], op.target_dtype.c_type, target_suffix, True),
                     (
-                        params["weight"],
-                        c_type,
-                        weight_suffix,
-                        True,
-                    )
-                    if params["weight"]
-                    else (None, "", "", True),
+                        (
+                            params["weight"],
+                            c_type,
+                            weight_suffix,
+                            True,
+                        )
+                        if params["weight"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -8226,22 +7750,26 @@ class CEmitter:
                     (params["input0"], c_type, input_suffix, True),
                     (params["target"], op.target_dtype.c_type, target_suffix, True),
                     (
-                        params["weight"],
-                        c_type,
-                        weight_suffix,
-                        True,
-                    )
-                    if params["weight"]
-                    else (None, "", "", True),
+                        (
+                            params["weight"],
+                            c_type,
+                            weight_suffix,
+                            True,
+                        )
+                        if params["weight"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], c_type, output_suffix, False),
                     (
-                        params["log_prob"],
-                        c_type,
-                        log_prob_suffix,
-                        False,
-                    )
-                    if params["log_prob"]
-                    else (None, "", "", False),
+                        (
+                            params["log_prob"],
+                            c_type,
+                            log_prob_suffix,
+                            False,
+                        )
+                        if params["log_prob"]
+                        else (None, "", "", False)
+                    ),
                 ]
             )
             rendered = softmax_cross_entropy_loss_template.render(
@@ -8258,7 +7786,9 @@ class CEmitter:
                 input_suffix=input_suffix,
                 target_suffix=target_suffix,
                 output_suffix=output_suffix,
-                log_prob_suffix=log_prob_suffix if op.log_prob_shape is not None else None,
+                log_prob_suffix=(
+                    log_prob_suffix if op.log_prob_shape is not None else None
+                ),
                 n=op.n,
                 c=op.c,
                 d=op.d,
@@ -8309,13 +7839,15 @@ class CEmitter:
                     (params["input0"], c_type, input_suffix, True),
                     (params["output"], c_type, output_suffix, False),
                     (
-                        params["indices"],
-                        indices_c_type or ScalarType.I64.c_type,
-                        indices_suffix,
-                        False,
-                    )
-                    if params["indices"]
-                    else (None, "", "", False),
+                        (
+                            params["indices"],
+                            indices_c_type or ScalarType.I64.c_type,
+                            indices_suffix,
+                            False,
+                        )
+                        if params["indices"]
+                        else (None, "", "", False)
+                    ),
                 ]
             )
             rendered = maxpool_template.render(
@@ -8349,9 +7881,7 @@ class CEmitter:
             input_params = [
                 (f"input_{index}", name) for index, name in enumerate(op.inputs)
             ]
-            params = self._shared_param_map(
-                [*input_params, ("output", op.output)]
-            )
+            params = self._shared_param_map([*input_params, ("output", op.output)])
             input_names = tuple(
                 params[f"input_{index}"] for index in range(len(op.inputs))
             )
@@ -8587,9 +8117,7 @@ class CEmitter:
             indices_dim_names = _dim_names_for(op.indices)
             updates_dim_names = _dim_names_for(op.updates)
             data_dim_names = _dim_names_for(op.data)
-            output_shape = CEmitter._shape_dim_exprs(
-                op.output_shape, output_dim_names
-            )
+            output_shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
             data_shape = CEmitter._shape_dim_exprs(op.data_shape, data_dim_names)
             indices_shape = CEmitter._shape_dim_exprs(
                 op.indices_shape, indices_dim_names
@@ -8605,8 +8133,7 @@ class CEmitter:
             tail_shape = output_shape[index_depth:]
             tail_loop_vars = (
                 tuple(
-                    f"t{index}"
-                    for index in range(len(op.output_shape[index_depth:]))
+                    f"t{index}" for index in range(len(op.output_shape[index_depth:]))
                 )
                 if op.output_shape[index_depth:]
                 else ()
@@ -8622,18 +8149,14 @@ class CEmitter:
                 updates_index_expr = f"{params['updates']}" + "".join(
                     f"[{var}]" for var in updates_index_vars
                 )
-            data_suffix = self._param_array_suffix(
-                op.data_shape, data_dim_names
-            )
+            data_suffix = self._param_array_suffix(op.data_shape, data_dim_names)
             indices_suffix = self._param_array_suffix(
                 op.indices_shape, indices_dim_names
             )
             updates_suffix = self._param_array_suffix(
                 op.updates_shape, updates_dim_names
             )
-            output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["data"], c_type, data_suffix, True),
@@ -8684,12 +8207,8 @@ class CEmitter:
             write_indices_dim_names = (
                 _dim_names_for(op.write_indices) if op.write_indices else None
             )
-            output_shape = CEmitter._shape_dim_exprs(
-                op.output_shape, output_dim_names
-            )
-            update_shape = CEmitter._shape_dim_exprs(
-                op.update_shape, update_dim_names
-            )
+            output_shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
+            update_shape = CEmitter._shape_dim_exprs(op.update_shape, update_dim_names)
             prefix_shape = output_shape[: op.axis]
             prefix_loop_vars = (
                 CEmitter._loop_vars(op.output_shape[: op.axis])
@@ -8699,8 +8218,7 @@ class CEmitter:
             tail_shape = output_shape[op.axis + 1 :]
             tail_loop_vars = (
                 tuple(
-                    f"t{index}"
-                    for index in range(len(op.output_shape[op.axis + 1 :]))
+                    f"t{index}" for index in range(len(op.output_shape[op.axis + 1 :]))
                 )
                 if op.output_shape[op.axis + 1 :]
                 else ()
@@ -8721,15 +8239,9 @@ class CEmitter:
             update_index_expr = f"{params['update']}" + "".join(
                 f"[{var}]" for var in update_index_vars
             )
-            past_suffix = self._param_array_suffix(
-                op.past_cache_shape, past_dim_names
-            )
-            update_suffix = self._param_array_suffix(
-                op.update_shape, update_dim_names
-            )
-            output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
-            )
+            past_suffix = self._param_array_suffix(op.past_cache_shape, past_dim_names)
+            update_suffix = self._param_array_suffix(op.update_shape, update_dim_names)
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
             param_decls = [
                 (params["past_cache"], c_type, past_suffix, True),
                 (params["update"], c_type, update_suffix, True),
@@ -8771,9 +8283,7 @@ class CEmitter:
                 update_index_expr=update_index_expr,
                 max_sequence_length=output_shape[op.axis],
                 write_indices_present=op.write_indices is not None,
-                batch_index_var=prefix_loop_vars[0]
-                if prefix_loop_vars
-                else "0",
+                batch_index_var=prefix_loop_vars[0] if prefix_loop_vars else "0",
                 write_index_var=write_index_var,
                 cache_index_var=cache_index_var,
                 circular=op.mode == "circular",
@@ -8851,9 +8361,7 @@ class CEmitter:
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(
-                output_shape_raw, output_dim_names
-            )
+            shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
             output_dtype = self._ctx_dtype(op.output)
             output_suffix = self._param_array_suffix(
@@ -8894,9 +8402,7 @@ class CEmitter:
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
             loop_vars = CEmitter._loop_vars(op.output_shape)
-            output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
             input_suffix = self._param_array_suffix(
                 op.input_shape, _dim_names_for(op.input0)
             )
@@ -8925,12 +8431,8 @@ class CEmitter:
                 op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
-                input_index_expr="".join(
-                    f"[{var}]" for var in loop_vars
-                ),
-                output_index_expr="".join(
-                    f"[{var}]" for var in loop_vars
-                ),
+                input_index_expr="".join(f"[{var}]" for var in loop_vars),
+                output_index_expr="".join(f"[{var}]" for var in loop_vars),
                 shape=shape,
                 loop_vars=loop_vars,
                 seed=op.seed if op.seed is not None else 0,
@@ -9037,16 +8539,12 @@ class CEmitter:
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
-            output_shape = CEmitter._shape_dim_exprs(
-                op.output_shape, output_dim_names
-            )
+            output_shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
             loop_vars = CEmitter._loop_vars(op.output_shape)
             input_suffix = self._param_array_suffix(
                 op.input_shape, _dim_names_for(op.input0)
             )
-            output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], c_type, input_suffix, True),
@@ -9055,9 +8553,7 @@ class CEmitter:
             )
             input_index_terms = [
                 f"({var} % {dim}) * {stride}"
-                for var, dim, stride in zip(
-                    loop_vars, op.input_shape, op.input_strides
-                )
+                for var, dim, stride in zip(loop_vars, op.input_shape, op.input_strides)
             ]
             input_index_expr = " + ".join(input_index_terms) or "0"
             rendered = tile_template.render(
@@ -9077,12 +8573,8 @@ class CEmitter:
         if isinstance(op, PadOp):
             input_dim_names = _dim_names_for(op.input0)
             output_dim_names = _dim_names_for(op.output)
-            input_shape = CEmitter._shape_dim_exprs(
-                op.input_shape, input_dim_names
-            )
-            output_shape = CEmitter._shape_dim_exprs(
-                op.output_shape, output_dim_names
-            )
+            input_shape = CEmitter._shape_dim_exprs(op.input_shape, input_dim_names)
+            output_shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
             in_loop_vars = CEmitter._loop_vars(op.input_shape)
             out_loop_vars = CEmitter._loop_vars(op.output_shape)
             idx_vars = tuple(f"pad_idx{index}" for index in range(len(op.output_shape)))
@@ -9136,9 +8628,7 @@ class CEmitter:
                         for index in range(len(op.output_shape))
                     )
             else:
-                pad_begin_exprs = tuple(
-                    str(value) for value in (op.pads_begin or ())
-                )
+                pad_begin_exprs = tuple(str(value) for value in (op.pads_begin or ()))
             if op.value_input is not None:
                 value_suffix = (
                     self._param_array_suffix(
@@ -9162,9 +8652,7 @@ class CEmitter:
                 c_type=c_type,
                 pads_c_type=pads_c_type,
                 axes_c_type=axes_c_type,
-                input_suffix=self._param_array_suffix(
-                    op.input_shape, input_dim_names
-                ),
+                input_suffix=self._param_array_suffix(op.input_shape, input_dim_names),
                 pads_suffix=pads_suffix,
                 axes_suffix=axes_suffix,
                 value_suffix=value_suffix,
@@ -9301,45 +8789,61 @@ class CEmitter:
                 [
                     (name_params["input0"], c_type, input_suffix, True),
                     (
-                        name_params["starts_input"],
-                        op.starts_dtype.c_type if op.starts_dtype else "",
-                        self._param_array_suffix(op.starts_shape)
-                        if op.starts_shape
-                        else "",
-                        True,
-                    )
-                    if op.starts_input and op.starts_shape and op.starts_dtype
-                    else (None, "", "", True),
+                        (
+                            name_params["starts_input"],
+                            op.starts_dtype.c_type if op.starts_dtype else "",
+                            (
+                                self._param_array_suffix(op.starts_shape)
+                                if op.starts_shape
+                                else ""
+                            ),
+                            True,
+                        )
+                        if op.starts_input and op.starts_shape and op.starts_dtype
+                        else (None, "", "", True)
+                    ),
                     (
-                        name_params["ends_input"],
-                        op.ends_dtype.c_type if op.ends_dtype else "",
-                        self._param_array_suffix(op.ends_shape)
-                        if op.ends_shape
-                        else "",
-                        True,
-                    )
-                    if op.ends_input and op.ends_shape and op.ends_dtype
-                    else (None, "", "", True),
+                        (
+                            name_params["ends_input"],
+                            op.ends_dtype.c_type if op.ends_dtype else "",
+                            (
+                                self._param_array_suffix(op.ends_shape)
+                                if op.ends_shape
+                                else ""
+                            ),
+                            True,
+                        )
+                        if op.ends_input and op.ends_shape and op.ends_dtype
+                        else (None, "", "", True)
+                    ),
                     (
-                        name_params["axes_input"],
-                        op.axes_dtype.c_type if op.axes_dtype else "",
-                        self._param_array_suffix(op.axes_shape)
-                        if op.axes_shape
-                        else "",
-                        True,
-                    )
-                    if op.axes_input and op.axes_shape and op.axes_dtype
-                    else (None, "", "", True),
+                        (
+                            name_params["axes_input"],
+                            op.axes_dtype.c_type if op.axes_dtype else "",
+                            (
+                                self._param_array_suffix(op.axes_shape)
+                                if op.axes_shape
+                                else ""
+                            ),
+                            True,
+                        )
+                        if op.axes_input and op.axes_shape and op.axes_dtype
+                        else (None, "", "", True)
+                    ),
                     (
-                        name_params["steps_input"],
-                        op.steps_dtype.c_type if op.steps_dtype else "",
-                        self._param_array_suffix(op.steps_shape)
-                        if op.steps_shape
-                        else "",
-                        True,
-                    )
-                    if op.steps_input and op.steps_shape and op.steps_dtype
-                    else (None, "", "", True),
+                        (
+                            name_params["steps_input"],
+                            op.steps_dtype.c_type if op.steps_dtype else "",
+                            (
+                                self._param_array_suffix(op.steps_shape)
+                                if op.steps_shape
+                                else ""
+                            ),
+                            True,
+                        )
+                        if op.steps_input and op.steps_shape and op.steps_dtype
+                        else (None, "", "", True)
+                    ),
                     (name_params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -9393,52 +8897,52 @@ class CEmitter:
                 [
                     (name_params["input0"], c_type, input_suffix, True),
                     (
-                        name_params["roi_input"],
-                        roi_c_type or "",
-                        roi_suffix or "",
-                        True,
-                    )
-                    if roi_c_type
-                    else (None, "", "", True),
+                        (
+                            name_params["roi_input"],
+                            roi_c_type or "",
+                            roi_suffix or "",
+                            True,
+                        )
+                        if roi_c_type
+                        else (None, "", "", True)
+                    ),
                     (
-                        name_params["scales_input"],
-                        scales_c_type or "",
-                        scales_suffix or "",
-                        True,
-                    )
-                    if scales_c_type
-                    else (None, "", "", True),
+                        (
+                            name_params["scales_input"],
+                            scales_c_type or "",
+                            scales_suffix or "",
+                            True,
+                        )
+                        if scales_c_type
+                        else (None, "", "", True)
+                    ),
                     (
-                        name_params["sizes_input"],
-                        sizes_c_type or "",
-                        sizes_suffix or "",
-                        True,
-                    )
-                    if sizes_c_type
-                    else (None, "", "", True),
+                        (
+                            name_params["sizes_input"],
+                            sizes_c_type or "",
+                            sizes_suffix or "",
+                            True,
+                        )
+                        if sizes_c_type
+                        else (None, "", "", True)
+                    ),
                     (name_params["output"], c_type, output_suffix, False),
                 ]
             )
             scales_axis_map = None
             if op.scales_input:
                 scales_axis_map = (
-                    tuple(range(len(op.scales_axes)))
-                    if op.scales_axes
-                    else op.axes
+                    tuple(range(len(op.scales_axes))) if op.scales_axes else op.axes
                 )
             sizes_axis_map = None
             if op.sizes_input:
                 sizes_axis_map = (
-                    tuple(range(len(op.sizes_axes)))
-                    if op.sizes_axes
-                    else op.axes
+                    tuple(range(len(op.sizes_axes))) if op.sizes_axes else op.axes
                 )
             roi_axis_map = None
             if op.roi_input:
                 roi_axis_map = (
-                    tuple(range(len(op.roi_axes)))
-                    if op.roi_axes
-                    else op.axes
+                    tuple(range(len(op.roi_axes))) if op.roi_axes else op.axes
                 )
             rendered = resize_template.render(
                 model_name=model.name,
@@ -9475,9 +8979,7 @@ class CEmitter:
                 nearest_mode=op.nearest_mode,
                 cubic_coeff_a=CEmitter._format_double(op.cubic_coeff_a),
                 exclude_outside=op.exclude_outside,
-                extrapolation_value=CEmitter._format_double(
-                    op.extrapolation_value
-                ),
+                extrapolation_value=CEmitter._format_double(op.extrapolation_value),
                 antialias=op.antialias,
                 keep_aspect_ratio_policy=op.keep_aspect_ratio_policy,
             ).rstrip()
@@ -9514,9 +9016,7 @@ class CEmitter:
                 mode=op.mode,
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
-                linear_offsets=tuple(
-                    itertools.product((0, 1), repeat=op.spatial_rank)
-                ),
+                linear_offsets=tuple(itertools.product((0, 1), repeat=op.spatial_rank)),
                 cubic_offsets=tuple(
                     itertools.product(range(4), repeat=op.spatial_rank)
                 ),
@@ -9542,27 +9042,27 @@ class CEmitter:
                 input_indices = [reduce_loop_vars[0]]
             elif op.keepdims:
                 input_indices = [
-                    reduce_loop_vars[axes.index(axis)]
-                    if axis in axes
-                    else output_loop_vars[axis]
+                    (
+                        reduce_loop_vars[axes.index(axis)]
+                        if axis in axes
+                        else output_loop_vars[axis]
+                    )
                     for axis in range(len(input_shape))
                 ]
             else:
                 kept_axes = [
-                    axis
-                    for axis in range(len(input_shape))
-                    if axis not in axes
+                    axis for axis in range(len(input_shape)) if axis not in axes
                 ]
                 input_indices = [
-                    reduce_loop_vars[axes.index(axis)]
-                    if axis in axes
-                    else output_loop_vars[kept_axes.index(axis)]
+                    (
+                        reduce_loop_vars[axes.index(axis)]
+                        if axis in axes
+                        else output_loop_vars[kept_axes.index(axis)]
+                    )
                     for axis in range(len(input_shape))
                 ]
             input_index_expr = "".join(f"[{var}]" for var in input_indices)
-            output_index_expr = "".join(
-                f"[{var}]" for var in output_loop_vars
-            )
+            output_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
             value_expr = f"{params['input0']}{input_index_expr}"
             update_expr = None
             init_literal = None
@@ -9575,9 +9075,7 @@ class CEmitter:
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr};"
             elif op.reduce_kind == "mean":
-                count_literal = CEmitter._format_literal(
-                    output_dtype, op.reduce_count
-                )
+                count_literal = CEmitter._format_literal(output_dtype, op.reduce_count)
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr};"
                 final_expr = f"acc / {count_literal}"
@@ -9609,9 +9107,7 @@ class CEmitter:
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr} * {value_expr};"
             else:
-                raise CodegenError(
-                    f"Unsupported reduce kind {op.reduce_kind}"
-                )
+                raise CodegenError(f"Unsupported reduce kind {op.reduce_kind}")
             input_suffix = self._param_array_suffix(input_shape)
             output_suffix = self._param_array_suffix(output_shape_raw)
             param_decls = self._build_param_decls(
@@ -9657,9 +9153,7 @@ class CEmitter:
             reduce_dim = input_shape[axis]
             if op.keepdims:
                 input_indices = [
-                    reduce_var
-                    if axis_index == axis
-                    else output_loop_vars[axis_index]
+                    reduce_var if axis_index == axis else output_loop_vars[axis_index]
                     for axis_index in range(len(input_shape))
                 ]
             else:
@@ -9669,9 +9163,11 @@ class CEmitter:
                     if axis_index != axis
                 ]
                 input_indices = [
-                    reduce_var
-                    if axis_index == axis
-                    else output_loop_vars[kept_axes.index(axis_index)]
+                    (
+                        reduce_var
+                        if axis_index == axis
+                        else output_loop_vars[kept_axes.index(axis_index)]
+                    )
                     for axis_index in range(len(input_shape))
                 ]
             init_indices = [
@@ -9680,17 +9176,13 @@ class CEmitter:
             ]
             input_index_expr = "".join(f"[{var}]" for var in input_indices)
             init_index_expr = "".join(f"[{var}]" for var in init_indices)
-            output_index_expr = "".join(
-                f"[{var}]" for var in output_loop_vars
-            )
+            output_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
             if op.reduce_kind == "max":
                 compare_op = ">=" if op.select_last_index else ">"
             elif op.reduce_kind == "min":
                 compare_op = "<=" if op.select_last_index else "<"
             else:
-                raise CodegenError(
-                    f"Unsupported arg reduce kind {op.reduce_kind}"
-                )
+                raise CodegenError(f"Unsupported arg reduce kind {op.reduce_kind}")
             input_suffix = self._param_array_suffix(input_shape)
             output_suffix = self._param_array_suffix(output_shape_raw)
             param_decls = self._build_param_decls(
@@ -9834,9 +9326,7 @@ class CEmitter:
             output_indices = "".join(
                 f"[out_indices[{idx}]]" for idx in range(len(output_shape))
             )
-            output_loop_index_expr = "".join(
-                f"[{var}]" for var in output_loop_vars
-            )
+            output_loop_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
             value_expr = f"{name_params['input0']}{input_indices}"
             update_expr = None
             init_literal = None
@@ -9881,27 +9371,23 @@ class CEmitter:
                 init_literal = zero_literal
                 update_expr = f"*out_ptr += {value_expr} * {value_expr};"
             else:
-                raise CodegenError(
-                    f"Unsupported reduce kind {op.reduce_kind}"
-                )
+                raise CodegenError(f"Unsupported reduce kind {op.reduce_kind}")
             input_suffix = self._param_array_suffix(input_shape_raw)
             output_suffix = self._param_array_suffix(output_shape_raw)
-            axes_suffix = (
-                self._param_array_suffix(axes_shape)
-                if axes_shape
-                else ""
-            )
+            axes_suffix = self._param_array_suffix(axes_shape) if axes_shape else ""
             params = self._build_param_decls(
                 [
                     (name_params["input0"], c_type, input_suffix, True),
                     (
-                        name_params["axes_input"],
-                        axes_c_type,
-                        axes_suffix,
-                        True,
-                    )
-                    if name_params["axes_input"]
-                    else (None, "", "", True),
+                        (
+                            name_params["axes_input"],
+                            axes_c_type,
+                            axes_suffix,
+                            True,
+                        )
+                        if name_params["axes_input"]
+                        else (None, "", "", True)
+                    ),
                     (name_params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -9928,8 +9414,7 @@ class CEmitter:
                 noop_with_empty_axes=op.noop_with_empty_axes,
                 axes_count=axes_count,
                 reduce_mask_vars=tuple(
-                    f"reduce_mask_{idx}"
-                    for idx in range(len(input_shape))
+                    f"reduce_mask_{idx}" for idx in range(len(input_shape))
                 ),
                 output_rank=len(output_shape),
             ).rstrip()
@@ -9986,8 +9471,7 @@ class CEmitter:
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 values=[
-                    CEmitter._format_literal(op.dtype, value)
-                    for value in op.values
+                    CEmitter._format_literal(op.dtype, value) for value in op.values
                 ],
             ).rstrip()
             return with_node_comment(rendered)
@@ -10031,9 +9515,7 @@ class CEmitter:
             optional_flags = self._optional_input_flag_map(model)
             input_flag = optional_flags.get(op.input0)
             if input_flag is None:
-                raise CodegenError(
-                    "OptionalHasElement expects an optional input flag."
-                )
+                raise CodegenError("OptionalHasElement expects an optional input flag.")
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], input_dtype.c_type, input_suffix, True),
@@ -10060,16 +9542,10 @@ class CEmitter:
             )
             input_dim_names = _dim_names_for(op.input0)
             output_dim_names = _dim_names_for(op.output)
-            input_shape = CEmitter._shape_dim_exprs(
-                op.input_shape, input_dim_names
-            )
+            input_shape = CEmitter._shape_dim_exprs(op.input_shape, input_dim_names)
             loop_vars = CEmitter._loop_vars(op.input_shape)
-            input_suffix = self._param_array_suffix(
-                op.input_shape, input_dim_names
-            )
-            output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
-            )
+            input_suffix = self._param_array_suffix(op.input_shape, input_dim_names)
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], op.input_dtype.c_type, input_suffix, True),
@@ -10158,37 +9634,43 @@ class CEmitter:
                     (params["boxes"], op.boxes_dtype.c_type, boxes_suffix, True),
                     (params["scores"], op.boxes_dtype.c_type, scores_suffix, True),
                     (
-                        params["max_output_boxes_per_class"],
-                        op.max_output_dtype.c_type if op.max_output_dtype else "",
-                        max_output_suffix,
-                        True,
-                    )
-                    if params["max_output_boxes_per_class"]
-                    else (None, "", "", True),
-                    (
-                        params["iou_threshold"],
                         (
-                            op.iou_threshold_dtype.c_type
-                            if op.iou_threshold_dtype
-                            else ""
-                        ),
-                        iou_threshold_suffix,
-                        True,
-                    )
-                    if params["iou_threshold"]
-                    else (None, "", "", True),
+                            params["max_output_boxes_per_class"],
+                            op.max_output_dtype.c_type if op.max_output_dtype else "",
+                            max_output_suffix,
+                            True,
+                        )
+                        if params["max_output_boxes_per_class"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["score_threshold"],
                         (
-                            op.score_threshold_dtype.c_type
-                            if op.score_threshold_dtype
-                            else ""
-                        ),
-                        score_threshold_suffix,
-                        True,
-                    )
-                    if params["score_threshold"]
-                    else (None, "", "", True),
+                            params["iou_threshold"],
+                            (
+                                op.iou_threshold_dtype.c_type
+                                if op.iou_threshold_dtype
+                                else ""
+                            ),
+                            iou_threshold_suffix,
+                            True,
+                        )
+                        if params["iou_threshold"]
+                        else (None, "", "", True)
+                    ),
+                    (
+                        (
+                            params["score_threshold"],
+                            (
+                                op.score_threshold_dtype.c_type
+                                if op.score_threshold_dtype
+                                else ""
+                            ),
+                            score_threshold_suffix,
+                            True,
+                        )
+                        if params["score_threshold"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], op.output_dtype.c_type, output_suffix, False),
                 ]
             )
@@ -10224,17 +9706,13 @@ class CEmitter:
             )
             output_dim_names = _dim_names_for(op.output)
             output_shape_raw = self._ctx_shape(op.output)
-            output_shape = CEmitter._shape_dim_exprs(
-                output_shape_raw, output_dim_names
-            )
+            output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
             input_shape = self._ctx_shape(op.input0)
             input_suffix = self._param_array_suffix(
                 input_shape, _dim_names_for(op.input0)
             )
-            output_suffix = self._param_array_suffix(
-                output_shape_raw, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], c_type, input_suffix, True),
@@ -10290,15 +9768,11 @@ class CEmitter:
                 axis_literal=op.axis,
                 output=params["output"],
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(
-                    op.input_shape, input_dim_names
-                ),
+                input_suffix=self._param_array_suffix(op.input_shape, input_dim_names),
                 output_suffix=self._param_array_suffix(
                     op.input_shape, output_dim_names
                 ),
-                input_shape=CEmitter._shape_dim_exprs(
-                    op.input_shape, input_dim_names
-                ),
+                input_shape=CEmitter._shape_dim_exprs(op.input_shape, input_dim_names),
                 rank=len(op.input_shape),
                 exclusive=op.exclusive,
                 reverse=op.reverse,
@@ -10389,15 +9863,11 @@ class CEmitter:
             )
             if not indices_indices:
                 indices_indices = ("0",)
-            output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
             indices_suffix = self._param_array_suffix(
                 op.indices_shape, indices_dim_names
             )
-            values_suffix = self._param_array_suffix(
-                op.values_shape, values_dim_names
-            )
+            values_suffix = self._param_array_suffix(op.values_shape, values_dim_names)
             depth_suffix = self._param_array_suffix(())
             param_decls = self._build_param_decls(
                 [
@@ -10444,12 +9914,8 @@ class CEmitter:
             )
             input_dim_names = _dim_names_for(op.input0)
             output_dim_names = _dim_names_for(op.output)
-            input_suffix = self._param_array_suffix(
-                op.input_shape, input_dim_names
-            )
-            output_suffix = self._param_array_suffix(
-                op.output_shape, output_dim_names
-            )
+            input_suffix = self._param_array_suffix(op.input_shape, input_dim_names)
+            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (
@@ -10553,20 +10019,14 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, SplitOp):
             output_params = [
-                (f"output_{index}", name)
-                for index, name in enumerate(op.outputs)
+                (f"output_{index}", name) for index, name in enumerate(op.outputs)
             ]
-            params = self._shared_param_map(
-                [("input0", op.input0), *output_params]
-            )
+            params = self._shared_param_map([("input0", op.input0), *output_params])
             output_names = tuple(
-                params[f"output_{index}"]
-                for index in range(len(op.outputs))
+                params[f"output_{index}"] for index in range(len(op.outputs))
             )
             output_suffixes = tuple(
-                self._param_array_suffix(
-                    shape, _dim_names_for(name)
-                )
+                self._param_array_suffix(shape, _dim_names_for(name))
                 for name, shape in zip(output_names, op.output_shapes)
             )
             outer = 1
@@ -10611,13 +10071,9 @@ class CEmitter:
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(
-                output_shape_raw, output_dim_names
-            )
+            shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
-            array_suffix = self._param_array_suffix(
-                output_shape_raw, output_dim_names
-            )
+            array_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], input_dtype.c_type, array_suffix, True),
@@ -10657,11 +10113,7 @@ class CEmitter:
             input_suffix = self._param_array_suffix(
                 op.input_shape, _dim_names_for(op.input0)
             )
-            scale_shape = (
-                ()
-                if op.axis is None
-                else (op.input_shape[op.axis],)
-            )
+            scale_shape = () if op.axis is None else (op.input_shape[op.axis],)
             scale_suffix = self._param_array_suffix(
                 scale_shape, _dim_names_for(op.scale)
             )
@@ -10673,21 +10125,21 @@ class CEmitter:
                     (params["input0"], op.input_dtype.c_type, input_suffix, True),
                     (params["scale"], op.scale_dtype.c_type, scale_suffix, True),
                     (
-                        params["zero_point"],
-                        op.dtype.c_type,
-                        zero_point_suffix,
-                        True,
-                    )
-                    if params["zero_point"]
-                    else (None, "", "", True),
+                        (
+                            params["zero_point"],
+                            op.dtype.c_type,
+                            zero_point_suffix,
+                            True,
+                        )
+                        if params["zero_point"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], op.dtype.c_type, input_suffix, False),
                 ]
             )
             compute_type = "double" if op.input_dtype == ScalarType.F64 else "float"
             compute_dtype = (
-                ScalarType.F64
-                if compute_type == "double"
-                else ScalarType.F32
+                ScalarType.F64 if compute_type == "double" else ScalarType.F32
             )
             max_fn = self._scalar_function_name(
                 ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
@@ -10699,9 +10151,7 @@ class CEmitter:
                 raise CodegenError(
                     "Failed to resolve scalar min/max functions for QuantizeLinear."
                 )
-            round_fn = CEmitter._math_fn(
-                op.input_dtype, "nearbyintf", "nearbyint"
-            )
+            round_fn = CEmitter._math_fn(op.input_dtype, "nearbyintf", "nearbyint")
             scale_index = "0" if op.axis is None else loop_vars[op.axis]
             input_expr = f"{params['input0']}" + "".join(
                 f"[{var}]" for var in loop_vars
@@ -10758,9 +10208,7 @@ class CEmitter:
                 scale_shape = ()
             elif op.block_size:
                 scale_shape_list = list(op.input_shape)
-                scale_shape_list[op.axis] = (
-                    op.input_shape[op.axis] // op.block_size
-                )
+                scale_shape_list[op.axis] = op.input_shape[op.axis] // op.block_size
                 scale_shape = tuple(scale_shape_list)
             else:
                 scale_shape = (op.input_shape[op.axis],)
@@ -10775,13 +10223,15 @@ class CEmitter:
                     (params["input0"], op.input_dtype.c_type, input_suffix, True),
                     (params["scale"], op.scale_dtype.c_type, scale_suffix, True),
                     (
-                        params["zero_point"],
-                        op.input_dtype.c_type,
-                        zero_point_suffix,
-                        True,
-                    )
-                    if params["zero_point"]
-                    else (None, "", "", True),
+                        (
+                            params["zero_point"],
+                            op.input_dtype.c_type,
+                            zero_point_suffix,
+                            True,
+                        )
+                        if params["zero_point"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], op.dtype.c_type, input_suffix, False),
                 ]
             )
@@ -10796,9 +10246,7 @@ class CEmitter:
                 scale_expr = f"{params['scale']}[0]"
             elif op.block_size:
                 scale_indices = list(loop_vars)
-                scale_indices[op.axis] = (
-                    f"({loop_vars[op.axis]}) / {op.block_size}"
-                )
+                scale_indices[op.axis] = f"({loop_vars[op.axis]}) / {op.block_size}"
                 scale_expr = f"{params['scale']}" + "".join(
                     f"[{index}]" for index in scale_indices
                 )
@@ -10810,9 +10258,7 @@ class CEmitter:
                     zero_expr = f"{params['zero_point']}[0]"
                 elif op.block_size:
                     scale_indices = list(loop_vars)
-                    scale_indices[op.axis] = (
-                        f"({loop_vars[op.axis]}) / {op.block_size}"
-                    )
+                    scale_indices[op.axis] = f"({loop_vars[op.axis]}) / {op.block_size}"
                     zero_expr = f"{params['zero_point']}" + "".join(
                         f"[{index}]" for index in scale_indices
                     )
@@ -10877,15 +10323,9 @@ class CEmitter:
             )
             input0_suffix = self._param_array_suffix(op.input0_shape)
             input1_suffix = self._param_array_suffix(op.input1_shape)
-            input0_scale_suffix = self._param_array_suffix(
-                op.input0_scale_shape
-            )
-            input1_scale_suffix = self._param_array_suffix(
-                op.input1_scale_shape
-            )
-            output_scale_suffix = self._param_array_suffix(
-                op.output_scale_shape
-            )
+            input0_scale_suffix = self._param_array_suffix(op.input0_scale_shape)
+            input1_scale_suffix = self._param_array_suffix(op.input1_scale_shape)
+            output_scale_suffix = self._param_array_suffix(op.output_scale_shape)
             input0_zero_suffix = self._param_array_suffix(op.input0_zero_shape)
             input1_zero_suffix = self._param_array_suffix(op.input1_zero_shape)
             output_zero_suffix = self._param_array_suffix(op.output_zero_shape)
@@ -10958,9 +10398,7 @@ class CEmitter:
                 }
                 else ScalarType.F32
             )
-            compute_type = (
-                "double" if compute_dtype == ScalarType.F64 else "float"
-            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
             max_fn = self._scalar_function_name(
                 ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
             )
@@ -10971,9 +10409,7 @@ class CEmitter:
                 raise CodegenError(
                     "Failed to resolve scalar min/max functions for QLinearMul."
                 )
-            round_fn = CEmitter._math_fn(
-                compute_dtype, "nearbyintf", "nearbyint"
-            )
+            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
             scale_index = "0"
             rendered = qlinear_mul_template.render(
                 model_name=model.name,
@@ -11058,15 +10494,9 @@ class CEmitter:
             )
             input0_suffix = self._param_array_suffix(op.input0_shape)
             input1_suffix = self._param_array_suffix(op.input1_shape)
-            input0_scale_suffix = self._param_array_suffix(
-                op.input0_scale_shape
-            )
-            input1_scale_suffix = self._param_array_suffix(
-                op.input1_scale_shape
-            )
-            output_scale_suffix = self._param_array_suffix(
-                op.output_scale_shape
-            )
+            input0_scale_suffix = self._param_array_suffix(op.input0_scale_shape)
+            input1_scale_suffix = self._param_array_suffix(op.input1_scale_shape)
+            output_scale_suffix = self._param_array_suffix(op.output_scale_shape)
             input0_zero_suffix = self._param_array_suffix(op.input0_zero_shape)
             input1_zero_suffix = self._param_array_suffix(op.input1_zero_shape)
             output_zero_suffix = self._param_array_suffix(op.output_zero_shape)
@@ -11144,12 +10574,8 @@ class CEmitter:
             else:
                 scale_dtype = ScalarType.F16
             compute_dtype = ScalarType.F64
-            compute_type = (
-                "double" if compute_dtype == ScalarType.F64 else "float"
-            )
-            round_fn = CEmitter._math_fn(
-                compute_dtype, "nearbyintf", "nearbyint"
-            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
             mod_fn = CEmitter._math_fn(compute_dtype, "fmodf", "fmod")
             scale_index = "0"
             rendered = qlinear_matmul_template.render(
@@ -11197,14 +10623,10 @@ class CEmitter:
             input_dtype = self._ctx_dtype(op.input0)
             output_dtype = self._ctx_dtype(op.output)
             min_shape = (
-                self._ctx_shape(op.input_min)
-                if op.input_min is not None
-                else None
+                self._ctx_shape(op.input_min) if op.input_min is not None else None
             )
             max_shape = (
-                self._ctx_shape(op.input_max)
-                if op.input_max is not None
-                else None
+                self._ctx_shape(op.input_max) if op.input_max is not None else None
             )
             min_fn = self._scalar_function_name(
                 ScalarFunction.MINIMUM, input_dtype, scalar_registry
@@ -11225,9 +10647,7 @@ class CEmitter:
                 ]
             )
             output_dim_names = _dim_names_for(op.output)
-            output_shape = CEmitter._shape_dim_exprs(
-                output_shape_raw, output_dim_names
-            )
+            output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
             input_expr = CEmitter._broadcast_index_expr(
                 params["input0"],
@@ -11267,41 +10687,39 @@ class CEmitter:
                 input_shape, _dim_names_for(op.input0)
             )
             min_suffix = (
-                self._param_array_suffix(
-                    min_shape, _dim_names_for(op.input_min)
-                )
+                self._param_array_suffix(min_shape, _dim_names_for(op.input_min))
                 if min_shape is not None
                 else ""
             )
             max_suffix = (
-                self._param_array_suffix(
-                    max_shape, _dim_names_for(op.input_max)
-                )
+                self._param_array_suffix(max_shape, _dim_names_for(op.input_max))
                 if max_shape is not None
                 else ""
             )
-            output_suffix = self._param_array_suffix(
-                output_shape_raw, output_dim_names
-            )
+            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], input_dtype.c_type, input_suffix, True),
                     (
-                        params["input_min"],
-                        input_dtype.c_type,
-                        min_suffix,
-                        True,
-                    )
-                    if params["input_min"]
-                    else (None, "", "", True),
+                        (
+                            params["input_min"],
+                            input_dtype.c_type,
+                            min_suffix,
+                            True,
+                        )
+                        if params["input_min"]
+                        else (None, "", "", True)
+                    ),
                     (
-                        params["input_max"],
-                        input_dtype.c_type,
-                        max_suffix,
-                        True,
-                    )
-                    if params["input_max"]
-                    else (None, "", "", True),
+                        (
+                            params["input_max"],
+                            input_dtype.c_type,
+                            max_suffix,
+                            True,
+                        )
+                        if params["input_max"]
+                        else (None, "", "", True)
+                    ),
                     (params["output"], output_dtype.c_type, output_suffix, False),
                 ]
             )
@@ -11342,13 +10760,9 @@ class CEmitter:
                     op.function, input_dtype, scalar_registry, params=op.params
                 )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(
-                output_shape_raw, output_dim_names
-            )
+            shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
-            array_suffix = self._param_array_suffix(
-                output_shape_raw, output_dim_names
-            )
+            array_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], input_dtype.c_type, array_suffix, True),
@@ -11400,70 +10814,72 @@ class CEmitter:
 
     @staticmethod
     def _op_output(
-        op: BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | QLinearMulOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | ConvOp
-        | ConvIntegerOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | PadOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | OptionalHasElementOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | SplitOp,
+        op: (
+            BinaryOp
+            | MultiInputBinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | QLinearMulOp
+            | QLinearMatMulOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | ConvIntegerOp
+            | ConvTransposeOp
+            | AveragePoolOp
+            | LpPoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | LrnOp
+            | GruOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | ScatterNDOp
+            | TensorScatterOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | PadOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | TopKOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | OptionalHasElementOp
+            | ExpandOp
+            | CumSumOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | SplitOp
+        ),
     ) -> str:
         if isinstance(op, SplitOp):
             return op.outputs[0]
@@ -11473,69 +10889,71 @@ class CEmitter:
 
     def _op_inputs(
         self,
-        op: BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | ConvOp
-        | ConvIntegerOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | PadOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | OptionalHasElementOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | SplitOp,
+        op: (
+            BinaryOp
+            | MultiInputBinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | DequantizeLinearOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | ConvIntegerOp
+            | ConvTransposeOp
+            | AveragePoolOp
+            | LpPoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | LrnOp
+            | GruOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | ScatterNDOp
+            | TensorScatterOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | PadOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | TopKOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | OptionalHasElementOp
+            | ExpandOp
+            | CumSumOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | SplitOp
+        ),
     ) -> tuple[tuple[str, tuple[int, ...]], ...]:
         if isinstance(op, BinaryOp):
             return (
@@ -11552,8 +10970,7 @@ class CEmitter:
             )
         if isinstance(op, EinsumOp):
             return tuple(
-                (name, shape)
-                for name, shape in zip(op.inputs, op.input_shapes)
+                (name, shape) for name, shape in zip(op.inputs, op.input_shapes)
             )
         if isinstance(op, UnaryOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
@@ -11602,27 +11019,15 @@ class CEmitter:
                 op.max_output_boxes_per_class is not None
                 and op.max_output_shape is not None
             ):
-                inputs.append(
-                    (op.max_output_boxes_per_class, op.max_output_shape)
-                )
-            if (
-                op.iou_threshold is not None
-                and op.iou_threshold_shape is not None
-            ):
+                inputs.append((op.max_output_boxes_per_class, op.max_output_shape))
+            if op.iou_threshold is not None and op.iou_threshold_shape is not None:
                 inputs.append((op.iou_threshold, op.iou_threshold_shape))
-            if (
-                op.score_threshold is not None
-                and op.score_threshold_shape is not None
-            ):
-                inputs.append(
-                    (op.score_threshold, op.score_threshold_shape)
-                )
+            if op.score_threshold is not None and op.score_threshold_shape is not None:
+                inputs.append((op.score_threshold, op.score_threshold_shape))
             return tuple(inputs)
         if isinstance(op, QuantizeLinearOp):
             scale_shape = (
-                ()
-                if op.axis is None
-                else (self._ctx_shape(op.input0)[op.axis],)
+                () if op.axis is None else (self._ctx_shape(op.input0)[op.axis],)
             )
             inputs = [(op.input0, self._ctx_shape(op.input0)), (op.scale, scale_shape)]
             if op.zero_point is not None:
@@ -11773,69 +11178,71 @@ class CEmitter:
 
     def _op_outputs(
         self,
-        op: BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | ConvOp
-        | ConvIntegerOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | ScatterNDOp
-        | TensorScatterOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | PadOp
-        | DepthToSpaceOp
-        | SpaceToDepthOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | SplitOp,
+        op: (
+            BinaryOp
+            | MultiInputBinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | DequantizeLinearOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | ConvIntegerOp
+            | ConvTransposeOp
+            | AveragePoolOp
+            | LpPoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | LrnOp
+            | GruOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | ScatterNDOp
+            | TensorScatterOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | PadOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | TopKOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | NonZeroOp
+            | NonMaxSuppressionOp
+            | ExpandOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | SplitOp
+        ),
     ) -> tuple[tuple[str, tuple[int, ...], ScalarType], ...]:
         if isinstance(op, OptionalHasElementOp):
             return (
@@ -11897,7 +11304,7 @@ class CEmitter:
                         (op.batch, op.q_heads, op.q_seq, op.total_seq),
                         op.dtype,
                     )
-            )
+                )
             return tuple(outputs)
         if isinstance(op, GruOp):
             outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
@@ -11974,9 +11381,7 @@ class CEmitter:
             ]
             outputs.extend(
                 (name, shape, op.dtype)
-                for name, shape in zip(
-                    op.accumulator_outputs, op.output_shapes
-                )
+                for name, shape in zip(op.accumulator_outputs, op.output_shapes)
             )
             return tuple(outputs)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
@@ -12040,69 +11445,71 @@ class CEmitter:
 
     def _op_output_shape(
         self,
-        op: BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | QLinearMatMulOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | ConvOp
-        | ConvIntegerOp
-        | AveragePoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | LrnOp
-        | GruOp
-        | LstmOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | BernoulliOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | SliceOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | TopKOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | TfIdfVectorizerOp
-        | RotaryEmbeddingOp
-        | SplitOp
-        | PadOp,
+        op: (
+            BinaryOp
+            | MultiInputBinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | DequantizeLinearOp
+            | QLinearMatMulOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | ConvIntegerOp
+            | AveragePoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | LrnOp
+            | GruOp
+            | LstmOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | BernoulliOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | SliceOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | TopKOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | NonZeroOp
+            | NonMaxSuppressionOp
+            | ExpandOp
+            | CumSumOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | TfIdfVectorizerOp
+            | RotaryEmbeddingOp
+            | SplitOp
+            | PadOp
+        ),
     ) -> tuple[int, ...]:
         if isinstance(op, BinaryOp):
             return self._ctx_shape(op.output)
@@ -12248,66 +11655,68 @@ class CEmitter:
 
     def _op_output_dtype(
         self,
-        op: BinaryOp
-        | MultiInputBinaryOp
-        | WhereOp
-        | UnaryOp
-        | ClipOp
-        | CastOp
-        | QuantizeLinearOp
-        | DequantizeLinearOp
-        | MatMulOp
-        | EinsumOp
-        | GemmOp
-        | AttentionOp
-        | ConvOp
-        | ConvIntegerOp
-        | ConvTransposeOp
-        | AveragePoolOp
-        | LpPoolOp
-        | BatchNormOp
-        | LpNormalizationOp
-        | InstanceNormalizationOp
-        | GroupNormalizationOp
-        | LayerNormalizationOp
-        | MeanVarianceNormalizationOp
-        | RMSNormalizationOp
-        | SoftmaxOp
-        | LogSoftmaxOp
-        | HardmaxOp
-        | AdagradOp
-        | NegativeLogLikelihoodLossOp
-        | SoftmaxCrossEntropyLossOp
-        | MaxPoolOp
-        | ConcatOp
-        | GatherElementsOp
-        | GatherOp
-        | GatherNDOp
-        | TransposeOp
-        | ReshapeOp
-        | IdentityOp
-        | BernoulliOp
-        | EyeLikeOp
-        | TriluOp
-        | TileOp
-        | ResizeOp
-        | GridSampleOp
-        | ReduceOp
-        | ArgReduceOp
-        | ConstantOfShapeOp
-        | ShapeOp
-        | SizeOp
-        | NonZeroOp
-        | NonMaxSuppressionOp
-        | ExpandOp
-        | CumSumOp
-        | RangeOp
-        | HammingWindowOp
-        | OneHotOp
-        | TfIdfVectorizerOp
-        | StringNormalizerOp
-        | SplitOp
-        | PadOp,
+        op: (
+            BinaryOp
+            | MultiInputBinaryOp
+            | WhereOp
+            | UnaryOp
+            | ClipOp
+            | CastOp
+            | QuantizeLinearOp
+            | DequantizeLinearOp
+            | MatMulOp
+            | EinsumOp
+            | GemmOp
+            | AttentionOp
+            | ConvOp
+            | ConvIntegerOp
+            | ConvTransposeOp
+            | AveragePoolOp
+            | LpPoolOp
+            | BatchNormOp
+            | LpNormalizationOp
+            | InstanceNormalizationOp
+            | GroupNormalizationOp
+            | LayerNormalizationOp
+            | MeanVarianceNormalizationOp
+            | RMSNormalizationOp
+            | SoftmaxOp
+            | LogSoftmaxOp
+            | HardmaxOp
+            | AdagradOp
+            | NegativeLogLikelihoodLossOp
+            | SoftmaxCrossEntropyLossOp
+            | MaxPoolOp
+            | ConcatOp
+            | GatherElementsOp
+            | GatherOp
+            | GatherNDOp
+            | TransposeOp
+            | ReshapeOp
+            | IdentityOp
+            | BernoulliOp
+            | EyeLikeOp
+            | TriluOp
+            | TileOp
+            | ResizeOp
+            | GridSampleOp
+            | ReduceOp
+            | ArgReduceOp
+            | ConstantOfShapeOp
+            | ShapeOp
+            | SizeOp
+            | NonZeroOp
+            | NonMaxSuppressionOp
+            | ExpandOp
+            | CumSumOp
+            | RangeOp
+            | HammingWindowOp
+            | OneHotOp
+            | TfIdfVectorizerOp
+            | StringNormalizerOp
+            | SplitOp
+            | PadOp
+        ),
     ) -> ScalarType:
         if isinstance(op, ArgReduceOp):
             return self._ctx_dtype(op.output)
@@ -12353,9 +11762,7 @@ class CEmitter:
         return tuple(max(1, dim) if isinstance(dim, int) else dim for dim in shape)
 
     @staticmethod
-    def _array_suffix(
-        shape: tuple[int, ...], dtype: ScalarType | None = None
-    ) -> str:
+    def _array_suffix(shape: tuple[int, ...], dtype: ScalarType | None = None) -> str:
         shape = CEmitter._codegen_shape(shape)
         suffix = "".join(f"[{dim}]" for dim in shape)
         if dtype == ScalarType.STRING:
@@ -12374,8 +11781,7 @@ class CEmitter:
         dim_names = dim_names or {}
         if not (self._restrict_arrays and use_restrict):
             suffix = "".join(
-                f"[{dim_names.get(index, dim)}]"
-                for index, dim in enumerate(shape)
+                f"[{dim_names.get(index, dim)}]" for index, dim in enumerate(shape)
             )
             if dtype == ScalarType.STRING:
                 suffix += "[EMX_STRING_MAX_LEN]"
@@ -12383,8 +11789,7 @@ class CEmitter:
         first, *rest = shape
         first_dim = dim_names.get(0, first)
         rest_dims = "".join(
-            f"[{dim_names.get(index + 1, dim)}]"
-            for index, dim in enumerate(rest)
+            f"[{dim_names.get(index + 1, dim)}]" for index, dim in enumerate(rest)
         )
         suffix = f"[restrict {first_dim}]{rest_dims}"
         if dtype == ScalarType.STRING:
@@ -12405,9 +11810,7 @@ class CEmitter:
     def _optional_input_flag_map(model: LoweredModel) -> dict[str, str]:
         return {
             name: flag
-            for name, flag in zip(
-                model.input_names, model.input_optional_names
-            )
+            for name, flag in zip(model.input_names, model.input_optional_names)
             if flag is not None
         }
 
@@ -12497,17 +11900,13 @@ class CEmitter:
 
         input_dim_names: dict[int, dict[int, str]] = {}
         for index, shape in enumerate(model.input_shapes):
-            dim_names = _build_dim_names(
-                "input", index, shape, variable_dim_inputs
-            )
+            dim_names = _build_dim_names("input", index, shape, variable_dim_inputs)
             if dim_names:
                 input_dim_names[index] = dim_names
 
         output_dim_names: dict[int, dict[int, str]] = {}
         for index, shape in enumerate(model.output_shapes):
-            dim_names = _build_dim_names(
-                "output", index, shape, variable_dim_outputs
-            )
+            dim_names = _build_dim_names("output", index, shape, variable_dim_outputs)
             if dim_names:
                 output_dim_names[index] = dim_names
 
@@ -12521,9 +11920,7 @@ class CEmitter:
         dim_names = dim_names or {}
         if not shape:
             shape = (1,)
-        return tuple(
-            dim_names.get(index, dim) for index, dim in enumerate(shape)
-        )
+        return tuple(dim_names.get(index, dim) for index, dim in enumerate(shape))
 
     @staticmethod
     def _element_count_expr(shape_exprs: Sequence[str | int]) -> str:
@@ -12602,9 +11999,7 @@ class CEmitter:
         input0_batch_shape: tuple[int, ...],
         input1_batch_shape: tuple[int, ...],
     ) -> tuple[str, str]:
-        def batch_indices(
-            batch_shape: tuple[int, ...], actual_rank: int
-        ) -> list[str]:
+        def batch_indices(batch_shape: tuple[int, ...], actual_rank: int) -> list[str]:
             if actual_rank == 0:
                 return []
             offset = batch_rank - actual_rank
@@ -12619,18 +12014,14 @@ class CEmitter:
             input0_indices = ["k"]
         else:
             input0_batch_rank = len(input0_shape) - 2
-            input0_indices = batch_indices(
-                input0_batch_shape, input0_batch_rank
-            )
+            input0_indices = batch_indices(input0_batch_shape, input0_batch_rank)
             input0_indices.append(row_var if row_var is not None else "0")
             input0_indices.append("k")
         if right_vector:
             input1_indices = ["k"]
         else:
             input1_batch_rank = len(input1_shape) - 2
-            input1_indices = batch_indices(
-                input1_batch_shape, input1_batch_rank
-            )
+            input1_indices = batch_indices(input1_batch_shape, input1_batch_rank)
             input1_indices.append("k")
             input1_indices.append(col_var if col_var is not None else "0")
         input0_index_expr = f"{input0}" + "".join(
@@ -12652,9 +12043,7 @@ class CEmitter:
         dim_values: Mapping[str, int],
         weight_data_filename: str,
     ) -> str:
-        input_counts = tuple(
-            self._element_count(shape) for shape in model.input_shapes
-        )
+        input_counts = tuple(self._element_count(shape) for shape in model.input_shapes)
         testbench_inputs = testbench_inputs or {}
         testbench_optional_inputs = testbench_optional_inputs or {}
         rng_requires_u64 = False
@@ -12698,8 +12087,7 @@ class CEmitter:
                 constant_name = f"{name}_testbench_data"
                 if constant_values:
                     constant_lines = [
-                        self._format_value(value, dtype)
-                        for value in constant_values
+                        self._format_value(value, dtype) for value in constant_values
                     ]
                 else:
                     constant_lines = [self._format_value(0, dtype)]
@@ -12715,9 +12103,7 @@ class CEmitter:
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": count,
                     "array_suffix": self._array_suffix(codegen_shape),
-                    "array_index_expr": "".join(
-                        f"[{var}]" for var in loop_vars
-                    ),
+                    "array_index_expr": "".join(f"[{var}]" for var in loop_vars),
                     "loop_vars": loop_vars,
                     "rank": len(loop_shape),
                     "index_expr": self._index_expr(loop_shape, loop_vars),
@@ -12748,9 +12134,7 @@ class CEmitter:
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": self._element_count(shape),
                     "array_suffix": self._array_suffix(codegen_shape),
-                    "array_index_expr": "".join(
-                        f"[{var}]" for var in output_loop_vars
-                    ),
+                    "array_index_expr": "".join(f"[{var}]" for var in output_loop_vars),
                     "loop_vars": output_loop_vars,
                     "rank": len(loop_shape),
                     "index_expr": self._index_expr(loop_shape, output_loop_vars),
@@ -12802,8 +12186,7 @@ class CEmitter:
         sorted_constants = sorted(
             enumerate(constants),
             key=lambda item: (
-                self._element_count(item[1].shape)
-                * item[1].dtype.np_dtype.itemsize,
+                self._element_count(item[1].shape) * item[1].dtype.np_dtype.itemsize,
                 item[0],
             ),
         )
@@ -12842,13 +12225,11 @@ class CEmitter:
         lines.append(f"static _Bool {model.name}_load_file(FILE *file);")
         lines.append("")
         lines.append(f"_Bool {model.name}_load(const char *path) {{")
-        lines.append("    FILE *file = fopen(path, \"rb\");")
+        lines.append('    FILE *file = fopen(path, "rb");')
         lines.append("    if (!file) {")
         lines.append("        return 0;")
         lines.append("    }")
-        lines.append(
-            f"    _Bool ok = {model.name}_load_file(file);"
-        )
+        lines.append(f"    _Bool ok = {model.name}_load_file(file);")
         lines.append("    fclose(file);")
         lines.append("    return ok;")
         lines.append("}")
@@ -12890,8 +12271,7 @@ class CEmitter:
             shape = self._codegen_shape(const.shape)
             array_suffix = self._array_suffix(shape)
             values = [
-                self._format_weight_value(value, const.dtype)
-                for value in const.data
+                self._format_weight_value(value, const.dtype) for value in const.data
             ]
             lines.append(
                 f"{storage_prefix} EMX_UNUSED {c_type} {const.name}{array_suffix} = {{"
@@ -12901,10 +12281,8 @@ class CEmitter:
                     self._truncate_weights_after is not None
                     and len(values) > self._truncate_weights_after
                 ):
-                    truncated_lines, _, _, _ = (
-                        self._emit_initializer_lines_truncated(
-                            values, shape, self._truncate_weights_after
-                        )
+                    truncated_lines, _, _, _ = self._emit_initializer_lines_truncated(
+                        values, shape, self._truncate_weights_after
                     )
                     lines.extend(truncated_lines)
                 else:
@@ -12915,9 +12293,7 @@ class CEmitter:
             lines.pop()
         return "\n".join(lines)
 
-    def _emit_constant_declarations(
-        self, constants: tuple[ConstTensor, ...]
-    ) -> str:
+    def _emit_constant_declarations(self, constants: tuple[ConstTensor, ...]) -> str:
         if not constants:
             return ""
         lines = []
@@ -12959,9 +12335,7 @@ class CEmitter:
             lines.pop()
         return "\n".join(lines)
 
-    def collect_weight_data(
-        self, constants: tuple[ConstTensor, ...]
-    ) -> bytes | None:
+    def collect_weight_data(self, constants: tuple[ConstTensor, ...]) -> bytes | None:
         _, large_constants = self._partition_constants(constants)
         if not large_constants:
             return None
@@ -13151,9 +12525,7 @@ class CEmitter:
             return self._format_int(int(value), 8, "INT8_MIN")
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
-    def _format_weight_value(
-        self, value: float | int | bool, dtype: ScalarType
-    ) -> str:
+    def _format_weight_value(self, value: float | int | bool, dtype: ScalarType) -> str:
         if dtype == ScalarType.F16:
             formatted = self._format_float32_hex(float(value))
             if formatted == "NAN" or formatted.endswith("INFINITY"):
@@ -13279,11 +12651,11 @@ class CEmitter:
     @staticmethod
     def _print_format(dtype: ScalarType) -> str:
         if dtype == ScalarType.F16:
-            return "\\\"%a\\\""
+            return '\\"%a\\"'
         if dtype == ScalarType.F32:
-            return "\\\"%a\\\""
+            return '\\"%a\\"'
         if dtype == ScalarType.F64:
-            return "\\\"%a\\\""
+            return '\\"%a\\"'
         if dtype == ScalarType.BOOL:
             return "%d"
         if dtype == ScalarType.U64:
