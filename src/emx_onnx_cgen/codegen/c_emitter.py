@@ -100,6 +100,7 @@ from ..ir.ops import (
     SplitOp,
     TensorScatterOp,
     TfIdfVectorizerOp,
+    StringNormalizerOp,
     TileOp,
     TopKOp,
     TransposeOp,
@@ -805,6 +806,8 @@ class CEmitter:
         if isinstance(op, OneHotOp):
             return (op.indices, op.depth, op.values, op.output)
         if isinstance(op, TfIdfVectorizerOp):
+            return (op.input0, op.output)
+        if isinstance(op, StringNormalizerOp):
             return (op.input0, op.output)
         if isinstance(op, SplitOp):
             return (op.input0, *op.outputs)
@@ -2162,6 +2165,16 @@ class CEmitter:
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
             )
+        if isinstance(op, StringNormalizerOp):
+            return StringNormalizerOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                case_change_action=op.case_change_action,
+                is_case_sensitive=op.is_case_sensitive,
+                stopwords=op.stopwords,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2388,6 +2401,9 @@ class CEmitter:
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template(
                     "tfidf_vectorizer_op.c.j2"
+                ),
+                "string_normalizer": self._env.get_template(
+                    "string_normalizer_op.c.j2"
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
             }
@@ -3198,6 +3214,10 @@ class CEmitter:
             for op in resolved_ops
         ):
             includes.add("#include <string.h>")
+        if any(isinstance(op, StringNormalizerOp) for op in resolved_ops):
+            includes.add("#include <string.h>")
+            includes.add("#include <strings.h>")
+            includes.add("#include <ctype.h>")
         ordered_includes = (
             "#include <stdint.h>",
             "#include <stdio.h>",
@@ -3207,7 +3227,9 @@ class CEmitter:
             "#include <math.h>",
             "#include <float.h>",
             "#include <limits.h>",
+            "#include <ctype.h>",
             "#include <string.h>",
+            "#include <strings.h>",
         )
         return [include for include in ordered_includes if include in includes]
 
@@ -5303,6 +5325,16 @@ class CEmitter:
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
             )
+        if isinstance(op, StringNormalizerOp):
+            return StringNormalizerOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                case_change_action=op.case_change_action,
+                is_case_sensitive=op.is_case_sensitive,
+                stopwords=op.stopwords,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5660,6 +5692,7 @@ class CEmitter:
             hamming_window_template=templates["hamming_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
+            string_normalizer_template=templates["string_normalizer"],
             split_template=templates["split"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
@@ -5750,6 +5783,7 @@ class CEmitter:
         hamming_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
+        string_normalizer_template,
         split_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
@@ -10483,6 +10517,40 @@ class CEmitter:
                 input_c_type=op.input_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, StringNormalizerOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_suffix = self._param_array_suffix(
+                op.input_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+            )
+            output_suffix = self._param_array_suffix(
+                op.output_shape, _dim_names_for(op.output), dtype=ScalarType.STRING
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], "char", input_suffix, True),
+                    (params["output"], "char", output_suffix, False),
+                ]
+            )
+            compare_fn = "strcmp" if op.is_case_sensitive else "strcasecmp"
+            stopword_checks = tuple(
+                f"if ({compare_fn}(src, {CEmitter._format_c_string_literal(stopword)}) == 0) keep = false;"
+                for stopword in op.stopwords
+            )
+            case_mode = {"NONE": 0, "LOWER": 1, "UPPER": 2}[op.case_change_action]
+            rendered = string_normalizer_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                input_count=CEmitter._element_count_expr(op.input_shape),
+                output_count=CEmitter._element_count_expr(op.output_shape),
+                stopword_checks=stopword_checks,
+                case_mode=case_mode,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SplitOp):
             output_params = [
                 (f"output_{index}", name)
@@ -12170,6 +12238,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, TfIdfVectorizerOp):
             return op.output_shape
+        if isinstance(op, StringNormalizerOp):
+            return op.output_shape
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -12235,6 +12305,7 @@ class CEmitter:
         | HammingWindowOp
         | OneHotOp
         | TfIdfVectorizerOp
+        | StringNormalizerOp
         | SplitOp
         | PadOp,
     ) -> ScalarType:
@@ -12248,6 +12319,8 @@ class CEmitter:
             return op.output_dtype
         if isinstance(op, TfIdfVectorizerOp):
             return op.output_dtype
+        if isinstance(op, StringNormalizerOp):
+            return ScalarType.STRING
         if isinstance(
             op,
             (
@@ -13012,6 +13085,16 @@ class CEmitter:
         if value == max_value:
             return max_macro
         return str(int(value))
+
+    @staticmethod
+    def _format_c_string_literal(value: str) -> str:
+        escaped = (
+            value.replace("\\", "\\\\")
+            .replace('"', '\\"')
+            .replace("\n", "\\n")
+            .replace("\t", "\\t")
+        )
+        return f'"{escaped}"'
 
     @staticmethod
     def _format_literal(dtype: ScalarType, value: float | int | bool) -> str:

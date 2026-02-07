@@ -588,6 +588,16 @@ class TfIdfVectorizerOp(RenderableOpBase):
     weights: tuple[float, ...] | None
 
 @dataclass(frozen=True)
+class StringNormalizerOp(RenderableOpBase):
+    input0: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    case_change_action: str
+    is_case_sensitive: bool
+    stopwords: tuple[str, ...]
+
+@dataclass(frozen=True)
 class SplitOp(RenderableOpBase):
     input0: str
     outputs: tuple[str, ...]

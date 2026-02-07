@@ -224,6 +224,28 @@ def _make_identity_string_model() -> onnx.ModelProto:
     return model
 
 
+def _make_string_normalizer_model() -> onnx.ModelProto:
+    input_x = helper.make_tensor_value_info("x", TensorProto.STRING, [4])
+    output = helper.make_tensor_value_info("out", TensorProto.STRING, [3])
+    node = helper.make_node(
+        "StringNormalizer",
+        inputs=["x"],
+        outputs=["out"],
+        case_change_action="UPPER",
+        is_case_sensitive=1,
+        stopwords=["monday"],
+    )
+    graph = helper.make_graph([node], "string_normalizer_graph", [input_x], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 10)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_matmul_model() -> onnx.ModelProto:
     input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3])
     input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [3, 4])
@@ -570,6 +592,14 @@ def test_codegen_golden_identity_string() -> None:
     compiler = Compiler(CompilerOptions(model_name="identity_string_model"))
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "identity_string_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_string_normalizer() -> None:
+    model = _make_string_normalizer_model()
+    compiler = Compiler(CompilerOptions(model_name="string_normalizer_model"))
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "string_normalizer_model.c"
     assert_golden(generated, golden_path)
 
 
