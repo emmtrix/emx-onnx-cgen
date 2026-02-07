@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Protocol
+from typing import ClassVar, Protocol
 
 from shared.scalar_types import ScalarType
 
@@ -22,14 +22,17 @@ class EmitContext:
 class OpBase(ABC):
     """Ops should not mutate themselves; store derived values in OpContext."""
 
+    __io_inputs__: ClassVar[tuple[str, ...] | None] = None
+    __io_outputs__: ClassVar[tuple[str, ...] | None] = None
+
     @property
     def input_names(self) -> tuple[str, ...]:
-        input_fields, _ = _io_field_names(self)
+        input_fields, _ = _io_field_names(type(self))
         return _resolve_io_names(self, input_fields)
 
     @property
     def output_names(self) -> tuple[str, ...]:
-        _, output_fields = _io_field_names(self)
+        _, output_fields = _io_field_names(type(self))
         return _resolve_io_names(self, output_fields)
 
     def __getattr__(self, name: str) -> str:
@@ -60,6 +63,8 @@ class RenderableOpBase(OpBase):
 
 class ElementwiseOpBase(RenderableOpBase):
     """Elementwise ops should validate against OpContext and store no derived state."""
+
+    __io_outputs__ = ("output",)
 
     def _elementwise_inputs(self) -> tuple[str, ...]:
         raise NotImplementedError
@@ -148,6 +153,9 @@ class ElementwiseOpBase(RenderableOpBase):
 
 
 class GatherLikeOpBase(RenderableOpBase):
+    __io_inputs__ = ("data", "indices")
+    __io_outputs__ = ("output",)
+
     def _gather_data(self) -> str:
         raise NotImplementedError
 
@@ -227,6 +235,9 @@ class GatherLikeOpBase(RenderableOpBase):
 
 
 class ShapeLikeOpBase(RenderableOpBase):
+    __io_inputs__ = ("input0", "input_shape")
+    __io_outputs__ = ("output",)
+
     def _shape_data(self) -> str:
         raise NotImplementedError
 
@@ -328,6 +339,9 @@ class ShapeLikeOpBase(RenderableOpBase):
 
 
 class VariadicLikeOpBase(RenderableOpBase):
+    __io_inputs__ = ("inputs",)
+    __io_outputs__ = ("output",)
+
     def _variadic_inputs(self) -> tuple[str, ...]:
         raise NotImplementedError
 
@@ -425,6 +439,9 @@ class VariadicLikeOpBase(RenderableOpBase):
 
 
 class ReduceOpBase(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+
     @staticmethod
     def normalize_axes(axes: tuple[int, ...] | None, rank: int) -> tuple[int, ...]:
         if axes is None:
@@ -505,184 +522,33 @@ class BroadcastingOpBase(RenderableOpBase):
 
 
 class MatMulLikeOpBase(RenderableOpBase):
-    pass
+    __io_inputs__ = ("input0", "input1")
+    __io_outputs__ = ("output",)
 
 
 class GemmLikeOpBase(RenderableOpBase):
-    pass
+    __io_inputs__ = ("input_a", "input_b", "input_c")
+    __io_outputs__ = ("output",)
 
 
 class ConvLikeOpBase(RenderableOpBase):
-    pass
+    __io_inputs__ = ("input0", "weights", "bias")
+    __io_outputs__ = ("output",)
 
 
-_OP_IO_FIELDS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
-    "BinaryOp": (("input0", "input1"), ("output",)),
-    "VariadicOp": (("inputs",), ("output",)),
-    "WhereOp": (("condition", "input_x", "input_y"), ("output",)),
-    "UnaryOp": (("input0",), ("output",)),
-    "ClipOp": (("input0", "input_min", "input_max"), ("output",)),
-    "IdentityOp": (("input0",), ("output",)),
-    "QLinearMulOp": (
-        (
-            "input0",
-            "input0_scale",
-            "input0_zero_point",
-            "input1",
-            "input1_scale",
-            "input1_zero_point",
-            "output_scale",
-            "output_zero_point",
-        ),
-        ("output",),
-    ),
-    "CastOp": (("input0",), ("output",)),
-    "QuantizeLinearOp": (("input0", "scale", "zero_point"), ("output",)),
-    "DequantizeLinearOp": (("input0", "scale", "zero_point"), ("output",)),
-    "ConcatOp": (("inputs",), ("output",)),
-    "GatherElementsOp": (("data", "indices"), ("output",)),
-    "GatherOp": (("data", "indices"), ("output",)),
-    "GatherNDOp": (("data", "indices"), ("output",)),
-    "ScatterNDOp": (("data", "indices", "updates"), ("output",)),
-    "TensorScatterOp": (("past_cache", "update", "write_indices"), ("output",)),
-    "TransposeOp": (("input0",), ("output",)),
-    "ReshapeOp": (("input0",), ("output",)),
-    "EyeLikeOp": (("input0",), ("output",)),
-    "BernoulliOp": (("input0",), ("output",)),
-    "TriluOp": (("input0", "k_input"), ("output",)),
-    "TileOp": (("input0",), ("output",)),
-    "PadOp": (("input0", "pads_input", "axes_input", "value_input"), ("output",)),
-    "DepthToSpaceOp": (("input0",), ("output",)),
-    "SpaceToDepthOp": (("input0",), ("output",)),
-    "SliceOp": (
-        ("input0", "starts_input", "ends_input", "axes_input", "steps_input"),
-        ("output",),
-    ),
-    "ResizeOp": (("input0", "roi_input", "scales_input", "sizes_input"), ("output",)),
-    "GridSampleOp": (("input0", "grid"), ("output",)),
-    "ConstantOfShapeOp": (("input0",), ("output",)),
-    "ShapeOp": (("input0",), ("output",)),
-    "SizeOp": (("input0",), ("output",)),
-    "OptionalHasElementOp": (("input0",), ("output",)),
-    "NonZeroOp": (("input0",), ("output",)),
-    "NonMaxSuppressionOp": (
-        (
-            "boxes",
-            "scores",
-            "max_output_boxes_per_class",
-            "iou_threshold",
-            "score_threshold",
-        ),
-        ("output",),
-    ),
-    "ExpandOp": (("input0", "input_shape"), ("output",)),
-    "CumSumOp": (("input0", "axis_input"), ("output",)),
-    "RangeOp": (("start", "limit", "delta"), ("output",)),
-    "HammingWindowOp": (("size",), ("output",)),
-    "OneHotOp": (("indices", "depth", "values"), ("output",)),
-    "TfIdfVectorizerOp": (("input0",), ("output",)),
-    "StringNormalizerOp": (("input0",), ("output",)),
-    "SplitOp": (("input0",), ("outputs",)),
-    "ReduceOp": (("input0", "axes_input"), ("output",)),
-    "ArgReduceOp": (("input0",), ("output",)),
-    "TopKOp": (("input0", "k_input"), ("output_values", "output_indices")),
-    "MatMulOp": (("input0", "input1"), ("output",)),
-    "QLinearMatMulOp": (
-        (
-            "input0",
-            "input0_scale",
-            "input0_zero_point",
-            "input1",
-            "input1_scale",
-            "input1_zero_point",
-            "output_scale",
-            "output_zero_point",
-        ),
-        ("output",),
-    ),
-    "EinsumOp": (("inputs",), ("output",)),
-    "GemmOp": (("input_a", "input_b", "input_c"), ("output",)),
-    "AttentionOp": (
-        (
-            "input_q",
-            "input_k",
-            "input_v",
-            "input_attn_mask",
-            "input_past_key",
-            "input_past_value",
-            "input_nonpad_kv_seqlen",
-        ),
-        ("output", "output_present_key", "output_present_value", "output_qk_matmul"),
-    ),
-    "RotaryEmbeddingOp": (
-        ("input0", "cos_cache", "sin_cache", "position_ids"),
-        ("output",),
-    ),
-    "ConvOp": (("input0", "weights", "bias"), ("output",)),
-    "ConvIntegerOp": (
-        ("input0", "weights", "x_zero_point", "w_zero_point"),
-        ("output",),
-    ),
-    "ConvTransposeOp": (("input0", "weights", "bias"), ("output",)),
-    "AveragePoolOp": (("input0",), ("output",)),
-    "LpPoolOp": (("input0",), ("output",)),
-    "SoftmaxOp": (("input0",), ("output",)),
-    "LogSoftmaxOp": (("input0",), ("output",)),
-    "HardmaxOp": (("input0",), ("output",)),
-    "NegativeLogLikelihoodLossOp": (("input0", "target", "weight"), ("output",)),
-    "SoftmaxCrossEntropyLossOp": (
-        ("input0", "target", "weight"),
-        ("output", "log_prob"),
-    ),
-    "BatchNormOp": (("input0", "scale", "bias", "mean", "variance"), ("output",)),
-    "LpNormalizationOp": (("input0",), ("output",)),
-    "InstanceNormalizationOp": (("input0", "scale", "bias"), ("output",)),
-    "GroupNormalizationOp": (("input0", "scale", "bias"), ("output",)),
-    "LayerNormalizationOp": (
-        ("input0", "scale", "bias"),
-        ("output", "mean_output", "invstd_output"),
-    ),
-    "MeanVarianceNormalizationOp": (("input0",), ("output",)),
-    "RMSNormalizationOp": (("input0", "scale"), ("output",)),
-    "LrnOp": (("input0",), ("output",)),
-    "GruOp": (
-        (
-            "input_x",
-            "input_w",
-            "input_r",
-            "input_b",
-            "input_sequence_lens",
-            "input_initial_h",
-        ),
-        ("output_y", "output_y_h"),
-    ),
-    "LstmOp": (
-        (
-            "input_x",
-            "input_w",
-            "input_r",
-            "input_b",
-            "input_sequence_lens",
-            "input_initial_h",
-            "input_initial_c",
-            "input_p",
-        ),
-        ("output_y", "output_y_h", "output_y_c"),
-    ),
-    "AdagradOp": (
-        ("rate", "timestep", "inputs", "gradients", "accumulators"),
-        ("outputs", "accumulator_outputs"),
-    ),
-    "MaxPoolOp": (("input0",), ("output", "indices")),
-}
-
-
-def _io_field_names(op: OpBase) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    for cls in type(op).__mro__:
-        schema = _OP_IO_FIELDS.get(cls.__name__)
-        if schema is not None:
-            return schema
-    raise UnsupportedOpError(f"Missing canonical I/O schema for op {op.kind}")
+def _io_field_names(op_type: type[OpBase]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    input_fields: tuple[str, ...] | None = None
+    output_fields: tuple[str, ...] | None = None
+    for cls in op_type.__mro__:
+        cls_inputs = cls.__dict__.get("__io_inputs__")
+        cls_outputs = cls.__dict__.get("__io_outputs__")
+        if input_fields is None and cls_inputs is not None:
+            input_fields = cls_inputs
+        if output_fields is None and cls_outputs is not None:
+            output_fields = cls_outputs
+        if input_fields is not None and output_fields is not None:
+            return input_fields, output_fields
+    raise UnsupportedOpError(f"Missing canonical I/O schema for op {op_type.__name__}")
 
 
 def _resolve_io_names(op: OpBase, field_names: tuple[str, ...]) -> tuple[str, ...]:

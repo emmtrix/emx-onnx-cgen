@@ -46,15 +46,12 @@ def _broadcast_batch_shapes(
     return tuple(broadcast_shape), left_padded, right_padded
 
 
-def _resolve_matmul_spec(
-    ctx: OpContext, input0: str, input1: str
-) -> dict[str, object]:
+def _resolve_matmul_spec(ctx: OpContext, input0: str, input1: str) -> dict[str, object]:
     input0_shape = ctx.shape(input0)
     input1_shape = ctx.shape(input1)
     if len(input0_shape) < 1 or len(input1_shape) < 1:
         raise UnsupportedOpError(
-            "MatMul inputs must be at least 1D, "
-            f"got {input0_shape} x {input1_shape}"
+            "MatMul inputs must be at least 1D, " f"got {input0_shape} x {input1_shape}"
         )
     left_vector = len(input0_shape) == 1
     right_vector = len(input1_shape) == 1
@@ -66,11 +63,9 @@ def _resolve_matmul_spec(
         raise ShapeInferenceError(
             f"MatMul inner dimensions must match, got {k_left} and {k_right}"
         )
-    batch_shape, input0_batch_shape, input1_batch_shape = (
-        _broadcast_batch_shapes(
-            input0_effective[:-2],
-            input1_effective[:-2],
-        )
+    batch_shape, input0_batch_shape, input1_batch_shape = _broadcast_batch_shapes(
+        input0_effective[:-2],
+        input1_effective[:-2],
     )
     if left_vector and right_vector:
         output_shape = batch_shape
@@ -141,8 +136,19 @@ class MatMulOp(MatMulLikeOpBase):
         ctx.set_derived(self, "left_vector", spec["left_vector"])
         ctx.set_derived(self, "right_vector", spec["right_vector"])
 
+
 @dataclass(frozen=True)
 class QLinearMatMulOp(MatMulLikeOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input0_scale",
+        "input0_zero_point",
+        "input1",
+        "input1_scale",
+        "input1_zero_point",
+        "output_scale",
+        "output_zero_point",
+    )
     input0: str
     input0_scale: str
     input0_zero_point: str
@@ -176,8 +182,10 @@ class QLinearMatMulOp(MatMulLikeOpBase):
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
 
+
 @dataclass(frozen=True)
 class EinsumOp(MatMulLikeOpBase):
+    __io_inputs__ = ("inputs",)
     inputs: tuple[str, ...]
     output: str
     kind: EinsumKind
@@ -185,6 +193,7 @@ class EinsumOp(MatMulLikeOpBase):
     output_shape: tuple[int, ...]
     dtype: ScalarType
     input_dtype: ScalarType
+
 
 @dataclass(frozen=True)
 class GemmOp(GemmLikeOpBase):
@@ -326,8 +335,24 @@ class GemmOp(GemmLikeOpBase):
         ctx.set_derived(self, "k", k_left)
         ctx.set_derived(self, "c_shape", c_shape)
 
+
 @dataclass(frozen=True)
 class AttentionOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_q",
+        "input_k",
+        "input_v",
+        "input_attn_mask",
+        "input_past_key",
+        "input_past_value",
+        "input_nonpad_kv_seqlen",
+    )
+    __io_outputs__ = (
+        "output",
+        "output_present_key",
+        "output_present_value",
+        "output_qk_matmul",
+    )
     input_q: str
     input_k: str
     input_v: str
@@ -370,8 +395,11 @@ class AttentionOp(RenderableOpBase):
     head_group_size: int
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class RotaryEmbeddingOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "cos_cache", "sin_cache", "position_ids")
+    __io_outputs__ = ("output",)
     input0: str
     cos_cache: str
     sin_cache: str
@@ -391,6 +419,7 @@ class RotaryEmbeddingOp(RenderableOpBase):
     batch: int
     input_rank: int
     interleaved: bool
+
 
 @dataclass(frozen=True)
 class ConvOp(ConvLikeOpBase):
@@ -423,8 +452,10 @@ class ConvOp(ConvLikeOpBase):
             raise ValueError("Conv output width is undefined for spatial_rank < 2")
         return self.out_spatial[1]
 
+
 @dataclass(frozen=True)
 class ConvIntegerOp(ConvLikeOpBase):
+    __io_inputs__ = ("input0", "weights", "x_zero_point", "w_zero_point")
     input0: str
     weights: str
     x_zero_point: str | None
@@ -448,6 +479,7 @@ class ConvIntegerOp(ConvLikeOpBase):
     w_zero_point_shape: tuple[int, ...] | None
     w_zero_point_per_channel: bool
 
+
 @dataclass(frozen=True)
 class ConvTransposeOp(ConvLikeOpBase):
     input0: str
@@ -468,8 +500,11 @@ class ConvTransposeOp(ConvLikeOpBase):
     group: int
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class AveragePoolOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     batch: int
@@ -499,8 +534,11 @@ class AveragePoolOp(RenderableOpBase):
     pad_front: int = 0
     pad_back: int = 0
 
+
 @dataclass(frozen=True)
 class LpPoolOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     batch: int
@@ -522,8 +560,11 @@ class LpPoolOp(RenderableOpBase):
     p: int
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class SoftmaxOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     axis: int | None
@@ -568,8 +609,11 @@ class SoftmaxOp(RenderableOpBase):
         ctx.set_derived(self, "axis_size", axis_size)
         ctx.set_derived(self, "inner", inner)
 
+
 @dataclass(frozen=True)
 class LogSoftmaxOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     axis: int | None
@@ -614,8 +658,11 @@ class LogSoftmaxOp(RenderableOpBase):
         ctx.set_derived(self, "axis_size", axis_size)
         ctx.set_derived(self, "inner", inner)
 
+
 @dataclass(frozen=True)
 class HardmaxOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     axis: int | None
@@ -661,8 +708,11 @@ class HardmaxOp(RenderableOpBase):
         ctx.set_derived(self, "axis_size", axis_size)
         ctx.set_derived(self, "inner", inner)
 
+
 @dataclass(frozen=True)
 class NegativeLogLikelihoodLossOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "target", "weight")
+    __io_outputs__ = ("output",)
     input0: str
     target: str
     weight: str | None
@@ -681,8 +731,11 @@ class NegativeLogLikelihoodLossOp(RenderableOpBase):
     dtype: ScalarType
     target_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class SoftmaxCrossEntropyLossOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "target", "weight")
+    __io_outputs__ = ("output", "log_prob")
     input0: str
     target: str
     weight: str | None
@@ -703,8 +756,11 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
     dtype: ScalarType
     target_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class BatchNormOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "scale", "bias", "mean", "variance")
+    __io_outputs__ = ("output",)
     input0: str
     scale: str
     bias: str
@@ -716,8 +772,11 @@ class BatchNormOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class LpNormalizationOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -728,8 +787,11 @@ class LpNormalizationOp(RenderableOpBase):
     inner: int
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class InstanceNormalizationOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "scale", "bias")
+    __io_outputs__ = ("output",)
     input0: str
     scale: str
     bias: str
@@ -740,8 +802,11 @@ class InstanceNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class GroupNormalizationOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "scale", "bias")
+    __io_outputs__ = ("output",)
     input0: str
     scale: str
     bias: str
@@ -754,8 +819,11 @@ class GroupNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class LayerNormalizationOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "scale", "bias")
+    __io_outputs__ = ("output", "mean_output", "invstd_output")
     input0: str
     scale: str
     bias: str | None
@@ -772,8 +840,11 @@ class LayerNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class MeanVarianceNormalizationOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -783,8 +854,11 @@ class MeanVarianceNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class RMSNormalizationOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "scale")
+    __io_outputs__ = ("output",)
     input0: str
     scale: str
     output: str
@@ -797,8 +871,11 @@ class RMSNormalizationOp(RenderableOpBase):
     epsilon: float
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class LrnOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -810,8 +887,18 @@ class LrnOp(RenderableOpBase):
     bias: float
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class GruOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_x",
+        "input_w",
+        "input_r",
+        "input_b",
+        "input_sequence_lens",
+        "input_initial_h",
+    )
+    __io_outputs__ = ("output_y", "output_y_h")
     input_x: str
     input_w: str
     input_r: str
@@ -835,8 +922,20 @@ class GruOp(RenderableOpBase):
     dtype: ScalarType
     sequence_lens_dtype: ScalarType | None
 
+
 @dataclass(frozen=True)
 class LstmOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input_x",
+        "input_w",
+        "input_r",
+        "input_b",
+        "input_sequence_lens",
+        "input_initial_h",
+        "input_initial_c",
+        "input_p",
+    )
+    __io_outputs__ = ("output_y", "output_y_h", "output_y_c")
     input_x: str
     input_w: str
     input_r: str
@@ -863,8 +962,11 @@ class LstmOp(RenderableOpBase):
     dtype: ScalarType
     sequence_lens_dtype: ScalarType | None
 
+
 @dataclass(frozen=True)
 class AdagradOp(RenderableOpBase):
+    __io_inputs__ = ("rate", "timestep", "inputs", "gradients", "accumulators")
+    __io_outputs__ = ("outputs", "accumulator_outputs")
     rate: str
     timestep: str
     inputs: tuple[str, ...]
@@ -883,8 +985,11 @@ class AdagradOp(RenderableOpBase):
     epsilon: float
     decay_factor: float
 
+
 @dataclass(frozen=True)
 class MaxPoolOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output", "indices")
     input0: str
     output: str
     indices: str | None

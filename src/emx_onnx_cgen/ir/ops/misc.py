@@ -27,6 +27,8 @@ def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
 
 @dataclass(frozen=True)
 class CastOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     shape: tuple[int, ...]
@@ -41,8 +43,11 @@ class CastOp(RenderableOpBase):
         shape = ctx.shape(self.input0)
         ctx.set_shape(self.output, shape)
 
+
 @dataclass(frozen=True)
 class QuantizeLinearOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "scale", "zero_point")
+    __io_outputs__ = ("output",)
     input0: str
     scale: str
     zero_point: str | None
@@ -56,6 +61,8 @@ class QuantizeLinearOp(RenderableOpBase):
 
 @dataclass(frozen=True)
 class DequantizeLinearOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "scale", "zero_point")
+    __io_outputs__ = ("output",)
     input0: str
     scale: str
     zero_point: str | None
@@ -67,8 +74,11 @@ class DequantizeLinearOp(RenderableOpBase):
     input_dtype: ScalarType
     scale_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class ConcatOp(RenderableOpBase):
+    __io_inputs__ = ("inputs",)
+    __io_outputs__ = ("output",)
     inputs: tuple[str, ...]
     output: str
     axis: int
@@ -76,8 +86,11 @@ class ConcatOp(RenderableOpBase):
     output_shape: tuple[int, ...]
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class GatherElementsOp(RenderableOpBase):
+    __io_inputs__ = ("data", "indices")
+    __io_outputs__ = ("output",)
     data: str
     indices: str
     output: str
@@ -87,6 +100,7 @@ class GatherElementsOp(RenderableOpBase):
     output_shape: tuple[int, ...]
     dtype: ScalarType
     indices_dtype: ScalarType
+
 
 @dataclass(frozen=True)
 class GatherOp(GatherLikeOpBase):
@@ -110,8 +124,11 @@ class GatherOp(GatherLikeOpBase):
     def _gather_mode(self) -> str:
         return "gather"
 
+
 @dataclass(frozen=True)
 class GatherNDOp(RenderableOpBase):
+    __io_inputs__ = ("data", "indices")
+    __io_outputs__ = ("output",)
     data: str
     indices: str
     output: str
@@ -122,8 +139,11 @@ class GatherNDOp(RenderableOpBase):
     dtype: ScalarType
     indices_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class ScatterNDOp(RenderableOpBase):
+    __io_inputs__ = ("data", "indices", "updates")
+    __io_outputs__ = ("output",)
     data: str
     indices: str
     updates: str
@@ -136,8 +156,11 @@ class ScatterNDOp(RenderableOpBase):
     dtype: ScalarType
     indices_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class TensorScatterOp(RenderableOpBase):
+    __io_inputs__ = ("past_cache", "update", "write_indices")
+    __io_outputs__ = ("output",)
     past_cache: str
     update: str
     write_indices: str | None
@@ -151,8 +174,11 @@ class TensorScatterOp(RenderableOpBase):
     dtype: ScalarType
     write_indices_dtype: ScalarType | None
 
+
 @dataclass(frozen=True)
 class TransposeOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     perm: tuple[int, ...]
@@ -171,8 +197,11 @@ class TransposeOp(RenderableOpBase):
         output_shape = tuple(input_shape[axis] for axis in self.perm)
         ctx.set_shape(self.output, output_shape)
 
+
 @dataclass(frozen=True)
 class ReshapeOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -189,8 +218,11 @@ class ReshapeOp(RenderableOpBase):
         )
         ctx.set_shape(self.output, output_shape)
 
+
 @dataclass(frozen=True)
 class EyeLikeOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     output_shape: tuple[int, ...]
@@ -198,8 +230,11 @@ class EyeLikeOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class BernoulliOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -208,8 +243,11 @@ class BernoulliOp(RenderableOpBase):
     dtype: ScalarType
     seed: int | None
 
+
 @dataclass(frozen=True)
 class TriluOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "k_input")
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -222,8 +260,11 @@ class TriluOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class TileOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -233,8 +274,11 @@ class TileOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class PadOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "pads_input", "axes_input", "value_input")
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -257,8 +301,11 @@ class PadOp(RenderableOpBase):
     input_dtype: ScalarType
     input_strides: tuple[int, ...]
 
+
 @dataclass(frozen=True)
 class DepthToSpaceOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -268,8 +315,11 @@ class DepthToSpaceOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class SpaceToDepthOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -278,8 +328,17 @@ class SpaceToDepthOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class SliceOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input0",
+        "starts_input",
+        "ends_input",
+        "axes_input",
+        "steps_input",
+    )
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -302,8 +361,11 @@ class SliceOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class ResizeOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "roi_input", "scales_input", "sizes_input")
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -332,8 +394,11 @@ class ResizeOp(RenderableOpBase):
     keep_aspect_ratio_policy: str
     dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class GridSampleOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "grid")
+    __io_outputs__ = ("output",)
     input0: str
     grid: str
     output: str
@@ -349,8 +414,11 @@ class GridSampleOp(RenderableOpBase):
     dtype: ScalarType
     grid_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class ConstantOfShapeOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -359,8 +427,11 @@ class ConstantOfShapeOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class ShapeOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -369,8 +440,11 @@ class ShapeOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class SizeOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -382,6 +456,8 @@ class SizeOp(RenderableOpBase):
 
 @dataclass(frozen=True)
 class OptionalHasElementOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
 
@@ -424,8 +500,11 @@ class OptionalHasElementOp(RenderableOpBase):
                 f"{self.kind} expects scalar output, got shape {output_shape}"
             )
 
+
 @dataclass(frozen=True)
 class NonZeroOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -433,8 +512,17 @@ class NonZeroOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class NonMaxSuppressionOp(RenderableOpBase):
+    __io_inputs__ = (
+        "boxes",
+        "scores",
+        "max_output_boxes_per_class",
+        "iou_threshold",
+        "score_threshold",
+    )
+    __io_outputs__ = ("output",)
     boxes: str
     scores: str
     max_output_boxes_per_class: str | None
@@ -453,6 +541,7 @@ class NonMaxSuppressionOp(RenderableOpBase):
     iou_threshold_shape: tuple[int, ...] | None
     score_threshold_dtype: ScalarType | None
     score_threshold_shape: tuple[int, ...] | None
+
 
 @dataclass(frozen=True)
 class ExpandOp(ShapeLikeOpBase):
@@ -477,34 +566,22 @@ class ExpandOp(ShapeLikeOpBase):
                     f"{self.kind} shape input must be int64 or int32"
                 )
             if len(initializer.type.shape) != 1:
-                raise UnsupportedOpError(
-                    f"{self.kind} shape input must be a 1D tensor"
-                )
+                raise UnsupportedOpError(f"{self.kind} shape input must be a 1D tensor")
             values = np.array(initializer.data, dtype=np.int64).reshape(-1)
             if values.size == 0:
-                raise ShapeInferenceError(
-                    f"{self.kind} shape input cannot be empty"
-                )
+                raise ShapeInferenceError(f"{self.kind} shape input cannot be empty")
             return tuple(int(value) for value in values)
         dtype = ctx.dtype(self.input_shape)
         if dtype not in {ScalarType.I64, ScalarType.I32}:
-            raise UnsupportedOpError(
-                f"{self.kind} shape input must be int64 or int32"
-            )
+            raise UnsupportedOpError(f"{self.kind} shape input must be int64 or int32")
         shape = ctx.shape(self.input_shape)
         if len(shape) != 1:
-            raise UnsupportedOpError(
-                f"{self.kind} shape input must be a 1D tensor"
-            )
+            raise UnsupportedOpError(f"{self.kind} shape input must be a 1D tensor")
         if shape[0] <= 0:
-            raise ShapeInferenceError(
-                f"{self.kind} shape input cannot be empty"
-            )
+            raise ShapeInferenceError(f"{self.kind} shape input cannot be empty")
         output_shape = ctx.shape(self.output)
         if not output_shape:
-            raise ShapeInferenceError(
-                f"{self.kind} output shape must be specified"
-            )
+            raise ShapeInferenceError(f"{self.kind} output shape must be specified")
         return output_shape
 
     def _shape_derived(
@@ -515,15 +592,16 @@ class ExpandOp(ShapeLikeOpBase):
         target_shape: tuple[int, ...],
         output_shape: tuple[int, ...],
     ) -> None:
-        input_shape_padded = (
-            (1,) * (len(output_shape) - len(data_shape)) + data_shape
-        )
+        input_shape_padded = (1,) * (len(output_shape) - len(data_shape)) + data_shape
         input_strides = _compute_strides(input_shape_padded)
         ctx.set_derived(self, "input_shape_padded", input_shape_padded)
         ctx.set_derived(self, "input_strides", input_strides)
 
+
 @dataclass(frozen=True)
 class CumSumOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "axis_input")
+    __io_outputs__ = ("output",)
     input0: str
     axis_input: str | None
     axis_input_dtype: ScalarType | None
@@ -535,8 +613,11 @@ class CumSumOp(RenderableOpBase):
     exclusive: bool
     reverse: bool
 
+
 @dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
+    __io_inputs__ = ("start", "limit", "delta")
+    __io_outputs__ = ("output",)
     start: str
     limit: str
     delta: str
@@ -546,8 +627,11 @@ class RangeOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class HammingWindowOp(RenderableOpBase):
+    __io_inputs__ = ("size",)
+    __io_outputs__ = ("output",)
     size: str
     output: str
     output_shape: tuple[int, ...]
@@ -555,8 +639,11 @@ class HammingWindowOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class OneHotOp(RenderableOpBase):
+    __io_inputs__ = ("indices", "depth", "values")
+    __io_outputs__ = ("output",)
     indices: str
     depth: str
     values: str
@@ -570,8 +657,11 @@ class OneHotOp(RenderableOpBase):
     indices_dtype: ScalarType
     depth_dtype: ScalarType
 
+
 @dataclass(frozen=True)
 class TfIdfVectorizerOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -587,8 +677,11 @@ class TfIdfVectorizerOp(RenderableOpBase):
     pool_int64s: tuple[int, ...]
     weights: tuple[float, ...] | None
 
+
 @dataclass(frozen=True)
 class StringNormalizerOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
     input0: str
     output: str
     input_shape: tuple[int, ...]
@@ -597,8 +690,11 @@ class StringNormalizerOp(RenderableOpBase):
     is_case_sensitive: bool
     stopwords: tuple[str, ...]
 
+
 @dataclass(frozen=True)
 class SplitOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("outputs",)
     input0: str
     outputs: tuple[str, ...]
     input_shape: tuple[int, ...]
