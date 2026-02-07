@@ -8,6 +8,7 @@ from ..op_context import OpContext
 
 @dataclass(frozen=True)
 class ReduceOp(ReduceOpBase):
+    __io_inputs__ = ("input0", "axes_input")
     input0: str
     output: str
     axes: tuple[int, ...]
@@ -24,9 +25,7 @@ class ReduceOp(ReduceOpBase):
         input_shape = ctx.shape(self.input0)
         if self.axes_input is None:
             axes = self.normalize_axes(self.axes, len(input_shape))
-            output_shape = self.reduced_shape(
-                input_shape, axes, keepdims=self.keepdims
-            )
+            output_shape = self.reduced_shape(input_shape, axes, keepdims=self.keepdims)
         else:
             axes = self.axes
             output_shape = ctx.shape(self.output)
@@ -50,15 +49,15 @@ class ArgReduceOp(ReduceOpBase):
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
         axes = self.normalize_axes((self.axis,), len(input_shape))
-        output_shape = self.reduced_shape(
-            input_shape, axes, keepdims=self.keepdims
-        )
+        output_shape = self.reduced_shape(input_shape, axes, keepdims=self.keepdims)
         ctx.set_shape(self.output, output_shape)
         ctx.set_derived(self, "axis", axes[0])
 
 
 @dataclass(frozen=True)
 class TopKOp(ReduceOpBase):
+    __io_inputs__ = ("input0", "k_input")
+    __io_outputs__ = ("output_values", "output_indices")
     input0: str
     k_input: str
     output_values: str
