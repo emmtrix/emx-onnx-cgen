@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op StringNormalizer",
+  "error": "Unsupported dtype string",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_empty_output model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "StringNormalizer"

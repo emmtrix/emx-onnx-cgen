@@ -1567,12 +1567,12 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_string_split_empty_tensor/model.onnx | 20 | ❌ | Unsupported op StringSplit |
 | onnx-org/onnx/backend/test/data/node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Unsupported op StringSplit |
 | onnx-org/onnx/backend/test/data/node/test_string_split_no_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
 | onnx-org/onnx/backend/test/data/node/test_sub/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1806,12 +1806,12 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_shrink/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sign_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_single_relu_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported op StringNormalizer |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
 
 ## Local ONNX file support
 
