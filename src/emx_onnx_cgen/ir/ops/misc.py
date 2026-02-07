@@ -507,10 +507,44 @@ class NonZeroOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
+
+    def validate(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        if len(input_shape) == 0:
+            raise UnsupportedOpError(f"{self.kind} does not support scalar inputs")
+        return None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.input0)
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, ScalarType.I64)
+            return None
+        if output_dtype != ScalarType.I64:
+            raise UnsupportedOpError(
+                f"{self.kind} output dtype must be int64, got {output_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        expected_rank_dim = len(input_shape)
+        try:
+            output_shape = ctx.shape(self.output)
+        except ShapeInferenceError:
+            raise ShapeInferenceError(
+                f"{self.kind} output shape must be specified as ({expected_rank_dim}, N)"
+            )
+        if len(output_shape) != 2:
+            raise ShapeInferenceError(f"{self.kind} output must be 2D")
+        if output_shape[0] != expected_rank_dim:
+            raise ShapeInferenceError(
+                f"{self.kind} output shape must be ({expected_rank_dim}, N), "
+                f"got {output_shape}"
+            )
+        if output_shape[0] < 0 or output_shape[1] < 0:
+            raise ShapeInferenceError(f"{self.kind} output shape must be non-negative")
+        ctx.set_shape(self.output, output_shape)
 
 
 @dataclass(frozen=True)
@@ -529,18 +563,114 @@ class NonMaxSuppressionOp(RenderableOpBase):
     iou_threshold: str | None
     score_threshold: str | None
     output: str
-    boxes_shape: tuple[int, ...]
-    scores_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     center_point_box: int
-    boxes_dtype: ScalarType
-    output_dtype: ScalarType
-    max_output_dtype: ScalarType | None
-    max_output_shape: tuple[int, ...] | None
-    iou_threshold_dtype: ScalarType | None
-    iou_threshold_shape: tuple[int, ...] | None
-    score_threshold_dtype: ScalarType | None
-    score_threshold_shape: tuple[int, ...] | None
+
+    def _validate_scalar_input(
+        self,
+        ctx: OpContext,
+        *,
+        name: str,
+        allowed_dtypes: set[ScalarType],
+        label: str,
+    ) -> None:
+        dtype = ctx.dtype(name)
+        if dtype not in allowed_dtypes:
+            allowed = ", ".join(sorted(d.onnx_name for d in allowed_dtypes))
+            raise UnsupportedOpError(
+                f"{self.kind} {label} must be {allowed}, got {dtype.onnx_name}"
+            )
+        shape = ctx.shape(name)
+        if shape not in {(), (1,)} and int(np.prod(shape, dtype=np.int64)) != 1:
+            raise ShapeInferenceError(
+                f"{self.kind} {label} must be a scalar tensor, got shape {shape}"
+            )
+
+    def validate(self, ctx: OpContext) -> None:
+        boxes_shape = ctx.shape(self.boxes)
+        scores_shape = ctx.shape(self.scores)
+        if len(boxes_shape) != 3 or boxes_shape[2] != 4:
+            raise ShapeInferenceError(
+                f"{self.kind} boxes input must have shape "
+                f"[num_batches, num_boxes, 4], got {boxes_shape}"
+            )
+        if len(scores_shape) != 3:
+            raise ShapeInferenceError(
+                f"{self.kind} scores input must have shape "
+                f"[num_batches, num_classes, num_boxes], got {scores_shape}"
+            )
+        if boxes_shape[0] != scores_shape[0]:
+            raise ShapeInferenceError(
+                f"{self.kind} boxes/scores batch dims must match, "
+                f"got {boxes_shape[0]} and {scores_shape[0]}"
+            )
+        if boxes_shape[1] != scores_shape[2]:
+            raise ShapeInferenceError(
+                f"{self.kind} boxes num_boxes dim {boxes_shape[1]} "
+                f"must match scores num_boxes dim {scores_shape[2]}"
+            )
+
+        boxes_dtype = ctx.dtype(self.boxes)
+        scores_dtype = ctx.dtype(self.scores)
+        if boxes_dtype != scores_dtype or not boxes_dtype.is_float:
+            raise UnsupportedOpError(
+                f"{self.kind} boxes and scores must be the same float dtype, "
+                f"got {boxes_dtype.onnx_name} and {scores_dtype.onnx_name}"
+            )
+
+        if self.max_output_boxes_per_class is not None:
+            self._validate_scalar_input(
+                ctx,
+                name=self.max_output_boxes_per_class,
+                allowed_dtypes={ScalarType.I32, ScalarType.I64},
+                label="max_output_boxes_per_class input",
+            )
+        if self.iou_threshold is not None:
+            self._validate_scalar_input(
+                ctx,
+                name=self.iou_threshold,
+                allowed_dtypes={ScalarType.F32, ScalarType.F64},
+                label="iou_threshold input",
+            )
+        if self.score_threshold is not None:
+            self._validate_scalar_input(
+                ctx,
+                name=self.score_threshold,
+                allowed_dtypes={ScalarType.F32, ScalarType.F64},
+                label="score_threshold input",
+            )
+        if self.center_point_box not in {0, 1}:
+            raise UnsupportedOpError(
+                f"{self.kind} center_point_box must be 0 or 1, got {self.center_point_box}"
+            )
+        return None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        ctx.dtype(self.boxes)
+        ctx.dtype(self.scores)
+        if self.max_output_boxes_per_class is not None:
+            ctx.dtype(self.max_output_boxes_per_class)
+        if self.iou_threshold is not None:
+            ctx.dtype(self.iou_threshold)
+        if self.score_threshold is not None:
+            ctx.dtype(self.score_threshold)
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, ScalarType.I64)
+            return None
+        if output_dtype != ScalarType.I64:
+            raise UnsupportedOpError(
+                f"{self.kind} output dtype must be int64, got {output_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        output_shape = ctx.shape(self.output)
+        if len(output_shape) != 2 or output_shape[1] != 3:
+            raise ShapeInferenceError(
+                f"{self.kind} output must have shape [num_selected, 3], "
+                f"got {output_shape}"
+            )
+        ctx.set_shape(self.output, output_shape)
 
 
 @dataclass(frozen=True)
