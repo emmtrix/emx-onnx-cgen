@@ -1640,10 +1640,6 @@ class CEmitter:
             return NonZeroOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, NonMaxSuppressionOp):
             return NonMaxSuppressionOp(
@@ -1655,18 +1651,7 @@ class CEmitter:
                 iou_threshold=self._map_optional_name(name_map, op.iou_threshold),
                 score_threshold=self._map_optional_name(name_map, op.score_threshold),
                 output=name_map.get(op.output, op.output),
-                boxes_shape=op.boxes_shape,
-                scores_shape=op.scores_shape,
-                output_shape=op.output_shape,
                 center_point_box=op.center_point_box,
-                boxes_dtype=op.boxes_dtype,
-                output_dtype=op.output_dtype,
-                max_output_dtype=op.max_output_dtype,
-                max_output_shape=op.max_output_shape,
-                iou_threshold_dtype=op.iou_threshold_dtype,
-                iou_threshold_shape=op.iou_threshold_shape,
-                score_threshold_dtype=op.score_threshold_dtype,
-                score_threshold_shape=op.score_threshold_shape,
             )
         if isinstance(op, ExpandOp):
             return ExpandOp(
@@ -4745,10 +4730,6 @@ class CEmitter:
             return NonZeroOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, NonMaxSuppressionOp):
             return NonMaxSuppressionOp(
@@ -4762,18 +4743,7 @@ class CEmitter:
                     temp_map, op.score_threshold
                 ),
                 output=temp_map.get(op.output, op.output),
-                boxes_shape=op.boxes_shape,
-                scores_shape=op.scores_shape,
-                output_shape=op.output_shape,
                 center_point_box=op.center_point_box,
-                boxes_dtype=op.boxes_dtype,
-                output_dtype=op.output_dtype,
-                max_output_dtype=op.max_output_dtype,
-                max_output_shape=op.max_output_shape,
-                iou_threshold_dtype=op.iou_threshold_dtype,
-                iou_threshold_shape=op.iou_threshold_shape,
-                score_threshold_dtype=op.score_threshold_dtype,
-                score_threshold_shape=op.score_threshold_shape,
             )
         if isinstance(op, ExpandOp):
             return ExpandOp(
@@ -9542,13 +9512,16 @@ class CEmitter:
             )
             input_dim_names = _dim_names_for(op.input0)
             output_dim_names = _dim_names_for(op.output)
-            input_shape = CEmitter._shape_dim_exprs(op.input_shape, input_dim_names)
-            loop_vars = CEmitter._loop_vars(op.input_shape)
-            input_suffix = self._param_array_suffix(op.input_shape, input_dim_names)
-            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            input_shape_raw = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            input_shape = CEmitter._shape_dim_exprs(input_shape_raw, input_dim_names)
+            loop_vars = CEmitter._loop_vars(input_shape_raw)
+            input_suffix = self._param_array_suffix(input_shape_raw, input_dim_names)
+            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -9561,14 +9534,14 @@ class CEmitter:
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                input_c_type=op.input_dtype.c_type,
+                input_c_type=input_dtype.c_type,
                 output_c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 input_shape=input_shape,
                 loop_vars=loop_vars,
                 input_expr=input_expr,
-                zero_literal=op.input_dtype.zero_literal,
+                zero_literal=input_dtype.zero_literal,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NonMaxSuppressionOp):
@@ -9576,11 +9549,46 @@ class CEmitter:
                 raise CodegenError(
                     "Scalar function registry is required for NonMaxSuppression."
                 )
+            boxes_shape = self._ctx_shape(op.boxes)
+            scores_shape = self._ctx_shape(op.scores)
+            output_shape = self._ctx_shape(op.output)
+            boxes_dtype = self._ctx_dtype(op.boxes)
+            output_dtype = self._ctx_dtype(op.output)
+            max_output_shape = (
+                self._ctx_shape(op.max_output_boxes_per_class)
+                if op.max_output_boxes_per_class is not None
+                else None
+            )
+            max_output_dtype = (
+                self._ctx_dtype(op.max_output_boxes_per_class)
+                if op.max_output_boxes_per_class is not None
+                else None
+            )
+            iou_threshold_shape = (
+                self._ctx_shape(op.iou_threshold)
+                if op.iou_threshold is not None
+                else None
+            )
+            iou_threshold_dtype = (
+                self._ctx_dtype(op.iou_threshold)
+                if op.iou_threshold is not None
+                else None
+            )
+            score_threshold_shape = (
+                self._ctx_shape(op.score_threshold)
+                if op.score_threshold is not None
+                else None
+            )
+            score_threshold_dtype = (
+                self._ctx_dtype(op.score_threshold)
+                if op.score_threshold is not None
+                else None
+            )
             min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, op.boxes_dtype, scalar_registry
+                ScalarFunction.MINIMUM, boxes_dtype, scalar_registry
             )
             max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, op.boxes_dtype, scalar_registry
+                ScalarFunction.MAXIMUM, boxes_dtype, scalar_registry
             )
             if min_fn is None or max_fn is None:
                 raise CodegenError(
@@ -9597,46 +9605,46 @@ class CEmitter:
                 ]
             )
             boxes_suffix = self._param_array_suffix(
-                op.boxes_shape, _dim_names_for(op.boxes)
+                boxes_shape, _dim_names_for(op.boxes)
             )
             scores_suffix = self._param_array_suffix(
-                op.scores_shape, _dim_names_for(op.scores)
+                scores_shape, _dim_names_for(op.scores)
             )
             output_suffix = self._param_array_suffix(
-                op.output_shape, _dim_names_for(op.output)
+                output_shape, _dim_names_for(op.output)
             )
             max_output_suffix = (
                 self._param_array_suffix(
-                    op.max_output_shape,
+                    max_output_shape,
                     _dim_names_for(op.max_output_boxes_per_class or ""),
                 )
-                if op.max_output_shape is not None
+                if max_output_shape is not None
                 else ""
             )
             iou_threshold_suffix = (
                 self._param_array_suffix(
-                    op.iou_threshold_shape,
+                    iou_threshold_shape,
                     _dim_names_for(op.iou_threshold or ""),
                 )
-                if op.iou_threshold_shape is not None
+                if iou_threshold_shape is not None
                 else ""
             )
             score_threshold_suffix = (
                 self._param_array_suffix(
-                    op.score_threshold_shape,
+                    score_threshold_shape,
                     _dim_names_for(op.score_threshold or ""),
                 )
-                if op.score_threshold_shape is not None
+                if score_threshold_shape is not None
                 else ""
             )
             param_decls = self._build_param_decls(
                 [
-                    (params["boxes"], op.boxes_dtype.c_type, boxes_suffix, True),
-                    (params["scores"], op.boxes_dtype.c_type, scores_suffix, True),
+                    (params["boxes"], boxes_dtype.c_type, boxes_suffix, True),
+                    (params["scores"], boxes_dtype.c_type, scores_suffix, True),
                     (
                         (
                             params["max_output_boxes_per_class"],
-                            op.max_output_dtype.c_type if op.max_output_dtype else "",
+                            max_output_dtype.c_type if max_output_dtype else "",
                             max_output_suffix,
                             True,
                         )
@@ -9646,11 +9654,7 @@ class CEmitter:
                     (
                         (
                             params["iou_threshold"],
-                            (
-                                op.iou_threshold_dtype.c_type
-                                if op.iou_threshold_dtype
-                                else ""
-                            ),
+                            iou_threshold_dtype.c_type if iou_threshold_dtype else "",
                             iou_threshold_suffix,
                             True,
                         )
@@ -9661,8 +9665,8 @@ class CEmitter:
                         (
                             params["score_threshold"],
                             (
-                                op.score_threshold_dtype.c_type
-                                if op.score_threshold_dtype
+                                score_threshold_dtype.c_type
+                                if score_threshold_dtype
                                 else ""
                             ),
                             score_threshold_suffix,
@@ -9671,7 +9675,7 @@ class CEmitter:
                         if params["score_threshold"]
                         else (None, "", "", True)
                     ),
-                    (params["output"], op.output_dtype.c_type, output_suffix, False),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
                 ]
             )
             rendered = nonmax_suppression_template.render(
@@ -9684,18 +9688,18 @@ class CEmitter:
                 score_threshold=params["score_threshold"],
                 output=params["output"],
                 params=param_decls,
-                input_c_type=op.boxes_dtype.c_type,
-                output_c_type=op.output_dtype.c_type,
-                compute_type=op.boxes_dtype.c_type,
-                output_capacity=op.output_shape[0],
-                num_batches=op.boxes_shape[0],
-                num_boxes=op.boxes_shape[1],
-                num_classes=op.scores_shape[1],
+                input_c_type=boxes_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                compute_type=boxes_dtype.c_type,
+                output_capacity=output_shape[0],
+                num_batches=boxes_shape[0],
+                num_boxes=boxes_shape[1],
+                num_classes=scores_shape[1],
                 center_point_box=op.center_point_box,
                 min_fn=min_fn,
                 max_fn=max_fn,
-                iou_threshold_default=op.boxes_dtype.zero_literal,
-                score_threshold_default=op.boxes_dtype.zero_literal,
+                iou_threshold_default=boxes_dtype.zero_literal,
+                score_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_enabled=op.score_threshold is not None,
                 dim_args=dim_args,
             ).rstrip()
@@ -11007,23 +11011,25 @@ class CEmitter:
         if isinstance(op, CastOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, NonZeroOp):
-            return ((op.input0, op.input_shape),)
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, OptionalHasElementOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, NonMaxSuppressionOp):
             inputs = [
-                (op.boxes, op.boxes_shape),
-                (op.scores, op.scores_shape),
+                (op.boxes, self._ctx_shape(op.boxes)),
+                (op.scores, self._ctx_shape(op.scores)),
             ]
-            if (
-                op.max_output_boxes_per_class is not None
-                and op.max_output_shape is not None
-            ):
-                inputs.append((op.max_output_boxes_per_class, op.max_output_shape))
-            if op.iou_threshold is not None and op.iou_threshold_shape is not None:
-                inputs.append((op.iou_threshold, op.iou_threshold_shape))
-            if op.score_threshold is not None and op.score_threshold_shape is not None:
-                inputs.append((op.score_threshold, op.score_threshold_shape))
+            if op.max_output_boxes_per_class is not None:
+                inputs.append(
+                    (
+                        op.max_output_boxes_per_class,
+                        self._ctx_shape(op.max_output_boxes_per_class),
+                    )
+                )
+            if op.iou_threshold is not None:
+                inputs.append((op.iou_threshold, self._ctx_shape(op.iou_threshold)))
+            if op.score_threshold is not None:
+                inputs.append((op.score_threshold, self._ctx_shape(op.score_threshold)))
             return tuple(inputs)
         if isinstance(op, QuantizeLinearOp):
             scale_shape = (
@@ -11434,7 +11440,7 @@ class CEmitter:
                 ),
             )
         if isinstance(op, NonMaxSuppressionOp):
-            return ((op.output, op.output_shape, op.output_dtype),)
+            return ((op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),)
         return (
             (
                 op.output,
@@ -11630,9 +11636,9 @@ class CEmitter:
         if isinstance(op, OptionalHasElementOp):
             return self._ctx_shape(op.output)
         if isinstance(op, NonZeroOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, NonMaxSuppressionOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, ExpandOp):
             return self._ctx_shape(op.output)
         if isinstance(op, CumSumOp):
@@ -11724,8 +11730,10 @@ class CEmitter:
             return self._ctx_dtype(op.output_values)
         if isinstance(op, OptionalHasElementOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, NonZeroOp):
+            return self._ctx_dtype(op.output)
         if isinstance(op, NonMaxSuppressionOp):
-            return op.output_dtype
+            return self._ctx_dtype(op.output)
         if isinstance(op, TfIdfVectorizerOp):
             return op.output_dtype
         if isinstance(op, StringNormalizerOp):
