@@ -11,8 +11,8 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
+| Unsupported dtype string | 14 | 10, 19 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Unsupported op StringNormalizer | 12 | 10 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 7 | 9, 19, 22 |
@@ -49,7 +49,6 @@
 | QuantizeLinear block_size is not supported | 2 | 25 |
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
-| Unsupported dtype string | 2 | 19 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op BlackmanWindow | 2 | 17 |
@@ -81,7 +80,7 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op StringNormalizer | 10 | 12 |
+| Unsupported dtype string | 10 | 12 |
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
 | Unsupported op MatMulInteger | 10 | 1 |

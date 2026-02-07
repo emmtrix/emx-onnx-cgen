@@ -36,6 +36,7 @@ from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
 from emx_onnx_cgen.lowering.upsample import lower_upsample
 from emx_onnx_cgen.lowering import variadic as _variadic  # noqa: F401
+from emx_onnx_cgen.lowering import load_lowering_registry
 from emx_onnx_cgen.lowering.registry import get_lowering
 from emx_onnx_cgen.onnx_import import import_onnx
 from emx_onnx_cgen.testbench import decode_testbench_array
@@ -126,6 +127,48 @@ def _make_tfidf_vectorizer_model(
         graph,
         producer_name="onnx2c",
         opset_imports=[helper.make_operatorsetid("", 9)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_string_normalizer_model(
+    *,
+    input_shape: list[int],
+    output_shape: list[int],
+    case_change_action: str = "NONE",
+    is_case_sensitive: int = 0,
+    stopwords: list[str] | None = None,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info(
+        "in0", TensorProto.STRING, input_shape
+    )
+    output_info = helper.make_tensor_value_info(
+        "out", TensorProto.STRING, output_shape
+    )
+    attrs: dict[str, object] = {
+        "case_change_action": case_change_action,
+        "is_case_sensitive": is_case_sensitive,
+    }
+    if stopwords is not None:
+        attrs["stopwords"] = stopwords
+    node = helper.make_node(
+        "StringNormalizer",
+        inputs=["in0"],
+        outputs=["out"],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "string_normalizer_graph",
+        [input_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 10)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -2820,6 +2863,37 @@ def _run_testbench_compare(model: onnx.ModelProto) -> None:
             )
         else:
             np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_string_normalizer_lowering() -> None:
+    model = _make_string_normalizer_model(
+        input_shape=[4],
+        output_shape=[3],
+        case_change_action="LOWER",
+        is_case_sensitive=0,
+        stopwords=["monday"],
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringNormalizer")
+    op = lowering(graph, graph.nodes[0])
+    assert op.case_change_action == "LOWER"
+    assert op.is_case_sensitive is False
+    assert op.stopwords == ("monday",)
+
+
+def test_string_normalizer_codegen_emits_transform_logic() -> None:
+    model = _make_string_normalizer_model(
+        input_shape=[4],
+        output_shape=[3],
+        case_change_action="UPPER",
+        is_case_sensitive=1,
+        stopwords=["monday"],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "toupper" in generated
+    assert "strcmp" in generated
+    assert "monday" in generated
 
 
 def test_tfidf_vectorizer_testbench_match() -> None:
