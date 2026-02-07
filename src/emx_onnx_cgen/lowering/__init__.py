@@ -58,6 +58,7 @@ _LOWERING_MODULES = [
     "quantize_linear",
     "range",
     "reduce",
+    "reverse_sequence",
     "reshape",
     "resize",
     "rms_normalization",

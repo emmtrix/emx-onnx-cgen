@@ -1,0 +1,35 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
+    const {{ seq_len_c_type }} *sequence_lens_data = (const {{ seq_len_c_type }} *){{ sequence_lens }};
+    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
+    const idx_t outer_dims[] = { {% for dim in outer_dims %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const idx_t outer_strides[] = { {% for stride in outer_strides %}{{ stride }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    for (idx_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
+        idx_t base_offset = 0;
+        idx_t rem = outer_idx;
+        for (idx_t axis_idx = 0; axis_idx < {{ outer_rank }}; ++axis_idx) {
+            idx_t dim = outer_dims[axis_idx];
+            idx_t coord = rem % dim;
+            rem /= dim;
+            base_offset += coord * outer_strides[axis_idx];
+        }
+        for (idx_t batch_idx = 0; batch_idx < {{ batch_dim }}; ++batch_idx) {
+            idx_t seq_len = (idx_t)sequence_lens_data[batch_idx];
+            if (seq_len < 0) {
+                seq_len = 0;
+            }
+            if (seq_len > {{ time_dim }}) {
+                seq_len = {{ time_dim }};
+            }
+            for (idx_t time_idx = 0; time_idx < {{ time_dim }}; ++time_idx) {
+                idx_t src_time = time_idx;
+                if (time_idx < seq_len) {
+                    src_time = seq_len - time_idx - 1;
+                }
+                idx_t in_idx = base_offset + batch_idx * {{ batch_stride }} + src_time * {{ time_stride }};
+                idx_t out_idx = base_offset + batch_idx * {{ batch_stride }} + time_idx * {{ time_stride }};
+                output_data[out_idx] = input_data[in_idx];
+            }
+        }
+    }
+}

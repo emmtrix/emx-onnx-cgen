@@ -48,10 +48,7 @@ def _run_reference(
 ) -> dict[str, np.ndarray]:
     evaluator = ReferenceEvaluator(model)
     outputs = evaluator.run(None, inputs)
-    return {
-        output.name: value
-        for output, value in zip(model.graph.output, outputs)
-    }
+    return {output.name: value for output, value in zip(model.graph.output, outputs)}
 
 
 def _make_operator_model(
@@ -98,12 +95,8 @@ def _make_tfidf_vectorizer_model(
     ngram_indexes: list[int],
     pool_int64s: list[int],
 ) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.INT32, input_shape
-    )
-    output_info = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.INT32, input_shape)
+    output_info = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     node = helper.make_node(
         "TfIdfVectorizer",
         inputs=["in0"],
@@ -142,13 +135,9 @@ def _flatten_output_shape(input_shape: list[int], axis: int) -> list[int]:
 
 
 def _make_flatten_model(input_shape: list[int], axis: int) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     output_shape = _flatten_output_shape(input_shape, axis)
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     node = helper.make_node(
         "Flatten",
         inputs=["in0"],
@@ -179,12 +168,8 @@ def _make_squeeze_lowering_model(
     include_axes_input: bool = False,
     opset: int = 13,
 ) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     inputs = ["in0"]
     initializers: list[onnx.TensorProto] = []
     attrs: dict[str, object] = {}
@@ -225,9 +210,7 @@ def _make_squeeze_lowering_model(
     return model
 
 
-def _broadcast_shape(
-    input_shape: list[int], target_shape: list[int]
-) -> list[int]:
+def _broadcast_shape(input_shape: list[int], target_shape: list[int]) -> list[int]:
     output_rank = max(len(input_shape), len(target_shape))
     padded_input = [1] * (output_rank - len(input_shape)) + input_shape
     padded_target = [1] * (output_rank - len(target_shape)) + target_shape
@@ -260,9 +243,7 @@ def _make_expand_model(
         dims=[len(target_shape)],
         vals=target_shape,
     )
-    node = helper.make_node(
-        "Expand", inputs=["input", "shape"], outputs=[output.name]
-    )
+    node = helper.make_node("Expand", inputs=["input", "shape"], outputs=[output.name])
     graph = helper.make_graph(
         [node],
         "expand_graph",
@@ -404,9 +385,7 @@ def _make_onehot_model(
     axis_norm = axis
     if axis_norm < 0:
         axis_norm += len(indices_shape) + 1
-    output_shape = (
-        indices_shape[:axis_norm] + [depth] + indices_shape[axis_norm:]
-    )
+    output_shape = indices_shape[:axis_norm] + [depth] + indices_shape[axis_norm:]
     output = helper.make_tensor_value_info("output", values_dtype, output_shape)
     node = helper.make_node(
         "OneHot",
@@ -519,9 +498,7 @@ def _make_eye_like_model(
         outputs=[output.name],
         k=k,
     )
-    graph = helper.make_graph(
-        [node], "eye_like_graph", [input_info], [output]
-    )
+    graph = helper.make_graph([node], "eye_like_graph", [input_info], [output])
     model = helper.make_model(
         graph,
         producer_name="onnx2c",
@@ -739,9 +716,7 @@ def _depth_to_space_reference(
     return np.reshape(transposed, finalshape)
 
 
-def _space_to_depth_reference(
-    value: np.ndarray, *, blocksize: int
-) -> np.ndarray:
+def _space_to_depth_reference(value: np.ndarray, *, blocksize: int) -> np.ndarray:
     if value.ndim != 4:
         raise ValueError("SpaceToDepth expects 4D input")
     b, c, h, w = value.shape
@@ -822,6 +797,74 @@ def _make_split_model(
     return model
 
 
+def _make_reverse_sequence_model(
+    *,
+    input_shape: list[int],
+    sequence_lens: list[int],
+    batch_axis: int = 1,
+    time_axis: int = 0,
+    dtype: int = TensorProto.FLOAT,
+    opset: int = 10,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    sequence_lens_info = helper.make_tensor_value_info(
+        "sequence_lens", TensorProto.INT64, [len(sequence_lens)]
+    )
+    output = helper.make_tensor_value_info("output", dtype, input_shape)
+    sequence_lens_tensor = helper.make_tensor(
+        "sequence_lens",
+        TensorProto.INT64,
+        dims=[len(sequence_lens)],
+        vals=sequence_lens,
+    )
+    node = helper.make_node(
+        "ReverseSequence",
+        inputs=["input", "sequence_lens"],
+        outputs=[output.name],
+        batch_axis=batch_axis,
+        time_axis=time_axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "reverse_sequence_graph",
+        [input_info, sequence_lens_info],
+        [output],
+        initializer=[sequence_lens_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _reverse_sequence_reference(
+    data: np.ndarray,
+    sequence_lens: list[int],
+    *,
+    batch_axis: int,
+    time_axis: int,
+) -> np.ndarray:
+    result = np.array(data, copy=True)
+    batch_dim = data.shape[batch_axis]
+    time_dim = data.shape[time_axis]
+    for batch_idx in range(batch_dim):
+        seq_len = max(0, min(int(sequence_lens[batch_idx]), time_dim))
+        if seq_len <= 1:
+            continue
+        head = [slice(None)] * data.ndim
+        tail = [slice(None)] * data.ndim
+        head[batch_axis] = batch_idx
+        tail[batch_axis] = batch_idx
+        head[time_axis] = slice(0, seq_len)
+        tail[time_axis] = slice(seq_len - 1, None, -1)
+        result[tuple(head)] = data[tuple(tail)]
+    return result
+
+
 def _make_compare_model(
     *,
     op_type: str,
@@ -835,9 +878,7 @@ def _make_compare_model(
         helper.make_tensor_value_info(name, input_dtype, shape)
         for name, shape in zip(input_names, input_shapes)
     ]
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.BOOL, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.BOOL, output_shape)
     node = helper.make_node(
         op_type,
         inputs=input_names,
@@ -907,9 +948,7 @@ def _make_reduce_model_with_axes_input(
     opset: int = 18,
 ) -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
-    axes_info = helper.make_tensor_value_info(
-        "axes", TensorProto.INT64, axes_shape
-    )
+    axes_info = helper.make_tensor_value_info("axes", TensorProto.INT64, axes_shape)
     output = helper.make_tensor_value_info("out", dtype, output_shape)
     node = helper.make_node(
         op_type,
@@ -931,6 +970,7 @@ def _make_reduce_model_with_axes_input(
     model.ir_version = 7
     onnx.checker.check_model(model)
     return model
+
 
 def _make_constant_add_model() -> onnx.ModelProto:
     input_shape = [2, 3]
@@ -1014,9 +1054,7 @@ def _make_constant_of_shape_model() -> onnx.ModelProto:
 def _make_reshape_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     output_shape = [2, 12]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     shape_values = np.array([0, -1], dtype=np.int64)
     shape_tensor = helper.make_tensor(
         "shape",
@@ -1024,9 +1062,7 @@ def _make_reshape_model() -> onnx.ModelProto:
         dims=shape_values.shape,
         vals=shape_values.tolist(),
     )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     node = helper.make_node(
         "Reshape",
         inputs=["in0", "shape"],
@@ -1052,9 +1088,7 @@ def _make_reshape_model() -> onnx.ModelProto:
 def _make_squeeze_model() -> onnx.ModelProto:
     input_shape = [1, 3, 1, 5]
     output_shape = [3, 5]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     axes_values = np.array([0, 2], dtype=np.int64)
     axes_tensor = helper.make_tensor(
         "axes",
@@ -1062,9 +1096,7 @@ def _make_squeeze_model() -> onnx.ModelProto:
         dims=axes_values.shape,
         vals=axes_values.tolist(),
     )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     node = helper.make_node(
         "Squeeze",
         inputs=["in0", "axes"],
@@ -1089,12 +1121,8 @@ def _make_squeeze_model() -> onnx.ModelProto:
 
 def _make_cast_model() -> onnx.ModelProto:
     input_shape = [2, 3]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.INT32, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.INT32, input_shape)
     node = helper.make_node(
         "Cast",
         inputs=["in0"],
@@ -1119,15 +1147,9 @@ def _make_cast_model() -> onnx.ModelProto:
 
 def _make_castlike_model() -> onnx.ModelProto:
     input_shape = [2, 3]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    like_info = helper.make_tensor_value_info(
-        "in1", TensorProto.INT32, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.INT32, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    like_info = helper.make_tensor_value_info("in1", TensorProto.INT32, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.INT32, input_shape)
     node = helper.make_node(
         "CastLike",
         inputs=["in0", "in1"],
@@ -1169,12 +1191,8 @@ def _make_lstm_model(
     )
     inputs = [
         helper.make_tensor_value_info("X", dtype, x_shape),
-        helper.make_tensor_value_info(
-            "W", dtype, [1, 4 * hidden_size, input_size]
-        ),
-        helper.make_tensor_value_info(
-            "R", dtype, [1, 4 * hidden_size, hidden_size]
-        ),
+        helper.make_tensor_value_info("W", dtype, [1, 4 * hidden_size, input_size]),
+        helper.make_tensor_value_info("R", dtype, [1, 4 * hidden_size, hidden_size]),
     ]
     input_names = ["X", "W", "R"]
     if include_optional_inputs:
@@ -1185,26 +1203,16 @@ def _make_lstm_model(
         )
         inputs.extend(
             [
-                helper.make_tensor_value_info(
-                    "B", dtype, [1, 8 * hidden_size]
-                ),
+                helper.make_tensor_value_info("B", dtype, [1, 8 * hidden_size]),
                 helper.make_tensor_value_info(
                     "sequence_lens", TensorProto.INT32, [batch_size]
                 ),
-                helper.make_tensor_value_info(
-                    "initial_h", dtype, state_shape
-                ),
-                helper.make_tensor_value_info(
-                    "initial_c", dtype, state_shape
-                ),
-                helper.make_tensor_value_info(
-                    "P", dtype, [1, 3 * hidden_size]
-                ),
+                helper.make_tensor_value_info("initial_h", dtype, state_shape),
+                helper.make_tensor_value_info("initial_c", dtype, state_shape),
+                helper.make_tensor_value_info("P", dtype, [1, 3 * hidden_size]),
             ]
         )
-        input_names.extend(
-            ["B", "sequence_lens", "initial_h", "initial_c", "P"]
-        )
+        input_names.extend(["B", "sequence_lens", "initial_h", "initial_c", "P"])
     outputs = []
     output_names: list[str] = []
     if include_y:
@@ -1213,24 +1221,16 @@ def _make_lstm_model(
             if layout == 0
             else [batch_size, seq_length, 1, hidden_size]
         )
-        outputs.append(
-            helper.make_tensor_value_info("Y", dtype, y_shape)
-        )
+        outputs.append(helper.make_tensor_value_info("Y", dtype, y_shape))
         output_names.append("Y")
     state_shape = (
-        [1, batch_size, hidden_size]
-        if layout == 0
-        else [batch_size, 1, hidden_size]
+        [1, batch_size, hidden_size] if layout == 0 else [batch_size, 1, hidden_size]
     )
     if include_y_h:
-        outputs.append(
-            helper.make_tensor_value_info("Y_h", dtype, state_shape)
-        )
+        outputs.append(helper.make_tensor_value_info("Y_h", dtype, state_shape))
         output_names.append("Y_h")
     if include_y_c:
-        outputs.append(
-            helper.make_tensor_value_info("Y_c", dtype, state_shape)
-        )
+        outputs.append(helper.make_tensor_value_info("Y_c", dtype, state_shape))
         output_names.append("Y_c")
     node = helper.make_node(
         "LSTM",
@@ -1323,15 +1323,15 @@ def _shape_output_shape(
 
 
 def _make_shape_model(
-    *, input_shape: list[int], start: int | None = None, end: int | None = None, opset: int = 13
+    *,
+    input_shape: list[int],
+    start: int | None = None,
+    end: int | None = None,
+    opset: int = 13,
 ) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     output_shape = _shape_output_shape(input_shape, start, end)
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.INT64, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.INT64, output_shape)
     attrs: dict[str, object] = {}
     if start is not None:
         attrs["start"] = start
@@ -1360,18 +1360,10 @@ def _make_shape_model(
 
 
 def _make_shape_dim_param_model() -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, [2, 3]
-    )
-    reshape_output = helper.make_tensor_value_info(
-        "reshaped", TensorProto.FLOAT, ["N"]
-    )
-    shape_output = helper.make_tensor_value_info(
-        "out", TensorProto.INT64, [1]
-    )
-    reshape_shape = numpy_helper.from_array(
-        np.array([6], dtype=np.int64), name="shape"
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, [2, 3])
+    reshape_output = helper.make_tensor_value_info("reshaped", TensorProto.FLOAT, ["N"])
+    shape_output = helper.make_tensor_value_info("out", TensorProto.INT64, [1])
+    reshape_shape = numpy_helper.from_array(np.array([6], dtype=np.int64), name="shape")
     reshape_node = helper.make_node(
         "Reshape",
         inputs=["in0", "shape"],
@@ -1401,9 +1393,7 @@ def _make_shape_dim_param_model() -> onnx.ModelProto:
 
 
 def _make_size_model(*, input_shape: list[int], opset: int = 13) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     output = helper.make_tensor_value_info("out", TensorProto.INT64, [])
     node = helper.make_node("Size", inputs=["in0"], outputs=[output.name])
     graph = helper.make_graph([node], "size_graph", [input_info], [output])
@@ -1424,12 +1414,8 @@ def _make_nonzero_model(
     input_dtype: int,
     opset: int = 13,
 ) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "input", input_dtype, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "output", TensorProto.INT64, output_shape
-    )
+    input_info = helper.make_tensor_value_info("input", input_dtype, input_shape)
+    output = helper.make_tensor_value_info("output", TensorProto.INT64, output_shape)
     node = helper.make_node("NonZero", inputs=["input"], outputs=[output.name])
     graph = helper.make_graph(
         [node],
@@ -1450,12 +1436,8 @@ def _make_nonzero_model(
 def _make_slice_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     output_shape = [2, 3, 1]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     starts_values = np.array([0, 1], dtype=np.int64)
     ends_values = np.array([2, 3], dtype=np.int64)
     axes_values = np.array([0, 2], dtype=np.int64)
@@ -1509,12 +1491,8 @@ def _make_slice_model() -> onnx.ModelProto:
 def _make_resize_model() -> onnx.ModelProto:
     input_shape = [1, 1, 2, 2]
     output_shape = [1, 1, 4, 4]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     sizes_values = np.array(output_shape, dtype=np.int64)
     sizes_tensor = helper.make_tensor(
         "sizes",
@@ -1550,12 +1528,8 @@ def _make_resize_model() -> onnx.ModelProto:
 def _make_upsample_model() -> onnx.ModelProto:
     input_shape = [1, 1, 2, 2]
     output_shape = [1, 1, 4, 6]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     scales_values = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float32)
     scales_tensor = helper.make_tensor(
         "scales",
@@ -1596,15 +1570,9 @@ def _make_gridsample_model(
     align_corners: int = 0,
     opset: int = 22,
 ) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "x", TensorProto.FLOAT, input_shape
-    )
-    grid_info = helper.make_tensor_value_info(
-        "grid", TensorProto.FLOAT, grid_shape
-    )
-    output = helper.make_tensor_value_info(
-        "y", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("x", TensorProto.FLOAT, input_shape)
+    grid_info = helper.make_tensor_value_info("grid", TensorProto.FLOAT, grid_shape)
+    output = helper.make_tensor_value_info("y", TensorProto.FLOAT, output_shape)
     node = helper.make_node(
         "GridSample",
         inputs=["x", "grid"],
@@ -1631,12 +1599,8 @@ def _make_gridsample_model(
 
 def _make_dropout_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
     node = helper.make_node(
         "Dropout",
         inputs=["in0"],
@@ -1658,9 +1622,7 @@ def _make_dropout_model() -> onnx.ModelProto:
     return model
 
 
-def _unsqueeze_output_shape(
-    input_shape: list[int], axes: list[int]
-) -> list[int]:
+def _unsqueeze_output_shape(input_shape: list[int], axes: list[int]) -> list[int]:
     output_rank = len(input_shape) + len(axes)
     normalized_axes = []
     for axis in axes:
@@ -1694,8 +1656,7 @@ def _reduce_output_shape(
         normalized.append(axis)
     if keepdims:
         return [
-            1 if axis in normalized else dim
-            for axis, dim in enumerate(input_shape)
+            1 if axis in normalized else dim for axis, dim in enumerate(input_shape)
         ]
     return [dim for axis, dim in enumerate(input_shape) if axis not in normalized]
 
@@ -1708,15 +1669,12 @@ def _arg_reduce_output_shape(
         axis += rank
     if keepdims:
         return [
-            1 if dim_axis == axis else dim
-            for dim_axis, dim in enumerate(input_shape)
+            1 if dim_axis == axis else dim for dim_axis, dim in enumerate(input_shape)
         ]
     return [dim for dim_axis, dim in enumerate(input_shape) if dim_axis != axis]
 
 
-def _topk_output_shape(
-    input_shape: list[int], axis: int, k: int
-) -> list[int]:
+def _topk_output_shape(input_shape: list[int], axis: int, k: int) -> list[int]:
     rank = len(input_shape)
     if axis < 0:
         axis += rank
@@ -1807,13 +1765,9 @@ def _make_topk_model(
 def _make_unsqueeze_model(
     *, input_shape: list[int], axes: list[int], opset: int = 13
 ) -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     output_shape = _unsqueeze_output_shape(input_shape, axes)
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     if opset >= 13:
         axes_values = np.array(axes, dtype=np.int64)
         axes_tensor = helper.make_tensor(
@@ -1861,9 +1815,7 @@ def _make_conv_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     weight_shape = [1, 1, 3, 3]
     output_shape = [1, 1, 4, 4]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     weight_values = np.arange(9, dtype=np.float32).reshape(weight_shape)
     weight_tensor = helper.make_tensor(
         "weight",
@@ -1878,9 +1830,7 @@ def _make_conv_model() -> onnx.ModelProto:
         dims=[1],
         vals=bias_values.tolist(),
     )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     conv_node = helper.make_node(
         "Conv",
         inputs=["in0", "weight", "bias"],
@@ -1909,9 +1859,7 @@ def _make_convinteger_model(*, per_channel_zero_point: bool = False) -> onnx.Mod
     input_shape = [1, 1, 3, 3]
     weight_shape = [2, 1, 2, 2]
     output_shape = [1, 2, 4, 4]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.UINT8, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, input_shape)
     weight_values = np.arange(8, dtype=np.uint8).reshape(weight_shape)
     weight_tensor = helper.make_tensor(
         "weight",
@@ -1933,9 +1881,7 @@ def _make_convinteger_model(*, per_channel_zero_point: bool = False) -> onnx.Mod
         w_zero_point = helper.make_tensor(
             "w_zero_point", TensorProto.UINT8, dims=[], vals=[0]
         )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.INT32, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.INT32, output_shape)
     conv_node = helper.make_node(
         "ConvInteger",
         inputs=["in0", "weight", "x_zero_point", "w_zero_point"],
@@ -1964,9 +1910,7 @@ def _make_conv_transpose_model() -> onnx.ModelProto:
     input_shape = [1, 1, 3, 3]
     weight_shape = [1, 1, 3, 3]
     output_shape = [1, 1, 3, 3]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     weight_values = np.arange(9, dtype=np.float32).reshape(weight_shape)
     weight_tensor = helper.make_tensor(
         "weight",
@@ -1981,9 +1925,7 @@ def _make_conv_transpose_model() -> onnx.ModelProto:
         dims=[1],
         vals=bias_values.tolist(),
     )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     conv_node = helper.make_node(
         "ConvTranspose",
         inputs=["in0", "weight", "bias"],
@@ -2011,12 +1953,8 @@ def _make_conv_transpose_model() -> onnx.ModelProto:
 def _make_lp_pool_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     output_shape = [1, 1, 2, 2]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
     node = helper.make_node(
         "LpPool",
         inputs=["in0"],
@@ -2043,12 +1981,8 @@ def _make_lp_pool_model() -> onnx.ModelProto:
 
 def _make_quantize_linear_model() -> onnx.ModelProto:
     input_shape = [2, 2]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.UINT8, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.UINT8, input_shape)
     scale_tensor = helper.make_tensor(
         "scale",
         TensorProto.FLOAT,
@@ -2085,9 +2019,7 @@ def _make_quantize_linear_model() -> onnx.ModelProto:
 
 def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
     input_shape = [2, 3, 2, 2]
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, input_shape
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
     params = {
         "scale": np.array([1.0, 1.5, -0.5], dtype=np.float32),
         "bias": np.array([0.0, 0.1, -0.2], dtype=np.float32),
@@ -2104,9 +2036,7 @@ def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
                 vals=values.flatten().tolist(),
             )
         )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, input_shape
-    )
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
     node = helper.make_node(
         "BatchNormalization",
         inputs=["in0", "scale", "bias", "mean", "var"],
@@ -2595,9 +2525,7 @@ def _gathernd_numpy(
             index_values = [int(value) for value in raw_index]
         for dim_index, value in enumerate(index_values):
             if value < 0:
-                index_values[dim_index] = value + data.shape[
-                    batch_dims + dim_index
-                ]
+                index_values[dim_index] = value + data.shape[batch_dims + dim_index]
         data_index = list(prefix[:batch_dims]) + index_values
         data_index.extend([slice(None)] * len(tail_shape))
         output_index = prefix + (slice(None),) * len(tail_shape)
@@ -2653,9 +2581,7 @@ def _run_ort_compare(model: onnx.ModelProto) -> None:
         elem_type = value_info.type.tensor_type.elem_type
         dtype = _tensorproto_to_dtype(elem_type)
         shape = _value_info_shape(value_info)
-        inputs[value_info.name] = _make_random_array(
-            rng, shape=shape, dtype=dtype
-        )
+        inputs[value_info.name] = _make_random_array(rng, shape=shape, dtype=dtype)
     session = ort.InferenceSession(
         model.SerializeToString(), providers=["CPUExecutionProvider"]
     )
@@ -2677,9 +2603,7 @@ def _run_ort_compare(model: onnx.ModelProto) -> None:
     except AssertionError:
         op_types = {node.op_type for node in model.graph.node}
         if op_types & {"OneHot", "BatchNormalization"}:
-            pytest.xfail(
-                "ONNX ReferenceEvaluator diverges from ORT for this op"
-            )
+            pytest.xfail("ONNX ReferenceEvaluator diverges from ORT for this op")
         raise
 
 
@@ -2704,9 +2628,7 @@ def test_rotary_embedding_numpy_match() -> None:
         inputs["in1"],
         inputs["in2"],
     )
-    np.testing.assert_allclose(
-        reference_outputs["out"], expected, rtol=1e-4, atol=1e-5
-    )
+    np.testing.assert_allclose(reference_outputs["out"], expected, rtol=1e-4, atol=1e-5)
 
 
 def test_rotary_embedding_ort_compare() -> None:
@@ -2769,12 +2691,8 @@ def _compile_and_run_testbench(
                     continue
                 array = testbench_inputs.get(value_info.name)
                 if array is None:
-                    raise AssertionError(
-                        f"Missing testbench input {value_info.name}"
-                    )
-                handle.write(
-                    np.ascontiguousarray(array).tobytes(order="C")
-                )
+                    raise AssertionError(f"Missing testbench input {value_info.name}")
+                handle.write(np.ascontiguousarray(array).tobytes(order="C"))
         result = subprocess.run(
             [str(exe_path), str(input_path)],
             check=True,
@@ -2794,9 +2712,7 @@ def _run_testbench_compare(model: onnx.ModelProto) -> None:
         elem_type = value_info.type.tensor_type.elem_type
         dtype = _tensorproto_to_dtype(elem_type)
         shape = _value_info_shape(value_info)
-        inputs[value_info.name] = _make_random_array(
-            rng, shape=shape, dtype=dtype
-        )
+        inputs[value_info.name] = _make_random_array(rng, shape=shape, dtype=dtype)
     session = ort.InferenceSession(
         model.SerializeToString(), providers=["CPUExecutionProvider"]
     )
@@ -2807,9 +2723,7 @@ def _run_testbench_compare(model: onnx.ModelProto) -> None:
         output_payload = outputs_payload.get(output_info.name)
         if output_payload is None:
             raise AssertionError(f"Missing output {output_info.name} in testbench data")
-        output_data = decode_testbench_array(
-            output_payload["data"], ort_output.dtype
-        )
+        output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
         output_data = output_data.reshape(ort_output.shape)
         if np.issubdtype(ort_output.dtype, np.floating):
             np.testing.assert_allclose(
@@ -3554,6 +3468,16 @@ REARRANGE_ORT_CASES = [
         ),
     },
     {
+        "name": "ReverseSequenceTime",
+        "model": lambda: _make_reverse_sequence_model(
+            input_shape=[4, 3, 2],
+            sequence_lens=[4, 2, 3],
+            batch_axis=1,
+            time_axis=0,
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
         "name": "TriluUpperKInput",
         "model": lambda: _make_trilu_model(
             input_shape=[2, 3, 4],
@@ -3610,6 +3534,18 @@ REARRANGE_UNIT_CASES = [
         "input_name": "in0",
         "input_shape": (1, 2, 4, 4),
         "expected": lambda value: _space_to_depth_reference(value, blocksize=2),
+    },
+    {
+        "name": "ReverseSequenceTime",
+        "model": REARRANGE_ORT_CASES[6]["model"],
+        "input_name": "input",
+        "input_shape": (4, 3, 2),
+        "expected": lambda value: _reverse_sequence_reference(
+            value,
+            [4, 2, 3],
+            batch_axis=1,
+            time_axis=0,
+        ),
     },
     {
         "name": "TriluUpper",
@@ -3669,14 +3605,10 @@ def test_lower_convinteger_per_channel_zero_point() -> None:
 
 
 def test_lower_pad_dynamic_axes_input() -> None:
-    input_info = helper.make_tensor_value_info(
-        "input", TensorProto.FLOAT, [2, 3]
-    )
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3])
     pads_info = helper.make_tensor_value_info("pads", TensorProto.INT64, [4])
     axes_info = helper.make_tensor_value_info("axes", TensorProto.INT64, [2])
-    output_info = helper.make_tensor_value_info(
-        "output", TensorProto.FLOAT, [2, 3]
-    )
+    output_info = helper.make_tensor_value_info("output", TensorProto.FLOAT, [2, 3])
     node = helper.make_node(
         "Pad",
         inputs=["input", "pads", "", "axes"],
@@ -3835,9 +3767,7 @@ def test_lower_shape_missing_value() -> None:
         nodes=(node,),
         initializers=(),
     )
-    with pytest.raises(
-        ShapeInferenceError, match="Missing shape for value 'missing'"
-    ):
+    with pytest.raises(ShapeInferenceError, match="Missing shape for value 'missing'"):
         lower_shape(graph, node)
 
 
@@ -3916,9 +3846,7 @@ def test_arg_reduce_matches_onnxruntime(case: dict[str, object]) -> None:
 
 @pytest.mark.parametrize("case", TOPK_CASES, ids=lambda case: case["name"])
 def test_topk_matches_onnxruntime(case: dict[str, object]) -> None:
-    output_shape = _topk_output_shape(
-        case["input_shape"], case["axis"], case["k"]
-    )
+    output_shape = _topk_output_shape(case["input_shape"], case["axis"], case["k"])
     model = _make_topk_model(
         input_shape=case["input_shape"],
         output_shape=output_shape,
@@ -3976,9 +3904,7 @@ def test_topk_tiebreaker_matches_numpy() -> None:
     expected_indices = np.take(order, np.arange(k), axis=axis)
     expected_values = np.take_along_axis(data, expected_indices, axis=axis)
     np.testing.assert_allclose(outputs["values"], expected_values, rtol=1e-5, atol=1e-6)
-    np.testing.assert_array_equal(
-        outputs["indices"], expected_indices.astype(np.int64)
-    )
+    np.testing.assert_array_equal(outputs["indices"], expected_indices.astype(np.int64))
 
 
 def test_reduce_op_axes_input_matches_numpy() -> None:
@@ -4069,6 +3995,17 @@ def test_cumsum_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+def test_reverse_sequence_matches_onnxruntime() -> None:
+    model = _make_reverse_sequence_model(
+        input_shape=[4, 3, 2],
+        sequence_lens=[4, 2, 3],
+        batch_axis=1,
+        time_axis=0,
+        dtype=TensorProto.FLOAT,
+    )
+    _run_ort_compare(model)
+
+
 def test_split_matches_onnxruntime() -> None:
     model = _make_split_model(
         input_shape=[2, 6],
@@ -4148,9 +4085,7 @@ def test_range_run_matches_numpy() -> None:
         (-1, True, True),
     ],
 )
-def test_cumsum_run_matches_numpy(
-    axis: int, exclusive: bool, reverse: bool
-) -> None:
+def test_cumsum_run_matches_numpy(axis: int, exclusive: bool, reverse: bool) -> None:
     model = _make_cumsum_model(
         input_shape=[2, 3],
         axis=axis,
@@ -4161,9 +4096,7 @@ def test_cumsum_run_matches_numpy(
     rng = np.random.default_rng(0)
     data = rng.standard_normal((2, 3)).astype(np.float32)
     outputs = _run_reference(model, {"input": data})
-    expected = _cumsum_numpy(
-        data, axis=axis, exclusive=exclusive, reverse=reverse
-    )
+    expected = _cumsum_numpy(data, axis=axis, exclusive=exclusive, reverse=reverse)
     np.testing.assert_allclose(outputs["output"], expected, rtol=1e-5, atol=1e-6)
 
 
@@ -4192,6 +4125,20 @@ def test_constant_of_shape_run() -> None:
     outputs = _run_reference(model, {})
     expected = np.full((2, 3, 4), 1.25, dtype=np.float32)
     np.testing.assert_allclose(outputs["out"], expected)
+
+
+def test_reverse_sequence_run_matches_numpy() -> None:
+    model = _make_reverse_sequence_model(
+        input_shape=[4, 3, 2],
+        sequence_lens=[4, 2, 3],
+        batch_axis=1,
+        time_axis=0,
+        dtype=TensorProto.FLOAT,
+    )
+    data = np.arange(24, dtype=np.float32).reshape(4, 3, 2)
+    outputs = _run_reference(model, {"input": data})
+    expected = _reverse_sequence_reference(data, [4, 2, 3], batch_axis=1, time_axis=0)
+    np.testing.assert_allclose(outputs["output"], expected, rtol=1e-5, atol=1e-6)
 
 
 def test_split_run_matches_numpy() -> None:
@@ -4485,9 +4432,7 @@ def test_instance_normalization_op_matches_onnxruntime() -> None:
 
 
 def test_group_normalization_op_matches_onnxruntime() -> None:
-    model = _make_group_normalization_model(
-        input_shape=[1, 4, 2, 2], num_groups=2
-    )
+    model = _make_group_normalization_model(input_shape=[1, 4, 2, 2], num_groups=2)
     _run_ort_compare(model)
 
 
@@ -4497,9 +4442,7 @@ def test_layer_normalization_op_matches_onnxruntime() -> None:
 
 
 def test_mean_variance_normalization_op_matches_onnxruntime() -> None:
-    model = _make_mean_variance_normalization_model(
-        input_shape=[2, 3, 2, 2]
-    )
+    model = _make_mean_variance_normalization_model(input_shape=[2, 3, 2, 2])
     _run_ort_compare(model)
 
 
@@ -4598,9 +4541,7 @@ def test_instance_normalization_run_matches_numpy() -> None:
 
 
 def test_group_normalization_run_matches_numpy() -> None:
-    model = _make_group_normalization_model(
-        input_shape=[1, 4, 2, 2], num_groups=2
-    )
+    model = _make_group_normalization_model(input_shape=[1, 4, 2, 2], num_groups=2)
     data = np.arange(16, dtype=np.float32).reshape(1, 4, 2, 2)
     scale = np.array([1.0, 1.5, 0.5, -1.0], dtype=np.float32)
     bias = np.array([0.25, -0.5, 0.75, 1.0], dtype=np.float32)
@@ -4617,9 +4558,7 @@ def test_group_normalization_run_matches_numpy() -> None:
 
 
 def test_layer_normalization_run_matches_numpy() -> None:
-    model = _make_layer_normalization_model(
-        input_shape=[2, 3, 4], axis=-1
-    )
+    model = _make_layer_normalization_model(input_shape=[2, 3, 4], axis=-1)
     data = np.arange(24, dtype=np.float32).reshape(2, 3, 4)
     scale = np.linspace(0.5, 1.5, num=4, dtype=np.float32)
     bias = np.linspace(-0.5, 0.5, num=4, dtype=np.float32)
