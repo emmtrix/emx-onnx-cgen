@@ -11,8 +11,7 @@ from .op_context import OpContext
 
 
 class Emitter(Protocol):
-    def render_op(self, op: "OpBase", ctx: "EmitContext") -> str:
-        ...
+    def render_op(self, op: "OpBase", ctx: "EmitContext") -> str: ...
 
 
 @dataclass(frozen=True)
@@ -22,8 +21,16 @@ class EmitContext:
 
 class OpBase(ABC):
     """Ops should not mutate themselves; store derived values in OpContext."""
-    inputs: tuple[str, ...]
-    outputs: tuple[str, ...]
+
+    @property
+    def input_names(self) -> tuple[str, ...]:
+        input_fields, _ = _io_field_names(self)
+        return _resolve_io_names(self, input_fields)
+
+    @property
+    def output_names(self) -> tuple[str, ...]:
+        _, output_fields = _io_field_names(self)
+        return _resolve_io_names(self, output_fields)
 
     def __getattr__(self, name: str) -> str:
         if name == "kind":
@@ -110,9 +117,7 @@ class ElementwiseOpBase(RenderableOpBase):
         output_name = self._elementwise_output()
         for name in input_names:
             ctx.dtype(name)
-        desired_dtype = (
-            ScalarType.BOOL if self._elementwise_compare() else None
-        )
+        desired_dtype = ScalarType.BOOL if self._elementwise_compare() else None
         if desired_dtype is None:
             data_inputs = self._elementwise_data_inputs()
             if data_inputs:
@@ -168,9 +173,7 @@ class GatherLikeOpBase(RenderableOpBase):
         data_shape = ctx.shape(self._gather_data())
         if self._gather_mode() in {"gather", "gather_elements"}:
             if not data_shape:
-                raise ShapeInferenceError(
-                    f"{self.kind} does not support scalar inputs"
-                )
+                raise ShapeInferenceError(f"{self.kind} does not support scalar inputs")
             axis = self._gather_axis()
             if axis < 0:
                 axis += len(data_shape)
@@ -206,13 +209,10 @@ class GatherLikeOpBase(RenderableOpBase):
                 f"{len(data_shape)}"
             )
         if self._gather_mode() == "gather":
-            output_shape = (
-                data_shape[:axis] + indices_shape + data_shape[axis + 1 :]
-            )
+            output_shape = data_shape[:axis] + indices_shape + data_shape[axis + 1 :]
         else:
             raise UnsupportedOpError(
-                f"{self.kind} does not support gather mode "
-                f"{self._gather_mode()}"
+                f"{self.kind} does not support gather mode " f"{self._gather_mode()}"
             )
         try:
             expected = ctx.shape(self._gather_output())
@@ -252,9 +252,7 @@ class ShapeLikeOpBase(RenderableOpBase):
     @staticmethod
     def _validate_static_dims(shape: tuple[int, ...], kind: str) -> None:
         if any(dim < 0 for dim in shape):
-            raise ShapeInferenceError(
-                f"{kind} does not support dynamic dims"
-            )
+            raise ShapeInferenceError(f"{kind} does not support dynamic dims")
 
     @staticmethod
     def _broadcast_shape(
@@ -287,9 +285,7 @@ class ShapeLikeOpBase(RenderableOpBase):
         data_shape = ctx.shape(self._shape_data())
         target_shape = self._shape_spec(ctx)
         if self._shape_mode() == "expand":
-            self._broadcast_shape(
-                data_shape, target_shape, kind=self.kind
-            )
+            self._broadcast_shape(data_shape, target_shape, kind=self.kind)
         return None
 
     def infer_types(self, ctx: OpContext) -> None:
@@ -356,9 +352,7 @@ class VariadicLikeOpBase(RenderableOpBase):
     def validate(self, ctx: OpContext) -> None:
         inputs = self._variadic_inputs()
         if any(not name for name in inputs):
-            raise UnsupportedOpError(
-                f"{self._variadic_kind()} input must be provided"
-            )
+            raise UnsupportedOpError(f"{self._variadic_kind()} input must be provided")
         min_inputs = self._variadic_min_inputs()
         max_inputs = self._variadic_max_inputs()
         if len(inputs) < min_inputs:
@@ -371,9 +365,7 @@ class VariadicLikeOpBase(RenderableOpBase):
             )
         input_dtypes = tuple(ctx.dtype(name) for name in inputs)
         if any(dtype != input_dtypes[0] for dtype in input_dtypes[1:]):
-            dtype_names = ", ".join(
-                dtype.onnx_name for dtype in input_dtypes
-            )
+            dtype_names = ", ".join(dtype.onnx_name for dtype in input_dtypes)
             raise UnsupportedOpError(
                 f"{self._variadic_kind()} expects matching input dtypes, "
                 f"got {dtype_names}"
@@ -434,9 +426,7 @@ class VariadicLikeOpBase(RenderableOpBase):
 
 class ReduceOpBase(RenderableOpBase):
     @staticmethod
-    def normalize_axes(
-        axes: tuple[int, ...] | None, rank: int
-    ) -> tuple[int, ...]:
+    def normalize_axes(axes: tuple[int, ...] | None, rank: int) -> tuple[int, ...]:
         if axes is None:
             axes = tuple(range(rank))
         normalized: list[int] = []
@@ -501,9 +491,7 @@ class BroadcastingOpBase(RenderableOpBase):
         if not shapes:
             return ()
         max_rank = max(len(shape) for shape in shapes)
-        padded_shapes = [
-            (1,) * (max_rank - len(shape)) + shape for shape in shapes
-        ]
+        padded_shapes = [(1,) * (max_rank - len(shape)) + shape for shape in shapes]
         result: list[int] = []
         for dims in zip(*padded_shapes):
             dim = max(dims)
@@ -526,3 +514,195 @@ class GemmLikeOpBase(RenderableOpBase):
 
 class ConvLikeOpBase(RenderableOpBase):
     pass
+
+
+_OP_IO_FIELDS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
+    "BinaryOp": (("input0", "input1"), ("output",)),
+    "VariadicOp": (("inputs",), ("output",)),
+    "WhereOp": (("condition", "input_x", "input_y"), ("output",)),
+    "UnaryOp": (("input0",), ("output",)),
+    "ClipOp": (("input0", "input_min", "input_max"), ("output",)),
+    "IdentityOp": (("input0",), ("output",)),
+    "QLinearMulOp": (
+        (
+            "input0",
+            "input0_scale",
+            "input0_zero_point",
+            "input1",
+            "input1_scale",
+            "input1_zero_point",
+            "output_scale",
+            "output_zero_point",
+        ),
+        ("output",),
+    ),
+    "CastOp": (("input0",), ("output",)),
+    "QuantizeLinearOp": (("input0", "scale", "zero_point"), ("output",)),
+    "DequantizeLinearOp": (("input0", "scale", "zero_point"), ("output",)),
+    "ConcatOp": (("inputs",), ("output",)),
+    "GatherElementsOp": (("data", "indices"), ("output",)),
+    "GatherOp": (("data", "indices"), ("output",)),
+    "GatherNDOp": (("data", "indices"), ("output",)),
+    "ScatterNDOp": (("data", "indices", "updates"), ("output",)),
+    "TensorScatterOp": (("past_cache", "update", "write_indices"), ("output",)),
+    "TransposeOp": (("input0",), ("output",)),
+    "ReshapeOp": (("input0",), ("output",)),
+    "EyeLikeOp": (("input0",), ("output",)),
+    "BernoulliOp": (("input0",), ("output",)),
+    "TriluOp": (("input0", "k_input"), ("output",)),
+    "TileOp": (("input0",), ("output",)),
+    "PadOp": (("input0", "pads_input", "axes_input", "value_input"), ("output",)),
+    "DepthToSpaceOp": (("input0",), ("output",)),
+    "SpaceToDepthOp": (("input0",), ("output",)),
+    "SliceOp": (
+        ("input0", "starts_input", "ends_input", "axes_input", "steps_input"),
+        ("output",),
+    ),
+    "ResizeOp": (("input0", "roi_input", "scales_input", "sizes_input"), ("output",)),
+    "GridSampleOp": (("input0", "grid"), ("output",)),
+    "ConstantOfShapeOp": (("input0",), ("output",)),
+    "ShapeOp": (("input0",), ("output",)),
+    "SizeOp": (("input0",), ("output",)),
+    "OptionalHasElementOp": (("input0",), ("output",)),
+    "NonZeroOp": (("input0",), ("output",)),
+    "NonMaxSuppressionOp": (
+        (
+            "boxes",
+            "scores",
+            "max_output_boxes_per_class",
+            "iou_threshold",
+            "score_threshold",
+        ),
+        ("output",),
+    ),
+    "ExpandOp": (("input0", "input_shape"), ("output",)),
+    "CumSumOp": (("input0", "axis_input"), ("output",)),
+    "RangeOp": (("start", "limit", "delta"), ("output",)),
+    "HammingWindowOp": (("size",), ("output",)),
+    "OneHotOp": (("indices", "depth", "values"), ("output",)),
+    "TfIdfVectorizerOp": (("input0",), ("output",)),
+    "StringNormalizerOp": (("input0",), ("output",)),
+    "SplitOp": (("input0",), ("outputs",)),
+    "ReduceOp": (("input0", "axes_input"), ("output",)),
+    "ArgReduceOp": (("input0",), ("output",)),
+    "TopKOp": (("input0", "k_input"), ("output_values", "output_indices")),
+    "MatMulOp": (("input0", "input1"), ("output",)),
+    "QLinearMatMulOp": (
+        (
+            "input0",
+            "input0_scale",
+            "input0_zero_point",
+            "input1",
+            "input1_scale",
+            "input1_zero_point",
+            "output_scale",
+            "output_zero_point",
+        ),
+        ("output",),
+    ),
+    "EinsumOp": (("inputs",), ("output",)),
+    "GemmOp": (("input_a", "input_b", "input_c"), ("output",)),
+    "AttentionOp": (
+        (
+            "input_q",
+            "input_k",
+            "input_v",
+            "input_attn_mask",
+            "input_past_key",
+            "input_past_value",
+            "input_nonpad_kv_seqlen",
+        ),
+        ("output", "output_present_key", "output_present_value", "output_qk_matmul"),
+    ),
+    "RotaryEmbeddingOp": (
+        ("input0", "cos_cache", "sin_cache", "position_ids"),
+        ("output",),
+    ),
+    "ConvOp": (("input0", "weights", "bias"), ("output",)),
+    "ConvIntegerOp": (
+        ("input0", "weights", "x_zero_point", "w_zero_point"),
+        ("output",),
+    ),
+    "ConvTransposeOp": (("input0", "weights", "bias"), ("output",)),
+    "AveragePoolOp": (("input0",), ("output",)),
+    "LpPoolOp": (("input0",), ("output",)),
+    "SoftmaxOp": (("input0",), ("output",)),
+    "LogSoftmaxOp": (("input0",), ("output",)),
+    "HardmaxOp": (("input0",), ("output",)),
+    "NegativeLogLikelihoodLossOp": (("input0", "target", "weight"), ("output",)),
+    "SoftmaxCrossEntropyLossOp": (
+        ("input0", "target", "weight"),
+        ("output", "log_prob"),
+    ),
+    "BatchNormOp": (("input0", "scale", "bias", "mean", "variance"), ("output",)),
+    "LpNormalizationOp": (("input0",), ("output",)),
+    "InstanceNormalizationOp": (("input0", "scale", "bias"), ("output",)),
+    "GroupNormalizationOp": (("input0", "scale", "bias"), ("output",)),
+    "LayerNormalizationOp": (
+        ("input0", "scale", "bias"),
+        ("output", "mean_output", "invstd_output"),
+    ),
+    "MeanVarianceNormalizationOp": (("input0",), ("output",)),
+    "RMSNormalizationOp": (("input0", "scale"), ("output",)),
+    "LrnOp": (("input0",), ("output",)),
+    "GruOp": (
+        (
+            "input_x",
+            "input_w",
+            "input_r",
+            "input_b",
+            "input_sequence_lens",
+            "input_initial_h",
+        ),
+        ("output_y", "output_y_h"),
+    ),
+    "LstmOp": (
+        (
+            "input_x",
+            "input_w",
+            "input_r",
+            "input_b",
+            "input_sequence_lens",
+            "input_initial_h",
+            "input_initial_c",
+            "input_p",
+        ),
+        ("output_y", "output_y_h", "output_y_c"),
+    ),
+    "AdagradOp": (
+        ("rate", "timestep", "inputs", "gradients", "accumulators"),
+        ("outputs", "accumulator_outputs"),
+    ),
+    "MaxPoolOp": (("input0",), ("output", "indices")),
+}
+
+
+def _io_field_names(op: OpBase) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    for cls in type(op).__mro__:
+        schema = _OP_IO_FIELDS.get(cls.__name__)
+        if schema is not None:
+            return schema
+    raise UnsupportedOpError(f"Missing canonical I/O schema for op {op.kind}")
+
+
+def _resolve_io_names(op: OpBase, field_names: tuple[str, ...]) -> tuple[str, ...]:
+    names: list[str] = []
+    for field_name in field_names:
+        value = getattr(op, field_name)
+        if value is None:
+            continue
+        if isinstance(value, str):
+            names.append(value)
+            continue
+        if isinstance(value, tuple):
+            for entry in value:
+                if not isinstance(entry, str):
+                    raise UnsupportedOpError(
+                        f"{op.kind} {field_name} must be a tuple of tensor names"
+                    )
+                names.append(entry)
+            continue
+        raise UnsupportedOpError(
+            f"{op.kind} {field_name} must be a tensor name or tuple of names"
+        )
+    return tuple(names)
