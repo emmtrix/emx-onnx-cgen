@@ -1,0 +1,28 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    idx_t out_idx = 0;
+    for (idx_t in_idx = 0; in_idx < {{ input_count }}; ++in_idx) {
+        const char *src = {{ input0 }}[in_idx];
+        _Bool keep = true;
+{% for check in stopword_checks %}
+        {{ check }}
+{% endfor %}
+        if (!keep) {
+            continue;
+        }
+        char *dst = {{ output }}[out_idx++];
+        size_t pos = 0;
+        for (size_t i = 0; src[i] != '\0' && pos + 1 < EMX_STRING_MAX_LEN; ++i) {
+            unsigned char ch = (unsigned char)src[i];
+{% if case_mode == 1 %}
+            ch = (unsigned char)tolower((int)ch);
+{% elif case_mode == 2 %}
+            ch = (unsigned char)toupper((int)ch);
+{% endif %}
+            dst[pos++] = (char)ch;
+        }
+        dst[pos] = '\0';
+    }
+    for (; out_idx < {{ output_count }}; ++out_idx) {
+        {{ output }}[out_idx][0] = '\0';
+    }
+}
