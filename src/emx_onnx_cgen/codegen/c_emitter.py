@@ -26,13 +26,6 @@ from ..ops import (
     unary_op_symbol,
 )
 from ..ir.op_base import (
-    BroadcastingOpBase,
-    ConvLikeOpBase,
-    ElementwiseOpBase,
-    GemmLikeOpBase,
-    MatMulLikeOpBase,
-    ReduceOpBase,
-    RenderableOpBase,
     OpBase,
     EmitContext,
 )
@@ -4658,6 +4651,48 @@ class CEmitter:
     def render_op(self, op: OpBase, ctx: EmitContext) -> str:
         return op.emit(self, ctx)
 
+    def require_emit_state(self) -> _EmitState:
+        if self._emit_state is None:
+            raise CodegenError("Emitter state not initialized")
+        return self._emit_state
+
+    def op_function_name(self, model: LoweredModel, index: int) -> str:
+        return self._op_function_name(model, index)
+
+    def with_node_comment(
+        self,
+        model: LoweredModel,
+        index: int,
+        rendered: str,
+    ) -> str:
+        node_info = model.node_infos[index]
+        node_comment = CEmitter._emit_node_comment(node_info, index)
+        return f"{node_comment}\n{_format_c_indentation(rendered)}"
+
+    def shared_param_map(
+        self,
+        items: list[tuple[str, str | None]],
+    ) -> dict[str, str]:
+        return self._shared_param_map(items)
+
+    def ctx_shape(self, name: str) -> tuple[int, ...]:
+        return self._ctx_shape(name)
+
+    def ctx_dtype(self, name: str) -> ScalarType:
+        return self._ctx_dtype(name)
+
+    def derived(self, op: OpBase, key: str) -> object:
+        return self._derived(op, key)
+
+    def param_array_suffix(self, shape: tuple[int, ...]) -> str:
+        return self._param_array_suffix(shape)
+
+    def build_param_decls(
+        self,
+        params: list[tuple[str | None, str, str, bool]],
+    ) -> tuple[str, ...]:
+        return self._build_param_decls(params)
+
     def emit_generic_op(self, op: OpBase, ctx: EmitContext) -> str:
         if self._emit_state is None:
             raise CodegenError("Emitter state not initialized")
@@ -4752,76 +4787,6 @@ class CEmitter:
             dim_args=state.dim_args,
             tensor_dim_names=state.tensor_dim_names,
         )
-
-    def _render_gather_like_op(
-        self,
-        *,
-        model: LoweredModel,
-        op: OpBase,
-        op_name: str,
-        c_type: str,
-        gather_template,
-    ) -> str | None:
-        if not isinstance(op, GatherOp):
-            return None
-        params = self._shared_param_map(
-            [
-                ("data", op.data),
-                ("indices", op.indices),
-                ("output", op.output),
-            ]
-        )
-        output_shape_raw = self._ctx_shape(op.output)
-        output_shape = CEmitter._codegen_shape(output_shape_raw)
-        loop_vars = CEmitter._loop_vars(output_shape_raw)
-        output_loop_vars = loop_vars if output_shape_raw else ()
-        indices_shape = self._ctx_shape(op.indices)
-        indices_rank = len(indices_shape)
-        axis = int(self._derived(op, "axis"))
-        if indices_rank == 0:
-            indices_indices = ("0",)
-        else:
-            indices_indices = output_loop_vars[axis : axis + indices_rank]
-        data_indices = [
-            *output_loop_vars[:axis],
-            "gather_index",
-            *output_loop_vars[axis + indices_rank :],
-        ]
-        data_shape = self._ctx_shape(op.data)
-        data_suffix = self._param_array_suffix(data_shape)
-        indices_suffix = self._param_array_suffix(indices_shape)
-        output_suffix = self._param_array_suffix(output_shape_raw)
-        indices_dtype = self._ctx_dtype(op.indices)
-        param_decls = self._build_param_decls(
-            [
-                (params["data"], c_type, data_suffix, True),
-                (
-                    params["indices"],
-                    indices_dtype.c_type,
-                    indices_suffix,
-                    True,
-                ),
-                (params["output"], c_type, output_suffix, False),
-            ]
-        )
-        return gather_template.render(
-            model_name=model.name,
-            op_name=op_name,
-            data=params["data"],
-            indices=params["indices"],
-            output=params["output"],
-            params=param_decls,
-            c_type=c_type,
-            indices_c_type=indices_dtype.c_type,
-            data_suffix=data_suffix,
-            indices_suffix=indices_suffix,
-            output_suffix=output_suffix,
-            output_shape=output_shape,
-            loop_vars=loop_vars,
-            indices_indices=indices_indices,
-            data_indices=data_indices,
-            axis_dim=data_shape[axis],
-        ).rstrip()
 
     def _render_reduce_like_op(
         self,
@@ -5122,7 +5087,9 @@ class CEmitter:
             output_loop_vars = CEmitter._loop_vars(output_shape)
             input_shape = CEmitter._codegen_shape(input_shape_raw)
             input_loop_vars = CEmitter._loop_vars(input_shape)
-            axes_shape = self._ctx_shape(op.axes_input) if op.axes_input is not None else ()
+            axes_shape = (
+                self._ctx_shape(op.axes_input) if op.axes_input is not None else ()
+            )
             axes_count = 1
             for dim in axes_shape:
                 if dim == 0:
@@ -5332,16 +5299,6 @@ class CEmitter:
 
         def with_node_comment(rendered: str) -> str:
             return f"{node_comment}\n{_format_c_indentation(rendered)}"
-
-        gather_like_rendered = self._render_gather_like_op(
-            model=model,
-            op=op,
-            op_name=op_name,
-            c_type=c_type,
-            gather_template=gather_template,
-        )
-        if gather_like_rendered is not None:
-            return with_node_comment(gather_like_rendered)
 
         reduce_like_rendered = self._render_reduce_like_op(
             model=model,
@@ -9305,51 +9262,6 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
-        if isinstance(op, ExpandOp):
-            params = self._shared_param_map(
-                [("input0", op.input0), ("output", op.output)]
-            )
-            output_dim_names = _dim_names_for(op.output)
-            output_shape_raw = self._ctx_shape(op.output)
-            output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
-            loop_vars = CEmitter._loop_vars(output_shape_raw)
-            input_shape = self._ctx_shape(op.input0)
-            input_suffix = self._param_array_suffix(
-                input_shape, _dim_names_for(op.input0)
-            )
-            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
-            param_decls = self._build_param_decls(
-                [
-                    (params["input0"], c_type, input_suffix, True),
-                    (params["output"], c_type, output_suffix, False),
-                ]
-            )
-            input_shape_padded = self._derived(op, "input_shape_padded")
-            input_strides = self._derived(op, "input_strides")
-            input_index_terms = [
-                f"{loop_var} * {stride}"
-                for loop_var, input_dim, stride in zip(
-                    loop_vars, input_shape_padded, input_strides
-                )
-                if input_dim != 1
-            ]
-            input_index_expr = (
-                " + ".join(input_index_terms) if input_index_terms else "0"
-            )
-            rendered = expand_template.render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                loop_vars=loop_vars,
-                input_index_expr=input_index_expr,
-            ).rstrip()
-            return with_node_comment(rendered)
         if isinstance(op, CumSumOp):
             params = self._unique_param_map(
                 [
@@ -11041,7 +10953,9 @@ class CEmitter:
                 ),
             )
         if isinstance(op, NonMaxSuppressionOp):
-            return ((op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),)
+            return (
+                (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),
+            )
         return (
             (
                 op.output,

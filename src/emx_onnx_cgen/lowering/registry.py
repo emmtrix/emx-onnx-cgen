@@ -28,7 +28,10 @@ def register_lowering(
 
 def register_lowering_if_missing(
     op_type: str,
-) -> Callable[[Callable[[Graph | GraphContext, Node], LoweredOp]], Callable[[Graph | GraphContext, Node], LoweredOp]]:
+) -> Callable[
+    [Callable[[Graph | GraphContext, Node], LoweredOp]],
+    Callable[[Graph | GraphContext, Node], LoweredOp],
+]:
     def decorator(
         func: Callable[[Graph | GraphContext, Node], LoweredOp],
     ) -> Callable[[Graph | GraphContext, Node], LoweredOp]:
@@ -42,12 +45,18 @@ def register_lowering_if_missing(
 def get_lowering(
     op_type: str,
 ) -> Callable[[Graph | GraphContext, Node], OpBase] | None:
+    lowering = _LOWERING_REGISTRY.get(op_type)
+    if lowering is not None:
+        return lowering
+    from . import load_lowering_registry
+
+    load_lowering_registry()
     return _LOWERING_REGISTRY.get(op_type)
 
 
-def get_lowering_registry() -> Mapping[
-    str, Callable[[Graph | GraphContext, Node], OpBase]
-]:
+def get_lowering_registry() -> (
+    Mapping[str, Callable[[Graph | GraphContext, Node], OpBase]]
+):
     return _LOWERING_REGISTRY
 
 
