@@ -4658,21 +4658,6 @@ class CEmitter:
     def render_op(self, op: OpBase, ctx: EmitContext) -> str:
         return op.emit(self, ctx)
 
-    def emit_elementwise_op(self, op: ElementwiseOpBase, ctx: EmitContext) -> str:
-        return self.emit_generic_op(op, ctx)
-
-    def emit_gather_like_op(self, op: RenderableOpBase, ctx: EmitContext) -> str:
-        return self.emit_generic_op(op, ctx)
-
-    def emit_shape_like_op(self, op: RenderableOpBase, ctx: EmitContext) -> str:
-        return self.emit_generic_op(op, ctx)
-
-    def emit_variadic_like_op(self, op: RenderableOpBase, ctx: EmitContext) -> str:
-        return self.emit_generic_op(op, ctx)
-
-    def emit_reduce_op(self, op: ReduceOpBase, ctx: EmitContext) -> str:
-        return self.emit_generic_op(op, ctx)
-
     def emit_generic_op(self, op: OpBase, ctx: EmitContext) -> str:
         if self._emit_state is None:
             raise CodegenError("Emitter state not initialized")
@@ -4767,6 +4752,485 @@ class CEmitter:
             dim_args=state.dim_args,
             tensor_dim_names=state.tensor_dim_names,
         )
+
+    def _render_gather_like_op(
+        self,
+        *,
+        model: LoweredModel,
+        op: OpBase,
+        op_name: str,
+        c_type: str,
+        gather_template,
+    ) -> str | None:
+        if not isinstance(op, GatherOp):
+            return None
+        params = self._shared_param_map(
+            [
+                ("data", op.data),
+                ("indices", op.indices),
+                ("output", op.output),
+            ]
+        )
+        output_shape_raw = self._ctx_shape(op.output)
+        output_shape = CEmitter._codegen_shape(output_shape_raw)
+        loop_vars = CEmitter._loop_vars(output_shape_raw)
+        output_loop_vars = loop_vars if output_shape_raw else ()
+        indices_shape = self._ctx_shape(op.indices)
+        indices_rank = len(indices_shape)
+        axis = int(self._derived(op, "axis"))
+        if indices_rank == 0:
+            indices_indices = ("0",)
+        else:
+            indices_indices = output_loop_vars[axis : axis + indices_rank]
+        data_indices = [
+            *output_loop_vars[:axis],
+            "gather_index",
+            *output_loop_vars[axis + indices_rank :],
+        ]
+        data_shape = self._ctx_shape(op.data)
+        data_suffix = self._param_array_suffix(data_shape)
+        indices_suffix = self._param_array_suffix(indices_shape)
+        output_suffix = self._param_array_suffix(output_shape_raw)
+        indices_dtype = self._ctx_dtype(op.indices)
+        param_decls = self._build_param_decls(
+            [
+                (params["data"], c_type, data_suffix, True),
+                (
+                    params["indices"],
+                    indices_dtype.c_type,
+                    indices_suffix,
+                    True,
+                ),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        return gather_template.render(
+            model_name=model.name,
+            op_name=op_name,
+            data=params["data"],
+            indices=params["indices"],
+            output=params["output"],
+            params=param_decls,
+            c_type=c_type,
+            indices_c_type=indices_dtype.c_type,
+            data_suffix=data_suffix,
+            indices_suffix=indices_suffix,
+            output_suffix=output_suffix,
+            output_shape=output_shape,
+            loop_vars=loop_vars,
+            indices_indices=indices_indices,
+            data_indices=data_indices,
+            axis_dim=data_shape[axis],
+        ).rstrip()
+
+    def _render_reduce_like_op(
+        self,
+        *,
+        model: LoweredModel,
+        op: OpBase,
+        op_name: str,
+        c_type: str,
+        zero_literal: str,
+        min_literal: str,
+        max_literal: str,
+        dim_args: str,
+        reduce_template,
+        reduce_dynamic_template,
+        arg_reduce_template,
+        topk_template,
+    ) -> str | None:
+        if isinstance(op, ReduceOp) and op.axes_input is None:
+            input_shape = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output)
+            axes = self._derived(op, "axes")
+            output_dtype = self._ctx_dtype(op.output)
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            if not input_shape:
+                reduce_loop_vars = ("r0",)
+                reduce_dims = (1,)
+            else:
+                reduce_loop_vars = tuple(f"r{idx}" for idx in range(len(axes)))
+                reduce_dims = tuple(input_shape[axis] for axis in axes)
+            if not input_shape:
+                input_indices = [reduce_loop_vars[0]]
+            elif op.keepdims:
+                input_indices = [
+                    (
+                        reduce_loop_vars[axes.index(axis)]
+                        if axis in axes
+                        else output_loop_vars[axis]
+                    )
+                    for axis in range(len(input_shape))
+                ]
+            else:
+                kept_axes = [
+                    axis for axis in range(len(input_shape)) if axis not in axes
+                ]
+                input_indices = [
+                    (
+                        reduce_loop_vars[axes.index(axis)]
+                        if axis in axes
+                        else output_loop_vars[kept_axes.index(axis)]
+                    )
+                    for axis in range(len(input_shape))
+                ]
+            input_index_expr = "".join(f"[{var}]" for var in input_indices)
+            output_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
+            value_expr = f"{params['input0']}{input_index_expr}"
+            update_expr = None
+            init_literal = None
+            final_expr = "acc"
+            fabs_fn = CEmitter._math_fn(output_dtype, "fabsf", "fabs")
+            exp_fn = CEmitter._math_fn(output_dtype, "expf", "exp")
+            log_fn = CEmitter._math_fn(output_dtype, "logf", "log")
+            sqrt_fn = CEmitter._math_fn(output_dtype, "sqrtf", "sqrt")
+            if op.reduce_kind == "sum":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr};"
+            elif op.reduce_kind == "mean":
+                count_literal = CEmitter._format_literal(output_dtype, op.reduce_count)
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr};"
+                final_expr = f"acc / {count_literal}"
+            elif op.reduce_kind == "max":
+                init_literal = min_literal
+                update_expr = f"if ({value_expr} > acc) acc = {value_expr};"
+            elif op.reduce_kind == "min":
+                init_literal = max_literal
+                update_expr = f"if ({value_expr} < acc) acc = {value_expr};"
+            elif op.reduce_kind == "prod":
+                init_literal = CEmitter._format_literal(output_dtype, 1)
+                update_expr = f"acc *= {value_expr};"
+            elif op.reduce_kind == "l1":
+                init_literal = zero_literal
+                update_expr = f"acc += {fabs_fn}({value_expr});"
+            elif op.reduce_kind == "l2":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr} * {value_expr};"
+                final_expr = f"{sqrt_fn}(acc)"
+            elif op.reduce_kind == "logsum":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr};"
+                final_expr = f"{log_fn}(acc)"
+            elif op.reduce_kind == "logsumexp":
+                init_literal = zero_literal
+                update_expr = f"acc += {exp_fn}({value_expr});"
+                final_expr = f"{log_fn}(acc)"
+            elif op.reduce_kind == "sumsquare":
+                init_literal = zero_literal
+                update_expr = f"acc += {value_expr} * {value_expr};"
+            else:
+                raise CodegenError(f"Unsupported reduce kind {op.reduce_kind}")
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            return reduce_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                reduce_loop_vars=reduce_loop_vars,
+                reduce_dims=reduce_dims,
+                output_index_expr=output_index_expr,
+                init_literal=init_literal,
+                zero_literal=zero_literal,
+                update_expr=update_expr,
+                final_expr=final_expr,
+                use_kahan=False,
+                kahan_value_expr=None,
+            ).rstrip()
+        if isinstance(op, ArgReduceOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output)
+            axis = self._derived(op, "axis")
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            reduce_var = "r0"
+            reduce_dim = input_shape[axis]
+            if op.keepdims:
+                input_indices = [
+                    reduce_var if axis_index == axis else output_loop_vars[axis_index]
+                    for axis_index in range(len(input_shape))
+                ]
+            else:
+                kept_axes = [
+                    axis_index
+                    for axis_index in range(len(input_shape))
+                    if axis_index != axis
+                ]
+                input_indices = [
+                    (
+                        reduce_var
+                        if axis_index == axis
+                        else output_loop_vars[kept_axes.index(axis_index)]
+                    )
+                    for axis_index in range(len(input_shape))
+                ]
+            init_indices = [
+                "0" if axis_index == axis else input_indices[axis_index]
+                for axis_index in range(len(input_shape))
+            ]
+            input_index_expr = "".join(f"[{var}]" for var in input_indices)
+            init_index_expr = "".join(f"[{var}]" for var in init_indices)
+            output_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
+            if op.reduce_kind == "max":
+                compare_op = ">=" if op.select_last_index else ">"
+            elif op.reduce_kind == "min":
+                compare_op = "<=" if op.select_last_index else "<"
+            else:
+                raise CodegenError(f"Unsupported arg reduce kind {op.reduce_kind}")
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
+                ]
+            )
+            return arg_reduce_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                output_loop_vars=output_loop_vars,
+                reduce_var=reduce_var,
+                reduce_dim=reduce_dim,
+                input_index_expr=input_index_expr,
+                init_index_expr=init_index_expr,
+                output_index_expr=output_index_expr,
+                compare_op=compare_op,
+                dim_args=dim_args,
+            ).rstrip()
+        if isinstance(op, TopKOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output_values)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_values_dtype = self._ctx_dtype(op.output_values)
+            output_indices_dtype = self._ctx_dtype(op.output_indices)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output_values", op.output_values),
+                    ("output_indices", op.output_indices),
+                ]
+            )
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            outer_shape = tuple(
+                dim for axis, dim in enumerate(output_shape) if axis != op.axis
+            )
+            outer_loop_vars = CEmitter._loop_vars(outer_shape)
+            reduce_var = "r0"
+            k_var = "k0"
+            input_indices: list[str] = []
+            output_indices: list[str] = []
+            outer_index = 0
+            for axis in range(len(input_shape)):
+                if axis == op.axis:
+                    input_indices.append(reduce_var)
+                    output_indices.append(k_var)
+                else:
+                    input_indices.append(outer_loop_vars[outer_index])
+                    output_indices.append(outer_loop_vars[outer_index])
+                    outer_index += 1
+            input_index_expr = "".join(f"[{var}]" for var in input_indices)
+            output_index_expr = "".join(f"[{var}]" for var in output_indices)
+            compare_expr = (
+                "(a > b) || ((a == b) && (ai < bi))"
+                if op.largest
+                else "(a < b) || ((a == b) && (ai < bi))"
+            )
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (
+                        params["output_values"],
+                        output_values_dtype.c_type,
+                        output_suffix,
+                        False,
+                    ),
+                    (
+                        params["output_indices"],
+                        output_indices_dtype.c_type,
+                        output_suffix,
+                        False,
+                    ),
+                ]
+            )
+            return topk_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output_values=params["output_values"],
+                output_indices=params["output_indices"],
+                params=param_decls,
+                input_c_type=input_dtype.c_type,
+                output_values_c_type=output_values_dtype.c_type,
+                output_indices_c_type=output_indices_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                outer_shape=outer_shape,
+                outer_loop_vars=outer_loop_vars,
+                reduce_var=reduce_var,
+                k_var=k_var,
+                axis_dim=input_shape[op.axis],
+                k=op.k,
+                input_index_expr=input_index_expr,
+                output_index_expr=output_index_expr,
+                compare_expr=compare_expr,
+                dim_args=dim_args,
+            ).rstrip()
+        if isinstance(op, ReduceOp):
+            name_params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("axes_input", op.axes_input),
+                    ("output", op.output),
+                ]
+            )
+            input_shape_raw = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            input_shape = CEmitter._codegen_shape(input_shape_raw)
+            input_loop_vars = CEmitter._loop_vars(input_shape)
+            axes_shape = self._ctx_shape(op.axes_input) if op.axes_input is not None else ()
+            axes_count = 1
+            for dim in axes_shape:
+                if dim == 0:
+                    axes_count = 0
+                    break
+                axes_count *= dim
+            axes_c_type = (
+                self._ctx_dtype(op.axes_input).c_type
+                if op.axes_input is not None
+                else ScalarType.I64.c_type
+            )
+            input_indices = "".join(f"[{var}]" for var in input_loop_vars)
+            output_indices = "".join(
+                f"[out_indices[{idx}]]" for idx in range(len(output_shape))
+            )
+            output_loop_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
+            value_expr = f"{name_params['input0']}{input_indices}"
+            update_expr = None
+            init_literal = None
+            post_expr = None
+            reduce_dtype = self._ctx_dtype(op.output)
+            fabs_fn = CEmitter._math_fn(reduce_dtype, "fabsf", "fabs")
+            exp_fn = CEmitter._math_fn(reduce_dtype, "expf", "exp")
+            log_fn = CEmitter._math_fn(reduce_dtype, "logf", "log")
+            sqrt_fn = CEmitter._math_fn(reduce_dtype, "sqrtf", "sqrt")
+            if op.reduce_kind == "sum":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr};"
+            elif op.reduce_kind == "mean":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr};"
+                post_expr = "*out_ptr = *out_ptr / reduce_count;"
+            elif op.reduce_kind == "max":
+                init_literal = min_literal
+                update_expr = f"if ({value_expr} > *out_ptr) *out_ptr = {value_expr};"
+            elif op.reduce_kind == "min":
+                init_literal = max_literal
+                update_expr = f"if ({value_expr} < *out_ptr) *out_ptr = {value_expr};"
+            elif op.reduce_kind == "prod":
+                init_literal = CEmitter._format_literal(reduce_dtype, 1)
+                update_expr = f"*out_ptr *= {value_expr};"
+            elif op.reduce_kind == "l1":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {fabs_fn}({value_expr});"
+            elif op.reduce_kind == "l2":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr} * {value_expr};"
+                post_expr = f"*out_ptr = {sqrt_fn}(*out_ptr);"
+            elif op.reduce_kind == "logsum":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr};"
+                post_expr = f"*out_ptr = {log_fn}(*out_ptr);"
+            elif op.reduce_kind == "logsumexp":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {exp_fn}({value_expr});"
+                post_expr = f"*out_ptr = {log_fn}(*out_ptr);"
+            elif op.reduce_kind == "sumsquare":
+                init_literal = zero_literal
+                update_expr = f"*out_ptr += {value_expr} * {value_expr};"
+            else:
+                raise CodegenError(f"Unsupported reduce kind {op.reduce_kind}")
+            input_suffix = self._param_array_suffix(input_shape_raw)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            axes_suffix = self._param_array_suffix(axes_shape) if axes_shape else ""
+            params = self._build_param_decls(
+                [
+                    (name_params["input0"], c_type, input_suffix, True),
+                    (
+                        (
+                            name_params["axes_input"],
+                            axes_c_type,
+                            axes_suffix,
+                            True,
+                        )
+                        if name_params["axes_input"]
+                        else (None, "", "", True)
+                    ),
+                    (name_params["output"], c_type, output_suffix, False),
+                ]
+            )
+            return reduce_dynamic_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                input0=name_params["input0"],
+                axes_input=name_params["axes_input"],
+                output=name_params["output"],
+                c_type=c_type,
+                axes_c_type=axes_c_type,
+                input_shape=input_shape,
+                output_shape=output_shape,
+                input_loop_vars=input_loop_vars,
+                output_loop_vars=output_loop_vars,
+                output_index_expr=output_indices,
+                output_loop_index_expr=output_loop_index_expr,
+                input_index_expr=input_indices,
+                init_literal=init_literal,
+                update_expr=update_expr,
+                post_expr=post_expr,
+                keepdims=op.keepdims,
+                noop_with_empty_axes=op.noop_with_empty_axes,
+                axes_count=axes_count,
+                reduce_mask_vars=tuple(
+                    f"reduce_mask_{idx}" for idx in range(len(input_shape))
+                ),
+                output_rank=len(output_shape),
+            ).rstrip()
+        return None
 
     def _render_op(
         self,
@@ -4868,6 +5332,33 @@ class CEmitter:
 
         def with_node_comment(rendered: str) -> str:
             return f"{node_comment}\n{_format_c_indentation(rendered)}"
+
+        gather_like_rendered = self._render_gather_like_op(
+            model=model,
+            op=op,
+            op_name=op_name,
+            c_type=c_type,
+            gather_template=gather_template,
+        )
+        if gather_like_rendered is not None:
+            return with_node_comment(gather_like_rendered)
+
+        reduce_like_rendered = self._render_reduce_like_op(
+            model=model,
+            op=op,
+            op_name=op_name,
+            c_type=c_type,
+            zero_literal=zero_literal,
+            min_literal=min_literal,
+            max_literal=max_literal,
+            dim_args=dim_args,
+            reduce_template=reduce_template,
+            reduce_dynamic_template=reduce_dynamic_template,
+            arg_reduce_template=arg_reduce_template,
+            topk_template=topk_template,
+        )
+        if reduce_like_rendered is not None:
+            return with_node_comment(reduce_like_rendered)
 
         if isinstance(op, BinaryOp):
             input0_shape = self._ctx_shape(op.input0)
@@ -7502,67 +7993,6 @@ class CEmitter:
                 axis_dim=op.data_shape[op.axis],
             ).rstrip()
             return with_node_comment(rendered)
-        if isinstance(op, GatherOp):
-            params = self._shared_param_map(
-                [
-                    ("data", op.data),
-                    ("indices", op.indices),
-                    ("output", op.output),
-                ]
-            )
-            output_shape_raw = self._ctx_shape(op.output)
-            output_shape = CEmitter._codegen_shape(output_shape_raw)
-            loop_vars = CEmitter._loop_vars(output_shape_raw)
-            output_loop_vars = loop_vars if output_shape_raw else ()
-            indices_shape = self._ctx_shape(op.indices)
-            indices_rank = len(indices_shape)
-            if indices_rank == 0:
-                indices_indices = ("0",)
-            else:
-                axis = int(self._derived(op, "axis"))
-                indices_indices = output_loop_vars[axis : axis + indices_rank]
-            axis = int(self._derived(op, "axis"))
-            data_indices = [
-                *output_loop_vars[:axis],
-                "gather_index",
-                *output_loop_vars[axis + indices_rank :],
-            ]
-            data_shape = self._ctx_shape(op.data)
-            data_suffix = self._param_array_suffix(data_shape)
-            indices_suffix = self._param_array_suffix(indices_shape)
-            output_suffix = self._param_array_suffix(output_shape_raw)
-            indices_dtype = self._ctx_dtype(op.indices)
-            param_decls = self._build_param_decls(
-                [
-                    (params["data"], c_type, data_suffix, True),
-                    (
-                        params["indices"],
-                        indices_dtype.c_type,
-                        indices_suffix,
-                        True,
-                    ),
-                    (params["output"], c_type, output_suffix, False),
-                ]
-            )
-            rendered = gather_template.render(
-                model_name=model.name,
-                op_name=op_name,
-                data=params["data"],
-                indices=params["indices"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                indices_c_type=indices_dtype.c_type,
-                data_suffix=data_suffix,
-                indices_suffix=indices_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                loop_vars=loop_vars,
-                indices_indices=indices_indices,
-                data_indices=data_indices,
-                axis_dim=data_shape[axis],
-            ).rstrip()
-            return with_node_comment(rendered)
         if isinstance(op, GatherNDOp):
             params = self._shared_param_map(
                 [
@@ -8558,403 +8988,6 @@ class CEmitter:
                 cubic_offsets=tuple(
                     itertools.product(range(4), repeat=op.spatial_rank)
                 ),
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, ReduceOp) and op.axes_input is None:
-            input_shape = self._ctx_shape(op.input0)
-            output_shape_raw = self._ctx_shape(op.output)
-            axes = self._derived(op, "axes")
-            output_dtype = self._ctx_dtype(op.output)
-            params = self._shared_param_map(
-                [("input0", op.input0), ("output", op.output)]
-            )
-            output_shape = CEmitter._codegen_shape(output_shape_raw)
-            output_loop_vars = CEmitter._loop_vars(output_shape)
-            if not input_shape:
-                reduce_loop_vars = ("r0",)
-                reduce_dims = (1,)
-            else:
-                reduce_loop_vars = tuple(f"r{idx}" for idx in range(len(axes)))
-                reduce_dims = tuple(input_shape[axis] for axis in axes)
-            if not input_shape:
-                input_indices = [reduce_loop_vars[0]]
-            elif op.keepdims:
-                input_indices = [
-                    (
-                        reduce_loop_vars[axes.index(axis)]
-                        if axis in axes
-                        else output_loop_vars[axis]
-                    )
-                    for axis in range(len(input_shape))
-                ]
-            else:
-                kept_axes = [
-                    axis for axis in range(len(input_shape)) if axis not in axes
-                ]
-                input_indices = [
-                    (
-                        reduce_loop_vars[axes.index(axis)]
-                        if axis in axes
-                        else output_loop_vars[kept_axes.index(axis)]
-                    )
-                    for axis in range(len(input_shape))
-                ]
-            input_index_expr = "".join(f"[{var}]" for var in input_indices)
-            output_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
-            value_expr = f"{params['input0']}{input_index_expr}"
-            update_expr = None
-            init_literal = None
-            final_expr = "acc"
-            fabs_fn = CEmitter._math_fn(output_dtype, "fabsf", "fabs")
-            exp_fn = CEmitter._math_fn(output_dtype, "expf", "exp")
-            log_fn = CEmitter._math_fn(output_dtype, "logf", "log")
-            sqrt_fn = CEmitter._math_fn(output_dtype, "sqrtf", "sqrt")
-            if op.reduce_kind == "sum":
-                init_literal = zero_literal
-                update_expr = f"acc += {value_expr};"
-            elif op.reduce_kind == "mean":
-                count_literal = CEmitter._format_literal(output_dtype, op.reduce_count)
-                init_literal = zero_literal
-                update_expr = f"acc += {value_expr};"
-                final_expr = f"acc / {count_literal}"
-            elif op.reduce_kind == "max":
-                init_literal = min_literal
-                update_expr = f"if ({value_expr} > acc) acc = {value_expr};"
-            elif op.reduce_kind == "min":
-                init_literal = max_literal
-                update_expr = f"if ({value_expr} < acc) acc = {value_expr};"
-            elif op.reduce_kind == "prod":
-                init_literal = CEmitter._format_literal(output_dtype, 1)
-                update_expr = f"acc *= {value_expr};"
-            elif op.reduce_kind == "l1":
-                init_literal = zero_literal
-                update_expr = f"acc += {fabs_fn}({value_expr});"
-            elif op.reduce_kind == "l2":
-                init_literal = zero_literal
-                update_expr = f"acc += {value_expr} * {value_expr};"
-                final_expr = f"{sqrt_fn}(acc)"
-            elif op.reduce_kind == "logsum":
-                init_literal = zero_literal
-                update_expr = f"acc += {value_expr};"
-                final_expr = f"{log_fn}(acc)"
-            elif op.reduce_kind == "logsumexp":
-                init_literal = zero_literal
-                update_expr = f"acc += {exp_fn}({value_expr});"
-                final_expr = f"{log_fn}(acc)"
-            elif op.reduce_kind == "sumsquare":
-                init_literal = zero_literal
-                update_expr = f"acc += {value_expr} * {value_expr};"
-            else:
-                raise CodegenError(f"Unsupported reduce kind {op.reduce_kind}")
-            input_suffix = self._param_array_suffix(input_shape)
-            output_suffix = self._param_array_suffix(output_shape_raw)
-            param_decls = self._build_param_decls(
-                [
-                    (params["input0"], c_type, input_suffix, True),
-                    (params["output"], c_type, output_suffix, False),
-                ]
-            )
-            rendered = reduce_template.render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                c_type=c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                output_loop_vars=output_loop_vars,
-                reduce_loop_vars=reduce_loop_vars,
-                reduce_dims=reduce_dims,
-                output_index_expr=output_index_expr,
-                init_literal=init_literal,
-                zero_literal=zero_literal,
-                update_expr=update_expr,
-                final_expr=final_expr,
-                use_kahan=False,
-                kahan_value_expr=None,
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, ArgReduceOp):
-            input_shape = self._ctx_shape(op.input0)
-            output_shape_raw = self._ctx_shape(op.output)
-            axis = self._derived(op, "axis")
-            input_dtype = self._ctx_dtype(op.input0)
-            output_dtype = self._ctx_dtype(op.output)
-            params = self._shared_param_map(
-                [("input0", op.input0), ("output", op.output)]
-            )
-            output_shape = CEmitter._codegen_shape(output_shape_raw)
-            output_loop_vars = CEmitter._loop_vars(output_shape)
-            reduce_var = "r0"
-            reduce_dim = input_shape[axis]
-            if op.keepdims:
-                input_indices = [
-                    reduce_var if axis_index == axis else output_loop_vars[axis_index]
-                    for axis_index in range(len(input_shape))
-                ]
-            else:
-                kept_axes = [
-                    axis_index
-                    for axis_index in range(len(input_shape))
-                    if axis_index != axis
-                ]
-                input_indices = [
-                    (
-                        reduce_var
-                        if axis_index == axis
-                        else output_loop_vars[kept_axes.index(axis_index)]
-                    )
-                    for axis_index in range(len(input_shape))
-                ]
-            init_indices = [
-                "0" if axis_index == axis else input_indices[axis_index]
-                for axis_index in range(len(input_shape))
-            ]
-            input_index_expr = "".join(f"[{var}]" for var in input_indices)
-            init_index_expr = "".join(f"[{var}]" for var in init_indices)
-            output_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
-            if op.reduce_kind == "max":
-                compare_op = ">=" if op.select_last_index else ">"
-            elif op.reduce_kind == "min":
-                compare_op = "<=" if op.select_last_index else "<"
-            else:
-                raise CodegenError(f"Unsupported arg reduce kind {op.reduce_kind}")
-            input_suffix = self._param_array_suffix(input_shape)
-            output_suffix = self._param_array_suffix(output_shape_raw)
-            param_decls = self._build_param_decls(
-                [
-                    (params["input0"], input_dtype.c_type, input_suffix, True),
-                    (params["output"], output_dtype.c_type, output_suffix, False),
-                ]
-            )
-            rendered = arg_reduce_template.render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output=params["output"],
-                params=param_decls,
-                input_c_type=input_dtype.c_type,
-                output_c_type=output_dtype.c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                output_loop_vars=output_loop_vars,
-                reduce_var=reduce_var,
-                reduce_dim=reduce_dim,
-                input_index_expr=input_index_expr,
-                init_index_expr=init_index_expr,
-                output_index_expr=output_index_expr,
-                compare_op=compare_op,
-                dim_args=dim_args,
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, TopKOp):
-            input_shape = self._ctx_shape(op.input0)
-            output_shape_raw = self._ctx_shape(op.output_values)
-            input_dtype = self._ctx_dtype(op.input0)
-            output_values_dtype = self._ctx_dtype(op.output_values)
-            output_indices_dtype = self._ctx_dtype(op.output_indices)
-            params = self._shared_param_map(
-                [
-                    ("input0", op.input0),
-                    ("output_values", op.output_values),
-                    ("output_indices", op.output_indices),
-                ]
-            )
-            output_shape = CEmitter._codegen_shape(output_shape_raw)
-            outer_shape = tuple(
-                dim for axis, dim in enumerate(output_shape) if axis != op.axis
-            )
-            outer_loop_vars = CEmitter._loop_vars(outer_shape)
-            reduce_var = "r0"
-            k_var = "k0"
-            input_indices: list[str] = []
-            output_indices: list[str] = []
-            outer_index = 0
-            for axis in range(len(input_shape)):
-                if axis == op.axis:
-                    input_indices.append(reduce_var)
-                    output_indices.append(k_var)
-                else:
-                    input_indices.append(outer_loop_vars[outer_index])
-                    output_indices.append(outer_loop_vars[outer_index])
-                    outer_index += 1
-            input_index_expr = "".join(f"[{var}]" for var in input_indices)
-            output_index_expr = "".join(f"[{var}]" for var in output_indices)
-            compare_expr = (
-                "(a > b) || ((a == b) && (ai < bi))"
-                if op.largest
-                else "(a < b) || ((a == b) && (ai < bi))"
-            )
-            input_suffix = self._param_array_suffix(input_shape)
-            output_suffix = self._param_array_suffix(output_shape_raw)
-            param_decls = self._build_param_decls(
-                [
-                    (params["input0"], input_dtype.c_type, input_suffix, True),
-                    (
-                        params["output_values"],
-                        output_values_dtype.c_type,
-                        output_suffix,
-                        False,
-                    ),
-                    (
-                        params["output_indices"],
-                        output_indices_dtype.c_type,
-                        output_suffix,
-                        False,
-                    ),
-                ]
-            )
-            rendered = topk_template.render(
-                model_name=model.name,
-                op_name=op_name,
-                input0=params["input0"],
-                output_values=params["output_values"],
-                output_indices=params["output_indices"],
-                params=param_decls,
-                input_c_type=input_dtype.c_type,
-                output_values_c_type=output_values_dtype.c_type,
-                output_indices_c_type=output_indices_dtype.c_type,
-                input_suffix=input_suffix,
-                output_suffix=output_suffix,
-                output_shape=output_shape,
-                outer_shape=outer_shape,
-                outer_loop_vars=outer_loop_vars,
-                reduce_var=reduce_var,
-                k_var=k_var,
-                axis_dim=input_shape[op.axis],
-                k=op.k,
-                input_index_expr=input_index_expr,
-                output_index_expr=output_index_expr,
-                compare_expr=compare_expr,
-                dim_args=dim_args,
-            ).rstrip()
-            return with_node_comment(rendered)
-        if isinstance(op, ReduceOp):
-            name_params = self._shared_param_map(
-                [
-                    ("input0", op.input0),
-                    ("axes_input", op.axes_input),
-                    ("output", op.output),
-                ]
-            )
-            input_shape_raw = self._ctx_shape(op.input0)
-            output_shape_raw = self._ctx_shape(op.output)
-            output_shape = CEmitter._codegen_shape(output_shape_raw)
-            output_loop_vars = CEmitter._loop_vars(output_shape)
-            input_shape = CEmitter._codegen_shape(input_shape_raw)
-            input_loop_vars = CEmitter._loop_vars(input_shape)
-            axes_shape = (
-                self._ctx_shape(op.axes_input) if op.axes_input is not None else ()
-            )
-            axes_count = 1
-            for dim in axes_shape:
-                if dim == 0:
-                    axes_count = 0
-                    break
-                axes_count *= dim
-            axes_c_type = (
-                self._ctx_dtype(op.axes_input).c_type
-                if op.axes_input is not None
-                else ScalarType.I64.c_type
-            )
-            input_indices = "".join(f"[{var}]" for var in input_loop_vars)
-            output_indices = "".join(
-                f"[out_indices[{idx}]]" for idx in range(len(output_shape))
-            )
-            output_loop_index_expr = "".join(f"[{var}]" for var in output_loop_vars)
-            value_expr = f"{name_params['input0']}{input_indices}"
-            update_expr = None
-            init_literal = None
-            post_expr = None
-            reduce_dtype = self._ctx_dtype(op.output)
-            fabs_fn = CEmitter._math_fn(reduce_dtype, "fabsf", "fabs")
-            exp_fn = CEmitter._math_fn(reduce_dtype, "expf", "exp")
-            log_fn = CEmitter._math_fn(reduce_dtype, "logf", "log")
-            sqrt_fn = CEmitter._math_fn(reduce_dtype, "sqrtf", "sqrt")
-            if op.reduce_kind == "sum":
-                init_literal = zero_literal
-                update_expr = f"*out_ptr += {value_expr};"
-            elif op.reduce_kind == "mean":
-                init_literal = zero_literal
-                update_expr = f"*out_ptr += {value_expr};"
-                post_expr = "*out_ptr = *out_ptr / reduce_count;"
-            elif op.reduce_kind == "max":
-                init_literal = min_literal
-                update_expr = f"if ({value_expr} > *out_ptr) *out_ptr = {value_expr};"
-            elif op.reduce_kind == "min":
-                init_literal = max_literal
-                update_expr = f"if ({value_expr} < *out_ptr) *out_ptr = {value_expr};"
-            elif op.reduce_kind == "prod":
-                init_literal = CEmitter._format_literal(reduce_dtype, 1)
-                update_expr = f"*out_ptr *= {value_expr};"
-            elif op.reduce_kind == "l1":
-                init_literal = zero_literal
-                update_expr = f"*out_ptr += {fabs_fn}({value_expr});"
-            elif op.reduce_kind == "l2":
-                init_literal = zero_literal
-                update_expr = f"*out_ptr += {value_expr} * {value_expr};"
-                post_expr = f"*out_ptr = {sqrt_fn}(*out_ptr);"
-            elif op.reduce_kind == "logsum":
-                init_literal = zero_literal
-                update_expr = f"*out_ptr += {value_expr};"
-                post_expr = f"*out_ptr = {log_fn}(*out_ptr);"
-            elif op.reduce_kind == "logsumexp":
-                init_literal = zero_literal
-                update_expr = f"*out_ptr += {exp_fn}({value_expr});"
-                post_expr = f"*out_ptr = {log_fn}(*out_ptr);"
-            elif op.reduce_kind == "sumsquare":
-                init_literal = zero_literal
-                update_expr = f"*out_ptr += {value_expr} * {value_expr};"
-            else:
-                raise CodegenError(f"Unsupported reduce kind {op.reduce_kind}")
-            input_suffix = self._param_array_suffix(input_shape_raw)
-            output_suffix = self._param_array_suffix(output_shape_raw)
-            axes_suffix = self._param_array_suffix(axes_shape) if axes_shape else ""
-            params = self._build_param_decls(
-                [
-                    (name_params["input0"], c_type, input_suffix, True),
-                    (
-                        (
-                            name_params["axes_input"],
-                            axes_c_type,
-                            axes_suffix,
-                            True,
-                        )
-                        if name_params["axes_input"]
-                        else (None, "", "", True)
-                    ),
-                    (name_params["output"], c_type, output_suffix, False),
-                ]
-            )
-            rendered = reduce_dynamic_template.render(
-                model_name=model.name,
-                op_name=op_name,
-                params=params,
-                input0=name_params["input0"],
-                axes_input=name_params["axes_input"],
-                output=name_params["output"],
-                c_type=c_type,
-                axes_c_type=axes_c_type,
-                input_shape=input_shape,
-                output_shape=output_shape,
-                input_loop_vars=input_loop_vars,
-                output_loop_vars=output_loop_vars,
-                output_index_expr=output_indices,
-                output_loop_index_expr=output_loop_index_expr,
-                input_index_expr=input_indices,
-                init_literal=init_literal,
-                update_expr=update_expr,
-                post_expr=post_expr,
-                keepdims=op.keepdims,
-                noop_with_empty_axes=op.noop_with_empty_axes,
-                axes_count=axes_count,
-                reduce_mask_vars=tuple(
-                    f"reduce_mask_{idx}" for idx in range(len(input_shape))
-                ),
-                output_rank=len(output_shape),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
