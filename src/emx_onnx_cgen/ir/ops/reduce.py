@@ -67,6 +67,9 @@ class TopKOp(ReduceOpBase):
     largest: bool
     sorted: bool
 
+    def call_args(self) -> tuple[str, ...]:
+        return (self.input0, self.output_values, self.output_indices)
+
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
         ctx.dtype(self.output_values)

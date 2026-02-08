@@ -45,6 +45,9 @@ class OpBase(ABC):
         _, output_fields = _io_field_names(type(self))
         return _resolve_io_names(self, output_fields)
 
+    def call_args(self) -> tuple[str, ...]:
+        return self.input_names + self.output_names
+
     def __getattr__(self, name: str) -> str:
         if name == "kind":
             return self.__class__.__name__
@@ -256,6 +259,9 @@ class ShapeLikeOpBase(RenderableOpBase):
 
     __io_inputs__ = ("input0", "input_shape")
     __io_outputs__ = ("output",)
+
+    def call_args(self) -> tuple[str, ...]:
+        return (self._shape_data(), self._shape_output())
 
     def _shape_data(self) -> str:
         raise NotImplementedError

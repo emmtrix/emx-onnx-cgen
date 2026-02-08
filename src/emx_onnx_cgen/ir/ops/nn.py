@@ -985,6 +985,20 @@ class AdagradOp(RenderableOpBase):
     epsilon: float
     decay_factor: float
 
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.rate, self.timestep]
+        for index in range(len(self.inputs)):
+            args.extend(
+                [
+                    self.inputs[index],
+                    self.gradients[index],
+                    self.accumulators[index],
+                    self.outputs[index],
+                    self.accumulator_outputs[index],
+                ]
+            )
+        return tuple(args)
+
 
 @dataclass(frozen=True)
 class MaxPoolOp(RenderableOpBase):
