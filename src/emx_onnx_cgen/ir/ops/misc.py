@@ -9,6 +9,8 @@ from shared.scalar_types import ScalarType
 from ...errors import ShapeInferenceError, UnsupportedOpError
 from ..op_base import (
     BroadcastingOpBase,
+    EmitContext,
+    Emitter,
     GatherLikeOpBase,
     RenderableOpBase,
     ShapeLikeOpBase,
@@ -427,6 +429,9 @@ class ConstantOfShapeOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_generic_op(self, ctx)
+
 
 @dataclass(frozen=True)
 class ShapeOp(RenderableOpBase):
@@ -440,9 +445,15 @@ class ShapeOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_generic_op(self, ctx)
+
 
 @dataclass(frozen=True)
 class SizeOp(RenderableOpBase):
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_generic_op(self, ctx)
+
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
     input0: str
@@ -460,6 +471,9 @@ class OptionalHasElementOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_generic_op(self, ctx)
 
     def validate(self, ctx: OpContext) -> None:
         value = ctx.graph.find_value(self.input0)
@@ -507,6 +521,9 @@ class NonZeroOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_generic_op(self, ctx)
 
     def validate(self, ctx: OpContext) -> None:
         if len(ctx.shape(self.input0)) == 0:

@@ -5106,6 +5106,24 @@ class CEmitter:
         )
 
     def render_op(self, op: OpBase, ctx: EmitContext) -> str:
+        return op.emit(self, ctx)
+
+    def emit_elementwise_op(self, op: ElementwiseOpBase, ctx: EmitContext) -> str:
+        return self.emit_generic_op(op, ctx)
+
+    def emit_gather_like_op(self, op: RenderableOpBase, ctx: EmitContext) -> str:
+        return self.emit_generic_op(op, ctx)
+
+    def emit_shape_like_op(self, op: RenderableOpBase, ctx: EmitContext) -> str:
+        return self.emit_generic_op(op, ctx)
+
+    def emit_variadic_like_op(self, op: RenderableOpBase, ctx: EmitContext) -> str:
+        return self.emit_generic_op(op, ctx)
+
+    def emit_reduce_op(self, op: ReduceOpBase, ctx: EmitContext) -> str:
+        return self.emit_generic_op(op, ctx)
+
+    def emit_generic_op(self, op: OpBase, ctx: EmitContext) -> str:
         if self._emit_state is None:
             raise CodegenError("Emitter state not initialized")
         state = self._emit_state
