@@ -11,7 +11,17 @@ from .op_context import OpContext
 
 
 class Emitter(Protocol):
-    def render_op(self, op: "OpBase", ctx: "EmitContext") -> str: ...
+    def emit_elementwise_op(self, op: "ElementwiseOpBase", ctx: "EmitContext") -> str: ...
+
+    def emit_gather_like_op(self, op: "GatherLikeOpBase", ctx: "EmitContext") -> str: ...
+
+    def emit_shape_like_op(self, op: "ShapeLikeOpBase", ctx: "EmitContext") -> str: ...
+
+    def emit_variadic_like_op(self, op: "VariadicLikeOpBase", ctx: "EmitContext") -> str: ...
+
+    def emit_reduce_op(self, op: "ReduceOpBase", ctx: "EmitContext") -> str: ...
+
+    def emit_generic_op(self, op: "OpBase", ctx: "EmitContext") -> str: ...
 
 
 @dataclass(frozen=True)
@@ -58,11 +68,14 @@ class OpBase(ABC):
 
 class RenderableOpBase(OpBase):
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
-        return emitter.render_op(self, ctx)
+        return emitter.emit_generic_op(self, ctx)
 
 
 class ElementwiseOpBase(RenderableOpBase):
     """Elementwise ops should validate against OpContext and store no derived state."""
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_elementwise_op(self, ctx)
 
     __io_outputs__ = ("output",)
 
@@ -153,6 +166,9 @@ class ElementwiseOpBase(RenderableOpBase):
 
 
 class GatherLikeOpBase(RenderableOpBase):
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_gather_like_op(self, ctx)
+
     __io_inputs__ = ("data", "indices")
     __io_outputs__ = ("output",)
 
@@ -235,6 +251,9 @@ class GatherLikeOpBase(RenderableOpBase):
 
 
 class ShapeLikeOpBase(RenderableOpBase):
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_shape_like_op(self, ctx)
+
     __io_inputs__ = ("input0", "input_shape")
     __io_outputs__ = ("output",)
 
@@ -339,6 +358,9 @@ class ShapeLikeOpBase(RenderableOpBase):
 
 
 class VariadicLikeOpBase(RenderableOpBase):
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_variadic_like_op(self, ctx)
+
     __io_inputs__ = ("inputs",)
     __io_outputs__ = ("output",)
 
@@ -439,6 +461,9 @@ class VariadicLikeOpBase(RenderableOpBase):
 
 
 class ReduceOpBase(RenderableOpBase):
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_reduce_op(self, ctx)
+
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
 
