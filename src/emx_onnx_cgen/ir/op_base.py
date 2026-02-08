@@ -12,6 +12,15 @@ from .op_context import OpContext
 
 class Emitter(Protocol):
     def emit_generic_op(self, op: "OpBase", ctx: "EmitContext") -> str: ...
+    def require_emit_state(self): ...
+    def op_function_name(self, model, index: int) -> str: ...
+    def with_node_comment(self, model, index: int, rendered: str) -> str: ...
+    def shared_param_map(self, items: list[tuple[str, str | None]]): ...
+    def ctx_shape(self, name: str) -> tuple[int, ...]: ...
+    def ctx_dtype(self, name: str): ...
+    def derived(self, op: "OpBase", key: str): ...
+    def param_array_suffix(self, shape: tuple[int, ...]) -> str: ...
+    def build_param_decls(self, params): ...
 
 
 @dataclass(frozen=True)
@@ -160,7 +169,71 @@ class ElementwiseOpBase(RenderableOpBase):
 
 class GatherLikeOpBase(RenderableOpBase):
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
-        return emitter.emit_generic_op(self, ctx)
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self._gather_output()).c_type
+        params = emitter.shared_param_map(
+            [
+                ("data", self._gather_data()),
+                ("indices", self._gather_indices()),
+                ("output", self._gather_output()),
+            ]
+        )
+        output_shape_raw = emitter.ctx_shape(self._gather_output())
+        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
+        loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+        render_output_shape = output_shape if output_shape else (1,)
+        render_loop_vars = loop_vars if loop_vars else ("i0",)
+        output_loop_vars = loop_vars if output_shape_raw else ()
+        indices_shape = emitter.ctx_shape(self._gather_indices())
+        indices_rank = len(indices_shape)
+        axis = int(emitter.derived(self, "axis"))
+        indices_indices = (
+            ("0",)
+            if indices_rank == 0
+            else output_loop_vars[axis : axis + indices_rank]
+        )
+        data_indices = [
+            *output_loop_vars[:axis],
+            "gather_index",
+            *output_loop_vars[axis + indices_rank :],
+        ]
+        data_shape = emitter.ctx_shape(self._gather_data())
+        data_suffix = emitter.param_array_suffix(data_shape)
+        indices_suffix = emitter.param_array_suffix(indices_shape)
+        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        indices_dtype = emitter.ctx_dtype(self._gather_indices())
+        param_decls = emitter.build_param_decls(
+            [
+                (params["data"], c_type, data_suffix, True),
+                (params["indices"], indices_dtype.c_type, indices_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        rendered = (
+            state.templates["gather"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                indices_c_type=indices_dtype.c_type,
+                data_suffix=data_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
+                output_shape=render_output_shape,
+                loop_vars=render_loop_vars,
+                indices_indices=indices_indices,
+                data_indices=data_indices,
+                axis_dim=data_shape[axis],
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     __io_inputs__ = ("data", "indices")
     __io_outputs__ = ("output",)
@@ -245,7 +318,55 @@ class GatherLikeOpBase(RenderableOpBase):
 
 class ShapeLikeOpBase(RenderableOpBase):
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
-        return emitter.emit_generic_op(self, ctx)
+        if self._shape_mode() != "expand":
+            return emitter.emit_generic_op(self, ctx)
+        state = emitter.require_emit_state()
+        model = state.model
+        op_name = emitter.op_function_name(model, ctx.op_index)
+        c_type = emitter.ctx_dtype(self._shape_output()).c_type
+        params = emitter.shared_param_map(
+            [("input0", self._shape_data()), ("output", self._shape_output())]
+        )
+        output_shape_raw = emitter.ctx_shape(self._shape_output())
+        output_shape = CEmitterCompat.codegen_shape(output_shape_raw)
+        loop_vars = CEmitterCompat.loop_vars(output_shape_raw)
+        input_shape = emitter.ctx_shape(self._shape_data())
+        input_suffix = emitter.param_array_suffix(input_shape)
+        output_suffix = emitter.param_array_suffix(output_shape_raw)
+        param_decls = emitter.build_param_decls(
+            [
+                (params["input0"], c_type, input_suffix, True),
+                (params["output"], c_type, output_suffix, False),
+            ]
+        )
+        input_shape_padded = emitter.derived(self, "input_shape_padded")
+        input_strides = emitter.derived(self, "input_strides")
+        input_index_terms = [
+            f"{loop_var} * {stride}"
+            for loop_var, input_dim, stride in zip(
+                loop_vars, input_shape_padded, input_strides
+            )
+            if input_dim != 1
+        ]
+        input_index_expr = " + ".join(input_index_terms) if input_index_terms else "0"
+        rendered = (
+            state.templates["expand"]
+            .render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                input_index_expr=input_index_expr,
+            )
+            .rstrip()
+        )
+        return emitter.with_node_comment(model, ctx.op_index, rendered)
 
     __io_inputs__ = ("input0", "input_shape")
     __io_outputs__ = ("output",)
@@ -555,6 +676,18 @@ class GemmLikeOpBase(RenderableOpBase):
 class ConvLikeOpBase(RenderableOpBase):
     __io_inputs__ = ("input0", "weights", "bias")
     __io_outputs__ = ("output",)
+
+
+class CEmitterCompat:
+    @staticmethod
+    def codegen_shape(shape: tuple[int, ...]) -> tuple[int | str, ...]:
+        return tuple(
+            dim if dim >= 0 else f"dim_{index}" for index, dim in enumerate(shape)
+        )
+
+    @staticmethod
+    def loop_vars(shape: tuple[int | str, ...]) -> tuple[str, ...]:
+        return tuple(f"i{idx}" for idx in range(len(shape)))
 
 
 def _io_field_names(op_type: type[OpBase]) -> tuple[tuple[str, ...], tuple[str, ...]]:
