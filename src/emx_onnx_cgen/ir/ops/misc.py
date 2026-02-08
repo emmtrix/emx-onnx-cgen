@@ -262,6 +262,12 @@ class TriluOp(RenderableOpBase):
     dtype: ScalarType
     input_dtype: ScalarType
 
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.input0, self.output]
+        if self.k_input is not None:
+            args.append(self.k_input)
+        return tuple(args)
+
 
 @dataclass(frozen=True)
 class TileOp(RenderableOpBase):
@@ -474,6 +480,9 @@ class OptionalHasElementOp(RenderableOpBase):
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         return emitter.emit_generic_op(self, ctx)
+
+    def call_args(self) -> tuple[str, ...]:
+        return (self.input0, f"{self.input0}_present", self.output)
 
     def validate(self, ctx: OpContext) -> None:
         value = ctx.graph.find_value(self.input0)
