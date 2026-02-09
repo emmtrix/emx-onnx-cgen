@@ -97,8 +97,5 @@ def lower_hamming_window(graph: Graph, node: Node) -> HammingWindowOp:
     return HammingWindowOp(
         size=node.inputs[0],
         output=node.outputs[0],
-        output_shape=output_shape,
         periodic=periodic == 1,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )
