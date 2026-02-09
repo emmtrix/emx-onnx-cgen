@@ -1388,10 +1388,7 @@ class CEmitter:
             return EyeLikeOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                output_shape=op.output_shape,
                 k=op.k,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, TriluOp):
             return TriluOp(
@@ -1648,10 +1645,6 @@ class CEmitter:
             return BernoulliOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                input_dtype=op.input_dtype,
-                dtype=op.dtype,
                 seed=op.seed,
             )
         if isinstance(op, OneHotOp):
@@ -4328,10 +4321,7 @@ class CEmitter:
             return EyeLikeOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                output_shape=op.output_shape,
                 k=op.k,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, TriluOp):
             return TriluOp(
@@ -4555,10 +4545,6 @@ class CEmitter:
             return BernoulliOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                input_dtype=op.input_dtype,
-                dtype=op.dtype,
                 seed=op.seed,
             )
         return UnaryOp(
@@ -8257,19 +8243,22 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, BernoulliOp):
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
-            loop_vars = CEmitter._loop_vars(op.output_shape)
-            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            output_shape = self._ctx_shape(op.output)
+            input_shape = self._ctx_shape(op.input0)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0)
+                input_shape, _dim_names_for(op.input0)
             )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            output_dtype = op.dtype
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
                     (params["output"], output_dtype.c_type, output_suffix, False),
                 ]
             )
@@ -8300,21 +8289,22 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EyeLikeOp):
-            input_c_type = op.input_dtype.c_type
+            input_dtype = self._ctx_dtype(op.input0)
+            output_shape = self._ctx_shape(op.output)
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
-            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
             input_suffix = self._param_array_suffix(
-                op.output_shape, _dim_names_for(op.input0)
+                output_shape, _dim_names_for(op.input0)
             )
-            batch_dims = op.output_shape[:-2]
+            batch_dims = output_shape[:-2]
             batch_size = CEmitter._element_count(batch_dims or (1,))
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], input_c_type, input_suffix, True),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
@@ -8329,8 +8319,8 @@ class CEmitter:
                 output_suffix=output_suffix,
                 shape=shape,
                 batch_size=batch_size,
-                rows=op.output_shape[-2],
-                cols=op.output_shape[-1],
+                rows=output_shape[-2],
+                cols=output_shape[-1],
                 k=op.k,
                 zero_literal=zero_literal,
                 one_literal=f"(({c_type})1)",
@@ -10525,7 +10515,7 @@ class CEmitter:
         if isinstance(op, IdentityOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, EyeLikeOp):
-            return ((op.input0, op.output_shape),)
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, TriluOp):
             inputs = [(op.input0, self._ctx_shape(op.input0))]
             if op.k_input is not None and op.k_input_shape is not None:
@@ -11073,9 +11063,9 @@ class CEmitter:
         if isinstance(op, IdentityOp):
             return self._ctx_shape(op.output)
         if isinstance(op, BernoulliOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, EyeLikeOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, TriluOp):
             return op.output_shape
         if isinstance(op, TileOp):
@@ -11232,6 +11222,8 @@ class CEmitter:
                 ConstantOfShapeOp,
                 ShapeOp,
                 SizeOp,
+                BernoulliOp,
+                EyeLikeOp,
             ),
         ):
             return self._ctx_dtype(op.output)

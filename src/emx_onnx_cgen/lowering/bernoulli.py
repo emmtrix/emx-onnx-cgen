@@ -65,9 +65,5 @@ def lower_bernoulli(graph: Graph, node: Node) -> BernoulliOp:
     return BernoulliOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=output_shape,
-        input_dtype=input_dtype,
-        dtype=output_dtype,
         seed=seed,
     )

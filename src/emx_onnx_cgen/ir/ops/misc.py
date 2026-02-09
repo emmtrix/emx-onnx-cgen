@@ -198,10 +198,7 @@ class EyeLikeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    output_shape: tuple[int, ...]
     k: int
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -210,10 +207,6 @@ class BernoulliOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    input_dtype: ScalarType
-    dtype: ScalarType
     seed: int | None
 
 
