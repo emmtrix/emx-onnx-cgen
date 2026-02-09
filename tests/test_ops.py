@@ -3584,9 +3584,8 @@ def test_lower_flatten_axis_default() -> None:
     model = _make_flatten_model([2, 3, 4], axis=1)
     graph = import_onnx(model)
     op = lower_flatten(graph, graph.nodes[0])
-    assert op.input_shape == (2, 3, 4)
+    assert op.input0 == "in0"
     assert op.output_shape == (2, 12)
-    assert op.dtype == ScalarType.F32
 
 
 def test_lower_flatten_negative_axis() -> None:
@@ -3667,10 +3666,10 @@ def test_lower_scatternd_shapes() -> None:
     )
     graph = import_onnx(model)
     op = lower_scatternd(graph, graph.nodes[0])
-    assert op.data_shape == (3, 3)
-    assert op.indices_shape == (2, 2)
-    assert op.updates_shape == (2,)
-    assert op.output_shape == (3, 3)
+    assert op.data == "data"
+    assert op.indices == "indices"
+    assert op.updates == "updates"
+    assert op.output == "output"
     assert op.reduction == "add"
 
 
@@ -3683,9 +3682,8 @@ def test_lower_squeeze_axes_input() -> None:
     )
     graph = import_onnx(model)
     op = lower_squeeze(graph, graph.nodes[0])
-    assert op.input_shape == (1, 3, 1, 5)
+    assert op.input0 == "in0"
     assert op.output_shape == (3, 5)
-    assert op.dtype == ScalarType.F32
 
 
 def test_lower_squeeze_default_axes() -> None:

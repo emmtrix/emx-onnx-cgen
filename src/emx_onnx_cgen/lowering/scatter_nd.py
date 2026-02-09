@@ -30,9 +30,7 @@ def lower_scatternd(graph: Graph, node: Node) -> ScatterNDOp:
         raise ShapeInferenceError("ScatterND indices must have rank >= 1")
     index_depth = indices_shape[-1]
     if index_depth <= 0:
-        raise ShapeInferenceError(
-            "ScatterND indices final dimension must be >= 1"
-        )
+        raise ShapeInferenceError("ScatterND indices final dimension must be >= 1")
     if index_depth > len(data_shape):
         raise ShapeInferenceError(
             "ScatterND indices final dimension must be <= data rank, "
@@ -72,11 +70,5 @@ def lower_scatternd(graph: Graph, node: Node) -> ScatterNDOp:
         indices=indices_name,
         updates=updates_name,
         output=output_name,
-        data_shape=data_shape,
-        indices_shape=indices_shape,
-        updates_shape=updates_shape,
-        output_shape=output_shape,
         reduction=reduction,
-        dtype=data_dtype,
-        indices_dtype=indices_dtype,
     )

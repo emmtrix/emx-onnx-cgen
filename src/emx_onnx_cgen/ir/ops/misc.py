@@ -33,9 +33,6 @@ class CastOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    shape: tuple[int, ...]
-    input_dtype: ScalarType
-    dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
@@ -84,9 +81,6 @@ class ConcatOp(RenderableOpBase):
     inputs: tuple[str, ...]
     output: str
     axis: int
-    input_shapes: tuple[tuple[int, ...], ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -97,11 +91,6 @@ class GatherElementsOp(RenderableOpBase):
     indices: str
     output: str
     axis: int
-    data_shape: tuple[int, ...]
-    indices_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -135,11 +124,6 @@ class GatherNDOp(RenderableOpBase):
     indices: str
     output: str
     batch_dims: int
-    data_shape: tuple[int, ...]
-    indices_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -150,13 +134,7 @@ class ScatterNDOp(RenderableOpBase):
     indices: str
     updates: str
     output: str
-    data_shape: tuple[int, ...]
-    indices_shape: tuple[int, ...]
-    updates_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     reduction: str
-    dtype: ScalarType
-    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -184,10 +162,6 @@ class TransposeOp(RenderableOpBase):
     input0: str
     output: str
     perm: tuple[int, ...]
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
@@ -206,10 +180,7 @@ class ReshapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
     output_shape: tuple[int, ...] | None
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)

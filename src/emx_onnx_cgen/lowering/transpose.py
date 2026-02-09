@@ -4,7 +4,6 @@ from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
 from ..ir.ops import TransposeOp
-from .common import node_dtype as _node_dtype
 from .common import value_has_dim_params as _value_has_dim_params
 from .common import value_shape as _value_shape
 from .registry import register_lowering
@@ -40,13 +39,8 @@ def lower_transpose(graph: Graph, node: Node) -> TransposeOp:
         )
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], expected_shape)
-    op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
     return TransposeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
         perm=perm,
-        input_shape=input_shape,
-        output_shape=expected_shape,
-        dtype=op_dtype,
-        input_dtype=op_dtype,
     )
