@@ -97,8 +97,4 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
         limit=node.inputs[1],
         delta=node.inputs[2],
         output=node.outputs[0],
-        output_shape=output_shape,
-        length=length,
-        dtype=dtype,
-        input_dtype=dtype,
     )

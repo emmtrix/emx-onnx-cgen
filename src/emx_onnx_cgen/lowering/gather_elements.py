@@ -30,15 +30,12 @@ def lower_gather_elements(graph: Graph, node: Node) -> GatherElementsOp:
             f"got {output_shape} and {indices_shape}"
         )
     axis = normalize_axis(int(node.attrs.get("axis", 0)), data_shape, node)
-    for dim_index, (data_dim, index_dim) in enumerate(
-        zip(data_shape, indices_shape)
-    ):
+    for dim_index, (data_dim, index_dim) in enumerate(zip(data_shape, indices_shape)):
         if dim_index != axis and data_dim != index_dim:
             raise ShapeInferenceError(
                 "GatherElements inputs must match on non-axis dimensions, "
                 f"got {data_shape} and {indices_shape}"
             )
-    op_dtype = _value_dtype(graph, data_name, node)
     indices_dtype = _value_dtype(graph, indices_name, node)
     if indices_dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
@@ -50,9 +47,4 @@ def lower_gather_elements(graph: Graph, node: Node) -> GatherElementsOp:
         indices=indices_name,
         output=node.outputs[0],
         axis=axis,
-        data_shape=data_shape,
-        indices_shape=indices_shape,
-        output_shape=output_shape,
-        dtype=op_dtype,
-        indices_dtype=indices_dtype,
     )

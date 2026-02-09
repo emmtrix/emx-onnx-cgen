@@ -33,9 +33,6 @@ class CastOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    shape: tuple[int, ...]
-    input_dtype: ScalarType
-    dtype: ScalarType
 
     def infer_types(self, ctx: OpContext) -> None:
         ctx.dtype(self.input0)
@@ -84,9 +81,6 @@ class ConcatOp(RenderableOpBase):
     inputs: tuple[str, ...]
     output: str
     axis: int
-    input_shapes: tuple[tuple[int, ...], ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -97,11 +91,6 @@ class GatherElementsOp(RenderableOpBase):
     indices: str
     output: str
     axis: int
-    data_shape: tuple[int, ...]
-    indices_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -135,11 +124,6 @@ class GatherNDOp(RenderableOpBase):
     indices: str
     output: str
     batch_dims: int
-    data_shape: tuple[int, ...]
-    indices_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -150,13 +134,7 @@ class ScatterNDOp(RenderableOpBase):
     indices: str
     updates: str
     output: str
-    data_shape: tuple[int, ...]
-    indices_shape: tuple[int, ...]
-    updates_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     reduction: str
-    dtype: ScalarType
-    indices_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -184,10 +162,6 @@ class TransposeOp(RenderableOpBase):
     input0: str
     output: str
     perm: tuple[int, ...]
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
@@ -206,10 +180,7 @@ class ReshapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
     output_shape: tuple[int, ...] | None
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
@@ -227,10 +198,7 @@ class EyeLikeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    output_shape: tuple[int, ...]
     k: int
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -239,10 +207,6 @@ class BernoulliOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    input_dtype: ScalarType
-    dtype: ScalarType
     seed: int | None
 
 
@@ -429,11 +393,7 @@ class ConstantOfShapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    shape: tuple[int, ...]
     value: float | int | bool
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         return emitter.emit_generic_op(self, ctx)
@@ -445,11 +405,8 @@ class ShapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    values: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
+    start: int | None
+    end: int | None
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         return emitter.emit_generic_op(self, ctx)
@@ -464,11 +421,6 @@ class SizeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    value: int
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -766,10 +718,6 @@ class RangeOp(RenderableOpBase):
     limit: str
     delta: str
     output: str
-    output_shape: tuple[int, ...]
-    length: int
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -778,10 +726,7 @@ class HammingWindowOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     size: str
     output: str
-    output_shape: tuple[int, ...]
     periodic: bool
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)

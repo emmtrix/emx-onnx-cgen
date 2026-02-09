@@ -55,17 +55,14 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
         raise UnsupportedOpError("ConstantOfShape expects a 1D shape input")
     output_shape = _value_shape(graph, node.outputs[0], node)
     if input_shape[0] != len(output_shape):
-        raise ShapeInferenceError(
-            "ConstantOfShape input length must match output rank"
-        )
+        raise ShapeInferenceError("ConstantOfShape input length must match output rank")
     for dim in output_shape:
         if dim < 0:
             raise ShapeInferenceError("Dynamic dims are not supported")
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     if input_dtype != ScalarType.I64:
         raise UnsupportedOpError(
-            "ConstantOfShape expects int64 shape input, "
-            f"got {input_dtype.onnx_name}"
+            "ConstantOfShape expects int64 shape input, " f"got {input_dtype.onnx_name}"
         )
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     value_dtype, value = _parse_value_attr(node)
@@ -77,9 +74,5 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
     return ConstantOfShapeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        shape=output_shape,
         value=value,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )

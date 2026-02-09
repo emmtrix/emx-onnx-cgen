@@ -23,9 +23,7 @@ def lower_gather_nd(graph: Graph, node: Node) -> GatherNDOp:
         raise ShapeInferenceError("GatherND indices must have rank >= 1")
     batch_dims = int(node.attrs.get("batch_dims", 0))
     if batch_dims < 0:
-        raise ShapeInferenceError(
-            f"GatherND batch_dims must be >= 0, got {batch_dims}"
-        )
+        raise ShapeInferenceError(f"GatherND batch_dims must be >= 0, got {batch_dims}")
     if batch_dims > len(indices_shape) - 1:
         raise ShapeInferenceError(
             "GatherND batch_dims must be <= indices rank - 1, "
@@ -43,37 +41,26 @@ def lower_gather_nd(graph: Graph, node: Node) -> GatherNDOp:
         )
     index_depth = indices_shape[-1]
     if index_depth <= 0:
-        raise ShapeInferenceError(
-            "GatherND indices final dimension must be >= 1"
-        )
+        raise ShapeInferenceError("GatherND indices final dimension must be >= 1")
     if index_depth > len(data_shape) - batch_dims:
         raise ShapeInferenceError(
             "GatherND indices final dimension must be <= data rank - "
             f"batch_dims, got {index_depth} vs {len(data_shape) - batch_dims}"
         )
-    expected_output_shape = indices_shape[:-1] + data_shape[
-        batch_dims + index_depth :
-    ]
+    expected_output_shape = indices_shape[:-1] + data_shape[batch_dims + index_depth :]
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "GatherND output shape must be "
             f"{expected_output_shape}, got {output_shape}"
         )
-    data_dtype = _value_dtype(graph, data_name, node)
     indices_dtype = _value_dtype(graph, indices_name, node)
     if indices_dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
-            "GatherND indices must be int32 or int64, "
-            f"got {indices_dtype.onnx_name}"
+            "GatherND indices must be int32 or int64, " f"got {indices_dtype.onnx_name}"
         )
     return GatherNDOp(
         data=data_name,
         indices=indices_name,
         output=output_name,
         batch_dims=batch_dims,
-        data_shape=data_shape,
-        indices_shape=indices_shape,
-        output_shape=output_shape,
-        dtype=data_dtype,
-        indices_dtype=indices_dtype,
     )
