@@ -38,9 +38,6 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
     return CastOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        shape=output_shape,
-        input_dtype=input_dtype,
-        dtype=output_dtype,
     )
 
 
@@ -64,7 +61,4 @@ def lower_castlike(graph: Graph, node: Node) -> CastOp:
     return CastOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        shape=output_shape,
-        input_dtype=input_dtype,
-        dtype=output_dtype,
     )

@@ -18,7 +18,7 @@ def lower_eye_like(graph: Graph, node: Node) -> EyeLikeOp:
         raise ShapeInferenceError("EyeLike input and output shapes must match")
     if len(output_shape) < 2:
         raise UnsupportedOpError("EyeLike expects input rank >= 2")
-    input_dtype = value_dtype(graph, node.inputs[0], node)
+    _ = value_dtype(graph, node.inputs[0], node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     dtype_attr = node.attrs.get("dtype")
     if dtype_attr is not None:
@@ -36,8 +36,5 @@ def lower_eye_like(graph: Graph, node: Node) -> EyeLikeOp:
     return EyeLikeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        output_shape=output_shape,
         k=k,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )

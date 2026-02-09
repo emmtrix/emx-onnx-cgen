@@ -37,7 +37,7 @@ def lower_shape(graph: Graph, node: Node) -> ShapeOp:
             raise ShapeInferenceError("Shape output must be 1D")
         if output_shape[0] < 0:
             raise ShapeInferenceError("Shape output length must be non-negative")
-    input_dtype = value_dtype(graph, node.inputs[0], node)
+    _ = value_dtype(graph, node.inputs[0], node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if output_dtype != ScalarType.I64:
         raise UnsupportedOpError("Shape output dtype must be int64")
@@ -49,17 +49,13 @@ def lower_shape(graph: Graph, node: Node) -> ShapeOp:
     expected_shape = (max(0, end_index - start_index),)
     if output_shape and expected_shape != output_shape:
         raise ShapeInferenceError(
-            "Shape output shape must be "
-            f"{expected_shape}, got {output_shape}"
+            "Shape output shape must be " f"{expected_shape}, got {output_shape}"
         )
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], expected_shape)
     return ShapeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=expected_shape,
-        values=input_shape[start_index:end_index],
-        dtype=output_dtype,
-        input_dtype=input_dtype,
+        start=int(start) if start is not None else None,
+        end=int(end) if end is not None else None,
     )
