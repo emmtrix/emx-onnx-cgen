@@ -718,10 +718,6 @@ class RangeOp(RenderableOpBase):
     limit: str
     delta: str
     output: str
-    output_shape: tuple[int, ...]
-    length: int
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -730,10 +726,7 @@ class HammingWindowOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     size: str
     output: str
-    output_shape: tuple[int, ...]
     periodic: bool
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)

@@ -1627,19 +1627,12 @@ class CEmitter:
                 limit=name_map.get(op.limit, op.limit),
                 delta=name_map.get(op.delta, op.delta),
                 output=name_map.get(op.output, op.output),
-                output_shape=op.output_shape,
-                length=op.length,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=name_map.get(op.size, op.size),
                 output=name_map.get(op.output, op.output),
-                output_shape=op.output_shape,
                 periodic=op.periodic,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, BernoulliOp):
             return BernoulliOp(
@@ -4233,19 +4226,12 @@ class CEmitter:
                 limit=temp_map.get(op.limit, op.limit),
                 delta=temp_map.get(op.delta, op.delta),
                 output=temp_map.get(op.output, op.output),
-                output_shape=op.output_shape,
-                length=op.length,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=temp_map.get(op.size, op.size),
                 output=temp_map.get(op.output, op.output),
-                output_shape=op.output_shape,
                 periodic=op.periodic,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, OneHotOp):
             return OneHotOp(
@@ -9252,7 +9238,8 @@ class CEmitter:
                 ]
             )
             scalar_suffix = self._param_array_suffix(())
-            output_suffix = self._param_array_suffix(op.output_shape)
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
             param_decls = self._build_param_decls(
                 [
                     (params["start"], c_type, scalar_suffix, True),
@@ -9272,7 +9259,7 @@ class CEmitter:
                 c_type=c_type,
                 input_suffix=scalar_suffix,
                 output_suffix=output_suffix,
-                length=op.length,
+                length=output_shape[0],
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HammingWindowOp):
@@ -9283,7 +9270,8 @@ class CEmitter:
                 ]
             )
             scalar_suffix = self._param_array_suffix(())
-            output_suffix = self._param_array_suffix(op.output_shape)
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
             param_decls = self._build_param_decls(
                 [
                     (
@@ -9303,7 +9291,7 @@ class CEmitter:
                 params=param_decls,
                 c_type=c_type,
                 output_suffix=output_suffix,
-                length=op.output_shape[0],
+                length=output_shape[0],
                 periodic_literal="1" if op.periodic else "0",
             ).rstrip()
             return with_node_comment(rendered)
@@ -11101,9 +11089,9 @@ class CEmitter:
         if isinstance(op, CumSumOp):
             return op.input_shape
         if isinstance(op, RangeOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, HammingWindowOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
             return op.output_shape
         if isinstance(op, TfIdfVectorizerOp):
@@ -11224,6 +11212,8 @@ class CEmitter:
                 SizeOp,
                 BernoulliOp,
                 EyeLikeOp,
+                RangeOp,
+                HammingWindowOp,
             ),
         ):
             return self._ctx_dtype(op.output)
