@@ -3754,11 +3754,8 @@ def test_lower_shape_resolves_dim_params() -> None:
     model = _make_shape_dim_param_model()
     graph = import_onnx(model)
     op = lower_shape(graph, graph.nodes[1])
-    assert op.input_shape == (6,)
-    assert op.output_shape == (1,)
-    assert op.values == (6,)
-    assert op.input_dtype == ScalarType.F32
-    assert op.dtype == ScalarType.I64
+    assert op.input0 == "reshaped"
+    assert op.output == "out"
 
 
 def test_lower_shape_missing_value() -> None:

@@ -400,11 +400,7 @@ class ConstantOfShapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    shape: tuple[int, ...]
     value: float | int | bool
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         return emitter.emit_generic_op(self, ctx)
@@ -416,11 +412,8 @@ class ShapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    values: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
+    start: int | None
+    end: int | None
 
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         return emitter.emit_generic_op(self, ctx)
@@ -435,11 +428,6 @@ class SizeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    value: int
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)

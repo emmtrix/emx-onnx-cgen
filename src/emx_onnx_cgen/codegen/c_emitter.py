@@ -1569,31 +1569,19 @@ class CEmitter:
             return ConstantOfShapeOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                shape=op.shape,
                 value=op.value,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, ShapeOp):
             return ShapeOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                values=op.values,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                start=op.start,
+                end=op.end,
             )
         if isinstance(op, SizeOp):
             return SizeOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                value=op.value,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, OptionalHasElementOp):
             return OptionalHasElementOp(
@@ -2574,7 +2562,9 @@ class CEmitter:
         ):
             includes.add("#include <math.h>")
         constant_of_shape_inputs = {
-            op.input_dtype for op in resolved_ops if isinstance(op, ConstantOfShapeOp)
+            model.op_context.dtype(op.input0)
+            for op in resolved_ops
+            if isinstance(op, ConstantOfShapeOp)
         }
         model_dtypes = {
             *model.input_dtypes,
@@ -4187,31 +4177,19 @@ class CEmitter:
             return ConstantOfShapeOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                shape=op.shape,
                 value=op.value,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, ShapeOp):
             return ShapeOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                values=op.values,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
+                start=op.start,
+                end=op.end,
             )
         if isinstance(op, SizeOp):
             return SizeOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                value=op.value,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, OptionalHasElementOp):
             return OptionalHasElementOp(
@@ -8905,14 +8883,18 @@ class CEmitter:
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            shape = CEmitter._codegen_shape(op.shape)
-            loop_vars = CEmitter._loop_vars(shape)
-            array_suffix = self._param_array_suffix(shape)
-            input_suffix = self._param_array_suffix(op.input_shape)
+            output_shape_raw = self._ctx_shape(op.output)
+            input_shape = self._ctx_shape(op.input0)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            shape = CEmitter._codegen_shape(output_shape_raw)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            array_suffix = self._param_array_suffix(output_shape_raw)
+            input_suffix = self._param_array_suffix(input_shape)
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
-                    (params["output"], c_type, array_suffix, False),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, array_suffix, False),
                 ]
             )
             rendered = constant_of_shape_template.render(
@@ -8921,39 +8903,53 @@ class CEmitter:
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                input_c_type=op.input_dtype.c_type,
-                c_type=c_type,
+                input_c_type=input_dtype.c_type,
+                c_type=output_dtype.c_type,
                 input_suffix=input_suffix,
                 array_suffix=array_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
-                value_literal=CEmitter._format_literal(op.dtype, op.value),
+                value_literal=CEmitter._format_literal(output_dtype, op.value),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ShapeOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            input_suffix = self._param_array_suffix(op.input_shape)
-            output_suffix = self._param_array_suffix(op.output_shape)
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
-                    (params["output"], c_type, output_suffix, False),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
                 ]
             )
+            rank = len(input_shape)
+            start_index = 0 if op.start is None else op.start
+            end_index = rank if op.end is None else op.end
+            if start_index < 0:
+                start_index += rank
+            if end_index < 0:
+                end_index += rank
+            start_index = max(0, min(start_index, rank))
+            end_index = max(0, min(end_index, rank))
             rendered = shape_template.render(
                 model_name=model.name,
                 op_name=op_name,
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                input_c_type=op.input_dtype.c_type,
-                c_type=c_type,
+                input_c_type=input_dtype.c_type,
+                c_type=output_dtype.c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 values=[
-                    CEmitter._format_literal(op.dtype, value) for value in op.values
+                    CEmitter._format_literal(output_dtype, value)
+                    for value in input_shape[start_index:end_index]
                 ],
             ).rstrip()
             return with_node_comment(rendered)
@@ -8961,12 +8957,16 @@ class CEmitter:
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            input_suffix = self._param_array_suffix(op.input_shape)
-            output_suffix = self._param_array_suffix(op.output_shape)
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
-                    (params["output"], c_type, output_suffix, False),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
                 ]
             )
             rendered = size_template.render(
@@ -8975,11 +8975,13 @@ class CEmitter:
                 input0=params["input0"],
                 output=params["output"],
                 params=param_decls,
-                input_c_type=op.input_dtype.c_type,
-                c_type=c_type,
+                input_c_type=input_dtype.c_type,
+                c_type=output_dtype.c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                value=CEmitter._format_literal(op.dtype, op.value),
+                value=CEmitter._format_literal(
+                    output_dtype, CEmitter._element_count(input_shape)
+                ),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OptionalHasElementOp):
@@ -11096,12 +11098,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, TopKOp):
             return self._ctx_shape(op.output_values)
-        if isinstance(op, ConstantOfShapeOp):
-            return op.shape
-        if isinstance(op, ShapeOp):
-            return op.output_shape
-        if isinstance(op, SizeOp):
-            return op.output_shape
+        if isinstance(op, (ConstantOfShapeOp, ShapeOp, SizeOp)):
+            return self._ctx_shape(op.output)
         if isinstance(op, OptionalHasElementOp):
             return self._ctx_shape(op.output)
         if isinstance(op, NonZeroOp):
@@ -11231,6 +11229,9 @@ class CEmitter:
                 IdentityOp,
                 ReduceOp,
                 ExpandOp,
+                ConstantOfShapeOp,
+                ShapeOp,
+                SizeOp,
             ),
         ):
             return self._ctx_dtype(op.output)
