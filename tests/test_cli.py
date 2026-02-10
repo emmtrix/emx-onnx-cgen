@@ -136,3 +136,9 @@ def test_cli_model_base_dir_resolves_test_data(tmp_path: Path) -> None:
     cli._apply_base_dir(args, parser)
     assert args.model == base_dir / "model.onnx"
     assert args.test_data_dir == base_dir / "inputs"
+
+
+def test_cli_verify_rejects_model_name_flag() -> None:
+    parser = cli._build_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(["verify", "model.onnx", "--model-name", "x"])
