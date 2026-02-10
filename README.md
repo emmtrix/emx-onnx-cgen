@@ -46,6 +46,7 @@ For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.
   - `float`, `double`, `float16`
   - `int8_t`, `uint8_t`, `int16_t`, `uint16_t`, `int32_t`, `uint32_t`, `int64_t`, `uint64_t`
   - `bool`
+  - `string` (fixed-size `'\0'`-terminated C strings; see [`docs/output-format.md`](docs/output-format.md))
 - Optional support for dynamic dimensions using C99 variable-length arrays (VLAs), when the target compiler supports them.
 
 ## Usage Scenarios
@@ -141,6 +142,17 @@ emx-onnx-cgen verify path/to/model.onnx
 
 `emx-onnx-cgen` provides two subcommands: `compile` and `verify`.
 
+### Common options
+
+These options are accepted by both `compile` and `verify`:
+
+- `--model-base-dir`: Base directory for resolving the model path (and related paths).
+- `--color`: Colorize CLI output (`auto`, `always`, `never`; default: `auto`).
+- `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`; set to `0` to disable).
+- `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
+- `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
+- `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
+
 ### `compile`
 
 ```bash
@@ -149,16 +161,10 @@ emx-onnx-cgen compile <model.onnx> <output.c> [options]
 
 Options:
 
-- `--model-base-dir`, `-B`: Base directory for resolving the model path (example: `emx-onnx-cgen compile --model-base-dir /data model.onnx out.c`).
-- `--color`: Colorize CLI output (`auto`, `always`, `never`; default: `auto`).
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
-- `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`; set to `0` to disable).
-- `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
-- `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
-- `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 
 ### `verify`
 
@@ -168,20 +174,13 @@ emx-onnx-cgen verify <model.onnx> [options]
 
 Options:
 
-- `--model-base-dir`, `-B`: Base directory for resolving the model and test data paths (example: `emx-onnx-cgen verify --model-base-dir /data model.onnx --test-data-dir inputs`).
-- `--color`: Colorize CLI output (`auto`, `always`, `never`; default: `auto`).
-- `--model-name`: Override the generated model name (default: model file stem).
 - `--cc`: Explicit C compiler command for building the testbench binary.
-- `--large-weight-threshold`: Store weights in a binary file once the cumulative byte size exceeds this threshold (default: `102400`).
-- `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--atol-eps`: Absolute tolerance as a multiple of machine epsilon for floating outputs (default: `1.0`).
 - `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
 - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
-- `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
-- `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
 
 How verification works:
 

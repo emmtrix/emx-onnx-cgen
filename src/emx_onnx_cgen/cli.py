@@ -461,12 +461,6 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     verify_parser.add_argument("model", type=Path, help="Path to the ONNX model")
     verify_parser.add_argument(
-        "--model-name",
-        type=str,
-        default=None,
-        help="Override the generated model name (default: model file stem)",
-    )
-    verify_parser.add_argument(
         "--cc",
         type=str,
         default=None,
@@ -786,7 +780,7 @@ def _verify_model(
         return f"exit code {returncode} (signal {signal_id}: {signal_name})"
 
     model_path: Path = args.model
-    model_name = args.model_name or "model"
+    model_name = "model"
     model, model_checksum = _load_model_and_checksum(model_path)
     compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=False)
     if compiler_cmd is None:
