@@ -110,11 +110,4 @@ def lower_onehot(graph: Graph, node: Node) -> OneHotOp:
         values=values_name,
         output=node.outputs[0],
         axis=axis,
-        indices_shape=indices_shape,
-        values_shape=values_shape,
-        output_shape=output_shape,
-        depth_dim=depth_dim,
-        dtype=values_dtype,
-        indices_dtype=indices_dtype,
-        depth_dtype=depth_dtype,
     )

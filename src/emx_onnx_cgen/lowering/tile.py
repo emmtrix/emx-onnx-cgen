@@ -109,10 +109,5 @@ def lower_tile(graph: Graph, node: Node) -> TileOp:
     return TileOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=expected_shape,
         repeats=repeats,
-        input_strides=_compute_strides(input_shape),
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )

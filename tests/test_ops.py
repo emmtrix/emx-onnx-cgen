@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import math
 import os
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, fields
 import shutil
 import subprocess
 import tempfile
@@ -34,6 +34,7 @@ from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
+from emx_onnx_cgen.lowering.depth_space import lower_depth_to_space, lower_space_to_depth
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
@@ -3606,8 +3607,43 @@ def test_lower_onehot_axis_normalization() -> None:
     graph = import_onnx(model)
     op = lower_onehot(graph, graph.nodes[0])
     assert op.axis == 2
-    assert op.output_shape == (2, 3, 4)
-    assert op.depth_dim == 4
+    assert graph.outputs[0].type.shape == (2, 3, 4)
+
+
+def test_lower_depth_space_ops_keep_only_explicit_attrs() -> None:
+    depth_to_space_model = _make_operator_model(
+        op_type="DepthToSpace",
+        input_shapes=[[1, 8, 2, 2]],
+        output_shape=[1, 2, 4, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={"blocksize": 2, "mode": "DCR"},
+    )
+    depth_graph = import_onnx(depth_to_space_model)
+    depth_op = lower_depth_to_space(depth_graph, depth_graph.nodes[0])
+    assert depth_op.blocksize == 2
+    assert depth_op.mode == "DCR"
+    assert {item.name for item in fields(type(depth_op))} == {
+        "input0",
+        "output",
+        "blocksize",
+        "mode",
+    }
+
+    space_to_depth_model = _make_operator_model(
+        op_type="SpaceToDepth",
+        input_shapes=[[1, 2, 4, 4]],
+        output_shape=[1, 8, 2, 2],
+        dtype=TensorProto.FLOAT,
+        attrs={"blocksize": 2},
+    )
+    space_graph = import_onnx(space_to_depth_model)
+    space_op = lower_space_to_depth(space_graph, space_graph.nodes[0])
+    assert space_op.blocksize == 2
+    assert {item.name for item in fields(type(space_op))} == {
+        "input0",
+        "output",
+        "blocksize",
+    }
 
 
 def test_lower_convinteger_per_channel_zero_point() -> None:

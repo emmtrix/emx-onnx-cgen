@@ -51,11 +51,7 @@ class QuantizeLinearOp(RenderableOpBase):
     scale: str
     zero_point: str | None
     output: str
-    input_shape: tuple[int, ...]
     axis: int | None
-    dtype: ScalarType
-    input_dtype: ScalarType
-    scale_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -66,12 +62,8 @@ class DequantizeLinearOp(RenderableOpBase):
     scale: str
     zero_point: str | None
     output: str
-    input_shape: tuple[int, ...]
     axis: int | None
     block_size: int | None
-    dtype: ScalarType
-    input_dtype: ScalarType
-    scale_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -216,15 +208,9 @@ class TriluOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     upper: bool
     k_value: int
     k_input: str | None
-    k_input_shape: tuple[int, ...] | None
-    k_input_dtype: ScalarType | None
-    dtype: ScalarType
-    input_dtype: ScalarType
 
     def call_args(self) -> tuple[str, ...]:
         args = [self.input0, self.output]
@@ -239,12 +225,7 @@ class TileOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     repeats: tuple[int, ...]
-    input_strides: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -280,12 +261,8 @@ class DepthToSpaceOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     blocksize: int
     mode: str
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -294,11 +271,7 @@ class SpaceToDepthOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     blocksize: int
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -700,12 +673,8 @@ class CumSumOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     axis_input: str | None
-    axis_input_dtype: ScalarType | None
     axis: int | None
     output: str
-    input_shape: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType
     exclusive: bool
     reverse: bool
 
@@ -738,13 +707,6 @@ class OneHotOp(RenderableOpBase):
     values: str
     output: str
     axis: int
-    indices_shape: tuple[int, ...]
-    values_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    depth_dim: int
-    dtype: ScalarType
-    indices_dtype: ScalarType
-    depth_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -753,10 +715,6 @@ class TfIdfVectorizerOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    input_dtype: ScalarType
-    output_dtype: ScalarType
     min_gram_length: int
     max_gram_length: int
     max_skip_count: int
@@ -773,8 +731,6 @@ class StringNormalizerOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     case_change_action: str
     is_case_sensitive: bool
     stopwords: tuple[str, ...]
@@ -786,9 +742,5 @@ class SplitOp(RenderableOpBase):
     __io_outputs__ = ("outputs",)
     input0: str
     outputs: tuple[str, ...]
-    input_shape: tuple[int, ...]
-    output_shapes: tuple[tuple[int, ...], ...]
     axis: int
     split_sizes: tuple[int, ...]
-    dtype: ScalarType
-    input_dtype: ScalarType

@@ -62,12 +62,8 @@ def lower_depth_to_space(graph: Graph, node: Node) -> DepthToSpaceOp:
     return DepthToSpaceOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=output_shape,
         blocksize=blocksize,
         mode=mode,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )
 
 
@@ -106,9 +102,5 @@ def lower_space_to_depth(graph: Graph, node: Node) -> SpaceToDepthOp:
     return SpaceToDepthOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=output_shape,
         blocksize=blocksize,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )

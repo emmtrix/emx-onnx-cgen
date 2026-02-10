@@ -79,8 +79,6 @@ def lower_string_normalizer(graph: Graph, node: Node) -> StringNormalizerOp:
     return StringNormalizerOp(
         input0=input_name,
         output=output_name,
-        input_shape=input_shape,
-        output_shape=output_shape,
         case_change_action=case_change_action,
         is_case_sensitive=bool(int(node.attrs.get("is_case_sensitive", 0))),
         stopwords=_decode_stopwords(node.attrs.get("stopwords")),
