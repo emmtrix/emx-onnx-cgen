@@ -16,6 +16,7 @@ Key characteristics:
 - **Single-threaded execution model**
 - **Bitwise-stable code generation** for reproducible builds
 - **Readable, auditable C code** suitable for certification and code reviews
+- **Generated C output format spec:** [`docs/output-format.md`](docs/output-format.md)
 - Designed for **bare-metal and RTOS-based systems**
 
 For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.com/emmtrix/emx-pytorch-cgen).
@@ -202,22 +203,6 @@ How verification works:
    Missing outputs or mismatches are treated as failures.
 5. **ORT unsupported models**: when using `onnxruntime`, if ORT reports
    `NOT_IMPLEMENTED`, verification is skipped with a warning (exit code 0).
-
-## Output
-
-By default, the compiler emits a single C source file that includes:
-
-- A generated entry point that mirrors the ONNX graph inputs/outputs.
-- Tensor buffers for constants and temporaries.
-
-When `--emit-data-file` is enabled, the main C source declares constant arrays
-as `extern`, and a second file named like the output with a `_data` suffix
-contains the constant definitions.
-
-When `--large-weight-threshold` is set and a weight exceeds the threshold, the
-compiler emits a `<model>.bin` file with weights packed contiguously and
-generates a `<model>_load` helper that loads weights from the binary file at
-runtime.
 
 ## Official ONNX test coverage
 
