@@ -39,24 +39,17 @@ static const {{ input.c_type }} {{ input.constant_name }}[] = {
 {% endif %}
 {% endfor %}
 
-int main(int argc, char **argv) {
-    FILE *input_file = NULL;
-    if (argc > 1) {
-        input_file = fopen(argv[1], "rb");
-        if (!input_file) {
-            fprintf(stderr, "Failed to open input file: %s\n", argv[1]);
-            return 1;
-        }
-    }
-{% for dim in dim_args %}
-    int {{ dim.name }} = {{ dim.value }};
-{% endfor %}
+__attribute__((weak, noinline)) void timer_start(void) {}
+__attribute__((weak, noinline)) void timer_stop(void) {}
 
-{% for input in inputs %}
-{% if input.optional_flag_name %}
-    _Bool {{ input.optional_flag_name }} = {{ "true" if input.optional_present else "false" }};
+{% set constant_inputs = inputs | selectattr('constant_name') | list %}
+{% set variable_inputs = inputs | rejectattr('constant_name') | list %}
+
+static void testbench_init_constant_input({% if not constant_inputs %}void{% else %}{% for input in constant_inputs %}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) {
+{% if not constant_inputs %}
+    (void)0;
 {% endif %}
-    {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
+{% for input in inputs %}
 {% if input.constant_name %}
 {% if input.rank == 0 %}
     {{ input.name }} = {{ input.constant_name }}[0];
@@ -69,19 +62,49 @@ int main(int argc, char **argv) {
     }
 {% endfor %}
 {% endif %}
+{% endif %}
+{% endfor %}
+}
+
+static int testbench_read_input_file(
+    const char *input_path{% for input in variable_inputs %}, {{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% endfor %}
+) {
+{% if not variable_inputs %}
+    (void)input_path;
+    return 0;
 {% else %}
-    if (input_file) {
+    FILE *input_file = fopen(input_path, "rb");
+    if (!input_file) {
+        fprintf(stderr, "Failed to open input file: %s\n", input_path);
+        return 1;
+    }
+{% for input in inputs %}
+{% if not input.constant_name %}
 {% for depth in range(input.rank) %}
     for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
         if (fread(&{{ input.name }}{{ input.array_index_expr }}, sizeof({{ input.c_type }}), 1, input_file) != 1) {
             fprintf(stderr, "Failed to read input {{ input.json_name }}\n");
+            fclose(input_file);
             return 1;
         }
 {% for depth in range(input.rank - 1, -1, -1) %}
     }
 {% endfor %}
-    } else {
+{% endif %}
+{% endfor %}
+
+    fclose(input_file);
+    return 0;
+{% endif %}
+}
+
+static void testbench_fill_random_input({% if not variable_inputs %}void{% else %}{% for input in variable_inputs %}{{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}) {
+{% if not variable_inputs %}
+    (void)0;
+{% endif %}
+{% for input in inputs %}
+{% if not input.constant_name %}
 {% for depth in range(input.rank) %}
     for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
@@ -89,22 +112,19 @@ int main(int argc, char **argv) {
 {% for depth in range(input.rank - 1, -1, -1) %}
     }
 {% endfor %}
-    }
 {% endif %}
 {% endfor %}
-    if (input_file) {
-        fclose(input_file);
-    }
+}
 
-{% for output in outputs %}
-    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
+static void testbench_print_json(
+{% for input in inputs %}
+    {{ input.c_type }} {{ input.name }}{{ input.array_suffix }},
 {% endfor %}
-
-    if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
-        return 1;
-    }
-    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
-
+{% for output in outputs %}
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if not loop.last %},
+{% endif %}
+{% endfor %}
+) {
     printf("{\"inputs\":{");
 {% for input in inputs %}
 {% if not loop.first %}
@@ -157,5 +177,51 @@ printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ o
     printf("]}");
 {% endfor %}
     printf("}}\n");
+}
+
+static int testbench_run(const char *input_path) {
+{% for dim in dim_args %}
+    int {{ dim.name }} = {{ dim.value }};
+{% endfor %}
+
+{% for input in inputs %}
+{% if input.optional_flag_name %}
+    _Bool {{ input.optional_flag_name }} = {{ "true" if input.optional_present else "false" }};
+{% endif %}
+    {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
+{% endfor %}
+
+    testbench_init_constant_input({% for input in constant_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+    if (input_path) {
+        if (testbench_read_input_file(input_path{% for input in variable_inputs %}, {{ input.name }}{% endfor %}) != 0) {
+            return 1;
+        }
+    } else {
+        testbench_fill_random_input({% for input in variable_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+    }
+
+{% for output in outputs %}
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
+{% endfor %}
+
+    if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
+        return 1;
+    }
+
+    timer_start();
+    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
+    timer_stop();
+
+    testbench_print_json({% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if not loop.last %}, {% endif %}{% endfor %});
     return 0;
+}
+
+int main(int argc, char **argv) {
+    const char *input_path = NULL;
+
+    if (argc > 1) {
+        input_path = argv[1];
+    }
+
+    return testbench_run(input_path);
 }
