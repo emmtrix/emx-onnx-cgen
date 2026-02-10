@@ -125,17 +125,21 @@ static void testbench_print_json(
 {% endif %}
 {% endfor %}
 ) {
-    printf("{\"inputs\":{");
+    printf("{\n  \"inputs\": {\n");
 {% for input in inputs %}
 {% if not loop.first %}
-    printf(",");
+    printf(",\n");
 {% endif %}
-    printf("\"{{ input.json_name }}\":{\"shape\":[{{ input.shape_literal }}],\"data\":");
+    printf("    \"{{ input.json_name }}\": {\"shape\": [{{ input.shape_literal }}], \"data\":\n      ");
     printf("[");
 {% for depth in range(input.rank) %}
 for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
     if ({{ input.loop_vars[depth] }}) {
+{% if depth == 0 %}
+        printf(",\n      ");
+{% else %}
         printf(",");
+{% endif %}
     }
 {% if depth < input.rank - 1 %}
     printf("[");
@@ -151,17 +155,21 @@ printf("{{ input.print_format }}", {{ input.print_cast }}{{ input.name }}{{ inpu
     printf("]}");
 {% endfor %}
 
-    printf("},\"outputs\":{");
+    printf("\n  },\n  \"outputs\": {\n");
 {% for output in outputs %}
 {% if not loop.first %}
-    printf(",");
+    printf(",\n");
 {% endif %}
-    printf("\"{{ output.json_name }}\":{\"shape\":[{{ output.shape_literal }}],\"data\":");
+    printf("    \"{{ output.json_name }}\": {\"shape\": [{{ output.shape_literal }}], \"data\":\n      ");
     printf("[");
 {% for depth in range(output.rank) %}
 for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
     if ({{ output.loop_vars[depth] }}) {
+{% if depth == 0 %}
+        printf(",\n      ");
+{% else %}
         printf(",");
+{% endif %}
     }
 {% if depth < output.rank - 1 %}
     printf("[");
@@ -176,7 +184,7 @@ printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ o
 {% endfor %}
     printf("]}");
 {% endfor %}
-    printf("}}\n");
+    printf("\n  }\n}\n");
 }
 
 static int testbench_run(const char *input_path) {
