@@ -119,10 +119,6 @@ def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:
         scale=node.inputs[1],
         zero_point=zero_point_name,
         output=node.outputs[0],
-        input_shape=spec.input_shape,
         axis=spec.axis,
         block_size=spec.block_size,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
-        scale_dtype=scale_dtype,
     )

@@ -81,7 +81,6 @@ def lower_cumsum(graph: Graph, node: Node) -> CumSumOp:
     axis_initializer = _find_initializer(graph, axis_name)
     axis_value = None
     axis_input = None
-    axis_input_dtype = None
     if axis_initializer is not None:
         axis_value = normalize_axis(
             _read_axis_initializer(axis_initializer, node),
@@ -107,12 +106,8 @@ def lower_cumsum(graph: Graph, node: Node) -> CumSumOp:
     return CumSumOp(
         input0=input_name,
         axis_input=axis_input,
-        axis_input_dtype=axis_input_dtype,
         axis=axis_value,
         output=node.outputs[0],
-        input_shape=input_shape,
-        dtype=input_dtype,
-        input_dtype=input_dtype,
         exclusive=bool(exclusive),
         reverse=bool(reverse),
     )

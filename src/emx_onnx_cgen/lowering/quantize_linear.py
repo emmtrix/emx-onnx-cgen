@@ -118,9 +118,5 @@ def lower_quantize_linear(graph: Graph, node: Node) -> QuantizeLinearOp:
         scale=node.inputs[1],
         zero_point=optional_name(node.inputs, 2),
         output=node.outputs[0],
-        input_shape=spec.input_shape,
         axis=spec.axis,
-        dtype=spec.output_dtype,
-        input_dtype=op_dtype,
-        scale_dtype=scale_dtype,
     )
