@@ -184,10 +184,6 @@ def lower_tfidf_vectorizer(graph: Graph, node: Node) -> TfIdfVectorizerOp:
     return TfIdfVectorizerOp(
         input0=input_name,
         output=output_name,
-        input_shape=input_shape,
-        output_shape=output_shape,
-        input_dtype=input_dtype,
-        output_dtype=output_dtype,
         min_gram_length=min_gram_length,
         max_gram_length=max_gram_length,
         max_skip_count=max_skip_count,

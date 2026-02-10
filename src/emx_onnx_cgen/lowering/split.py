@@ -175,10 +175,6 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
     return SplitOp(
         input0=input_name,
         outputs=tuple(node.outputs),
-        input_shape=input_shape,
-        output_shapes=tuple(computed_shapes),
         axis=axis,
         split_sizes=tuple(split_sizes),
-        dtype=input_dtype,
-        input_dtype=input_dtype,
     )

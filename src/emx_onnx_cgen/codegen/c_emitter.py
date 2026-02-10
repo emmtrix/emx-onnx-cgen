@@ -736,11 +736,7 @@ class CEmitter:
                 scale=name_map.get(op.scale, op.scale),
                 zero_point=self._map_optional_name(name_map, op.zero_point),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
                 axis=op.axis,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                scale_dtype=op.scale_dtype,
             )
         if isinstance(op, DequantizeLinearOp):
             return DequantizeLinearOp(
@@ -748,12 +744,8 @@ class CEmitter:
                 scale=name_map.get(op.scale, op.scale),
                 zero_point=self._map_optional_name(name_map, op.zero_point),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
                 axis=op.axis,
                 block_size=op.block_size,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                scale_dtype=op.scale_dtype,
             )
         if isinstance(op, QLinearMulOp):
             return QLinearMulOp(
@@ -1394,26 +1386,15 @@ class CEmitter:
             return TriluOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 upper=op.upper,
                 k_value=op.k_value,
                 k_input=self._map_optional_name(name_map, op.k_input),
-                k_input_shape=op.k_input_shape,
-                k_input_dtype=op.k_input_dtype,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, TileOp):
             return TileOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 repeats=op.repeats,
-                input_strides=op.input_strides,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, PadOp):
             return PadOp(
@@ -1443,22 +1424,14 @@ class CEmitter:
             return DepthToSpaceOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 blocksize=op.blocksize,
                 mode=op.mode,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, SpaceToDepthOp):
             return SpaceToDepthOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 blocksize=op.blocksize,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, SliceOp):
             return SliceOp(
@@ -1612,12 +1585,8 @@ class CEmitter:
             return CumSumOp(
                 input0=name_map.get(op.input0, op.input0),
                 axis_input=self._map_optional_name(name_map, op.axis_input),
-                axis_input_dtype=op.axis_input_dtype,
                 axis=op.axis,
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
@@ -1647,22 +1616,11 @@ class CEmitter:
                 values=name_map.get(op.values, op.values),
                 output=name_map.get(op.output, op.output),
                 axis=op.axis,
-                indices_shape=op.indices_shape,
-                values_shape=op.values_shape,
-                output_shape=op.output_shape,
-                depth_dim=op.depth_dim,
-                dtype=op.dtype,
-                indices_dtype=op.indices_dtype,
-                depth_dtype=op.depth_dtype,
             )
         if isinstance(op, TfIdfVectorizerOp):
             return TfIdfVectorizerOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                input_dtype=op.input_dtype,
-                output_dtype=op.output_dtype,
                 min_gram_length=op.min_gram_length,
                 max_gram_length=op.max_gram_length,
                 max_skip_count=op.max_skip_count,
@@ -1676,8 +1634,6 @@ class CEmitter:
             return StringNormalizerOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 case_change_action=op.case_change_action,
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
@@ -1686,12 +1642,8 @@ class CEmitter:
             return SplitOp(
                 input0=name_map.get(op.input0, op.input0),
                 outputs=tuple(name_map.get(name, name) for name in op.outputs),
-                input_shape=op.input_shape,
-                output_shapes=op.output_shapes,
                 axis=op.axis,
                 split_sizes=op.split_sizes,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
@@ -2566,6 +2518,8 @@ class CEmitter:
                 return model.op_context.dtype(op.data)
             if isinstance(op, ExpandOp):
                 return model.op_context.dtype(op.input0)
+            if isinstance(op, SplitOp):
+                return model.op_context.dtype(op.outputs[0])
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -2609,9 +2563,9 @@ class CEmitter:
             if dtype is not None
         }
         trilu_k_dtypes = {
-            op.k_input_dtype
+            model.op_context.dtype(op.k_input)
             for op in resolved_ops
-            if isinstance(op, TriluOp) and op.k_input_dtype is not None
+            if isinstance(op, TriluOp) and op.k_input is not None
         }
         maxpool_indices_dtypes = {
             op.indices_dtype
@@ -3027,7 +2981,7 @@ class CEmitter:
             return True
         if any(
             isinstance(op, (QuantizeLinearOp, QLinearMulOp, QLinearMatMulOp))
-            and op.dtype.is_integer
+            and op_context.dtype(op.output).is_integer
             for op in resolved_ops
         ):
             return True
@@ -3430,11 +3384,7 @@ class CEmitter:
                     else None
                 ),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
                 axis=op.axis,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                scale_dtype=op.scale_dtype,
             )
         if isinstance(op, DequantizeLinearOp):
             return DequantizeLinearOp(
@@ -3446,12 +3396,8 @@ class CEmitter:
                     else None
                 ),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
                 axis=op.axis,
                 block_size=op.block_size,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
-                scale_dtype=op.scale_dtype,
             )
         if isinstance(op, QLinearMulOp):
             return QLinearMulOp(
@@ -4211,12 +4157,8 @@ class CEmitter:
             return CumSumOp(
                 input0=temp_map.get(op.input0, op.input0),
                 axis_input=CEmitter._map_optional_name(temp_map, op.axis_input),
-                axis_input_dtype=op.axis_input_dtype,
                 axis=op.axis,
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
@@ -4240,22 +4182,11 @@ class CEmitter:
                 values=temp_map.get(op.values, op.values),
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
-                indices_shape=op.indices_shape,
-                values_shape=op.values_shape,
-                output_shape=op.output_shape,
-                depth_dim=op.depth_dim,
-                dtype=op.dtype,
-                indices_dtype=op.indices_dtype,
-                depth_dtype=op.depth_dtype,
             )
         if isinstance(op, TfIdfVectorizerOp):
             return TfIdfVectorizerOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                input_dtype=op.input_dtype,
-                output_dtype=op.output_dtype,
                 min_gram_length=op.min_gram_length,
                 max_gram_length=op.max_gram_length,
                 max_skip_count=op.max_skip_count,
@@ -4269,8 +4200,6 @@ class CEmitter:
             return StringNormalizerOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 case_change_action=op.case_change_action,
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
@@ -4279,12 +4208,8 @@ class CEmitter:
             return SplitOp(
                 input0=temp_map.get(op.input0, op.input0),
                 outputs=tuple(temp_map.get(name, name) for name in op.outputs),
-                input_shape=op.input_shape,
-                output_shapes=op.output_shapes,
                 axis=op.axis,
                 split_sizes=op.split_sizes,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, TransposeOp):
             return TransposeOp(
@@ -4313,8 +4238,6 @@ class CEmitter:
             return TriluOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 upper=op.upper,
                 k_value=op.k_value,
                 k_input=(
@@ -4322,21 +4245,12 @@ class CEmitter:
                     if op.k_input is not None
                     else None
                 ),
-                k_input_shape=op.k_input_shape,
-                k_input_dtype=op.k_input_dtype,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, TileOp):
             return TileOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 repeats=op.repeats,
-                input_strides=op.input_strides,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, PadOp):
             return PadOp(
@@ -4378,22 +4292,14 @@ class CEmitter:
             return DepthToSpaceOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 blocksize=op.blocksize,
                 mode=op.mode,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, SpaceToDepthOp):
             return SpaceToDepthOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
                 blocksize=op.blocksize,
-                dtype=op.dtype,
-                input_dtype=op.input_dtype,
             )
         if isinstance(op, SliceOp):
             return SliceOp(
@@ -8313,32 +8219,35 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, TriluOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
             param_specs = [("input0", op.input0), ("output", op.output)]
             if op.k_input is not None:
                 param_specs.append(("k_input", op.k_input))
             params = self._shared_param_map(param_specs)
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
-            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0)
+                input_shape, _dim_names_for(op.input0)
             )
             k_suffix = ""
-            if op.k_input is not None and op.k_input_shape is not None:
+            if op.k_input is not None:
                 k_suffix = self._param_array_suffix(
-                    op.k_input_shape, _dim_names_for(op.k_input)
+                    self._ctx_shape(op.k_input), _dim_names_for(op.k_input)
                 )
-            batch_dims = op.output_shape[:-2]
+            batch_dims = output_shape[:-2]
             batch_size = CEmitter._element_count(batch_dims or (1,))
             param_decls = [
                 (params["input0"], c_type, input_suffix, True),
                 (params["output"], c_type, output_suffix, False),
             ]
-            if op.k_input is not None and op.k_input_dtype is not None:
+            if op.k_input is not None:
                 param_decls.append(
                     (
                         params["k_input"],
-                        op.k_input_dtype.c_type,
+                        self._ctx_dtype(op.k_input).c_type,
                         k_suffix,
                         True,
                     )
@@ -8352,41 +8261,49 @@ class CEmitter:
                 params=self._build_param_decls(param_decls),
                 c_type=c_type,
                 k_c_type=(
-                    op.k_input_dtype.c_type
-                    if op.k_input_dtype is not None
+                    self._ctx_dtype(op.k_input).c_type
+                    if op.k_input is not None
                     else ScalarType.I64.c_type
                 ),
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
                 shape=shape,
                 batch_size=batch_size,
-                rows=op.output_shape[-2],
-                cols=op.output_shape[-1],
+                rows=output_shape[-2],
+                cols=output_shape[-1],
                 k_value=op.k_value,
                 upper=op.upper,
                 zero_literal=zero_literal,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, TileOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output)
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
             output_dim_names = _dim_names_for(op.output)
-            output_shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
-            loop_vars = CEmitter._loop_vars(op.output_shape)
+            output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0)
+                input_shape, _dim_names_for(op.input0)
             )
-            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], c_type, input_suffix, True),
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            input_strides: list[int] = []
+            stride = 1
+            for dim in reversed(input_shape):
+                input_strides.append(stride)
+                stride *= dim
+            input_strides = list(reversed(input_strides))
             input_index_terms = [
                 f"({var} % {dim}) * {stride}"
-                for var, dim, stride in zip(loop_vars, op.input_shape, op.input_strides)
+                for var, dim, stride in zip(loop_vars, input_shape, input_strides)
             ]
             input_index_expr = " + ".join(input_index_terms) or "0"
             rendered = tile_template.render(
@@ -8509,11 +8426,13 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, DepthToSpaceOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            output_suffix = self._param_array_suffix(op.output_shape)
-            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            input_suffix = self._param_array_suffix(input_shape)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], c_type, input_suffix, True),
@@ -8529,23 +8448,25 @@ class CEmitter:
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=op.input_shape[0],
-                in_channels=op.input_shape[1],
-                out_channels=op.output_shape[1],
-                in_h=op.input_shape[2],
-                in_w=op.input_shape[3],
-                out_h=op.output_shape[2],
-                out_w=op.output_shape[3],
+                batch=input_shape[0],
+                in_channels=input_shape[1],
+                out_channels=output_shape[1],
+                in_h=input_shape[2],
+                in_w=input_shape[3],
+                out_h=output_shape[2],
+                out_w=output_shape[3],
                 blocksize=op.blocksize,
                 mode=op.mode,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SpaceToDepthOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            output_suffix = self._param_array_suffix(op.output_shape)
-            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            input_suffix = self._param_array_suffix(input_shape)
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], c_type, input_suffix, True),
@@ -8561,13 +8482,13 @@ class CEmitter:
                 c_type=c_type,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                batch=op.input_shape[0],
-                in_channels=op.input_shape[1],
-                out_channels=op.output_shape[1],
-                in_h=op.input_shape[2],
-                in_w=op.input_shape[3],
-                out_h=op.output_shape[2],
-                out_w=op.output_shape[3],
+                batch=input_shape[0],
+                in_channels=input_shape[1],
+                out_channels=output_shape[1],
+                in_h=input_shape[2],
+                in_w=input_shape[3],
+                out_h=output_shape[2],
+                out_w=output_shape[3],
                 blocksize=op.blocksize,
             ).rstrip()
             return with_node_comment(rendered)
@@ -9195,6 +9116,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, CumSumOp):
+            input_shape = self._ctx_shape(op.input0)
             params = self._unique_param_map(
                 [
                     ("input0", op.input0),
@@ -9205,7 +9127,9 @@ class CEmitter:
             input_dim_names = _dim_names_for(op.input0)
             output_dim_names = _dim_names_for(op.output)
             axis_c_type = (
-                op.axis_input_dtype.c_type if op.axis_input_dtype else "int64_t"
+                self._ctx_dtype(op.axis_input).c_type
+                if op.axis_input is not None
+                else "int64_t"
             )
             rendered = cumsum_template.render(
                 model_name=model.name,
@@ -9217,12 +9141,12 @@ class CEmitter:
                 axis_literal=op.axis,
                 output=params["output"],
                 c_type=c_type,
-                input_suffix=self._param_array_suffix(op.input_shape, input_dim_names),
+                input_suffix=self._param_array_suffix(input_shape, input_dim_names),
                 output_suffix=self._param_array_suffix(
-                    op.input_shape, output_dim_names
+                    input_shape, output_dim_names
                 ),
-                input_shape=CEmitter._shape_dim_exprs(op.input_shape, input_dim_names),
-                rank=len(op.input_shape),
+                input_shape=CEmitter._shape_dim_exprs(input_shape, input_dim_names),
+                rank=len(input_shape),
                 exclusive=op.exclusive,
                 reverse=op.reverse,
                 dim_args=dim_args,
@@ -9276,7 +9200,7 @@ class CEmitter:
                 [
                     (
                         params["size"],
-                        op.input_dtype.c_type,
+                        self._ctx_dtype(op.size).c_type,
                         scalar_suffix,
                         True,
                     ),
@@ -9307,18 +9231,22 @@ class CEmitter:
             output_dim_names = _dim_names_for(op.output)
             indices_dim_names = _dim_names_for(op.indices)
             values_dim_names = _dim_names_for(op.values)
-            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_shape_raw = self._ctx_shape(op.output)
+            indices_shape_raw = self._ctx_shape(op.indices)
+            values_shape_raw = self._ctx_shape(op.values)
+            depth_dtype = self._ctx_dtype(op.depth)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
             loop_vars = CEmitter._loop_vars(output_shape)
             indices_indices = tuple(
                 var for idx, var in enumerate(loop_vars) if idx != op.axis
             )
             if not indices_indices:
                 indices_indices = ("0",)
-            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            output_suffix = self._param_array_suffix(output_shape_raw, output_dim_names)
             indices_suffix = self._param_array_suffix(
-                op.indices_shape, indices_dim_names
+                indices_shape_raw, indices_dim_names
             )
-            values_suffix = self._param_array_suffix(op.values_shape, values_dim_names)
+            values_suffix = self._param_array_suffix(values_shape_raw, values_dim_names)
             depth_suffix = self._param_array_suffix(())
             param_decls = self._build_param_decls(
                 [
@@ -9330,7 +9258,7 @@ class CEmitter:
                     ),
                     (
                         params["depth"],
-                        op.depth_dtype.c_type,
+                        depth_dtype.c_type,
                         depth_suffix,
                         True,
                     ),
@@ -9354,7 +9282,7 @@ class CEmitter:
                 loop_vars=loop_vars,
                 indices_indices=indices_indices,
                 axis_index=loop_vars[op.axis],
-                depth_dim=op.depth_dim,
+                depth_dim=output_shape_raw[op.axis],
                 indices_c_type=self._ctx_dtype(op.indices).c_type,
                 c_type=c_type,
             ).rstrip()
@@ -9365,25 +9293,29 @@ class CEmitter:
             )
             input_dim_names = _dim_names_for(op.input0)
             output_dim_names = _dim_names_for(op.output)
-            input_suffix = self._param_array_suffix(op.input_shape, input_dim_names)
-            output_suffix = self._param_array_suffix(op.output_shape, output_dim_names)
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            input_suffix = self._param_array_suffix(input_shape, input_dim_names)
+            output_suffix = self._param_array_suffix(output_shape, output_dim_names)
             param_decls = self._build_param_decls(
                 [
                     (
                         params["input0"],
-                        op.input_dtype.c_type,
+                        input_dtype.c_type,
                         input_suffix,
                         True,
                     ),
                     (
                         params["output"],
-                        op.output_dtype.c_type,
+                        output_dtype.c_type,
                         output_suffix,
                         False,
                     ),
                 ]
             )
-            output_dim = op.output_shape[-1] if op.output_shape else 0
+            output_dim = output_shape[-1] if output_shape else 0
             mode_id = {"TF": 0, "IDF": 1, "TFIDF": 2}[op.mode]
             pool_values = [
                 CEmitter._format_literal(ScalarType.I64, value)
@@ -9399,7 +9331,7 @@ class CEmitter:
             ]
             weights_values = (
                 [
-                    CEmitter._format_literal(op.output_dtype, value)
+                    CEmitter._format_literal(output_dtype, value)
                     for value in op.weights
                 ]
                 if op.weights is not None
@@ -9413,9 +9345,9 @@ class CEmitter:
                 params=param_decls,
                 input_suffix=input_suffix,
                 output_suffix=output_suffix,
-                input_shape=op.input_shape,
-                output_shape=op.output_shape,
-                input_rank=len(op.input_shape),
+                input_shape=input_shape,
+                output_shape=output_shape,
+                input_rank=len(input_shape),
                 output_dim=output_dim,
                 min_gram_length=op.min_gram_length,
                 max_gram_length=op.max_gram_length,
@@ -9428,21 +9360,23 @@ class CEmitter:
                 ngram_counts_values=ngram_counts_values,
                 ngram_indexes_values=ngram_indexes_values,
                 weights_values=weights_values,
-                zero_literal=op.output_dtype.zero_literal,
-                one_literal=CEmitter._format_literal(op.output_dtype, 1.0),
-                c_type=op.output_dtype.c_type,
-                input_c_type=op.input_dtype.c_type,
+                zero_literal=output_dtype.zero_literal,
+                one_literal=CEmitter._format_literal(output_dtype, 1.0),
+                c_type=output_dtype.c_type,
+                input_c_type=input_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, StringNormalizerOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+                input_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
             )
             output_suffix = self._param_array_suffix(
-                op.output_shape, _dim_names_for(op.output), dtype=ScalarType.STRING
+                output_shape, _dim_names_for(op.output), dtype=ScalarType.STRING
             )
             param_decls = self._build_param_decls(
                 [
@@ -9462,13 +9396,15 @@ class CEmitter:
                 params=param_decls,
                 input0=params["input0"],
                 output=params["output"],
-                input_count=CEmitter._element_count_expr(op.input_shape),
-                output_count=CEmitter._element_count_expr(op.output_shape),
+                input_count=CEmitter._element_count_expr(input_shape),
+                output_count=CEmitter._element_count_expr(output_shape),
                 stopword_checks=stopword_checks,
                 case_mode=case_mode,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SplitOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shapes = tuple(self._ctx_shape(name) for name in op.outputs)
             output_params = [
                 (f"output_{index}", name) for index, name in enumerate(op.outputs)
             ]
@@ -9478,16 +9414,16 @@ class CEmitter:
             )
             output_suffixes = tuple(
                 self._param_array_suffix(shape, _dim_names_for(name))
-                for name, shape in zip(output_names, op.output_shapes)
+                for name, shape in zip(output_names, output_shapes)
             )
             outer = 1
-            for dim in op.input_shape[: op.axis]:
+            for dim in input_shape[: op.axis]:
                 outer *= dim
             inner = 1
-            for dim in op.input_shape[op.axis + 1 :]:
+            for dim in input_shape[op.axis + 1 :]:
                 inner *= dim
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0)
+                input_shape, _dim_names_for(op.input0)
             )
             param_decls = self._build_param_decls(
                 [
@@ -9508,7 +9444,7 @@ class CEmitter:
                 c_type=c_type,
                 input_suffix=input_suffix,
                 axis_sizes=op.split_sizes,
-                axis_total=op.input_shape[op.axis],
+                axis_total=input_shape[op.axis],
                 outer=outer,
                 inner=inner,
                 output_count=len(output_names),
@@ -9559,12 +9495,16 @@ class CEmitter:
                 ]
             )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(op.input_shape, output_dim_names)
-            loop_vars = CEmitter._loop_vars(op.input_shape)
+            input_shape = self._ctx_shape(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            scale_dtype = self._ctx_dtype(op.scale)
+            shape = CEmitter._shape_dim_exprs(input_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(input_shape)
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0)
+                input_shape, _dim_names_for(op.input0)
             )
-            scale_shape = () if op.axis is None else (op.input_shape[op.axis],)
+            scale_shape = () if op.axis is None else (input_shape[op.axis],)
             scale_suffix = self._param_array_suffix(
                 scale_shape, _dim_names_for(op.scale)
             )
@@ -9573,22 +9513,22 @@ class CEmitter:
             )
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
-                    (params["scale"], op.scale_dtype.c_type, scale_suffix, True),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["scale"], scale_dtype.c_type, scale_suffix, True),
                     (
                         (
                             params["zero_point"],
-                            op.dtype.c_type,
+                            output_dtype.c_type,
                             zero_point_suffix,
                             True,
                         )
                         if params["zero_point"]
                         else (None, "", "", True)
                     ),
-                    (params["output"], op.dtype.c_type, input_suffix, False),
+                    (params["output"], output_dtype.c_type, input_suffix, False),
                 ]
             )
-            compute_type = "double" if op.input_dtype == ScalarType.F64 else "float"
+            compute_type = "double" if input_dtype == ScalarType.F64 else "float"
             compute_dtype = (
                 ScalarType.F64 if compute_type == "double" else ScalarType.F32
             )
@@ -9602,7 +9542,7 @@ class CEmitter:
                 raise CodegenError(
                     "Failed to resolve scalar min/max functions for QuantizeLinear."
                 )
-            round_fn = CEmitter._math_fn(op.input_dtype, "nearbyintf", "nearbyint")
+            round_fn = CEmitter._math_fn(input_dtype, "nearbyintf", "nearbyint")
             scale_index = "0" if op.axis is None else loop_vars[op.axis]
             input_expr = f"{params['input0']}" + "".join(
                 f"[{var}]" for var in loop_vars
@@ -9624,8 +9564,8 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 compute_type=compute_type,
-                input_c_type=op.input_dtype.c_type,
-                output_c_type=op.dtype.c_type,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
                 shape=shape,
                 loop_vars=loop_vars,
                 input_expr=input_expr,
@@ -9633,8 +9573,8 @@ class CEmitter:
                 zero_expr=zero_expr,
                 output_expr=output_expr,
                 round_fn=round_fn,
-                min_literal=op.dtype.min_literal,
-                max_literal=op.dtype.max_literal,
+                min_literal=output_dtype.min_literal,
+                max_literal=output_dtype.max_literal,
                 min_fn=min_fn,
                 max_fn=max_fn,
                 dim_args=dim_args,
@@ -9650,19 +9590,23 @@ class CEmitter:
                 ]
             )
             output_dim_names = _dim_names_for(op.output)
-            shape = CEmitter._shape_dim_exprs(op.input_shape, output_dim_names)
-            loop_vars = CEmitter._loop_vars(op.input_shape)
+            input_shape = self._ctx_shape(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            scale_dtype = self._ctx_dtype(op.scale)
+            shape = CEmitter._shape_dim_exprs(input_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(input_shape)
             input_suffix = self._param_array_suffix(
-                op.input_shape, _dim_names_for(op.input0)
+                input_shape, _dim_names_for(op.input0)
             )
             if op.axis is None:
                 scale_shape = ()
             elif op.block_size:
-                scale_shape_list = list(op.input_shape)
-                scale_shape_list[op.axis] = op.input_shape[op.axis] // op.block_size
+                scale_shape_list = list(input_shape)
+                scale_shape_list[op.axis] = input_shape[op.axis] // op.block_size
                 scale_shape = tuple(scale_shape_list)
             else:
-                scale_shape = (op.input_shape[op.axis],)
+                scale_shape = (input_shape[op.axis],)
             scale_suffix = self._param_array_suffix(
                 scale_shape, _dim_names_for(op.scale)
             )
@@ -9671,22 +9615,22 @@ class CEmitter:
             )
             param_decls = self._build_param_decls(
                 [
-                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
-                    (params["scale"], op.scale_dtype.c_type, scale_suffix, True),
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["scale"], scale_dtype.c_type, scale_suffix, True),
                     (
                         (
                             params["zero_point"],
-                            op.input_dtype.c_type,
+                            input_dtype.c_type,
                             zero_point_suffix,
                             True,
                         )
                         if params["zero_point"]
                         else (None, "", "", True)
                     ),
-                    (params["output"], op.dtype.c_type, input_suffix, False),
+                    (params["output"], output_dtype.c_type, input_suffix, False),
                 ]
             )
-            compute_type = "double" if op.dtype == ScalarType.F64 else "float"
+            compute_type = "double" if output_dtype == ScalarType.F64 else "float"
             input_expr = f"{params['input0']}" + "".join(
                 f"[{var}]" for var in loop_vars
             )
@@ -9726,8 +9670,8 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 compute_type=compute_type,
-                input_c_type=op.input_dtype.c_type,
-                output_c_type=op.dtype.c_type,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
                 shape=shape,
                 loop_vars=loop_vars,
                 input_expr=input_expr,
@@ -10506,8 +10450,8 @@ class CEmitter:
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, TriluOp):
             inputs = [(op.input0, self._ctx_shape(op.input0))]
-            if op.k_input is not None and op.k_input_shape is not None:
-                inputs.append((op.k_input, op.k_input_shape))
+            if op.k_input is not None:
+                inputs.append((op.k_input, self._ctx_shape(op.k_input)))
             return tuple(inputs)
         if isinstance(op, GridSampleOp):
             return ((op.input0, op.input_shape), (op.grid, op.grid_shape))
@@ -10531,19 +10475,19 @@ class CEmitter:
                 inputs.append((op.write_indices, op.write_indices_shape))
             return tuple(inputs)
         if isinstance(op, CumSumOp):
-            return ((op.input0, op.input_shape),)
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, RangeOp):
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
         if isinstance(op, HammingWindowOp):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
             return (
-                (op.indices, op.indices_shape),
+                (op.indices, self._ctx_shape(op.indices)),
                 (op.depth, ()),
-                (op.values, op.values_shape),
+                (op.values, self._ctx_shape(op.values)),
             )
         if isinstance(op, SplitOp):
-            return ((op.input0, op.input_shape),)
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, TopKOp):
             return (
                 (op.input0, self._ctx_shape(op.input0)),
@@ -10862,8 +10806,8 @@ class CEmitter:
             return tuple(outputs)
         if isinstance(op, SplitOp):
             return tuple(
-                (name, shape, op.dtype)
-                for name, shape in zip(op.outputs, op.output_shapes)
+                (name, self._ctx_shape(name), self._ctx_dtype(name))
+                for name in op.outputs
             )
         if isinstance(op, ArgReduceOp):
             return (
@@ -10961,6 +10905,9 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
+            | StringNormalizerOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
             | RotaryEmbeddingOp
             | SplitOp
             | PadOp
@@ -10977,9 +10924,9 @@ class CEmitter:
         if isinstance(op, ClipOp):
             return self._ctx_shape(op.output)
         if isinstance(op, QuantizeLinearOp):
-            return op.input_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, DequantizeLinearOp):
-            return op.input_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, CastOp):
             return self._ctx_shape(op.output)
         if isinstance(op, QLinearMulOp):
@@ -11055,15 +11002,15 @@ class CEmitter:
         if isinstance(op, EyeLikeOp):
             return self._ctx_shape(op.output)
         if isinstance(op, TriluOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, TileOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, PadOp):
             return op.output_shape
         if isinstance(op, DepthToSpaceOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, SpaceToDepthOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, SliceOp):
             return op.output_shape
         if isinstance(op, ResizeOp):
@@ -11087,17 +11034,17 @@ class CEmitter:
         if isinstance(op, ExpandOp):
             return self._ctx_shape(op.output)
         if isinstance(op, CumSumOp):
-            return op.input_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, RangeOp):
             return self._ctx_shape(op.output)
         if isinstance(op, HammingWindowOp):
             return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, TfIdfVectorizerOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
-            return op.output_shape
+            return self._ctx_shape(op.output)
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -11165,6 +11112,8 @@ class CEmitter:
             | OneHotOp
             | TfIdfVectorizerOp
             | StringNormalizerOp
+            | DepthToSpaceOp
+            | SpaceToDepthOp
             | SplitOp
             | PadOp
         ),
@@ -11180,9 +11129,19 @@ class CEmitter:
         if isinstance(op, NonMaxSuppressionOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, TfIdfVectorizerOp):
-            return op.output_dtype
+            return self._ctx_dtype(op.output)
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
+        if isinstance(op, (QuantizeLinearOp, DequantizeLinearOp)):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, (TriluOp, TileOp, CumSumOp)):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, SplitOp):
+            return self._ctx_dtype(op.outputs[0])
+        if isinstance(op, (DepthToSpaceOp, SpaceToDepthOp)):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, OneHotOp):
+            return self._ctx_dtype(op.output)
         if isinstance(
             op,
             (

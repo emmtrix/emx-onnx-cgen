@@ -58,8 +58,6 @@ def lower_trilu(graph: Graph, node: Node) -> TriluOp:
     k_input = optional_name(node.inputs, 1)
     k_value = 0
     k_input_name = None
-    k_input_shape = None
-    k_input_dtype = None
     if k_input:
         k_initializer = _find_initializer(graph, k_input)
         if k_initializer is not None:
@@ -72,18 +70,10 @@ def lower_trilu(graph: Graph, node: Node) -> TriluOp:
             if k_dtype != ScalarType.I64:
                 raise UnsupportedOpError("Trilu k input must be int64")
             k_input_name = k_input
-            k_input_shape = k_shape
-            k_input_dtype = k_dtype
     return TriluOp(
         input0=input_name,
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=output_shape,
         upper=upper,
         k_value=k_value,
         k_input=k_input_name,
-        k_input_shape=k_input_shape,
-        k_input_dtype=k_input_dtype,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
     )
