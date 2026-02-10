@@ -160,12 +160,12 @@ static void testbench_fill_random_input(float in0[2][3]) {
 static void testbench_print_json(
 float in0[2][3],
 float out[2][3]) {
-    printf("{\"inputs\":{");
-    printf("\"in0\":{\"shape\":[2,3],\"data\":");
+    printf("{\n  \"inputs\": {\n");
+    printf("    \"in0\": {\"shape\": [2,3], \"data\":\n      ");
     printf("[");
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         if (i0) {
-            printf(",");
+            printf(",\n      ");
         }
         printf("[");
         for (idx_t i1 = 0; i1 < 3; ++i1) {
@@ -178,12 +178,12 @@ float out[2][3]) {
     }
     printf("]}");
 
-    printf("},\"outputs\":{");
-    printf("\"out\":{\"shape\":[2,3],\"data\":");
+    printf("\n  },\n  \"outputs\": {\n");
+    printf("    \"out\": {\"shape\": [2,3], \"data\":\n      ");
     printf("[");
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         if (i0) {
-            printf(",");
+            printf(",\n      ");
         }
         printf("[");
         for (idx_t i1 = 0; i1 < 3; ++i1) {
@@ -195,7 +195,7 @@ float out[2][3]) {
         printf("]");
     }
     printf("]}");
-    printf("}}\n");
+    printf("\n  }\n}\n");
 }
 
 static int testbench_run(const char *input_path) {
