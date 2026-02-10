@@ -120,44 +120,46 @@ static float rng_next_float(void) {
 
 
 
-int main(int argc, char **argv) {
-    FILE *input_file = NULL;
-    if (argc > 1) {
-        input_file = fopen(argv[1], "rb");
-        if (!input_file) {
-            fprintf(stderr, "Failed to open input file: %s\n", argv[1]);
-            return 1;
-        }
-    }
+__attribute__((weak, noinline)) void timer_start(void) {}
+__attribute__((weak, noinline)) void timer_stop(void) {}
 
-    float in0[2][3];
-    if (input_file) {
-        for (idx_t i0 = 0; i0 < 2; ++i0) {
-            for (idx_t i1 = 0; i1 < 3; ++i1) {
-                if (fread(&in0[i0][i1], sizeof(float), 1, input_file) != 1) {
-                    fprintf(stderr, "Failed to read input in0\n");
-                    return 1;
-                }
-            }
-        }
-    } else {
-        for (idx_t i0 = 0; i0 < 2; ++i0) {
-            for (idx_t i1 = 0; i1 < 3; ++i1) {
-                in0[i0][i1] = rng_next_float();
-            }
-        }
-    }
-    if (input_file) {
-        fclose(input_file);
-    }
 
-    float out[2][3];
+static void testbench_init_constant_input(void) {
+    (void)0;
+}
 
-    if (!large_weight_model_load("large_weight_model.bin")) {
+static int testbench_read_input_file(
+const char *input_path, float in0[2][3]) {
+    FILE *input_file = fopen(input_path, "rb");
+    if (!input_file) {
+        fprintf(stderr, "Failed to open input file: %s\n", input_path);
         return 1;
     }
-    large_weight_model(in0, out);
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            if (fread(&in0[i0][i1], sizeof(float), 1, input_file) != 1) {
+                fprintf(stderr, "Failed to read input in0\n");
+                fclose(input_file);
+                return 1;
+            }
+        }
+    }
 
+    fclose(input_file);
+    return 0;
+}
+
+static void testbench_fill_random_input(float in0[2][3]) {
+    for (idx_t i0 = 0; i0 < 2; ++i0) {
+        for (idx_t i1 = 0; i1 < 3; ++i1) {
+            in0[i0][i1] = rng_next_float();
+        }
+    }
+}
+
+static void testbench_print_json(
+float in0[2][3],
+float out[2][3]) {
     printf("{\"inputs\":{");
     printf("\"in0\":{\"shape\":[2,3],\"data\":");
     printf("[");
@@ -194,5 +196,41 @@ int main(int argc, char **argv) {
     }
     printf("]}");
     printf("}}\n");
+}
+
+static int testbench_run(const char *input_path) {
+
+    float in0[2][3];
+
+    testbench_init_constant_input();
+    if (input_path) {
+        if (testbench_read_input_file(input_path, in0) != 0) {
+            return 1;
+        }
+    } else {
+        testbench_fill_random_input(in0);
+    }
+
+    float out[2][3];
+
+    if (!large_weight_model_load("large_weight_model.bin")) {
+        return 1;
+    }
+
+    timer_start();
+    large_weight_model(in0, out);
+    timer_stop();
+
+    testbench_print_json(in0, out);
     return 0;
+}
+
+int main(int argc, char **argv) {
+    const char *input_path = NULL;
+
+    if (argc > 1) {
+        input_path = argv[1];
+    }
+
+    return testbench_run(input_path);
 }
