@@ -43,10 +43,11 @@ For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.
 - Official ONNX operator coverage tracking.
 - Support for a wide range of ONNX operators (see [`SUPPORT_OPS.md`](SUPPORT_OPS.md)).
 - Supported data types:
-  - `float`, `double`, `float16`
-  - `int8_t`, `uint8_t`, `int16_t`, `uint16_t`, `int32_t`, `uint32_t`, `int64_t`, `uint64_t`
+  - `float16`, `float`, `double`
+  - `int8`, `uint8`, `int16`, `uint16`, `int32`, `uint32`, `int64`, `uint64`
   - `bool`
   - `string` (fixed-size `'\0'`-terminated C strings; see [`docs/output-format.md`](docs/output-format.md))
+  - `optional(<tensor type>)` (optional tensors represented via an extra `_Bool <name>_present` flag; see [`docs/output-format.md`](docs/output-format.md))
 - Optional support for dynamic dimensions using C99 variable-length arrays (VLAs), when the target compiler supports them.
 
 ## Usage Scenarios
