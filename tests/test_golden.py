@@ -246,6 +246,28 @@ def _make_string_normalizer_model() -> onnx.ModelProto:
     return model
 
 
+def _make_constant_string_model() -> onnx.ModelProto:
+    output = helper.make_tensor_value_info("out", TensorProto.STRING, [2])
+    constant = helper.make_node(
+        "Constant",
+        inputs=[],
+        outputs=["const_out"],
+        value_strings=[b"hello", b"world"],
+    )
+    identity = helper.make_node("Identity", ["const_out"], ["out"])
+    graph = helper.make_graph(
+        [constant, identity], "constant_string_graph", [], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_matmul_model() -> onnx.ModelProto:
     input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3])
     input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [3, 4])
@@ -600,6 +622,14 @@ def test_codegen_golden_string_normalizer() -> None:
     compiler = Compiler(CompilerOptions(model_name="string_normalizer_model"))
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "string_normalizer_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_constant_string() -> None:
+    model = _make_constant_string_model()
+    compiler = Compiler(CompilerOptions(model_name="constant_string_model"))
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "constant_string_model.c"
     assert_golden(generated, golden_path)
 
 
