@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported dtype string",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "StringNormalizer"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "2489e843faf2291985c56469cd96577463fc94ab08834b47b797661c8156f52f"
 }

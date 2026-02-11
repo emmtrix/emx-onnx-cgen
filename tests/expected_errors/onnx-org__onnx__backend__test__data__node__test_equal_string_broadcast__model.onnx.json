@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported dtype string",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_equal_string_broadcast model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Equal"
   ],
-  "opset_version": 19
+  "opset_version": 19,
+  "generated_checksum": "e914595283c4ad041fca3a734255c6ba449a7767f72428df7bef293060595338"
 }
