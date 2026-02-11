@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 153 / 200
+Supported operators: 154 / 200
 
 | Operator | Supported |
 | --- | --- |
@@ -178,7 +178,7 @@ Supported operators: 153 / 200
 | Sqrt | ✅ |
 | Squeeze | ✅ |
 | StringConcat | ❌ |
-| StringNormalizer | ❌ |
+| StringNormalizer | ✅ |
 | StringSplit | ❌ |
 | Sub | ✅ |
 | Sum | ✅ |

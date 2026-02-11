@@ -26,6 +26,7 @@
  */
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
@@ -56,15 +57,19 @@
  *   stopwords: [monday]
  */
 static inline void node0_stringnormalizer(const char input0[4][EMX_STRING_MAX_LEN], char output[3][EMX_STRING_MAX_LEN]) {
+    const char (*input0_flat)[EMX_STRING_MAX_LEN] =
+    (const char (*)[EMX_STRING_MAX_LEN])input0;
+    char (*output_flat)[EMX_STRING_MAX_LEN] =
+    (char (*)[EMX_STRING_MAX_LEN])output;
     idx_t out_idx = 0;
     for (idx_t in_idx = 0; in_idx < 4; ++in_idx) {
-        const char *src = input0[in_idx];
+        const char *src = input0_flat[in_idx];
         _Bool keep = true;
         if (strcmp(src, "monday") == 0) keep = false;
         if (!keep) {
             continue;
         }
-        char *dst = output[out_idx++];
+        char *dst = output_flat[out_idx++];
         size_t pos = 0;
         for (size_t i = 0; src[i] != '\0' && pos + 1 < EMX_STRING_MAX_LEN; ++i) {
             unsigned char ch = (unsigned char)src[i];
@@ -74,7 +79,7 @@ static inline void node0_stringnormalizer(const char input0[4][EMX_STRING_MAX_LE
         dst[pos] = '\0';
     }
     for (; out_idx < 3; ++out_idx) {
-        output[out_idx][0] = '\0';
+        output_flat[out_idx][0] = '\0';
     }
 }
 
