@@ -4,6 +4,7 @@ import numpy as np
 import onnx
 
 from onnx import TensorProto, helper
+from shared.scalar_types import ScalarType
 
 from emx_onnx_cgen.onnx_import import import_onnx
 
@@ -39,3 +40,30 @@ def test_import_constant_creates_initializer() -> None:
     initializer = graph.initializers[0]
     assert initializer.name == "const_out"
     np.testing.assert_array_equal(initializer.data, const_values)
+
+
+def test_import_constant_with_value_strings_creates_string_initializer() -> None:
+    node = helper.make_node(
+        "Constant",
+        inputs=[],
+        outputs=["const_out"],
+        value_strings=[b"alpha", b"beta"],
+    )
+    output = helper.make_tensor_value_info("const_out", TensorProto.STRING, [2])
+    graph = helper.make_graph([node], "const_string_graph", [], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+
+    imported = import_onnx(model)
+    assert not imported.nodes
+    assert len(imported.initializers) == 1
+    initializer = imported.initializers[0]
+    assert initializer.type.dtype == ScalarType.STRING
+    np.testing.assert_array_equal(
+        initializer.data, np.array([b"alpha", b"beta"], dtype=object)
+    )

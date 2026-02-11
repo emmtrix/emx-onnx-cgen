@@ -9142,9 +9142,7 @@ class CEmitter:
                 output=params["output"],
                 c_type=c_type,
                 input_suffix=self._param_array_suffix(input_shape, input_dim_names),
-                output_suffix=self._param_array_suffix(
-                    input_shape, output_dim_names
-                ),
+                output_suffix=self._param_array_suffix(input_shape, output_dim_names),
                 input_shape=CEmitter._shape_dim_exprs(input_shape, input_dim_names),
                 rank=len(input_shape),
                 exclusive=op.exclusive,
@@ -9330,10 +9328,7 @@ class CEmitter:
                 for value in op.ngram_indexes
             ]
             weights_values = (
-                [
-                    CEmitter._format_literal(output_dtype, value)
-                    for value in op.weights
-                ]
+                [CEmitter._format_literal(output_dtype, value) for value in op.weights]
                 if op.weights is not None
                 else None
             )
@@ -11609,13 +11604,21 @@ class CEmitter:
         sorted_constants = sorted(
             enumerate(constants),
             key=lambda item: (
-                self._element_count(item[1].shape) * item[1].dtype.np_dtype.itemsize,
+                (
+                    0
+                    if item[1].dtype == ScalarType.STRING
+                    else self._element_count(item[1].shape)
+                    * item[1].dtype.np_dtype.itemsize
+                ),
                 item[0],
             ),
         )
         inline_set: set[ConstTensor] = set()
         total_bytes = 0
         for _, const in sorted_constants:
+            if const.dtype == ScalarType.STRING:
+                inline_set.add(const)
+                continue
             const_bytes = (
                 self._element_count(const.shape) * const.dtype.np_dtype.itemsize
             )
@@ -11692,7 +11695,7 @@ class CEmitter:
             lines.append(self._emit_constant_comment(const, index))
             c_type = const.dtype.c_type
             shape = self._codegen_shape(const.shape)
-            array_suffix = self._array_suffix(shape)
+            array_suffix = self._array_suffix(shape, const.dtype)
             values = [
                 self._format_weight_value(value, const.dtype) for value in const.data
             ]
@@ -11722,7 +11725,7 @@ class CEmitter:
         lines = []
         for index, const in enumerate(constants, start=1):
             c_type = const.dtype.c_type
-            array_suffix = self._array_suffix(const.shape)
+            array_suffix = self._array_suffix(const.shape, const.dtype)
             lines.append(f"extern const {c_type} {const.name}{array_suffix};")
         return "\n".join(lines)
 
@@ -11734,7 +11737,7 @@ class CEmitter:
         lines = []
         for index, const in enumerate(constants, start=1):
             c_type = const.dtype.c_type
-            array_suffix = self._array_suffix(const.shape)
+            array_suffix = self._array_suffix(const.shape, const.dtype)
             lines.append(f"extern {c_type} {const.name}{array_suffix};")
         return "\n".join(lines)
 
@@ -11751,7 +11754,7 @@ class CEmitter:
         for index, const in enumerate(constants, start=1):
             lines.append(self._emit_constant_comment(const, index))
             c_type = const.dtype.c_type
-            array_suffix = self._array_suffix(const.shape)
+            array_suffix = self._array_suffix(const.shape, const.dtype)
             lines.append(f"{prefix}{c_type} {const.name}{array_suffix};")
             lines.append("")
         if lines and not lines[-1]:
@@ -11948,7 +11951,9 @@ class CEmitter:
             return self._format_int(int(value), 8, "INT8_MIN")
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
-    def _format_weight_value(self, value: float | int | bool, dtype: ScalarType) -> str:
+    def _format_weight_value(
+        self, value: float | int | bool | bytes | str, dtype: ScalarType
+    ) -> str:
         if dtype == ScalarType.F16:
             formatted = self._format_float32_hex(float(value))
             if formatted == "NAN" or formatted.endswith("INFINITY"):
@@ -11979,6 +11984,12 @@ class CEmitter:
             return self._format_int(int(value), 16, "INT16_MIN")
         if dtype == ScalarType.I8:
             return self._format_int(int(value), 8, "INT8_MIN")
+        if dtype == ScalarType.STRING:
+            if isinstance(value, bytes):
+                decoded = value.decode("utf-8")
+            else:
+                decoded = str(value)
+            return self._format_c_string_literal(decoded)
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
     @staticmethod

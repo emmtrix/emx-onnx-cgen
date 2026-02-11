@@ -10,14 +10,10 @@ from emx_onnx_cgen.compiler import Compiler
 
 
 def _make_mixed_dtype_model() -> onnx.ModelProto:
-    float_input = helper.make_tensor_value_info(
-        "float_in", TensorProto.FLOAT, [2, 2]
-    )
+    float_input = helper.make_tensor_value_info("float_in", TensorProto.FLOAT, [2, 2])
     int_input = helper.make_tensor_value_info("int_in", TensorProto.INT32, [2, 2])
     output = helper.make_tensor_value_info("out", TensorProto.INT32, [2, 2])
-    bias = helper.make_tensor(
-        "bias", TensorProto.INT32, [2, 2], [1, 2, 3, 4]
-    )
+    bias = helper.make_tensor("bias", TensorProto.INT32, [2, 2], [1, 2, 3, 4])
     add = helper.make_node("Add", ["int_in", "bias"], ["out"])
     graph = helper.make_graph(
         [add], "mixed_dtype_graph", [float_input, int_input], [output], [bias]
@@ -30,12 +26,8 @@ def _make_mixed_dtype_model() -> onnx.ModelProto:
 
 
 def _make_cast_model() -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "input", TensorProto.FLOAT, [2, 2]
-    )
-    output = helper.make_tensor_value_info(
-        "output", TensorProto.INT32, [2, 2]
-    )
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 2])
+    output = helper.make_tensor_value_info("output", TensorProto.INT32, [2, 2])
     node = helper.make_node(
         "Cast",
         ["input"],
@@ -56,15 +48,9 @@ def _make_cast_model() -> onnx.ModelProto:
 
 
 def _make_castlike_model() -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "input", TensorProto.FLOAT, [2, 2]
-    )
-    like_info = helper.make_tensor_value_info(
-        "like", TensorProto.INT32, [2, 2]
-    )
-    output = helper.make_tensor_value_info(
-        "output", TensorProto.INT32, [2, 2]
-    )
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 2])
+    like_info = helper.make_tensor_value_info("like", TensorProto.INT32, [2, 2])
+    output = helper.make_tensor_value_info("output", TensorProto.INT32, [2, 2])
     node = helper.make_node(
         "CastLike",
         ["input", "like"],
@@ -79,6 +65,25 @@ def _make_castlike_model() -> onnx.ModelProto:
     return helper.make_model(
         graph,
         opset_imports=[helper.make_opsetid("", 19)],
+        ir_version=11,
+    )
+
+
+def _make_constant_string_model() -> onnx.ModelProto:
+    output = helper.make_tensor_value_info("out", TensorProto.STRING, [2])
+    constant = helper.make_node(
+        "Constant",
+        inputs=[],
+        outputs=["const_out"],
+        value_strings=[b"hello", b"world"],
+    )
+    identity = helper.make_node("Identity", ["const_out"], ["out"])
+    graph = helper.make_graph(
+        [constant, identity], "constant_string_graph", [], [output]
+    )
+    return helper.make_model(
+        graph,
+        opset_imports=[helper.make_opsetid("", 13)],
         ir_version=11,
     )
 
@@ -124,7 +129,17 @@ def test_castlike_matches_numpy() -> None:
     like_data = np.array([[1, 2], [3, 4]], dtype=np.int32)
     expected = input_data.astype(np.int32)
     evaluator = ReferenceEvaluator(model)
-    (reference_out,) = evaluator.run(
-        None, {"input": input_data, "like": like_data}
-    )
+    (reference_out,) = evaluator.run(None, {"input": input_data, "like": like_data})
     np.testing.assert_array_equal(reference_out, expected)
+
+
+def test_compile_supports_constant_string_initializer() -> None:
+    model = _make_constant_string_model()
+    compiler = Compiler()
+    generated = compiler.compile(model)
+    assert (
+        "const EMX_UNUSED char weight1_const_out[2][EMX_STRING_MAX_LEN] = {"
+        in generated
+    )
+    assert '"hello"' in generated
+    assert '"world"' in generated

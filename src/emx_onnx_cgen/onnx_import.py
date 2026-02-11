@@ -122,9 +122,7 @@ def _values(
     return tuple(
         Value(
             name=vi.name,
-            type=_value_type(
-                vi, dim_param_override=dim_param_by_name.get(vi.name)
-            ),
+            type=_value_type(vi, dim_param_override=dim_param_by_name.get(vi.name)),
         )
         for vi in value_infos
     )
@@ -233,9 +231,7 @@ def _node_attrs(node: onnx.NodeProto) -> dict[str, object]:
     return {attr.name: helper.get_attribute_value(attr) for attr in node.attribute}
 
 
-def _find_value_info(
-    graph: onnx.GraphProto, name: str
-) -> onnx.ValueInfoProto | None:
+def _find_value_info(graph: onnx.GraphProto, name: str) -> onnx.ValueInfoProto | None:
     for value_info in graph.input:
         if value_info.name == name:
             return value_info
@@ -248,9 +244,7 @@ def _find_value_info(
     return None
 
 
-def _tensor_shape_from_value_info(
-    graph: onnx.GraphProto, name: str
-) -> tuple[int, ...]:
+def _tensor_shape_from_value_info(graph: onnx.GraphProto, name: str) -> tuple[int, ...]:
     value_info = _find_value_info(graph, name)
     if value_info is None:
         for initializer in graph.initializer:
@@ -329,21 +323,13 @@ def _scan_axes_and_directions(
         default=(0,) * scan_output_count,
     )
     if any(axis != default_axis for axis in scan_input_axes):
-        raise UnsupportedOpError(
-            f"Scan only supports scan_input_axes={default_axis}"
-        )
+        raise UnsupportedOpError(f"Scan only supports scan_input_axes={default_axis}")
     if any(axis != default_axis for axis in scan_output_axes):
-        raise UnsupportedOpError(
-            f"Scan only supports scan_output_axes={default_axis}"
-        )
+        raise UnsupportedOpError(f"Scan only supports scan_output_axes={default_axis}")
     if any(direction != 0 for direction in scan_input_directions):
-        raise UnsupportedOpError(
-            "Scan only supports scan_input_directions=0"
-        )
+        raise UnsupportedOpError("Scan only supports scan_input_directions=0")
     if any(direction != 0 for direction in scan_output_directions):
-        raise UnsupportedOpError(
-            "Scan only supports scan_output_directions=0"
-        )
+        raise UnsupportedOpError("Scan only supports scan_output_directions=0")
 
 
 def _scan_sequence_length(
@@ -353,8 +339,7 @@ def _scan_sequence_length(
     is_opset8: bool,
 ) -> tuple[int, int | None]:
     scan_input_shapes = [
-        _tensor_shape_from_value_info(graph, name)
-        for name in scan_input_names
+        _tensor_shape_from_value_info(graph, name) for name in scan_input_names
     ]
     if not scan_input_shapes:
         raise UnsupportedOpError("Scan requires scan inputs")
@@ -383,9 +368,7 @@ def _scan_sequence_length(
     if sequence_len <= 0:
         raise UnsupportedOpError("Scan requires positive sequence length")
     if any(shape[0] != sequence_len for shape in scan_input_shapes):
-        raise UnsupportedOpError(
-            "Scan inputs must share the same sequence length"
-        )
+        raise UnsupportedOpError("Scan inputs must share the same sequence length")
     return sequence_len, None
 
 
@@ -418,9 +401,7 @@ def _scan_state_inputs(
         for state_index, state_name in enumerate(state_input_names):
             state_shape = _tensor_shape_from_value_info(graph, state_name)
             if not state_shape:
-                raise UnsupportedOpError(
-                    "Scan opset 8 state inputs must be tensors"
-                )
+                raise UnsupportedOpError("Scan opset 8 state inputs must be tensors")
             if batch_size is not None and state_shape[0] != batch_size:
                 raise UnsupportedOpError(
                     "Scan opset 8 state inputs must match batch size"
@@ -509,9 +490,7 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
                 raise UnsupportedOpError("Scan in opset 8 requires inputs")
             sequence_lens = input_names.pop(0)
             if sequence_lens:
-                raise UnsupportedOpError(
-                    "Scan sequence_lens input is not supported"
-                )
+                raise UnsupportedOpError("Scan sequence_lens input is not supported")
         num_state_inputs = len(input_names) - num_scan_inputs
         if num_state_inputs < 0:
             raise UnsupportedOpError("Scan input count is invalid")
@@ -520,9 +499,7 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
                 "Scan body input count must match state and scan inputs"
             )
         if len(body.output) != len(node.output):
-            raise UnsupportedOpError(
-                "Scan body output count must match Scan outputs"
-            )
+            raise UnsupportedOpError("Scan body output count must match Scan outputs")
         scan_output_count = len(node.output) - num_state_inputs
         _scan_axes_and_directions(
             attrs,
@@ -554,9 +531,7 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
             is_opset8=is_opset8,
             batch_size=batch_size,
         )
-        scan_output_buffers: list[list[str]] = [
-            [] for _ in range(scan_output_count)
-        ]
+        scan_output_buffers: list[list[str]] = [[] for _ in range(scan_output_count)]
 
         for iter_index in range(sequence_len):
             scan_iter_inputs = _scan_iteration_inputs(
@@ -587,9 +562,7 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
                     if not output_name:
                         mapped_outputs.append("")
                         continue
-                    mapped_name = (
-                        f"{prefix}_iter{iter_index}_{output_name}"
-                    )
+                    mapped_name = f"{prefix}_iter{iter_index}_{output_name}"
                     name_map[output_name] = mapped_name
                     mapped_outputs.append(mapped_name)
                 new_nodes.append(
@@ -616,18 +589,14 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
                 state_names[index] = mapped_output
 
             for output_index, output in enumerate(
-                body.output[
-                    num_state_inputs : num_state_inputs + scan_output_count
-                ]
+                body.output[num_state_inputs : num_state_inputs + scan_output_count]
             ):
                 mapped_output = name_map.get(output.name)
                 if mapped_output is None:
                     raise UnsupportedOpError(
                         "Scan body did not produce a required scan output"
                     )
-                unsqueeze_out = (
-                    f"{prefix}_iter{iter_index}_scanout{output_index}"
-                )
+                unsqueeze_out = f"{prefix}_iter{iter_index}_scanout{output_index}"
                 unsqueeze_axes = [0, 1] if is_opset8 else [0]
                 new_nodes.append(
                     helper.make_node(
@@ -744,28 +713,39 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
         data = _normalize_initializer_data(ScalarType.F32, values)
         return Initializer(
             name=output_name,
-        type=TensorType(
-            dtype=ScalarType.F32,
-            shape=tuple(data.shape),
-            dim_params=(None,) * len(data.shape),
-        ),
-        data=data,
-    )
+            type=TensorType(
+                dtype=ScalarType.F32,
+                shape=tuple(data.shape),
+                dim_params=(None,) * len(data.shape),
+            ),
+            data=data,
+        )
     if "value_int" in attrs or "value_ints" in attrs:
         values = attrs.get("value_ints", attrs.get("value_int"))
         data = _normalize_initializer_data(ScalarType.I64, values)
         return Initializer(
             name=output_name,
-        type=TensorType(
-            dtype=ScalarType.I64,
-            shape=tuple(data.shape),
-            dim_params=(None,) * len(data.shape),
-        ),
-        data=data,
-    )
+            type=TensorType(
+                dtype=ScalarType.I64,
+                shape=tuple(data.shape),
+                dim_params=(None,) * len(data.shape),
+            ),
+            data=data,
+        )
     if "value_string" in attrs or "value_strings" in attrs:
-        raise UnsupportedOpError(
-            f"Constant '{output_name}' has unsupported string values"
+        values = attrs.get("value_strings", attrs.get("value_string"))
+        if isinstance(values, (bytes, str)):
+            data = _normalize_initializer_data(ScalarType.STRING, [values])
+        else:
+            data = _normalize_initializer_data(ScalarType.STRING, values)
+        return Initializer(
+            name=output_name,
+            type=TensorType(
+                dtype=ScalarType.STRING,
+                shape=tuple(data.shape),
+                dim_params=(None,) * len(data.shape),
+            ),
+            data=data,
         )
     raise UnsupportedOpError(f"Constant '{output_name}' requires a value attribute")
 
@@ -775,9 +755,7 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)
     )
-    opset_imports = tuple(
-        (opset.domain, opset.version) for opset in model.opset_import
-    )
+    opset_imports = tuple((opset.domain, opset.version) for opset in model.opset_import)
     if _needs_shape_inference(model):
         try:
             model = shape_inference.infer_shapes(model, data_prop=True)
@@ -816,8 +794,7 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
     values = _values(
         value_info
         for value_info in graph.value_info
-        if value_info.name
-        not in initializer_names | input_names | output_names
+        if value_info.name not in initializer_names | input_names | output_names
     )
     return Graph(
         inputs=inputs,
