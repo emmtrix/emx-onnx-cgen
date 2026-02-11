@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported dtype string",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_empty_output model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "StringNormalizer"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "613618b190c57914fd0463587e9fd5817fadafaf354cf73bd57753003be13927"
 }
