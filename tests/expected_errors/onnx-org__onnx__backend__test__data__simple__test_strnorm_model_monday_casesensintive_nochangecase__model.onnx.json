@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported dtype string",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_nochangecase model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "StringNormalizer"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "ef4e42e117653f8fffbafd352753b7a32d44dca8955bdd1e05606e84359b56bd"
 }

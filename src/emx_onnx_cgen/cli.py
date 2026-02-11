@@ -19,6 +19,7 @@ from typing import Any, Mapping, Sequence, TextIO
 import numpy as np
 import onnx
 from onnx import numpy_helper
+from shared.scalar_types import ScalarType
 
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
@@ -31,6 +32,19 @@ from .verification import format_success_message, worst_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
 _NONDETERMINISTIC_OPERATORS = {"Bernoulli"}
+_EMX_STRING_MAX_LEN = 256
+
+
+def _serialize_string_tensor(array: np.ndarray) -> bytes:
+    encoded = bytearray()
+    for item in array.reshape(-1):
+        value = item.decode("utf-8") if isinstance(item, bytes) else str(item)
+        chunk = value.encode("utf-8")
+        if len(chunk) >= _EMX_STRING_MAX_LEN:
+            chunk = chunk[: _EMX_STRING_MAX_LEN - 1]
+        encoded.extend(chunk)
+        encoded.extend(b"\0" * (_EMX_STRING_MAX_LEN - len(chunk)))
+    return bytes(encoded)
 
 
 @dataclass(frozen=True)
@@ -947,9 +961,12 @@ def _verify_model(
                             generated_checksum,
                         )
                     dtype = input_dtypes[name].np_dtype
-                    blob = np.ascontiguousarray(
-                        array.astype(dtype, copy=False)
-                    ).tobytes(order="C")
+                    if input_dtypes[name] == ScalarType.STRING:
+                        blob = _serialize_string_tensor(array)
+                    else:
+                        blob = np.ascontiguousarray(
+                            array.astype(dtype, copy=False)
+                        ).tobytes(order="C")
                     handle.write(blob)
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
