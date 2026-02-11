@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1416 / 1802 official ONNX files.
+Support 1430 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -619,8 +619,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_equal_bcast/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_int16/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_int8/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_equal_string/model.onnx | 19 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/node/test_equal_string_broadcast/model.onnx | 19 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_equal_string/model.onnx | 19 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_equal_string_broadcast/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_uint16/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_uint32/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_equal_uint64/model.onnx | 19 | ✅ | OK (max ULP 0) |
@@ -1567,12 +1567,12 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_string_split_empty_tensor/model.onnx | 20 | ❌ | Unsupported op StringSplit |
 | onnx-org/onnx/backend/test/data/node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Unsupported op StringSplit |
 | onnx-org/onnx/backend/test/data/node/test_string_split_no_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_sub_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1806,12 +1806,12 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_shrink/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sign_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_single_relu_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Unsupported dtype string |
-| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ❌ | Unsupported dtype string |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
 
 ## Local ONNX file support
 

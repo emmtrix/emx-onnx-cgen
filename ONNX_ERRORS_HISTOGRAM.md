@@ -11,7 +11,6 @@
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
-| Unsupported dtype string | 14 | 10, 19 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
@@ -80,7 +79,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported dtype string | 10 | 12 |
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
 | Unsupported op MatMulInteger | 10 | 1 |
@@ -114,7 +112,6 @@
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 18 | 1 |
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
-| Unsupported dtype string | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op StringSplit | 20 | 6 |
 | Unsupported op StringConcat | 20 | 5 |

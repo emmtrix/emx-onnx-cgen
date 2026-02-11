@@ -2620,10 +2620,17 @@ class CEmitter:
             for op in resolved_ops
         ):
             includes.add("#include <string.h>")
+        if any(
+            isinstance(op, BinaryOp)
+            and model.op_context.dtype(op.input0) == ScalarType.STRING
+            for op in resolved_ops
+        ):
+            includes.add("#include <string.h>")
         if any(isinstance(op, StringNormalizerOp) for op in resolved_ops):
             includes.add("#include <string.h>")
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
+            includes.add("#include <stdbool.h>")
         ordered_includes = (
             "#include <stdint.h>",
             "#include <stdio.h>",
@@ -5150,10 +5157,10 @@ class CEmitter:
             loop_vars = CEmitter._loop_vars(output_shape)
             output_suffix = self._param_array_suffix(output_shape, output_dim_names)
             input0_suffix = self._param_array_suffix(
-                input0_shape, _dim_names_for(op.input0)
+                input0_shape, _dim_names_for(op.input0), dtype=input_dtype
             )
             input1_suffix = self._param_array_suffix(
-                input1_shape, _dim_names_for(op.input1)
+                input1_shape, _dim_names_for(op.input1), dtype=input1_dtype
             )
             input_c_type = input_dtype.c_type
             input1_c_type = input1_dtype.c_type
@@ -5204,10 +5211,22 @@ class CEmitter:
             if scalar_operator is not None:
                 operator = scalar_operator
                 operator_kind = OperatorKind.FUNC
+            if input_dtype == ScalarType.STRING:
+                if op.function == ScalarFunction.EQ:
+                    operator_expr = (
+                        f"(strcmp({left_expr}, {right_expr}) == 0)"
+                    )
+                    operator_kind = OperatorKind.EXPR
+                else:
+                    raise CodegenError(
+                        "Unsupported string comparison for rendering: "
+                        f"{op.function.value}"
+                    )
             if operator_kind == OperatorKind.EXPR:
-                operator_expr = op_spec.operator.format(
-                    left=left_expr, right=right_expr
-                )
+                if operator_expr is None:
+                    operator_expr = op_spec.operator.format(
+                        left=left_expr, right=right_expr
+                    )
             rendered = binary_template.render(
                 **common,
                 input0=params["input0"],
@@ -5253,7 +5272,7 @@ class CEmitter:
             shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
             output_array_suffix = self._param_array_suffix(
-                output_shape_raw, output_dim_names
+                output_shape_raw, output_dim_names, dtype=output_dtype
             )
             input_c_type = input_dtype.c_type
             output_c_type = output_dtype.c_type
@@ -5261,7 +5280,7 @@ class CEmitter:
             input_shapes = [self._ctx_shape(name) for name in op.inputs]
             input_dim_names = [_dim_names_for(name) for name in op.inputs]
             input_array_suffixes = [
-                self._param_array_suffix(shape, dim_names)
+                self._param_array_suffix(shape, dim_names, dtype=input_dtype)
                 for shape, dim_names in zip(input_shapes, input_dim_names)
             ]
             param_decls = self._build_param_decls(
@@ -11482,14 +11501,19 @@ class CEmitter:
             loop_vars = self._loop_vars(loop_shape)
             constant_values = testbench_inputs.get(name)
             if constant_values is None:
-                rng_requires_u64 = True
                 if dtype in {ScalarType.F16, ScalarType.F32}:
+                    rng_requires_u64 = True
                     rng_requires_float = True
                 elif dtype == ScalarType.F64:
+                    rng_requires_u64 = True
                     rng_requires_double = True
                 elif dtype == ScalarType.BOOL:
+                    rng_requires_u64 = True
+                    pass
+                elif dtype == ScalarType.STRING:
                     pass
                 else:
+                    rng_requires_u64 = True
                     rng_requires_i64 = True
             if dtype in {ScalarType.F16, ScalarType.F32}:
                 random_expr = "rng_next_float()"
@@ -11497,6 +11521,8 @@ class CEmitter:
                 random_expr = "rng_next_double()"
             elif dtype == ScalarType.BOOL:
                 random_expr = "((rng_next_u64() & 1ull) != 0)"
+            elif dtype == ScalarType.STRING:
+                random_expr = '""'
             else:
                 random_expr = f"({dtype.c_type})rng_next_i64()"
             constant_name = None
@@ -11520,12 +11546,13 @@ class CEmitter:
                     "shape": loop_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": count,
-                    "array_suffix": self._array_suffix(codegen_shape),
+                    "array_suffix": self._array_suffix(codegen_shape, dtype),
                     "array_index_expr": "".join(f"[{var}]" for var in loop_vars),
                     "loop_vars": loop_vars,
                     "rank": len(loop_shape),
                     "index_expr": self._index_expr(loop_shape, loop_vars),
                     "dtype": dtype,
+                    "is_string": dtype == ScalarType.STRING,
                     "c_type": dtype.c_type,
                     "random_expr": random_expr,
                     "print_format": self._print_format(dtype),
@@ -11551,12 +11578,13 @@ class CEmitter:
                     "shape": loop_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": self._element_count(shape),
-                    "array_suffix": self._array_suffix(codegen_shape),
+                    "array_suffix": self._array_suffix(codegen_shape, dtype),
                     "array_index_expr": "".join(f"[{var}]" for var in output_loop_vars),
                     "loop_vars": output_loop_vars,
                     "rank": len(loop_shape),
                     "index_expr": self._index_expr(loop_shape, output_loop_vars),
                     "dtype": dtype,
+                    "is_string": dtype == ScalarType.STRING,
                     "c_type": dtype.c_type,
                     "print_format": self._print_format(dtype),
                     "print_cast": self._print_cast(dtype),
@@ -11949,6 +11977,10 @@ class CEmitter:
             return self._format_int(int(value), 16, "INT16_MIN")
         if dtype == ScalarType.I8:
             return self._format_int(int(value), 8, "INT8_MIN")
+        if dtype == ScalarType.STRING:
+            if isinstance(value, bytes):
+                return self._format_c_string_literal(value.decode("utf-8"))
+            return self._format_c_string_literal(str(value))
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
     def _format_weight_value(
@@ -12108,6 +12140,8 @@ class CEmitter:
             return "%hd"
         if dtype == ScalarType.I8:
             return "%hhd"
+        if dtype == ScalarType.STRING:
+            return '"%s"'
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
     @staticmethod
@@ -12124,6 +12158,8 @@ class CEmitter:
             return "(long long)"
         if dtype in {ScalarType.I32, ScalarType.I16, ScalarType.I8}:
             return "(int)"
+        if dtype == ScalarType.STRING:
+            return ""
         raise CodegenError(f"Unsupported dtype {dtype.onnx_name}")
 
 
