@@ -38,7 +38,6 @@
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
-| expected number, got str | 3 |  |
 | name '*' is not defined | 3 |  |
 | BatchNormalization must have 5 inputs and 1 output | 2 | 15 |
 | Failed to build testbench. | 2 | 12 |

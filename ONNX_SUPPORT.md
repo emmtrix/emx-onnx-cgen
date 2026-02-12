@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1433 / 1802 official ONNX files.
+Support 1436 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -309,7 +309,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_BFLOAT16/model.onnx |  | ❌ | expected number, got str |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
@@ -393,8 +393,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16/model.onnx |  | ❌ | expected number, got str |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx |  | ❌ | expected number, got str |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
