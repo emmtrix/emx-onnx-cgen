@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_atanh model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Atanh"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "b3eee5eccf8e891ba6d306214bad536d32e72fe03f2cbe1ab1def6d1f23831c3"
+  "operators": []
 }

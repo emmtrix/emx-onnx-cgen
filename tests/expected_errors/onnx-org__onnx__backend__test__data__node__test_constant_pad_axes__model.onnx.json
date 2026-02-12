@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_constant_pad_axes model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Pad"
-  ],
-  "opset_version": 25,
-  "generated_checksum": "a553a4f6214d7b065a7e15be8a288cce2946e3737e98c0cf1d7213346e810b7b"
+  "operators": []
 }

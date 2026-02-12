@@ -1,28 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Constant",
-    "Concat",
-    "Reshape",
-    "Transpose",
-    "Cast",
-    "Sqrt",
-    "Div",
-    "Identity",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Where",
-    "Unsqueeze",
-    "Expand",
-    "Mul",
-    "MatMul",
-    "Add",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "f645cffe17d4e29497f6f444afabb7b0ee9d321a2aea6104794e3ddaeabe9cb0"
+  "operators": []
 }

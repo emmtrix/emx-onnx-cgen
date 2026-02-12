@@ -1,16 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Cast",
-    "Sub",
-    "Mul",
-    "Add",
-    "Div",
-    "Range",
-    "Cos"
-  ],
-  "opset_version": 17,
-  "generated_checksum": "f09910e35f92b80c16d48e399be4a2a0fb5bf8e03e2bbdb5d0445ee379b03e61"
+  "operators": []
 }

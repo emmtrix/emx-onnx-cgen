@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_div_bcast model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Div"
-  ],
-  "opset_version": 14,
-  "generated_checksum": "c3c6032229cf3980a996ab59d8bc5c6889bdc46465ab6b5c0881d8977da4bf9e"
+  "operators": []
 }

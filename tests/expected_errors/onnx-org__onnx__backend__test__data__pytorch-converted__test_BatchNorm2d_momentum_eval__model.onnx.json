@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_BatchNorm2d_momentum_eval model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "BatchNormalization"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "879a757f8d5d610a094611810d69a5baa75441f73f56506405eb480cc50af847"
+  "operators": []
 }

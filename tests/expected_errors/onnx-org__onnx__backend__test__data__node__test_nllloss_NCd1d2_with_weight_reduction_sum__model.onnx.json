@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_with_weight_reduction_sum model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "NegativeLogLikelihoodLoss"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "94ce30e5551ae81f26af32fb7daea0c18b55dd86e1684283cd7cce6ba5dd9f2f"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gemm_alpha model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Gemm"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "3c717707a6cc42761af1aeda8291719b06ee59a853a3b546da7a8542b9bb2bdf"
+  "operators": []
 }

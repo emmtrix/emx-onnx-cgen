@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_pad_edge model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Pad",
-    "Constant"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "f73b612aa1da2c58353622e1f01b155ff43185de181d99626e719da26cf95f42"
+  "operators": []
 }

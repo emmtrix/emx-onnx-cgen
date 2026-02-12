@@ -1,29 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_scaled_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Constant",
-    "Concat",
-    "Reshape",
-    "Transpose",
-    "Cast",
-    "Sqrt",
-    "Div",
-    "Identity",
-    "ConstantOfShape",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Where",
-    "Unsqueeze",
-    "Expand",
-    "Mul",
-    "MatMul",
-    "Add",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "7286ee4469d36eabe98a47a6d47e25103d9f402192cb111dc3a13192b4c6d8d3"
+  "operators": []
 }

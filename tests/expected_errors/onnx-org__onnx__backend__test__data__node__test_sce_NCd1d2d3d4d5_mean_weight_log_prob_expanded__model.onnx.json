@@ -1,15 +1,5 @@
 {
   "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3d4d5_mean_weight_log_prob_expanded model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
-  "operators": [
-    "Constant",
-    "Reshape",
-    "Transpose",
-    "LogSoftmax",
-    "Shape",
-    "Identity",
-    "NegativeLogLikelihoodLoss"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "562aa977f9f063b3b8ccbae18af4e7b3d9993dbe6cb88773c40cff8a23bad991"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_no_bias model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Conv"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "020e038fcf3fd102b276e1bbad77d1a899ba166dfcff6c1c03b9160649c800b0"
+  "operators": []
 }

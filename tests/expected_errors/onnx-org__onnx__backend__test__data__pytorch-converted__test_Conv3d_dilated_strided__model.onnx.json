@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv3d_dilated_strided model.onnx --test-data-dir test_data_set_0 --fp32-accumulation-strategy fp64",
-  "operators": [
-    "Conv"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "9e453f172a32d8b734e03ea89c13e6a589b5e8253c77187e25ffdf84d8123ab4"
+  "operators": []
 }

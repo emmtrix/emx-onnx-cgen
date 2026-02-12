@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gathernd_example_float32 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "GatherND"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "e1bba1aca1ae2e8456dec2288b69975547f889004e6820e377f83c2cec16699a"
+  "operators": []
 }

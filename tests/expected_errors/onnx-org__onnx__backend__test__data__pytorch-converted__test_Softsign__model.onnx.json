@@ -1,12 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Softsign model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Abs",
-    "Constant",
-    "Add",
-    "Div"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "b08ca453f0830a164e504884aa16f157a799086852c01612b14a236133fcd133"
+  "operators": []
 }

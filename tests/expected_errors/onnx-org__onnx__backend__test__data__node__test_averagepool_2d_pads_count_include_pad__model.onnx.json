@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_pads_count_include_pad model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "AveragePool"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "9e2955e0c2edb892f2a16eedcf4c73c1950d06e8a507b223d5076a414a787c96"
+  "operators": []
 }

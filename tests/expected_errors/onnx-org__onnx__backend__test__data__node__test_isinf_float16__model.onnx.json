@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_isinf_float16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "IsInf"
-  ],
-  "opset_version": 20,
-  "generated_checksum": "e0827358df212264e666439ca0ea9938cf6e3b2832b4d696e41cc12e99c8d56e"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_or_bcast3v1d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Or"
-  ],
-  "opset_version": 7,
-  "generated_checksum": "3b701ca18e8c02aca6f28b183a1d795692c94e327176c0bdfb18e31b3643bb2f"
+  "operators": []
 }

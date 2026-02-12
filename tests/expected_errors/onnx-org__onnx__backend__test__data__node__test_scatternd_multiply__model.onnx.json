@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_scatternd_multiply model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ScatterND"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "20e847fbfbee0818158d307ccb057c8a1ee67a010831e00c99e30236f5c7b8c0"
+  "operators": []
 }

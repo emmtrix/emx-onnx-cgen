@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_maxpool_3d_dilations_use_ref_impl model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "MaxPool"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "fd19740eb9bda10de50a73d016773879f0d496c38222cf58e9782624803027ce"
+  "operators": []
 }

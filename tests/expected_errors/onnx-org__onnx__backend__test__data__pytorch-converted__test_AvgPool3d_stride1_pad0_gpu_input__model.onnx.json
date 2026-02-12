@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_AvgPool3d_stride1_pad0_gpu_input model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "AveragePool"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "dd4b11730476968c8075a9fa1dab74c4c772e4ed67f9327e275236eb81a4d1e1"
+  "operators": []
 }

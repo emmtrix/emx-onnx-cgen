@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_convinteger_with_padding model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ConvInteger"
-  ],
-  "opset_version": 10,
-  "generated_checksum": "6c39b083368a790d5209e9b4c821a339339f5a29a812210eb4a620db4a5d9a93"
+  "operators": []
 }

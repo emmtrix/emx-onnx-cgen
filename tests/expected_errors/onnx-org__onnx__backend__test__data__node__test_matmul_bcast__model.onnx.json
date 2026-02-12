@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_matmul_bcast model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "MatMul"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "dc706a00698e7794ebb425cedf7d76460bb808f5fde7a808d33d1c950d4ab516"
+  "operators": []
 }

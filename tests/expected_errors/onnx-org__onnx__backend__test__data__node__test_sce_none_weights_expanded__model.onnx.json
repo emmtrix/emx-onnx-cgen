@@ -1,14 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sce_none_weights_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Reshape",
-    "Transpose",
-    "LogSoftmax",
-    "Shape",
-    "NegativeLogLikelihoodLoss"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "2bf4a4ad9c96bbac96f46805d3874a1041e7774e1774a4f0a09d804e26032d55"
+  "operators": []
 }

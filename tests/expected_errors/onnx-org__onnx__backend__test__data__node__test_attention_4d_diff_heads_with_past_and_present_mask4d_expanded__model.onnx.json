@@ -1,28 +1,5 @@
 {
   "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask4d_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Identity",
-    "Cast",
-    "Sqrt",
-    "Constant",
-    "Div",
-    "Concat",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Where",
-    "Unsqueeze",
-    "Expand",
-    "Reshape",
-    "Transpose",
-    "Mul",
-    "MatMul",
-    "Add",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "45ee97d62a843e751f79438ecb37e1083ff62a685320b982e70058554bd88b98"
+  "operators": []
 }

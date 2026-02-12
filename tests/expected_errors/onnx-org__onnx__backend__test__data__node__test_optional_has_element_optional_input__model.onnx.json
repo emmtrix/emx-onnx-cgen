@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_optional_input model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "OptionalHasElement"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "cff45b01522a97a39b8caa03e2508897e6902b63ad7e5054ac391010fbb22c4d"
+  "operators": []
 }

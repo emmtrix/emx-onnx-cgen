@@ -1,25 +1,5 @@
 {
   "error": "OK (max ULP 48)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis_negative_3_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Cast",
-    "Shape",
-    "Size",
-    "Slice",
-    "Neg",
-    "ConstantOfShape",
-    "Concat",
-    "Flatten",
-    "ReduceMean",
-    "Mul",
-    "Sub",
-    "Add",
-    "Sqrt",
-    "Div",
-    "Reshape",
-    "Reciprocal"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "8122bfc53e8cd3f15f196eee1c5808136ca3544647028c59d2fc7862f9a5cd55"
+  "operators": []
 }

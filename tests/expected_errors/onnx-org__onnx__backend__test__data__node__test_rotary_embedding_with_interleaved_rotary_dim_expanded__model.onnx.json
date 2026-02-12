@@ -1,22 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_interleaved_rotary_dim_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Transpose",
-    "Shape",
-    "Sub",
-    "Concat",
-    "Split",
-    "Gather",
-    "Div",
-    "Cast",
-    "Slice",
-    "Unsqueeze",
-    "Add",
-    "Mul",
-    "Reshape"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "372341269c1d5703903f887b7c67b2c23935535d82ebb120900a0a56cfcfa86a"
+  "operators": []
 }

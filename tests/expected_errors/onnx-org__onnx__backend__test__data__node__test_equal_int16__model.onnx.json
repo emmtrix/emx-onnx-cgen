@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_equal_int16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Equal"
-  ],
-  "opset_version": 19,
-  "generated_checksum": "6107f0400197ff25dbd74cb24f4253e35acd36420c1cac33cb7ade84dcb2f3d0"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_gather_scalar_axis1 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Gather"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "8f8e6614ff9de908da032414ddaad3b3e0127ca8a747f20b2929a2d49ac9a403"
+  "operators": []
 }

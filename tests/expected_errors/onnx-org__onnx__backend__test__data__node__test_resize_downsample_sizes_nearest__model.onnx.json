@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_nearest model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Resize"
-  ],
-  "opset_version": 19,
-  "generated_checksum": "f5c334cb0d6f2c79639a04a7ffb41042e2df4f6972874204744d05442e654b48"
+  "operators": []
 }

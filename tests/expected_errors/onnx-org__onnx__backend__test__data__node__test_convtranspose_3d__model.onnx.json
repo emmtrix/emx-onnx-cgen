@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_convtranspose_3d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ConvTranspose"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "a39a9cd46b183463279ee6ed726f49e4b6d0aba6223214d3771c5eec4e70c242"
+  "operators": []
 }

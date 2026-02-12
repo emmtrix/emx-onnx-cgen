@@ -1,12 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_swish_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "CastLike",
-    "Mul",
-    "Sigmoid"
-  ],
-  "opset_version": 24,
-  "generated_checksum": "4070a70174b94d0948e63b6097fa8be4100fbd097885b4da8cba5bedb0b371a3"
+  "operators": []
 }

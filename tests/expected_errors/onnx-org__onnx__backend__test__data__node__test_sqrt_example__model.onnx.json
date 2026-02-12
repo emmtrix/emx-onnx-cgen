@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sqrt_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Sqrt"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "656209160a8b0f29eecf11df15b1e93154d645954872c18b059a23bd91e65026"
+  "operators": []
 }

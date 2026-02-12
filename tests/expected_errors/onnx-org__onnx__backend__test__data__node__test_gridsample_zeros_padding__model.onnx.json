@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gridsample_zeros_padding model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "GridSample"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "c730bfa491097557a01b2c4a205b5567ee72ddcf37937fb9342b3ed37d52683b"
+  "operators": []
 }

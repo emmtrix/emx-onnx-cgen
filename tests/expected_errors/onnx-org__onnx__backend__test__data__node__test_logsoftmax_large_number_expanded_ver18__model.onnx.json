@@ -1,14 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_large_number_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "ReduceMax",
-    "Sub",
-    "Exp",
-    "ReduceSum",
-    "Log"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "b4c6f240fbcda61927494908f26f2a55eeaaa3f9b8d62635883887767e8c26bd"
+  "operators": []
 }

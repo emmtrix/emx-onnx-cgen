@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_keepdims_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceSumSquare"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "b0be9ee288074e14dc656cedb808895890a88d77e2ebb86bba7ab801f67b2f83"
+  "operators": []
 }

@@ -1,28 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_bool_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Identity",
-    "Cast",
-    "Sqrt",
-    "Constant",
-    "Div",
-    "Concat",
-    "Where",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Unsqueeze",
-    "Expand",
-    "Reshape",
-    "Transpose",
-    "Mul",
-    "MatMul",
-    "Add",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "5102626ba2183cab25ba1a92482cbc55b3507cf393e14eda920bdb0c16c02275"
+  "operators": []
 }

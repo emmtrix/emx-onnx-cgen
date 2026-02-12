@@ -1,12 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_example_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "CastLike",
-    "Less",
-    "Where"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "200c6d1b93997abb2e0ac76f7b1df83f655a759c42e79e55de9697798eb67676"
+  "operators": []
 }

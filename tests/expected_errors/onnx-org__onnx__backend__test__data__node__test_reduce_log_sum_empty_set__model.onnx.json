@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_empty_set model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceLogSum"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "4b742a248604bf376065b2dc62ac561c241794e3df4db38c0688b703b2c9a1ae"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_squeeze model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Squeeze"
-  ],
-  "opset_version": 25,
-  "generated_checksum": "5858566f51eab726f3014adeca195873303ba4ad053ea61379ee1305e5ea9039"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_conv_with_strides_no_padding model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Conv"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "52dcda59435c7be8c822042a3f3a229fe985486f67468626e2438d1d82707265"
+  "operators": []
 }

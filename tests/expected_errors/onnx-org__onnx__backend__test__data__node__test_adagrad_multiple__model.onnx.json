@@ -1,8 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_adagrad_multiple model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ai.onnx.preview.training::Adagrad"
-  ],
-  "generated_checksum": "2120607317e1ac3e2f7a864e51d3db9a4bc089fc5bda00fef47191fcffcff21a"
+  "operators": []
 }

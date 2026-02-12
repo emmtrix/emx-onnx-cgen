@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_resize_tf_crop_and_resize_axes_2_3 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Resize"
-  ],
-  "opset_version": 19,
-  "generated_checksum": "4d1ea743dcbc3c013ddee5a77c6460290507f85c76537e04a171ceeab0fe865c"
+  "operators": []
 }

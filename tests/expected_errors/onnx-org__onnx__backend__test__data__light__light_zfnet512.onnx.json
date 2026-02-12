@@ -1,16 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_zfnet512.onnx",
-  "operators": [
-    "ConstantOfShape",
-    "Conv",
-    "Relu",
-    "LRN",
-    "MaxPool",
-    "Reshape",
-    "Gemm",
-    "Softmax"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "5d5a65444b7f53bb6d3f35ba784ac6d26c1f9b4e5340c5381427764f43960101"
+  "operators": []
 }

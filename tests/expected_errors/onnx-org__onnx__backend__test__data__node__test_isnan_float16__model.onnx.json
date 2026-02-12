@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_isnan_float16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "IsNaN"
-  ],
-  "opset_version": 20,
-  "generated_checksum": "84e2dfe996af6119ad68e5be8352b0f296b35e7a64647617160de0f885d85cdb"
+  "operators": []
 }

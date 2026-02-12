@@ -1,15 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_shrink_hard_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "CastLike",
-    "Neg",
-    "Less",
-    "Add",
-    "Sub",
-    "Where"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "96d44e37de90caa1df0cbf2fa765becb5c53602abbf684679aa25a6339265a29"
+  "operators": []
 }

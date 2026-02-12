@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_with_past_and_present_mask3d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Attention"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "46d78746906247cd6cfca540398b44cbf25b60cc4a7e0ec2c2809b964e017ab5"
+  "operators": []
 }

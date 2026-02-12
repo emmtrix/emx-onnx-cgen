@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_max_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Max"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "d2243e60524824466b8385d3456b88805e232a81585cbb8df983005881b65f0f"
+  "operators": []
 }

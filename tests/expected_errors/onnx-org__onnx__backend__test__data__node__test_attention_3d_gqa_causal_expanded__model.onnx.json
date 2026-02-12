@@ -1,33 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_gqa_causal_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Constant",
-    "Concat",
-    "Reshape",
-    "Transpose",
-    "Cast",
-    "Sqrt",
-    "Div",
-    "Identity",
-    "ConstantOfShape",
-    "Squeeze",
-    "Gather",
-    "Range",
-    "Unsqueeze",
-    "Add",
-    "Less",
-    "Where",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Expand",
-    "Mul",
-    "MatMul",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "51cd921b1ae836778680deb0c09bcc4f38f615ed8b70170cdcf7989c4eab40b2"
+  "operators": []
 }

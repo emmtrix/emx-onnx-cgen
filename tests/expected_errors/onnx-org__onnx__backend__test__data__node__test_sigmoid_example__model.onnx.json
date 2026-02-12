@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sigmoid_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Sigmoid"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "fc7d13581a21759de2b38a6fae9f3eb51111c60f17117951943f7cd6303daac5"
+  "operators": []
 }

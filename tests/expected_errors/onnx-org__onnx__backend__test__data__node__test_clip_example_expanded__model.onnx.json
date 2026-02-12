@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_clip_example_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Less",
-    "Where"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "4af756fdce2176912bbf6bebc0dca1899c1cfc6c630a5c499d41a0898e432ed6"
+  "operators": []
 }

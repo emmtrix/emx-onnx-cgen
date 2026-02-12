@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sce_NCd1d2d3_none_no_weight_negative_ii_log_prob model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "SoftmaxCrossEntropyLoss"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "7a8279d7d3612a91a2316fedab5131953be4f2704ad9d82144960f17dad7c4cb"
+  "operators": []
 }

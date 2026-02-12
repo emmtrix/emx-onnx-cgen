@@ -1,20 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_shufflenet.onnx",
-  "operators": [
-    "ConstantOfShape",
-    "Conv",
-    "BatchNormalization",
-    "Relu",
-    "MaxPool",
-    "Reshape",
-    "Transpose",
-    "AveragePool",
-    "Concat",
-    "Sum",
-    "Gemm",
-    "Softmax"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "74c554487e59729d07d22a4ec1952b864e5e3e041242a8bd07db3583bdc0689c"
+  "operators": []
 }

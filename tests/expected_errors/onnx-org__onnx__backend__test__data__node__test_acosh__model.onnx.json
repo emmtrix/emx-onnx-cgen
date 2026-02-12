@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_acosh model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Acosh"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "af7be8472866bad44b14dfdde11931ec62792228a589e0acf5674ab9f67839b0"
+  "operators": []
 }

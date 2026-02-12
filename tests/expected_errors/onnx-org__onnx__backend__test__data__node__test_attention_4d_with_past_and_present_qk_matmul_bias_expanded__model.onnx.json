@@ -1,28 +1,5 @@
 {
   "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_with_past_and_present_qk_matmul_bias_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Identity",
-    "Cast",
-    "Sqrt",
-    "Constant",
-    "Div",
-    "Concat",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Where",
-    "Unsqueeze",
-    "Expand",
-    "Reshape",
-    "Transpose",
-    "Mul",
-    "MatMul",
-    "Add",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "4ad3c9f64a55b7a97cffbd04692c19404ad350bd4edda299e2f7bdfc920fc43e"
+  "operators": []
 }

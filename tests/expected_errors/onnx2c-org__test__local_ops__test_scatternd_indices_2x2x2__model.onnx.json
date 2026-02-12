@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_scatternd_indices_2x2x2 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ScatterND"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "8c2d52107d88ac308a12ec43e3e7d6767ea70cd6adadc4f198466d87e073652a"
+  "operators": []
 }

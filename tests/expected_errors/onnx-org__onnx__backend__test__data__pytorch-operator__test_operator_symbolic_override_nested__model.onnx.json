@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override_nested model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Sum",
-    "Neg"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "781f8d94f2c42b9d4da7942049212d2738b110a606aa10ace1ad8429747fd780"
+  "operators": []
 }

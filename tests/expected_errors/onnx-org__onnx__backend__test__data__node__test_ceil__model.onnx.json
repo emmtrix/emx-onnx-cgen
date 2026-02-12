@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_ceil model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Ceil"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "de5c58d45858b27d1bd602402829c73ed02be76c63826315abc033628c74dd6a"
+  "operators": []
 }

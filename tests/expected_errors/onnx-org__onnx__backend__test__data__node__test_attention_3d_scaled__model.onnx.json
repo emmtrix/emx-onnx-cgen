@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_scaled model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Attention"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "8730833ffaa57abf9d4eed7952cd9bffd73acd8729e662911a7fba2c171107ac"
+  "operators": []
 }

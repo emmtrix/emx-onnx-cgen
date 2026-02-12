@@ -1,14 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_softmax_large_number_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "ReduceMax",
-    "Sub",
-    "Exp",
-    "ReduceSum",
-    "Div"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "5d5f57a02b10b3bb37b5070f5fe68eb90c116d8dd40851c73a175d0045b35101"
+  "operators": []
 }

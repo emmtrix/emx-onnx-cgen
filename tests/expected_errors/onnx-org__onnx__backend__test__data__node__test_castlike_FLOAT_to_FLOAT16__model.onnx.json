@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "CastLike"
-  ],
-  "opset_version": 25,
-  "generated_checksum": "4d6c1ad37bec1e920b21ef7b4f72054145c052f815af0c078c5429c058f4b8a1"
+  "operators": []
 }

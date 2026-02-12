@@ -1,32 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_attn_mask_3d_causal_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Identity",
-    "Cast",
-    "Sqrt",
-    "Constant",
-    "Div",
-    "Concat",
-    "Squeeze",
-    "Gather",
-    "Range",
-    "Unsqueeze",
-    "Add",
-    "Less",
-    "Where",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Expand",
-    "Reshape",
-    "Transpose",
-    "Mul",
-    "MatMul",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "37a992bff915c298557cc572c7ec2ecb83afbac7de9cd1c0136bc1ef205a8f6d"
+  "operators": []
 }

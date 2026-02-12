@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dropout_default model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Dropout"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "cb91d0c189fd6176168817090362c4da841744b97f519a43717803907ff1445c"
+  "operators": []
 }

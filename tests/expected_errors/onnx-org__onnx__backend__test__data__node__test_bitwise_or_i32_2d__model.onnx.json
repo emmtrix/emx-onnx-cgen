@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitwise_or_i32_2d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "BitwiseOr"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "838364a3b9e3d3d0befb346b46a6248fe96f88f43f9ee40f6ec13b68fe348fea"
+  "operators": []
 }

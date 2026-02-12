@@ -1,24 +1,5 @@
 {
   "error": "OK (max ULP 24)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_2d_axis1_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Cast",
-    "Shape",
-    "Size",
-    "Slice",
-    "Sub",
-    "ConstantOfShape",
-    "Concat",
-    "Flatten",
-    "ReduceMean",
-    "Mul",
-    "Add",
-    "Sqrt",
-    "Div",
-    "Reshape",
-    "Reciprocal"
-  ],
-  "opset_version": 17,
-  "generated_checksum": "2d05b61d452479b7a618a02a044746d2a0e6f27532b8770c77ac90c55186eeb4"
+  "operators": []
 }

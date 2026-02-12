@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pow model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Pow"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "30654b065db79cb5770155470502da342e5851b8eeba041340018b04f977c98e"
+  "operators": []
 }

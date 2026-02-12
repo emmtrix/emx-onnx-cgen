@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_pad model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Pad"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "834fd88323bd72ecfec4f6a917cd64e1ac75b22f57b340c268deb54500df2cc7"
+  "operators": []
 }

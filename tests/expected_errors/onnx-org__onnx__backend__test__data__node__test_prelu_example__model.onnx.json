@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_prelu_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "PRelu"
-  ],
-  "opset_version": 16,
-  "generated_checksum": "f50950b6bc2fc9cc61262923e29c28f2fb760853119ceb0936a7ed5b71e14861"
+  "operators": []
 }

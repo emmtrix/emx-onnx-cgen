@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cumsum_1d_exclusive model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "CumSum"
-  ],
-  "opset_version": 14,
-  "generated_checksum": "c802b7c24940836c91dc3c3031082113406773defd381d4e53e02d148a1b60c8"
+  "operators": []
 }

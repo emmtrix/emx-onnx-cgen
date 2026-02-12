@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_prod_do_not_keepdims_random model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceProd"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "d219ac60c09ea1c8e62e3aa6c8bf3c1aab815481744a396f70be0e9b0f3db5d6"
+  "operators": []
 }

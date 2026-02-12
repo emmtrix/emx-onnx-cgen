@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PReLU_3d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "PRelu"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "bc6e30d5e19b4f45b27559e966dcf545e8596f38d57653a06fde139b30c24b26"
+  "operators": []
 }

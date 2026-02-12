@@ -1,20 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "ReduceMin",
-    "Min",
-    "ReduceMax",
-    "Max",
-    "Sub",
-    "Div",
-    "Clip",
-    "Round",
-    "Cast",
-    "Identity",
-    "QuantizeLinear"
-  ],
-  "opset_version": 11,
-  "generated_checksum": "25524fa19f3a2f4f842e20768730e4712c625197e863cdf38c3a026f6beec909"
+  "operators": []
 }

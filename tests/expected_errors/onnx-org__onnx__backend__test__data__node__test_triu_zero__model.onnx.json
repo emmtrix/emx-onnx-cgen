@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_triu_zero model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Trilu"
-  ],
-  "opset_version": 14,
-  "generated_checksum": "7937004a2420c3d48f70691ff50de238b03c0dbce44ae3f8182fed852e7dd445"
+  "operators": []
 }

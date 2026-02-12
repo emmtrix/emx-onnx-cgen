@@ -1,11 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_repeat_dim_overflow model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Reshape",
-    "Tile"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "61e857255541e2146bca22a4e9e4941ce8a9dd9976038f3a5115695f6d5363a5"
+  "operators": []
 }

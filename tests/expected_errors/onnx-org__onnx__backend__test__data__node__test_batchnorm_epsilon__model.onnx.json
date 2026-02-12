@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_batchnorm_epsilon model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "BatchNormalization"
-  ],
-  "opset_version": 15,
-  "generated_checksum": "3e61848b703e2ee695de96af57cc2c523a7b338d6a0c4200c135b9d1c3a82961"
+  "operators": []
 }

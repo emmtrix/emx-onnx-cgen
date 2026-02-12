@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_min_float32 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Min"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "bc99c1e7fa0ce4bc0e5b1b8c646ec1066b48bb6eb0afc200ff8983da985c6218"
+  "operators": []
 }

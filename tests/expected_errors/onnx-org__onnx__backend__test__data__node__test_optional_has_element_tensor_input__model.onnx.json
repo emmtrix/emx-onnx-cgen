@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_tensor_input model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "OptionalHasElement"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "971a2a2bc73d6b4c7920fccff3d8f3227d722d0742bbe9c24fab8c76e8bd2b9a"
+  "operators": []
 }

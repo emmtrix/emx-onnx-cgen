@@ -1,33 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_diff_heads_sizes_causal_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Identity",
-    "Cast",
-    "Sqrt",
-    "Constant",
-    "Div",
-    "Concat",
-    "ConstantOfShape",
-    "Squeeze",
-    "Gather",
-    "Range",
-    "Unsqueeze",
-    "Add",
-    "Less",
-    "Where",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Expand",
-    "Reshape",
-    "Transpose",
-    "Mul",
-    "MatMul",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "4685876cf9f02d1e86d4c6699f4baed08c3a0f0a3d431a3fc4d6e82a3b252060"
+  "operators": []
 }

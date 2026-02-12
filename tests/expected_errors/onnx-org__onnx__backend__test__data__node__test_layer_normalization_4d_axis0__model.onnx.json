@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_layer_normalization_4d_axis0 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LayerNormalization"
-  ],
-  "opset_version": 17,
-  "generated_checksum": "d846c5b4d82e820b941e1681fdb4aae49586d23e3935909835baaf985610ed7d"
+  "operators": []
 }

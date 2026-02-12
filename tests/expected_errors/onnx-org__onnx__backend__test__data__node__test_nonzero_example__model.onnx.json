@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nonzero_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "NonZero"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "86d8ffac21ee57b65cec44224f186a7444720b4debc3fa3b316619e2fcf1e708"
+  "operators": []
 }

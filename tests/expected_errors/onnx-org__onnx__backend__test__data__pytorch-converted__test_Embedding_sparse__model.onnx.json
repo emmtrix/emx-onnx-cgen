@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Embedding_sparse model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Gather"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "cc2889c5b027eb7bb3dddae8fa103ef53496ff9ba01e7eaaa770701c17da35eb"
+  "operators": []
 }

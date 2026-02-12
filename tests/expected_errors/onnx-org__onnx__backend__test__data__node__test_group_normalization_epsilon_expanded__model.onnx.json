@@ -1,19 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_group_normalization_epsilon_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Cast",
-    "Shape",
-    "Div",
-    "Concat",
-    "Reshape",
-    "ReduceMean",
-    "Mul",
-    "Sub",
-    "Add",
-    "Sqrt"
-  ],
-  "opset_version": 21,
-  "generated_checksum": "b38c35dc65965b2a728da7be988822549f16e4b903e00d2033d65f57650a9bcf"
+  "operators": []
 }

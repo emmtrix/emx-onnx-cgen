@@ -1,15 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_2_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "CastLike",
-    "Sqrt",
-    "Div",
-    "Erf",
-    "Sum",
-    "Mul"
-  ],
-  "opset_version": 20,
-  "generated_checksum": "e0810e4114797621b97c68db69e6d976d13c86b83aa8d7db857ae9ae04abfee7"
+  "operators": []
 }

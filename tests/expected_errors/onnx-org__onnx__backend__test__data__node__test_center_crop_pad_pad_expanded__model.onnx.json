@@ -1,17 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Shape",
-    "Max",
-    "Sub",
-    "Div",
-    "Concat",
-    "Pad",
-    "Add",
-    "Slice"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "7dc146315545599db718c922ba8c9754012c2f0303b91653f7ee676479d937c1"
+  "operators": []
 }

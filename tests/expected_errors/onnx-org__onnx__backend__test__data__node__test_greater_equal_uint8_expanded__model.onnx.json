@@ -1,11 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_greater_equal_uint8_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Greater",
-    "Equal",
-    "Or"
-  ],
-  "opset_version": 16,
-  "generated_checksum": "e5e7c61f66a57d31ea4bbcb1fd6c7958fd7d93526adc7d0d435a3de943853d04"
+  "operators": []
 }

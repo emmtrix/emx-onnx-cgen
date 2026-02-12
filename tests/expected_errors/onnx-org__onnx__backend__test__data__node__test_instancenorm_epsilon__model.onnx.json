@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_instancenorm_epsilon model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "InstanceNormalization"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "f126dc2cbf46136eb09be9b41fa58570ef13df1c719a2080aeeeee7a1f4e453d"
+  "operators": []
 }

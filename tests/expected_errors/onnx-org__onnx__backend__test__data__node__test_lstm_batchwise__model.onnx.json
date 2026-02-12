@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_lstm_batchwise model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LSTM"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "1041b214d2c7e4e2d68038eaf2c3c1d78c966279f9ebb8861f1de334e7701a46"
+  "operators": []
 }

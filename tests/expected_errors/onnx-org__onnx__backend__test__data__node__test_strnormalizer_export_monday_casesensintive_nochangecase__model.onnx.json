@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_strnormalizer_export_monday_casesensintive_nochangecase model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "StringNormalizer"
-  ],
-  "opset_version": 10,
-  "generated_checksum": "7703b85176ce8397567e4d0d92ffd9890d308816d94e8086eb8c38374f22f141"
+  "operators": []
 }

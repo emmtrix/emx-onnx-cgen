@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_3D_uint8_float16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "QLinearMatMul"
-  ],
-  "opset_version": 21,
-  "generated_checksum": "61b4ade389af595b81bf896c4c38636e10e40ded3f01affd2ca2f626168b82f5"
+  "operators": []
 }

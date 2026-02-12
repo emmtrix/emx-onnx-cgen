@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_flatten_default_axis model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Flatten"
-  ],
-  "opset_version": 25,
-  "generated_checksum": "2496b286c20c185d4a6333eaa614da0e7ac58a0250a47f0fe79ebba6c1fa5ecb"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ReplicationPad2d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Pad"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "6f1a36b7f7fe24e1fe8dd30fddab36c609a1be4fe98f17054018c50094bd2e86"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_elu model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Elu"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "e503c23596da728a78bf0a115a78d34128390c9c3e637dbdcccc524216eb1560"
+  "operators": []
 }

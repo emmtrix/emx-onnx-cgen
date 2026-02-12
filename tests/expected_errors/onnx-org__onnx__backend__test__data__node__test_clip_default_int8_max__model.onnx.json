@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_clip_default_int8_max model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Clip"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "7fb198ed123b1a174ef203185c3f16453a24f663803726d3de7304aa0290bfb5"
+  "operators": []
 }

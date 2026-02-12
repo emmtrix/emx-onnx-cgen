@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_erf model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Erf"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "bb6c15146dfbc75acf57c31e84d26134a9ccfc3f1fae63e71285e70ceb50723c"
+  "operators": []
 }

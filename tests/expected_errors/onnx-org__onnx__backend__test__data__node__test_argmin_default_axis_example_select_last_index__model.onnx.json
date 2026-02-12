@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_argmin_default_axis_example_select_last_index model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ArgMin"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "290b5f65b4254dc4c1a0e2d88eb67fd4dfc83f98a5d23223a215e75a69a46b33"
+  "operators": []
 }

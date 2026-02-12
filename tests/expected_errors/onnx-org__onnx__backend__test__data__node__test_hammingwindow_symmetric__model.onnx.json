@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 5)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "HammingWindow"
-  ],
-  "opset_version": 17,
-  "generated_checksum": "56d4ce508180253f2dddfecbb47fb77d1716d8482888a4ceefb38c9f71d18624"
+  "operators": []
 }

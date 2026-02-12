@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_averagepool_1d_default model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "AveragePool"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "2ef70aa2062a0d52475d85d529830d562605cc07e871b27d660ae9e8afe453a3"
+  "operators": []
 }

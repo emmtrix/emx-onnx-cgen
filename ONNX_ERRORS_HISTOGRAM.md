@@ -14,7 +14,7 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 7 | 9, 19, 22 |
+| Out of tolerance | 7 |  |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
@@ -77,7 +77,6 @@
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Out of tolerance | 9 | 1 |
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
 | Unsupported op MatMulInteger | 10 | 1 |
@@ -110,7 +109,6 @@
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 18 | 1 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 18 | 1 |
 | Unsupported op DFT | 19 | 3 |
-| Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op StringSplit | 20 | 6 |
 | Unsupported op StringConcat | 20 | 5 |
@@ -122,7 +120,6 @@
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
-| Out of tolerance | 22 | 4 |
 | Unsupported op DeformConv | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |

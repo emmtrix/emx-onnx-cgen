@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_mean_keepdim model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceMean"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "f95fc37ea6fc89291e4239ba77015f2338121c4d982a60b39a09b70aa1e3c510"
+  "operators": []
 }

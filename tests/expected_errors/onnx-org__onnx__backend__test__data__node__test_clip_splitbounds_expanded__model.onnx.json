@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_clip_splitbounds_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Less",
-    "Where"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "1b6813adb3a7d896fbe90346f942fe73693efe9ab8297b84a73c614e07dca3c2"
+  "operators": []
 }

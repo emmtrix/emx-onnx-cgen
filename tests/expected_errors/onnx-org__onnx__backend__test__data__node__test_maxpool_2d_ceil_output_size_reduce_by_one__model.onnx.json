@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_maxpool_2d_ceil_output_size_reduce_by_one model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "MaxPool"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "6db5167360b047f3808e2fe43b63892262191b60ecb404ca4ad27e81a204907d"
+  "operators": []
 }

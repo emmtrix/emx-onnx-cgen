@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reciprocal_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Reciprocal"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "348114f81cd686b5eb04de5aa256575ff8b8a30b12c7397aedc81c1439138e00"
+  "operators": []
 }

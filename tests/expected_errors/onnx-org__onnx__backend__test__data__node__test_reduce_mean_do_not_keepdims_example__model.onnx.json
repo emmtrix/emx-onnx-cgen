@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_mean_do_not_keepdims_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceMean"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "4a5b6d5d5fd78dd69267652954f3c53dd9e60e3859eaa39783822a5c8b20427a"
+  "operators": []
 }

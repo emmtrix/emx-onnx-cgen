@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitwise_xor_ui64_bcast_3v1d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "BitwiseXor"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "d2ac2fd8e85ebb2f423768edee0e3b7b7fe8d52dde7f58052e18a87690fd3cfe"
+  "operators": []
 }

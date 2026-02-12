@@ -1,22 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1_weight_ii_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Unsqueeze",
-    "Sub",
-    "Cast",
-    "Equal",
-    "Where",
-    "GatherElements",
-    "Neg",
-    "Slice",
-    "Gather",
-    "Squeeze",
-    "Mul",
-    "ReduceSum",
-    "Div"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "7228ac0fb8347d3b454d4399e304be55947ab1c739eee2379f4f1ea170fe7ded"
+  "operators": []
 }

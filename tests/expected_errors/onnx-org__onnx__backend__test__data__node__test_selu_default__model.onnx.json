@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 5)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_selu_default model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Selu"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "2fff46ae867dfc945895a21998f42aa0866ebd2b29a68b45a30749d8da444705"
+  "operators": []
 }

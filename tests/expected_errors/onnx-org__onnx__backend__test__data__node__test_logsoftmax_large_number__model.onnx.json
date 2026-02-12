@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_large_number model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LogSoftmax"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "2022ef5823efa1c39b8550eced8e85da76a739d568b8e691a74d4921a1381e94"
+  "operators": []
 }

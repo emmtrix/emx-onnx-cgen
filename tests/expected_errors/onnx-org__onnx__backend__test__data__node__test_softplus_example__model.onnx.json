@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_softplus_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Softplus"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "188c5771c564a7f813781562d9ad8fc574569d747f8b56a7687763b343a42af9"
+  "operators": []
 }

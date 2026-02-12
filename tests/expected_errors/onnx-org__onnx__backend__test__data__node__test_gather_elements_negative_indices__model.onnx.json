@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gather_elements_negative_indices model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "GatherElements"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "6e72395b8c06d9305dd11cf0dbbf7e3b31e1cf3d0b0fff5fa4275addfaa6b948"
+  "operators": []
 }

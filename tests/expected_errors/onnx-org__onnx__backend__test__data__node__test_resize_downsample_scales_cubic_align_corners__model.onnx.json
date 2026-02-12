@@ -1,9 +1,5 @@
 {
   "error": "Out of tolerance (max ULP 1098996)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_scales_cubic_align_corners model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Resize"
-  ],
-  "opset_version": 19,
-  "generated_checksum": "658045d4d781128b1589a90e46219d39e70af635224d05b4582165c4fb144023"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_tile model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Tile"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "62884d52ecb11aa1cadc83c91893a40d4981bb165f4fff93327d38a8a552646b"
+  "operators": []
 }

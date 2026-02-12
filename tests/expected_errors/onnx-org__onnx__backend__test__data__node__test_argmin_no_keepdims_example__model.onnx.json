@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_argmin_no_keepdims_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ArgMin"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "ea3be265696f72983b295c5c6c98b96b19f5edee5ef8e5f8e42d79b1a6f1ab64"
+  "operators": []
 }

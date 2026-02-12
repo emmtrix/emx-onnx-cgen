@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_slice_neg_steps model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Slice"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "4a1126c6386deefd48547e6219869383670a8b52f42abdcf328d11359193b3c5"
+  "operators": []
 }

@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_pad_reflect_nopadding model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Pad",
-    "Constant"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "24f7fe32a8309609a4171c03ea9d3e28915bcee28558067d470a6280b996e278"
+  "operators": []
 }

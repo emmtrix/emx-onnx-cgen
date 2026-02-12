@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_lstm_missing_inputs model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LSTM"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "c7ec666c1ff2a1c3a3398417f68d951f31a0214c2fc9c07a69bc068c4168b887"
+  "operators": []
 }

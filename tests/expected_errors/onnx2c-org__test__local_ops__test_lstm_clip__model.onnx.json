@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_lstm_clip model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LSTM"
-  ],
-  "opset_version": 11,
-  "generated_checksum": "aeea2740040ae99baf91becc783cbac30c9d1ec7067db8a299f9d954cc604b55"
+  "operators": []
 }

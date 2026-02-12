@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_min_do_not_keepdims_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceMin"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "87aa8b583c26001e14c04a132b827e75a91e3313ae2ee6d0d0f7e7fb2bc641d6"
+  "operators": []
 }

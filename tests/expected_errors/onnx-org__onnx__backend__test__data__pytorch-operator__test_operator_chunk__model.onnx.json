@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_chunk model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Split"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "44491d1665a4481135a88bfd084cd7c6d3147dceda6b535b304d12489a408f0d"
+  "operators": []
 }

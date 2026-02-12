@@ -1,15 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2_reduction_mean_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Unsqueeze",
-    "GatherElements",
-    "Neg",
-    "Slice",
-    "Squeeze",
-    "ReduceMean"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "7d7933773b0df1272dfaa819a0e48e4ae610c0d0903d91f3aff7e9e68aa36191"
+  "operators": []
 }

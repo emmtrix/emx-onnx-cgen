@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_mod_mixed_sign_int32 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Mod"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "25a1c4b78de703eb9caa9228f51037c40bd0860b5f4ba221fb3cb5c017288113"
+  "operators": []
 }

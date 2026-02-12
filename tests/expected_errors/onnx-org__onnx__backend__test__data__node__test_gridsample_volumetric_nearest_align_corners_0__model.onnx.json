@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gridsample_volumetric_nearest_align_corners_0 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "GridSample"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "23958857073b52c753751becf49d94ec076acb941de25de0e304b582848b1538"
+  "operators": []
 }

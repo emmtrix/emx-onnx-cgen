@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_sum_square_negative_axes_keepdims_example_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Mul",
-    "ReduceSum"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "adc29a9cef1557b0abd7c9091ebc791327f48b45bfb8ce4fbbe44ebb4a5cd8b0"
+  "operators": []
 }

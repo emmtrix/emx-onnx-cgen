@@ -1,16 +1,5 @@
 {
   "error": "OK (max ULP 4)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Cast",
-    "Sub",
-    "Mul",
-    "Add",
-    "Div",
-    "Range",
-    "Cos"
-  ],
-  "opset_version": 17,
-  "generated_checksum": "3641ff47eb5b8bfd90f2d38405ddde0c4d64726a721586e603a00368100110ce"
+  "operators": []
 }

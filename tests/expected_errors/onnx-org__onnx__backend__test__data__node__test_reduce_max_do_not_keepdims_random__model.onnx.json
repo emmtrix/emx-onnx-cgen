@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_max_do_not_keepdims_random model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceMax"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "7652952eb039e018d2c91e0c9fa51095e54b8c4eb221e2c6ad1aead76567ddfc"
+  "operators": []
 }

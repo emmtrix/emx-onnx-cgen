@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_equal_parts_default_axis_opset13 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Split"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "a827fece6140eeff9d1686661be239c421ed8d1e8a8d91d511967c963bc303a7"
+  "operators": []
 }

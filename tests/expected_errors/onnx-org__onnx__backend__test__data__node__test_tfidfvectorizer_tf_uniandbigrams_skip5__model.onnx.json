@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_uniandbigrams_skip5 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "TfIdfVectorizer"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "201a79598f8e9a68a02b0f33ee95585deea1e5ecc9be20ea900607be3e6ac268"
+  "operators": []
 }

@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_shape_const_out model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Expand"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "9c294930aa2b0b9d8139c76d8de8d80ce9389e0f9f04311abe41ff38c4555b12"
+  "operators": []
 }

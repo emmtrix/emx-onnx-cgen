@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_spacetodepth model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "SpaceToDepth"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "ca92ae376fce914f4c1446f62d77360c86075ce4fa8ff876b4e6792639f877c3"
+  "operators": []
 }

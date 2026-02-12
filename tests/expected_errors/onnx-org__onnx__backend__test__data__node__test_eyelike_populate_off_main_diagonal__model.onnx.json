@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_eyelike_populate_off_main_diagonal model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "EyeLike"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "a4abfad210bb38d5d637406e43a5cabf6e2077a86398e7f684a5f5be3de7fbb9"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_axis model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "QuantizeLinear"
-  ],
-  "opset_version": 25,
-  "generated_checksum": "ce06a494a4223879ddc183ce606712e95b323e2883fa661016392f0c3d3396a5"
+  "operators": []
 }

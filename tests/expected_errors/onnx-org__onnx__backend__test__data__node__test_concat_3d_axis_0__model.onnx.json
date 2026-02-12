@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_concat_3d_axis_0 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Concat"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "decb6b95d9a840eb78a95864089b6116fe9697685b3791cf3c600131e43efd58"
+  "operators": []
 }

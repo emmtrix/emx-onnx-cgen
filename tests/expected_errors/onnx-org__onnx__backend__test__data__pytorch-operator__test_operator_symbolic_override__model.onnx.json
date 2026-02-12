@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 9)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_symbolic_override model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "InstanceNormalization"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "65e3fd203fe80eaa8bd1a26dfcaa2e9d39e839ee7b7603eab33e3e445192bc1e"
+  "operators": []
 }

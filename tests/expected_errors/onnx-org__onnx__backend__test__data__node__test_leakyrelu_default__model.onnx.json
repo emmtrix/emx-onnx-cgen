@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_leakyrelu_default model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LeakyRelu"
-  ],
-  "opset_version": 16,
-  "generated_checksum": "0036652ebc56b7beb52ab08a6632f8a95e2ee4b5879911b29a3be2ee3dd36139"
+  "operators": []
 }

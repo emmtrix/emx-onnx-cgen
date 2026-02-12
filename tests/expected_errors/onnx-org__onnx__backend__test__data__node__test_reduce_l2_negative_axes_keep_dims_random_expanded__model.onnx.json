@@ -1,13 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_negative_axes_keep_dims_random_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Mul",
-    "ReduceSum",
-    "Cast",
-    "Sqrt",
-    "CastLike"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "a5178f3fbff4c0775c2f52a79e6c0501c40a4cf6137ffb66ca0a8accbbcd00c4"
+  "operators": []
 }

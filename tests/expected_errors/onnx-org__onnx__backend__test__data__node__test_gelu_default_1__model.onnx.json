@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gelu_default_1 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Gelu"
-  ],
-  "opset_version": 20,
-  "generated_checksum": "707722b1f6116f37c36090b9353715e00e210d44947e022e3fb34b2b11f9d623"
+  "operators": []
 }

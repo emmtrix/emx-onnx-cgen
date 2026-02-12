@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_lppool_2d_default model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LpPool"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "d3d82b720858b9bb49801078c99e23d5c42dc74fac79af6cae51bc3ce5b7ca86"
+  "operators": []
 }

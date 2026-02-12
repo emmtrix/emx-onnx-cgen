@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_einsum_batch_diagonal model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Einsum"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "b3500b5c4e14ae3780d46f9d2f4e30f13be15ac6fefd74597a1cbdbfa8017073"
+  "operators": []
 }

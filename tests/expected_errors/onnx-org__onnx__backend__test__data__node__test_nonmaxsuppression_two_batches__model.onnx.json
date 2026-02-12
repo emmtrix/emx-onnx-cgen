@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_two_batches model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "NonMaxSuppression"
-  ],
-  "opset_version": 11,
-  "generated_checksum": "ab3f30c5396f5d89fd5761ac0e610e2f7af6800eb2a9288bd45021fc7028e7c9"
+  "operators": []
 }

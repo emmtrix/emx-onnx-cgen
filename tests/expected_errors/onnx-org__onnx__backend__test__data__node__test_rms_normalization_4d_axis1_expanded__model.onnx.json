@@ -1,19 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rms_normalization_4d_axis1_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Cast",
-    "Shape",
-    "Size",
-    "Identity",
-    "Range",
-    "Mul",
-    "ReduceMean",
-    "Add",
-    "Sqrt",
-    "Div"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "6ed7b397b3b88de68e9250464e90cebab41e69348c216343dbc3e9e7f853a444"
+  "operators": []
 }

@@ -1,11 +1,5 @@
 {
   "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_mish_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Softplus",
-    "Tanh",
-    "Mul"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "dd8970b7d30df0f81a7aec34647e701e8bd0d5b19754bcb58d968eb7b69be4e1"
+  "operators": []
 }

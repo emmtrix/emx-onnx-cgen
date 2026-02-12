@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_l1_do_not_keepdims_example_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Abs",
-    "ReduceSum"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "fffb9e37d88d4537821a535803b0c488413616d03853f2de3237e83f3942f5cc"
+  "operators": []
 }

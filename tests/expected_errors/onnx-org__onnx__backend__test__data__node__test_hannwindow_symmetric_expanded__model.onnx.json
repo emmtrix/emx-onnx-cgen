@@ -1,16 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Cast",
-    "Sub",
-    "Mul",
-    "Add",
-    "Div",
-    "Range",
-    "Cos"
-  ],
-  "opset_version": 17,
-  "generated_checksum": "e73b2b8c9b4e5086a62edc1a0c8d7c7d1ff5cbb8a66fd3bf725e4434e62ef5e0"
+  "operators": []
 }

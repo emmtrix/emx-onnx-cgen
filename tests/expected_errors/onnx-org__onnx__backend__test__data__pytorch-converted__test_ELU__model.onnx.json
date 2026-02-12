@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ELU model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Elu"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "37f0fa120d9ac839525ac70bb98d5354c4fc721896324a12a5be1ee727dadb77"
+  "operators": []
 }

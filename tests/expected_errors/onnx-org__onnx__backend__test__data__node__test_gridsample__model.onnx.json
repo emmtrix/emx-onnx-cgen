@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gridsample model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "GridSample"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "0d2a1505153cb3e6b0422b4016f4d149ae52221edc678bff9fb4ad3a9b2e825f"
+  "operators": []
 }

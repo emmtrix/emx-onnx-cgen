@@ -1,13 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_l2_empty_set_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Mul",
-    "ReduceSum",
-    "Cast",
-    "Sqrt",
-    "CastLike"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "6d58918bf2c4fbcc26e11b347267771b2a8b93f99119dc867aca7a63311e8667"
+  "operators": []
 }

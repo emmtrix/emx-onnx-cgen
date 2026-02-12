@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitwise_and_ui8_bcast_4v3d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "BitwiseAnd"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "1a34dda97a93c09bce6cc1de6ef4307f16396eb89e96f9388c192f0fd2a72204"
+  "operators": []
 }

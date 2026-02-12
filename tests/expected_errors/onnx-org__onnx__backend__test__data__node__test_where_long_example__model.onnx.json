@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_where_long_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Where"
-  ],
-  "opset_version": 16,
-  "generated_checksum": "a311ad2bda67aa59f93f4828578e7293f8d41ecf2582e4c2c56a19c90d6a150a"
+  "operators": []
 }

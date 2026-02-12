@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_eyelike_with_dtype model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "EyeLike"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "d4965d4309b0cca76a353f54733d5b917a70a1c4994cc0146d07a39a22f16f18"
+  "operators": []
 }

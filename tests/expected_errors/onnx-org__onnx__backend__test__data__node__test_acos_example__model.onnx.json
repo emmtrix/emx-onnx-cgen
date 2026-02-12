@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_acos_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Acos"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "cb9a08c92ff9993d06d582d9b5d4da720ee89f432dd4db13b51354d79286f91c"
+  "operators": []
 }

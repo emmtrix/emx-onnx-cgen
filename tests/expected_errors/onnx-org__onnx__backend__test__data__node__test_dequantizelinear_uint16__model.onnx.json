@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "DequantizeLinear"
-  ],
-  "opset_version": 25,
-  "generated_checksum": "c9e5033eeb5c9eae4dddd31fb84a9d88a8885e349dbf60f810cb14adc4bf21d9"
+  "operators": []
 }

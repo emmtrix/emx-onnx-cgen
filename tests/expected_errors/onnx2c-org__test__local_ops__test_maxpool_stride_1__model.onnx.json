@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_maxpool_stride_1 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "MaxPool"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "c803709e5afe86a1de054ba809bd79d4db1e4ce32c8001949ea09c77a32e5f1a"
+  "operators": []
 }

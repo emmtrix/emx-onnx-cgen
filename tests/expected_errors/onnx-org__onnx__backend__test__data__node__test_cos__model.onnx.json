@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cos model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Cos"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "ead9232366e11e1f4efc8d442c207d0db7004777b04f8e9856e08d6d3385bfb4"
+  "operators": []
 }

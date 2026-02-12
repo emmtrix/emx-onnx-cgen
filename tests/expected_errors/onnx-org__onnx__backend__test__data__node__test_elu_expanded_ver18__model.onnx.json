@@ -1,15 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_elu_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "CastLike",
-    "Less",
-    "Exp",
-    "Sub",
-    "Mul",
-    "Where"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "d6937179404c264d5798c70ba35925c665940ba368bcc8d4977a3ca4de25fab6"
+  "operators": []
 }

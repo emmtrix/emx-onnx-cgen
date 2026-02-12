@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_argmax_negative_axis_keepdims_random_select_last_index model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ArgMax"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "7c804f0692bd05dfc533e337548b5997ef1266b9c93241b6ebae66f502a2aed9"
+  "operators": []
 }

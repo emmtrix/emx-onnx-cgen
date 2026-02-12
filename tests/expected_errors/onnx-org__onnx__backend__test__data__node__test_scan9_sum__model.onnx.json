@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_scan9_sum model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Scan"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "a03e7f3b47f9a6a1093064890785ec167b496a13ca346f3c14cec1c889b95617"
+  "operators": []
 }

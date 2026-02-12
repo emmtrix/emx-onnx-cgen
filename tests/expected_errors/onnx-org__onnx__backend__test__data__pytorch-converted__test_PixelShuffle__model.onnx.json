@@ -1,11 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PixelShuffle model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Reshape",
-    "Transpose"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "683e9c500310c8ec4bdc6b36a18a8a1f8eb20a63a63ae5d63985373834e983eb"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_group_normalization_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "GroupNormalization"
-  ],
-  "opset_version": 21,
-  "generated_checksum": "afe429df7112612703403bee90e6ef589b0d47af81c7ee72c1beceac4d7156a5"
+  "operators": []
 }

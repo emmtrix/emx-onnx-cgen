@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_4d_gqa_with_past_and_present_fp16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Attention"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "eca23b32423f74f21695cd32eba187f8246f38b2a2a8d3fa1c79edc4a37b0fe4"
+  "operators": []
 }

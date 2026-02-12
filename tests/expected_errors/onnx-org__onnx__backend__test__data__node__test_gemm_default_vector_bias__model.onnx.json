@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gemm_default_vector_bias model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Gemm"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "5af37e70c0e57303996ab780443d2ed394058a9543a01e721b1204b824bba369"
+  "operators": []
 }

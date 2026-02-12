@@ -1,29 +1,5 @@
 {
   "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_with_past_and_present_qk_matmul_softcap_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Constant",
-    "Concat",
-    "Reshape",
-    "Transpose",
-    "Cast",
-    "Sqrt",
-    "Div",
-    "Identity",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Where",
-    "Unsqueeze",
-    "Expand",
-    "Mul",
-    "MatMul",
-    "Add",
-    "Tanh",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "30124b2a1b23ea114d47bdf75da69467b65fd747a0bc8f78ce375c679f4c2046"
+  "operators": []
 }

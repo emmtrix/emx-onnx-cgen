@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_max_two_inputs model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Max"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "0ca0e00555d7831311f789e20d502f800d12cc5966b26cb6fc4b2ae156b1ea34"
+  "operators": []
 }

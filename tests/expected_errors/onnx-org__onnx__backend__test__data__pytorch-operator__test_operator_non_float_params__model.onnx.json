@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_non_float_params model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Add",
-    "Mul"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "6851cc5ccb36f15c2d7d8de64d95606c42ebe89e3d01991bbe96f8534623fde3"
+  "operators": []
 }

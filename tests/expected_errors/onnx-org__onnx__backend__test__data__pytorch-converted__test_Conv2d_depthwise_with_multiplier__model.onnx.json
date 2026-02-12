@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Conv2d_depthwise_with_multiplier model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Conv"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "1b635eb37f396e25f1dc94f3f71c01afee6219f426fdc906ae20b98811fba8f5"
+  "operators": []
 }

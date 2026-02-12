@@ -1,16 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_vgg19.onnx",
-  "operators": [
-    "ConstantOfShape",
-    "Conv",
-    "Relu",
-    "MaxPool",
-    "Reshape",
-    "Gemm",
-    "Dropout",
-    "Softmax"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "795c21aa258c4b93bfc7bc2a8aa82ede0d1b447c23949ec1917d92fa13863169"
+  "operators": []
 }

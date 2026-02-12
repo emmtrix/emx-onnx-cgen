@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_reduced_sum model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceSum"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "bb25733b842eed595a645201d8eb50030c715db86e20e0b4ec92ca7339c8ef23"
+  "operators": []
 }

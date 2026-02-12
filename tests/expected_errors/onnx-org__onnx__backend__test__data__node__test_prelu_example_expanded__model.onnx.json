@@ -1,13 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_prelu_example_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "CastLike",
-    "Less",
-    "Mul",
-    "Where"
-  ],
-  "opset_version": 16,
-  "generated_checksum": "70634b1460635d409356d62e64de871be259f41da9b39587a775ac6e400018dc"
+  "operators": []
 }

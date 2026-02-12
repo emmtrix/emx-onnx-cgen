@@ -1,9 +1,5 @@
 {
   "error": "OK (non-deterministic output)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_bernoulli_double model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Bernoulli"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "874741029303a9664d50cc4189fa4f9625329e509f2bc5793894efa76c1f0b6d"
+  "operators": []
 }

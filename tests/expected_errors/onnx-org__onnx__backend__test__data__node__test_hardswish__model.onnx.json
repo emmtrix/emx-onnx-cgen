@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 2)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_hardswish model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "HardSwish"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "d9ef74d475e02129f830e8a554360378e784b440ffd385fcf2408a95f7e7021c"
+  "operators": []
 }

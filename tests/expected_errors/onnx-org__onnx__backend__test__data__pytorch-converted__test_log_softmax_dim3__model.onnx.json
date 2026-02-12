@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_log_softmax_dim3 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LogSoftmax"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "60a0665256c091f3eb611ce5819e2e21a6d339f41aec44ffde0b672d8185235b"
+  "operators": []
 }

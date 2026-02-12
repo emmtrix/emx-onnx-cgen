@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT16_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Cast"
-  ],
-  "opset_version": 25,
-  "generated_checksum": "5e04654a10eefab82fddaf0a274ac9c1d515d142bb25c425262e0ae508ea1b40"
+  "operators": []
 }

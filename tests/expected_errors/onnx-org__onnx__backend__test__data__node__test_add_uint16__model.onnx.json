@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_add_uint16 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Add"
-  ],
-  "opset_version": 14,
-  "generated_checksum": "e8682d70f3dcb8e100ad86d07e83a7051fc04ad76f3bc24f0dcc302067268201"
+  "operators": []
 }

@@ -1,18 +1,5 @@
 {
   "error": "Out of tolerance (max ULP 357)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Unsqueeze",
-    "GatherElements",
-    "Neg",
-    "Slice",
-    "Gather",
-    "Squeeze",
-    "Mul",
-    "ReduceSum",
-    "Div"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "eabe4e6d4fd40ea8a74a10f1a62bd657254daee154074062f1de5183c0e99448"
+  "operators": []
 }

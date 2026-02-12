@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_gridsample_bilinear_align_corners_0_additional_1 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "GridSample"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "dd940862cc260538d1776c93d2ac1f364cdce7f71f1f54debb4c51a64fdf7a8d"
+  "operators": []
 }

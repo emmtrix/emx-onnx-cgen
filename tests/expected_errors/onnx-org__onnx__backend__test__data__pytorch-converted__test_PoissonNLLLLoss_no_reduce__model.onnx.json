@@ -1,12 +1,5 @@
 {
   "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_PoissonNLLLLoss_no_reduce model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "Exp",
-    "Mul",
-    "Sub"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "6f265f49f10d480e63bec548231161edeb1745a5cd7c0d3bfee14cb232bdf9b6"
+  "operators": []
 }

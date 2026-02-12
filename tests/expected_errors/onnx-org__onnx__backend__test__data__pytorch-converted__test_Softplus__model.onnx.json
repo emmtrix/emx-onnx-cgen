@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Softplus model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Softplus"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "0b953afae28954caa568602efcc6c283623cf16610e8041976cc95ad86ae9d07"
+  "operators": []
 }

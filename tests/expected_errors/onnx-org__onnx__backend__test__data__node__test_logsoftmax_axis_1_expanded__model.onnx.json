@@ -1,14 +1,5 @@
 {
   "error": "OK (max ULP 3)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_logsoftmax_axis_1_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "ReduceMax",
-    "Sub",
-    "Exp",
-    "ReduceSum",
-    "Log"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "c0dcb095cd6e650dc48d513cc46a6f79fcf7ddf5566b6fcaac09d5cf2fc9e479"
+  "operators": []
 }

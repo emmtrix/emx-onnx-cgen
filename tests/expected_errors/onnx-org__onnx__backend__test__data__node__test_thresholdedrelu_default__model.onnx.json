@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_thresholdedrelu_default model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ThresholdedRelu"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "2561594bbb2b499505235d652356f4e1a1a505fbd764fd91b45050117a3eda59"
+  "operators": []
 }

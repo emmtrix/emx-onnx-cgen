@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_ZeroPad2d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Pad"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "6483b6db3d021a899371adb7c7b005cb00eafba6443aac2d9f0de0c83c56db58"
+  "operators": []
 }

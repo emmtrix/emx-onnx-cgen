@@ -1,10 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_resize_downsample_sizes_linear_1D model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Resize",
-    "Constant"
-  ],
-  "opset_version": 12,
-  "generated_checksum": "ea2183d4e92412e327fefaab4af3eb975c6449407a8a0a7f908ab6c341015f60"
+  "operators": []
 }

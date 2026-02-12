@@ -1,9 +1,5 @@
 {
   "error": "Out of tolerance (max ULP 2983)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_averagepool_2d_ceil_last_window_starts_on_pad model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "AveragePool"
-  ],
-  "opset_version": 22,
-  "generated_checksum": "f052dce35ca8271e2dae979aa9c865d80bbb0a680357ba50dd9d6d955a6ba5af"
+  "operators": []
 }

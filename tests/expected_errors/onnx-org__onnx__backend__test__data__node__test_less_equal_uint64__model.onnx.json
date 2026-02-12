@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_less_equal_uint64 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "LessOrEqual"
-  ],
-  "opset_version": 16,
-  "generated_checksum": "fec6c9c2fb72a3ed4b6ba9628a5a6c1c9c7e00c99b2b43c59c5ef483940c0208"
+  "operators": []
 }

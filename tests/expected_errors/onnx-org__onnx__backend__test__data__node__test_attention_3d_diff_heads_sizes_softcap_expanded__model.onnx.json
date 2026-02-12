@@ -1,30 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_attention_3d_diff_heads_sizes_softcap_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Shape",
-    "Constant",
-    "Concat",
-    "Reshape",
-    "Transpose",
-    "Cast",
-    "Sqrt",
-    "Div",
-    "Identity",
-    "ConstantOfShape",
-    "Equal",
-    "Not",
-    "Mod",
-    "And",
-    "Where",
-    "Unsqueeze",
-    "Expand",
-    "Mul",
-    "MatMul",
-    "Add",
-    "Tanh",
-    "Softmax"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "96fd43dbab46b44a69e61dcb8515015a1cbdf135e75bb40174cd8626d6c9178d"
+  "operators": []
 }

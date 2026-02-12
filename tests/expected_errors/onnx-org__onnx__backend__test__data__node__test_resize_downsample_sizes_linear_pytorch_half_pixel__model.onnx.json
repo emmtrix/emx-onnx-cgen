@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_resize_downsample_sizes_linear_pytorch_half_pixel model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Resize"
-  ],
-  "opset_version": 19,
-  "generated_checksum": "2db0c6764bdf757d2a3be4eebcd782015c76763072120ab568011b93a2939501"
+  "operators": []
 }

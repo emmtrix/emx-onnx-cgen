@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_nonmaxsuppression_suppress_by_IOU_and_scores model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "NonMaxSuppression"
-  ],
-  "opset_version": 11,
-  "generated_checksum": "49610a07d8f8a4e4b439c591225c610d90cac7932959a648c04ec05569af58f9"
+  "operators": []
 }

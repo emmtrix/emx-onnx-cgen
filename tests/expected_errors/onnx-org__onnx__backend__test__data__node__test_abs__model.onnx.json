@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_abs model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Abs"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "d34344c8937aa928dfebbafda9582e3ce8aadd5c41fa4314aea406fc6661d391"
+  "operators": []
 }

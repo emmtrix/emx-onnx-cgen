@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Tanh model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Tanh"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "7a5b15fc34908e3e7fb99cffb662236f92643ba586fad075adc17f5b35401a75"
+  "operators": []
 }

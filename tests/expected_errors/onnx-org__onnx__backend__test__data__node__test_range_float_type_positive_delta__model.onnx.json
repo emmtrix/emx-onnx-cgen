@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Range"
-  ],
-  "opset_version": 11,
-  "generated_checksum": "edd082bb6bc2f77320b7ff988622c64dca4db966ea8002aff94ccb66eaf3713d"
+  "operators": []
 }

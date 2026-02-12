@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_xor_bcast3v1d model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Xor"
-  ],
-  "opset_version": 7,
-  "generated_checksum": "e0a8516e3b5e171487e08bdad58c18027e86abea5f971ff37344ab089042b49e"
+  "operators": []
 }

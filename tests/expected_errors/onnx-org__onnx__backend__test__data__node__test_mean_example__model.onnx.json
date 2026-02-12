@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_mean_example model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Mean"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "c5a4dd42ee7a5c77d817fa5663d6f3c4b01c15d9e469ede51a4e117367cf0269"
+  "operators": []
 }

@@ -1,8 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_qlinearmul_int8 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "com.microsoft::QLinearMul"
-  ],
-  "generated_checksum": "ac02f151c1095d1b6585dec5919f690119feba0fb6d625cc3b4d15567b145124"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_rotary_embedding_with_rotary_dim model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "RotaryEmbedding"
-  ],
-  "opset_version": 23,
-  "generated_checksum": "f4965e1f56ea03cc66ce9f6af268918195cf886064b81eb7be93edf415a3e5bd"
+  "operators": []
 }

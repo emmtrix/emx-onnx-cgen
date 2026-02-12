@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_log_sum_exp_negative_axes_keepdims_random model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "ReduceLogSumExp"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "19415c5e707e4906eed3a5b579982b45bc740db6ce4e59cbcae53f4761a60631"
+  "operators": []
 }

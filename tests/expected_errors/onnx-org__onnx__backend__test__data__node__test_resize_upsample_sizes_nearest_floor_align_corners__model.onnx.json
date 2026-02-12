@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_floor_align_corners model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Resize"
-  ],
-  "opset_version": 19,
-  "generated_checksum": "98d07e5a791243e81012965dbf6ea2cc7b62f011054ba9450a9f9d929a6a38c8"
+  "operators": []
 }

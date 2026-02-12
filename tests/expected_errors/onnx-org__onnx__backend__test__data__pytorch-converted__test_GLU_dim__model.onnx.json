@@ -1,11 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_GLU_dim model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Split",
-    "Sigmoid",
-    "Mul"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "f0460a5ae0b1ad7c753611c15bbc503399f1d1eb2990754e514eccee20bebf04"
+  "operators": []
 }

@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_hardmax_negative_axis model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Hardmax"
-  ],
-  "opset_version": 13,
-  "generated_checksum": "5115255132a866d728d6617e34c85c6303b1091a0a23c96d24e7242a76802446"
+  "operators": []
 }

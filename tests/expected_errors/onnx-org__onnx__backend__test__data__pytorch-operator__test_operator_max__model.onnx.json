@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_max model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Max"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "7ae7cb3ed4cd1620a8ca96319f7a484b0596f9ae2ddc033b1e48193721a4a21d"
+  "operators": []
 }

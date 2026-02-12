@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_cubic model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Resize"
-  ],
-  "opset_version": 19,
-  "generated_checksum": "2af6b5fc8913a7f121e0e1d416151f4f56738aee4a26e92ca6f3c1239b38654d"
+  "operators": []
 }

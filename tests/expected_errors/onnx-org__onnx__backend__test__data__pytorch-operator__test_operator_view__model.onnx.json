@@ -1,9 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_view model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Flatten"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "7a041a0e6c4fe01b8175b43b1f9638aa5006cf0037c45f0074fecd60caddfff8"
+  "operators": []
 }

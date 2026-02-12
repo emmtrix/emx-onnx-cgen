@@ -1,14 +1,5 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_hardsigmoid_expanded_ver18 model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Constant",
-    "CastLike",
-    "Mul",
-    "Add",
-    "Min",
-    "Max"
-  ],
-  "opset_version": 18,
-  "generated_checksum": "e8eb8303f2f8940a22b18ac3812467806b58ea9d4b9d6701bb3810202a31b25f"
+  "operators": []
 }
