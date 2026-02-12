@@ -2070,6 +2070,17 @@ _SCALAR_TYPES: Dict[ScalarType, _ScalarTypeInfo] = {
         is_small_int=False,
         bits=None,
     ),
+    ScalarType.BF16: _ScalarTypeInfo(
+        scalar_type=ScalarType.BF16,
+        c_type="__bf16",
+        prefix="ref_scalar_bf16_",
+        suffix="bf16",
+        is_float=True,
+        is_bool=False,
+        is_signed=True,
+        is_small_int=False,
+        bits=None,
+    ),
     ScalarType.F32: _ScalarTypeInfo(
         scalar_type=ScalarType.F32,
         c_type="float",

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported elem_type 16 (BFLOAT16) for tensor 'input'.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_BFLOAT16_to_FLOAT model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "CastLike"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "7086025b5e83ad6d21892f5f56ad005f506a2f17ae10afa4f7c6e5f3b70e6e42"
 }

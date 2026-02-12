@@ -5,6 +5,18 @@ from enum import Enum
 import numpy as np
 
 
+def _bfloat16_numpy_dtype() -> np.dtype:
+    try:
+        import ml_dtypes
+
+        return np.dtype(ml_dtypes.bfloat16)
+    except Exception:
+        try:
+            return np.dtype("bfloat16")
+        except TypeError:
+            return np.dtype(np.float32)
+
+
 class ScalarFunctionError(RuntimeError):
     pass
 
@@ -44,6 +56,19 @@ class ScalarType(str, Enum):
         "float16",
         "_Float16",
         np.dtype("float16"),
+        "0.0f",
+        "-INFINITY",
+        "INFINITY",
+        True,
+        True,
+        False,
+        16,
+    )
+    BF16 = (
+        "bf16",
+        "bfloat16",
+        "__bf16",
+        _bfloat16_numpy_dtype(),
         "0.0f",
         "-INFINITY",
         "INFINITY",
@@ -226,6 +251,7 @@ class ScalarType(str, Enum):
             normalized = normalized[len("torch.") :]
         mapping = {
             "float16": cls.F16,
+            "bfloat16": cls.BF16,
             "float32": cls.F32,
             "float64": cls.F64,
             "int8": cls.I8,

@@ -7,6 +7,7 @@ from onnx import TensorProto, helper
 from shared.scalar_types import ScalarType
 
 from emx_onnx_cgen.onnx_import import import_onnx
+from emx_onnx_cgen.dtypes import scalar_type_from_onnx
 
 
 def _make_constant_model() -> tuple[onnx.ModelProto, np.ndarray]:
@@ -67,3 +68,29 @@ def test_import_constant_with_value_strings_creates_string_initializer() -> None
     np.testing.assert_array_equal(
         initializer.data, np.array([b"alpha", b"beta"], dtype=object)
     )
+
+
+def test_scalar_type_from_onnx_maps_bfloat16_to_bfloat16() -> None:
+    assert scalar_type_from_onnx(TensorProto.BFLOAT16) == ScalarType.BF16
+
+
+def test_import_bfloat16_value_info_keeps_bfloat16() -> None:
+    input_value = helper.make_tensor_value_info("in0", TensorProto.BFLOAT16, [2, 2])
+    output_value = helper.make_tensor_value_info("out", TensorProto.BFLOAT16, [2, 2])
+    node = helper.make_node("Identity", inputs=["in0"], outputs=["out"])
+    graph = helper.make_graph([node], "bf16_graph", [input_value], [output_value])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+
+    imported = import_onnx(model)
+    assert imported.inputs[0].type.dtype == ScalarType.BF16
+    assert imported.outputs[0].type.dtype == ScalarType.BF16
+
+
+def test_bfloat16_scalar_type_uses___bf16_c_type() -> None:
+    assert ScalarType.BF16.c_type == "__bf16"
