@@ -59,10 +59,12 @@ class OnnxFileExpectation:
     generated_checksum: str | None = None
 
 
+@cache
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+@cache
 def _official_data_root() -> Path:
     return _repo_root() / "onnx-org" / "onnx" / "backend" / "test" / "data"
 
@@ -84,11 +86,9 @@ def _missing_official_onnx_paths() -> tuple[str, ...]:
 
 
 def _normalize_official_path(path: str) -> str:
-    repo_root = _repo_root()
-    candidate = repo_root / path
-    if candidate.exists():
-        return candidate.relative_to(repo_root).as_posix()
-    return (_official_data_root() / path).relative_to(repo_root).as_posix()
+    if path.startswith(OFFICIAL_ONNX_PREFIX):
+        return path
+    return f"{OFFICIAL_ONNX_PREFIX}{path}"
 
 
 def _list_expectation_repo_paths(
@@ -227,6 +227,9 @@ def _load_expectation_for_repo_relative(
     )
 
 
+_load_expectation_for_repo_relative = cache(_load_expectation_for_repo_relative)
+
+
 def _write_expectation_file(
     expectation: OnnxFileExpectation,
     *,
@@ -344,6 +347,23 @@ def _find_test_data_dir(model_path: Path) -> Path | None:
     if not list(test_data_dir.glob("input_*.pb")):
         return None
     return test_data_dir
+
+
+_find_test_data_dir = cache(_find_test_data_dir)
+
+
+@pytest.fixture(scope="module")
+def official_repo_root_and_data_root() -> tuple[Path, Path]:
+    data_root = _official_data_root()
+    _ensure_official_onnx_files_present(data_root)
+    return _repo_root(), data_root
+
+
+@pytest.fixture(scope="module")
+def local_repo_root_and_data_root() -> tuple[Path, Path]:
+    data_root = LOCAL_ONNX_DATA_ROOT
+    _ensure_local_onnx_files_present(data_root)
+    return _repo_root(), data_root
 
 
 def _errors_match(actual_error: str, expected_error: str) -> bool:
@@ -485,10 +505,9 @@ def _run_expected_error_test(
 def test_official_onnx_expected_errors(
     repo_relative_path: str,
     request: Any,
+    official_repo_root_and_data_root: tuple[Path, Path],
 ) -> None:
-    data_root = _official_data_root()
-    _ensure_official_onnx_files_present(data_root)
-    repo_root = _repo_root()
+    repo_root, _ = official_repo_root_and_data_root
     rel_path = _normalize_official_path(repo_relative_path)
     expectation = _load_expectation_for_repo_relative(rel_path)
     model_path = repo_root / rel_path
@@ -513,10 +532,9 @@ def test_official_onnx_expected_errors(
 def test_local_onnx_expected_errors(
     repo_relative_path: str,
     request: Any,
+    local_repo_root_and_data_root: tuple[Path, Path],
 ) -> None:
-    data_root = LOCAL_ONNX_DATA_ROOT
-    _ensure_local_onnx_files_present(data_root)
-    repo_root = _repo_root()
+    repo_root, data_root = local_repo_root_and_data_root
     expectation = _load_expectation_for_repo_relative(
         repo_relative_path
     )

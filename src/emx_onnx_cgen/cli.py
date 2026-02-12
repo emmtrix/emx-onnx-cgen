@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Any, Mapping, Sequence, TextIO
 
@@ -263,7 +264,7 @@ def run_cli_command(
     parse_argv = raw_argv
     if raw_argv and raw_argv[0] == "emx-onnx-cgen":
         parse_argv = raw_argv[1:]
-    parser = _build_parser()
+    parser = _get_parser()
     args = parser.parse_args(parse_argv)
     args.command_line = _format_command_line(raw_argv)
     _apply_base_dir(args, parser)
@@ -577,6 +578,11 @@ def _build_parser() -> argparse.ArgumentParser:
     add_fp32_accumulation_strategy_flag(verify_parser)
     add_fp16_accumulation_strategy_flag(verify_parser)
     return parser
+
+
+@cache
+def _get_parser() -> argparse.ArgumentParser:
+    return _build_parser()
 
 
 def _resolve_with_base_dir(base_dir: Path, path: Path) -> Path:
