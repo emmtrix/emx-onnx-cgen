@@ -81,9 +81,6 @@ def lower_upsample(graph: Graph, node: Node) -> ResizeOp:
     rank = len(input_shape)
     axes = tuple(range(rank))
     scales_input = None
-    scales_shape = None
-    scales_dtype = None
-    scales_axes = None
     scales: tuple[float, ...]
     if len(node.inputs) == 2 and node.inputs[1]:
         scales_input = node.inputs[1]
@@ -92,8 +89,7 @@ def lower_upsample(graph: Graph, node: Node) -> ResizeOp:
             raise UnsupportedOpError("Upsample expects scales to be 1D")
         if scales_shape[0] != rank:
             raise UnsupportedOpError("Upsample scales length mismatch")
-        scales_dtype = value_dtype(graph, scales_input, node)
-        if scales_dtype not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
+        if value_dtype(graph, scales_input, node) not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
             raise UnsupportedOpError(
                 "Upsample expects scales input to be bfloat16/float16/float32/float64"
             )
@@ -123,22 +119,11 @@ def lower_upsample(graph: Graph, node: Node) -> ResizeOp:
     return ResizeOp(
         input0=input_name,
         output=output_name,
-        input_shape=input_shape,
-        output_shape=output_shape,
         scales=scales,
         scales_input=scales_input,
         sizes_input=None,
         roi_input=None,
         axes=axes,
-        scales_shape=scales_shape,
-        sizes_shape=None,
-        roi_shape=None,
-        scales_dtype=scales_dtype,
-        sizes_dtype=None,
-        roi_dtype=None,
-        scales_axes=scales_axes,
-        sizes_axes=None,
-        roi_axes=None,
         mode=mode,
         coordinate_transformation_mode="asymmetric",
         nearest_mode="floor",
@@ -147,5 +132,4 @@ def lower_upsample(graph: Graph, node: Node) -> ResizeOp:
         extrapolation_value=0.0,
         antialias=False,
         keep_aspect_ratio_policy="stretch",
-        dtype=input_dtype,
     )

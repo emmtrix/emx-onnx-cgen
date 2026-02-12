@@ -126,7 +126,7 @@ def lower_grid_sample(graph: Graph, node: Node) -> GridSampleOp:
         )
     if align_corners not in {0, 1}:
         raise UnsupportedOpError("GridSample align_corners must be 0 or 1")
-    input_dtype, grid_dtype = _validate_dtypes(graph, node)
+    _validate_dtypes(graph, node)
     if shapes.spatial_rank > 3:
         raise UnsupportedOpError(
             "GridSample supports up to 3 spatial dimensions"
@@ -135,15 +135,7 @@ def lower_grid_sample(graph: Graph, node: Node) -> GridSampleOp:
         input0=node.inputs[0],
         grid=node.inputs[1],
         output=node.outputs[0],
-        input_shape=shapes.input_shape,
-        grid_shape=shapes.grid_shape,
-        output_shape=shapes.output_shape,
-        spatial_rank=shapes.spatial_rank,
-        input_spatial=shapes.input_shape[2:],
-        output_spatial=shapes.output_shape[2:],
         mode=mode,
         padding_mode=padding_mode,
         align_corners=bool(align_corners),
-        dtype=input_dtype,
-        grid_dtype=grid_dtype,
     )

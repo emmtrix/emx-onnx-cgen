@@ -26,6 +26,12 @@ def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
         stride *= dim
     return tuple(reversed(strides))
 
+def _shape_product(shape: tuple[int, ...]) -> int:
+    product = 1
+    for dim in shape:
+        product *= dim
+    return product
+
 
 @dataclass(frozen=True)
 class CastOp(RenderableOpBase):
@@ -137,14 +143,72 @@ class TensorScatterOp(RenderableOpBase):
     update: str
     write_indices: str | None
     output: str
-    past_cache_shape: tuple[int, ...]
-    update_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    write_indices_shape: tuple[int, ...] | None
     axis: int
     mode: str
-    dtype: ScalarType
-    write_indices_dtype: ScalarType | None
+
+    def infer_types(self, ctx: OpContext) -> None:
+        past_dtype = ctx.dtype(self.past_cache)
+        update_dtype = ctx.dtype(self.update)
+        if past_dtype != update_dtype:
+            raise UnsupportedOpError(
+                f"{self.kind} expects matching past_cache/update dtypes, "
+                f"got {past_dtype.onnx_name} and {update_dtype.onnx_name}"
+            )
+        if self.write_indices is not None:
+            write_dtype = ctx.dtype(self.write_indices)
+            if write_dtype not in {ScalarType.I32, ScalarType.I64}:
+                raise UnsupportedOpError(
+                    f"{self.kind} write_indices must be int32 or int64, "
+                    f"got {write_dtype.onnx_name}"
+                )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, past_dtype)
+            output_dtype = past_dtype
+        if output_dtype != past_dtype:
+            raise UnsupportedOpError(
+                f"{self.kind} expects output dtype {past_dtype.onnx_name}, "
+                f"got {output_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        past_shape = ctx.shape(self.past_cache)
+        update_shape = ctx.shape(self.update)
+        output_shape = ctx.shape(self.output)
+        if output_shape != past_shape:
+            raise ShapeInferenceError(
+                f"{self.kind} output shape must match past_cache shape, "
+                f"got {output_shape} and {past_shape}"
+            )
+        if len(update_shape) != len(past_shape):
+            raise ShapeInferenceError(
+                f"{self.kind} update rank must match past_cache rank, "
+                f"got {len(update_shape)} and {len(past_shape)}"
+            )
+        for index, (past_dim, update_dim) in enumerate(zip(past_shape, update_shape)):
+            if index == self.axis:
+                if update_dim > past_dim:
+                    raise ShapeInferenceError(
+                        f"{self.kind} update dim at axis {self.axis} must not exceed "
+                        f"past_cache dim {past_dim}, got {update_dim}"
+                    )
+                continue
+            if update_dim != past_dim:
+                raise ShapeInferenceError(
+                    f"{self.kind} update shape must match past_cache outside axis {self.axis}, "
+                    f"got {update_shape} vs {past_shape}"
+                )
+        if self.write_indices is not None:
+            write_shape = ctx.shape(self.write_indices)
+            if len(write_shape) != 1:
+                raise ShapeInferenceError(
+                    f"{self.kind} write_indices must be rank-1, got shape {write_shape}"
+                )
+            if write_shape[0] != past_shape[0]:
+                raise ShapeInferenceError(
+                    f"{self.kind} write_indices length must match batch dim {past_shape[0]}, got {write_shape[0]}"
+                )
 
 
 @dataclass(frozen=True)
@@ -172,16 +236,15 @@ class ReshapeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    output_shape: tuple[int, ...] | None
 
     def infer_shapes(self, ctx: OpContext) -> None:
         input_shape = ctx.shape(self.input0)
-        output_shape = (
-            self.output_shape
-            if self.output_shape is not None
-            else ctx.shape(self.output)
-        )
-        ctx.set_shape(self.output, output_shape)
+        output_shape = ctx.shape(self.output)
+        if _shape_product(input_shape) != _shape_product(output_shape):
+            raise ShapeInferenceError(
+                f"{self.kind} input/output element counts must match, "
+                f"got {input_shape} and {output_shape}"
+            )
 
 
 @dataclass(frozen=True)
@@ -221,11 +284,11 @@ class TriluOp(RenderableOpBase):
 
 @dataclass(frozen=True)
 class TileOp(RenderableOpBase):
-    __io_inputs__ = ("input0",)
+    __io_inputs__ = ("input0", "repeats_input")
     __io_outputs__ = ("output",)
     input0: str
+    repeats_input: str
     output: str
-    repeats: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -234,25 +297,14 @@ class PadOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     pads_begin: tuple[int, ...] | None
     pads_end: tuple[int, ...] | None
     pads_input: str | None
-    pads_shape: tuple[int, ...] | None
-    pads_dtype: ScalarType | None
-    pads_axis_map: tuple[int | None, ...] | None
     pads_values: tuple[int, ...] | None
     axes_input: str | None
-    axes_shape: tuple[int, ...] | None
-    axes_dtype: ScalarType | None
     mode: str
     value: float | int | bool
     value_input: str | None
-    value_shape: tuple[int, ...] | None
-    dtype: ScalarType
-    input_dtype: ScalarType
-    input_strides: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -286,8 +338,6 @@ class SliceOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     starts: tuple[int, ...] | None
     steps: tuple[int, ...] | None
     axes: tuple[int, ...] | None
@@ -295,16 +345,6 @@ class SliceOp(RenderableOpBase):
     ends_input: str | None
     axes_input: str | None
     steps_input: str | None
-    starts_shape: tuple[int, ...] | None
-    ends_shape: tuple[int, ...] | None
-    axes_shape: tuple[int, ...] | None
-    steps_shape: tuple[int, ...] | None
-    starts_dtype: ScalarType | None
-    ends_dtype: ScalarType | None
-    axes_dtype: ScalarType | None
-    steps_dtype: ScalarType | None
-    dtype: ScalarType
-    input_dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -313,22 +353,11 @@ class ResizeOp(RenderableOpBase):
     __io_outputs__ = ("output",)
     input0: str
     output: str
-    input_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
     scales: tuple[float, ...]
     scales_input: str | None
     sizes_input: str | None
     roi_input: str | None
     axes: tuple[int, ...]
-    scales_shape: tuple[int, ...] | None
-    sizes_shape: tuple[int, ...] | None
-    roi_shape: tuple[int, ...] | None
-    scales_dtype: ScalarType | None
-    sizes_dtype: ScalarType | None
-    roi_dtype: ScalarType | None
-    scales_axes: tuple[int, ...] | None
-    sizes_axes: tuple[int, ...] | None
-    roi_axes: tuple[int, ...] | None
     mode: str
     coordinate_transformation_mode: str
     nearest_mode: str
@@ -337,7 +366,6 @@ class ResizeOp(RenderableOpBase):
     extrapolation_value: float
     antialias: bool
     keep_aspect_ratio_policy: str
-    dtype: ScalarType
 
 
 @dataclass(frozen=True)
@@ -347,17 +375,61 @@ class GridSampleOp(RenderableOpBase):
     input0: str
     grid: str
     output: str
-    input_shape: tuple[int, ...]
-    grid_shape: tuple[int, ...]
-    output_shape: tuple[int, ...]
-    spatial_rank: int
-    input_spatial: tuple[int, ...]
-    output_spatial: tuple[int, ...]
     mode: str
     padding_mode: str
     align_corners: bool
-    dtype: ScalarType
-    grid_dtype: ScalarType
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_dtype = ctx.dtype(self.input0)
+        grid_dtype = ctx.dtype(self.grid)
+        if not grid_dtype.is_float:
+            raise UnsupportedOpError(
+                f"{self.kind} grid dtype must be float, got {grid_dtype.onnx_name}"
+            )
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input_dtype)
+            output_dtype = input_dtype
+        if output_dtype != input_dtype:
+            raise UnsupportedOpError(
+                f"{self.kind} output dtype must match input dtype {input_dtype.onnx_name}, "
+                f"got {output_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        grid_shape = ctx.shape(self.grid)
+        output_shape = ctx.shape(self.output)
+        if len(input_shape) < 3:
+            raise ShapeInferenceError(
+                f"{self.kind} input rank must be >= 3, got {len(input_shape)}"
+            )
+        spatial_rank = len(input_shape) - 2
+        if spatial_rank > 3:
+            raise UnsupportedOpError(
+                f"{self.kind} supports up to 3 spatial dims, got {spatial_rank}"
+            )
+        if len(grid_shape) != spatial_rank + 2:
+            raise ShapeInferenceError(
+                f"{self.kind} grid rank must be {spatial_rank + 2}, got {len(grid_shape)}"
+            )
+        if len(output_shape) != len(input_shape):
+            raise ShapeInferenceError(
+                f"{self.kind} output rank must match input rank {len(input_shape)}, got {len(output_shape)}"
+            )
+        if output_shape[:2] != input_shape[:2]:
+            raise ShapeInferenceError(
+                f"{self.kind} output batch/channels must match input, got {output_shape[:2]} vs {input_shape[:2]}"
+            )
+        if output_shape[2:] != grid_shape[1:-1]:
+            raise ShapeInferenceError(
+                f"{self.kind} output spatial dims must match grid dims {grid_shape[1:-1]}, got {output_shape[2:]}"
+            )
+        if grid_shape[-1] != spatial_rank:
+            raise ShapeInferenceError(
+                f"{self.kind} grid last dim must equal spatial rank {spatial_rank}, got {grid_shape[-1]}"
+            )
 
 
 @dataclass(frozen=True)

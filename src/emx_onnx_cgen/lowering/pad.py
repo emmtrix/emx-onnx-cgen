@@ -73,15 +73,6 @@ def _default_pad_value(dtype: ScalarType) -> float | int | bool:
     return 0
 
 
-def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
-    strides: list[int] = []
-    stride = 1
-    for dim in reversed(shape):
-        strides.append(stride)
-        stride *= dim
-    return tuple(reversed(strides))
-
-
 @register_lowering("Pad")
 def lower_pad(graph: Graph, node: Node) -> PadOp:
     if not node.inputs or len(node.outputs) != 1:
@@ -152,7 +143,6 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
         else:
             axes = _normalize_axes(axes, input_shape, node)
 
-    pads_axis_map = None
     pads_values = None
     pads_begin = None
     pads_end = None
@@ -178,9 +168,7 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
                 raise ShapeInferenceError(
                     "Pad pads must have length 2 * len(axes)"
                 )
-            pads_axis_map = [None] * len(input_shape)
-            for index, axis in enumerate(axes):
-                pads_axis_map[axis] = index
+            axes_input = axes_name
         else:
             if len(pads) != 2 * len(axes):
                 raise ShapeInferenceError(
@@ -251,8 +239,6 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
     return PadOp(
         input0=input_name,
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=output_shape,
         pads_begin=(
             tuple(int(value) for value in pads_begin)
             if pads_begin is not None
@@ -264,24 +250,13 @@ def lower_pad(graph: Graph, node: Node) -> PadOp:
             else None
         ),
         pads_input=pads_input,
-        pads_shape=pads_shape,
-        pads_dtype=pads_dtype,
-        pads_axis_map=(
-            tuple(pads_axis_map) if pads_axis_map is not None else None
-        ),
         pads_values=(
             tuple(int(value) for value in pads_values)
             if pads_values is not None
             else None
         ),
         axes_input=axes_input,
-        axes_shape=axes_shape,
-        axes_dtype=axes_dtype,
         mode=mode,
         value=pad_value,
         value_input=value_input,
-        value_shape=value_input_shape,
-        dtype=output_dtype,
-        input_dtype=input_dtype,
-        input_strides=_compute_strides(input_shape),
     )

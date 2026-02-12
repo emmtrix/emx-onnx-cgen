@@ -62,7 +62,7 @@ const EMX_UNUSED int64_t weight1_repeats[2] = {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void node0_tile(const float input0[2][3], float output[4][3]) {
+static inline void node0_tile(const float input0[2][3], const int64_t repeats_input[2], float output[4][3]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     idx_t output_index = 0;
@@ -81,5 +81,5 @@ _Bool model_load(const char *path) {
 }
 
 void model(const float input[restrict 2][3], float output[restrict 4][3]) {
-    node0_tile(input, output);
+    node0_tile(input, weight1_repeats, output);
 }
