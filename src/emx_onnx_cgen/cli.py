@@ -13,6 +13,7 @@ import sys
 import tempfile
 import time
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Any, Mapping, Sequence, TextIO
 
@@ -198,9 +199,7 @@ def _worst_ulp_diff(
     expected_cast = expected.astype(dtype, copy=False)
     max_diff = 0
     worst: tuple[tuple[int, ...], float, float] | None = None
-    iterator = np.nditer(
-        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
-    )
+    iterator = np.nditer([actual_cast, expected_cast], flags=["refs_ok", "multi_index"])
     for actual_value, expected_value in iterator:
         actual_scalar = float(actual_value[()])
         expected_scalar = float(expected_value[()])
@@ -229,9 +228,7 @@ def _worst_abs_diff(
     expected_cast = expected.astype(dtype, copy=False)
     max_diff: float | int = 0
     worst: tuple[tuple[int, ...], object, object] | None = None
-    iterator = np.nditer(
-        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
-    )
+    iterator = np.nditer([actual_cast, expected_cast], flags=["refs_ok", "multi_index"])
     for actual_value, expected_value in iterator:
         actual_scalar = actual_value[()]
         expected_scalar = expected_value[()]
@@ -263,7 +260,7 @@ def run_cli_command(
     parse_argv = raw_argv
     if raw_argv and raw_argv[0] == "emx-onnx-cgen":
         parse_argv = raw_argv[1:]
-    parser = _build_parser()
+    parser = _get_parser()
     args = parser.parse_args(parse_argv)
     args.command_line = _format_command_line(raw_argv)
     _apply_base_dir(args, parser)
@@ -325,9 +322,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "--color",
             choices=("auto", "always", "never"),
             default="auto",
-            help=(
-                "Colorize CLI output (default: auto; options: auto, always, never)"
-            ),
+            help=("Colorize CLI output (default: auto; options: auto, always, never)"),
         )
 
     def add_verbose_flag(subparser: argparse.ArgumentParser) -> None:
@@ -431,7 +426,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Truncate inline weight initializers after N values and insert "
-            "\"...\" placeholders (default: no truncation)"
+            '"..." placeholders (default: no truncation)'
         ),
     )
     compile_parser.add_argument(
@@ -486,7 +481,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Truncate inline weight initializers after N values and insert "
-            "\"...\" placeholders (default: no truncation)"
+            '"..." placeholders (default: no truncation)'
         ),
     )
     verify_parser.add_argument(
@@ -579,15 +574,18 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+@cache
+def _get_parser() -> argparse.ArgumentParser:
+    return _build_parser()
+
+
 def _resolve_with_base_dir(base_dir: Path, path: Path) -> Path:
     if path.is_absolute():
         return path
     return Path(os.path.normpath(os.path.join(base_dir, path)))
 
 
-def _apply_base_dir(
-    args: argparse.Namespace, parser: argparse.ArgumentParser
-) -> None:
+def _apply_base_dir(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
     model_base_dir: Path | None = args.model_base_dir
     if model_base_dir is None:
         return
@@ -625,9 +623,7 @@ def _handle_compile(args: argparse.Namespace) -> int:
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
     model_name = args.model_name or "model"
-    generated, data_source, weight_data, error = _compile_model(
-        args, reporter=reporter
-    )
+    generated, data_source, weight_data, error = _compile_model(args, reporter=reporter)
     if error:
         reporter.info("")
         reporter.result(error, ok=False)
@@ -655,9 +651,7 @@ def _compile_model(
     model_path: Path = args.model
     model_name = args.model_name or "model"
     active_reporter = reporter or _NullVerifyReporter()
-    load_started = active_reporter.start_step(
-        f"Loading model {model_path.name}"
-    )
+    load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     timings: dict[str, float] = {}
     try:
         model, model_checksum = _load_model_and_checksum(model_path)
@@ -795,7 +789,6 @@ def _verify_model(
 
     model_path: Path = args.model
     model_name = "model"
-    model, model_checksum = _load_model_and_checksum(model_path)
     compiler_cmd = _resolve_compiler(args.cc, prefer_ccache=False)
     if compiler_cmd is None:
         return (
@@ -811,18 +804,18 @@ def _verify_model(
         return (
             None,
             "Cannot set both --temp-dir-root and --temp-dir.",
-            operators,
-            opset_version,
-            generated_checksum,
+            [],
+            None,
+            None,
         )
     if temp_dir_root is not None:
         if temp_dir_root.exists() and not temp_dir_root.is_dir():
             return (
                 None,
                 f"Verification temp dir root is not a directory: {temp_dir_root}",
-                operators,
-                opset_version,
-                generated_checksum,
+                [],
+                None,
+                None,
             )
         temp_dir_root.mkdir(parents=True, exist_ok=True)
     if explicit_temp_dir is not None:
@@ -830,9 +823,9 @@ def _verify_model(
             return (
                 None,
                 f"Verification temp dir is not a directory: {explicit_temp_dir}",
-                operators,
-                opset_version,
-                generated_checksum,
+                [],
+                None,
+                None,
             )
     temp_dir: tempfile.TemporaryDirectory | None = None
     cleanup_created_dir = False
@@ -855,9 +848,7 @@ def _verify_model(
     keep_label = (
         "--keep-temp-dir set" if args.keep_temp_dir else "--keep-temp-dir not set"
     )
-    active_reporter.note(
-        f"Using temporary folder [{keep_label}]: {temp_path}"
-    )
+    active_reporter.note(f"Using temporary folder [{keep_label}]: {temp_path}")
     active_reporter.info("")
     load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     try:
@@ -997,18 +988,14 @@ def _verify_model(
                 cwd=temp_path,
             )
             active_reporter.step_ok(compile_started)
-            active_reporter.info(
-                f"  Compile command: {shlex.join(compile_cmd)}"
-            )
+            active_reporter.info(f"  Compile command: {shlex.join(compile_cmd)}")
             active_reporter.info("")
             if args.test_data_dir is not None:
                 active_reporter.info(
                     f"Verifying using test data set: {args.test_data_dir.name}"
                 )
             else:
-                active_reporter.info(
-                    "Verifying using generated random inputs"
-                )
+                active_reporter.info("Verifying using generated random inputs")
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
             if include_build_details:
@@ -1018,9 +1005,7 @@ def _verify_model(
             active_reporter.step_fail(message)
             return None, message, operators, opset_version, generated_checksum
         try:
-            run_started = active_reporter.start_step(
-                "  Running generated binary"
-            )
+            run_started = active_reporter.start_step("  Running generated binary")
             run_cmd = [str(exe_path)]
             if testbench_input_path is not None:
                 run_cmd.append(str(testbench_input_path))
@@ -1046,16 +1031,20 @@ def _verify_model(
                 )
         except subprocess.CalledProcessError as exc:
             active_reporter.step_fail(describe_exit_code(exc.returncode))
-            return None, (
-                "Testbench execution failed: " + describe_exit_code(exc.returncode)
-            ), operators, opset_version, generated_checksum
+            return (
+                None,
+                ("Testbench execution failed: " + describe_exit_code(exc.returncode)),
+                operators,
+                opset_version,
+                generated_checksum,
+            )
         if payload is None:
             return (
                 None,
                 "Failed to parse testbench JSON: missing output.",
-                operators,
-                opset_version,
-                generated_checksum,
+                [],
+                None,
+                None,
             )
 
         if testbench_inputs:
@@ -1065,9 +1054,7 @@ def _verify_model(
             }
         else:
             inputs = {
-                name: decode_testbench_array(
-                    value["data"], input_dtypes[name].np_dtype
-                )
+                name: decode_testbench_array(value["data"], input_dtypes[name].np_dtype)
                 for name, value in payload["inputs"].items()
             }
         runtime_outputs: dict[str, np.ndarray] | None = None
@@ -1144,9 +1131,9 @@ def _verify_model(
             return (
                 "OK (non-deterministic output)",
                 None,
-                operators,
-                opset_version,
-                generated_checksum,
+                [],
+                None,
+                None,
             )
         payload_outputs = payload.get("outputs", {})
         max_ulp = 0
@@ -1154,13 +1141,9 @@ def _verify_model(
         max_abs_diff: float | int = 0
         worst_abs_diff: _WorstAbsDiff | None = None
         output_nodes = {
-            output_name: node
-            for node in graph.nodes
-            for output_name in node.outputs
+            output_name: node for node in graph.nodes for output_name in node.outputs
         }
-        active_reporter.start_step(
-            f"  Comparing outputs [--max-ulp={args.max_ulp}]"
-        )
+        active_reporter.start_step(f"  Comparing outputs [--max-ulp={args.max_ulp}]")
         try:
             for value in graph.outputs:
                 runtime_out = runtime_outputs[value.name]
@@ -1194,9 +1177,7 @@ def _verify_model(
                                 ulp=output_max,
                             )
                 else:
-                    output_max, output_worst = _worst_abs_diff(
-                        output_data, runtime_out
-                    )
+                    output_max, output_worst = _worst_abs_diff(output_data, runtime_out)
                     if output_max > max_abs_diff:
                         max_abs_diff = output_max
                         if output_worst is not None:
@@ -1228,9 +1209,9 @@ def _verify_model(
             return (
                 None,
                 f"Arrays are not equal (max abs diff {max_abs_diff})",
-                operators,
-                opset_version,
-                generated_checksum,
+                [],
+                None,
+                None,
             )
         if max_ulp > args.max_ulp:
             active_reporter.step_fail(f"max ULP {max_ulp}")
@@ -1248,18 +1229,18 @@ def _verify_model(
             return (
                 None,
                 f"Out of tolerance (max ULP {max_ulp})",
-                operators,
-                opset_version,
-                generated_checksum,
+                [],
+                None,
+                None,
             )
         active_reporter.step_ok_simple()
         active_reporter.info(f"    Maximum ULP: {max_ulp}")
         return (
             format_success_message(max_ulp),
             None,
-            operators,
-            opset_version,
-            generated_checksum,
+            [],
+            None,
+            None,
         )
     finally:
         active_reporter.info("")
@@ -1323,9 +1304,7 @@ def _load_test_data_inputs(
             return None, None
         tensor_type = elem_type.tensor_type
         if optional.HasField("tensor_value"):
-            inputs[value_info.name] = numpy_helper.to_array(
-                optional.tensor_value
-            )
+            inputs[value_info.name] = numpy_helper.to_array(optional.tensor_value)
             optional_flags[value_info.name] = True
             continue
         if not tensor_type.HasField("elem_type"):
@@ -1347,9 +1326,7 @@ def _load_test_data_inputs(
                 raise CodegenError(
                     f"Optional input {value_info.name} has unknown shape."
                 )
-        inputs[value_info.name] = np.zeros(
-            tuple(shape), dtype=dtype_info.np_dtype
-        )
+        inputs[value_info.name] = np.zeros(tuple(shape), dtype=dtype_info.np_dtype)
         optional_flags[value_info.name] = False
     return inputs, optional_flags
 
@@ -1442,9 +1419,7 @@ def _report_model_details(
     output_count: int,
 ) -> None:
     operators_display = ", ".join(operators) if operators else "(none)"
-    reporter.info(
-        f"  Model operators ({len(operators)}): {operators_display}"
-    )
+    reporter.info(f"  Model operators ({len(operators)}): {operators_display}")
     reporter.info(
         f"  Model file size: {_format_artifact_size(model_path.stat().st_size)}"
     )

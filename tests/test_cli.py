@@ -138,6 +138,42 @@ def test_cli_model_base_dir_resolves_test_data(tmp_path: Path) -> None:
     assert args.test_data_dir == base_dir / "inputs"
 
 
+def test_verify_rejects_conflicting_temp_dir_flags_without_loading_model(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        [
+            "verify",
+            "model.onnx",
+            "--temp-dir-root",
+            "tmp-root",
+            "--temp-dir",
+            "tmp-explicit",
+        ]
+    )
+
+    def _unexpected_load(_model_path: Path) -> tuple[onnx.ModelProto, str]:
+        raise AssertionError("model loading should not run for invalid temp-dir args")
+
+    monkeypatch.setattr(cli, "_load_model_and_checksum", _unexpected_load)
+    monkeypatch.setattr(
+        cli, "_resolve_compiler", lambda cc, prefer_ccache=False: ["cc"]
+    )
+
+    success, error, operators, opset_version, generated_checksum = cli._verify_model(
+        args,
+        include_build_details=False,
+        reporter=cli._NullVerifyReporter(),
+    )
+
+    assert success is None
+    assert error == "Cannot set both --temp-dir-root and --temp-dir."
+    assert operators == []
+    assert opset_version is None
+    assert generated_checksum is None
+
+
 def test_cli_verify_rejects_model_name_flag() -> None:
     parser = cli._build_parser()
     with pytest.raises(SystemExit):
