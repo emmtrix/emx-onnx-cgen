@@ -3586,14 +3586,18 @@ def test_lower_flatten_axis_default() -> None:
     graph = import_onnx(model)
     op = lower_flatten(graph, graph.nodes[0])
     assert op.input0 == "in0"
-    assert op.output_shape == (2, 12)
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_shapes(op_ctx)
+    assert op_ctx.shape(op.output) == (2, 12)
 
 
 def test_lower_flatten_negative_axis() -> None:
     model = _make_flatten_model([2, 3, 4], axis=-1)
     graph = import_onnx(model)
     op = lower_flatten(graph, graph.nodes[0])
-    assert op.output_shape == (6, 4)
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_shapes(op_ctx)
+    assert op_ctx.shape(op.output) == (6, 4)
 
 
 def test_lower_onehot_axis_normalization() -> None:
@@ -3684,9 +3688,10 @@ def test_lower_pad_dynamic_axes_input() -> None:
     graph = import_onnx(model)
     op = get_lowering("Pad")(graph, graph.nodes[0])
     assert op.pads_input == "pads"
-    assert op.pads_shape == (4,)
     assert op.axes_input == "axes"
-    assert op.axes_shape == (2,)
+    op_ctx = OpContext(GraphContext(graph))
+    assert op_ctx.shape(op.pads_input) == (4,)
+    assert op_ctx.shape(op.axes_input) == (2,)
     assert op.pads_begin is None
     assert op.pads_end is None
 
@@ -3719,14 +3724,18 @@ def test_lower_squeeze_axes_input() -> None:
     graph = import_onnx(model)
     op = lower_squeeze(graph, graph.nodes[0])
     assert op.input0 == "in0"
-    assert op.output_shape == (3, 5)
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_shapes(op_ctx)
+    assert op_ctx.shape(op.output) == (3, 5)
 
 
 def test_lower_squeeze_default_axes() -> None:
     model = _make_squeeze_lowering_model([1, 3, 1, 5], [3, 5])
     graph = import_onnx(model)
     op = lower_squeeze(graph, graph.nodes[0])
-    assert op.output_shape == (3, 5)
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_shapes(op_ctx)
+    assert op_ctx.shape(op.output) == (3, 5)
 
 
 def test_lower_gridsample_builds_spec() -> None:
@@ -3737,9 +3746,11 @@ def test_lower_gridsample_builds_spec() -> None:
     )
     graph = import_onnx(model)
     op = lower_grid_sample(graph, graph.nodes[0])
-    assert op.spatial_rank == 2
-    assert op.input_spatial == (3, 4)
-    assert op.output_spatial == (5, 6)
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op_ctx.shape(op.input0)[2:] == (3, 4)
+    assert op_ctx.shape(op.output)[2:] == (5, 6)
     assert op.mode == "linear"
 
 

@@ -370,69 +370,34 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
         keep_aspect_ratio_policy,
     )
     _validate_output_shape(expected_output, config.output_shape)
-    roi_shape = None
-    roi_axes = None
-    roi_dtype = None
     if inputs.roi:
-        roi_len, roi_dtype = _validate_tensor_1d(
+        roi_len, _ = _validate_tensor_1d(
             graph,
             inputs.roi,
             node,
             {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
-        if roi_len == 2 * rank:
-            roi_shape = (roi_len,)
-        elif roi_len == 2 * len(axes):
-            roi_shape = (roi_len,)
-            roi_axes = axes
-        else:
+        if roi_len not in {2 * rank, 2 * len(axes)}:
             raise UnsupportedOpError("Resize roi length mismatch")
-        if coordinate_mode != "tf_crop_and_resize" and roi_len != 0:
-            roi_axes = roi_axes if roi_len == 2 * len(axes) else None
     if coordinate_mode == "tf_crop_and_resize" and not inputs.roi:
         raise UnsupportedOpError("Resize requires roi for tf_crop_and_resize")
-    scales_shape = None
-    sizes_shape = None
-    scales_dtype = None
-    sizes_dtype = None
-    scales_axes = None
-    sizes_axes = None
     if inputs.scales:
-        scale_len, scales_dtype = _validate_tensor_1d(
+        _validate_tensor_1d(
             graph,
             inputs.scales,
             node,
             {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
-        scales_shape = (scale_len,)
-        if scale_len == len(axes) and len(axes) != rank:
-            scales_axes = axes
     if inputs.sizes:
-        size_len, sizes_dtype = _validate_tensor_1d(
-            graph, inputs.sizes, node, {ScalarType.I64, ScalarType.I32}
-        )
-        sizes_shape = (size_len,)
-        if size_len == len(axes) and len(axes) != rank:
-            sizes_axes = axes
+        _validate_tensor_1d(graph, inputs.sizes, node, {ScalarType.I64, ScalarType.I32})
     return ResizeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=config.input_shape,
-        output_shape=config.output_shape,
         scales=scales,
         scales_input=inputs.scales,
         sizes_input=inputs.sizes,
         roi_input=inputs.roi,
         axes=axes,
-        scales_shape=scales_shape,
-        sizes_shape=sizes_shape,
-        roi_shape=roi_shape,
-        scales_dtype=scales_dtype,
-        sizes_dtype=sizes_dtype,
-        roi_dtype=roi_dtype,
-        scales_axes=scales_axes,
-        sizes_axes=sizes_axes,
-        roi_axes=roi_axes,
         mode=mode,
         coordinate_transformation_mode=coordinate_mode,
         nearest_mode=nearest_mode,
@@ -441,5 +406,4 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
         extrapolation_value=extrapolation_value,
         antialias=antialias,
         keep_aspect_ratio_policy=keep_aspect_ratio_policy,
-        dtype=config.input_dtype,
     )

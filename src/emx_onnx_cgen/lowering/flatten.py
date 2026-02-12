@@ -53,5 +53,4 @@ def lower_flatten(graph: Graph, node: Node) -> ReshapeOp:
     return ReshapeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        output_shape=output_shape,
     )
