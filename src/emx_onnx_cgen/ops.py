@@ -111,7 +111,7 @@ def _format_float_literal(value: float, dtype: ScalarType) -> str:
     formatted = f"{value:.9g}"
     if "e" not in formatted and "E" not in formatted and "." not in formatted:
         formatted = f"{formatted}.0"
-    if dtype in {ScalarType.F16, ScalarType.F32}:
+    if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32}:
         return f"{formatted}f"
     return formatted
 
@@ -541,7 +541,7 @@ def binary_op_symbol(
                 "Mod only supports fmod=1 for floating point types"
             )
         func = (
-            "fmodf" if dtype in {ScalarType.F16, ScalarType.F32} else "fmod"
+            "fmodf" if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32} else "fmod"
         )
         return BinaryOpSpec(func, OperatorKind.FUNC, np.fmod)
     return None

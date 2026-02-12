@@ -246,7 +246,7 @@ def _resolve_scales(
             graph,
             inputs.scales,
             node,
-            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
+            {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
         if scale_len not in {len(axes), rank}:
             raise UnsupportedOpError("Resize scales length mismatch")
@@ -378,7 +378,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
             graph,
             inputs.roi,
             node,
-            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
+            {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
         if roi_len == 2 * rank:
             roi_shape = (roi_len,)
@@ -402,7 +402,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
             graph,
             inputs.scales,
             node,
-            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
+            {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
         scales_shape = (scale_len,)
         if scale_len == len(axes) and len(axes) != rank:

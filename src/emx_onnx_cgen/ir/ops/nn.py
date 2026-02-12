@@ -573,7 +573,7 @@ class SoftmaxOp(RenderableOpBase):
         input_dtype = ctx.dtype(self.input0)
         if not input_dtype.is_float:
             raise UnsupportedOpError(
-                "Softmax supports float16, float, and double inputs only"
+                "Softmax supports bfloat16, float16, float, and double inputs only"
             )
         try:
             output_dtype = ctx.dtype(self.output)
@@ -622,7 +622,7 @@ class LogSoftmaxOp(RenderableOpBase):
         input_dtype = ctx.dtype(self.input0)
         if not input_dtype.is_float:
             raise UnsupportedOpError(
-                "LogSoftmax supports float16, float, and double inputs only"
+                "LogSoftmax supports bfloat16, float16, float, and double inputs only"
             )
         try:
             output_dtype = ctx.dtype(self.output)
@@ -669,9 +669,9 @@ class HardmaxOp(RenderableOpBase):
 
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
-        if input_dtype not in {ScalarType.F16, ScalarType.F32, ScalarType.F64}:
+        if input_dtype not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
             raise UnsupportedOpError(
-                "Hardmax supports float16, float, and double inputs only"
+                "Hardmax supports bfloat16, float16, float, and double inputs only"
             )
         try:
             output_dtype = ctx.dtype(self.output)

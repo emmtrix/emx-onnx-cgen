@@ -15,7 +15,6 @@
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 7 | 9, 19, 22 |
-| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 6 | 25 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
@@ -148,7 +147,6 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 25 | 17 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 25 | 17 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 25 | 14 |
-| Unsupported elem_type 16 (BFLOAT16) for tensor '*'. | 25 | 6 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 25 | 4 |
 | QuantizeLinear block_size is not supported | 25 | 2 |
 | Graph must contain at least one node | 25 | 1 |

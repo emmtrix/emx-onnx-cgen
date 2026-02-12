@@ -23,9 +23,9 @@ def lower_global_max_pool(graph: Graph, node: Node) -> ReduceOp:
             "GlobalMaxPool expects matching input/output dtypes, "
             f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
-    if op_dtype not in {ScalarType.F16, ScalarType.F32, ScalarType.F64}:
+    if op_dtype not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
         raise UnsupportedOpError(
-            "GlobalMaxPool supports float16, float, and double inputs only"
+            "GlobalMaxPool supports bfloat16, float16, float, and double inputs only"
         )
     input_shape = _value_shape(graph, node.inputs[0], node)
     if len(input_shape) < 3:
