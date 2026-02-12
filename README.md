@@ -50,11 +50,6 @@ For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.
   - `optional(<tensor type>)` (optional tensors represented via an extra `_Bool <name>_present` flag; see [`docs/output-format.md`](docs/output-format.md))
 - Optional support for dynamic dimensions using C99 variable-length arrays (VLAs), when the target compiler supports them.
 
-
-> **BF16 note:** Native `bfloat16` is emitted as `__bf16` in generated C.
-> Support depends on your toolchain; verification may still report expected failures
-> for some `FLOAT -> BFLOAT16` ONNX backend cases due to JSON numeric encoding limits.
-
 ## Usage Scenarios
 
 ### 1. Fully Embedded, Standalone C Firmware
