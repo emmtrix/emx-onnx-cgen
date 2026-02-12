@@ -11,7 +11,7 @@ from .common import value_shape as _value_shape
 from .registry import register_lowering
 
 
-_SUPPORTED_INPUT_DTYPES = {ScalarType.F16, ScalarType.F32, ScalarType.F64}
+_SUPPORTED_INPUT_DTYPES = {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}
 _SUPPORTED_OUTPUT_DTYPES = {
     ScalarType.U8,
     ScalarType.U16,

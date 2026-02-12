@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported elem_type 16 (BFLOAT16) for tensor 'like'.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Cast"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "27b5f9aa7a487c9509604b4b420f9fe2934f931770abdebfef8777cc0db74bbe"
 }

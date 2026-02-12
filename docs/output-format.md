@@ -192,13 +192,14 @@ ONNX dtypes are currently unsupported.
 Notes:
 
 - Fixed-width integer types use `<stdint.h>` (for example, `int32_t`).
+- `bfloat16` uses `__bf16`; support depends on the target compiler/toolchain.
 - `float16` uses C's `_Float16` type; support depends on the target compiler.
 - `string` tensors are represented as fixed-size `'\0'`-terminated C strings
   (`char[EMX_STRING_MAX_LEN]` per element).
 
 | ONNX dtype name | C type in generated code |
 | --- | --- |
-| bfloat16 | not supported |
+| bfloat16 | `__bf16` |
 | float16 | `_Float16` |
 | float | `float` |
 | double | `double` |
