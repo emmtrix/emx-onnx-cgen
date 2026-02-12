@@ -422,9 +422,9 @@ class CEmitter:
                 if self._fp32_accumulation_strategy == "simple"
                 else ScalarType.F64
             )
-        if dtype == ScalarType.F16:
+        if dtype in {ScalarType.F16, ScalarType.BF16}:
             return (
-                ScalarType.F16
+                dtype
                 if self._fp16_accumulation_strategy == "simple"
                 else ScalarType.F32
             )
@@ -2313,7 +2313,7 @@ class CEmitter:
             ScalarFunction.ISPOSINF,
         }
         if function in {ScalarFunction.MAXIMUM, ScalarFunction.MINIMUM}:
-            if dtype in {ScalarType.F32, ScalarType.F64}:
+            if dtype in {ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
                 scalar_function = (
                     ScalarFunction.FMAX
                     if function == ScalarFunction.MAXIMUM
@@ -11414,7 +11414,7 @@ class CEmitter:
             loop_vars = self._loop_vars(loop_shape)
             constant_values = testbench_inputs.get(name)
             if constant_values is None:
-                if dtype in {ScalarType.F16, ScalarType.F32}:
+                if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32}:
                     rng_requires_u64 = True
                     rng_requires_float = True
                 elif dtype == ScalarType.F64:
@@ -11428,7 +11428,7 @@ class CEmitter:
                 else:
                     rng_requires_u64 = True
                     rng_requires_i64 = True
-            if dtype in {ScalarType.F16, ScalarType.F32}:
+            if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32}:
                 random_expr = "rng_next_float()"
             elif dtype == ScalarType.F64:
                 random_expr = "rng_next_double()"
@@ -11528,7 +11528,7 @@ class CEmitter:
         if not testbench_inputs:
             return False
         dtype_map = dict(zip(model.input_names, model.input_dtypes))
-        float_dtypes = {ScalarType.F16, ScalarType.F32, ScalarType.F64}
+        float_dtypes = {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}
         for name, values in testbench_inputs.items():
             if dtype_map.get(name) not in float_dtypes:
                 continue
@@ -11740,6 +11740,10 @@ class CEmitter:
         return f"(_Float16){CEmitter._format_float(value)}"
 
     @staticmethod
+    def _format_bfloat16(value: float) -> str:
+        return f"(__bf16){CEmitter._format_float(value)}"
+
+    @staticmethod
     def _format_double(value: float) -> str:
         if math.isnan(value):
             return "NAN"
@@ -11798,6 +11802,8 @@ class CEmitter:
             return CEmitter._format_double(value)
         if dtype == ScalarType.F16:
             return CEmitter._format_float16(value)
+        if dtype == ScalarType.BF16:
+            return CEmitter._format_bfloat16(value)
         return CEmitter._format_float(value)
 
     @staticmethod
@@ -11841,6 +11847,8 @@ class CEmitter:
     def _format_literal(dtype: ScalarType, value: float | int | bool) -> str:
         if dtype == ScalarType.F16:
             return CEmitter._format_float16(float(value))
+        if dtype == ScalarType.BF16:
+            return CEmitter._format_bfloat16(float(value))
         if dtype == ScalarType.F32:
             return CEmitter._format_float(float(value))
         if dtype == ScalarType.F64:
@@ -11868,6 +11876,8 @@ class CEmitter:
     def _format_value(self, value: float | int | bool, dtype: ScalarType) -> str:
         if dtype == ScalarType.F16:
             return self._format_float16(float(value))
+        if dtype == ScalarType.BF16:
+            return self._format_bfloat16(float(value))
         if dtype == ScalarType.F32:
             return self._format_float(float(value))
         if dtype == ScalarType.F64:
@@ -11904,6 +11914,11 @@ class CEmitter:
             if formatted == "NAN" or formatted.endswith("INFINITY"):
                 return f"(_Float16){formatted}"
             return f"(_Float16){formatted}f"
+        if dtype == ScalarType.BF16:
+            formatted = self._format_float32_hex(float(value))
+            if formatted == "NAN" or formatted.endswith("INFINITY"):
+                return f"(__bf16){formatted}"
+            return f"(__bf16){formatted}f"
         if dtype == ScalarType.F32:
             formatted = self._format_float32_hex(float(value))
             if formatted == "NAN" or formatted.endswith("INFINITY"):
@@ -12029,7 +12044,7 @@ class CEmitter:
 
     @staticmethod
     def _print_format(dtype: ScalarType) -> str:
-        if dtype == ScalarType.F16:
+        if dtype in {ScalarType.F16, ScalarType.BF16}:
             return '\\"%a\\"'
         if dtype == ScalarType.F32:
             return '\\"%a\\"'

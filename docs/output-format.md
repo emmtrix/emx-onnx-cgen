@@ -192,38 +192,39 @@ ONNX dtypes are currently unsupported.
 Notes:
 
 - Fixed-width integer types use `<stdint.h>` (for example, `int32_t`).
+- `bfloat16` uses `__bf16`; support depends on the target compiler/toolchain.
 - `float16` uses C's `_Float16` type; support depends on the target compiler.
 - `string` tensors are represented as fixed-size `'\0'`-terminated C strings
   (`char[EMX_STRING_MAX_LEN]` per element).
 
-| ONNX dtype (TensorProto) | ONNX dtype name | C type in generated code |
-| --- | --- | --- |
-| `BFLOAT16` | `bfloat16` | not supported |
-| `FLOAT16` | `float16` | `_Float16` |
-| `FLOAT` | `float` | `float` |
-| `DOUBLE` | `double` | `double` |
-| `FLOAT8E4M3FN` | `float8e4m3fn` | not supported |
-| `FLOAT8E4M3FNUZ` | `float8e4m3fnuz` | not supported |
-| `FLOAT8E5M2` | `float8e5m2` | not supported |
-| `FLOAT8E5M2FNUZ` | `float8e5m2fnuz` | not supported |
-| `FLOAT8E8M0` | `float8e8m0` | not supported |
-| `FLOAT4E2M1` | `float4e2m1` | not supported |
-| `INT2` | `int2` | not supported |
-| `INT4` | `int4` | not supported |
-| `INT8` | `int8` | `int8_t` |
-| `INT16` | `int16` | `int16_t` |
-| `INT32` | `int32` | `int32_t` |
-| `INT64` | `int64` | `int64_t` |
-| `UINT2` | `uint2` | not supported |
-| `UINT4` | `uint4` | not supported |
-| `UINT8` | `uint8` | `uint8_t` |
-| `UINT16` | `uint16` | `uint16_t` |
-| `UINT32` | `uint32` | `uint32_t` |
-| `UINT64` | `uint64` | `uint64_t` |
-| `BOOL` | `bool` | `bool` |
-| `STRING` | `string` | `char[EMX_STRING_MAX_LEN]` |
-| `COMPLEX64` | `complex64` | not supported |
-| `COMPLEX128` | `complex128` | not supported |
+| ONNX dtype name | C type in generated code |
+| --- | --- |
+| bfloat16 | `__bf16` |
+| float16 | `_Float16` |
+| float | `float` |
+| double | `double` |
+| float8e4m3fn | not supported |
+| float8e4m3fnuz | not supported |
+| float8e5m2 | not supported |
+| float8e5m2fnuz | not supported |
+| float8e8m0 | not supported |
+| float4e2m1 | not supported |
+| int2 | not supported |
+| int4 | not supported |
+| int8 | `int8_t` |
+| int16 | `int16_t` |
+| int32 | `int32_t` |
+| int64 | `int64_t` |
+| uint2 | not supported |
+| uint4 | not supported |
+| uint8 | `uint8_t` |
+| uint16 | `uint16_t` |
+| uint32 | `uint32_t` |
+| uint64 | `uint64_t` |
+| bool | `bool` |
+| string | `char[EMX_STRING_MAX_LEN]` |
+| complex64 | not supported |
+| complex128 | not supported |
 
 ### ONNX value types
 

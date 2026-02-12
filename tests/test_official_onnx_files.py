@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from typing import Any, Callable
 
@@ -65,6 +67,22 @@ def _official_data_root() -> Path:
     return _repo_root() / "onnx-org" / "onnx" / "backend" / "test" / "data"
 
 
+@cache
+def _official_onnx_repo_paths_set() -> frozenset[str]:
+    return frozenset(_official_onnx_file_paths())
+
+
+@cache
+def _missing_official_onnx_paths() -> tuple[str, ...]:
+    repo_root = _repo_root()
+    missing = [
+        path
+        for path in _official_onnx_repo_paths_set()
+        if not (repo_root / path).exists()
+    ]
+    return tuple(sorted(missing))
+
+
 def _normalize_official_path(path: str) -> str:
     repo_root = _repo_root()
     candidate = repo_root / path
@@ -93,13 +111,14 @@ def _list_expectation_repo_paths(
     return repo_relative_paths[:ONNX_FILE_LIMIT]
 
 
-def _official_onnx_file_paths() -> list[str]:
+@cache
+def _official_onnx_file_paths() -> tuple[str, ...]:
     if os.getenv("UPDATE_REFS"):
-        return [
+        return tuple(
             _normalize_official_path(path)
             for path in _collect_onnx_files(_official_data_root())
-        ]
-    return [
+        )
+    return tuple(
         _normalize_official_path(path)
         for path in _list_expectation_repo_paths(
             EXPECTED_ERRORS_ROOT,
@@ -107,16 +126,17 @@ def _official_onnx_file_paths() -> list[str]:
                 OFFICIAL_ONNX_PREFIX
             ),
         )
-    ]
+    )
 
 
-def _local_onnx_file_paths() -> list[str]:
+@cache
+def _local_onnx_file_paths() -> tuple[str, ...]:
     if os.getenv("UPDATE_REFS"):
-        return _collect_onnx_files(LOCAL_ONNX_DATA_ROOT)
+        return tuple(_collect_onnx_files(LOCAL_ONNX_DATA_ROOT))
     repo_relative_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(
         _repo_root()
     ).as_posix()
-    return [
+    return tuple(
         Path(path).relative_to(repo_relative_prefix).as_posix()
         for path in _list_expectation_repo_paths(
             EXPECTED_ERRORS_ROOT,
@@ -124,7 +144,7 @@ def _local_onnx_file_paths() -> list[str]:
                 LOCAL_ONNX_PREFIX
             ),
         )
-    ]
+    )
 
 
 def _encode_repo_relative_path(repo_relative_path: str) -> str:
@@ -285,23 +305,17 @@ def _maybe_init_onnx2c_org() -> None:
 def _ensure_official_onnx_files_present(data_root: Path) -> None:
     if not data_root.exists():
         _maybe_init_onnx_org()
+        _missing_official_onnx_paths.cache_clear()
     if not data_root.exists():
         pytest.skip(
             "onnx-org test data is unavailable. Initialize the onnx-org submodule "
             "and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
         )
-    missing = [
-        path
-        for path in _official_onnx_file_paths()
-        if not (_repo_root() / path).exists()
-    ]
+    missing = _missing_official_onnx_paths()
     if missing:
         _maybe_init_onnx_org()
-        missing = [
-            path
-            for path in _official_onnx_file_paths()
-            if not (_repo_root() / path).exists()
-        ]
+        _missing_official_onnx_paths.cache_clear()
+        missing = _missing_official_onnx_paths()
         if not missing:
             return
         preview = ", ".join(missing[:5])

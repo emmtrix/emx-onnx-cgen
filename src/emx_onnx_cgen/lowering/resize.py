@@ -246,7 +246,7 @@ def _resolve_scales(
             graph,
             inputs.scales,
             node,
-            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
+            {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
         if scale_len not in {len(axes), rank}:
             raise UnsupportedOpError("Resize scales length mismatch")
@@ -375,7 +375,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
             graph,
             inputs.roi,
             node,
-            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
+            {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
         if roi_len not in {2 * rank, 2 * len(axes)}:
             raise UnsupportedOpError("Resize roi length mismatch")
@@ -386,7 +386,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
             graph,
             inputs.scales,
             node,
-            {ScalarType.F16, ScalarType.F32, ScalarType.F64},
+            {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64},
         )
     if inputs.sizes:
         _validate_tensor_1d(graph, inputs.sizes, node, {ScalarType.I64, ScalarType.I32})

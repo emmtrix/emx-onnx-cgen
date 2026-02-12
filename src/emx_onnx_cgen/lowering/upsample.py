@@ -40,7 +40,7 @@ def _load_initializer_values(
         ScalarType.F64,
     }:
         raise UnsupportedOpError(
-            "Upsample scales initializer must be float16/float32/float64"
+            "Upsample scales initializer must be bfloat16/float16/float32/float64"
         )
     data = initializer.data.reshape(-1)
     return tuple(data.tolist())
@@ -89,9 +89,9 @@ def lower_upsample(graph: Graph, node: Node) -> ResizeOp:
             raise UnsupportedOpError("Upsample expects scales to be 1D")
         if scales_shape[0] != rank:
             raise UnsupportedOpError("Upsample scales length mismatch")
-        if value_dtype(graph, scales_input, node) not in {ScalarType.F16, ScalarType.F32, ScalarType.F64}:
+        if value_dtype(graph, scales_input, node) not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
             raise UnsupportedOpError(
-                "Upsample expects scales input to be float16/float32/float64"
+                "Upsample expects scales input to be bfloat16/float16/float32/float64"
             )
         values = _load_initializer_values(graph, scales_input, node)
         if values is None:
