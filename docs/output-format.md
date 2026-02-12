@@ -196,9 +196,6 @@ Notes:
 - `float16` uses C's `_Float16` type; support depends on the target compiler.
 - `string` tensors are represented as fixed-size `'\0'`-terminated C strings
   (`char[EMX_STRING_MAX_LEN]` per element).
-- Some official ONNX `FLOAT -> BFLOAT16` verification fixtures currently fail with
-  `expected number, got str` because BF16 values are emitted as non-JSON numeric literals
-  by the generated testbench output path.
 
 | ONNX dtype name | C type in generated code |
 | --- | --- |
