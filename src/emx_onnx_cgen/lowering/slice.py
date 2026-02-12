@@ -38,14 +38,14 @@ class SliceInputs:
     ends_input: str | None
     axes_input: str | None
     steps_input: str | None
-    starts_shape: tuple[int, ...] | None
-    ends_shape: tuple[int, ...] | None
-    axes_shape: tuple[int, ...] | None
-    steps_shape: tuple[int, ...] | None
-    starts_dtype: ScalarType | None
-    ends_dtype: ScalarType | None
-    axes_dtype: ScalarType | None
-    steps_dtype: ScalarType | None
+    starts_shape: tuple[int, ...] | None = None
+    ends_shape: tuple[int, ...] | None = None
+    axes_shape: tuple[int, ...] | None = None
+    steps_shape: tuple[int, ...] | None = None
+    starts_dtype: ScalarType | None = None
+    ends_dtype: ScalarType | None = None
+    axes_dtype: ScalarType | None = None
+    steps_dtype: ScalarType | None = None
 
 
 def _find_initializer(graph: Graph, name: str) -> Initializer | None:
@@ -122,14 +122,6 @@ def _resolve_inputs(
             ends_input=None,
             axes_input=None,
             steps_input=None,
-            starts_shape=None,
-            ends_shape=None,
-            axes_shape=None,
-            steps_shape=None,
-            starts_dtype=None,
-            ends_dtype=None,
-            axes_dtype=None,
-            steps_dtype=None,
         )
     if len(node.inputs) < 3:
         raise UnsupportedOpError(
@@ -161,14 +153,6 @@ def _resolve_inputs(
             ends_input=None,
             axes_input=None,
             steps_input=None,
-            starts_shape=None,
-            ends_shape=None,
-            axes_shape=None,
-            steps_shape=None,
-            starts_dtype=None,
-            ends_dtype=None,
-            axes_dtype=None,
-            steps_dtype=None,
         )
     if starts is None or ends is None:
         starts_shape, starts_dtype = _validate_int_input(
@@ -369,8 +353,6 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         return SliceOp(
             input0=node.inputs[0],
             output=node.outputs[0],
-            input_shape=input_shape,
-            output_shape=computed_output_shape,
             starts=normalized_starts,
             steps=normalized_steps,
             axes=None,
@@ -378,16 +360,6 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
             ends_input=None,
             axes_input=None,
             steps_input=None,
-            starts_shape=None,
-            ends_shape=None,
-            axes_shape=None,
-            steps_shape=None,
-            starts_dtype=None,
-            ends_dtype=None,
-            axes_dtype=None,
-            steps_dtype=None,
-            dtype=input_dtype,
-            input_dtype=input_dtype,
         )
     if output_shape and len(output_shape) != len(input_shape):
         raise ShapeInferenceError(
@@ -413,8 +385,6 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
     return SliceOp(
         input0=node.inputs[0],
         output=node.outputs[0],
-        input_shape=input_shape,
-        output_shape=output_shape,
         starts=None,
         steps=None,
         axes=None,
@@ -422,14 +392,4 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         ends_input=inputs.ends_input,
         axes_input=inputs.axes_input,
         steps_input=inputs.steps_input,
-        starts_shape=inputs.starts_shape,
-        ends_shape=inputs.ends_shape,
-        axes_shape=inputs.axes_shape,
-        steps_shape=inputs.steps_shape,
-        starts_dtype=inputs.starts_dtype,
-        ends_dtype=inputs.ends_dtype,
-        axes_dtype=inputs.axes_dtype,
-        steps_dtype=inputs.steps_dtype,
-        dtype=input_dtype,
-        input_dtype=input_dtype,
     )

@@ -99,12 +99,6 @@ def lower_tensor_scatter(graph: Graph, node: Node) -> TensorScatterOp:
         update=update_name,
         write_indices=write_indices_name,
         output=output_name,
-        past_cache_shape=past_cache_shape,
-        update_shape=update_shape,
-        output_shape=output_shape,
-        write_indices_shape=write_indices_shape,
         axis=axis,
         mode=mode,
-        dtype=dtype,
-        write_indices_dtype=write_indices_dtype,
     )

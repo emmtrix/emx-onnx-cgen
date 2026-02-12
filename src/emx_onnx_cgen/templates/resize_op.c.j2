@@ -4,7 +4,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     double scales[{{ rank }}] EMX_UNUSED;
 {% if roi_input %}
     double roi[{{ rank * 2 }}] EMX_UNUSED;
-{% if roi_axes %}
+{% if roi_axis_map %}
     for (idx_t r = 0; r < {{ rank }}; ++r) {
         roi[r] = 0.0;
         roi[r + {{ rank }}] = 1.0;
@@ -27,7 +27,7 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     };
 {% endif %}
 {% if scales_input %}
-{% if scales_axes %}
+{% if scales_axis_map %}
     for (idx_t r = 0; r < {{ rank }}; ++r) {
         scales[r] = 1.0;
     }
