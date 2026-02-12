@@ -86,9 +86,14 @@ def _missing_official_onnx_paths() -> tuple[str, ...]:
 
 
 def _normalize_official_path(path: str) -> str:
-    if path.startswith(OFFICIAL_ONNX_PREFIX):
-        return path
-    return f"{OFFICIAL_ONNX_PREFIX}{path}"
+    normalized = Path(path).as_posix()
+    if normalized.startswith(OFFICIAL_ONNX_PREFIX):
+        return normalized
+    if normalized.startswith("onnx/backend/test/data/"):
+        return f"onnx-org/{normalized}"
+    if normalized.startswith("onnx-org/"):
+        return normalized
+    return f"{OFFICIAL_ONNX_PREFIX}{normalized.lstrip('./')}"
 
 
 def _list_expectation_repo_paths(
@@ -227,8 +232,6 @@ def _load_expectation_for_repo_relative(
     )
 
 
-_load_expectation_for_repo_relative = cache(_load_expectation_for_repo_relative)
-
 
 def _write_expectation_file(
     expectation: OnnxFileExpectation,
@@ -340,6 +343,7 @@ def _ensure_local_onnx_files_present(data_root: Path) -> None:
         )
 
 
+@cache
 def _find_test_data_dir(model_path: Path) -> Path | None:
     test_data_dir = model_path.parent / "test_data_set_0"
     if not test_data_dir.exists():
@@ -348,8 +352,6 @@ def _find_test_data_dir(model_path: Path) -> Path | None:
         return None
     return test_data_dir
 
-
-_find_test_data_dir = cache(_find_test_data_dir)
 
 
 @pytest.fixture(scope="module")
