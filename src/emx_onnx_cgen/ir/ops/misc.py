@@ -26,6 +26,7 @@ def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
         stride *= dim
     return tuple(reversed(strides))
 
+
 def _shape_product(shape: tuple[int, ...]) -> int:
     product = 1
     for dim in shape:
@@ -133,6 +134,17 @@ class ScatterNDOp(RenderableOpBase):
     updates: str
     output: str
     reduction: str
+
+
+@dataclass(frozen=True)
+class ScatterOp(RenderableOpBase):
+    __io_inputs__ = ("data", "indices", "updates")
+    __io_outputs__ = ("output",)
+    data: str
+    indices: str
+    updates: str
+    output: str
+    axis: int
 
 
 @dataclass(frozen=True)
