@@ -8,7 +8,6 @@ from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
 from ..op_base import (
-    BroadcastingOpBase,
     EmitContext,
     Emitter,
     GatherLikeOpBase,
@@ -828,3 +827,14 @@ class SplitOp(RenderableOpBase):
     outputs: tuple[str, ...]
     axis: int
     split_sizes: tuple[int, ...]
+
+
+@dataclass(frozen=True)
+class ReverseSequenceOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "sequence_lens")
+    __io_outputs__ = ("output",)
+    input0: str
+    sequence_lens: str
+    output: str
+    batch_axis: int
+    time_axis: int

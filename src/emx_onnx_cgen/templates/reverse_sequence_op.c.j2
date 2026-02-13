@@ -1,0 +1,40 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ seq_c_type }} *seq_data = (const {{ seq_c_type }} *){{ sequence_lens }};
+    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
+    const idx_t dims[{{ rank }}] = { {% for dim in dims %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+
+    idx_t strides[{{ rank }}];
+    strides[{{ rank - 1 }}] = 1;
+    for (int i = {{ rank - 2 }}; i >= 0; --i) {
+        strides[i] = strides[i + 1] * dims[i + 1];
+    }
+
+    idx_t total = 1;
+    for (int i = 0; i < {{ rank }}; ++i) {
+        total *= dims[i];
+    }
+
+    const idx_t time_dim = dims[{{ time_axis }}];
+    const idx_t batch_dim = dims[{{ batch_axis }}];
+    const idx_t time_stride = strides[{{ time_axis }}];
+    const idx_t batch_stride = strides[{{ batch_axis }}];
+
+    for (idx_t flat = 0; flat < total; ++flat) {
+        const idx_t batch_index = (flat / batch_stride) % batch_dim;
+        const idx_t time_index = (flat / time_stride) % time_dim;
+        idx_t seq_len = (idx_t)seq_data[batch_index];
+        if (seq_len < 0) {
+            seq_len = 0;
+        }
+        if (seq_len > time_dim) {
+            seq_len = time_dim;
+        }
+        idx_t source_time_index = time_index;
+        if (time_index < seq_len) {
+            source_time_index = seq_len - 1 - time_index;
+        }
+        const idx_t source_flat = flat + (source_time_index - time_index) * time_stride;
+        output_data[flat] = input_data[source_flat];
+    }
+}

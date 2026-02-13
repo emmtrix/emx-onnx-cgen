@@ -143,7 +143,7 @@ Supported operators: 156 / 201
 | Relu | ✅ |
 | Reshape | ✅ |
 | Resize | ✅ |
-| ReverseSequence | ❌ |
+| ReverseSequence | ✅ |
 | RoiAlign | ❌ |
 | RotaryEmbedding | ✅ |
 | Round | ✅ |

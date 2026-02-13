@@ -84,6 +84,7 @@ from ..ir.ops import (
     QLinearMulOp,
     QLinearMatMulOp,
     RangeOp,
+    ReverseSequenceOp,
     ReduceOp,
     ReshapeOp,
     ResizeOp,
@@ -1606,6 +1607,14 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, ReverseSequenceOp):
+            return ReverseSequenceOp(
+                input0=name_map.get(op.input0, op.input0),
+                sequence_lens=name_map.get(op.sequence_lens, op.sequence_lens),
+                output=name_map.get(op.output, op.output),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+            )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
@@ -1799,6 +1808,7 @@ class CEmitter:
                     "string_normalizer_op.c.j2"
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
+                "reverse_sequence": self._env.get_template("reverse_sequence_op.c.j2"),
             }
             if emit_testbench:
                 templates["testbench"] = self._env.get_template("testbench.c.j2")
@@ -4181,6 +4191,14 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, ReverseSequenceOp):
+            return ReverseSequenceOp(
+                input0=temp_map.get(op.input0, op.input0),
+                sequence_lens=temp_map.get(op.sequence_lens, op.sequence_lens),
+                output=temp_map.get(op.output, op.output),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4509,6 +4527,7 @@ class CEmitter:
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
             split_template=templates["split"],
+            reverse_sequence_template=templates["reverse_sequence"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
             tensor_dim_names=state.tensor_dim_names,
@@ -5013,6 +5032,7 @@ class CEmitter:
         tfidf_vectorizer_template,
         string_normalizer_template,
         split_template,
+        reverse_sequence_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
         tensor_dim_names: Mapping[str, Mapping[int, str]] | None = None,
@@ -9409,6 +9429,52 @@ class CEmitter:
                 case_mode=case_mode,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ReverseSequenceOp):
+            input_shape = self._ctx_shape(op.input0)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("sequence_lens", op.sequence_lens),
+                    ("output", op.output),
+                ]
+            )
+            seq_dtype = self._ctx_dtype(op.sequence_lens)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.output)
+            )
+            sequence_lens_suffix = self._param_array_suffix(
+                (input_shape[op.batch_axis],)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (
+                        params["sequence_lens"],
+                        seq_dtype.c_type,
+                        sequence_lens_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = reverse_sequence_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                sequence_lens=params["sequence_lens"],
+                output=params["output"],
+                rank=len(input_shape),
+                dims=CEmitter._shape_dim_exprs(input_shape, _dim_names_for(op.input0)),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+                seq_c_type=seq_dtype.c_type,
+                c_type=c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SplitOp):
             input_shape = self._ctx_shape(op.input0)
             output_shapes = tuple(self._ctx_shape(name) for name in op.outputs)
@@ -11071,6 +11137,10 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, SplitOp):
+            return self._ctx_shape(op.outputs[0])
+        if isinstance(op, ReverseSequenceOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -11200,6 +11270,7 @@ class CEmitter:
                 BernoulliOp,
                 EyeLikeOp,
                 RangeOp,
+                ReverseSequenceOp,
                 HammingWindowOp,
                 GridSampleOp,
                 ResizeOp,
