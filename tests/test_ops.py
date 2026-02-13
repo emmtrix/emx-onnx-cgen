@@ -33,6 +33,7 @@ from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
+from emx_onnx_cgen.lowering.matmul_integer import lower_matmul_integer
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.depth_space import (
     lower_depth_to_space,
@@ -2023,6 +2024,44 @@ def _make_convinteger_model(*, per_channel_zero_point: bool = False) -> onnx.Mod
     return model
 
 
+def _make_matmulinteger_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
+    weight_values = np.arange(12, dtype=np.uint8).reshape(3, 4)
+    weight_tensor = helper.make_tensor(
+        "in1",
+        TensorProto.UINT8,
+        dims=[3, 4],
+        vals=weight_values.flatten().tolist(),
+    )
+    a_zero_point = helper.make_tensor(
+        "a_zero_point", TensorProto.UINT8, dims=[], vals=[1]
+    )
+    b_zero_point = helper.make_tensor(
+        "b_zero_point", TensorProto.UINT8, dims=[], vals=[2]
+    )
+    output = helper.make_tensor_value_info("out", TensorProto.INT32, [2, 4])
+    node = helper.make_node(
+        "MatMulInteger",
+        inputs=["in0", "in1", "a_zero_point", "b_zero_point"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "matmulinteger_graph",
+        [input_info],
+        [output],
+        initializer=[weight_tensor, a_zero_point, b_zero_point],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 10)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_conv_transpose_model() -> onnx.ModelProto:
     input_shape = [1, 1, 3, 3]
     weight_shape = [1, 1, 3, 3]
@@ -3788,6 +3827,18 @@ def test_lower_convinteger_per_channel_zero_point() -> None:
     assert op.weight_dtype == ScalarType.U8
     assert op.w_zero_point_per_channel is True
     assert op.out_spatial == (4, 4)
+
+
+def test_lower_matmulinteger_with_zero_points() -> None:
+    model = _make_matmulinteger_model()
+    graph = import_onnx(model)
+    op = lower_matmul_integer(graph, graph.nodes[0])
+    assert op.dtype == ScalarType.I32
+    assert op.input0_dtype == ScalarType.U8
+    assert op.input1_dtype == ScalarType.U8
+    assert op.output_shape == (2, 4)
+    assert op.input0_zero_shape == ()
+    assert op.input1_zero_shape == ()
 
 
 def test_lower_pad_dynamic_axes_input() -> None:

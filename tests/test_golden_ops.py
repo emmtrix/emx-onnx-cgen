@@ -105,6 +105,54 @@ def _make_matmul_model() -> onnx.ModelProto:
     )
 
 
+def _make_matmulinteger_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
+    input1_values = [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+    ]
+    input1 = helper.make_tensor(
+        "in1", TensorProto.UINT8, dims=[3, 4], vals=input1_values
+    )
+    a_zero_point = helper.make_tensor(
+        "a_zero_point", TensorProto.UINT8, dims=[], vals=[1]
+    )
+    b_zero_point = helper.make_tensor(
+        "b_zero_point", TensorProto.UINT8, dims=[], vals=[2]
+    )
+    output = helper.make_tensor_value_info("out", TensorProto.INT32, [2, 4])
+    node = helper.make_node(
+        "MatMulInteger",
+        inputs=["in0", "in1", "a_zero_point", "b_zero_point"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "matmulinteger_graph",
+        [input_info],
+        [output],
+        initializer=[input1, a_zero_point, b_zero_point],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 10)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_optional_has_element_model() -> onnx.ModelProto:
     elem_type = helper.make_tensor_type_proto(TensorProto.FLOAT, [4])
     optional_type = helper.make_optional_type_proto(elem_type)
@@ -427,6 +475,7 @@ OP_GOLDEN_CASES = [
     ("clip", "clip", _make_clip_model),
     ("cast", "cast", _make_cast_model),
     ("matmul", "matmul", _make_matmul_model),
+    ("matmulinteger", "matmul_integer", _make_matmulinteger_model),
     ("optionalhaselement", "optional_has_element", _make_optional_has_element_model),
     ("gemm", "gemm", _make_gemm_model),
     ("attention", "attention", _make_attention_model),

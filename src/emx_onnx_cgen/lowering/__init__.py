@@ -45,6 +45,7 @@ _LOWERING_MODULES = [
     "lrn",
     "lstm",
     "matmul",
+    "matmul_integer",
     "maxpool",
     "mean_variance_normalization",
     "negative_log_likelihood_loss",
