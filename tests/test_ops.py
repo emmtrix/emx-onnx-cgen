@@ -34,7 +34,11 @@ from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
-from emx_onnx_cgen.lowering.depth_space import lower_depth_to_space, lower_space_to_depth
+from emx_onnx_cgen.lowering.depth_space import (
+    lower_depth_to_space,
+    lower_space_to_depth,
+)
+from emx_onnx_cgen.lowering.scatter import lower_scatter
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
@@ -293,6 +297,48 @@ def _make_expand_model(
         [input_info],
         [output],
         initializer=[shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_scatter_model(
+    *,
+    data_shape: list[int],
+    indices_shape: list[int],
+    axis: int,
+    dtype: int,
+    opset: int = 10,
+) -> onnx.ModelProto:
+    data_info = helper.make_tensor_value_info("data", dtype, data_shape)
+    updates_info = helper.make_tensor_value_info("updates", dtype, indices_shape)
+    output = helper.make_tensor_value_info("output", dtype, data_shape)
+    axis_dim = data_shape[axis]
+    index_values = np.arange(np.prod(indices_shape), dtype=np.int64) % axis_dim
+    indices_tensor = helper.make_tensor(
+        "indices",
+        TensorProto.INT64,
+        dims=indices_shape,
+        vals=index_values.tolist(),
+    )
+    node = helper.make_node(
+        "Scatter",
+        inputs=["data", "indices", "updates"],
+        outputs=[output.name],
+        axis=axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "scatter_graph",
+        [data_info, updates_info],
+        [output],
+        initializer=[indices_tensor],
     )
     model = helper.make_model(
         graph,
@@ -3696,6 +3742,22 @@ def test_lower_pad_dynamic_axes_input() -> None:
     assert op.pads_end is None
 
 
+def test_lower_scatter_shapes() -> None:
+    model = _make_scatter_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    graph = import_onnx(model)
+    op = lower_scatter(graph, graph.nodes[0])
+    assert op.data == "data"
+    assert op.indices == "indices"
+    assert op.updates == "updates"
+    assert op.output == "output"
+    assert op.axis == 1
+
+
 def test_lower_scatternd_shapes() -> None:
     indices = np.array([[0, 1], [1, 2]], dtype=np.int64)
     model = _make_scatternd_model(
@@ -4383,6 +4445,16 @@ def test_gathernd_matches_onnxruntime() -> None:
         indices_as_initializer=True,
     )
     _run_ort_compare(model)
+
+
+def test_scatter_matches_onnxruntime() -> None:
+    model = _make_scatter_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    _run_testbench_compare(model)
 
 
 def test_scatternd_matches_onnxruntime() -> None:
