@@ -45,6 +45,7 @@ _LOWERING_MODULES = [
     "lrn",
     "lstm",
     "matmul",
+    "matmul_integer",
     "maxpool",
     "mean_variance_normalization",
     "negative_log_likelihood_loss",
@@ -87,5 +88,6 @@ _LOWERING_MODULES = [
 def load_lowering_registry() -> None:
     for module_name in _LOWERING_MODULES:
         importlib.import_module(f"{__name__}.{module_name}")
+
 
 __all__ = ["get_lowering", "register_lowering", "load_lowering_registry"]
