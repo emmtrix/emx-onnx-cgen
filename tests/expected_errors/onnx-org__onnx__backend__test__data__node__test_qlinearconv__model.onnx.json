@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op QLinearConv",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_qlinearconv model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "QLinearConv"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "7653a23ce90b169271be70d84089360f670236fd7aa9787b2a3586b83f32ad7a"
 }

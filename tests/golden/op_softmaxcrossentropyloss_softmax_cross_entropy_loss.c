@@ -43,7 +43,7 @@
 #define EMX_STRING_MAX_LEN 256
 #endif
 
-static inline float ref_scalar_f32_fmax(float a, float b) {
+static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
@@ -74,7 +74,7 @@ static inline void node0_softmaxcrossentropyloss(const float input0[2][3], const
             float max_value = (float)input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
                 float value = (float)input_flat[base + c_idx * d];
-                max_value = ref_scalar_f32_fmax(max_value, value);
+                max_value = ref_scalar_f32_maximum(max_value, value);
             }
             float sum = 0.0f;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {

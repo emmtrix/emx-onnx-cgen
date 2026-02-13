@@ -67,7 +67,6 @@
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op MelWeightMatrix | 1 | 17 |
-| Unsupported op QLinearConv | 1 | 10 |
 
 ## Error frequency by opset
 
@@ -76,6 +75,7 @@
 | Out of tolerance | 9 | 1 |
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
+| Unsupported op MatMulInteger | 10 | 1 |
 | Unsupported op QLinearConv | 10 | 1 |
 | Unsupported op Unique | 11 | 6 |
 | Unsupported op Compress | 11 | 4 |

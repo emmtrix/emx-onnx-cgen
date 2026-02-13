@@ -121,7 +121,7 @@ Supported operators: 156 / 201
 | PRelu | ✅ |
 | Pad | ✅ |
 | Pow | ✅ |
-| QLinearConv | ❌ |
+| QLinearConv | ✅ |
 | QLinearMatMul | ✅ |
 | QuantizeLinear | ✅ |
 | RMSNormalization | ✅ |
