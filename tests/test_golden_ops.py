@@ -30,6 +30,7 @@ from test_ops import (
     _make_range_model,
     _make_reduce_model,
     _make_reshape_model,
+    _make_scatter_model,
     _make_resize_model,
     _make_rms_normalization_model,
     _make_shape_model,
@@ -47,18 +48,10 @@ from test_ops import (
 
 
 def _make_where_model() -> onnx.ModelProto:
-    condition = helper.make_tensor_value_info(
-        "condition", TensorProto.BOOL, [2, 3]
-    )
-    input_x = helper.make_tensor_value_info(
-        "x", TensorProto.FLOAT, [2, 3]
-    )
-    input_y = helper.make_tensor_value_info(
-        "y", TensorProto.FLOAT, [2, 3]
-    )
-    output = helper.make_tensor_value_info(
-        "out", TensorProto.FLOAT, [2, 3]
-    )
+    condition = helper.make_tensor_value_info("condition", TensorProto.BOOL, [2, 3])
+    input_x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2, 3])
+    input_y = helper.make_tensor_value_info("y", TensorProto.FLOAT, [2, 3])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2, 3])
     node = helper.make_node(
         "Where", inputs=["condition", "x", "y"], outputs=[output.name]
     )
@@ -76,9 +69,7 @@ def _make_where_model() -> onnx.ModelProto:
 
 
 def _make_clip_model() -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "input", TensorProto.FLOAT, [2, 3]
-    )
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3])
     min_info = helper.make_tensor_value_info("min", TensorProto.FLOAT, [])
     max_info = helper.make_tensor_value_info("max", TensorProto.FLOAT, [])
     output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [2, 3])
@@ -112,6 +103,54 @@ def _make_matmul_model() -> onnx.ModelProto:
         dtype=TensorProto.FLOAT,
         opset=13,
     )
+
+
+def _make_matmulinteger_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
+    input1_values = [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+    ]
+    input1 = helper.make_tensor(
+        "in1", TensorProto.UINT8, dims=[3, 4], vals=input1_values
+    )
+    a_zero_point = helper.make_tensor(
+        "a_zero_point", TensorProto.UINT8, dims=[], vals=[1]
+    )
+    b_zero_point = helper.make_tensor(
+        "b_zero_point", TensorProto.UINT8, dims=[], vals=[2]
+    )
+    output = helper.make_tensor_value_info("out", TensorProto.INT32, [2, 4])
+    node = helper.make_node(
+        "MatMulInteger",
+        inputs=["in0", "in1", "a_zero_point", "b_zero_point"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "matmulinteger_graph",
+        [input_info],
+        [output],
+        initializer=[input1, a_zero_point, b_zero_point],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 10)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
 
 
 def _make_optional_has_element_model() -> onnx.ModelProto:
@@ -165,12 +204,8 @@ def _make_attention_model() -> onnx.ModelProto:
 def _make_average_pool_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     output_shape = [1, 1, 2, 2]
-    input_info = helper.make_tensor_value_info(
-        "input", TensorProto.FLOAT, input_shape
-    )
-    output = helper.make_tensor_value_info(
-        "output", TensorProto.FLOAT, output_shape
-    )
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, output_shape)
     node = helper.make_node(
         "AveragePool",
         inputs=["input"],
@@ -178,9 +213,7 @@ def _make_average_pool_model() -> onnx.ModelProto:
         kernel_shape=[2, 2],
         strides=[2, 2],
     )
-    graph = helper.make_graph(
-        [node], "average_pool_graph", [input_info], [output]
-    )
+    graph = helper.make_graph([node], "average_pool_graph", [input_info], [output])
     model = helper.make_model(
         graph,
         producer_name="emx-onnx-cgen",
@@ -214,12 +247,8 @@ def _make_logsoftmax_model() -> onnx.ModelProto:
 
 
 def _make_negative_log_likelihood_loss_model() -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "input", TensorProto.FLOAT, [2, 3]
-    )
-    target_info = helper.make_tensor_value_info(
-        "target", TensorProto.INT64, [2]
-    )
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3])
+    target_info = helper.make_tensor_value_info("target", TensorProto.INT64, [2])
     output = helper.make_tensor_value_info("loss", TensorProto.FLOAT, [])
     node = helper.make_node(
         "NegativeLogLikelihoodLoss",
@@ -244,16 +273,10 @@ def _make_negative_log_likelihood_loss_model() -> onnx.ModelProto:
 
 
 def _make_softmax_cross_entropy_loss_model() -> onnx.ModelProto:
-    input_info = helper.make_tensor_value_info(
-        "scores", TensorProto.FLOAT, [2, 3]
-    )
-    target_info = helper.make_tensor_value_info(
-        "labels", TensorProto.INT64, [2]
-    )
+    input_info = helper.make_tensor_value_info("scores", TensorProto.FLOAT, [2, 3])
+    target_info = helper.make_tensor_value_info("labels", TensorProto.INT64, [2])
     output = helper.make_tensor_value_info("loss", TensorProto.FLOAT, [])
-    log_prob = helper.make_tensor_value_info(
-        "log_prob", TensorProto.FLOAT, [2, 3]
-    )
+    log_prob = helper.make_tensor_value_info("log_prob", TensorProto.FLOAT, [2, 3])
     node = helper.make_node(
         "SoftmaxCrossEntropyLoss",
         inputs=["scores", "labels"],
@@ -422,7 +445,9 @@ def _compile_and_assert_golden(
     assert_golden(generated, golden_path)
 
 
-def _make_test_case(model_fn: Callable[[], onnx.ModelProto], filename: str) -> Callable[[], None]:
+def _make_test_case(
+    model_fn: Callable[[], onnx.ModelProto], filename: str
+) -> Callable[[], None]:
     def _test() -> None:
         _compile_and_assert_golden(model_fn(), filename)
 
@@ -450,6 +475,7 @@ OP_GOLDEN_CASES = [
     ("clip", "clip", _make_clip_model),
     ("cast", "cast", _make_cast_model),
     ("matmul", "matmul", _make_matmul_model),
+    ("matmulinteger", "matmul_integer", _make_matmulinteger_model),
     ("optionalhaselement", "optional_has_element", _make_optional_has_element_model),
     ("gemm", "gemm", _make_gemm_model),
     ("attention", "attention", _make_attention_model),
@@ -482,9 +508,7 @@ OP_GOLDEN_CASES = [
     (
         "groupnormalization",
         "group_normalization",
-        lambda: _make_group_normalization_model(
-            input_shape=[1, 4, 2, 2], num_groups=2
-        ),
+        lambda: _make_group_normalization_model(input_shape=[1, 4, 2, 2], num_groups=2),
     ),
     (
         "layernormalization",
@@ -528,8 +552,13 @@ OP_GOLDEN_CASES = [
     (
         "gather",
         "gather",
-        lambda: _make_gather_model(
-            data_shape=[3, 2], indices_shape=[2], axis=0
+        lambda: _make_gather_model(data_shape=[3, 2], indices_shape=[2], axis=0),
+    ),
+    (
+        "scatter",
+        "scatter",
+        lambda: _make_scatter_model(
+            data_shape=[2, 3], indices_shape=[2, 3], axis=1, dtype=TensorProto.FLOAT
         ),
     ),
     ("transpose", "transpose", _make_transpose_model),
@@ -582,9 +611,7 @@ OP_GOLDEN_CASES = [
     (
         "cumsum",
         "cumsum",
-        lambda: _make_cumsum_model(
-            input_shape=[2, 3], axis=1, dtype=TensorProto.FLOAT
-        ),
+        lambda: _make_cumsum_model(input_shape=[2, 3], axis=1, dtype=TensorProto.FLOAT),
     ),
     (
         "range",

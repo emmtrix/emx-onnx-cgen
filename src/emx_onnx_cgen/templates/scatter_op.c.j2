@@ -1,0 +1,21 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in output_shape %}
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+    {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ data }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in output_shape %}
+}
+{% endfor %}
+
+{% for dim in updates_shape %}
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+idx_t scatter_index = {{ indices }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+if (scatter_index < 0) {
+    scatter_index += {{ axis_dim }};
+}
+{{ output }}{% for idx in output_indices %}[{{ idx }}]{% endfor %} = {{ updates }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in updates_shape %}
+}
+{% endfor %}
+}

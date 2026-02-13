@@ -69,6 +69,7 @@ from ..ir.ops import (
     LpPoolOp,
     LrnOp,
     LstmOp,
+    MatMulIntegerOp,
     MatMulOp,
     MaxPoolOp,
     MeanVarianceNormalizationOp,
@@ -85,11 +86,13 @@ from ..ir.ops import (
     QLinearMatMulOp,
     QLinearConvOp,
     RangeOp,
+    ReverseSequenceOp,
     ReduceOp,
     ReshapeOp,
     ResizeOp,
     RMSNormalizationOp,
     RotaryEmbeddingOp,
+    ScatterOp,
     ScatterNDOp,
     ShapeOp,
     SizeOp,
@@ -571,6 +574,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -646,6 +650,7 @@ class CEmitter:
         | GatherElementsOp
         | GatherOp
         | GatherNDOp
+        | ScatterOp
         | ScatterNDOp
         | TensorScatterOp
         | TransposeOp
@@ -821,6 +826,34 @@ class CEmitter:
                 input0_zero_shape=op.input0_zero_shape,
                 input1_zero_shape=op.input1_zero_shape,
                 output_zero_shape=op.output_zero_shape,
+            )
+        if isinstance(op, MatMulIntegerOp):
+            return MatMulIntegerOp(
+                input0=name_map.get(op.input0, op.input0),
+                input1=name_map.get(op.input1, op.input1),
+                input0_zero_point=self._map_optional_name(
+                    name_map, op.input0_zero_point
+                ),
+                input1_zero_point=self._map_optional_name(
+                    name_map, op.input1_zero_point
+                ),
+                output=name_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -1417,6 +1450,14 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 batch_dims=op.batch_dims,
             )
+        if isinstance(op, ScatterOp):
+            return ScatterOp(
+                data=name_map.get(op.data, op.data),
+                indices=name_map.get(op.indices, op.indices),
+                updates=name_map.get(op.updates, op.updates),
+                output=name_map.get(op.output, op.output),
+                axis=op.axis,
+            )
         if isinstance(op, ScatterNDOp):
             return ScatterNDOp(
                 data=name_map.get(op.data, op.data),
@@ -1680,6 +1721,14 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, ReverseSequenceOp):
+            return ReverseSequenceOp(
+                input0=name_map.get(op.input0, op.input0),
+                sequence_lens=name_map.get(op.sequence_lens, op.sequence_lens),
+                output=name_map.get(op.output, op.output),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+            )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
@@ -1792,6 +1841,7 @@ class CEmitter:
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
+                "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
@@ -1831,6 +1881,7 @@ class CEmitter:
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "gather": self._env.get_template("gather_op.c.j2"),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
+                "scatter": self._env.get_template("scatter_op.c.j2"),
                 "scatter_nd": self._env.get_template("scatter_nd_op.c.j2"),
                 "tensor_scatter": self._env.get_template("tensor_scatter_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
@@ -1873,6 +1924,7 @@ class CEmitter:
                     "string_normalizer_op.c.j2"
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
+                "reverse_sequence": self._env.get_template("reverse_sequence_op.c.j2"),
             }
             if emit_testbench:
                 templates["testbench"] = self._env.get_template("testbench.c.j2")
@@ -2488,6 +2540,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -2779,6 +2832,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -3234,6 +3288,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -3306,6 +3361,7 @@ class CEmitter:
         | GatherElementsOp
         | GatherOp
         | GatherNDOp
+        | ScatterOp
         | ScatterNDOp
         | TensorScatterOp
         | TransposeOp
@@ -3397,6 +3453,38 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 input1=temp_map.get(op.input1, op.input1),
                 output=temp_map.get(op.output, op.output),
+            )
+        if isinstance(op, MatMulIntegerOp):
+            return MatMulIntegerOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input1=temp_map.get(op.input1, op.input1),
+                input0_zero_point=(
+                    temp_map.get(op.input0_zero_point, op.input0_zero_point)
+                    if op.input0_zero_point is not None
+                    else None
+                ),
+                input1_zero_point=(
+                    temp_map.get(op.input1_zero_point, op.input1_zero_point)
+                    if op.input1_zero_point is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
             )
         if isinstance(op, EinsumOp):
             return EinsumOp(
@@ -4153,6 +4241,14 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 batch_dims=op.batch_dims,
             )
+        if isinstance(op, ScatterOp):
+            return ScatterOp(
+                data=temp_map.get(op.data, op.data),
+                indices=temp_map.get(op.indices, op.indices),
+                updates=temp_map.get(op.updates, op.updates),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+            )
         if isinstance(op, ScatterNDOp):
             return ScatterNDOp(
                 data=temp_map.get(op.data, op.data),
@@ -4285,6 +4381,14 @@ class CEmitter:
                 outputs=tuple(temp_map.get(name, name) for name in op.outputs),
                 axis=op.axis,
                 split_sizes=op.split_sizes,
+            )
+        if isinstance(op, ReverseSequenceOp):
+            return ReverseSequenceOp(
+                input0=temp_map.get(op.input0, op.input0),
+                sequence_lens=temp_map.get(op.sequence_lens, op.sequence_lens),
+                output=temp_map.get(op.output, op.output),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
             )
         if isinstance(op, TransposeOp):
             return TransposeOp(
@@ -4549,6 +4653,7 @@ class CEmitter:
             qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
             qlinear_conv_template=templates["qlinear_conv"],
+            matmul_integer_template=templates["matmul_integer"],
             matmul_template=templates["matmul"],
             einsum_template=templates["einsum"],
             gemm_template=templates["gemm"],
@@ -4578,6 +4683,7 @@ class CEmitter:
             maxpool_template=templates["maxpool"],
             concat_template=templates["concat"],
             gather_elements_template=templates["gather_elements"],
+            scatter_template=templates["scatter"],
             gather_template=templates["gather"],
             gather_nd_template=templates["gather_nd"],
             scatter_nd_template=templates["scatter_nd"],
@@ -4614,6 +4720,7 @@ class CEmitter:
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
             split_template=templates["split"],
+            reverse_sequence_template=templates["reverse_sequence"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
             tensor_dim_names=state.tensor_dim_names,
@@ -5053,6 +5160,7 @@ class CEmitter:
         qlinear_mul_template,
         qlinear_matmul_template,
         qlinear_conv_template,
+        matmul_integer_template,
         matmul_template,
         einsum_template,
         gemm_template,
@@ -5082,6 +5190,7 @@ class CEmitter:
         maxpool_template,
         concat_template,
         gather_elements_template,
+        scatter_template,
         gather_template,
         gather_nd_template,
         scatter_nd_template,
@@ -5118,6 +5227,7 @@ class CEmitter:
         tfidf_vectorizer_template,
         string_normalizer_template,
         split_template,
+        reverse_sequence_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
         tensor_dim_names: Mapping[str, Mapping[int, str]] | None = None,
@@ -5541,6 +5651,112 @@ class CEmitter:
                 m=m,
                 n=n,
                 k=k,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, MatMulIntegerOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input1", op.input1),
+                    ("input0_zero_point", op.input0_zero_point),
+                    ("input1_zero_point", op.input1_zero_point),
+                    ("output", op.output),
+                ]
+            )
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            output_index_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            batch_rank = len(op.batch_shape)
+            batch_vars = output_loop_vars[:batch_rank]
+            if op.left_vector and op.right_vector:
+                row_var = None
+                col_var = None
+            elif op.left_vector:
+                row_var = None
+                col_var = output_loop_vars[-1]
+            elif op.right_vector:
+                row_var = output_loop_vars[-1]
+                col_var = None
+            else:
+                row_var = output_loop_vars[-2]
+                col_var = output_loop_vars[-1]
+            input0_index_expr, input1_index_expr = CEmitter._matmul_index_exprs(
+                batch_vars,
+                row_var,
+                col_var,
+                batch_rank,
+                input0=params["input0"],
+                input1=params["input1"],
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+            )
+            input0_suffix = self._param_array_suffix(op.input0_shape)
+            input1_suffix = self._param_array_suffix(op.input1_shape)
+            input0_zero_suffix = self._param_array_suffix(op.input0_zero_shape or ())
+            input1_zero_suffix = self._param_array_suffix(op.input1_zero_shape or ())
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input0_dtype.c_type, input0_suffix, True),
+                    (params["input1"], op.input1_dtype.c_type, input1_suffix, True),
+                    (
+                        (
+                            params["input0_zero_point"],
+                            op.input0_dtype.c_type,
+                            input0_zero_suffix,
+                            True,
+                        )
+                        if params["input0_zero_point"]
+                        else (None, "", "", True)
+                    ),
+                    (
+                        (
+                            params["input1_zero_point"],
+                            op.input1_dtype.c_type,
+                            input1_zero_suffix,
+                            True,
+                        )
+                        if params["input1_zero_point"]
+                        else (None, "", "", True)
+                    ),
+                    (params["output"], op.dtype.c_type, output_suffix, False),
+                ]
+            )
+            input0_zero_expr = (
+                f"{params['input0_zero_point']}[0]"
+                if params["input0_zero_point"]
+                else "0"
+            )
+            input1_zero_expr = (
+                f"{params['input1_zero_point']}[0]"
+                if params["input1_zero_point"]
+                else "0"
+            )
+            rendered = matmul_integer_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                output=params["output"],
+                params=param_decls,
+                input0_c_type=op.input0_dtype.c_type,
+                input1_c_type=op.input1_dtype.c_type,
+                output_c_type=op.dtype.c_type,
+                input0_zero_expr=input0_zero_expr,
+                input1_zero_expr=input1_zero_expr,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                k=op.k,
+                dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EinsumOp):
@@ -8061,6 +8277,57 @@ class CEmitter:
                 data_shape=data_shape,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ScatterOp):
+            params = self._shared_param_map(
+                [
+                    ("data", op.data),
+                    ("indices", op.indices),
+                    ("updates", op.updates),
+                    ("output", op.output),
+                ]
+            )
+            output_shape_raw = self._ctx_shape(op.output)
+            updates_shape_raw = self._ctx_shape(op.updates)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            updates_shape = CEmitter._codegen_shape(updates_shape_raw)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_indices = list(loop_vars)
+            output_indices[op.axis] = "scatter_index"
+            data_shape = self._ctx_shape(op.data)
+            indices_shape = self._ctx_shape(op.indices)
+            data_suffix = self._param_array_suffix(data_shape)
+            indices_suffix = self._param_array_suffix(indices_shape)
+            updates_suffix = self._param_array_suffix(updates_shape_raw)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["indices"],
+                        self._ctx_dtype(op.indices).c_type,
+                        indices_suffix,
+                        True,
+                    ),
+                    (params["updates"], c_type, updates_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = scatter_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                updates=params["updates"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_shape=output_shape,
+                updates_shape=updates_shape,
+                loop_vars=loop_vars,
+                output_indices=output_indices,
+                axis_dim=data_shape[op.axis],
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ScatterNDOp):
             params = self._shared_param_map(
                 [
@@ -9644,6 +9911,52 @@ class CEmitter:
                 case_mode=case_mode,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ReverseSequenceOp):
+            input_shape = self._ctx_shape(op.input0)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("sequence_lens", op.sequence_lens),
+                    ("output", op.output),
+                ]
+            )
+            seq_dtype = self._ctx_dtype(op.sequence_lens)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.output)
+            )
+            sequence_lens_suffix = self._param_array_suffix(
+                (input_shape[op.batch_axis],)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (
+                        params["sequence_lens"],
+                        seq_dtype.c_type,
+                        sequence_lens_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = reverse_sequence_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                sequence_lens=params["sequence_lens"],
+                output=params["output"],
+                rank=len(input_shape),
+                dims=CEmitter._shape_dim_exprs(input_shape, _dim_names_for(op.input0)),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+                seq_c_type=seq_dtype.c_type,
+                c_type=c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SplitOp):
             input_shape = self._ctx_shape(op.input0)
             output_shapes = tuple(self._ctx_shape(name) for name in op.outputs)
@@ -10490,6 +10803,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -10564,6 +10878,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -10714,6 +11029,12 @@ class CEmitter:
             if op.value_input is not None:
                 inputs.append((op.value_input, self._ctx_shape(op.value_input)))
             return tuple(inputs)
+        if isinstance(op, ScatterOp):
+            return (
+                (op.data, self._ctx_shape(op.data)),
+                (op.indices, self._ctx_shape(op.indices)),
+                (op.updates, self._ctx_shape(op.updates)),
+            )
         if isinstance(op, ScatterNDOp):
             return ((op.data, self._ctx_shape(op.data)),)
         if isinstance(op, TensorScatterOp):
@@ -10863,6 +11184,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -11185,6 +11507,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, MatMulOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, MatMulIntegerOp):
+            return op.output_shape
         if isinstance(op, EinsumOp):
             return op.output_shape
         if isinstance(op, GemmOp):
@@ -11238,6 +11562,8 @@ class CEmitter:
         if isinstance(op, GatherOp):
             return self._ctx_shape(op.output)
         if isinstance(op, GatherNDOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, ScatterOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ScatterNDOp):
             return self._ctx_shape(op.output)
@@ -11296,6 +11622,10 @@ class CEmitter:
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, SplitOp):
+            return self._ctx_shape(op.outputs[0])
+        if isinstance(op, ReverseSequenceOp):
             return self._ctx_shape(op.output)
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
@@ -11406,12 +11736,14 @@ class CEmitter:
                 SoftmaxOp,
                 LogSoftmaxOp,
                 HardmaxOp,
+                MatMulIntegerOp,
                 MatMulOp,
                 GemmOp,
                 GatherOp,
                 ConcatOp,
                 GatherElementsOp,
                 GatherNDOp,
+                ScatterOp,
                 ScatterNDOp,
                 TensorScatterOp,
                 TransposeOp,
@@ -11425,6 +11757,7 @@ class CEmitter:
                 BernoulliOp,
                 EyeLikeOp,
                 RangeOp,
+                ReverseSequenceOp,
                 HammingWindowOp,
                 GridSampleOp,
                 ResizeOp,

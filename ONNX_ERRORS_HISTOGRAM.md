@@ -54,9 +54,7 @@
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op OptionalGetElement | 2 | 18 |
-| Unsupported op ReverseSequence | 2 | 10 |
 | Unsupported op STFT | 2 | 17 |
-| Unsupported op Scatter | 2 | 10 |
 | Unsupported op TreeEnsemble | 2 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
@@ -68,7 +66,6 @@
 | Testbench execution failed: exit code 1 | 1 | 13 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
-| Unsupported op MatMulInteger | 1 | 10 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 
 ## Error frequency by opset
@@ -79,6 +76,7 @@
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
 | Unsupported op MatMulInteger | 10 | 1 |
+| Unsupported op QLinearConv | 10 | 1 |
 | Unsupported op Unique | 11 | 6 |
 | Unsupported op Compress | 11 | 4 |
 | Unsupported op DynamicQuantizeLinear | 11 | 3 |

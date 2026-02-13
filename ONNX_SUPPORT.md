@@ -1,6 +1,7 @@
 # Official ONNX file support
 
 Support 1440 / 1802 official ONNX files.
+Support 1441 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -913,7 +914,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_matmul_4d/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_4d_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_bcast/model.onnx | 13 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_matmulinteger/model.onnx | 10 | ❌ | Unsupported op MatMulInteger |
+| onnx-org/onnx/backend/test/data/node/test_matmulinteger/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_float16/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_float32/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1301,8 +1302,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_not_larger/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_not_smaller/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_round_prefer_ceil_asymmetric/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reversesequence_batch/model.onnx | 10 | ❌ | Unsupported op ReverseSequence |
-| onnx-org/onnx/backend/test/data/node/test_reversesequence_time/model.onnx | 10 | ❌ | Unsupported op ReverseSequence |
+| onnx-org/onnx/backend/test/data/node/test_reversesequence_batch/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_reversesequence_time/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1/model.onnx | 23 | ✅ | OK (max ULP 0) |
@@ -1370,8 +1371,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_reduction_max/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_reduction_min/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_without_axis/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| onnx-org/onnx/backend/test/data/node/test_scatter_with_axis/model.onnx | 10 | ❌ | Unsupported op Scatter |
-| onnx-org/onnx/backend/test/data/node/test_scatter_without_axis/model.onnx | 10 | ❌ | Unsupported op Scatter |
+| onnx-org/onnx/backend/test/data/node/test_scatter_with_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_scatter_without_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scatternd/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scatternd_add/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scatternd_max/model.onnx | 18 | ✅ | OK (max ULP 0) |
