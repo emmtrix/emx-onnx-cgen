@@ -30,6 +30,7 @@ from test_ops import (
     _make_range_model,
     _make_reduce_model,
     _make_reshape_model,
+    _make_scatter_model,
     _make_resize_model,
     _make_rms_normalization_model,
     _make_shape_model,
@@ -552,6 +553,13 @@ OP_GOLDEN_CASES = [
         "gather",
         "gather",
         lambda: _make_gather_model(data_shape=[3, 2], indices_shape=[2], axis=0),
+    ),
+    (
+        "scatter",
+        "scatter",
+        lambda: _make_scatter_model(
+            data_shape=[2, 3], indices_shape=[2, 3], axis=1, dtype=TensorProto.FLOAT
+        ),
     ),
     ("transpose", "transpose", _make_transpose_model),
     ("reshape", "reshape", _make_reshape_model),

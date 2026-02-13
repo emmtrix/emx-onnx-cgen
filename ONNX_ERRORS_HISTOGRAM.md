@@ -54,9 +54,7 @@
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op OptionalGetElement | 2 | 18 |
-| Unsupported op ReverseSequence | 2 | 10 |
 | Unsupported op STFT | 2 | 17 |
-| Unsupported op Scatter | 2 | 10 |
 | Unsupported op TreeEnsemble | 2 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |

@@ -39,6 +39,7 @@ from emx_onnx_cgen.lowering.depth_space import (
     lower_depth_to_space,
     lower_space_to_depth,
 )
+from emx_onnx_cgen.lowering.scatter import lower_scatter
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
@@ -297,6 +298,48 @@ def _make_expand_model(
         [input_info],
         [output],
         initializer=[shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_scatter_model(
+    *,
+    data_shape: list[int],
+    indices_shape: list[int],
+    axis: int,
+    dtype: int,
+    opset: int = 10,
+) -> onnx.ModelProto:
+    data_info = helper.make_tensor_value_info("data", dtype, data_shape)
+    updates_info = helper.make_tensor_value_info("updates", dtype, indices_shape)
+    output = helper.make_tensor_value_info("output", dtype, data_shape)
+    axis_dim = data_shape[axis]
+    index_values = np.arange(np.prod(indices_shape), dtype=np.int64) % axis_dim
+    indices_tensor = helper.make_tensor(
+        "indices",
+        TensorProto.INT64,
+        dims=indices_shape,
+        vals=index_values.tolist(),
+    )
+    node = helper.make_node(
+        "Scatter",
+        inputs=["data", "indices", "updates"],
+        outputs=[output.name],
+        axis=axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "scatter_graph",
+        [data_info, updates_info],
+        [output],
+        initializer=[indices_tensor],
     )
     model = helper.make_model(
         graph,
@@ -842,6 +885,67 @@ def _make_split_model(
     model.ir_version = 7
     onnx.checker.check_model(model)
     return model
+
+
+def _make_reverse_sequence_model(
+    *,
+    input_shape: list[int],
+    sequence_lens: list[int],
+    batch_axis: int = 1,
+    time_axis: int = 0,
+    dtype: int = TensorProto.FLOAT,
+    seq_dtype: int = TensorProto.INT64,
+    opset: int = 10,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output = helper.make_tensor_value_info("output", dtype, input_shape)
+    sequence_lens_tensor = helper.make_tensor(
+        "sequence_lens",
+        seq_dtype,
+        dims=[len(sequence_lens)],
+        vals=sequence_lens,
+    )
+    node = helper.make_node(
+        "ReverseSequence",
+        inputs=["input", "sequence_lens"],
+        outputs=[output.name],
+        batch_axis=batch_axis,
+        time_axis=time_axis,
+    )
+    graph = helper.make_graph(
+        [node],
+        "reverse_sequence_graph",
+        [input_info],
+        [output],
+        initializer=[sequence_lens_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _reverse_sequence_reference(
+    value: np.ndarray,
+    *,
+    sequence_lens: list[int],
+    batch_axis: int,
+    time_axis: int,
+) -> np.ndarray:
+    output = np.array(value, copy=True)
+    for batch_index, seq_len in enumerate(sequence_lens):
+        clipped_seq_len = max(0, min(int(seq_len), value.shape[time_axis]))
+        if clipped_seq_len <= 1:
+            continue
+        index = [slice(None)] * value.ndim
+        index[batch_axis] = batch_index
+        index[time_axis] = slice(0, clipped_seq_len)
+        output[tuple(index)] = np.flip(value[tuple(index)], axis=time_axis)
+    return output
 
 
 def _make_compare_model(
@@ -3559,6 +3663,16 @@ REARRANGE_ORT_CASES = [
             include_k_input=True,
         ),
     },
+    {
+        "name": "ReverseSequence",
+        "model": lambda: _make_reverse_sequence_model(
+            input_shape=[4, 3, 2],
+            sequence_lens=[4, 3, 2],
+            batch_axis=1,
+            time_axis=0,
+            dtype=TensorProto.FLOAT,
+        ),
+    },
 ]
 
 REARRANGE_UNIT_CASES = [
@@ -3619,6 +3733,18 @@ REARRANGE_UNIT_CASES = [
         "input_name": "input",
         "input_shape": (3, 4),
         "expected": lambda value: np.triu(value, k=1),
+    },
+    {
+        "name": "ReverseSequence",
+        "model": REARRANGE_ORT_CASES[7]["model"],
+        "input_name": "input",
+        "input_shape": (4, 3, 2),
+        "expected": lambda value: _reverse_sequence_reference(
+            value,
+            sequence_lens=[4, 3, 2],
+            batch_axis=1,
+            time_axis=0,
+        ),
     },
 ]
 
@@ -3748,6 +3874,22 @@ def test_lower_pad_dynamic_axes_input() -> None:
     assert op_ctx.shape(op.axes_input) == (2,)
     assert op.pads_begin is None
     assert op.pads_end is None
+
+
+def test_lower_scatter_shapes() -> None:
+    model = _make_scatter_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    graph = import_onnx(model)
+    op = lower_scatter(graph, graph.nodes[0])
+    assert op.data == "data"
+    assert op.indices == "indices"
+    assert op.updates == "updates"
+    assert op.output == "output"
+    assert op.axis == 1
 
 
 def test_lower_scatternd_shapes() -> None:
@@ -4437,6 +4579,16 @@ def test_gathernd_matches_onnxruntime() -> None:
         indices_as_initializer=True,
     )
     _run_ort_compare(model)
+
+
+def test_scatter_matches_onnxruntime() -> None:
+    model = _make_scatter_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    _run_testbench_compare(model)
 
 
 def test_scatternd_matches_onnxruntime() -> None:

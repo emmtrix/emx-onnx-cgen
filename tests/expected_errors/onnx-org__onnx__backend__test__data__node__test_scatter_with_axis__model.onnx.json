@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Scatter",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_scatter_with_axis model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Scatter"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "a48737b817c02bb272a6c1a4d39e8bab789cfa114c0be3c112aec19575c6a26d"
 }
