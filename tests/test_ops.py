@@ -2100,6 +2100,17 @@ def _make_qlinearconv_model(
         [input_info],
         [output],
         initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 10)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_matmulinteger_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
     weight_values = np.arange(12, dtype=np.uint8).reshape(3, 4)
