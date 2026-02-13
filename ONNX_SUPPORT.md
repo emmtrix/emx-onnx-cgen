@@ -1370,8 +1370,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_reduction_max/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_reduction_min/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
 | onnx-org/onnx/backend/test/data/node/test_scatter_elements_without_axis/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| onnx-org/onnx/backend/test/data/node/test_scatter_with_axis/model.onnx | 10 | ❌ | Unsupported op Scatter |
-| onnx-org/onnx/backend/test/data/node/test_scatter_without_axis/model.onnx | 10 | ❌ | Unsupported op Scatter |
+| onnx-org/onnx/backend/test/data/node/test_scatter_with_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_scatter_without_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scatternd/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scatternd_add/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_scatternd_max/model.onnx | 18 | ✅ | OK (max ULP 0) |

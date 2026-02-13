@@ -149,7 +149,7 @@ Supported operators: 156 / 201
 | Round | ✅ |
 | STFT | ❌ |
 | Scan | ✅ |
-| Scatter | ❌ |
+| Scatter | ✅ |
 | ScatterElements | ❌ |
 | ScatterND | ✅ |
 | Selu | ✅ |
