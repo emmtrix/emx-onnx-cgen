@@ -73,10 +73,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op ReverseSequence | 10 | 2 |
-| Unsupported op Scatter | 10 | 2 |
-| Unsupported op MatMulInteger | 10 | 1 |
-| Unsupported op QLinearConv | 10 | 1 |
 | Unsupported op Unique | 11 | 6 |
 | Unsupported op Compress | 11 | 4 |
 | Unsupported op DynamicQuantizeLinear | 11 | 3 |
