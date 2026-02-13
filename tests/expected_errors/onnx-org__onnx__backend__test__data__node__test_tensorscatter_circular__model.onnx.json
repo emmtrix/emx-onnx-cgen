@@ -1,4 +1,9 @@
 {
-  "error": "name 'tensor_scatter_template' is not defined",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "TensorScatter"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "113d5b3927178a724b20834187c89c13d8858dc0539777a55c3f5bd4b1eca170"
 }
