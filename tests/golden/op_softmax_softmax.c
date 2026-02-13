@@ -43,7 +43,7 @@
 #define EMX_STRING_MAX_LEN 256
 #endif
 
-static inline float ref_scalar_f32_fmax(float a, float b) {
+static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
@@ -68,7 +68,7 @@ static inline void node0_softmax(const float input0[2][3], float output[2][3]) {
             float max_value = input_flat[base];
             for (idx_t axis_idx = 1; axis_idx < axis_size; ++axis_idx) {
                 float value = input_flat[base + axis_idx * inner];
-                max_value = ref_scalar_f32_fmax(max_value, value);
+                max_value = ref_scalar_f32_maximum(max_value, value);
             }
             float sum = 0;
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {

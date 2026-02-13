@@ -54,6 +54,7 @@ _LOWERING_MODULES = [
     "optional_has_element",
     "one_hot",
     "pad",
+    "qlinear_conv",
     "qlinear_matmul",
     "qlinear_mul",
     "quantize_linear",

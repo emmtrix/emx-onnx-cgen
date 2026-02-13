@@ -68,11 +68,11 @@ const EMX_UNUSED float weight2_max[1] = {
     0x1.800000p+2f
 };
 
-static inline float ref_scalar_f32_fmin(float a, float b) {
+static inline float ref_scalar_f32_minimum(float a, float b) {
     return fminf(a, b);
 }
 
-static inline float ref_scalar_f32_fmax(float a, float b) {
+static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
@@ -90,8 +90,8 @@ static inline void node0_clip(const float input0[2][3], const float input_min[1]
             float value = input0[i0][i1];
             const float min_value = input_min[0];
             const float max_value = input_max[0];
-            value = ref_scalar_f32_fmax(value, min_value);
-            value = ref_scalar_f32_fmin(value, max_value);
+            value = ref_scalar_f32_maximum(value, min_value);
+            value = ref_scalar_f32_minimum(value, max_value);
             output[i0][i1] = value;
         }
     }

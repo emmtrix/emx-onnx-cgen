@@ -43,7 +43,7 @@
 #define EMX_STRING_MAX_LEN 256
 #endif
 
-static inline float ref_scalar_f32_fmax(float a, float b) {
+static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
@@ -72,7 +72,7 @@ static inline void node0_maxpool(const float input0[1][1][4][4], float output[1]
                                 const idx_t iw = ow * 2 + kw * 1 - 0;
                                 if (iw >= 0 && iw < 4) {
                                     float val = input0[n][c][ih][iw];
-                                    max_value = ref_scalar_f32_fmax(max_value, val);
+                                    max_value = ref_scalar_f32_maximum(max_value, val);
                                 }
                             }
                         }

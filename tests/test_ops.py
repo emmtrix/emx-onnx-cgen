@@ -2024,6 +2024,82 @@ def _make_convinteger_model(*, per_channel_zero_point: bool = False) -> onnx.Mod
     return model
 
 
+def _make_qlinearconv_model(
+    *, per_channel_weights: bool = False, include_bias: bool = False
+) -> onnx.ModelProto:
+    input_shape = [1, 1, 3, 3]
+    weight_shape = [2, 1, 2, 2]
+    output_shape = [1, 2, 4, 4]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, input_shape)
+    weight_values = np.arange(8, dtype=np.uint8).reshape(weight_shape)
+    weight_tensor = helper.make_tensor(
+        "weight",
+        TensorProto.UINT8,
+        dims=weight_shape,
+        vals=weight_values.flatten().tolist(),
+    )
+    x_scale = helper.make_tensor("x_scale", TensorProto.FLOAT, dims=[], vals=[0.125])
+    x_zero_point = helper.make_tensor(
+        "x_zero_point", TensorProto.UINT8, dims=[], vals=[7]
+    )
+    if per_channel_weights:
+        w_scale = helper.make_tensor(
+            "w_scale", TensorProto.FLOAT, dims=[2], vals=[0.25, 0.25]
+        )
+        w_zero_point = helper.make_tensor(
+            "w_zero_point", TensorProto.UINT8, dims=[2], vals=[3, 3]
+        )
+    else:
+        w_scale = helper.make_tensor("w_scale", TensorProto.FLOAT, dims=[], vals=[0.25])
+        w_zero_point = helper.make_tensor(
+            "w_zero_point", TensorProto.UINT8, dims=[], vals=[3]
+        )
+    y_scale = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[0.25])
+    y_zero_point = helper.make_tensor(
+        "y_zero_point", TensorProto.UINT8, dims=[], vals=[11]
+    )
+    bias = helper.make_tensor(
+        "bias",
+        TensorProto.INT32,
+        dims=[2],
+        vals=[1, -2],
+    )
+    output = helper.make_tensor_value_info("out", TensorProto.UINT8, output_shape)
+    inputs = [
+        "in0",
+        "x_scale",
+        "x_zero_point",
+        "weight",
+        "w_scale",
+        "w_zero_point",
+        "y_scale",
+        "y_zero_point",
+    ]
+    initializers = [
+        weight_tensor,
+        x_scale,
+        x_zero_point,
+        w_scale,
+        w_zero_point,
+        y_scale,
+        y_zero_point,
+    ]
+    if include_bias:
+        inputs.append("bias")
+        initializers.append(bias)
+    conv_node = helper.make_node(
+        "QLinearConv",
+        inputs=inputs,
+        outputs=[output.name],
+        pads=[1, 1, 1, 1],
+        strides=[1, 1],
+    )
+    graph = helper.make_graph(
+        [conv_node],
+        "qlinearconv_graph",
+        [input_info],
+        [output],
+        initializer=initializers,
 def _make_matmulinteger_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
     weight_values = np.arange(12, dtype=np.uint8).reshape(3, 4)
@@ -3829,6 +3905,15 @@ def test_lower_convinteger_per_channel_zero_point() -> None:
     assert op.out_spatial == (4, 4)
 
 
+def test_lower_qlinearconv_per_channel_weights() -> None:
+    model = _make_qlinearconv_model(per_channel_weights=True)
+    graph = import_onnx(model)
+    op = get_lowering("QLinearConv")(graph, graph.nodes[0])
+    assert op.input_dtype == ScalarType.U8
+    assert op.weight_dtype == ScalarType.U8
+    assert op.dtype == ScalarType.U8
+    assert op.weight_scale_per_channel is True
+    assert op.weight_zero_per_channel is True
 def test_lower_matmulinteger_with_zero_points() -> None:
     model = _make_matmulinteger_model()
     graph = import_onnx(model)
@@ -4693,6 +4778,11 @@ def test_conv_op_matches_onnxruntime() -> None:
 
 def test_convinteger_op_matches_onnxruntime() -> None:
     model = _make_convinteger_model(per_channel_zero_point=False)
+    _run_testbench_compare(model)
+
+
+def test_qlinearconv_op_matches_onnxruntime() -> None:
+    model = _make_qlinearconv_model(per_channel_weights=True, include_bias=False)
     _run_testbench_compare(model)
 
 

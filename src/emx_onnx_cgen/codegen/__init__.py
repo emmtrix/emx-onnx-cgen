@@ -10,6 +10,7 @@ from .c_emitter import (
     MatMulOp,
     QLinearMulOp,
     QLinearMatMulOp,
+    QLinearConvOp,
     ShapeOp,
     UnaryOp,
 )
@@ -26,6 +27,7 @@ __all__ = [
     "MatMulOp",
     "QLinearMulOp",
     "QLinearMatMulOp",
+    "QLinearConvOp",
     "ShapeOp",
     "UnaryOp",
 ]
