@@ -38,7 +38,6 @@
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
-| name '*' is not defined | 3 |  |
 | BatchNormalization must have 5 inputs and 1 output | 2 | 15 |
 | Failed to build testbench. | 2 | 12 |
 | Gelu only supports approximate=none | 2 | 20 |
@@ -69,7 +68,6 @@
 | Testbench execution failed: exit code 1 | 1 | 13 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
-| Unsupported op MatMulInteger | 1 | 10 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op QLinearConv | 1 | 10 |
 
@@ -80,7 +78,6 @@
 | Out of tolerance | 9 | 1 |
 | Unsupported op ReverseSequence | 10 | 2 |
 | Unsupported op Scatter | 10 | 2 |
-| Unsupported op MatMulInteger | 10 | 1 |
 | Unsupported op QLinearConv | 10 | 1 |
 | Unsupported op Unique | 11 | 6 |
 | Unsupported op Compress | 11 | 4 |
