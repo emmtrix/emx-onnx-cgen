@@ -8,7 +8,6 @@ from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
 from ..op_base import (
-    BroadcastingOpBase,
     EmitContext,
     Emitter,
     GatherLikeOpBase,
@@ -25,6 +24,7 @@ def _compute_strides(shape: tuple[int, ...]) -> tuple[int, ...]:
         strides.append(stride)
         stride *= dim
     return tuple(reversed(strides))
+
 
 def _shape_product(shape: tuple[int, ...]) -> int:
     product = 1
@@ -816,3 +816,14 @@ class SplitOp(RenderableOpBase):
     outputs: tuple[str, ...]
     axis: int
     split_sizes: tuple[int, ...]
+
+
+@dataclass(frozen=True)
+class ReverseSequenceOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "sequence_lens")
+    __io_outputs__ = ("output",)
+    input0: str
+    sequence_lens: str
+    output: str
+    batch_axis: int
+    time_axis: int
