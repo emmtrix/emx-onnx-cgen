@@ -98,7 +98,7 @@ Supported operators: 156 / 201
 | LpNormalization | ✅ |
 | LpPool | ✅ |
 | MatMul | ✅ |
-| MatMulInteger | ❌ |
+| MatMulInteger | ✅ |
 | Max | ✅ |
 | MaxPool | ✅ |
 | MaxUnpool | ❌ |

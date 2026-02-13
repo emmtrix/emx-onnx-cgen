@@ -1,5 +1,6 @@
 # Official ONNX file support
 
+Support 1440 / 1802 official ONNX files.
 Support 1441 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
@@ -913,7 +914,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_matmul_4d/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_4d_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_matmul_bcast/model.onnx | 13 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_matmulinteger/model.onnx | 10 | ❌ | Unsupported op MatMulInteger |
+| onnx-org/onnx/backend/test/data/node/test_matmulinteger/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_float16/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_max_float32/model.onnx | 13 | ✅ | OK (max ULP 0) |
