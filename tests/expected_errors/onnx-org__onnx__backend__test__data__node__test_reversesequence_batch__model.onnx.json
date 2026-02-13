@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op ReverseSequence",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_reversesequence_batch model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ReverseSequence"
   ],
-  "opset_version": 10
+  "opset_version": 10,
+  "generated_checksum": "a6c788fc1cdeaf18852893c5502d6e5088d80d7a5b161140874091e4f5fcf322"
 }
