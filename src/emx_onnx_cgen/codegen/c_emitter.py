@@ -84,6 +84,7 @@ from ..ir.ops import (
     QLinearMulOp,
     QLinearMatMulOp,
     RangeOp,
+    ReverseSequenceOp,
     ReduceOp,
     ReshapeOp,
     ResizeOp,
@@ -1595,6 +1596,14 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, ReverseSequenceOp):
+            return ReverseSequenceOp(
+                input0=name_map.get(op.input0, op.input0),
+                sequence_lens=name_map.get(op.sequence_lens, op.sequence_lens),
+                output=name_map.get(op.output, op.output),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+            )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
@@ -1787,6 +1796,7 @@ class CEmitter:
                     "string_normalizer_op.c.j2"
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
+                "reverse_sequence": self._env.get_template("reverse_sequence_op.c.j2"),
             }
             if emit_testbench:
                 templates["testbench"] = self._env.get_template("testbench.c.j2")
@@ -4157,6 +4167,14 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, ReverseSequenceOp):
+            return ReverseSequenceOp(
+                input0=temp_map.get(op.input0, op.input0),
+                sequence_lens=temp_map.get(op.sequence_lens, op.sequence_lens),
+                output=temp_map.get(op.output, op.output),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4451,6 +4469,7 @@ class CEmitter:
             gather_template=templates["gather"],
             gather_nd_template=templates["gather_nd"],
             scatter_nd_template=templates["scatter_nd"],
+            tensor_scatter_template=templates["tensor_scatter"],
             transpose_template=templates["transpose"],
             reshape_template=templates["reshape"],
             identity_template=templates["identity"],
@@ -4483,6 +4502,7 @@ class CEmitter:
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
             split_template=templates["split"],
+            reverse_sequence_template=templates["reverse_sequence"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
             tensor_dim_names=state.tensor_dim_names,
@@ -4953,6 +4973,7 @@ class CEmitter:
         gather_template,
         gather_nd_template,
         scatter_nd_template,
+        tensor_scatter_template,
         transpose_template,
         reshape_template,
         identity_template,
@@ -4985,6 +5006,7 @@ class CEmitter:
         tfidf_vectorizer_template,
         string_normalizer_template,
         split_template,
+        reverse_sequence_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
         tensor_dim_names: Mapping[str, Mapping[int, str]] | None = None,
@@ -5108,9 +5130,7 @@ class CEmitter:
                 operator_kind = OperatorKind.FUNC
             if input_dtype == ScalarType.STRING:
                 if op.function == ScalarFunction.EQ:
-                    operator_expr = (
-                        f"(strcmp({left_expr}, {right_expr}) == 0)"
-                    )
+                    operator_expr = f"(strcmp({left_expr}, {right_expr}) == 0)"
                     operator_kind = OperatorKind.EXPR
                 else:
                     raise CodegenError(
@@ -7859,8 +7879,12 @@ class CEmitter:
             output_shape_tuple = self._ctx_shape(op.output)
             update_shape_tuple = self._ctx_shape(op.update)
             past_shape_tuple = self._ctx_shape(op.past_cache)
-            output_shape = CEmitter._shape_dim_exprs(output_shape_tuple, output_dim_names)
-            update_shape = CEmitter._shape_dim_exprs(update_shape_tuple, update_dim_names)
+            output_shape = CEmitter._shape_dim_exprs(
+                output_shape_tuple, output_dim_names
+            )
+            update_shape = CEmitter._shape_dim_exprs(
+                update_shape_tuple, update_dim_names
+            )
             prefix_shape = output_shape[: op.axis]
             prefix_loop_vars = (
                 CEmitter._loop_vars(output_shape_tuple[: op.axis])
@@ -7870,7 +7894,8 @@ class CEmitter:
             tail_shape = output_shape[op.axis + 1 :]
             tail_loop_vars = (
                 tuple(
-                    f"t{index}" for index in range(len(output_shape_tuple[op.axis + 1 :]))
+                    f"t{index}"
+                    for index in range(len(output_shape_tuple[op.axis + 1 :]))
                 )
                 if output_shape_tuple[op.axis + 1 :]
                 else ()
@@ -7892,8 +7917,12 @@ class CEmitter:
                 f"[{var}]" for var in update_index_vars
             )
             past_suffix = self._param_array_suffix(past_shape_tuple, past_dim_names)
-            update_suffix = self._param_array_suffix(update_shape_tuple, update_dim_names)
-            output_suffix = self._param_array_suffix(output_shape_tuple, output_dim_names)
+            update_suffix = self._param_array_suffix(
+                update_shape_tuple, update_dim_names
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape_tuple, output_dim_names
+            )
             param_decls = [
                 (params["past_cache"], c_type, past_suffix, True),
                 (params["update"], c_type, update_suffix, True),
@@ -8199,7 +8228,11 @@ class CEmitter:
             input_shape = self._ctx_shape(op.input0)
             output_shape_raw = self._ctx_shape(op.output)
             params = self._shared_param_map(
-                [("input0", op.input0), ("repeats_input", op.repeats_input), ("output", op.output)]
+                [
+                    ("input0", op.input0),
+                    ("repeats_input", op.repeats_input),
+                    ("output", op.output),
+                ]
             )
             output_dim_names = _dim_names_for(op.output)
             output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
@@ -8214,7 +8247,10 @@ class CEmitter:
                     (
                         params["repeats_input"],
                         self._ctx_dtype(op.repeats_input).c_type,
-                        self._param_array_suffix(self._ctx_shape(op.repeats_input), _dim_names_for(op.repeats_input)),
+                        self._param_array_suffix(
+                            self._ctx_shape(op.repeats_input),
+                            _dim_names_for(op.repeats_input),
+                        ),
                         True,
                     ),
                     (params["output"], c_type, output_suffix, False),
@@ -8254,7 +8290,9 @@ class CEmitter:
             output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             in_loop_vars = CEmitter._loop_vars(input_shape_raw)
             out_loop_vars = CEmitter._loop_vars(output_shape_raw)
-            idx_vars = tuple(f"pad_idx{index}" for index in range(len(output_shape_raw)))
+            idx_vars = tuple(
+                f"pad_idx{index}" for index in range(len(output_shape_raw))
+            )
             reflect_vars = tuple(
                 f"pad_reflect{index}" for index in range(len(output_shape_raw))
             )
@@ -8263,10 +8301,8 @@ class CEmitter:
             pads_values = op.pads_values
             if op.pads_input is not None:
                 pads_c_type = self._ctx_dtype(op.pads_input).c_type
-                pads_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.pads_input), _dim_names_for(op.pads_input)
-                    )
+                pads_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.pads_input), _dim_names_for(op.pads_input)
                 )
             elif pads_values is not None:
                 pads_c_type = "int64_t"
@@ -8276,10 +8312,8 @@ class CEmitter:
             axes_length = None
             if op.axes_input is not None:
                 axes_c_type = self._ctx_dtype(op.axes_input).c_type
-                axes_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.axes_input), _dim_names_for(op.axes_input)
-                    )
+                axes_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.axes_input), _dim_names_for(op.axes_input)
                 )
                 axes_length = self._ctx_shape(op.axes_input)[0]
                 pad_begin_exprs = tuple(
@@ -8293,15 +8327,15 @@ class CEmitter:
             else:
                 pad_begin_exprs = tuple(str(value) for value in (op.pads_begin or ()))
             if op.value_input is not None:
-                value_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.value_input), _dim_names_for(op.value_input)
-                    )
+                value_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.value_input), _dim_names_for(op.value_input)
                 )
                 pad_value_expr = f"{op.value_input}[0]"
             else:
                 value_suffix = None
-                pad_value_expr = CEmitter._format_literal(self._ctx_dtype(op.output), op.value)
+                pad_value_expr = CEmitter._format_literal(
+                    self._ctx_dtype(op.output), op.value
+                )
             input_strides: list[int] = []
             stride = 1
             for dim in reversed(input_shape_raw):
@@ -8520,7 +8554,9 @@ class CEmitter:
                 output_shape=output_shape,
                 output_loop_vars=loop_vars,
                 input_rank=len(input_shape_raw),
-                starts_len=self._ctx_shape(op.starts_input)[0] if op.starts_input else 0,
+                starts_len=(
+                    self._ctx_shape(op.starts_input)[0] if op.starts_input else 0
+                ),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
@@ -8547,7 +8583,9 @@ class CEmitter:
                 roi_suffix = self._param_array_suffix(self._ctx_shape(op.roi_input))
                 roi_c_type = self._ctx_dtype(op.roi_input).c_type
             if op.scales_input:
-                scales_suffix = self._param_array_suffix(self._ctx_shape(op.scales_input))
+                scales_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.scales_input)
+                )
                 scales_c_type = self._ctx_dtype(op.scales_input).c_type
             if op.sizes_input:
                 sizes_suffix = self._param_array_suffix(self._ctx_shape(op.sizes_input))
@@ -8690,9 +8728,7 @@ class CEmitter:
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
                 linear_offsets=tuple(itertools.product((0, 1), repeat=spatial_rank)),
-                cubic_offsets=tuple(
-                    itertools.product(range(4), repeat=spatial_rank)
-                ),
+                cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
@@ -9314,6 +9350,52 @@ class CEmitter:
                 output_count=CEmitter._element_count_expr(output_shape),
                 stopword_checks=stopword_checks,
                 case_mode=case_mode,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, ReverseSequenceOp):
+            input_shape = self._ctx_shape(op.input0)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("sequence_lens", op.sequence_lens),
+                    ("output", op.output),
+                ]
+            )
+            seq_dtype = self._ctx_dtype(op.sequence_lens)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.output)
+            )
+            sequence_lens_suffix = self._param_array_suffix(
+                (input_shape[op.batch_axis],)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (
+                        params["sequence_lens"],
+                        seq_dtype.c_type,
+                        sequence_lens_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = reverse_sequence_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                sequence_lens=params["sequence_lens"],
+                output=params["output"],
+                rank=len(input_shape),
+                dims=CEmitter._shape_dim_exprs(input_shape, _dim_names_for(op.input0)),
+                batch_axis=op.batch_axis,
+                time_axis=op.time_axis,
+                seq_c_type=seq_dtype.c_type,
+                c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SplitOp):
@@ -10967,6 +11049,10 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, SplitOp):
+            return self._ctx_shape(op.outputs[0])
+        if isinstance(op, ReverseSequenceOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -11095,6 +11181,7 @@ class CEmitter:
                 BernoulliOp,
                 EyeLikeOp,
                 RangeOp,
+                ReverseSequenceOp,
                 HammingWindowOp,
                 GridSampleOp,
                 ResizeOp,

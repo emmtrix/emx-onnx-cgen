@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 154 / 200
+Supported operators: 156 / 201
 
 | Operator | Supported |
 | --- | --- |
@@ -143,7 +143,7 @@ Supported operators: 154 / 200
 | Relu | ✅ |
 | Reshape | ✅ |
 | Resize | ✅ |
-| ReverseSequence | ❌ |
+| ReverseSequence | ✅ |
 | RoiAlign | ❌ |
 | RotaryEmbedding | ✅ |
 | Round | ✅ |
@@ -185,6 +185,7 @@ Supported operators: 154 / 200
 | Swish | ✅ |
 | Tan | ✅ |
 | Tanh | ✅ |
+| TensorScatter | ✅ |
 | TfIdfVectorizer | ✅ |
 | ThresholdedRelu | ✅ |
 | Tile | ✅ |

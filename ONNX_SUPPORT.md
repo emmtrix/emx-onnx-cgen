@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1436 / 1802 official ONNX files.
+Support 1441 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1301,8 +1301,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_not_larger/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_not_smaller/model.onnx | 19 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_resize_upsample_sizes_nearest_round_prefer_ceil_asymmetric/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_reversesequence_batch/model.onnx | 10 | ❌ | Unsupported op ReverseSequence |
-| onnx-org/onnx/backend/test/data/node/test_reversesequence_time/model.onnx | 10 | ❌ | Unsupported op ReverseSequence |
+| onnx-org/onnx/backend/test/data/node/test_reversesequence_batch/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_reversesequence_time/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis0_expanded/model.onnx | 23 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_rms_normalization_2d_axis1/model.onnx | 23 | ✅ | OK (max ULP 0) |
@@ -1591,9 +1591,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_tan_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tanh/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tanh_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_tensorscatter/model.onnx |  | ❌ | name 'tensor_scatter_template' is not defined |
-| onnx-org/onnx/backend/test/data/node/test_tensorscatter_3d/model.onnx |  | ❌ | name 'tensor_scatter_template' is not defined |
-| onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular/model.onnx |  | ❌ | name 'tensor_scatter_template' is not defined |
+| onnx-org/onnx/backend/test/data/node/test_tensorscatter/model.onnx | 24 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_tensorscatter_3d/model.onnx | 24 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_tensorscatter_circular/model.onnx | 24 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_batch_onlybigrams_skip0/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_batch_onlybigrams_skip5/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_tfidfvectorizer_tf_batch_uniandbigrams_skip5/model.onnx | 9 | ✅ | OK (max ULP 0) |
