@@ -53,6 +53,7 @@ _LOWERING_MODULES = [
     "optional_has_element",
     "one_hot",
     "pad",
+    "qlinear_conv",
     "qlinear_matmul",
     "qlinear_mul",
     "quantize_linear",
@@ -87,5 +88,6 @@ _LOWERING_MODULES = [
 def load_lowering_registry() -> None:
     for module_name in _LOWERING_MODULES:
         importlib.import_module(f"{__name__}.{module_name}")
+
 
 __all__ = ["get_lowering", "register_lowering", "load_lowering_registry"]

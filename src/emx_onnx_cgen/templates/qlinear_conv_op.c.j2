@@ -1,0 +1,45 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t g = 0; g < {{ group }}; ++g) {
+            for (idx_t oc = 0; oc < {{ group_out_channels }}; ++oc) {
+                const idx_t oc_global = g * {{ group_out_channels }} + oc;
+                const {{ compute_type }} scale =
+                    (({{ compute_type }}){{ input_scale_expr }}) *
+                    (({{ compute_type }}){{ weight_scale_expr }}) /
+                    (({{ compute_type }}){{ output_scale_expr }});
+                {% for dim in range(spatial_rank) %}
+                for (idx_t {{ out_indices[dim] }} = 0; {{ out_indices[dim] }} < {{ out_spatial[dim] }}; ++{{ out_indices[dim] }}) {
+                {% endfor %}
+                    int32_t acc = 0;
+                    {% if bias %}
+                    acc += {{ bias }}[oc_global];
+                    {% endif %}
+                    for (idx_t ic = 0; ic < {{ group_in_channels }}; ++ic) {
+                        const idx_t ic_global = g * {{ group_in_channels }} + ic;
+                        {% for dim in range(spatial_rank) %}
+                        for (idx_t {{ kernel_indices[dim] }} = 0; {{ kernel_indices[dim] }} < {{ kernel_shape[dim] }}; ++{{ kernel_indices[dim] }}) {
+                        {% endfor %}
+                            {% for dim in range(spatial_rank) %}
+                            const idx_t {{ in_indices[dim] }} = {{ out_indices[dim] }} * {{ strides[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }} - {{ pads_begin[dim] }};
+                            {% endfor %}
+                            if ({% for dim in range(spatial_rank) %}{{ in_indices[dim] }} >= 0 && {{ in_indices[dim] }} < {{ in_spatial[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
+                                const int32_t input_value = (int32_t){{ input0 }}[n][ic_global]{% for dim in range(spatial_rank) %}[{{ in_indices[dim] }}]{% endfor %} - (int32_t)({{ input_zero_expr }});
+                                const int32_t weight_value = (int32_t){{ weights }}[oc_global][ic]{% for dim in range(spatial_rank) %}[{{ kernel_indices[dim] }}]{% endfor %} - (int32_t)({{ weight_zero_expr }});
+                                acc += input_value * weight_value;
+                            }
+                        {% for dim in range(spatial_rank) %}
+                        }
+                        {% endfor %}
+                    }
+                    {{ compute_type }} scaled = (({{ compute_type }})acc) * scale;
+                    {{ compute_type }} rounded = {{ round_fn }}(scaled) + ({{ compute_type }})({{ output_zero_expr }});
+                    rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
+                    rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+                    {{ output }}[n][oc_global]{% for dim in range(spatial_rank) %}[{{ out_indices[dim] }}]{% endfor %} = ({{ output_c_type }})rounded;
+                {% for dim in range(spatial_rank) %}
+                }
+                {% endfor %}
+            }
+        }
+    }
+}
