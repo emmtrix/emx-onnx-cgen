@@ -69,6 +69,7 @@ from ..ir.ops import (
     LpPoolOp,
     LrnOp,
     LstmOp,
+    MatMulIntegerOp,
     MatMulOp,
     MaxPoolOp,
     MeanVarianceNormalizationOp,
@@ -820,6 +821,34 @@ class CEmitter:
                 input0_zero_shape=op.input0_zero_shape,
                 input1_zero_shape=op.input1_zero_shape,
                 output_zero_shape=op.output_zero_shape,
+            )
+        if isinstance(op, MatMulIntegerOp):
+            return MatMulIntegerOp(
+                input0=name_map.get(op.input0, op.input0),
+                input1=name_map.get(op.input1, op.input1),
+                input0_zero_point=self._map_optional_name(
+                    name_map, op.input0_zero_point
+                ),
+                input1_zero_point=self._map_optional_name(
+                    name_map, op.input1_zero_point
+                ),
+                output=name_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
             )
         if isinstance(op, MatMulOp):
             return MatMulOp(
@@ -1706,6 +1735,7 @@ class CEmitter:
                 ),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
+                "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
@@ -3311,6 +3341,38 @@ class CEmitter:
                 input1=temp_map.get(op.input1, op.input1),
                 output=temp_map.get(op.output, op.output),
             )
+        if isinstance(op, MatMulIntegerOp):
+            return MatMulIntegerOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input1=temp_map.get(op.input1, op.input1),
+                input0_zero_point=(
+                    temp_map.get(op.input0_zero_point, op.input0_zero_point)
+                    if op.input0_zero_point is not None
+                    else None
+                ),
+                input1_zero_point=(
+                    temp_map.get(op.input1_zero_point, op.input1_zero_point)
+                    if op.input1_zero_point is not None
+                    else None
+                ),
+                output=temp_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
+            )
         if isinstance(op, EinsumOp):
             return EinsumOp(
                 inputs=tuple(temp_map.get(name, name) for name in op.inputs),
@@ -4419,6 +4481,7 @@ class CEmitter:
             dequantize_linear_template=templates["dequantize_linear"],
             qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
+            matmul_integer_template=templates["matmul_integer"],
             matmul_template=templates["matmul"],
             einsum_template=templates["einsum"],
             gemm_template=templates["gemm"],
@@ -4451,6 +4514,7 @@ class CEmitter:
             gather_template=templates["gather"],
             gather_nd_template=templates["gather_nd"],
             scatter_nd_template=templates["scatter_nd"],
+            tensor_scatter_template=templates["tensor_scatter"],
             transpose_template=templates["transpose"],
             reshape_template=templates["reshape"],
             identity_template=templates["identity"],
@@ -4921,6 +4985,7 @@ class CEmitter:
         dequantize_linear_template,
         qlinear_mul_template,
         qlinear_matmul_template,
+        matmul_integer_template,
         matmul_template,
         einsum_template,
         gemm_template,
@@ -4953,6 +5018,7 @@ class CEmitter:
         gather_template,
         gather_nd_template,
         scatter_nd_template,
+        tensor_scatter_template,
         transpose_template,
         reshape_template,
         identity_template,
@@ -5108,9 +5174,7 @@ class CEmitter:
                 operator_kind = OperatorKind.FUNC
             if input_dtype == ScalarType.STRING:
                 if op.function == ScalarFunction.EQ:
-                    operator_expr = (
-                        f"(strcmp({left_expr}, {right_expr}) == 0)"
-                    )
+                    operator_expr = f"(strcmp({left_expr}, {right_expr}) == 0)"
                     operator_kind = OperatorKind.EXPR
                 else:
                     raise CodegenError(
@@ -5410,6 +5474,112 @@ class CEmitter:
                 m=m,
                 n=n,
                 k=k,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, MatMulIntegerOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input1", op.input1),
+                    ("input0_zero_point", op.input0_zero_point),
+                    ("input1_zero_point", op.input1_zero_point),
+                    ("output", op.output),
+                ]
+            )
+            output_shape = CEmitter._codegen_shape(op.output_shape)
+            output_loop_vars = CEmitter._loop_vars(output_shape)
+            output_index_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in output_loop_vars
+            )
+            batch_rank = len(op.batch_shape)
+            batch_vars = output_loop_vars[:batch_rank]
+            if op.left_vector and op.right_vector:
+                row_var = None
+                col_var = None
+            elif op.left_vector:
+                row_var = None
+                col_var = output_loop_vars[-1]
+            elif op.right_vector:
+                row_var = output_loop_vars[-1]
+                col_var = None
+            else:
+                row_var = output_loop_vars[-2]
+                col_var = output_loop_vars[-1]
+            input0_index_expr, input1_index_expr = CEmitter._matmul_index_exprs(
+                batch_vars,
+                row_var,
+                col_var,
+                batch_rank,
+                input0=params["input0"],
+                input1=params["input1"],
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+            )
+            input0_suffix = self._param_array_suffix(op.input0_shape)
+            input1_suffix = self._param_array_suffix(op.input1_shape)
+            input0_zero_suffix = self._param_array_suffix(op.input0_zero_shape or ())
+            input1_zero_suffix = self._param_array_suffix(op.input1_zero_shape or ())
+            output_suffix = self._param_array_suffix(op.output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input0_dtype.c_type, input0_suffix, True),
+                    (params["input1"], op.input1_dtype.c_type, input1_suffix, True),
+                    (
+                        (
+                            params["input0_zero_point"],
+                            op.input0_dtype.c_type,
+                            input0_zero_suffix,
+                            True,
+                        )
+                        if params["input0_zero_point"]
+                        else (None, "", "", True)
+                    ),
+                    (
+                        (
+                            params["input1_zero_point"],
+                            op.input1_dtype.c_type,
+                            input1_zero_suffix,
+                            True,
+                        )
+                        if params["input1_zero_point"]
+                        else (None, "", "", True)
+                    ),
+                    (params["output"], op.dtype.c_type, output_suffix, False),
+                ]
+            )
+            input0_zero_expr = (
+                f"{params['input0_zero_point']}[0]"
+                if params["input0_zero_point"]
+                else "0"
+            )
+            input1_zero_expr = (
+                f"{params['input1_zero_point']}[0]"
+                if params["input1_zero_point"]
+                else "0"
+            )
+            rendered = matmul_integer_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input1=params["input1"],
+                output=params["output"],
+                params=param_decls,
+                input0_c_type=op.input0_dtype.c_type,
+                input1_c_type=op.input1_dtype.c_type,
+                output_c_type=op.dtype.c_type,
+                input0_zero_expr=input0_zero_expr,
+                input1_zero_expr=input1_zero_expr,
+                output_loop_vars=output_loop_vars,
+                output_loop_bounds=output_shape,
+                output_index_expr=output_index_expr,
+                input0_index_expr=input0_index_expr,
+                input1_index_expr=input1_index_expr,
+                k=op.k,
+                dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, EinsumOp):
@@ -7859,8 +8029,12 @@ class CEmitter:
             output_shape_tuple = self._ctx_shape(op.output)
             update_shape_tuple = self._ctx_shape(op.update)
             past_shape_tuple = self._ctx_shape(op.past_cache)
-            output_shape = CEmitter._shape_dim_exprs(output_shape_tuple, output_dim_names)
-            update_shape = CEmitter._shape_dim_exprs(update_shape_tuple, update_dim_names)
+            output_shape = CEmitter._shape_dim_exprs(
+                output_shape_tuple, output_dim_names
+            )
+            update_shape = CEmitter._shape_dim_exprs(
+                update_shape_tuple, update_dim_names
+            )
             prefix_shape = output_shape[: op.axis]
             prefix_loop_vars = (
                 CEmitter._loop_vars(output_shape_tuple[: op.axis])
@@ -7870,7 +8044,8 @@ class CEmitter:
             tail_shape = output_shape[op.axis + 1 :]
             tail_loop_vars = (
                 tuple(
-                    f"t{index}" for index in range(len(output_shape_tuple[op.axis + 1 :]))
+                    f"t{index}"
+                    for index in range(len(output_shape_tuple[op.axis + 1 :]))
                 )
                 if output_shape_tuple[op.axis + 1 :]
                 else ()
@@ -7892,8 +8067,12 @@ class CEmitter:
                 f"[{var}]" for var in update_index_vars
             )
             past_suffix = self._param_array_suffix(past_shape_tuple, past_dim_names)
-            update_suffix = self._param_array_suffix(update_shape_tuple, update_dim_names)
-            output_suffix = self._param_array_suffix(output_shape_tuple, output_dim_names)
+            update_suffix = self._param_array_suffix(
+                update_shape_tuple, update_dim_names
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape_tuple, output_dim_names
+            )
             param_decls = [
                 (params["past_cache"], c_type, past_suffix, True),
                 (params["update"], c_type, update_suffix, True),
@@ -8199,7 +8378,11 @@ class CEmitter:
             input_shape = self._ctx_shape(op.input0)
             output_shape_raw = self._ctx_shape(op.output)
             params = self._shared_param_map(
-                [("input0", op.input0), ("repeats_input", op.repeats_input), ("output", op.output)]
+                [
+                    ("input0", op.input0),
+                    ("repeats_input", op.repeats_input),
+                    ("output", op.output),
+                ]
             )
             output_dim_names = _dim_names_for(op.output)
             output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
@@ -8214,7 +8397,10 @@ class CEmitter:
                     (
                         params["repeats_input"],
                         self._ctx_dtype(op.repeats_input).c_type,
-                        self._param_array_suffix(self._ctx_shape(op.repeats_input), _dim_names_for(op.repeats_input)),
+                        self._param_array_suffix(
+                            self._ctx_shape(op.repeats_input),
+                            _dim_names_for(op.repeats_input),
+                        ),
                         True,
                     ),
                     (params["output"], c_type, output_suffix, False),
@@ -8254,7 +8440,9 @@ class CEmitter:
             output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             in_loop_vars = CEmitter._loop_vars(input_shape_raw)
             out_loop_vars = CEmitter._loop_vars(output_shape_raw)
-            idx_vars = tuple(f"pad_idx{index}" for index in range(len(output_shape_raw)))
+            idx_vars = tuple(
+                f"pad_idx{index}" for index in range(len(output_shape_raw))
+            )
             reflect_vars = tuple(
                 f"pad_reflect{index}" for index in range(len(output_shape_raw))
             )
@@ -8263,10 +8451,8 @@ class CEmitter:
             pads_values = op.pads_values
             if op.pads_input is not None:
                 pads_c_type = self._ctx_dtype(op.pads_input).c_type
-                pads_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.pads_input), _dim_names_for(op.pads_input)
-                    )
+                pads_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.pads_input), _dim_names_for(op.pads_input)
                 )
             elif pads_values is not None:
                 pads_c_type = "int64_t"
@@ -8276,10 +8462,8 @@ class CEmitter:
             axes_length = None
             if op.axes_input is not None:
                 axes_c_type = self._ctx_dtype(op.axes_input).c_type
-                axes_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.axes_input), _dim_names_for(op.axes_input)
-                    )
+                axes_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.axes_input), _dim_names_for(op.axes_input)
                 )
                 axes_length = self._ctx_shape(op.axes_input)[0]
                 pad_begin_exprs = tuple(
@@ -8293,15 +8477,15 @@ class CEmitter:
             else:
                 pad_begin_exprs = tuple(str(value) for value in (op.pads_begin or ()))
             if op.value_input is not None:
-                value_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.value_input), _dim_names_for(op.value_input)
-                    )
+                value_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.value_input), _dim_names_for(op.value_input)
                 )
                 pad_value_expr = f"{op.value_input}[0]"
             else:
                 value_suffix = None
-                pad_value_expr = CEmitter._format_literal(self._ctx_dtype(op.output), op.value)
+                pad_value_expr = CEmitter._format_literal(
+                    self._ctx_dtype(op.output), op.value
+                )
             input_strides: list[int] = []
             stride = 1
             for dim in reversed(input_shape_raw):
@@ -8520,7 +8704,9 @@ class CEmitter:
                 output_shape=output_shape,
                 output_loop_vars=loop_vars,
                 input_rank=len(input_shape_raw),
-                starts_len=self._ctx_shape(op.starts_input)[0] if op.starts_input else 0,
+                starts_len=(
+                    self._ctx_shape(op.starts_input)[0] if op.starts_input else 0
+                ),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
@@ -8547,7 +8733,9 @@ class CEmitter:
                 roi_suffix = self._param_array_suffix(self._ctx_shape(op.roi_input))
                 roi_c_type = self._ctx_dtype(op.roi_input).c_type
             if op.scales_input:
-                scales_suffix = self._param_array_suffix(self._ctx_shape(op.scales_input))
+                scales_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.scales_input)
+                )
                 scales_c_type = self._ctx_dtype(op.scales_input).c_type
             if op.sizes_input:
                 sizes_suffix = self._param_array_suffix(self._ctx_shape(op.sizes_input))
@@ -8690,9 +8878,7 @@ class CEmitter:
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
                 linear_offsets=tuple(itertools.product((0, 1), repeat=spatial_rank)),
-                cubic_offsets=tuple(
-                    itertools.product(range(4), repeat=spatial_rank)
-                ),
+                cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
@@ -10857,6 +11043,8 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, MatMulOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, MatMulIntegerOp):
+            return op.output_shape
         if isinstance(op, EinsumOp):
             return op.output_shape
         if isinstance(op, GemmOp):
@@ -11076,6 +11264,7 @@ class CEmitter:
                 SoftmaxOp,
                 LogSoftmaxOp,
                 HardmaxOp,
+                MatMulIntegerOp,
                 MatMulOp,
                 GemmOp,
                 GatherOp,

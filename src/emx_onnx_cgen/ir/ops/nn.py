@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
-from shared.scalar_functions import ScalarFunction
 from shared.scalar_types import ScalarType
 
 from ...errors import ShapeInferenceError, UnsupportedOpError
@@ -181,6 +180,37 @@ class QLinearMatMulOp(MatMulLikeOpBase):
     input0_zero_shape: tuple[int, ...]
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
+
+
+@dataclass(frozen=True)
+class MatMulIntegerOp(MatMulLikeOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input1",
+        "input0_zero_point",
+        "input1_zero_point",
+    )
+    input0: str
+    input1: str
+    input0_zero_point: str | None
+    input1_zero_point: str | None
+    output: str
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    batch_shape: tuple[int, ...]
+    input0_batch_shape: tuple[int, ...]
+    input1_batch_shape: tuple[int, ...]
+    m: int
+    n: int
+    k: int
+    left_vector: bool
+    right_vector: bool
+    input0_dtype: ScalarType
+    input1_dtype: ScalarType
+    dtype: ScalarType
+    input0_zero_shape: tuple[int, ...] | None
+    input1_zero_shape: tuple[int, ...] | None
 
 
 @dataclass(frozen=True)
@@ -669,7 +699,12 @@ class HardmaxOp(RenderableOpBase):
 
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
-        if input_dtype not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
+        if input_dtype not in {
+            ScalarType.F16,
+            ScalarType.BF16,
+            ScalarType.F32,
+            ScalarType.F64,
+        }:
             raise UnsupportedOpError(
                 "Hardmax supports bfloat16, float16, float, and double inputs only"
             )
