@@ -90,6 +90,7 @@ from ..ir.ops import (
     ResizeOp,
     RMSNormalizationOp,
     RotaryEmbeddingOp,
+    ScatterOp,
     ScatterNDOp,
     ShapeOp,
     SizeOp,
@@ -571,6 +572,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -646,6 +648,7 @@ class CEmitter:
         | GatherElementsOp
         | GatherOp
         | GatherNDOp
+        | ScatterOp
         | ScatterNDOp
         | TensorScatterOp
         | TransposeOp
@@ -1333,6 +1336,14 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 batch_dims=op.batch_dims,
             )
+        if isinstance(op, ScatterOp):
+            return ScatterOp(
+                data=name_map.get(op.data, op.data),
+                indices=name_map.get(op.indices, op.indices),
+                updates=name_map.get(op.updates, op.updates),
+                output=name_map.get(op.output, op.output),
+                axis=op.axis,
+            )
         if isinstance(op, ScatterNDOp):
             return ScatterNDOp(
                 data=name_map.get(op.data, op.data),
@@ -1754,6 +1765,7 @@ class CEmitter:
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "gather": self._env.get_template("gather_op.c.j2"),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
+                "scatter": self._env.get_template("scatter_op.c.j2"),
                 "scatter_nd": self._env.get_template("scatter_nd_op.c.j2"),
                 "tensor_scatter": self._env.get_template("tensor_scatter_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
@@ -2412,6 +2424,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -2703,6 +2716,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -3157,6 +3171,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -3229,6 +3244,7 @@ class CEmitter:
         | GatherElementsOp
         | GatherOp
         | GatherNDOp
+        | ScatterOp
         | ScatterNDOp
         | TensorScatterOp
         | TransposeOp
@@ -4034,6 +4050,14 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 batch_dims=op.batch_dims,
             )
+        if isinstance(op, ScatterOp):
+            return ScatterOp(
+                data=temp_map.get(op.data, op.data),
+                indices=temp_map.get(op.indices, op.indices),
+                updates=temp_map.get(op.updates, op.updates),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+            )
         if isinstance(op, ScatterNDOp):
             return ScatterNDOp(
                 data=temp_map.get(op.data, op.data),
@@ -4466,6 +4490,7 @@ class CEmitter:
             maxpool_template=templates["maxpool"],
             concat_template=templates["concat"],
             gather_elements_template=templates["gather_elements"],
+            scatter_template=templates["scatter"],
             gather_template=templates["gather"],
             gather_nd_template=templates["gather_nd"],
             scatter_nd_template=templates["scatter_nd"],
@@ -4970,6 +4995,7 @@ class CEmitter:
         maxpool_template,
         concat_template,
         gather_elements_template,
+        scatter_template,
         gather_template,
         gather_nd_template,
         scatter_nd_template,
@@ -7769,6 +7795,57 @@ class CEmitter:
                 data_shape=data_shape,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ScatterOp):
+            params = self._shared_param_map(
+                [
+                    ("data", op.data),
+                    ("indices", op.indices),
+                    ("updates", op.updates),
+                    ("output", op.output),
+                ]
+            )
+            output_shape_raw = self._ctx_shape(op.output)
+            updates_shape_raw = self._ctx_shape(op.updates)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            updates_shape = CEmitter._codegen_shape(updates_shape_raw)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_indices = list(loop_vars)
+            output_indices[op.axis] = "scatter_index"
+            data_shape = self._ctx_shape(op.data)
+            indices_shape = self._ctx_shape(op.indices)
+            data_suffix = self._param_array_suffix(data_shape)
+            indices_suffix = self._param_array_suffix(indices_shape)
+            updates_suffix = self._param_array_suffix(updates_shape_raw)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["indices"],
+                        self._ctx_dtype(op.indices).c_type,
+                        indices_suffix,
+                        True,
+                    ),
+                    (params["updates"], c_type, updates_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = scatter_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                updates=params["updates"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_shape=output_shape,
+                updates_shape=updates_shape,
+                loop_vars=loop_vars,
+                output_indices=output_indices,
+                axis_dim=data_shape[op.axis],
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ScatterNDOp):
             params = self._shared_param_map(
                 [
@@ -10244,6 +10321,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -10318,6 +10396,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -10468,6 +10547,12 @@ class CEmitter:
             if op.value_input is not None:
                 inputs.append((op.value_input, self._ctx_shape(op.value_input)))
             return tuple(inputs)
+        if isinstance(op, ScatterOp):
+            return (
+                (op.data, self._ctx_shape(op.data)),
+                (op.indices, self._ctx_shape(op.indices)),
+                (op.updates, self._ctx_shape(op.updates)),
+            )
         if isinstance(op, ScatterNDOp):
             return ((op.data, self._ctx_shape(op.data)),)
         if isinstance(op, TensorScatterOp):
@@ -10617,6 +10702,7 @@ class CEmitter:
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
+            | ScatterOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -10991,6 +11077,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, GatherNDOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, ScatterOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, ScatterNDOp):
             return self._ctx_shape(op.output)
         if isinstance(op, TensorScatterOp):
@@ -11168,6 +11256,7 @@ class CEmitter:
                 ConcatOp,
                 GatherElementsOp,
                 GatherNDOp,
+                ScatterOp,
                 ScatterNDOp,
                 TensorScatterOp,
                 TransposeOp,
