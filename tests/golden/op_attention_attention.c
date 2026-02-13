@@ -43,7 +43,7 @@
 #define EMX_STRING_MAX_LEN 256
 #endif
 
-static inline float ref_scalar_f32_fmax(float a, float b) {
+static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
@@ -85,7 +85,7 @@ static inline void node0_attention(const float input_q[1][2][3][4], const float 
                         score_softcap = softcap * tanhf(score_bias / softcap);
                     }
                     scores[ki] = score_softcap;
-                    max_score = ref_scalar_f32_fmax(max_score, score_softcap);
+                    max_score = ref_scalar_f32_maximum(max_score, score_softcap);
                 }
                 float weights[5];
                 float sum = 0.0f;
