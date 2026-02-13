@@ -481,6 +481,56 @@ class ConvIntegerOp(ConvLikeOpBase):
 
 
 @dataclass(frozen=True)
+class QLinearConvOp(ConvLikeOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input_scale",
+        "input_zero_point",
+        "weights",
+        "weight_scale",
+        "weight_zero_point",
+        "output_scale",
+        "output_zero_point",
+        "bias",
+    )
+    input0: str
+    input_scale: str
+    input_zero_point: str
+    weights: str
+    weight_scale: str
+    weight_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    bias: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    spatial_rank: int
+    in_spatial: tuple[int, ...]
+    out_spatial: tuple[int, ...]
+    kernel_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    pads: tuple[int, ...]
+    dilations: tuple[int, ...]
+    group: int
+    input_dtype: ScalarType
+    weight_dtype: ScalarType
+    dtype: ScalarType
+    input_scale_dtype: ScalarType
+    weight_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input_scale_shape: tuple[int, ...]
+    weight_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input_zero_shape: tuple[int, ...]
+    weight_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
+    weight_scale_per_channel: bool
+    weight_zero_per_channel: bool
+
+
+@dataclass(frozen=True)
 class ConvTransposeOp(ConvLikeOpBase):
     input0: str
     weights: str
@@ -669,7 +719,12 @@ class HardmaxOp(RenderableOpBase):
 
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
-        if input_dtype not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
+        if input_dtype not in {
+            ScalarType.F16,
+            ScalarType.BF16,
+            ScalarType.F32,
+            ScalarType.F64,
+        }:
             raise UnsupportedOpError(
                 "Hardmax supports bfloat16, float16, float, and double inputs only"
             )

@@ -83,6 +83,7 @@ from ..ir.ops import (
     PowOp,
     QLinearMulOp,
     QLinearMatMulOp,
+    QLinearConvOp,
     RangeOp,
     ReduceOp,
     ReshapeOp,
@@ -964,6 +965,90 @@ class CEmitter:
                 w_zero_point_shape=op.w_zero_point_shape,
                 w_zero_point_per_channel=op.w_zero_point_per_channel,
             )
+        if isinstance(op, QLinearConvOp):
+            return QLinearConvOp(
+                input0=name_map.get(op.input0, op.input0),
+                input_scale=name_map.get(op.input_scale, op.input_scale),
+                input_zero_point=name_map.get(op.input_zero_point, op.input_zero_point),
+                weights=name_map.get(op.weights, op.weights),
+                weight_scale=name_map.get(op.weight_scale, op.weight_scale),
+                weight_zero_point=name_map.get(
+                    op.weight_zero_point, op.weight_zero_point
+                ),
+                output_scale=name_map.get(op.output_scale, op.output_scale),
+                output_zero_point=name_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                bias=self._map_optional_name(name_map, op.bias),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                group=op.group,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                dtype=op.dtype,
+                input_scale_dtype=op.input_scale_dtype,
+                weight_scale_dtype=op.weight_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input_scale_shape=op.input_scale_shape,
+                weight_scale_shape=op.weight_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input_zero_shape=op.input_zero_shape,
+                weight_zero_shape=op.weight_zero_shape,
+                output_zero_shape=op.output_zero_shape,
+                weight_scale_per_channel=op.weight_scale_per_channel,
+                weight_zero_per_channel=op.weight_zero_per_channel,
+            )
+        if isinstance(op, QLinearConvOp):
+            return QLinearConvOp(
+                input0=name_map.get(op.input0, op.input0),
+                input_scale=name_map.get(op.input_scale, op.input_scale),
+                input_zero_point=name_map.get(op.input_zero_point, op.input_zero_point),
+                weights=name_map.get(op.weights, op.weights),
+                weight_scale=name_map.get(op.weight_scale, op.weight_scale),
+                weight_zero_point=name_map.get(
+                    op.weight_zero_point, op.weight_zero_point
+                ),
+                output_scale=name_map.get(op.output_scale, op.output_scale),
+                output_zero_point=name_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                bias=self._map_optional_name(name_map, op.bias),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                group=op.group,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                dtype=op.dtype,
+                input_scale_dtype=op.input_scale_dtype,
+                weight_scale_dtype=op.weight_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input_scale_shape=op.input_scale_shape,
+                weight_scale_shape=op.weight_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input_zero_shape=op.input_zero_shape,
+                weight_zero_shape=op.weight_zero_shape,
+                output_zero_shape=op.output_zero_shape,
+                weight_scale_per_channel=op.weight_scale_per_channel,
+                weight_zero_per_channel=op.weight_zero_per_channel,
+            )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1706,6 +1791,7 @@ class CEmitter:
                 ),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
+                "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
                 "einsum": self._env.get_template("einsum_op.c.j2"),
                 "gemm": self._env.get_template("gemm_op.c.j2"),
@@ -2315,9 +2401,9 @@ class CEmitter:
         if function in {ScalarFunction.MAXIMUM, ScalarFunction.MINIMUM}:
             if dtype in {ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
                 scalar_function = (
-                    ScalarFunction.FMAX
+                    ScalarFunction.MAXIMUM
                     if function == ScalarFunction.MAXIMUM
-                    else ScalarFunction.FMIN
+                    else ScalarFunction.MINIMUM
                 )
             else:
                 scalar_function = function
@@ -2826,6 +2912,7 @@ class CEmitter:
                     QuantizeLinearOp,
                     QLinearMulOp,
                     QLinearMatMulOp,
+                    QLinearConvOp,
                 ),
             )
             for op in resolved_ops
@@ -3719,6 +3806,48 @@ class CEmitter:
                 w_zero_point_shape=op.w_zero_point_shape,
                 w_zero_point_per_channel=op.w_zero_point_per_channel,
             )
+        if isinstance(op, QLinearConvOp):
+            return QLinearConvOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input_scale=temp_map.get(op.input_scale, op.input_scale),
+                input_zero_point=temp_map.get(op.input_zero_point, op.input_zero_point),
+                weights=temp_map.get(op.weights, op.weights),
+                weight_scale=temp_map.get(op.weight_scale, op.weight_scale),
+                weight_zero_point=temp_map.get(
+                    op.weight_zero_point, op.weight_zero_point
+                ),
+                output_scale=temp_map.get(op.output_scale, op.output_scale),
+                output_zero_point=temp_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                bias=temp_map.get(op.bias, op.bias) if op.bias else None,
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads=op.pads,
+                dilations=op.dilations,
+                group=op.group,
+                input_dtype=op.input_dtype,
+                weight_dtype=op.weight_dtype,
+                dtype=op.dtype,
+                input_scale_dtype=op.input_scale_dtype,
+                weight_scale_dtype=op.weight_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input_scale_shape=op.input_scale_shape,
+                weight_scale_shape=op.weight_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input_zero_shape=op.input_zero_shape,
+                weight_zero_shape=op.weight_zero_shape,
+                output_zero_shape=op.output_zero_shape,
+                weight_scale_per_channel=op.weight_scale_per_channel,
+                weight_zero_per_channel=op.weight_zero_per_channel,
+            )
         if isinstance(op, ConvTransposeOp):
             return ConvTransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4419,6 +4548,7 @@ class CEmitter:
             dequantize_linear_template=templates["dequantize_linear"],
             qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
+            qlinear_conv_template=templates["qlinear_conv"],
             matmul_template=templates["matmul"],
             einsum_template=templates["einsum"],
             gemm_template=templates["gemm"],
@@ -4451,6 +4581,7 @@ class CEmitter:
             gather_template=templates["gather"],
             gather_nd_template=templates["gather_nd"],
             scatter_nd_template=templates["scatter_nd"],
+            tensor_scatter_template=templates["tensor_scatter"],
             transpose_template=templates["transpose"],
             reshape_template=templates["reshape"],
             identity_template=templates["identity"],
@@ -4921,6 +5052,7 @@ class CEmitter:
         dequantize_linear_template,
         qlinear_mul_template,
         qlinear_matmul_template,
+        qlinear_conv_template,
         matmul_template,
         einsum_template,
         gemm_template,
@@ -4953,6 +5085,7 @@ class CEmitter:
         gather_template,
         gather_nd_template,
         scatter_nd_template,
+        tensor_scatter_template,
         transpose_template,
         reshape_template,
         identity_template,
@@ -5108,9 +5241,7 @@ class CEmitter:
                 operator_kind = OperatorKind.FUNC
             if input_dtype == ScalarType.STRING:
                 if op.function == ScalarFunction.EQ:
-                    operator_expr = (
-                        f"(strcmp({left_expr}, {right_expr}) == 0)"
-                    )
+                    operator_expr = f"(strcmp({left_expr}, {right_expr}) == 0)"
                     operator_kind = OperatorKind.EXPR
                 else:
                     raise CodegenError(
@@ -6138,6 +6269,187 @@ class CEmitter:
                 in_indices=in_indices,
                 x_zero_expr=x_zero_expr,
                 w_zero_expr=w_zero_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, QLinearConvOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input_scale", op.input_scale),
+                    ("input_zero_point", op.input_zero_point),
+                    ("weights", op.weights),
+                    ("weight_scale", op.weight_scale),
+                    ("weight_zero_point", op.weight_zero_point),
+                    ("output_scale", op.output_scale),
+                    ("output_zero_point", op.output_zero_point),
+                    ("bias", op.bias),
+                    ("output", op.output),
+                ]
+            )
+            input_shape = (op.batch, op.in_channels, *op.in_spatial)
+            weight_shape = (
+                op.out_channels,
+                op.in_channels // op.group,
+                *op.kernel_shape,
+            )
+            output_shape = (op.batch, op.out_channels, *op.out_spatial)
+            out_indices = tuple(f"od{dim}" for dim in range(op.spatial_rank))
+            kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
+            in_indices = tuple(f"id{dim}" for dim in range(op.spatial_rank))
+            pad_begin = op.pads[: op.spatial_rank]
+            group_in_channels = op.in_channels // op.group
+            group_out_channels = op.out_channels // op.group
+            input_suffix = self._param_array_suffix(input_shape)
+            weight_suffix = self._param_array_suffix(weight_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            input_scale_suffix = self._param_array_suffix(op.input_scale_shape)
+            weight_scale_suffix = self._param_array_suffix(op.weight_scale_shape)
+            output_scale_suffix = self._param_array_suffix(op.output_scale_shape)
+            input_zero_suffix = self._param_array_suffix(op.input_zero_shape)
+            weight_zero_suffix = self._param_array_suffix(op.weight_zero_shape)
+            output_zero_suffix = self._param_array_suffix(op.output_zero_shape)
+            bias_suffix = self._param_array_suffix((op.out_channels,))
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (
+                        params["input_scale"],
+                        op.input_scale_dtype.c_type,
+                        input_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["input_zero_point"],
+                        op.input_dtype.c_type,
+                        input_zero_suffix,
+                        True,
+                    ),
+                    (params["weights"], op.weight_dtype.c_type, weight_suffix, True),
+                    (
+                        params["weight_scale"],
+                        op.weight_scale_dtype.c_type,
+                        weight_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["weight_zero_point"],
+                        op.weight_dtype.c_type,
+                        weight_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_scale"],
+                        op.output_scale_dtype.c_type,
+                        output_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_zero_point"],
+                        op.dtype.c_type,
+                        output_zero_suffix,
+                        True,
+                    ),
+                    (
+                        (params["bias"], ScalarType.I32.c_type, bias_suffix, True)
+                        if params["bias"]
+                        else (None, "", "", True)
+                    ),
+                    (params["output"], op.dtype.c_type, output_suffix, False),
+                ]
+            )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for QLinearConv."
+                )
+            compute_dtype = (
+                ScalarType.F64
+                if ScalarType.F64
+                in {
+                    op.input_scale_dtype,
+                    op.weight_scale_dtype,
+                    op.output_scale_dtype,
+                }
+                else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM,
+                compute_dtype,
+                scalar_registry,
+            )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM,
+                compute_dtype,
+                scalar_registry,
+            )
+            if min_fn is None or max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for QLinearConv."
+                )
+            round_fn = CEmitter._math_fn(ScalarType.F64, "nearbyintf", "nearbyint")
+            weight_scale_expr = (
+                f"{params['weight_scale']}[oc_global]"
+                if op.weight_scale_per_channel
+                else f"{params['weight_scale']}[0]"
+            )
+            weight_zero_expr = (
+                f"{params['weight_zero_point']}[oc_global]"
+                if op.weight_zero_per_channel
+                else f"{params['weight_zero_point']}[0]"
+            )
+            rendered = qlinear_conv_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input_scale=params["input_scale"],
+                input_zero_point=params["input_zero_point"],
+                weights=params["weights"],
+                weight_scale=params["weight_scale"],
+                weight_zero_point=params["weight_zero_point"],
+                output_scale=params["output_scale"],
+                output_zero_point=params["output_zero_point"],
+                bias=params["bias"],
+                output=params["output"],
+                params=param_decls,
+                output_c_type=op.dtype.c_type,
+                compute_type=compute_type,
+                input_suffix=input_suffix,
+                weight_suffix=weight_suffix,
+                input_scale_suffix=input_scale_suffix,
+                weight_scale_suffix=weight_scale_suffix,
+                output_scale_suffix=output_scale_suffix,
+                input_zero_suffix=input_zero_suffix,
+                weight_zero_suffix=weight_zero_suffix,
+                output_zero_suffix=output_zero_suffix,
+                bias_suffix=bias_suffix,
+                output_suffix=output_suffix,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                spatial_rank=op.spatial_rank,
+                in_spatial=op.in_spatial,
+                out_spatial=op.out_spatial,
+                kernel_shape=op.kernel_shape,
+                strides=op.strides,
+                pads_begin=pad_begin,
+                dilations=op.dilations,
+                group=op.group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                out_indices=out_indices,
+                kernel_indices=kernel_indices,
+                in_indices=in_indices,
+                input_scale_expr=f"{params['input_scale']}[0]",
+                weight_scale_expr=weight_scale_expr,
+                output_scale_expr=f"{params['output_scale']}[0]",
+                input_zero_expr=f"{params['input_zero_point']}[0]",
+                weight_zero_expr=weight_zero_expr,
+                output_zero_expr=f"{params['output_zero_point']}[0]",
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
+                round_fn=round_fn,
+                min_fn=min_fn,
+                max_fn=max_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvTransposeOp):
@@ -7859,8 +8171,12 @@ class CEmitter:
             output_shape_tuple = self._ctx_shape(op.output)
             update_shape_tuple = self._ctx_shape(op.update)
             past_shape_tuple = self._ctx_shape(op.past_cache)
-            output_shape = CEmitter._shape_dim_exprs(output_shape_tuple, output_dim_names)
-            update_shape = CEmitter._shape_dim_exprs(update_shape_tuple, update_dim_names)
+            output_shape = CEmitter._shape_dim_exprs(
+                output_shape_tuple, output_dim_names
+            )
+            update_shape = CEmitter._shape_dim_exprs(
+                update_shape_tuple, update_dim_names
+            )
             prefix_shape = output_shape[: op.axis]
             prefix_loop_vars = (
                 CEmitter._loop_vars(output_shape_tuple[: op.axis])
@@ -7870,7 +8186,8 @@ class CEmitter:
             tail_shape = output_shape[op.axis + 1 :]
             tail_loop_vars = (
                 tuple(
-                    f"t{index}" for index in range(len(output_shape_tuple[op.axis + 1 :]))
+                    f"t{index}"
+                    for index in range(len(output_shape_tuple[op.axis + 1 :]))
                 )
                 if output_shape_tuple[op.axis + 1 :]
                 else ()
@@ -7892,8 +8209,12 @@ class CEmitter:
                 f"[{var}]" for var in update_index_vars
             )
             past_suffix = self._param_array_suffix(past_shape_tuple, past_dim_names)
-            update_suffix = self._param_array_suffix(update_shape_tuple, update_dim_names)
-            output_suffix = self._param_array_suffix(output_shape_tuple, output_dim_names)
+            update_suffix = self._param_array_suffix(
+                update_shape_tuple, update_dim_names
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape_tuple, output_dim_names
+            )
             param_decls = [
                 (params["past_cache"], c_type, past_suffix, True),
                 (params["update"], c_type, update_suffix, True),
@@ -8199,7 +8520,11 @@ class CEmitter:
             input_shape = self._ctx_shape(op.input0)
             output_shape_raw = self._ctx_shape(op.output)
             params = self._shared_param_map(
-                [("input0", op.input0), ("repeats_input", op.repeats_input), ("output", op.output)]
+                [
+                    ("input0", op.input0),
+                    ("repeats_input", op.repeats_input),
+                    ("output", op.output),
+                ]
             )
             output_dim_names = _dim_names_for(op.output)
             output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
@@ -8214,7 +8539,10 @@ class CEmitter:
                     (
                         params["repeats_input"],
                         self._ctx_dtype(op.repeats_input).c_type,
-                        self._param_array_suffix(self._ctx_shape(op.repeats_input), _dim_names_for(op.repeats_input)),
+                        self._param_array_suffix(
+                            self._ctx_shape(op.repeats_input),
+                            _dim_names_for(op.repeats_input),
+                        ),
                         True,
                     ),
                     (params["output"], c_type, output_suffix, False),
@@ -8254,7 +8582,9 @@ class CEmitter:
             output_shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             in_loop_vars = CEmitter._loop_vars(input_shape_raw)
             out_loop_vars = CEmitter._loop_vars(output_shape_raw)
-            idx_vars = tuple(f"pad_idx{index}" for index in range(len(output_shape_raw)))
+            idx_vars = tuple(
+                f"pad_idx{index}" for index in range(len(output_shape_raw))
+            )
             reflect_vars = tuple(
                 f"pad_reflect{index}" for index in range(len(output_shape_raw))
             )
@@ -8263,10 +8593,8 @@ class CEmitter:
             pads_values = op.pads_values
             if op.pads_input is not None:
                 pads_c_type = self._ctx_dtype(op.pads_input).c_type
-                pads_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.pads_input), _dim_names_for(op.pads_input)
-                    )
+                pads_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.pads_input), _dim_names_for(op.pads_input)
                 )
             elif pads_values is not None:
                 pads_c_type = "int64_t"
@@ -8276,10 +8604,8 @@ class CEmitter:
             axes_length = None
             if op.axes_input is not None:
                 axes_c_type = self._ctx_dtype(op.axes_input).c_type
-                axes_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.axes_input), _dim_names_for(op.axes_input)
-                    )
+                axes_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.axes_input), _dim_names_for(op.axes_input)
                 )
                 axes_length = self._ctx_shape(op.axes_input)[0]
                 pad_begin_exprs = tuple(
@@ -8293,15 +8619,15 @@ class CEmitter:
             else:
                 pad_begin_exprs = tuple(str(value) for value in (op.pads_begin or ()))
             if op.value_input is not None:
-                value_suffix = (
-                    self._param_array_suffix(
-                        self._ctx_shape(op.value_input), _dim_names_for(op.value_input)
-                    )
+                value_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.value_input), _dim_names_for(op.value_input)
                 )
                 pad_value_expr = f"{op.value_input}[0]"
             else:
                 value_suffix = None
-                pad_value_expr = CEmitter._format_literal(self._ctx_dtype(op.output), op.value)
+                pad_value_expr = CEmitter._format_literal(
+                    self._ctx_dtype(op.output), op.value
+                )
             input_strides: list[int] = []
             stride = 1
             for dim in reversed(input_shape_raw):
@@ -8520,7 +8846,9 @@ class CEmitter:
                 output_shape=output_shape,
                 output_loop_vars=loop_vars,
                 input_rank=len(input_shape_raw),
-                starts_len=self._ctx_shape(op.starts_input)[0] if op.starts_input else 0,
+                starts_len=(
+                    self._ctx_shape(op.starts_input)[0] if op.starts_input else 0
+                ),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ResizeOp):
@@ -8547,7 +8875,9 @@ class CEmitter:
                 roi_suffix = self._param_array_suffix(self._ctx_shape(op.roi_input))
                 roi_c_type = self._ctx_dtype(op.roi_input).c_type
             if op.scales_input:
-                scales_suffix = self._param_array_suffix(self._ctx_shape(op.scales_input))
+                scales_suffix = self._param_array_suffix(
+                    self._ctx_shape(op.scales_input)
+                )
                 scales_c_type = self._ctx_dtype(op.scales_input).c_type
             if op.sizes_input:
                 sizes_suffix = self._param_array_suffix(self._ctx_shape(op.sizes_input))
@@ -8690,9 +9020,7 @@ class CEmitter:
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
                 linear_offsets=tuple(itertools.product((0, 1), repeat=spatial_rank)),
-                cubic_offsets=tuple(
-                    itertools.product(range(4), repeat=spatial_rank)
-                ),
+                cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
@@ -10864,6 +11192,8 @@ class CEmitter:
         if isinstance(op, ConvOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, ConvIntegerOp):
+            return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, QLinearConvOp):
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
