@@ -1490,6 +1490,51 @@ def _make_size_model(*, input_shape: list[int], opset: int = 13) -> onnx.ModelPr
     return model
 
 
+def _make_unique_model(
+    *,
+    input_shape: list[int],
+    output_shapes: tuple[list[int], list[int], list[int], list[int]],
+    dtype: int = TensorProto.FLOAT,
+    axis: int | None = None,
+    sorted_output: int = 1,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", dtype, input_shape)
+    y_shape, indices_shape, inverse_shape, counts_shape = output_shapes
+    y_info = helper.make_tensor_value_info("y", dtype, y_shape)
+    indices_info = helper.make_tensor_value_info(
+        "indices", TensorProto.INT64, indices_shape
+    )
+    inverse_info = helper.make_tensor_value_info(
+        "inverse_indices", TensorProto.INT64, inverse_shape
+    )
+    counts_info = helper.make_tensor_value_info(
+        "counts", TensorProto.INT64, counts_shape
+    )
+    attrs: dict[str, object] = {"sorted": sorted_output}
+    if axis is not None:
+        attrs["axis"] = axis
+    node = helper.make_node(
+        "Unique",
+        inputs=["in0"],
+        outputs=["y", "indices", "inverse_indices", "counts"],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "unique_graph",
+        [input_info],
+        [y_info, indices_info, inverse_info, counts_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 11)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_nonzero_model(
     *,
     input_shape: list[int],
@@ -3925,6 +3970,8 @@ def test_lower_qlinearconv_per_channel_weights() -> None:
     assert op.dtype == ScalarType.U8
     assert op.weight_scale_per_channel is True
     assert op.weight_zero_per_channel is True
+
+
 def test_lower_matmulinteger_with_zero_points() -> None:
     model = _make_matmulinteger_model()
     graph = import_onnx(model)
@@ -4279,6 +4326,52 @@ def test_reduce_op_axes_input_matches_numpy() -> None:
     )
     expected = np.sum(data, axis=tuple(axes), keepdims=bool(keepdims))
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_unique_matches_onnxruntime_without_axis() -> None:
+    model = _make_unique_model(
+        input_shape=[6],
+        output_shapes=([4], [4], [6], [4]),
+        dtype=TensorProto.FLOAT,
+        sorted_output=0,
+    )
+    data = np.array([2.0, 1.0, 2.0, 3.0, 1.0, 4.0], dtype=np.float32)
+    payload = _compile_and_run_testbench(model, testbench_inputs={"in0": data})
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_outputs = session.run(None, {"in0": data})
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_payload = payload["outputs"].get(output_info.name)
+        assert output_payload is not None
+        output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+        output_data = output_data.reshape(ort_output.shape)
+        np.testing.assert_array_equal(output_data, ort_output)
+
+
+def test_unique_matches_onnxruntime_with_axis() -> None:
+    model = _make_unique_model(
+        input_shape=[3, 3],
+        output_shapes=([2, 3], [2], [3], [2]),
+        dtype=TensorProto.FLOAT,
+        axis=0,
+        sorted_output=1,
+    )
+    data = np.array(
+        [[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [1.0, 0.0, 0.0]],
+        dtype=np.float32,
+    )
+    payload = _compile_and_run_testbench(model, testbench_inputs={"in0": data})
+    session = ort.InferenceSession(
+        model.SerializeToString(), providers=["CPUExecutionProvider"]
+    )
+    ort_outputs = session.run(None, {"in0": data})
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_payload = payload["outputs"].get(output_info.name)
+        assert output_payload is not None
+        output_data = decode_testbench_array(output_payload["data"], ort_output.dtype)
+        output_data = output_data.reshape(ort_output.shape)
+        np.testing.assert_array_equal(output_data, ort_output)
 
 
 def test_nonzero_inference_stores_values_in_context() -> None:

@@ -1,0 +1,150 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    {{ input_c_type }} *input_flat = ({{ input_c_type }} *){{ input0 }};
+    {{ input_c_type }} *y_flat = ({{ input_c_type }} *){{ y }};
+    int64_t *indices_flat = (int64_t *){{ indices }};
+    int64_t *inverse_flat = (int64_t *){{ inverse_indices }};
+    int64_t *counts_flat = (int64_t *){{ counts }};
+{% if axis < 0 %}
+    idx_t unique_count = 0;
+    for (idx_t i = 0; i < {{ flat_size }}; ++i) {
+        idx_t found = -1;
+        for (idx_t u = 0; u < unique_count; ++u) {
+            if (y_flat[u] == input_flat[i]) {
+                found = u;
+                break;
+            }
+        }
+        if (found >= 0) {
+            inverse_flat[i] = found;
+            counts_flat[found] += 1;
+            continue;
+        }
+        y_flat[unique_count] = input_flat[i];
+        indices_flat[unique_count] = i;
+        counts_flat[unique_count] = 1;
+        inverse_flat[i] = unique_count;
+        unique_count += 1;
+    }
+    if ({{ sorted_output }} != 0) {
+        for (idx_t i = 0; i < unique_count; ++i) {
+            for (idx_t j = i + 1; j < unique_count; ++j) {
+                if (y_flat[j] < y_flat[i]) {
+                    {{ input_c_type }} y_tmp = y_flat[i];
+                    y_flat[i] = y_flat[j];
+                    y_flat[j] = y_tmp;
+                    int64_t idx_tmp = indices_flat[i];
+                    indices_flat[i] = indices_flat[j];
+                    indices_flat[j] = idx_tmp;
+                    int64_t count_tmp = counts_flat[i];
+                    counts_flat[i] = counts_flat[j];
+                    counts_flat[j] = count_tmp;
+                }
+            }
+        }
+        for (idx_t i = 0; i < {{ flat_size }}; ++i) {
+            for (idx_t u = 0; u < unique_count; ++u) {
+                if (y_flat[u] == input_flat[i]) {
+                    inverse_flat[i] = u;
+                    break;
+                }
+            }
+        }
+    }
+{% else %}
+    idx_t slice_size = {{ outer }} * {{ inner }};
+    idx_t unique_count = 0;
+    for (idx_t a = 0; a < {{ axis_dim }}; ++a) {
+        idx_t found = -1;
+        for (idx_t u = 0; u < unique_count; ++u) {
+            int same = 1;
+            for (idx_t p = 0; p < slice_size; ++p) {
+                idx_t o = p / {{ inner }};
+                idx_t in = p % {{ inner }};
+                idx_t in_off_a = o * {{ axis_dim }} * {{ inner }} + a * {{ inner }} + in;
+                idx_t y_off_u = o * {{ y_axis_dim }} * {{ inner }} + u * {{ inner }} + in;
+                if (input_flat[in_off_a] != y_flat[y_off_u]) {
+                    same = 0;
+                    break;
+                }
+            }
+            if (same != 0) {
+                found = u;
+                break;
+            }
+        }
+        if (found >= 0) {
+            inverse_flat[a] = found;
+            counts_flat[found] += 1;
+            continue;
+        }
+        for (idx_t p = 0; p < slice_size; ++p) {
+            idx_t o = p / {{ inner }};
+            idx_t in = p % {{ inner }};
+            idx_t in_off_a = o * {{ axis_dim }} * {{ inner }} + a * {{ inner }} + in;
+            idx_t y_off_u = o * {{ y_axis_dim }} * {{ inner }} + unique_count * {{ inner }} + in;
+            y_flat[y_off_u] = input_flat[in_off_a];
+        }
+        indices_flat[unique_count] = a;
+        counts_flat[unique_count] = 1;
+        inverse_flat[a] = unique_count;
+        unique_count += 1;
+    }
+    if ({{ sorted_output }} != 0) {
+        for (idx_t i = 0; i < unique_count; ++i) {
+            for (idx_t j = i + 1; j < unique_count; ++j) {
+                int cmp = 0;
+                for (idx_t p = 0; p < slice_size; ++p) {
+                    idx_t o = p / {{ inner }};
+                    idx_t in = p % {{ inner }};
+                    idx_t off_i = o * {{ y_axis_dim }} * {{ inner }} + i * {{ inner }} + in;
+                    idx_t off_j = o * {{ y_axis_dim }} * {{ inner }} + j * {{ inner }} + in;
+                    if (y_flat[off_j] < y_flat[off_i]) {
+                        cmp = -1;
+                        break;
+                    }
+                    if (y_flat[off_j] > y_flat[off_i]) {
+                        cmp = 1;
+                        break;
+                    }
+                }
+                if (cmp < 0) {
+                    for (idx_t p = 0; p < slice_size; ++p) {
+                        idx_t o = p / {{ inner }};
+                        idx_t in = p % {{ inner }};
+                        idx_t off_i = o * {{ y_axis_dim }} * {{ inner }} + i * {{ inner }} + in;
+                        idx_t off_j = o * {{ y_axis_dim }} * {{ inner }} + j * {{ inner }} + in;
+                        {{ input_c_type }} y_tmp = y_flat[off_i];
+                        y_flat[off_i] = y_flat[off_j];
+                        y_flat[off_j] = y_tmp;
+                    }
+                    int64_t idx_tmp = indices_flat[i];
+                    indices_flat[i] = indices_flat[j];
+                    indices_flat[j] = idx_tmp;
+                    int64_t count_tmp = counts_flat[i];
+                    counts_flat[i] = counts_flat[j];
+                    counts_flat[j] = count_tmp;
+                }
+            }
+        }
+        for (idx_t a = 0; a < {{ axis_dim }}; ++a) {
+            for (idx_t u = 0; u < unique_count; ++u) {
+                int same = 1;
+                for (idx_t p = 0; p < slice_size; ++p) {
+                    idx_t o = p / {{ inner }};
+                    idx_t in = p % {{ inner }};
+                    idx_t in_off_a = o * {{ axis_dim }} * {{ inner }} + a * {{ inner }} + in;
+                    idx_t y_off_u = o * {{ y_axis_dim }} * {{ inner }} + u * {{ inner }} + in;
+                    if (input_flat[in_off_a] != y_flat[y_off_u]) {
+                        same = 0;
+                        break;
+                    }
+                }
+                if (same != 0) {
+                    inverse_flat[a] = u;
+                    break;
+                }
+            }
+        }
+    }
+{% endif %}
+}

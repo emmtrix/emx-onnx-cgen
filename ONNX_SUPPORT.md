@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1445 / 1802 official ONNX files.
+Support 1451 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1647,12 +1647,12 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_triu_square/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_square_neg/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_triu_zero/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_unique_length_1/model.onnx | 11 | ❌ | Unsupported op Unique |
-| onnx-org/onnx/backend/test/data/node/test_unique_not_sorted_without_axis/model.onnx | 11 | ❌ | Unsupported op Unique |
-| onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_axis/model.onnx | 11 | ❌ | Unsupported op Unique |
-| onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_axis_3d/model.onnx | 11 | ❌ | Unsupported op Unique |
-| onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_negative_axis/model.onnx | 11 | ❌ | Unsupported op Unique |
-| onnx-org/onnx/backend/test/data/node/test_unique_sorted_without_axis/model.onnx | 11 | ❌ | Unsupported op Unique |
+| onnx-org/onnx/backend/test/data/node/test_unique_length_1/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_unique_not_sorted_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_axis_3d/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_negative_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_unique_sorted_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_unsqueeze_axis_0/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_unsqueeze_axis_1/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_unsqueeze_axis_2/model.onnx | 25 | ✅ | OK (max ULP 0) |

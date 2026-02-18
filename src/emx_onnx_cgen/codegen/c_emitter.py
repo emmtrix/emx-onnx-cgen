@@ -108,6 +108,7 @@ from ..ir.ops import (
     TopKOp,
     TransposeOp,
     TriluOp,
+    UniqueOp,
     UnaryOp,
     WhereOp,
 )
@@ -597,6 +598,7 @@ class CEmitter:
             | SizeOp
             | OptionalHasElementOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -673,6 +675,7 @@ class CEmitter:
         | SizeOp
         | OptionalHasElementOp
         | NonZeroOp
+        | UniqueOp
         | NonMaxSuppressionOp
         | ExpandOp
         | CumSumOp
@@ -1639,6 +1642,16 @@ class CEmitter:
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
             )
+        if isinstance(op, UniqueOp):
+            return UniqueOp(
+                input0=name_map.get(op.input0, op.input0),
+                y=name_map.get(op.y, op.y),
+                indices=name_map.get(op.indices, op.indices),
+                inverse_indices=name_map.get(op.inverse_indices, op.inverse_indices),
+                counts=name_map.get(op.counts, op.counts),
+                axis=op.axis,
+                sorted=op.sorted,
+            )
         if isinstance(op, NonMaxSuppressionOp):
             return NonMaxSuppressionOp(
                 boxes=name_map.get(op.boxes, op.boxes),
@@ -1911,6 +1924,7 @@ class CEmitter:
                     "optional_has_element_op.c.j2"
                 ),
                 "nonzero": self._env.get_template("nonzero_op.c.j2"),
+                "unique": self._env.get_template("unique_op.c.j2"),
                 "nonmax_suppression": self._env.get_template(
                     "nonmax_suppression_op.c.j2"
                 ),
@@ -2562,6 +2576,7 @@ class CEmitter:
             | SizeOp
             | OptionalHasElementOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -2609,6 +2624,8 @@ class CEmitter:
                 return model.op_context.dtype(op.input0)
             if isinstance(op, SplitOp):
                 return model.op_context.dtype(op.outputs[0])
+            if isinstance(op, UniqueOp):
+                return model.op_context.dtype(op.y)
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -2854,6 +2871,7 @@ class CEmitter:
             | SizeOp
             | OptionalHasElementOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -3035,6 +3053,7 @@ class CEmitter:
             | SizeOp
             | OptionalHasElementOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -3142,6 +3161,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -3309,6 +3329,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -3382,6 +3403,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | NonZeroOp
+        | UniqueOp
         | NonMaxSuppressionOp
         | ExpandOp
         | CumSumOp
@@ -4574,6 +4596,16 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 seed=op.seed,
             )
+        if isinstance(op, UniqueOp):
+            return UniqueOp(
+                input0=temp_map.get(op.input0, op.input0),
+                y=temp_map.get(op.y, op.y),
+                indices=temp_map.get(op.indices, op.indices),
+                inverse_indices=temp_map.get(op.inverse_indices, op.inverse_indices),
+                counts=temp_map.get(op.counts, op.counts),
+                axis=op.axis,
+                sorted=op.sorted,
+            )
         return UnaryOp(
             input0=temp_map.get(op.input0, op.input0),
             output=temp_map.get(op.output, op.output),
@@ -4711,6 +4743,7 @@ class CEmitter:
             size_template=templates["size"],
             optional_has_element_template=templates["optional_has_element"],
             nonzero_template=templates["nonzero"],
+            unique_template=templates["unique"],
             nonmax_suppression_template=templates["nonmax_suppression"],
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
@@ -5218,6 +5251,7 @@ class CEmitter:
         size_template,
         optional_has_element_template,
         nonzero_template,
+        unique_template,
         nonmax_suppression_template,
         expand_template,
         cumsum_template,
@@ -9469,6 +9503,83 @@ class CEmitter:
                 zero_literal=input_dtype.zero_literal,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, UniqueOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("y", op.y),
+                    ("indices", op.indices),
+                    ("inverse_indices", op.inverse_indices),
+                    ("counts", op.counts),
+                ]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            y_shape = self._ctx_shape(op.y)
+            input_dtype = self._ctx_dtype(op.input0)
+            y_dtype = self._ctx_dtype(op.y)
+            indices_dtype = self._ctx_dtype(op.indices)
+            inverse_dtype = self._ctx_dtype(op.inverse_indices)
+            counts_dtype = self._ctx_dtype(op.counts)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            y_suffix = self._param_array_suffix(y_shape, _dim_names_for(op.y))
+            indices_suffix = self._param_array_suffix(
+                self._ctx_shape(op.indices), _dim_names_for(op.indices)
+            )
+            inverse_suffix = self._param_array_suffix(
+                self._ctx_shape(op.inverse_indices), _dim_names_for(op.inverse_indices)
+            )
+            counts_suffix = self._param_array_suffix(
+                self._ctx_shape(op.counts), _dim_names_for(op.counts)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["y"], y_dtype.c_type, y_suffix, False),
+                    (params["indices"], indices_dtype.c_type, indices_suffix, False),
+                    (
+                        params["inverse_indices"],
+                        inverse_dtype.c_type,
+                        inverse_suffix,
+                        False,
+                    ),
+                    (params["counts"], counts_dtype.c_type, counts_suffix, False),
+                ]
+            )
+            rendered = unique_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                dim_args=dim_args,
+                input0=params["input0"],
+                y=params["y"],
+                indices=params["indices"],
+                inverse_indices=params["inverse_indices"],
+                counts=params["counts"],
+                input_shape=CEmitter._shape_dim_exprs(
+                    input_shape, _dim_names_for(op.input0)
+                ),
+                y_shape=CEmitter._shape_dim_exprs(y_shape, _dim_names_for(op.y)),
+                input_rank=len(input_shape),
+                axis=-1 if op.axis is None else op.axis,
+                flat_size=CEmitter._element_count_expr(input_shape),
+                axis_dim=(0 if op.axis is None else input_shape[op.axis]),
+                y_axis_dim=(y_shape[0] if op.axis is None else y_shape[op.axis]),
+                outer=(
+                    0
+                    if op.axis is None
+                    else CEmitter._element_count_expr(input_shape[: op.axis])
+                ),
+                inner=(
+                    0
+                    if op.axis is None
+                    else CEmitter._element_count_expr(input_shape[op.axis + 1 :])
+                ),
+                sorted_output=1 if op.sorted else 0,
+                input_c_type=input_dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, NonMaxSuppressionOp):
             if scalar_registry is None:
                 raise CodegenError(
@@ -10960,6 +11071,8 @@ class CEmitter:
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, NonZeroOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
+        if isinstance(op, UniqueOp):
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, OptionalHasElementOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, NonMaxSuppressionOp):
@@ -11125,6 +11238,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
@@ -11205,6 +11319,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
@@ -11406,6 +11521,17 @@ class CEmitter:
             return (
                 (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),
             )
+        if isinstance(op, UniqueOp):
+            return (
+                (op.y, self._ctx_shape(op.y), self._ctx_dtype(op.y)),
+                (op.indices, self._ctx_shape(op.indices), self._ctx_dtype(op.indices)),
+                (
+                    op.inverse_indices,
+                    self._ctx_shape(op.inverse_indices),
+                    self._ctx_dtype(op.inverse_indices),
+                ),
+                (op.counts, self._ctx_shape(op.counts), self._ctx_dtype(op.counts)),
+            )
         return (
             (
                 op.output,
@@ -11470,6 +11596,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -11607,6 +11734,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, NonZeroOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, UniqueOp):
+            return self._ctx_shape(op.y)
         if isinstance(op, NonMaxSuppressionOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ExpandOp):
@@ -11686,6 +11815,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | NonZeroOp
+            | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
@@ -11708,6 +11838,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, NonZeroOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, UniqueOp):
+            return self._ctx_dtype(op.y)
         if isinstance(op, NonMaxSuppressionOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, TfIdfVectorizerOp):

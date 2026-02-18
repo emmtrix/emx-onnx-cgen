@@ -47,6 +47,7 @@ from .misc import (
     TileOp,
     TransposeOp,
     TriluOp,
+    UniqueOp,
 )
 from .nn import (
     AdagradOp,
@@ -161,6 +162,7 @@ __all__ = [
     "TopKOp",
     "TransposeOp",
     "TriluOp",
+    "UniqueOp",
     "UnaryOp",
     "VariadicOp",
     "WhereOp",
