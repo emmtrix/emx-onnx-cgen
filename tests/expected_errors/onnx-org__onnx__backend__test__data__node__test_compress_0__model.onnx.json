@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Compress",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_compress_0 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Compress"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "efbb0983e7f6cf6ae103d46f3fc1a0b80775e61fc3b6c8c0eae8e1ccd2855fb8"
 }

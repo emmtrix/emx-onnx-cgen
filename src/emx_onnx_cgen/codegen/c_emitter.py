@@ -40,6 +40,7 @@ from ..ir.ops import (
     BinaryOp,
     CastOp,
     ClipOp,
+    CompressOp,
     ConcatOp,
     ConstantOfShapeOp,
     ConvOp,
@@ -572,6 +573,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | CompressOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -649,6 +651,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | CompressOp
         | GatherElementsOp
         | GatherOp
         | GatherNDOp
@@ -1432,6 +1435,13 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 axis=op.axis,
             )
+        if isinstance(op, CompressOp):
+            return CompressOp(
+                data=name_map.get(op.data, op.data),
+                condition=name_map.get(op.condition, op.condition),
+                output=name_map.get(op.output, op.output),
+                axis=op.axis,
+            )
         if isinstance(op, GatherElementsOp):
             return GatherElementsOp(
                 data=name_map.get(op.data, op.data),
@@ -1891,6 +1901,7 @@ class CEmitter:
                 ),
                 "maxpool": self._env.get_template("maxpool_op.c.j2"),
                 "concat": self._env.get_template("concat_op.c.j2"),
+                "compress": self._env.get_template("compress_op.c.j2"),
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "gather": self._env.get_template("gather_op.c.j2"),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
@@ -2551,6 +2562,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | CompressOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -2846,6 +2858,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | CompressOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -3031,6 +3044,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | CompressOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -3140,6 +3154,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | CompressOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -4298,6 +4313,13 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
             )
+        if isinstance(op, CompressOp):
+            return CompressOp(
+                data=temp_map.get(op.data, op.data),
+                condition=temp_map.get(op.condition, op.condition),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+            )
         if isinstance(op, ConstantOfShapeOp):
             return ConstantOfShapeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4714,6 +4736,7 @@ class CEmitter:
             softmax_cross_entropy_loss_template=templates["softmax_cross_entropy_loss"],
             maxpool_template=templates["maxpool"],
             concat_template=templates["concat"],
+            compress_template=templates["compress"],
             gather_elements_template=templates["gather_elements"],
             scatter_template=templates["scatter"],
             gather_template=templates["gather"],
@@ -5222,6 +5245,7 @@ class CEmitter:
         softmax_cross_entropy_loss_template,
         maxpool_template,
         concat_template,
+        compress_template,
         gather_elements_template,
         scatter_template,
         gather_template,
@@ -8179,6 +8203,63 @@ class CEmitter:
                 input_count=len(op.inputs),
                 outer=outer,
                 inner=inner,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, CompressOp):
+            params = self._shared_param_map(
+                [
+                    ("data", op.data),
+                    ("condition", op.condition),
+                    ("output", op.output),
+                ]
+            )
+            data_shape = self._ctx_shape(op.data)
+            condition_shape = self._ctx_shape(op.condition)
+            output_shape_raw = self._ctx_shape(op.output)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            output_size = CEmitter._element_count(output_shape_raw)
+            condition_length = condition_shape[0]
+            data_suffix = self._param_array_suffix(data_shape)
+            condition_suffix = self._param_array_suffix(condition_shape)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_strides: list[int] = []
+            stride = 1
+            for dim in reversed(output_shape_raw):
+                output_strides.append(stride)
+                stride *= dim
+            output_strides = tuple(reversed(output_strides))
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["condition"],
+                        self._ctx_dtype(op.condition).c_type,
+                        condition_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = compress_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                condition=params["condition"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                data_suffix=data_suffix,
+                condition_suffix=condition_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                output_size=output_size,
+                output_strides=output_strides,
+                condition_length=condition_length,
+                axis=op.axis,
+                axis_is_none=op.axis is None,
+                loop_vars=loop_vars,
+                dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GatherElementsOp):
@@ -11684,6 +11765,8 @@ class CEmitter:
             return (op.batch, op.channels, *op.out_spatial)
         if isinstance(op, ConcatOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, CompressOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, GatherElementsOp):
             return self._ctx_shape(op.output)
         if isinstance(op, GatherOp):
@@ -11873,6 +11956,7 @@ class CEmitter:
                 GemmOp,
                 GatherOp,
                 ConcatOp,
+                CompressOp,
                 GatherElementsOp,
                 GatherNDOp,
                 ScatterOp,
