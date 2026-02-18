@@ -28,7 +28,7 @@ from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 from emx_onnx_cgen.errors import ShapeInferenceError
 from emx_onnx_cgen.ir.context import GraphContext
 from emx_onnx_cgen.ir.op_context import OpContext
-from emx_onnx_cgen.ir.ops import NonMaxSuppressionOp, NonZeroOp, ResizeOp
+from emx_onnx_cgen.ir.ops import CompressOp, NonMaxSuppressionOp, NonZeroOp, ResizeOp
 from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
@@ -2555,6 +2555,76 @@ def _make_gather_elements_model(
     return model
 
 
+def _make_compress_model(
+    *,
+    data_shape: list[int],
+    condition_values: np.ndarray,
+    axis: int | None,
+    data_dtype: int = TensorProto.FLOAT,
+    condition_as_initializer: bool = False,
+    opset: int = 13,
+) -> onnx.ModelProto:
+    condition_values = condition_values.astype(np.bool_)
+    condition_shape = [int(condition_values.size)]
+    if axis is None:
+        output_shape = [int(np.count_nonzero(condition_values))]
+    else:
+        normalized_axis = axis if axis >= 0 else axis + len(data_shape)
+        output_shape = list(data_shape)
+        output_shape[normalized_axis] = int(np.count_nonzero(condition_values))
+
+    data_input = helper.make_tensor_value_info("data", data_dtype, data_shape)
+    inputs = [data_input]
+    initializers = []
+    value_infos = []
+    if condition_as_initializer:
+        condition_tensor = helper.make_tensor(
+            "condition",
+            TensorProto.BOOL,
+            dims=condition_shape,
+            vals=condition_values.tolist(),
+        )
+        initializers.append(condition_tensor)
+        value_infos.append(
+            helper.make_tensor_value_info(
+                "condition", TensorProto.BOOL, condition_shape
+            )
+        )
+    else:
+        inputs.append(
+            helper.make_tensor_value_info(
+                "condition", TensorProto.BOOL, condition_shape
+            )
+        )
+
+    output = helper.make_tensor_value_info("out", data_dtype, output_shape)
+    attrs: dict[str, int] = {}
+    if axis is not None:
+        attrs["axis"] = axis
+    node = helper.make_node(
+        "Compress",
+        inputs=["data", "condition"],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "compress_graph",
+        inputs,
+        [output],
+        initializer=initializers,
+        value_info=value_infos,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_gather_model(
     *,
     data_shape: list[int],
@@ -4733,6 +4803,43 @@ def test_constant_op_matches_onnxruntime() -> None:
 def test_constant_of_shape_matches_onnxruntime() -> None:
     model = _make_constant_of_shape_model()
     _run_ort_compare(model)
+
+
+def test_compress_matches_onnxruntime_with_axis() -> None:
+    model = _make_compress_model(
+        data_shape=[3, 4],
+        condition_values=np.array([True, False, True], dtype=np.bool_),
+        axis=0,
+        condition_as_initializer=True,
+    )
+    _run_ort_compare(model)
+
+
+def test_compress_matches_onnxruntime_default_axis() -> None:
+    model = _make_compress_model(
+        data_shape=[2, 3],
+        condition_values=np.array(
+            [True, False, True, True, False, False], dtype=np.bool_
+        ),
+        axis=None,
+    )
+    _run_ort_compare(model)
+
+
+def test_compress_lowering_axis_defaults_to_none() -> None:
+    model = _make_compress_model(
+        data_shape=[2, 3],
+        condition_values=np.array(
+            [True, False, True, False, True, False], dtype=np.bool_
+        ),
+        axis=None,
+        condition_as_initializer=True,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    op = get_lowering("Compress")(graph, graph.nodes[0])
+    assert isinstance(op, CompressOp)
+    assert op.axis is None
 
 
 def test_gather_elements_matches_onnxruntime() -> None:

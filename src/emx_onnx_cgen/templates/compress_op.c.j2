@@ -1,0 +1,35 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if axis_is_none %}
+    idx_t out_index = 0;
+    for (idx_t cond_index = 0; cond_index < {{ condition_length }}; ++cond_index) {
+        if (!{{ condition }}[cond_index]) {
+            continue;
+        }
+        if (out_index < {{ output_size }}) {
+            {{ output }}[out_index] = ((const {{ c_type }}*){{ data }})[cond_index];
+            ++out_index;
+        }
+    }
+{% else %}
+    for (idx_t out_linear = 0; out_linear < {{ output_size }}; ++out_linear) {
+        idx_t remainder = out_linear;
+{% for dim in output_shape %}
+        idx_t {{ loop_vars[loop.index0] }} = remainder / {{ output_strides[loop.index0] }};
+        remainder = remainder % {{ output_strides[loop.index0] }};
+{% endfor %}
+        idx_t selected_data_axis = 0;
+        idx_t selected_count = 0;
+        for (idx_t cond_index = 0; cond_index < {{ condition_length }}; ++cond_index) {
+            if (!{{ condition }}[cond_index]) {
+                continue;
+            }
+            if (selected_count == {{ loop_vars[axis] }}) {
+                selected_data_axis = cond_index;
+                break;
+            }
+            ++selected_count;
+        }
+        {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ data }}{% for var in loop_vars %}[{% if loop.index0 == axis %}selected_data_axis{% else %}{{ var }}{% endif %}]{% endfor %};
+    }
+{% endif %}
+}

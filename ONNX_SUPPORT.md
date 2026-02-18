@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1451 / 1802 official ONNX files.
+Support 1455 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -502,10 +502,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_col2im_dilations/model.onnx | 18 | ❌ | Unsupported op Col2Im |
 | onnx-org/onnx/backend/test/data/node/test_col2im_pads/model.onnx | 18 | ❌ | Unsupported op Col2Im |
 | onnx-org/onnx/backend/test/data/node/test_col2im_strides/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| onnx-org/onnx/backend/test/data/node/test_compress_0/model.onnx | 11 | ❌ | Unsupported op Compress |
-| onnx-org/onnx/backend/test/data/node/test_compress_1/model.onnx | 11 | ❌ | Unsupported op Compress |
-| onnx-org/onnx/backend/test/data/node/test_compress_default_axis/model.onnx | 11 | ❌ | Unsupported op Compress |
-| onnx-org/onnx/backend/test/data/node/test_compress_negative_axis/model.onnx | 11 | ❌ | Unsupported op Compress |
+| onnx-org/onnx/backend/test/data/node/test_compress_0/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_compress_1/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_compress_default_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_compress_negative_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_concat_1d_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_concat_1d_axis_negative_1/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_concat_2d_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |

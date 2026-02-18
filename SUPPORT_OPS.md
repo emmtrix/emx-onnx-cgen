@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 160 / 201
+Supported operators: 161 / 201
 
 | Operator | Supported |
 | --- | --- |
@@ -35,7 +35,7 @@ Supported operators: 160 / 201
 | CenterCropPad | ❌ |
 | Clip | ✅ |
 | Col2Im | ❌ |
-| Compress | ❌ |
+| Compress | ✅ |
 | Concat | ✅ |
 | ConcatFromSequence | ❌ |
 | Constant | ✅ |
