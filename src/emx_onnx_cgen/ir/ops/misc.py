@@ -573,6 +573,87 @@ class NonZeroOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class UniqueOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("y", "indices", "inverse_indices", "counts")
+    input0: str
+    y: str
+    indices: str
+    inverse_indices: str
+    counts: str
+    axis: int | None
+    sorted: bool
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_dtype = ctx.dtype(self.input0)
+        if input_dtype == ScalarType.STRING:
+            raise UnsupportedOpError(f"{self.kind} does not support string input")
+        y_dtype = ctx.dtype(self.y)
+        if y_dtype != input_dtype:
+            raise UnsupportedOpError(
+                f"{self.kind} Y dtype must match input dtype {input_dtype.onnx_name}, got {y_dtype.onnx_name}"
+            )
+        for name in (self.indices, self.inverse_indices, self.counts):
+            output_dtype = ctx.dtype(name)
+            if output_dtype != ScalarType.I64:
+                raise UnsupportedOpError(
+                    f"{self.kind} output {name} must be int64, got {output_dtype.onnx_name}"
+                )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        y_shape = ctx.shape(self.y)
+        indices_shape = ctx.shape(self.indices)
+        inverse_shape = ctx.shape(self.inverse_indices)
+        counts_shape = ctx.shape(self.counts)
+        if len(indices_shape) != 1 or len(counts_shape) != 1:
+            raise ShapeInferenceError(
+                f"{self.kind} indices and counts outputs must be rank-1"
+            )
+        if self.axis is None:
+            if len(y_shape) != 1:
+                raise ShapeInferenceError(f"{self.kind} Y output must be rank-1")
+            if len(inverse_shape) != 1:
+                raise ShapeInferenceError(
+                    f"{self.kind} inverse_indices output must be rank-1"
+                )
+            if inverse_shape[0] != _shape_product(input_shape):
+                raise ShapeInferenceError(
+                    f"{self.kind} inverse_indices length must be {_shape_product(input_shape)}, got {inverse_shape[0]}"
+                )
+            if y_shape[0] != indices_shape[0] or y_shape[0] != counts_shape[0]:
+                raise ShapeInferenceError(
+                    f"{self.kind} Y/indices/counts lengths must match, got {y_shape[0]}, {indices_shape[0]}, {counts_shape[0]}"
+                )
+            return None
+        axis = self.axis
+        rank = len(input_shape)
+        if axis < 0 or axis >= rank:
+            raise ShapeInferenceError(
+                f"{self.kind} axis {axis} out of range for rank {rank}"
+            )
+        if len(y_shape) != rank:
+            raise ShapeInferenceError(
+                f"{self.kind} Y output rank must be {rank}, got {len(y_shape)}"
+            )
+        for dim_index, (in_dim, out_dim) in enumerate(zip(input_shape, y_shape)):
+            if dim_index == axis:
+                continue
+            if in_dim != out_dim:
+                raise ShapeInferenceError(
+                    f"{self.kind} Y output shape must match input outside axis {axis}, got {y_shape} for input {input_shape}"
+                )
+        if indices_shape[0] != y_shape[axis] or counts_shape[0] != y_shape[axis]:
+            raise ShapeInferenceError(
+                f"{self.kind} indices/counts length must match Y axis {axis} size {y_shape[axis]}"
+            )
+        if len(inverse_shape) != 1 or inverse_shape[0] != input_shape[axis]:
+            raise ShapeInferenceError(
+                f"{self.kind} inverse_indices length must be input axis {axis} size {input_shape[axis]}"
+            )
+
+
+@dataclass(frozen=True)
 class NonMaxSuppressionOp(RenderableOpBase):
     __io_inputs__ = (
         "boxes",

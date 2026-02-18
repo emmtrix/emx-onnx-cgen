@@ -80,6 +80,7 @@ _LOWERING_MODULES = [
     "tile",
     "topk",
     "transpose",
+    "unique",
     "trilu",
     "unsqueeze",
     "upsample",
