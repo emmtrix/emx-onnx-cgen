@@ -12,6 +12,7 @@ from .elementwise import (
 from .misc import (
     BernoulliOp,
     CastOp,
+    CompressOp,
     ConcatOp,
     ConstantOfShapeOp,
     CumSumOp,
@@ -93,6 +94,7 @@ __all__ = [
     "BernoulliOp",
     "BinaryOp",
     "CastOp",
+    "CompressOp",
     "ClipOp",
     "ConcatOp",
     "ConstantOfShapeOp",

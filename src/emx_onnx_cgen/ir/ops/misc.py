@@ -82,6 +82,16 @@ class ConcatOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class CompressOp(RenderableOpBase):
+    __io_inputs__ = ("data", "condition")
+    __io_outputs__ = ("output",)
+    data: str
+    condition: str
+    output: str
+    axis: int | None
+
+
+@dataclass(frozen=True)
 class GatherElementsOp(RenderableOpBase):
     __io_inputs__ = ("data", "indices")
     __io_outputs__ = ("output",)

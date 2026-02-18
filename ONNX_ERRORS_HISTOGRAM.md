@@ -25,7 +25,6 @@
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
-| Unsupported op Compress | 4 | 11 |
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
@@ -72,7 +71,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op Compress | 11 | 4 |
 | Unsupported op DynamicQuantizeLinear | 11 | 3 |
 | Unsupported op Loop | 11 | 3 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 11 | 2 |
