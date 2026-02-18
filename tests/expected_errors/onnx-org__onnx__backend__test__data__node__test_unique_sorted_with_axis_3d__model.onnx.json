@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Unique",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_unique_sorted_with_axis_3d model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Unique"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "1e83fdb90b480fa021308cc1de01dd4979088842b44064be8935367e54b81a2e"
 }
