@@ -19,7 +19,6 @@
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
 | Unsupported op StringSplit | 6 | 20 |
-| Unsupported op Unique | 6 | 11 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op If | 5 | 11, 20 |
 | Unsupported op StringConcat | 5 | 20 |
@@ -73,7 +72,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op Unique | 11 | 6 |
 | Unsupported op Compress | 11 | 4 |
 | Unsupported op DynamicQuantizeLinear | 11 | 3 |
 | Unsupported op Loop | 11 | 3 |
