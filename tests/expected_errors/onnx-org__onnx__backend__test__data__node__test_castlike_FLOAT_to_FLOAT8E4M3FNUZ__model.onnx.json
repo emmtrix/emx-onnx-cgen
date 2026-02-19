@@ -1,5 +1,5 @@
 {
-  "error": "Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'.",
+  "error": "Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "CastLike"

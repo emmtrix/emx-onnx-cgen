@@ -1,5 +1,5 @@
 {
-  "error": "Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'output'.",
+  "error": "Unsupported elem_type 21 (UINT4) for tensor 'output'.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT4 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Cast"

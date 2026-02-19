@@ -1,5 +1,5 @@
 {
-  "error": "Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'x'.",
+  "error": "Unsupported elem_type 22 (INT4) for tensor 'x'.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int4 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "DequantizeLinear"

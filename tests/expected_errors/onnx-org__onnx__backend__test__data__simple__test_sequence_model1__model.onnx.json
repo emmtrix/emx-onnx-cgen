@@ -1,5 +1,5 @@
 {
-  "error": "Failed to import model graph: Dynamic dim for tensor 'out'",
+  "error": "Dynamic dim for tensor 'out'",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model1 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceEmpty",

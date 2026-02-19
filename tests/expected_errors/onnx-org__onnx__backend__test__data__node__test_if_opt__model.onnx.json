@@ -1,5 +1,5 @@
 {
-  "error": "Failed to import model graph: Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs.",
+  "error": "Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_opt model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "If"

@@ -1,5 +1,5 @@
 {
-  "error": "Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'output'.",
+  "error": "Unsupported elem_type 25 (UINT2) for tensor 'output'.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT2 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Cast"

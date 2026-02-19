@@ -1,5 +1,5 @@
 {
-  "error": "Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'.",
+  "error": "Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Cast"
