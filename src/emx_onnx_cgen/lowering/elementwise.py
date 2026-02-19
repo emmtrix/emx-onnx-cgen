@@ -5,7 +5,7 @@ from shared.scalar_types import ScalarType
 
 from ..ir.op_base import BroadcastingOpBase
 from ..ir.ops import BinaryOp, ClipOp, PowOp, UnaryOp
-from ..errors import UnsupportedOpError
+from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
 from ..lowering.common import (
@@ -75,12 +75,10 @@ def lower_clip(graph: Graph, node: Node) -> ClipOp:
                 "Clip max dtype must match input dtype, "
                 f"got {max_dtype.onnx_name}"
             )
-    input_shape = value_shape(graph, input_name, node)
     output_shape = value_shape(graph, node.outputs[0], node)
+    input_shape = value_shape(graph, input_name, node)
     if input_shape != output_shape:
         raise UnsupportedOpError("Clip input and output shapes must match")
-    min_shape = value_shape(graph, min_name, node) if min_name else None
-    max_shape = value_shape(graph, max_name, node) if max_name else None
     return ClipOp(
         input0=input_name,
         input_min=min_name,
@@ -99,7 +97,6 @@ def lower_celu(graph: Graph, node: Node) -> UnaryOp:
     if not dtype.is_float:
         raise UnsupportedOpError("Celu only supports floating-point inputs")
     alpha = float(node.attrs.get("alpha", 1.0))
-    output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -122,7 +119,6 @@ def lower_elu(graph: Graph, node: Node) -> UnaryOp:
         alpha = float(node.attrs.get("alpha", 1.0))
     except (TypeError, ValueError) as exc:
         raise UnsupportedOpError("Elu alpha must be numeric") from exc
-    output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -147,7 +143,6 @@ def lower_leaky_relu(graph: Graph, node: Node) -> UnaryOp:
         alpha = float(node.attrs.get("alpha", 0.01))
     except (TypeError, ValueError) as exc:
         raise UnsupportedOpError("LeakyRelu alpha must be numeric") from exc
-    output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -164,7 +159,6 @@ def lower_swish(graph: Graph, node: Node) -> UnaryOp:
     if not dtype.is_float:
         raise UnsupportedOpError("Swish only supports floating-point inputs")
     alpha = float(node.attrs.get("alpha", 1.0))
-    output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -182,7 +176,6 @@ def lower_shrink(graph: Graph, node: Node) -> UnaryOp:
         raise UnsupportedOpError("Shrink only supports floating-point inputs")
     bias = float(node.attrs.get("bias", 0.0))
     lambd = float(node.attrs.get("lambd", 0.5))
-    output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -257,7 +250,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             raise UnsupportedOpError("Unsupported op BitShift")
         input0_shape = value_shape(graph, node.inputs[0], node)
         input1_shape = value_shape(graph, node.inputs[1], node)
-        output_shape = value_shape(graph, node.outputs[0], node)
         return BinaryOp(
             input0=node.inputs[0],
             input1=node.inputs[1],
@@ -296,7 +288,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             )
         input0_shape = value_shape(graph, node.inputs[0], node)
         input1_shape = value_shape(graph, node.inputs[1], node)
-        output_shape = value_shape(graph, node.outputs[0], node)
         op = BinaryOp(
             input0=node.inputs[0],
             input1=node.inputs[1],
@@ -324,7 +315,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             )
         input0_shape = value_shape(graph, node.inputs[0], node)
         input1_shape = value_shape(graph, node.inputs[1], node)
-        output_shape = value_shape(graph, node.outputs[0], node)
         op = BinaryOp(
             input0=node.inputs[0],
             input1=node.inputs[1],
@@ -344,7 +334,6 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         raise UnsupportedOpError(
             f"{node.op_type} must have 1 input and 1 output"
         )
-    output_shape = value_shape(graph, node.outputs[0], node)
     op = UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -381,7 +370,6 @@ def lower_isinf(graph: Graph, node: Node) -> UnaryOp:
         raise UnsupportedOpError(
             "IsInf detect_negative and detect_positive must be 0 or 1"
         )
-    output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -400,7 +388,6 @@ def lower_isnan(graph: Graph, node: Node) -> UnaryOp:
         raise UnsupportedOpError("IsNaN only supports floating-point inputs")
     if output_dtype != ScalarType.BOOL:
         raise UnsupportedOpError("IsNaN output must be bool")
-    output_shape = value_shape(graph, node.outputs[0], node)
     return UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],

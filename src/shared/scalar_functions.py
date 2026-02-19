@@ -966,7 +966,6 @@ def _float_silu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 def _float_mish(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     twenty = _float_literal(20.0, dtype_info)
-    zero = _float_literal(0.0, dtype_info)
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}mish({dtype_info.c_type} a) {{",
         f"    if (a > {twenty}) {{",
@@ -1210,7 +1209,6 @@ def _float_frac(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _float_i0(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    zero = _float_literal(0.0, dtype_info)
     three_seven_five = _float_literal(3.75, dtype_info)
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}i0({dtype_info.c_type} x) {{",

@@ -31,6 +31,9 @@ jobs:
           git submodule update --init --recursive
           python -m pip install -r requirements-ci.txt
 
+      - name: Run Ruff
+        run: ruff check src tests
+
       - name: Run tests
         if: github.event_name == 'push'
         run: pytest -n auto -q

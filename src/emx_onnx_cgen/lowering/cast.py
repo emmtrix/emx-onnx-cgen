@@ -24,7 +24,6 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
             f"Cast 'to' dtype {target_onnx_dtype} ({name}) is not supported"
         )
     target_dtype = ensure_supported_dtype(target_dtype)
-    input_dtype = value_dtype(graph, node.inputs[0], node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if output_dtype != target_dtype:
         raise UnsupportedOpError(
@@ -45,7 +44,6 @@ def lower_cast(graph: Graph, node: Node) -> CastOp:
 def lower_castlike(graph: Graph, node: Node) -> CastOp:
     if len(node.inputs) != 2 or len(node.outputs) != 1:
         raise UnsupportedOpError("CastLike must have 2 inputs and 1 output")
-    input_dtype = value_dtype(graph, node.inputs[0], node)
     like_dtype = value_dtype(graph, node.inputs[1], node)
     target_dtype = ensure_supported_dtype(like_dtype)
     output_dtype = value_dtype(graph, node.outputs[0], node)
