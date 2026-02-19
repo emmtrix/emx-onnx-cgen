@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1455 / 1802 official ONNX files.
+Support 1458 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -596,11 +596,11 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_dropout_default_old/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dropout_default_ratio/model.onnx | 22 | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | onnx-org/onnx/backend/test/data/node/test_dropout_random_old/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear/model.onnx | 11 | ❌ | Unsupported op DynamicQuantizeLinear |
+| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted/model.onnx | 11 | ❌ | Unsupported op DynamicQuantizeLinear |
+| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted/model.onnx | 11 | ❌ | Unsupported op DynamicQuantizeLinear |
+| onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_edge_pad/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_einsum_batch_diagonal/model.onnx | 12 | ✅ | OK (max ULP 0) |

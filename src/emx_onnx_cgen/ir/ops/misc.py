@@ -61,6 +61,16 @@ class QuantizeLinearOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class DynamicQuantizeLinearOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output", "scale", "zero_point")
+    input0: str
+    output: str
+    scale: str
+    zero_point: str
+
+
+@dataclass(frozen=True)
 class DequantizeLinearOp(RenderableOpBase):
     __io_inputs__ = ("input0", "scale", "zero_point")
     __io_outputs__ = ("output",)
