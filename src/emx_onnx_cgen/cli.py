@@ -892,7 +892,7 @@ def _verify_model(
     except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
         return (
             None,
-            f"Failed to import model graph: {exc}",
+            str(exc),
             operators,
             opset_version,
             None,

@@ -75,6 +75,7 @@
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
 | Failed to build testbench. | 11 | 2 |
+| Unsupported op Loop | 11 | 3 |
 | Unsupported op If | 11 | 1 |
 | Unsupported op Loop | 11 | 1 |
 | Unsupported op SequenceConstruct | 12 | 4 |
