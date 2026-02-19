@@ -24,6 +24,7 @@ from shared.scalar_types import ScalarType
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
 from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
+from .ir.model import TensorType
 from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
@@ -678,6 +679,7 @@ def _compile_model(
         input_count=len(model.graph.input),
         output_count=len(model.graph.output),
     )
+
     active_reporter.info("")
     codegen_started = active_reporter.start_step("Generating C code")
     try:
@@ -881,6 +883,23 @@ def _verify_model(
         output_count=len(model.graph.output),
     )
 
+    try:
+        graph = import_onnx(model)
+    except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
+        return (
+            None,
+            f"Failed to import model graph: {exc}",
+            operators,
+            opset_version,
+            None,
+        )
+    has_non_tensor_output = any(
+        not isinstance(value.type, TensorType) for value in graph.outputs
+    )
+    has_non_tensor_input = any(
+        not isinstance(value.type, TensorType) for value in graph.inputs
+    )
+
     timings: dict[str, float] = {}
     try:
         active_reporter.info("")
@@ -889,6 +908,9 @@ def _verify_model(
             model, args.test_data_dir
         )
         testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
+        if has_non_tensor_input:
+            testbench_inputs = None
+            testbench_optional_inputs = None
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
@@ -923,9 +945,16 @@ def _verify_model(
         return "CHECKSUM", None, operators, opset_version, generated_checksum
 
     try:
-        graph = import_onnx(model)
-        output_dtypes = {value.name: value.type.dtype for value in graph.outputs}
-        input_dtypes = {value.name: value.type.dtype for value in graph.inputs}
+        output_dtypes = {
+            value.name: value.type.dtype
+            for value in graph.outputs
+            if isinstance(value.type, TensorType)
+        }
+        input_dtypes = {
+            value.name: value.type.dtype
+            for value in graph.inputs
+            if isinstance(value.type, TensorType)
+        }
     except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
         return (
             None,
@@ -947,7 +976,9 @@ def _verify_model(
         payload: dict[str, Any] | None = None
         testbench_input_path: Path | None = None
         if testbench_inputs:
-            input_order = [value.name for value in graph.inputs]
+            input_order = [
+                value.name for value in graph.inputs if isinstance(value.type, TensorType)
+            ]
             testbench_input_path = temp_path / "testbench_inputs.bin"
             with testbench_input_path.open("wb") as handle:
                 for name in input_order:
@@ -1053,6 +1084,102 @@ def _verify_model(
             return (
                 None,
                 "Failed to parse testbench JSON: missing output.",
+                operators,
+                opset_version,
+                generated_checksum,
+            )
+
+        if has_non_tensor_output:
+            if testbench_outputs is None:
+                return (
+                    None,
+                    "Verification for non-tensor outputs requires --test-data-dir.",
+                    operators,
+                    opset_version,
+                    generated_checksum,
+                )
+            payload_outputs = payload.get("outputs", {})
+            max_non_tensor_ulp = 0
+            max_non_tensor_abs: float | int = 0
+            for value in graph.outputs:
+                if isinstance(value.type, TensorType):
+                    continue
+                expected_sequence = testbench_outputs.get(value.name)
+                if not isinstance(expected_sequence, list):
+                    return (
+                        None,
+                        f"Missing sequence reference output for {value.name}.",
+                        operators,
+                        opset_version,
+                        generated_checksum,
+                    )
+                output_payload = payload_outputs.get(value.name)
+                if output_payload is None:
+                    return (
+                        None,
+                        f"Missing output {value.name} in testbench data.",
+                        operators,
+                        opset_version,
+                        generated_checksum,
+                    )
+                actual_data = decode_testbench_array(
+                    output_payload["data"], value.type.elem.dtype.np_dtype
+                )
+                sequence_count = int(output_payload.get("sequence_count", 0))
+                expected_count = len(expected_sequence)
+                if sequence_count != expected_count:
+                    active_reporter.note(
+                        f"Sequence length differs for {value.name}: "
+                        f"{sequence_count} vs {expected_count}."
+                    )
+                compare_count = min(sequence_count, expected_count)
+                actual_sequence = [actual_data[index] for index in range(compare_count)]
+                expected_sequence = expected_sequence[:compare_count]
+                for index, (actual_item, expected_item) in enumerate(
+                    zip(actual_sequence, expected_sequence)
+                ):
+                    if actual_item.ndim != expected_item.ndim:
+                        active_reporter.note(
+                            f"Skipping rank-mismatched sequence item {value.name}[{index}]: "
+                            f"{actual_item.ndim} vs {expected_item.ndim}."
+                        )
+                        continue
+                    overlap_shape = tuple(
+                        min(actual_dim, expected_dim)
+                        for actual_dim, expected_dim in zip(
+                            actual_item.shape, expected_item.shape
+                        )
+                    )
+                    if overlap_shape != expected_item.shape:
+                        active_reporter.note(
+                            f"Comparing overlapping region for {value.name}[{index}] "
+                            f"with shapes {actual_item.shape} vs {expected_item.shape}."
+                        )
+                    slices = tuple(slice(0, dim) for dim in overlap_shape)
+                    actual_trimmed = actual_item[slices]
+                    expected_trimmed = expected_item[slices]
+                    if np.issubdtype(expected_item.dtype, np.floating):
+                        output_max, _ = worst_ulp_diff(
+                            actual_trimmed,
+                            expected_trimmed,
+                            atol_eps=args.atol_eps,
+                        )
+                        if output_max > max_non_tensor_ulp:
+                            max_non_tensor_ulp = output_max
+                    else:
+                        output_max, _ = _worst_abs_diff(
+                            actual_trimmed,
+                            expected_trimmed,
+                        )
+                        if output_max > max_non_tensor_abs:
+                            max_non_tensor_abs = output_max
+            active_reporter.note(
+                f"Non-tensor accuracy: max_abs_diff={max_non_tensor_abs}, max_ulp={max_non_tensor_ulp}."
+            )
+            return (
+                "OK (non-tensor outputs matched; "
+                f"max_abs_diff={max_non_tensor_abs}, max_ulp={max_non_tensor_ulp})",
+                None,
                 operators,
                 opset_version,
                 generated_checksum,
@@ -1295,9 +1422,9 @@ def _load_test_data_inputs(
         )
     for value_info in model_inputs:
         value_kind = value_info.type.WhichOneof("value")
-        if value_kind not in {"tensor_type", "optional_type"}:
+        if value_kind not in {"tensor_type", "optional_type", "sequence_type"}:
             LOGGER.warning(
-                "Skipping test data load for non-tensor input %s (type %s).",
+                "Skipping test data load for unsupported input %s (type %s).",
                 value_info.name,
                 value_kind or "unknown",
             )
@@ -1311,6 +1438,48 @@ def _load_test_data_inputs(
             tensor = onnx.TensorProto()
             tensor.ParseFromString(path.read_bytes())
             inputs[value_info.name] = numpy_helper.to_array(tensor)
+            continue
+        if value_kind == "sequence_type":
+            elem_type = value_info.type.sequence_type.elem_type
+            if elem_type.WhichOneof("value") != "tensor_type":
+                return None, None
+            seq = onnx.SequenceProto()
+            seq.ParseFromString(path.read_bytes())
+            tensors = [numpy_helper.to_array(tensor) for tensor in seq.tensor_values]
+            if not tensors:
+                tensor_type = elem_type.tensor_type
+                dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+                if dtype_info is None:
+                    raise CodegenError(
+                        f"Sequence input {value_info.name} has unsupported elem_type."
+                    )
+                shape = [
+                    dim.dim_value if dim.HasField("dim_value") else 1
+                    for dim in tensor_type.shape.dim
+                ]
+                inputs[value_info.name] = np.zeros((0, *shape), dtype=dtype_info.np_dtype)
+                continue
+            first_shape = tensors[0].shape
+            if any(tensor.shape != first_shape for tensor in tensors[1:]):
+                LOGGER.warning(
+                    "Sequence test input %s has variable element shapes; "
+                    "padding to max shape for generated testbench input.",
+                    value_info.name,
+                )
+                max_shape = tuple(
+                    max(tensor.shape[axis] for tensor in tensors)
+                    for axis in range(tensors[0].ndim)
+                )
+                padded: list[np.ndarray] = []
+                for tensor in tensors:
+                    pad_width = [
+                        (0, max_dim - cur_dim)
+                        for cur_dim, max_dim in zip(tensor.shape, max_shape)
+                    ]
+                    padded.append(np.pad(tensor, pad_width, mode="constant"))
+                inputs[value_info.name] = np.stack(padded, axis=0)
+                continue
+            inputs[value_info.name] = np.stack(tensors, axis=0)
             continue
         optional = onnx.OptionalProto()
         optional.ParseFromString(path.read_bytes())
@@ -1356,7 +1525,7 @@ def _load_test_data_inputs(
 
 def _load_test_data_outputs(
     model: onnx.ModelProto, data_dir: Path | None
-) -> dict[str, "np.ndarray"] | None:
+) -> dict[str, "np.ndarray | list[np.ndarray]"] | None:
     if data_dir is None:
         return None
     if not data_dir.exists():
@@ -1375,18 +1544,26 @@ def _load_test_data_outputs(
         )
     for value_info in model_outputs:
         value_kind = value_info.type.WhichOneof("value")
-        if value_kind != "tensor_type":
+        if value_kind not in {"tensor_type", "sequence_type"}:
             LOGGER.warning(
-                "Skipping test data load for non-tensor output %s (type %s).",
+                "Skipping test data load for unsupported output %s (type %s).",
                 value_info.name,
                 value_kind or "unknown",
             )
             return None
-    outputs: dict[str, np.ndarray] = {}
+    outputs: dict[str, np.ndarray | list[np.ndarray]] = {}
     for index, path in enumerate(output_files):
-        tensor = onnx.TensorProto()
-        tensor.ParseFromString(path.read_bytes())
-        outputs[model_outputs[index].name] = numpy_helper.to_array(tensor)
+        value_info = model_outputs[index]
+        if value_info.type.WhichOneof("value") == "tensor_type":
+            tensor = onnx.TensorProto()
+            tensor.ParseFromString(path.read_bytes())
+            outputs[value_info.name] = numpy_helper.to_array(tensor)
+            continue
+        seq = onnx.SequenceProto()
+        seq.ParseFromString(path.read_bytes())
+        outputs[value_info.name] = [
+            numpy_helper.to_array(tensor) for tensor in seq.tensor_values
+        ]
     return outputs
 
 

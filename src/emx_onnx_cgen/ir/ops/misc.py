@@ -939,3 +939,20 @@ class ReverseSequenceOp(RenderableOpBase):
     output: str
     batch_axis: int
     time_axis: int
+
+
+@dataclass(frozen=True)
+class SequenceInsertOp(RenderableOpBase):
+    __io_inputs__ = ("input_sequence", "tensor", "position")
+    __io_outputs__ = ("output_sequence",)
+    input_sequence: str
+    tensor: str
+    position: str | None
+    output_sequence: str
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.input_sequence, f"{self.input_sequence}__count", self.tensor]
+        if self.position is not None:
+            args.append(self.position)
+        args.extend([self.output_sequence, f"{self.output_sequence}__count"])
+        return tuple(args)
