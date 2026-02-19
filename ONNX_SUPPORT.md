@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1460 / 1802 official ONNX files.
+Support 1462 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1110,9 +1110,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_l1_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |

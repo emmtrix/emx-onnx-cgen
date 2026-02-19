@@ -29,7 +29,6 @@
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
-| Unsupported op Loop | 4 | 11, 13 |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported op SequenceConstruct | 4 | 12 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
@@ -53,6 +52,7 @@
 | Unsupported op Det | 2 | 22 |
 | Unsupported op Gradient | 2 | 12 |
 | Unsupported op HannWindow | 2 | 17 |
+| Unsupported op Loop | 2 | 11, 13 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | Unsupported op TreeEnsemble | 2 |  |
@@ -74,8 +74,8 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op Loop | 11 | 3 |
 | Unsupported op If | 11 | 1 |
+| Unsupported op Loop | 11 | 1 |
 | Unsupported op SequenceConstruct | 12 | 4 |
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
