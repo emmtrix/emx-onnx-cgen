@@ -109,6 +109,31 @@ def _make_mul_model() -> onnx.ModelProto:
     return model
 
 
+def _make_sequence_io_model() -> onnx.ModelProto:
+    seq_input = helper.make_tensor_sequence_value_info(
+        "seq_in", TensorProto.FLOAT, [2, 3]
+    )
+    tensor_input = helper.make_tensor_value_info("x", TensorProto.FLOAT, [1])
+    seq_output = helper.make_tensor_sequence_value_info(
+        "seq_out", TensorProto.FLOAT, [2, 3]
+    )
+    tensor_output = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1])
+    identity_node = helper.make_node("Identity", inputs=["x"], outputs=["y"])
+    graph = helper.make_graph(
+        [identity_node],
+        "sequence_io_graph",
+        [seq_input, tensor_input],
+        [seq_output, tensor_output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    return model
+
+
 def _make_mul_add_model() -> onnx.ModelProto:
     input_a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2, 3])
     input_b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2, 3])
@@ -376,6 +401,14 @@ def test_codegen_golden_relu() -> None:
     compiler = Compiler()
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "relu_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_sequence_io() -> None:
+    model = _make_sequence_io_model()
+    compiler = Compiler(CompilerOptions(model_name="sequence_io_model"))
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "sequence_io_model.c"
     assert_golden(generated, golden_path)
 
 

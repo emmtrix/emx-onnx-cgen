@@ -42,6 +42,9 @@
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
+#ifndef EMX_SEQUENCE_MAX_LEN
+#define EMX_SEQUENCE_MAX_LEN 32
+#endif
 
 static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);

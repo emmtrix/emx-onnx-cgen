@@ -10,7 +10,15 @@ from shared.scalar_types import ScalarType
 
 from .dtypes import scalar_type_from_onnx
 from .errors import ShapeInferenceError, UnsupportedOpError
-from .ir.model import Graph, Initializer, Node, TensorType, Value
+from .ir.model import (
+    Graph,
+    Initializer,
+    Node,
+    SequenceType,
+    TensorType,
+    Value,
+    ValueType,
+)
 
 
 def _normalize_initializer_data(dtype: ScalarType, data: object) -> np.ndarray:
@@ -83,7 +91,7 @@ def _value_type(
     value_info: onnx.ValueInfoProto,
     *,
     dim_param_override: tuple[str | None, ...] | None = None,
-) -> TensorType:
+) -> ValueType:
     value_kind = value_info.type.WhichOneof("value")
     if value_kind == "tensor_type":
         return _tensor_type_from_proto(
@@ -109,6 +117,20 @@ def _value_type(
             shape=tensor_type.shape,
             dim_params=tensor_type.dim_params,
             is_optional=True,
+        )
+    if value_kind == "sequence_type":
+        elem_type = value_info.type.sequence_type.elem_type
+        if elem_type.WhichOneof("value") != "tensor_type":
+            raise UnsupportedOpError(
+                f"Unsupported sequence element type '{elem_type.WhichOneof('value')}' for '{value_info.name}'. "
+                "Hint: export the model with sequence<tensor<...>> inputs/outputs."
+            )
+        return SequenceType(
+            elem=_tensor_type_from_proto(
+                elem_type.tensor_type,
+                value_info.name,
+                dim_param_override=dim_param_override,
+            )
         )
     raise _unsupported_value_type(value_info)
 
