@@ -40,6 +40,9 @@
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
+#ifndef EMX_SEQUENCE_MAX_LEN
+#define EMX_SEQUENCE_MAX_LEN 32
+#endif
 
 extern const int64_t weight1_start[1];
 extern const int64_t weight2_limit[1];

@@ -239,10 +239,14 @@ representation in generated signatures:
 | --- | --- | --- |
 | `tensor_type` | `tensor(float)` | Supported; represented as N-dimensional C arrays |
 | `optional_type` | `optional(tensor(float))` | Supported for optional tensors; additional `_Bool <name>_present` parameter is added |
-| `sequence_type` | `sequence(tensor(float))` | Not supported |
+| `sequence_type` | `sequence(tensor(float))` | Supported at model IO ABI as fixed-capacity arrays plus count (`EMX_SEQUENCE_MAX_LEN`, `<name>__count`) |
 | `map_type` | `map(string, tensor(float))` | Not supported |
 | `sparse_tensor_type` | `sparse_tensor(float)` | Not supported |
 | `opaque_type` | `opaque(...)` | Not supported |
+
+For sequence tensor IO, generated model entrypoints use a fixed-capacity ABI:
+- Input: `const T name[EMX_SEQUENCE_MAX_LEN][elem_shape...]` plus `idx_t name__count`.
+- Output: `T name[EMX_SEQUENCE_MAX_LEN][elem_shape...]` plus `idx_t *name__count`.
 
 ### Static shapes: N-dimensional arrays
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Mapping, Sequence
+from typing import Mapping
 
 import numpy as np
 
@@ -17,9 +17,17 @@ class TensorType:
 
 
 @dataclass(frozen=True)
+class SequenceType:
+    elem: TensorType
+
+
+ValueType = TensorType | SequenceType
+
+
+@dataclass(frozen=True)
 class Value:
     name: str
-    type: TensorType
+    type: ValueType
 
 
 @dataclass(frozen=True)

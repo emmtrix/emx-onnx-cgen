@@ -2,7 +2,6 @@
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 28 | 11, 12, 13, 17, 18, 24, 25 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | 25 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | 25 |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | 25 |
@@ -17,21 +16,26 @@
 | Out of tolerance | 7 | 9, 19, 22 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
+| Unsupported op If | 6 | 11, 13, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
+| Unsupported op SequenceLength | 6 | 17 |
+| Unsupported op SequenceMap | 6 | 17 |
+| Unsupported op SplitToSequence | 6 | 12, 24 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
-| Unsupported op If | 5 | 11, 20 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
+| Unsupported op Loop | 4 | 11, 13 |
 | Unsupported op RNN | 4 | 22 |
+| Unsupported op SequenceConstruct | 4 | 12 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
-| Unsupported op Loop | 3 | 11 |
 | Unsupported op Momentum | 3 |  |
+| Unsupported op OptionalGetElement | 3 | 18 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
@@ -50,8 +54,8 @@
 | Unsupported op Gradient | 2 | 12 |
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
-| Unsupported op OptionalGetElement | 2 | 18 |
 | Unsupported op STFT | 2 | 17 |
+| Unsupported op SequenceInsert | 2 | 11 |
 | Unsupported op TreeEnsemble | 2 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
@@ -61,6 +65,7 @@
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
 | Testbench execution failed: exit code 1 | 1 | 13 |
+| Unsupported non-tensor value '*' in op Identity. | 1 | 25 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op MelWeightMatrix | 1 | 17 |
@@ -71,17 +76,20 @@
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
 | Unsupported op Loop | 11 | 3 |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 11 | 2 |
+| Unsupported op SequenceInsert | 11 | 2 |
 | Unsupported op If | 11 | 1 |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 12 | 7 |
+| Unsupported op SequenceConstruct | 12 | 4 |
+| Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
 | Unsupported op Gradient | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 13 | 2 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
+| Unsupported op If | 13 | 1 |
+| Unsupported op Loop | 13 | 1 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 17 | 12 |
+| Unsupported op SequenceLength | 17 | 6 |
+| Unsupported op SequenceMap | 17 | 6 |
 | Unsupported op BlackmanWindow | 17 | 2 |
 | Unsupported op HannWindow | 17 | 2 |
 | Unsupported op STFT | 17 | 2 |
@@ -90,10 +98,9 @@
 | Unsupported op ScatterElements | 18 | 6 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
+| Unsupported op OptionalGetElement | 18 | 3 |
 | Unsupported op BitwiseNot | 18 | 2 |
-| Unsupported op OptionalGetElement | 18 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 18 | 1 |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 18 | 1 |
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
@@ -121,7 +128,7 @@
 | Unsupported op MaxUnpool | 22 | 2 |
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 24 | 3 |
+| Unsupported op SplitToSequence | 24 | 3 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -135,7 +142,7 @@
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 25 | 4 |
 | QuantizeLinear block_size is not supported | 25 | 2 |
 | Graph must contain at least one node | 25 | 1 |
-| Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 25 | 1 |
+| Unsupported non-tensor value '*' in op Identity. | 25 | 1 |
 
 ## Local ONNX file support histogram
 
