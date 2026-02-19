@@ -1,0 +1,35 @@
+void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+    idx_t input_count = {{ input_sequence }}__count;
+    if (input_count >= EMX_SEQUENCE_MAX_LEN) {
+        input_count = EMX_SEQUENCE_MAX_LEN - 1;
+    }
+    idx_t insert_index = input_count;
+    {% if position %}
+    insert_index = (idx_t){{ position }}[0];
+    if (insert_index < 0) {
+        insert_index += input_count;
+    }
+    if (insert_index < 0) {
+        insert_index = 0;
+    }
+    if (insert_index > input_count) {
+        insert_index = input_count;
+    }
+    {% endif %}
+
+    for (idx_t seq = 0; seq < insert_index; ++seq) {
+        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+            (({{ c_type }} *){{ output_sequence }}[seq])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
+        }
+    }
+    for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+        (({{ c_type }} *){{ output_sequence }}[insert_index])[elem] = ((const {{ c_type }} *){{ tensor }})[elem];
+    }
+    for (idx_t seq = insert_index; seq < input_count; ++seq) {
+        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+            (({{ c_type }} *){{ output_sequence }}[seq + 1])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
+        }
+    }
+
+    *{{ output_sequence }}__count = input_count + 1;
+}

@@ -65,6 +65,7 @@ _LOWERING_MODULES = [
     "reshape",
     "resize",
     "reverse_sequence",
+    "sequence_insert",
     "rms_normalization",
     "rotary_embedding",
     "scatter",

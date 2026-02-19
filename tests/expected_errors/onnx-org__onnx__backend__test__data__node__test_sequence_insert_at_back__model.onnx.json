@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op SequenceInsert",
+  "error": "OK (non-tensor outputs matched)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceInsert"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "7c15f42c2f3961a22fb23b3669c19bec6de91f4460246319dfca9bcbe2808beb"
 }
