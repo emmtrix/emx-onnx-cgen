@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Loop",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Sub",
@@ -9,5 +9,6 @@
     "Relu",
     "Loop"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "5b23b2dda71bab0e87c32e1166919db0989da8c7dc00f6483d54e5156b19b5f9"
 }
