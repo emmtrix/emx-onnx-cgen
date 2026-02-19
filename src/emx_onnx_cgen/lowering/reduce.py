@@ -509,7 +509,6 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
             input0=node.inputs[0],
             output=node.outputs[0],
         )
-    input_shape = _value_shape(graph, node.inputs[0], node)
     if spec.axes_input and (
         spec.axes_input_shape is None or spec.axes_input_dtype is None
     ):
