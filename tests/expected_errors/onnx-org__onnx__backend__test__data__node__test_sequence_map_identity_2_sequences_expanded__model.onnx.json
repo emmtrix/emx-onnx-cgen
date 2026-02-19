@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported value type 'sequence_type' for 'x0'. Hint: export the model with tensor inputs/outputs.",
+  "error": "Unsupported op SequenceLength",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceLength",

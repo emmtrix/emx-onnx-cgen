@@ -20,9 +20,9 @@ from .codegen.c_emitter import (
     NodeInfo,
 )
 from .dtypes import dtype_info
-from .errors import CodegenError, ShapeInferenceError, UnsupportedOpError
+from .errors import CodegenError, UnsupportedOpError
 from .ir.context import GraphContext
-from .ir.model import Graph, TensorType, Value
+from .ir.model import Graph, TensorType, Value, ValueType
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
@@ -217,11 +217,11 @@ class Compiler:
         def collect(values: tuple[Value, ...]) -> dict[int, dict[int, str]]:
             dim_map: dict[int, dict[int, str]] = {}
             for index, value in enumerate(values):
+                if not isinstance(value.type, TensorType):
+                    continue
                 dims = {
                     dim_index: dim_param
-                    for dim_index, dim_param in enumerate(
-                        value.type.dim_params
-                    )
+                    for dim_index, dim_param in enumerate(value.type.dim_params)
                     if dim_param
                 }
                 if dims:
@@ -239,10 +239,12 @@ class Compiler:
             input_optional_names,
             input_shapes,
             input_dtypes,
+            input_types,
             output_names,
             output_optional_names,
             output_shapes,
             output_dtypes,
+            output_types,
         ) = self._collect_io_specs(graph)
         ops, node_infos = self._lower_nodes(ctx)
         op_ctx = OpContext(ctx)
@@ -259,10 +261,12 @@ class Compiler:
             input_optional_names=input_optional_names,
             input_shapes=input_shapes,
             input_dtypes=input_dtypes,
+            input_types=input_types,
             output_names=output_names,
             output_optional_names=output_optional_names,
             output_shapes=output_shapes,
             output_dtypes=output_dtypes,
+            output_types=output_types,
             constants=constants,
             ops=tuple(ops),
             node_infos=tuple(node_infos),
@@ -277,21 +281,18 @@ class Compiler:
             return None
         input_specs = {value.name: value for value in graph.inputs}
         unknown_inputs = sorted(
-            name
-            for name in self._options.testbench_inputs
-            if name not in input_specs
+            name for name in self._options.testbench_inputs if name not in input_specs
         )
         if unknown_inputs:
             raise CodegenError(
-                "Testbench inputs include unknown inputs: "
-                + ", ".join(unknown_inputs)
+                "Testbench inputs include unknown inputs: " + ", ".join(unknown_inputs)
             )
         for name, values in self._options.testbench_inputs.items():
             if not isinstance(values, np.ndarray):
-                raise CodegenError(
-                    f"Testbench input {name} must be a numpy array"
-                )
+                raise CodegenError(f"Testbench input {name} must be a numpy array")
             input_value = input_specs[name]
+            if not isinstance(input_value.type, TensorType):
+                raise CodegenError(f"Testbench input {name} must be a tensor value")
             dtype = value_dtype(graph, name)
             info = dtype_info(dtype)
             expected_shape = input_value.type.shape
@@ -304,15 +305,14 @@ class Compiler:
                 )
         return None
 
-    def _concretize_graph_shapes(
-        self, model: onnx.ModelProto, graph: Graph
-    ) -> Graph:
+    def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
         if not self._options.testbench_inputs:
             return graph
-        if not any(value.type.dim_params for value in graph.values):
-            if not any(value.type.dim_params for value in graph.inputs):
-                if not any(value.type.dim_params for value in graph.outputs):
-                    return graph
+        if not any(
+            isinstance(value.type, TensorType) and value.type.dim_params
+            for value in graph.values + graph.inputs + graph.outputs
+        ):
+            return graph
         try:
             import onnxruntime as ort
         except Exception:
@@ -333,6 +333,8 @@ class Compiler:
                 value_info = value_info_by_name.get(value.name)
                 if value_info is None:
                     dims: list[int | str | None] = []
+                    if not isinstance(value.type, TensorType):
+                        continue
                     for index, dim in enumerate(value.type.shape):
                         dim_param = None
                         if index < len(value.type.dim_params):
@@ -366,6 +368,8 @@ class Compiler:
             shape = shapes_by_name.get(value.name)
             if shape is None:
                 return value
+            if not isinstance(value.type, TensorType):
+                return value
             return Value(
                 name=value.name,
                 type=TensorType(
@@ -391,52 +395,64 @@ class Compiler:
         if not graph.nodes:
             raise UnsupportedOpError("Graph must contain at least one node")
         for value in graph.outputs:
-            shape_product(value.type.shape)
+            if isinstance(value.type, TensorType):
+                shape_product(value.type.shape)
 
-    def _collect_io_specs(
-        self, graph: Graph
-    ) -> tuple[
+    def _collect_io_specs(self, graph: Graph) -> tuple[
         tuple[str, ...],
         tuple[str | None, ...],
         tuple[tuple[int, ...], ...],
         tuple[ScalarType, ...],
+        tuple[ValueType, ...],
         tuple[str, ...],
         tuple[str | None, ...],
         tuple[tuple[int, ...], ...],
         tuple[ScalarType, ...],
+        tuple[ValueType, ...],
     ]:
+        def tensor_type(value_type: ValueType) -> TensorType:
+            if isinstance(value_type, TensorType):
+                return value_type
+            return value_type.elem
+
         input_names = tuple(value.name for value in graph.inputs)
         input_optional_names = tuple(
-            _optional_flag_name(value.name) if value.type.is_optional else None
+            (
+                _optional_flag_name(value.name)
+                if isinstance(value.type, TensorType) and value.type.is_optional
+                else None
+            )
             for value in graph.inputs
         )
-        input_shapes = tuple(value.type.shape for value in graph.inputs)
-        input_dtypes = tuple(
-            value_dtype(graph, value.name) for value in graph.inputs
-        )
+        input_types = tuple(value.type for value in graph.inputs)
+        input_shapes = tuple(tensor_type(value.type).shape for value in graph.inputs)
+        input_dtypes = tuple(tensor_type(value.type).dtype for value in graph.inputs)
         output_names = tuple(value.name for value in graph.outputs)
         output_optional_names = tuple(
-            _optional_flag_name(value.name) if value.type.is_optional else None
+            (
+                _optional_flag_name(value.name)
+                if isinstance(value.type, TensorType) and value.type.is_optional
+                else None
+            )
             for value in graph.outputs
         )
-        output_shapes = tuple(value.type.shape for value in graph.outputs)
-        output_dtypes = tuple(
-            value_dtype(graph, value.name) for value in graph.outputs
-        )
+        output_types = tuple(value.type for value in graph.outputs)
+        output_shapes = tuple(tensor_type(value.type).shape for value in graph.outputs)
+        output_dtypes = tuple(tensor_type(value.type).dtype for value in graph.outputs)
         return (
             input_names,
             input_optional_names,
             input_shapes,
             input_dtypes,
+            input_types,
             output_names,
             output_optional_names,
             output_shapes,
             output_dtypes,
+            output_types,
         )
 
-    def _lower_nodes(
-        self, ctx: GraphContext
-    ) -> tuple[list[OpBase], list[NodeInfo]]:
+    def _lower_nodes(self, ctx: GraphContext) -> tuple[list[OpBase], list[NodeInfo]]:
         ops: list[OpBase] = []
         node_infos: list[NodeInfo] = []
         registry = get_lowering_registry()
@@ -457,9 +473,7 @@ class Compiler:
         return ops, node_infos
 
     def _build_header(self, model: onnx.ModelProto, graph: Graph) -> ModelHeader:
-        metadata_props = tuple(
-            (prop.key, prop.value) for prop in model.metadata_props
-        )
+        metadata_props = tuple((prop.key, prop.value) for prop in model.metadata_props)
         opset_imports = tuple(
             (opset.domain, opset.version) for opset in model.opset_import
         )
@@ -514,6 +528,7 @@ class Compiler:
             initializer_count=len(graph.initializers),
             codegen_settings=tuple(codegen_settings),
         )
+
 
 def _lowered_constants(graph: Graph | GraphContext) -> tuple[ConstTensor, ...]:
     used_initializers = {value.name for value in graph.outputs}

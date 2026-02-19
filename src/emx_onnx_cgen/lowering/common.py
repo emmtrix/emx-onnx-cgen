@@ -6,7 +6,7 @@ from shared.scalar_types import ScalarType
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
-from ..ir.model import Graph, Initializer, Node
+from ..ir.model import Graph, Initializer, Node, TensorType
 
 
 def ensure_supported_dtype(dtype: ScalarType) -> ScalarType:
@@ -41,6 +41,11 @@ def value_dtype(
             f"Missing dtype for value '{name}' in op {op_type}. "
             "Hint: run ONNX shape inference or export with static shapes."
         ) from exc
+    if not isinstance(value.type, TensorType):
+        op_type = node.op_type if node is not None else "unknown"
+        raise UnsupportedOpError(
+            f"Unsupported non-tensor value '{name}' in op {op_type}."
+        )
     return ensure_supported_dtype(value.type.dtype)
 
 
@@ -61,8 +66,13 @@ def value_shape(
                 f"Missing shape for value '{name}' in op {op_type}. "
                 "Hint: run ONNX shape inference or export with static shapes."
             ) from exc
+        if not isinstance(value.type, TensorType):
+            op_type = node.op_type if node is not None else "unknown"
+            raise UnsupportedOpError(
+                f"Unsupported non-tensor value '{name}' in op {op_type}."
+            )
         shape = value.type.shape
-    if any(value.type.dim_params):
+    if isinstance(value.type, TensorType) and any(value.type.dim_params):
         resolved = _resolve_value_shape(graph, name, node)
         if resolved is not None:
             return resolved
@@ -298,8 +308,7 @@ def _shape_values_from_input(
             if not (len(condition) == len(on_true) == len(on_false)):
                 return None
             return [
-                t if cond else f
-                for cond, t, f in zip(condition, on_true, on_false)
+                t if cond else f for cond, t, f in zip(condition, on_true, on_false)
             ]
         return None
     finally:
@@ -341,6 +350,11 @@ def _resolve_value_shape(
     _visited.add(name)
     try:
         value = graph.find_value(name)
+        if not isinstance(value.type, TensorType):
+            op_type = node.op_type if node is not None else "unknown"
+            raise UnsupportedOpError(
+                f"Unsupported non-tensor value '{name}' in op {op_type}."
+            )
         shape = value.type.shape
         if not any(value.type.dim_params):
             return shape
@@ -350,18 +364,14 @@ def _resolve_value_shape(
         if source_node.op_type == "Expand":
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Expand must have 2 inputs and 1 output")
-            shape_values = _shape_values_from_input(
-                graph, source_node.inputs[1], node
-            )
+            shape_values = _shape_values_from_input(graph, source_node.inputs[1], node)
             if shape_values is not None and all(dim >= 0 for dim in shape_values):
                 return tuple(shape_values)
             return None
         if source_node.op_type == "Reshape":
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Reshape must have 2 inputs and 1 output")
-            shape_values = _shape_values_from_input(
-                graph, source_node.inputs[1], node
-            )
+            shape_values = _shape_values_from_input(graph, source_node.inputs[1], node)
             if shape_values is None:
                 return None
             allowzero = int(source_node.attrs.get("allowzero", 0))

@@ -30,6 +30,7 @@ from ..ir.op_base import (
     EmitContext,
 )
 from ..ir.op_context import OpContext
+from ..ir.model import SequenceType, ValueType
 from ..ir.ops import (
     AdagradOp,
     ArgReduceOp,
@@ -298,10 +299,12 @@ class LoweredModel:
     input_optional_names: tuple[str | None, ...]
     input_shapes: tuple[tuple[int, ...], ...]
     input_dtypes: tuple[ScalarType, ...]
+    input_types: tuple[ValueType, ...]
     output_names: tuple[str, ...]
     output_optional_names: tuple[str | None, ...]
     output_shapes: tuple[tuple[int, ...], ...]
     output_dtypes: tuple[ScalarType, ...]
+    output_types: tuple[ValueType, ...]
     constants: tuple[ConstTensor, ...]
     ops: tuple[OpBase, ...]
     node_infos: tuple[NodeInfo, ...]
@@ -1793,6 +1796,7 @@ class CEmitter:
             ),
             input_shapes=model.input_shapes,
             input_dtypes=model.input_dtypes,
+            input_types=model.input_types,
             output_names=tuple(name_map.get(name, name) for name in model.output_names),
             output_optional_names=tuple(
                 name_map.get(name, name) if name is not None else None
@@ -1800,6 +1804,7 @@ class CEmitter:
             ),
             output_shapes=model.output_shapes,
             output_dtypes=model.output_dtypes,
+            output_types=model.output_types,
             constants=constants,
             ops=ops,
             node_infos=model.node_infos,
@@ -2075,6 +2080,7 @@ class CEmitter:
             self._emit_index_type_define(),
             self._emit_unused_define(),
             self._emit_string_max_len_define(),
+            self._emit_sequence_max_len_define(),
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
@@ -2232,6 +2238,7 @@ class CEmitter:
             "",
             self._emit_index_type_define(),
             self._emit_string_max_len_define(),
+            self._emit_sequence_max_len_define(),
         ]
         if scalar_preamble:
             sections.extend(("", *scalar_preamble))
@@ -2807,6 +2814,16 @@ class CEmitter:
         )
 
     @staticmethod
+    def _emit_sequence_max_len_define() -> str:
+        return "\n".join(
+            (
+                "#ifndef EMX_SEQUENCE_MAX_LEN",
+                "#define EMX_SEQUENCE_MAX_LEN 32",
+                "#endif",
+            )
+        )
+
+    @staticmethod
     def _needs_stdint(
         model_dtypes: set[ScalarType],
         targets: tuple[set[ScalarType], ...],
@@ -3209,9 +3226,23 @@ class CEmitter:
         optional_flags = self._optional_input_flag_map(model)
         if dim_order:
             params.extend(self._format_dim_args(dim_order))
-        for index, (name, shape, dtype) in enumerate(
-            zip(model.input_names, model.input_shapes, model.input_dtypes)
+        for index, (name, shape, dtype, value_type) in enumerate(
+            zip(
+                model.input_names,
+                model.input_shapes,
+                model.input_dtypes,
+                model.input_types,
+            )
         ):
+            if isinstance(value_type, SequenceType):
+                elem_suffix = self._array_suffix(
+                    value_type.elem.shape, value_type.elem.dtype
+                )
+                params.append(
+                    f"const {dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
+                )
+                params.append(f"idx_t {name}__count")
+                continue
             params.append(
                 f"const {dtype.c_type} {name}"
                 f"{self._param_array_suffix(shape, input_dim_names.get(index), use_restrict=True, dtype=dtype)}"
@@ -3219,9 +3250,23 @@ class CEmitter:
             optional_flag = optional_flags.get(name)
             if optional_flag is not None:
                 params.append(f"_Bool {optional_flag}")
-        for index, (name, shape, dtype) in enumerate(
-            zip(model.output_names, model.output_shapes, model.output_dtypes)
+        for index, (name, shape, dtype, value_type) in enumerate(
+            zip(
+                model.output_names,
+                model.output_shapes,
+                model.output_dtypes,
+                model.output_types,
+            )
         ):
+            if isinstance(value_type, SequenceType):
+                elem_suffix = self._array_suffix(
+                    value_type.elem.shape, value_type.elem.dtype
+                )
+                params.append(
+                    f"{dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
+                )
+                params.append(f"idx_t *{name}__count")
+                continue
             params.append(
                 f"{dtype.c_type} {name}"
                 f"{self._param_array_suffix(shape, output_dim_names.get(index), use_restrict=True, dtype=dtype)}"
