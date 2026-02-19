@@ -24,12 +24,12 @@
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
+| Failed to build testbench. | 4 | 11, 12 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
-| Unsupported op Loop | 4 | 11, 13 |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported op SequenceConstruct | 4 | 12 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
@@ -40,7 +40,6 @@
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | BatchNormalization must have 5 inputs and 1 output | 2 | 15 |
-| Failed to build testbench. | 2 | 12 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -53,6 +52,7 @@
 | Unsupported op Det | 2 | 22 |
 | Unsupported op Gradient | 2 | 12 |
 | Unsupported op HannWindow | 2 | 17 |
+| Unsupported op Loop | 2 | 11, 13 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | Unsupported op TreeEnsemble | 2 |  |
@@ -74,8 +74,9 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op Loop | 11 | 3 |
+| Failed to build testbench. | 11 | 2 |
 | Unsupported op If | 11 | 1 |
+| Unsupported op Loop | 11 | 1 |
 | Unsupported op SequenceConstruct | 12 | 4 |
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
