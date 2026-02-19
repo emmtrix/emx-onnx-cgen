@@ -76,7 +76,6 @@ class TopKOp(ReduceOpBase):
         ctx.dtype(self.output_indices)
 
     def infer_shapes(self, ctx: OpContext) -> None:
-        input_shape = ctx.shape(self.input0)
         output_shape = ctx.shape(self.output_values)
         ctx.set_shape(self.output_values, output_shape)
         ctx.set_shape(self.output_indices, ctx.shape(self.output_indices))

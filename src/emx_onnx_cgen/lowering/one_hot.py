@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from shared.scalar_types import ScalarType
 
 from ..ir.ops import OneHotOp
 from ..errors import ShapeInferenceError, UnsupportedOpError

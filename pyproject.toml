@@ -42,3 +42,10 @@ where = ["src"]
 [tool.setuptools_scm]
 write_to = "src/emx_onnx_cgen/_version.py"
 local_scheme = "no-local-version"
+
+[tool.ruff]
+extend-exclude = [
+    "emx-pytorch2c-org",
+    "onnx2c-org",
+    "onnx-org",
+]

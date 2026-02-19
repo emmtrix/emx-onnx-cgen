@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, Sequence
+from typing import TYPE_CHECKING, Iterable, Sequence
 
 from shared.scalar_types import ScalarType
 
-from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import node_dtype, optional_name, value_dtype, value_shape
 from .registry import register_lowering
+
+if TYPE_CHECKING:
+    from ..ir.ops import LstmOp
 
 ACTIVATION_KIND_BY_NAME = {
     "Relu": 0,
@@ -322,7 +325,7 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
 
 
 @register_lowering("LSTM")
-def lower_lstm(graph: Graph, node: Node) -> "LstmOp":
+def lower_lstm(graph: Graph, node: Node) -> LstmOp:
     from ..ir.ops import LstmOp
 
     spec = resolve_lstm_spec(graph, node)

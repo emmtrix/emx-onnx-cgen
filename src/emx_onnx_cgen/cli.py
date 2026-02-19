@@ -20,6 +20,7 @@ import numpy as np
 import onnx
 from onnx import numpy_helper
 from shared.scalar_types import ScalarType
+from shared.ulp import ulp_intdiff_float
 
 from ._build_info import BUILD_DATE, GIT_VERSION
 from .compiler import Compiler, CompilerOptions
@@ -782,6 +783,9 @@ def _verify_model(
     reporter: _VerifyReporter | None = None,
 ) -> tuple[str | None, str | None, list[str], int | None, str | None]:
     active_reporter = reporter or _NullVerifyReporter()
+    operators: list[str] = []
+    opset_version: int | None = None
+    generated_checksum: str | None = None
 
     def describe_exit_code(returncode: int) -> str:
         if returncode >= 0:
