@@ -42,6 +42,9 @@
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
+#ifndef EMX_SEQUENCE_MAX_LEN
+#define EMX_SEQUENCE_MAX_LEN 32
+#endif
 
 static inline float ref_scalar_f32_relu(float a) {
     return a > 0.0f ? a : 0.0f;

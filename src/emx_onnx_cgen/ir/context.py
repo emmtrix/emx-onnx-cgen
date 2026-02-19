@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
-from .model import Graph, Initializer, Node, Value
+from .model import Graph, Initializer, Node, TensorType, Value
 from shared.scalar_types import ScalarType
 
 
@@ -48,6 +48,10 @@ class GraphContext:
                 f"Missing dtype for value '{name}' in op {op_type}. "
                 "Hint: run ONNX shape inference or export with static shapes."
             ) from exc
+        if not isinstance(value.type, TensorType):
+            raise UnsupportedOpError(
+                f"Unsupported non-tensor value '{name}' in op {node.op_type if node is not None else 'unknown'}."
+            )
         dtype = value.type.dtype
         if not isinstance(dtype, ScalarType):
             raise UnsupportedOpError(f"Unsupported dtype {dtype}")
@@ -68,6 +72,10 @@ class GraphContext:
                 f"Missing shape for value '{name}' in op {op_type}. "
                 "Hint: run ONNX shape inference or export with static shapes."
             ) from exc
+        if not isinstance(value.type, TensorType):
+            raise UnsupportedOpError(
+                f"Unsupported non-tensor value '{name}' in op {node.op_type if node is not None else 'unknown'}."
+            )
         self._shape_cache[name] = value.type.shape
         return value.type.shape
 
