@@ -55,7 +55,6 @@
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
-| Unsupported op SequenceInsert | 2 | 11 |
 | Unsupported op TreeEnsemble | 2 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
@@ -76,7 +75,6 @@
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
 | Unsupported op Loop | 11 | 3 |
-| Unsupported op SequenceInsert | 11 | 2 |
 | Unsupported op If | 11 | 1 |
 | Unsupported op SequenceConstruct | 12 | 4 |
 | Unsupported op SplitToSequence | 12 | 3 |
