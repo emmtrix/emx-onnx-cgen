@@ -1,0 +1,15 @@
+static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const int64_t trip = (int64_t){{ trip_count }}[0];
+    const bool enabled = {{ cond }}[0];
+    {{ c_type }} current = {{ start }}[0];
+    if (!enabled || trip <= 0) {
+        {{ final }}[0] = current;
+        return;
+    }
+    const {{ c_type }} delta_value = {{ delta }}[0];
+    for (int64_t idx = 0; idx < trip; ++idx) {
+        {{ output }}[idx] = current;
+        current = current + delta_value;
+    }
+    {{ final }}[0] = current;
+}

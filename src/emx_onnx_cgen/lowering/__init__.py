@@ -42,6 +42,7 @@ _LOWERING_MODULES = [
     "instance_normalization",
     "layer_normalization",
     "logsoftmax",
+    "loop",
     "lp_normalization",
     "lp_pool",
     "lrn",

@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'.",
+  "error": "Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E4M3FN model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Cast"
