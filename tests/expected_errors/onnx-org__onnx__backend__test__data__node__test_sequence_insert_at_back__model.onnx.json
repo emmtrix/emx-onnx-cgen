@@ -1,5 +1,5 @@
 {
-  "error": "OK (non-tensor outputs matched)",
+  "error": "OK (non-tensor outputs matched; max_abs_diff=8972011810649449542, max_ulp=0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceInsert"

@@ -1451,8 +1451,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_selu_example/model.onnx | 22 | ❌ | Selu only supports alpha=1.6732632423543772 |
 | onnx-org/onnx/backend/test/data/node/test_selu_example_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_selu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched) |
-| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched) |
+| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8972011810649449542, max_ulp=0) |
+| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8247628798212575849, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
