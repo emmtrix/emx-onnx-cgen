@@ -90,6 +90,7 @@ from ..ir.ops import (
     QLinearConvOp,
     RangeOp,
     ReverseSequenceOp,
+    SequenceInsertOp,
     ReduceOp,
     ReshapeOp,
     ResizeOp,
@@ -1765,6 +1766,13 @@ class CEmitter:
                 batch_axis=op.batch_axis,
                 time_axis=op.time_axis,
             )
+        if isinstance(op, SequenceInsertOp):
+            return SequenceInsertOp(
+                input_sequence=name_map.get(op.input_sequence, op.input_sequence),
+                tensor=name_map.get(op.tensor, op.tensor),
+                position=self._map_optional_name(name_map, op.position),
+                output_sequence=name_map.get(op.output_sequence, op.output_sequence),
+            )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
@@ -1968,6 +1976,7 @@ class CEmitter:
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
                 "reverse_sequence": self._env.get_template("reverse_sequence_op.c.j2"),
+                "sequence_insert": self._env.get_template("sequence_insert_op.c.j2"),
             }
             if emit_testbench:
                 templates["testbench"] = self._env.get_template("testbench.c.j2")
@@ -2616,6 +2625,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceInsertOp
         ],
         *,
         emit_testbench: bool,
@@ -2658,6 +2668,8 @@ class CEmitter:
                 return model.op_context.dtype(op.outputs[0])
             if isinstance(op, UniqueOp):
                 return model.op_context.dtype(op.y)
+            if isinstance(op, SequenceInsertOp):
+                return model.op_context.dtype(op.tensor)
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -2922,6 +2934,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceInsertOp
         ],
         op_context: OpContext,
     ) -> bool:
@@ -3106,6 +3119,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceInsertOp
         ],
         op_context: OpContext,
     ) -> bool:
@@ -3215,6 +3229,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceInsertOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
         *,
@@ -3235,9 +3250,7 @@ class CEmitter:
             )
         ):
             if isinstance(value_type, SequenceType):
-                elem_suffix = self._array_suffix(
-                    value_type.elem.shape, value_type.elem.dtype
-                )
+                elem_suffix = self._array_suffix(shape, dtype)
                 params.append(
                     f"const {dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
@@ -3259,9 +3272,7 @@ class CEmitter:
             )
         ):
             if isinstance(value_type, SequenceType):
-                elem_suffix = self._array_suffix(
-                    value_type.elem.shape, value_type.elem.dtype
-                )
+                elem_suffix = self._array_suffix(shape, dtype)
                 params.append(
                     f"{dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
@@ -4500,6 +4511,13 @@ class CEmitter:
                 batch_axis=op.batch_axis,
                 time_axis=op.time_axis,
             )
+        if isinstance(op, SequenceInsertOp):
+            return SequenceInsertOp(
+                input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
+                tensor=temp_map.get(op.tensor, op.tensor),
+                position=CEmitter._map_optional_name(temp_map, op.position),
+                output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4844,6 +4862,7 @@ class CEmitter:
             string_normalizer_template=templates["string_normalizer"],
             split_template=templates["split"],
             reverse_sequence_template=templates["reverse_sequence"],
+            sequence_insert_template=templates["sequence_insert"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
             tensor_dim_names=state.tensor_dim_names,
@@ -5354,6 +5373,7 @@ class CEmitter:
         string_normalizer_template,
         split_template,
         reverse_sequence_template,
+        sequence_insert_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
         tensor_dim_names: Mapping[str, Mapping[int, str]] | None = None,
@@ -10217,6 +10237,65 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SequenceInsertOp):
+            tensor_shape = self._ctx_shape(op.tensor)
+            params = self._shared_param_map(
+                [
+                    ("input_sequence", op.input_sequence),
+                    ("tensor", op.tensor),
+                    ("position", op.position),
+                    ("output_sequence", op.output_sequence),
+                ]
+            )
+            tensor_suffix = self._param_array_suffix(
+                tensor_shape, _dim_names_for(op.tensor)
+            )
+            position_dtype = (
+                self._ctx_dtype(op.position) if op.position is not None else ScalarType.I64
+            )
+            param_specs = [
+                (
+                    params["input_sequence"],
+                    c_type,
+                    f"[EMX_SEQUENCE_MAX_LEN]{tensor_suffix}",
+                    True,
+                ),
+                (f"{params['input_sequence']}__count", "idx_t", "", True),
+                (params["tensor"], c_type, tensor_suffix, True),
+            ]
+            if params["position"] is not None:
+                param_specs.append(
+                    (
+                        params["position"],
+                        position_dtype.c_type,
+                        self._param_array_suffix((1,)),
+                        True,
+                    )
+                )
+            param_specs.extend(
+                [
+                    (
+                        params["output_sequence"],
+                        c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{tensor_suffix}",
+                        False,
+                    ),
+                    (f"{params['output_sequence']}__count", "idx_t *", "", False),
+                ]
+            )
+            param_decls = self._build_param_decls(param_specs)
+            rendered = sequence_insert_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                tensor=params["tensor"],
+                position=params["position"],
+                output_sequence=params["output_sequence"],
+                element_count=CEmitter._element_count_expr(tensor_shape),
+                c_type=c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SplitOp):
             input_shape = self._ctx_shape(op.input0)
             output_shapes = tuple(self._ctx_shape(name) for name in op.outputs)
@@ -11469,6 +11548,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceInsertOp
         ],
         tensor_dim_names: dict[str, dict[int, str]],
     ) -> None:
@@ -11766,6 +11846,14 @@ class CEmitter:
                     self._ctx_dtype(op.zero_point),
                 ),
             )
+        if isinstance(op, SequenceInsertOp):
+            return (
+                (
+                    op.output_sequence,
+                    self._ctx_shape(op.tensor),
+                    self._ctx_dtype(op.tensor),
+                ),
+            )
         return (
             (
                 op.output,
@@ -11994,6 +12082,8 @@ class CEmitter:
             return self._ctx_shape(op.outputs[0])
         if isinstance(op, ReverseSequenceOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, SequenceInsertOp):
+            return self._ctx_shape(op.tensor)
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -12092,6 +12182,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])
+        if isinstance(op, SequenceInsertOp):
+            return self._ctx_dtype(op.tensor)
         if isinstance(op, (DepthToSpaceOp, SpaceToDepthOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, OneHotOp):
@@ -12437,18 +12529,25 @@ class CEmitter:
         rng_requires_double = False
         rng_requires_i64 = False
         inputs = []
-        for name, shape, count, dtype, optional_flag in zip(
+        for name, shape, count, dtype, optional_flag, value_type in zip(
             model.input_names,
             model.input_shapes,
             input_counts,
             model.input_dtypes,
             model.input_optional_names,
+            model.input_types,
         ):
             json_name = self._ctx_name(name)
             codegen_shape = self._codegen_shape(shape)
-            loop_shape = (1,) if not shape else shape
-            loop_vars = self._loop_vars(loop_shape)
+            is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
+            loop_shape = (1,) if not shape else shape
+            if is_sequence_input:
+                if isinstance(constant_values, np.ndarray) and constant_values.ndim >= 1:
+                    loop_shape = (int(constant_values.shape[0]), *loop_shape)
+                else:
+                    loop_shape = (32, *loop_shape)
+            loop_vars = self._loop_vars(loop_shape)
             if constant_values is None:
                 if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32}:
                     rng_requires_u64 = True
@@ -12478,9 +12577,14 @@ class CEmitter:
             constant_lines = None
             if constant_values is not None:
                 constant_name = f"{name}_testbench_data"
-                if constant_values:
+                flat_values: list[float | int | bool]
+                if isinstance(constant_values, np.ndarray):
+                    flat_values = constant_values.reshape(-1).tolist()
+                else:
+                    flat_values = list(constant_values)
+                if flat_values:
                     constant_lines = [
-                        self._format_value(value, dtype) for value in constant_values
+                        self._format_value(value, dtype) for value in flat_values
                     ]
                 else:
                     constant_lines = [self._format_value(0, dtype)]
@@ -12489,13 +12593,18 @@ class CEmitter:
                 if optional_flag is not None
                 else None
             )
+            input_array_suffix = (
+                f"[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(codegen_shape, dtype)}"
+                if is_sequence_input
+                else self._array_suffix(codegen_shape, dtype)
+            )
             inputs.append(
                 {
                     "name": name,
                     "shape": loop_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": count,
-                    "array_suffix": self._array_suffix(codegen_shape, dtype),
+                    "array_suffix": input_array_suffix,
                     "array_index_expr": "".join(f"[{var}]" for var in loop_vars),
                     "loop_vars": loop_vars,
                     "rank": len(loop_shape),
@@ -12511,23 +12620,37 @@ class CEmitter:
                     "json_name": json_name,
                     "optional_flag_name": optional_flag,
                     "optional_present": optional_present,
+                    "is_sequence": is_sequence_input,
+                    "count_name": f"{name}__count",
+                    "count_value": loop_shape[0] if is_sequence_input else 1,
                 }
             )
         outputs = []
-        for name, shape, dtype in zip(
-            model.output_names, model.output_shapes, model.output_dtypes
+        for name, shape, dtype, value_type in zip(
+            model.output_names,
+            model.output_shapes,
+            model.output_dtypes,
+            model.output_types,
         ):
             json_name = self._ctx_name(name)
             codegen_shape = self._codegen_shape(shape)
+            is_sequence_output = isinstance(value_type, SequenceType)
             loop_shape = (1,) if not shape else shape
+            if is_sequence_output:
+                loop_shape = (32, *loop_shape)
             output_loop_vars = self._loop_vars(loop_shape)
+            output_array_suffix = (
+                f"[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(codegen_shape, dtype)}"
+                if is_sequence_output
+                else self._array_suffix(codegen_shape, dtype)
+            )
             outputs.append(
                 {
                     "name": name,
                     "shape": loop_shape,
                     "shape_literal": ",".join(str(dim) for dim in shape),
                     "count": self._element_count(shape),
-                    "array_suffix": self._array_suffix(codegen_shape, dtype),
+                    "array_suffix": output_array_suffix,
                     "array_index_expr": "".join(f"[{var}]" for var in output_loop_vars),
                     "loop_vars": output_loop_vars,
                     "rank": len(loop_shape),
@@ -12538,6 +12661,8 @@ class CEmitter:
                     "print_format": self._print_format(dtype),
                     "print_cast": self._print_cast(dtype),
                     "json_name": json_name,
+                    "is_sequence": is_sequence_output,
+                    "count_name": f"{name}__count",
                 }
             )
         rendered = testbench_template.render(

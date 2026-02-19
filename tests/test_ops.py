@@ -41,6 +41,7 @@ from emx_onnx_cgen.lowering.depth_space import (
 )
 from emx_onnx_cgen.lowering.scatter import lower_scatter
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
+from emx_onnx_cgen.lowering.sequence_insert import lower_sequence_insert
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
 from emx_onnx_cgen.lowering.upsample import lower_upsample
@@ -923,6 +924,48 @@ def _make_reverse_sequence_model(
         graph,
         producer_name="onnx2c",
         opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_sequence_insert_model(*, with_position: bool) -> onnx.ModelProto:
+    sequence = helper.make_tensor_sequence_value_info(
+        "sequence", TensorProto.FLOAT, shape=None
+    )
+    tensor = helper.make_tensor_value_info("tensor", TensorProto.FLOAT, [3])
+    inputs = [sequence, tensor]
+    node_inputs = ["sequence", "tensor"]
+    initializers = []
+    if with_position:
+        position = helper.make_tensor(
+            "position",
+            TensorProto.INT64,
+            dims=[1],
+            vals=[0],
+        )
+        node_inputs.append("position")
+        initializers.append(position)
+    output_sequence = helper.make_tensor_sequence_value_info(
+        "output_sequence", TensorProto.FLOAT, shape=None
+    )
+    node = helper.make_node(
+        "SequenceInsert",
+        inputs=node_inputs,
+        outputs=["output_sequence"],
+    )
+    graph = helper.make_graph(
+        [node],
+        "sequence_insert_graph",
+        inputs,
+        [output_sequence],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 11)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -4011,6 +4054,21 @@ def test_lower_onehot_axis_normalization() -> None:
     op = lower_onehot(graph, graph.nodes[0])
     assert op.axis == 2
     assert graph.outputs[0].type.shape == (2, 3, 4)
+
+
+def test_lower_sequence_insert_without_position() -> None:
+    graph = import_onnx(_make_sequence_insert_model(with_position=False))
+    op = lower_sequence_insert(graph, graph.nodes[0])
+    assert op.input_sequence == "sequence"
+    assert op.tensor == "tensor"
+    assert op.position is None
+    assert op.output_sequence == "output_sequence"
+
+
+def test_lower_sequence_insert_with_position() -> None:
+    graph = import_onnx(_make_sequence_insert_model(with_position=True))
+    op = lower_sequence_insert(graph, graph.nodes[0])
+    assert op.position == "position"
 
 
 def test_lower_depth_space_ops_keep_only_explicit_attrs() -> None:

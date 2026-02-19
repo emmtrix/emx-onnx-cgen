@@ -410,10 +410,29 @@ class Compiler:
         tuple[ScalarType, ...],
         tuple[ValueType, ...],
     ]:
-        def tensor_type(value_type: ValueType) -> TensorType:
+        def tensor_type(value_name: str, value_type: ValueType) -> TensorType:
             if isinstance(value_type, TensorType):
                 return value_type
-            return value_type.elem
+            elem = value_type.elem
+            if elem.shape:
+                return elem
+            for node in graph.nodes:
+                if node.op_type != "SequenceInsert":
+                    continue
+                if value_name in {node.inputs[0], node.outputs[0]}:
+                    tensor_name = node.inputs[1]
+                    try:
+                        tensor_value = graph.find_value(tensor_name)
+                    except KeyError:
+                        continue
+                    if isinstance(tensor_value.type, TensorType):
+                        return TensorType(
+                            dtype=elem.dtype,
+                            shape=tensor_value.type.shape,
+                            dim_params=tensor_value.type.dim_params,
+                            is_optional=elem.is_optional,
+                        )
+            return elem
 
         input_names = tuple(value.name for value in graph.inputs)
         input_optional_names = tuple(
@@ -425,8 +444,12 @@ class Compiler:
             for value in graph.inputs
         )
         input_types = tuple(value.type for value in graph.inputs)
-        input_shapes = tuple(tensor_type(value.type).shape for value in graph.inputs)
-        input_dtypes = tuple(tensor_type(value.type).dtype for value in graph.inputs)
+        input_shapes = tuple(
+            tensor_type(value.name, value.type).shape for value in graph.inputs
+        )
+        input_dtypes = tuple(
+            tensor_type(value.name, value.type).dtype for value in graph.inputs
+        )
         output_names = tuple(value.name for value in graph.outputs)
         output_optional_names = tuple(
             (
@@ -437,8 +460,12 @@ class Compiler:
             for value in graph.outputs
         )
         output_types = tuple(value.type for value in graph.outputs)
-        output_shapes = tuple(tensor_type(value.type).shape for value in graph.outputs)
-        output_dtypes = tuple(tensor_type(value.type).dtype for value in graph.outputs)
+        output_shapes = tuple(
+            tensor_type(value.name, value.type).shape for value in graph.outputs
+        )
+        output_dtypes = tuple(
+            tensor_type(value.name, value.type).dtype for value in graph.outputs
+        )
         return (
             input_names,
             input_optional_names,
