@@ -864,6 +864,17 @@ class CumSumOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class LoopRangeOp(RenderableOpBase):
+    __io_inputs__ = ("trip_count", "cond", "start", "delta")
+    __io_outputs__ = ("final", "output")
+    trip_count: str
+    cond: str
+    start: str
+    delta: str
+    final: str
+    output: str
+
+@dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
     __io_inputs__ = ("start", "limit", "delta")
     __io_outputs__ = ("output",)

@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported elem_type 22 (INT4) for tensor 'like'.",
+  "error": "Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'like'.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT4 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "CastLike"

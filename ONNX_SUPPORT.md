@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1458 / 1802 official ONNX files.
+Support 1460 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -290,61 +290,61 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_cast_DOUBLE_to_FLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_INT2/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_INT4/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FN_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FN_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_INT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_INT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT16_to_UINT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FN_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E4M3FN_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT2/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT4/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_UINT2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_UINT4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_INT2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_INT2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_INT2_to_INT8/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_INT8/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_UINT2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_UINT2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_UINT2_to_UINT8/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_UINT4_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_UINT4_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_UINT4_to_UINT8/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT16_to_FLOAT8E8M0/model.onnx | 25 | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT_to_FLOAT8E8M0/model.onnx | 25 | ❌ | Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
-| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_INT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_UINT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_FLOAT_to_UINT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_INT2_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_INT2_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_INT2_to_INT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_INT4_to_INT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_UINT2_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_UINT2_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_UINT2_to_UINT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_UINT4_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_UINT4_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_UINT4_to_UINT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT16_to_FLOAT8E8M0/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT8E8M0_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_e8m0_FLOAT_to_FLOAT8E8M0/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 24 (FLOAT8E8M0) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'output'. |
+| onnx-org/onnx/backend/test/data/node/test_cast_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'output'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_BFLOAT16_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_BFLOAT16_to_FLOAT_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_DOUBLE_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -354,109 +354,109 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_DOUBLE_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT4E2M1_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_FLOAT_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT2/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT4/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT4_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT4_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_INT4_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT16_to_UINT4_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT4E2M1_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FNUZ_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E4M3FN_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2FNUZ_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT16_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT2/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT4/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT4_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT4_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_INT8/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_INT8_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_INT8/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_INT8_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_UINT8/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_UINT8_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_UINT8/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_UINT8_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'input'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
-| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT4E2M1_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_INT4_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_FLOAT_to_UINT4_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_INT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT2_to_INT8_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_INT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_INT4_to_INT8_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_UINT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT2_to_UINT8_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_FLOAT_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_UINT8/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_UINT4_to_UINT8_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'input'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT16_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E4M3FN_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2FNUZ_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'like'. |
+| onnx-org/onnx/backend/test/data/node/test_castlike_no_saturate_FLOAT_to_FLOAT8E5M2_expanded/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'like'. |
 | onnx-org/onnx/backend/test/data/node/test_ceil/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_ceil_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_celu/model.onnx | 12 | ✅ | OK (max ULP 0) |
@@ -562,17 +562,17 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_axis/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_blocked/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn_float16/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e5m2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_float4e2m1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn_float16/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e4m3fn_zero_point/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_e5m2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_float4e2m1/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int16/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int2/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int4/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_int4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint16/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'x'. |
-| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'x'. |
+| onnx-org/onnx/backend/test/data/node/test_dequantizelinear_uint4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'x'. |
 | onnx-org/onnx/backend/test/data/node/test_det_2d/model.onnx | 22 | ❌ | Unsupported op Det |
 | onnx-org/onnx/backend/test/data/node/test_det_nd/model.onnx | 22 | ❌ | Unsupported op Det |
 | onnx-org/onnx/backend/test/data/node/test_dft/model.onnx | 20 | ❌ | Unsupported op DFT |
@@ -751,10 +751,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_hardswish/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_hardswish_expanded/model.onnx | 22 | ❌ | HardSigmoid only supports alpha=0.2 |
 | onnx-org/onnx/backend/test/data/node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_in'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | 16 | ❌ | Failed to import model graph: Unsupported optional element type 'sequence_type' for 'opt_in'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | 25 | ❌ | Unsupported non-tensor value 'x' in op Identity. |
 | onnx-org/onnx/backend/test/data/node/test_if/model.onnx | 11 | ❌ | Unsupported op If |
-| onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | 16 | ❌ | Failed to import model graph: Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx | 13 | ❌ | Unsupported op If |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
@@ -890,7 +890,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | 11 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | 13 | ❌ | Unsupported op Loop |
-| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | Failed to import model graph: Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | 22 | ❌ | LpPool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1052,7 +1052,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_negative_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | 18 | ❌ | Unsupported optional element type 'sequence_type' for 'optional_input'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | 18 | ❌ | Failed to import model graph: Unsupported optional element type 'sequence_type' for 'optional_input'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_tensor/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_tensor/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
@@ -1100,19 +1100,19 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_axis/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_asymmetric/model.onnx | 25 | ❌ | QuantizeLinear block_size is not supported |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_blocked_symmetric/model.onnx | 25 | ❌ | QuantizeLinear block_size is not supported |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_e4m3fn/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_e5m2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_float4e2m1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_e4m3fn/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_e5m2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_float4e2m1/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_int16/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_int2/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_int4/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_int2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_int4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint16/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
-| onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint2/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
+| onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint4/model.onnx | 25 | ❌ | Failed to import model graph: Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ❌ | Failed to build testbench. |
 | onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ❌ | Failed to build testbench. |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_l1_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1451,8 +1451,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_selu_example/model.onnx | 22 | ❌ | Selu only supports alpha=1.6732632423543772 |
 | onnx-org/onnx/backend/test/data/node/test_selu_example_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_selu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
-| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | 11 | ❌ | Unsupported op SequenceInsert |
-| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | 11 | ❌ | Unsupported op SequenceInsert |
+| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched) |
+| onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
@@ -1795,7 +1795,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_expand_shape_model4/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_gradient_of_add/model.onnx | 12 | ❌ | Unsupported op Gradient |
 | onnx-org/onnx/backend/test/data/simple/test_gradient_of_add_and_mul/model.onnx | 12 | ❌ | Unsupported op Gradient |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model1/model.onnx | 12 | ❌ | Dynamic dim for tensor 'out' |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model1/model.onnx | 12 | ❌ | Failed to import model graph: Dynamic dim for tensor 'out' |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model2/model.onnx | 12 | ❌ | Unsupported op SequenceConstruct |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model3/model.onnx | 12 | ❌ | Unsupported op SequenceConstruct |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model4/model.onnx | 12 | ❌ | Unsupported op SequenceConstruct |

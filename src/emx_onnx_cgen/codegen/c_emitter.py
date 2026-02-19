@@ -88,6 +88,7 @@ from ..ir.ops import (
     QLinearMulOp,
     QLinearMatMulOp,
     QLinearConvOp,
+    LoopRangeOp,
     RangeOp,
     ReverseSequenceOp,
     SequenceInsertOp,
@@ -1703,6 +1704,15 @@ class CEmitter:
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
+        if isinstance(op, LoopRangeOp):
+            return LoopRangeOp(
+                trip_count=name_map.get(op.trip_count, op.trip_count),
+                cond=name_map.get(op.cond, op.cond),
+                start=name_map.get(op.start, op.start),
+                delta=name_map.get(op.delta, op.delta),
+                final=name_map.get(op.final, op.final),
+                output=name_map.get(op.output, op.output),
+            )
         if isinstance(op, RangeOp):
             return RangeOp(
                 start=name_map.get(op.start, op.start),
@@ -1968,6 +1978,7 @@ class CEmitter:
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
+                "loop_range": self._env.get_template("loop_range_op.c.j2"),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
@@ -4461,6 +4472,15 @@ class CEmitter:
                 delta=temp_map.get(op.delta, op.delta),
                 output=temp_map.get(op.output, op.output),
             )
+        if isinstance(op, LoopRangeOp):
+            return LoopRangeOp(
+                trip_count=temp_map.get(op.trip_count, op.trip_count),
+                cond=temp_map.get(op.cond, op.cond),
+                start=temp_map.get(op.start, op.start),
+                delta=temp_map.get(op.delta, op.delta),
+                final=temp_map.get(op.final, op.final),
+                output=temp_map.get(op.output, op.output),
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=temp_map.get(op.size, op.size),
@@ -4856,6 +4876,7 @@ class CEmitter:
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
             range_template=templates["range"],
+            loop_range_template=templates["loop_range"],
             hamming_window_template=templates["hamming_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
@@ -5367,6 +5388,7 @@ class CEmitter:
         expand_template,
         cumsum_template,
         range_template,
+        loop_range_template,
         hamming_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
@@ -9978,6 +10000,47 @@ class CEmitter:
                 length=output_shape[0],
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, LoopRangeOp):
+            params = self._shared_param_map(
+                [
+                    ("trip_count", op.trip_count),
+                    ("cond", op.cond),
+                    ("start", op.start),
+                    ("delta", op.delta),
+                    ("final", op.final),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            count_dtype = self._ctx_dtype(op.trip_count).c_type
+            cond_dtype = self._ctx_dtype(op.cond).c_type
+            param_decls = self._build_param_decls(
+                [
+                    (params["trip_count"], count_dtype, scalar_suffix, True),
+                    (params["cond"], cond_dtype, scalar_suffix, True),
+                    (params["start"], c_type, scalar_suffix, True),
+                    (params["delta"], c_type, scalar_suffix, True),
+                    (params["final"], c_type, scalar_suffix, False),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = loop_range_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                trip_count=params["trip_count"],
+                cond=params["cond"],
+                start=params["start"],
+                delta=params["delta"],
+                final=params["final"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, HammingWindowOp):
             params = self._shared_param_map(
                 [
@@ -11465,6 +11528,8 @@ class CEmitter:
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, RangeOp):
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
+        if isinstance(op, LoopRangeOp):
+            return ((op.trip_count, ()), (op.cond, ()), (op.start, ()), (op.delta, ()))
         if isinstance(op, HammingWindowOp):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
@@ -12070,6 +12135,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, RangeOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, LoopRangeOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, HammingWindowOp):
             return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
@@ -12162,6 +12229,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, TopKOp):
             return self._ctx_dtype(op.output_values)
+        if isinstance(op, LoopRangeOp):
+            return self._ctx_dtype(op.output)
         if isinstance(op, OptionalHasElementOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, NonZeroOp):

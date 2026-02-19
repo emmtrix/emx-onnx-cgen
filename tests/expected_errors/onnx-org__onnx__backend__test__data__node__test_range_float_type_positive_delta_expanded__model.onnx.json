@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Loop",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Sub",
@@ -9,5 +9,6 @@
     "Relu",
     "Loop"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "f5b1cf913f99afef39e686d8f185d678b16283e9b4e3c86f50c1dff3e12634c3"
 }
