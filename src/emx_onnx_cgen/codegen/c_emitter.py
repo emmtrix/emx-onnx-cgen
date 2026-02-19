@@ -49,6 +49,7 @@ from ..ir.ops import (
     CumSumOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
+    DynamicQuantizeLinearOp,
     EinsumKind,
     EinsumOp,
     ExpandOp,
@@ -543,6 +544,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | DequantizeLinearOp
+            | DynamicQuantizeLinearOp
             | QLinearMulOp
             | QLinearMatMulOp
             | MatMulOp
@@ -621,6 +623,7 @@ class CEmitter:
         | CastOp
         | QuantizeLinearOp
         | DequantizeLinearOp
+        | DynamicQuantizeLinearOp
         | QLinearMulOp
         | QLinearMatMulOp
         | MatMulOp
@@ -758,6 +761,13 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 axis=op.axis,
                 block_size=op.block_size,
+            )
+        if isinstance(op, DynamicQuantizeLinearOp):
+            return DynamicQuantizeLinearOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                scale=name_map.get(op.scale, op.scale),
+                zero_point=name_map.get(op.zero_point, op.zero_point),
             )
         if isinstance(op, QLinearMulOp):
             return QLinearMulOp(
@@ -1860,6 +1870,9 @@ class CEmitter:
                 "quantize_linear": self._env.get_template("quantize_linear_op.c.j2"),
                 "dequantize_linear": self._env.get_template(
                     "dequantize_linear_op.c.j2"
+                ),
+                "dynamic_quantize_linear": self._env.get_template(
+                    "dynamic_quantize_linear_op.c.j2"
                 ),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
@@ -2995,6 +3008,7 @@ class CEmitter:
                 (
                     LpPoolOp,
                     QuantizeLinearOp,
+                    DynamicQuantizeLinearOp,
                     QLinearMulOp,
                     QLinearMatMulOp,
                     QLinearConvOp,
@@ -3562,6 +3576,13 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
                 block_size=op.block_size,
+            )
+        if isinstance(op, DynamicQuantizeLinearOp):
+            return DynamicQuantizeLinearOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                scale=temp_map.get(op.scale, op.scale),
+                zero_point=temp_map.get(op.zero_point, op.zero_point),
             )
         if isinstance(op, QLinearMulOp):
             return QLinearMulOp(
@@ -4704,6 +4725,7 @@ class CEmitter:
             cast_template=templates["cast"],
             quantize_linear_template=templates["quantize_linear"],
             dequantize_linear_template=templates["dequantize_linear"],
+            dynamic_quantize_linear_template=templates["dynamic_quantize_linear"],
             qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
             qlinear_conv_template=templates["qlinear_conv"],
@@ -5213,6 +5235,7 @@ class CEmitter:
         cast_template,
         quantize_linear_template,
         dequantize_linear_template,
+        dynamic_quantize_linear_template,
         qlinear_mul_template,
         qlinear_matmul_template,
         qlinear_conv_template,
@@ -10428,6 +10451,79 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, DynamicQuantizeLinearOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for DynamicQuantizeLinear."
+                )
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output", op.output),
+                    ("scale", op.scale),
+                    ("zero_point", op.zero_point),
+                ]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            scale_dtype = self._ctx_dtype(op.scale)
+            zero_point_dtype = self._ctx_dtype(op.zero_point)
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(input_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(input_shape)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, input_suffix, False),
+                    (params["scale"], scale_dtype.c_type, "[1]", False),
+                    (params["zero_point"], zero_point_dtype.c_type, "[1]", False),
+                ]
+            )
+            compute_type = "double" if input_dtype == ScalarType.F64 else "float"
+            compute_dtype = (
+                ScalarType.F64 if compute_type == "double" else ScalarType.F32
+            )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
+            )
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
+            )
+            if max_fn is None or min_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for DynamicQuantizeLinear."
+                )
+            round_fn = CEmitter._math_fn(input_dtype, "nearbyintf", "nearbyint")
+            input_expr = f"{params['input0']}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            output_expr = f"{params['output']}" + "".join(
+                f"[{var}]" for var in loop_vars
+            )
+            rendered = dynamic_quantize_linear_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                compute_type=compute_type,
+                output_c_type=output_dtype.c_type,
+                scale_c_type=scale_dtype.c_type,
+                zero_point_c_type=zero_point_dtype.c_type,
+                shape=shape,
+                loop_vars=loop_vars,
+                input_expr=input_expr,
+                output_expr=output_expr,
+                scale_expr=f"{params['scale']}[0]",
+                zero_point_expr=f"{params['zero_point']}[0]",
+                min_fn=min_fn,
+                max_fn=max_fn,
+                round_fn=round_fn,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, QLinearMulOp):
             if scalar_registry is None:
                 raise CodegenError(
@@ -11195,6 +11291,8 @@ class CEmitter:
             if op.zero_point is not None:
                 inputs.append((op.zero_point, scale_shape))
             return tuple(inputs)
+        if isinstance(op, DynamicQuantizeLinearOp):
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, IdentityOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, EyeLikeOp):
@@ -11613,6 +11711,16 @@ class CEmitter:
                 ),
                 (op.counts, self._ctx_shape(op.counts), self._ctx_dtype(op.counts)),
             )
+        if isinstance(op, DynamicQuantizeLinearOp):
+            return (
+                (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),
+                (op.scale, self._ctx_shape(op.scale), self._ctx_dtype(op.scale)),
+                (
+                    op.zero_point,
+                    self._ctx_shape(op.zero_point),
+                    self._ctx_dtype(op.zero_point),
+                ),
+            )
         return (
             (
                 op.output,
@@ -11706,6 +11814,8 @@ class CEmitter:
         if isinstance(op, QuantizeLinearOp):
             return self._ctx_shape(op.output)
         if isinstance(op, DequantizeLinearOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, DynamicQuantizeLinearOp):
             return self._ctx_shape(op.output)
         if isinstance(op, CastOp):
             return self._ctx_shape(op.output)
@@ -11929,7 +12039,9 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
-        if isinstance(op, (QuantizeLinearOp, DequantizeLinearOp)):
+        if isinstance(
+            op, (QuantizeLinearOp, DequantizeLinearOp, DynamicQuantizeLinearOp)
+        ):
             return self._ctx_dtype(op.output)
         if isinstance(op, (TriluOp, TileOp, CumSumOp)):
             return self._ctx_dtype(op.output)

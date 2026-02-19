@@ -30,7 +30,6 @@
 | Unsupported op RNN | 4 | 22 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
-| Unsupported op DynamicQuantizeLinear | 3 | 11 |
 | Unsupported op Loop | 3 | 11 |
 | Unsupported op Momentum | 3 |  |
 | Unsupported op RandomUniformLike | 3 | 22 |
@@ -71,7 +70,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op DynamicQuantizeLinear | 11 | 3 |
 | Unsupported op Loop | 11 | 3 |
 | Unsupported value type '*' for '*'. Hint: export the model with tensor inputs/outputs. | 11 | 2 |
 | Unsupported op If | 11 | 1 |
