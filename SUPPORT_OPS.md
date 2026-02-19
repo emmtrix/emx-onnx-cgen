@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 161 / 201
+Supported operators: 162 / 201
 
 | Operator | Supported |
 | --- | --- |
@@ -53,7 +53,7 @@ Supported operators: 161 / 201
 | Det | ❌ |
 | Div | ✅ |
 | Dropout | ✅ |
-| DynamicQuantizeLinear | ❌ |
+| DynamicQuantizeLinear | ✅ |
 | Einsum | ✅ |
 | Elu | ✅ |
 | Equal | ✅ |

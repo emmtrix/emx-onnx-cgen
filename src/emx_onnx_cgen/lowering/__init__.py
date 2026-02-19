@@ -21,6 +21,7 @@ _LOWERING_MODULES = [
     "cumsum",
     "depth_space",
     "dequantize_linear",
+    "dynamic_quantize_linear",
     "dropout",
     "einsum",
     "elementwise",

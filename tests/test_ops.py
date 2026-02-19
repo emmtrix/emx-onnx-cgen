@@ -2305,6 +2305,35 @@ def _make_quantize_linear_model() -> onnx.ModelProto:
     return model
 
 
+def _make_dynamic_quantize_linear_model() -> onnx.ModelProto:
+    input_shape = [2, 3]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.UINT8, input_shape)
+    output_scale = helper.make_tensor_value_info("out_scale", TensorProto.FLOAT, [])
+    output_zero_point = helper.make_tensor_value_info(
+        "out_zero_point", TensorProto.UINT8, []
+    )
+    node = helper.make_node(
+        "DynamicQuantizeLinear",
+        inputs=["in0"],
+        outputs=[output.name, output_scale.name, output_zero_point.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "dynamic_quantize_linear_graph",
+        [input_info],
+        [output, output_scale, output_zero_point],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
     input_shape = [2, 3, 2, 2]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -5009,6 +5038,11 @@ def test_lp_pool_matches_onnxruntime() -> None:
 
 def test_quantize_linear_matches_onnxruntime() -> None:
     model = _make_quantize_linear_model()
+    _run_ort_compare(model)
+
+
+def test_dynamic_quantize_linear_matches_onnxruntime() -> None:
+    model = _make_dynamic_quantize_linear_model()
     _run_ort_compare(model)
 
 

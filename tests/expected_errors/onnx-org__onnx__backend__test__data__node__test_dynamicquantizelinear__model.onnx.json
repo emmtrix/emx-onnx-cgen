@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op DynamicQuantizeLinear",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "DynamicQuantizeLinear"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "0fb550ca534a509131b618ec22f28f9e60798996e1a42ff5c00f7106f55fc817"
 }
