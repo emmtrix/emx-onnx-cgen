@@ -89,6 +89,7 @@ from ..ir.ops import (
     QLinearMatMulOp,
     QLinearConvOp,
     LoopRangeOp,
+    LoopSequenceInsertOp,
     RangeOp,
     ReverseSequenceOp,
     SequenceInsertOp,
@@ -1715,6 +1716,17 @@ class CEmitter:
                 add_table_data=op.add_table_data,
                 add_table_shape=op.add_table_shape,
             )
+        if isinstance(op, LoopSequenceInsertOp):
+            return LoopSequenceInsertOp(
+                trip_count=name_map.get(op.trip_count, op.trip_count),
+                cond=name_map.get(op.cond, op.cond),
+                input_sequence=name_map.get(op.input_sequence, op.input_sequence),
+                output_sequence=name_map.get(op.output_sequence, op.output_sequence),
+                table_data=op.table_data,
+                table_shape=op.table_shape,
+                elem_shape=op.elem_shape,
+                elem_dtype=op.elem_dtype,
+            )
         if isinstance(op, RangeOp):
             return RangeOp(
                 start=name_map.get(op.start, op.start),
@@ -1981,6 +1993,9 @@ class CEmitter:
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
                 "loop_range": self._env.get_template("loop_range_op.c.j2"),
+                "loop_sequence_insert": self._env.get_template(
+                    "loop_sequence_insert_op.c.j2"
+                ),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
@@ -2683,6 +2698,8 @@ class CEmitter:
                 return model.op_context.dtype(op.y)
             if isinstance(op, SequenceInsertOp):
                 return model.op_context.dtype(op.tensor)
+            if isinstance(op, LoopSequenceInsertOp):
+                return op.elem_dtype
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -4485,6 +4502,17 @@ class CEmitter:
                 add_table_data=op.add_table_data,
                 add_table_shape=op.add_table_shape,
             )
+        if isinstance(op, LoopSequenceInsertOp):
+            return LoopSequenceInsertOp(
+                trip_count=temp_map.get(op.trip_count, op.trip_count),
+                cond=temp_map.get(op.cond, op.cond),
+                input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
+                output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
+                table_data=op.table_data,
+                table_shape=op.table_shape,
+                elem_shape=op.elem_shape,
+                elem_dtype=op.elem_dtype,
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=temp_map.get(op.size, op.size),
@@ -4881,6 +4909,7 @@ class CEmitter:
             cumsum_template=templates["cumsum"],
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
+            loop_sequence_insert_template=templates["loop_sequence_insert"],
             hamming_window_template=templates["hamming_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
@@ -5393,6 +5422,7 @@ class CEmitter:
         cumsum_template,
         range_template,
         loop_range_template,
+        loop_sequence_insert_template,
         hamming_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
@@ -10056,6 +10086,71 @@ class CEmitter:
                 state_size=state_size,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, LoopSequenceInsertOp):
+            params = self._shared_param_map(
+                [
+                    ("trip_count", op.trip_count),
+                    ("cond", op.cond),
+                    ("input_sequence", op.input_sequence),
+                    ("output_sequence", op.output_sequence),
+                ]
+            )
+            elem_shape = op.elem_shape
+            elem_suffix = self._param_array_suffix(elem_shape)
+            seq_dtype = op.elem_dtype
+            scalar_suffix = self._param_array_suffix(())
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["trip_count"],
+                        self._ctx_dtype(op.trip_count).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["cond"],
+                        self._ctx_dtype(op.cond).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["input_sequence"],
+                        seq_dtype.c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{elem_suffix}",
+                        True,
+                    ),
+                    (f"{params['input_sequence']}__count", "idx_t", "", True),
+                    (
+                        params["output_sequence"],
+                        seq_dtype.c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{elem_suffix}",
+                        False,
+                    ),
+                    (
+                        f"{params['output_sequence']}__count",
+                        "idx_t *",
+                        "",
+                        False,
+                    ),
+                ]
+            )
+            table_data = [
+                self._format_value(value, seq_dtype) for value in op.table_data
+            ]
+            rendered = loop_sequence_insert_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                trip_count=params["trip_count"],
+                cond=params["cond"],
+                input_sequence=params["input_sequence"],
+                output_sequence=params["output_sequence"],
+                table_data=table_data,
+                table_len=op.table_shape[0],
+                element_count=CEmitter._element_count_expr(elem_shape),
+                c_type=seq_dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, HammingWindowOp):
             params = self._shared_param_map(
                 [
@@ -11547,6 +11642,8 @@ class CEmitter:
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
         if isinstance(op, LoopRangeOp):
             return ((op.trip_count, ()), (op.cond, ()), (op.start, ()), (op.delta, ()))
+        if isinstance(op, LoopSequenceInsertOp):
+            return ((op.trip_count, ()), (op.cond, ()))
         if isinstance(op, HammingWindowOp):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
@@ -11936,6 +12033,8 @@ class CEmitter:
                     self._ctx_dtype(op.tensor),
                 ),
             )
+        if isinstance(op, LoopSequenceInsertOp):
+            return ((op.output_sequence, op.elem_shape, op.elem_dtype),)
         return (
             (
                 op.output,
@@ -12168,6 +12267,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, SequenceInsertOp):
             return self._ctx_shape(op.tensor)
+        if isinstance(op, LoopSequenceInsertOp):
+            return op.elem_shape
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -12270,6 +12371,8 @@ class CEmitter:
             return self._ctx_dtype(op.outputs[0])
         if isinstance(op, SequenceInsertOp):
             return self._ctx_dtype(op.tensor)
+        if isinstance(op, LoopSequenceInsertOp):
+            return op.elem_dtype
         if isinstance(op, (DepthToSpaceOp, SpaceToDepthOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, OneHotOp):

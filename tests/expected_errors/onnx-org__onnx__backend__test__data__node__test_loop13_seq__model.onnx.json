@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Loop",
+  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=58382658)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop13_seq model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Loop"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "eedab3d6d9430040f26359c0d32caaa485c830eada7134c452420d012c288c1a"
 }

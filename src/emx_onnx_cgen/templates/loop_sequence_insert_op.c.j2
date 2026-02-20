@@ -1,0 +1,38 @@
+void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+    idx_t input_count = {{ input_sequence }}__count;
+    if (input_count > EMX_SEQUENCE_MAX_LEN) {
+        input_count = EMX_SEQUENCE_MAX_LEN;
+    }
+    for (idx_t seq = 0; seq < input_count; ++seq) {
+        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+            {{ output_sequence }}[seq][elem] = {{ input_sequence }}[seq][elem];
+        }
+    }
+
+    const int64_t trip_raw = (int64_t){{ trip_count }}[0];
+    const bool enabled = {{ cond }}[0];
+    if (!enabled || trip_raw <= 0) {
+        *{{ output_sequence }}__count = input_count;
+        return;
+    }
+
+    const int64_t limit_by_trip = trip_raw;
+    const int64_t limit_by_table = {{ table_len }};
+    const int64_t limit_by_capacity = (int64_t)EMX_SEQUENCE_MAX_LEN - (int64_t)input_count;
+    int64_t append_count = limit_by_trip;
+    if (append_count > limit_by_table) {
+        append_count = limit_by_table;
+    }
+    if (append_count > limit_by_capacity) {
+        append_count = limit_by_capacity;
+    }
+    if (append_count < 0) {
+        append_count = 0;
+    }
+
+    static const {{ c_type }} loop_insert_table[{{ table_len }}] = { {{ table_data | join(', ') }} };
+    for (int64_t idx = 0; idx < append_count; ++idx) {
+        {{ output_sequence }}[input_count + (idx_t)idx][0] = loop_insert_table[idx];
+    }
+    *{{ output_sequence }}__count = input_count + (idx_t)append_count;
+}
