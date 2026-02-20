@@ -11414,6 +11414,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | LoopRangeOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -12035,6 +12036,11 @@ class CEmitter:
             )
         if isinstance(op, LoopSequenceInsertOp):
             return ((op.output_sequence, op.elem_shape, op.elem_dtype),)
+        if isinstance(op, LoopRangeOp):
+            return (
+                (op.final, self._ctx_shape(op.final), self._ctx_dtype(op.final)),
+                (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),
+            )
         return (
             (
                 op.output,
