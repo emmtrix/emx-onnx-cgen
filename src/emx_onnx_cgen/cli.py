@@ -420,11 +420,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Emit a JSON-producing testbench main() for validation",
     )
     compile_parser.add_argument(
-        "--testbench-name",
+        "--testbench-file",
         type=str,
         default=None,
         help=(
-            "If set, emit the testbench into a separate C file with this name "
+            "If set, emit the testbench into a separate C file at this path "
             "(implies --emit-testbench)."
         ),
     )
@@ -636,7 +636,7 @@ def _handle_compile(args: argparse.Namespace) -> int:
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
     model_name = args.model_name or "model"
-    if args.testbench_name:
+    if args.testbench_file:
         args.emit_testbench = True
     generated, testbench, data_source, weight_data, error = _compile_model(
         args, reporter=reporter
@@ -649,10 +649,8 @@ def _handle_compile(args: argparse.Namespace) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generated or "", encoding="utf-8")
     if testbench is not None:
-        testbench_path = _resolve_testbench_output_path(
-            output_path, args.testbench_name
-        )
-        if args.testbench_name:
+        testbench_path = _resolve_testbench_output_path(output_path, args.testbench_file)
+        if args.testbench_file:
             testbench_decls = _compile_testbench_declarations(args, reporter=reporter)
             testbench_path.write_text(
                 _wrap_separate_testbench_source(testbench_decls, testbench),
@@ -708,7 +706,7 @@ def _compile_model(
     active_reporter.info("")
     codegen_started = active_reporter.start_step("Generating C code")
     try:
-        separate_testbench = bool(args.testbench_name)
+        separate_testbench = bool(args.testbench_file)
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=args.emit_testbench and not separate_testbench,
@@ -743,10 +741,8 @@ def _compile_model(
     output_path: Path = args.output or model_path.with_suffix(".c")
     artifacts = [(str(output_path), len(generated.encode("utf-8")))]
     if testbench is not None:
-        testbench_path = _resolve_testbench_output_path(
-            output_path, args.testbench_name
-        )
-        if args.testbench_name:
+        testbench_path = _resolve_testbench_output_path(output_path, args.testbench_file)
+        if args.testbench_file:
             testbench_decls = _compile_testbench_declarations(args, reporter=reporter)
             wrapped_testbench = _wrap_separate_testbench_source(testbench_decls, testbench)
             artifacts.append(
@@ -830,8 +826,8 @@ def _wrap_separate_testbench_source(declarations: str, testbench_source: str) ->
     return f"{preamble}\n{testbench_source}"
 
 
-def _resolve_testbench_output_path(output_path: Path, testbench_name: str) -> Path:
-    requested = Path(testbench_name)
+def _resolve_testbench_output_path(output_path: Path, testbench_file: str) -> Path:
+    requested = Path(testbench_file)
     if not requested.suffix:
         requested = requested.with_suffix(output_path.suffix)
     if requested.is_absolute():
