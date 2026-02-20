@@ -1,5 +1,5 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Sub",
@@ -10,5 +10,5 @@
     "Loop"
   ],
   "opset_version": 11,
-  "generated_checksum": "f5b1cf913f99afef39e686d8f185d678b16283e9b4e3c86f50c1dff3e12634c3"
+  "generated_checksum": "4d5934c92f452b8af4be8356aad511b4b939791ffd7ecc469ebbc5a3640ad038"
 }
