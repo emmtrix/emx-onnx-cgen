@@ -14,6 +14,8 @@ Depending on CLI options, compilation can produce:
 - `<out>.c`: main generated C translation unit (always).
 - `<out>_data.c`: optional companion file containing constant data definitions
   (enabled by `--emit-data-file`).
+- `<testbench>.c`: optional testbench translation unit when `--testbench-file`
+  is set (implies `--emit-testbench`).
 - `<model_name>.bin`: optional binary blob containing packed weights when
   `--large-weight-threshold` triggers.
 
@@ -22,6 +24,8 @@ Notes:
 - `--model-name` controls the symbol prefix. If not specified, the output file
   stem is typically used.
 - The file `<model_name>.bin` is written next to the main output C file.
+- If `--testbench-file` is a relative path, it is resolved relative to the main
+  output C file directory.
 
 ## High-Level File Layout
 
@@ -88,7 +92,8 @@ void <model_name>(const float x[restrict 1][16], float y[restrict 1][16]) {
 }
 ```
 
-Optional testbench tail (emitted when `--emit-testbench` is enabled):
+Optional testbench tail (emitted when `--emit-testbench` is enabled and
+`--testbench-file` is not set):
 
 ```c
 __attribute__((weak, noinline)) void timer_start(void) {}
@@ -117,6 +122,12 @@ int main(int argc, char **argv) {
     return testbench_run(input_path);
 }
 ```
+
+When `--testbench-file <path>` is set, the testbench is emitted into a separate
+translation unit instead of being appended to `<out>.c`. The separate file does
+not include `<out>.c`; it contains forward declarations for `<model_name>()`
+and `<model_name>_load()` and can be compiled and linked together with the main
+output C file.
 
 ## Public C API
 
@@ -411,8 +422,9 @@ Includes are minimized and added only as needed:
 - `<strings.h>` and `<ctype.h>` may appear for string ops like `StringNormalizer`
   (note: `<strings.h>` is POSIX, not ISO C).
 - `<stdbool.h>` appears for `bool` outputs/ops.
-- `<stdio.h>` appears when testbench is emitted, or when external weights are
-  loaded from a file path (loader uses `FILE*` / `fopen` / `fread`).
+- `<stdio.h>` appears in translation units that use the testbench, or when
+  external weights are loaded from a file path (loader uses `FILE*` / `fopen` /
+  `fread`).
 
 Macros:
 
@@ -420,7 +432,7 @@ Macros:
 - `EMX_UNUSED`: attribute/helper for unused parameters.
 - `EMX_STRING_MAX_LEN`: fixed upper bound for string element storage.
 
-## Optional Testbench Output (`--emit-testbench`)
+## Optional Testbench Output (`--emit-testbench`, `--testbench-file`)
 
 When `--emit-testbench` is enabled, the generated C file additionally includes:
 
@@ -430,6 +442,11 @@ When `--emit-testbench` is enabled, the generated C file additionally includes:
   - runs `<model_name>(...)`,
   - prints inputs/outputs as JSON.
 - Weak `timer_start()` / `timer_stop()` hooks for integration-level timing.
+
+When `--testbench-file <path>` is set, the testbench is emitted into the given
+file instead of being appended to `<out>.c` (and `--emit-testbench` is implied).
+The generated testbench file contains forward declarations for the model entry
+points and can be compiled and linked together with `<out>.c`.
 
 The JSON output is designed for the Python verification pipeline and uses
 hex-float formatting (`%a`) for floating-point values to keep comparisons stable

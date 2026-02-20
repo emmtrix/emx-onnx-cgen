@@ -165,7 +165,7 @@ Options:
 
 - `--model-name`: Override the generated model name (default: output file stem).
 - `--emit-testbench`: Emit a JSON-producing `main()` testbench for validation.
-- `--testbench-name`: Emit the testbench into a separate C file with the given name (requires `--emit-testbench`). If not set, the testbench is embedded in the main output C file (legacy behavior).
+- `--testbench-file`: Emit the testbench into a separate C file at the given path (implies `--emit-testbench`). If not set, the testbench is embedded in the main output C file (legacy behavior).
 - `--emit-data-file`: Emit constant data arrays into a companion `_data` C file.
 - `--no-restrict-arrays`: Disable `restrict` qualifiers on generated array parameters.
 
