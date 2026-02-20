@@ -690,6 +690,16 @@ def test_codegen_loop11_emits_runtime_loop() -> None:
     assert "loop_add_table" in generated
 
 
+def test_codegen_loop13_seq_emits_runtime_loop() -> None:
+    model = _load_official_onnx_model(
+        "onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx"
+    )
+    compiler = Compiler(CompilerOptions(model_name="loop13_seq_model"))
+    generated = compiler.compile(model)
+    assert "for (int64_t idx = 0; idx < append_count; ++idx)" in generated
+    assert "loop_insert_table" in generated
+
+
 def test_codegen_golden_matmul() -> None:
     model = _make_matmul_model()
     compiler = Compiler()
