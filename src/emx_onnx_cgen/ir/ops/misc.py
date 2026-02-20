@@ -873,6 +873,33 @@ class LoopRangeOp(RenderableOpBase):
     delta: str
     final: str
     output: str
+    add_table_data: tuple[float | int, ...] | None = None
+    add_table_shape: tuple[int, ...] | None = None
+
+
+@dataclass(frozen=True)
+class LoopSequenceInsertOp(RenderableOpBase):
+    __io_inputs__ = ("trip_count", "cond", "input_sequence")
+    __io_outputs__ = ("output_sequence",)
+    trip_count: str
+    cond: str
+    input_sequence: str
+    output_sequence: str
+    table_data: tuple[float | int, ...]
+    table_shape: tuple[int, ...]
+    elem_shape: tuple[int, ...]
+    elem_dtype: ScalarType
+
+    def call_args(self) -> tuple[str, ...]:
+        return (
+            self.trip_count,
+            self.cond,
+            self.input_sequence,
+            f"{self.input_sequence}__count",
+            self.output_sequence,
+            f"{self.output_sequence}__count",
+        )
+
 
 @dataclass(frozen=True)
 class RangeOp(RenderableOpBase):

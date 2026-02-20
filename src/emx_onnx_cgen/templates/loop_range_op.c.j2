@@ -1,15 +1,43 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int64_t trip = (int64_t){{ trip_count }}[0];
     const bool enabled = {{ cond }}[0];
+{% if add_table_data is not none %}
+    static const {{ c_type }} loop_add_table[{{ add_table_data | length }}] = { {{ add_table_data | join(', ') }} };
+    {{ c_type }} current[{{ state_size }}];
+    for (int64_t k = 0; k < {{ state_size }}; ++k) {
+        current[k] = {{ start }}[k];
+    }
+{% else %}
     {{ c_type }} current = {{ start }}[0];
+{% endif %}
     if (!enabled || trip <= 0) {
+{% if add_table_data is not none %}
+        for (int64_t k = 0; k < {{ state_size }}; ++k) {
+            {{ final }}[k] = current[k];
+        }
+{% else %}
         {{ final }}[0] = current;
+{% endif %}
         return;
     }
+{% if add_table_data is not none %}
+    const int64_t state_size = {{ state_size }};
+    for (int64_t idx = 0; idx < trip; ++idx) {
+        for (int64_t k = 0; k < state_size; ++k) {
+            const int64_t base = idx * state_size;
+            current[k] = current[k] + loop_add_table[base + k];
+            {{ output }}[idx][k] = current[k];
+        }
+    }
+    for (int64_t k = 0; k < state_size; ++k) {
+        {{ final }}[k] = current[k];
+    }
+{% else %}
     const {{ c_type }} delta_value = {{ delta }}[0];
     for (int64_t idx = 0; idx < trip; ++idx) {
         {{ output }}[idx] = current;
         current = current + delta_value;
     }
     {{ final }}[0] = current;
+{% endif %}
 }

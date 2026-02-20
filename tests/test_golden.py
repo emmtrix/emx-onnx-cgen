@@ -369,10 +369,9 @@ def _make_large_weight_initializer_model() -> onnx.ModelProto:
     return model
 
 
-
-
 def _load_official_onnx_model(repo_relative_path: str) -> onnx.ModelProto:
     return onnx.load(Path(__file__).resolve().parent.parent / repo_relative_path)
+
 
 def _mark_dynamic_dims(
     model: onnx.ModelProto,
@@ -671,8 +670,6 @@ def test_codegen_golden_constant_string() -> None:
     assert_golden(generated, golden_path)
 
 
-
-
 def test_codegen_golden_loop_range_official_model() -> None:
     model = _load_official_onnx_model(
         "onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx"
@@ -681,6 +678,27 @@ def test_codegen_golden_loop_range_official_model() -> None:
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "loop_range_float_model.c"
     assert_golden(generated, golden_path)
+
+
+def test_codegen_loop11_emits_runtime_loop() -> None:
+    model = _load_official_onnx_model(
+        "onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx"
+    )
+    compiler = Compiler(CompilerOptions(model_name="loop11_model"))
+    generated = compiler.compile(model)
+    assert "for (int64_t idx = 0; idx < trip; ++idx)" in generated
+    assert "loop_add_table" in generated
+
+
+def test_codegen_loop13_seq_emits_runtime_loop() -> None:
+    model = _load_official_onnx_model(
+        "onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx"
+    )
+    compiler = Compiler(CompilerOptions(model_name="loop13_seq_model"))
+    generated = compiler.compile(model)
+    assert "for (int64_t idx = 0; idx < append_count; ++idx)" in generated
+    assert "loop_insert_table" in generated
+
 
 def test_codegen_golden_matmul() -> None:
     model = _make_matmul_model()
