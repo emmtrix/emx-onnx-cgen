@@ -289,7 +289,7 @@ def run_cli_command(
                 opset_version=opset_version,
                 generated_checksum=generated_checksum,
             )
-        generated, data_source, error = _compile_model(
+        generated, _testbench, data_source, _weight_data, error = _compile_model(
             args, testbench_inputs=testbench_inputs
         )
         if error:
@@ -418,6 +418,15 @@ def _build_parser() -> argparse.ArgumentParser:
         "--emit-testbench",
         action="store_true",
         help="Emit a JSON-producing testbench main() for validation",
+    )
+    compile_parser.add_argument(
+        "--testbench-file",
+        type=str,
+        default=None,
+        help=(
+            "If set, emit the testbench into a separate C file at this path "
+            "(implies --emit-testbench)."
+        ),
     )
     compile_parser.add_argument(
         "--emit-data-file",
@@ -627,7 +636,9 @@ def _handle_compile(args: argparse.Namespace) -> int:
     model_path: Path = args.model
     output_path: Path = args.output or model_path.with_suffix(".c")
     model_name = args.model_name or "model"
-    generated, data_source, weight_data, error = _compile_model(
+    if args.testbench_file:
+        args.emit_testbench = True
+    generated, testbench, data_source, weight_data, error = _compile_model(
         args, reporter=reporter
     )
     if error:
@@ -637,6 +648,17 @@ def _handle_compile(args: argparse.Namespace) -> int:
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generated or "", encoding="utf-8")
+    if testbench is not None:
+        testbench_path = _resolve_testbench_output_path(output_path, args.testbench_file)
+        if args.testbench_file:
+            testbench_decls = _compile_testbench_declarations(args, reporter=reporter)
+            testbench_path.write_text(
+                _wrap_separate_testbench_source(testbench_decls, testbench),
+                encoding="utf-8",
+            )
+        else:
+            # Embedded testbench: no separate file.
+            pass
     if data_source is not None:
         data_path = output_path.with_name(
             f"{output_path.stem}_data{output_path.suffix}"
@@ -653,7 +675,7 @@ def _compile_model(
     *,
     testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
     reporter: _VerifyReporter | None = None,
-) -> tuple[str | None, str | None, bytes | None, str | None]:
+) -> tuple[str | None, str | None, str | None, bytes | None, str | None]:
     model_path: Path = args.model
     model_name = args.model_name or "model"
     active_reporter = reporter or _NullVerifyReporter()
@@ -666,7 +688,7 @@ def _compile_model(
         active_reporter.step_ok(load_started)
     except OSError as exc:
         active_reporter.step_fail(str(exc))
-        return None, None, None, str(exc)
+        return None, None, None, None, str(exc)
     operators = _collect_model_operators(model)
     opset_version = _model_opset_version(model)
     _report_model_details(
@@ -684,9 +706,10 @@ def _compile_model(
     active_reporter.info("")
     codegen_started = active_reporter.start_step("Generating C code")
     try:
+        separate_testbench = bool(args.testbench_file)
         options = CompilerOptions(
             model_name=model_name,
-            emit_testbench=args.emit_testbench,
+            emit_testbench=args.emit_testbench and not separate_testbench,
             command_line=args.command_line,
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,
@@ -706,14 +729,25 @@ def _compile_model(
         else:
             generated, weight_data = compiler.compile_with_weight_data(model)
             data_source = None
+        testbench = None
+        if separate_testbench:
+            testbench = compiler.compile_testbench(model)
         active_reporter.step_ok(codegen_started)
         if args.verbose:
             _report_codegen_timings(active_reporter, timings=timings)
     except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
         active_reporter.step_fail(str(exc))
-        return None, None, None, str(exc)
+        return None, None, None, None, str(exc)
     output_path: Path = args.output or model_path.with_suffix(".c")
     artifacts = [(str(output_path), len(generated.encode("utf-8")))]
+    if testbench is not None:
+        testbench_path = _resolve_testbench_output_path(output_path, args.testbench_file)
+        if args.testbench_file:
+            testbench_decls = _compile_testbench_declarations(args, reporter=reporter)
+            wrapped_testbench = _wrap_separate_testbench_source(testbench_decls, testbench)
+            artifacts.append(
+                (str(testbench_path), len(wrapped_testbench.encode("utf-8")))
+            )
     if data_source is not None:
         data_path = output_path.with_name(
             f"{output_path.stem}_data{output_path.suffix}"
@@ -726,7 +760,79 @@ def _compile_model(
     active_reporter.info(
         f"  Generated checksum (sha256): {_generated_checksum(generated)}"
     )
-    return generated, data_source, weight_data, None
+    return generated, testbench, data_source, weight_data, None
+
+
+def _compile_testbench_declarations(
+    args: argparse.Namespace,
+    *,
+    reporter: _VerifyReporter | None = None,
+) -> str:
+    model_path: Path = args.model
+    model_name = args.model_name or "model"
+    active_reporter = reporter or _NullVerifyReporter()
+    try:
+        model, _model_checksum = _load_model_and_checksum(model_path)
+    except OSError as exc:
+        raise CodegenError(str(exc)) from exc
+    options = CompilerOptions(
+        model_name=model_name,
+        emit_testbench=False,
+        command_line=args.command_line,
+        model_checksum=None,
+        restrict_arrays=args.restrict_arrays,
+        fp32_accumulation_strategy=args.fp32_accumulation_strategy,
+        fp16_accumulation_strategy=args.fp16_accumulation_strategy,
+        truncate_weights_after=args.truncate_weights_after,
+        large_temp_threshold_bytes=args.large_temp_threshold_bytes,
+        large_weight_threshold=args.large_weight_threshold,
+        testbench_inputs=None,
+        testbench_optional_inputs=None,
+        timings=None,
+    )
+    compiler = Compiler(options)
+    try:
+        return compiler.compile_testbench_declarations(model)
+    except (CodegenError, ShapeInferenceError, UnsupportedOpError) as exc:
+        active_reporter.step_fail(str(exc))
+        raise
+
+
+def _wrap_separate_testbench_source(declarations: str, testbench_source: str) -> str:
+    preamble = "\n".join(
+        [
+            "/* Testbench (separate translation unit). */",
+            "#include <stdint.h>",
+            "#include <stdbool.h>",
+            "#include <stdio.h>",
+            "#include <math.h>",
+            "#include <float.h>",
+            "#include <string.h>",
+            "",
+            "#ifndef idx_t",
+            "#define idx_t int32_t",
+            "#endif",
+            "#ifndef EMX_STRING_MAX_LEN",
+            "#define EMX_STRING_MAX_LEN 256",
+            "#endif",
+            "#ifndef EMX_SEQUENCE_MAX_LEN",
+            "#define EMX_SEQUENCE_MAX_LEN 32",
+            "#endif",
+            "",
+            declarations.rstrip(),
+            "",
+        ]
+    )
+    return f"{preamble}\n{testbench_source}"
+
+
+def _resolve_testbench_output_path(output_path: Path, testbench_file: str) -> Path:
+    requested = Path(testbench_file)
+    if not requested.suffix:
+        requested = requested.with_suffix(output_path.suffix)
+    if requested.is_absolute():
+        return requested
+    return output_path.with_name(str(requested))
 
 
 def _resolve_compiler(cc: str | None, prefer_ccache: bool = False) -> list[str] | None:

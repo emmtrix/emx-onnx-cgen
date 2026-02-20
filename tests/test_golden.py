@@ -717,6 +717,18 @@ def test_codegen_includes_testbench() -> None:
     assert_golden(generated, golden_path)
 
 
+def test_codegen_separate_testbench_source() -> None:
+    model = _make_add_model()
+    compiler = Compiler(CompilerOptions(emit_testbench=False))
+    testbench = compiler.compile_testbench(model)
+    decls = compiler.compile_testbench_declarations(model)
+    from emx_onnx_cgen.cli import _wrap_separate_testbench_source
+
+    rendered = _wrap_separate_testbench_source(decls, testbench)
+    golden_path = Path(__file__).parent / "golden" / "add_model_testbench_separate.c"
+    assert_golden(rendered, golden_path)
+
+
 def test_matmul_matches_onnxruntime() -> None:
     model = _make_matmul_model()
     input_a = np.random.rand(2, 3).astype(np.float32)
