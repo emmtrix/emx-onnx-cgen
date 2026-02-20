@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Loop",
+  "error": "ONNX shape inference failed",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop13_seq model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Loop"

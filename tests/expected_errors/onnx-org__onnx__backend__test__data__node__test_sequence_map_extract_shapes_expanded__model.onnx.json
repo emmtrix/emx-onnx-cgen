@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op SequenceLength",
+  "error": "Unsupported op Loop",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceLength",

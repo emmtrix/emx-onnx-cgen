@@ -17,8 +17,8 @@
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op If | 6 | 11, 13, 20 |
+| Unsupported op Loop | 6 | 17 |
 | Unsupported op ScatterElements | 6 | 18 |
-| Unsupported op SequenceLength | 6 | 17 |
 | Unsupported op SequenceMap | 6 | 17 |
 | Unsupported op SplitToSequence | 6 | 12, 24 |
 | Unsupported op StringSplit | 6 | 20 |
@@ -29,21 +29,21 @@
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
-| Unsupported op Loop | 4 | 11, 13 |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported op SequenceConstruct | 4 | 12 |
-| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op Momentum | 3 |  |
 | Unsupported op OptionalGetElement | 3 | 18 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
+| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 3 | 16, 18 |
 | BatchNormalization must have 5 inputs and 1 output | 2 | 15 |
 | Failed to build testbench. | 2 | 12 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
+| ONNX shape inference failed | 2 | 13, 16 |
 | QuantizeLinear block_size is not supported | 2 | 25 |
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
@@ -74,19 +74,19 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op Loop | 11 | 3 |
 | Unsupported op If | 11 | 1 |
 | Unsupported op SequenceConstruct | 12 | 4 |
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
 | Unsupported op Gradient | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
+| ONNX shape inference failed | 13 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |
-| Unsupported op Loop | 13 | 1 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
-| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
-| Unsupported op SequenceLength | 17 | 6 |
+| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 2 |
+| ONNX shape inference failed | 16 | 1 |
+| Unsupported op Loop | 17 | 6 |
 | Unsupported op SequenceMap | 17 | 6 |
 | Unsupported op BlackmanWindow | 17 | 2 |
 | Unsupported op HannWindow | 17 | 2 |

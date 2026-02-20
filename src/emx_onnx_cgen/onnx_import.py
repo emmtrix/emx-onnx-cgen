@@ -689,6 +689,196 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
     return model, expanded
 
 
+
+
+def _loop_body_constant_length(body: onnx.GraphProto) -> int | None:
+    for body_node in body.node:
+        if body_node.op_type != "Constant":
+            continue
+        attrs = _node_attrs(body_node)
+        value = attrs.get("value")
+        if isinstance(value, onnx.TensorProto):
+            dims = tuple(int(dim) for dim in value.dims)
+            if len(dims) == 1 and dims[0] > 0:
+                return dims[0]
+    return None
+
+
+
+
+def _loop_constant_ints(body: onnx.GraphProto, output_name: str) -> tuple[int, ...] | None:
+    for body_node in body.node:
+        if body_node.op_type != "Constant" or len(body_node.output) != 1:
+            continue
+        if body_node.output[0] != output_name:
+            continue
+        attrs = _node_attrs(body_node)
+        if "value" in attrs and isinstance(attrs["value"], onnx.TensorProto):
+            array = numpy_helper.to_array(attrs["value"])
+            if array.size == 0:
+                return ()
+            return tuple(int(v) for v in array.reshape(-1).tolist())
+        if "value_int" in attrs:
+            return (int(attrs["value_int"]),)
+        if "value_ints" in attrs:
+            return tuple(int(v) for v in attrs["value_ints"])
+    return None
+def _expand_loop_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+    graph = model.graph
+    new_nodes: list[onnx.NodeProto] = []
+    expanded = False
+
+    for loop_index, node in enumerate(graph.node, start=1):
+        if node.op_type != "Loop":
+            new_nodes.append(node)
+            continue
+
+        attrs = _node_attrs(node)
+        body = attrs.get("body")
+        if not isinstance(body, onnx.GraphProto):
+            raise UnsupportedOpError("Loop requires a body graph")
+        if len(node.input) < 2:
+            raise UnsupportedOpError("Loop must have at least trip count and condition inputs")
+
+        state_input_names = list(node.input[2:])
+        state_count = len(state_input_names)
+        if len(body.input) != state_count + 2:
+            raise UnsupportedOpError("Loop body input count must match Loop state inputs")
+        if len(body.output) < 1 + state_count:
+            raise UnsupportedOpError("Loop body output count is invalid")
+        scan_count = len(body.output) - 1 - state_count
+        if len(node.output) != state_count + scan_count:
+            raise UnsupportedOpError("Loop output count must match Loop body outputs")
+
+        prefix = node.name or f"loop_{loop_index}"
+        iter_count: int | None = None
+
+        if scan_count > 0:
+            first_scan_output = node.output[state_count]
+            scan_shape = _tensor_shape_from_value_info(graph, first_scan_output)
+            if not scan_shape or scan_shape[0] <= 0:
+                raise UnsupportedOpError("Loop scan output requires a static positive leading dim")
+            iter_count = scan_shape[0]
+        if iter_count is None:
+            iter_count = _loop_body_constant_length(body)
+        if iter_count is None or iter_count <= 0:
+            raise UnsupportedOpError("Unsupported op Loop")
+
+        expanded = True
+        state_names = list(state_input_names)
+        scan_buffers: list[list[str]] = [[] for _ in range(scan_count)]
+
+        for iter_index in range(iter_count):
+            iter_name = f"{prefix}_iter{iter_index}_counter"
+            new_nodes.append(
+                helper.make_node(
+                    "Constant",
+                    inputs=[],
+                    outputs=[iter_name],
+                    name=f"{iter_name}_node",
+                    value=numpy_helper.from_array(
+                        np.array(iter_index, dtype=np.int64),
+                        name=f"{iter_name}_value",
+                    ),
+                )
+            )
+            name_map: dict[str, str] = {
+                body.input[0].name: iter_name,
+                body.input[1].name: node.input[1],
+            }
+            for state_slot in range(state_count):
+                name_map[body.input[2 + state_slot].name] = state_names[state_slot]
+
+            for body_node in body.node:
+                mapped_inputs = [name_map.get(input_name, input_name) for input_name in body_node.input]
+                mapped_outputs: list[str] = []
+                for output_name in body_node.output:
+                    if not output_name:
+                        mapped_outputs.append("")
+                        continue
+                    mapped_name = f"{prefix}_iter{iter_index}_{output_name}"
+                    name_map[output_name] = mapped_name
+                    mapped_outputs.append(mapped_name)
+                body_attrs = _node_attrs(body_node)
+                emitted_inputs = mapped_inputs
+                if body_node.op_type == "Unsqueeze" and len(mapped_inputs) == 2:
+                    axes = _loop_constant_ints(body, body_node.input[1])
+                    if axes is not None:
+                        emitted_inputs = [mapped_inputs[0]]
+                        body_attrs = dict(body_attrs)
+                        body_attrs["axes"] = list(axes)
+                new_nodes.append(
+                    helper.make_node(
+                        body_node.op_type,
+                        inputs=emitted_inputs,
+                        outputs=mapped_outputs,
+                        name=(f"{prefix}_iter{iter_index}_{body_node.name}" if body_node.name else f"{prefix}_iter{iter_index}_{body_node.op_type}"),
+                        **body_attrs,
+                    )
+                )
+
+            for state_slot in range(state_count):
+                loop_output_name = body.output[1 + state_slot].name
+                mapped = name_map.get(loop_output_name)
+                if mapped is None:
+                    raise UnsupportedOpError("Loop body did not produce a required state output")
+                state_names[state_slot] = mapped
+
+            for scan_slot in range(scan_count):
+                loop_output_name = body.output[1 + state_count + scan_slot].name
+                mapped = name_map.get(loop_output_name)
+                if mapped is None:
+                    raise UnsupportedOpError("Loop body did not produce a required scan output")
+                unsqueezed = f"{prefix}_iter{iter_index}_scan{scan_slot}"
+                new_nodes.append(
+                    helper.make_node(
+                        "Unsqueeze",
+                        inputs=[mapped],
+                        outputs=[unsqueezed],
+                        name=f"{unsqueezed}_node",
+                        axes=[0],
+                    )
+                )
+                scan_buffers[scan_slot].append(unsqueezed)
+
+        for state_slot, output_name in enumerate(node.output[:state_count]):
+            state_value = state_names[state_slot]
+            if state_value != output_name:
+                new_nodes.append(
+                    helper.make_node(
+                        "Identity",
+                        inputs=[state_value],
+                        outputs=[output_name],
+                        name=f"{prefix}_state_output_{state_slot}",
+                    )
+                )
+
+        for scan_slot, output_name in enumerate(node.output[state_count:]):
+            buffer = scan_buffers[scan_slot]
+            if len(buffer) == 1:
+                new_nodes.append(
+                    helper.make_node(
+                        "Identity",
+                        inputs=buffer,
+                        outputs=[output_name],
+                        name=f"{prefix}_scan_output_{scan_slot}",
+                    )
+                )
+            else:
+                new_nodes.append(
+                    helper.make_node(
+                        "Concat",
+                        inputs=buffer,
+                        outputs=[output_name],
+                        name=f"{prefix}_scan_output_{scan_slot}",
+                        axis=0,
+                    )
+                )
+
+    if expanded:
+        del graph.node[:]
+        graph.node.extend(new_nodes)
+    return model, expanded
 def _constant_initializer(node: onnx.NodeProto) -> Initializer:
     if len(node.output) != 1:
         raise UnsupportedOpError("Constant must have exactly one output")
@@ -773,7 +963,8 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
 
 
 def import_onnx(model: onnx.ModelProto) -> Graph:
-    model, _ = _expand_scan_nodes(model)
+    model, scan_expanded = _expand_scan_nodes(model)
+    model, loop_expanded = _expand_loop_nodes(model)
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)
     )
@@ -782,7 +973,8 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
         try:
             model = shape_inference.infer_shapes(model, data_prop=True)
         except Exception as exc:  # pragma: no cover - onnx inference errors
-            raise ShapeInferenceError("ONNX shape inference failed") from exc
+            if not (scan_expanded or loop_expanded):
+                raise ShapeInferenceError("ONNX shape inference failed") from exc
     graph = model.graph
     base_initializers = [_initializer(value) for value in graph.initializer]
     constant_initializers: list[Initializer] = []

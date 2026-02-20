@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1460 / 1802 official ONNX files.
+Support 1463 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -888,9 +888,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | 11 | ❌ | Unsupported op Loop |
-| onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | 13 | ❌ | Unsupported op Loop |
-| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | 13 | ❌ | ONNX shape inference failed |
+| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | ONNX shape inference failed |
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | 22 | ❌ | LpPool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1110,9 +1110,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_l1_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1454,17 +1454,17 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_shape/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_end/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_start/model.onnx | 25 | ✅ | OK (max ULP 0) |
