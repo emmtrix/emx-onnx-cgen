@@ -873,6 +873,9 @@ class LoopRangeOp(RenderableOpBase):
     delta: str
     final: str
     output: str
+    add_table_data: tuple[float | int, ...] | None = None
+    add_table_shape: tuple[int, ...] | None = None
+
 
 @dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
