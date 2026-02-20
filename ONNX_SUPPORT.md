@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1460 / 1802 official ONNX files.
+Support 1462 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -888,8 +888,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
-| onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | 11 | ❌ | Unsupported op Loop |
-| onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | 13 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=58382658) |
 | onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | 22 | ❌ | LpPool expects 2D kernel_shape |
