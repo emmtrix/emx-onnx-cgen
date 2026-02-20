@@ -1712,6 +1712,8 @@ class CEmitter:
                 delta=name_map.get(op.delta, op.delta),
                 final=name_map.get(op.final, op.final),
                 output=name_map.get(op.output, op.output),
+                add_table_data=op.add_table_data,
+                add_table_shape=op.add_table_shape,
             )
         if isinstance(op, RangeOp):
             return RangeOp(
@@ -4480,6 +4482,8 @@ class CEmitter:
                 delta=temp_map.get(op.delta, op.delta),
                 final=temp_map.get(op.final, op.final),
                 output=temp_map.get(op.output, op.output),
+                add_table_data=op.add_table_data,
+                add_table_shape=op.add_table_shape,
             )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
@@ -10026,6 +10030,15 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            add_table_data = None
+            state_size = 1
+            if op.add_table_data is not None:
+                add_table_data = [
+                    self._format_value(value, self._ctx_dtype(op.output))
+                    for value in op.add_table_data
+                ]
+                start_shape = self._ctx_shape(op.start)
+                state_size = int(math.prod(start_shape)) if start_shape else 1
             rendered = loop_range_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -10039,6 +10052,8 @@ class CEmitter:
                 c_type=c_type,
                 output_suffix=output_suffix,
                 dim_args=dim_args,
+                add_table_data=add_table_data,
+                state_size=state_size,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HammingWindowOp):
@@ -10314,7 +10329,9 @@ class CEmitter:
                 tensor_shape, _dim_names_for(op.tensor)
             )
             position_dtype = (
-                self._ctx_dtype(op.position) if op.position is not None else ScalarType.I64
+                self._ctx_dtype(op.position)
+                if op.position is not None
+                else ScalarType.I64
             )
             param_specs = [
                 (
@@ -12612,7 +12629,10 @@ class CEmitter:
             constant_values = testbench_inputs.get(name)
             loop_shape = (1,) if not shape else shape
             if is_sequence_input:
-                if isinstance(constant_values, np.ndarray) and constant_values.ndim >= 1:
+                if (
+                    isinstance(constant_values, np.ndarray)
+                    and constant_values.ndim >= 1
+                ):
                     loop_shape = (int(constant_values.shape[0]), *loop_shape)
                 else:
                     loop_shape = (32, *loop_shape)
