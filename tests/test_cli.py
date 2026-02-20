@@ -73,6 +73,26 @@ def test_cli_verify_reduce_model() -> None:
     _run_cli_verify(model)
 
 
+def test_cli_testbench_filename_and_include() -> None:
+    output_path = Path("out.c")
+    testbench_path = output_path.with_name(f"{output_path.stem}_testbench{output_path.suffix}")
+    assert testbench_path.name == "out_testbench.c"
+
+    from emx_onnx_cgen.cli import _resolve_testbench_output_path, _wrap_separate_testbench_source
+
+    rendered = _wrap_separate_testbench_source(
+        "void model(int x);",
+        "int main(void) { return 0; }\n",
+    )
+    assert '#include "out.c"' not in rendered
+    assert "void model(int x);" in rendered
+
+    resolved = _resolve_testbench_output_path(output_path, "tb")
+    assert resolved.name == "tb.c"
+    resolved = _resolve_testbench_output_path(output_path, "tb_custom.c")
+    assert resolved.name == "tb_custom.c"
+
+
 def test_cli_model_base_dir_resolves_relative_paths(tmp_path: Path) -> None:
     base_dir = tmp_path / "base"
     base_dir.mkdir()
