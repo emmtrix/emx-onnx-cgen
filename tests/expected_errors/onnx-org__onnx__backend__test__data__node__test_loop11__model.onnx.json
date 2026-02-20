@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Loop",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop11 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Loop"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "93cd998f388d92080f4f0b36d59632ed0fe4acd560bac7336cf7f9fef79fccb0"
 }
