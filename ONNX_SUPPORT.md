@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1462 / 1802 official ONNX files.
+Support 1465 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -753,7 +753,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_in'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | 25 | ❌ | Unsupported non-tensor value 'x' in op Identity. |
-| onnx-org/onnx/backend/test/data/node/test_if/model.onnx | 11 | ❌ | Unsupported op If |
+| onnx-org/onnx/backend/test/data/node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs. |
 | onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx | 13 | ❌ | Unsupported op If |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
@@ -1110,9 +1110,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_quantizelinear_uint4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reciprocal_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_reduce_l1_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |

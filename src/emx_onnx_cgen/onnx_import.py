@@ -689,6 +689,155 @@ def _expand_scan_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
     return model, expanded
 
 
+def _if_graph_attrs(
+    node: onnx.NodeProto,
+) -> tuple[onnx.GraphProto, onnx.GraphProto] | None:
+    then_branch: onnx.GraphProto | None = None
+    else_branch: onnx.GraphProto | None = None
+    for attr in node.attribute:
+        if attr.name == "then_branch" and attr.HasField("g"):
+            then_branch = attr.g
+        if attr.name == "else_branch" and attr.HasField("g"):
+            else_branch = attr.g
+    if then_branch is None or else_branch is None:
+        return None
+    return then_branch, else_branch
+
+
+def _is_tensor_output(graph: onnx.GraphProto, name: str) -> bool:
+    value_info = _find_value_info(graph, name)
+    return (
+        value_info is not None and value_info.type.WhichOneof("value") == "tensor_type"
+    )
+
+
+def _inline_if_branch(
+    branch: onnx.GraphProto,
+    *,
+    prefix: str,
+    new_initializers: list[onnx.TensorProto],
+) -> tuple[list[onnx.NodeProto], dict[str, str]]:
+    name_map: dict[str, str] = {}
+    for initializer in branch.initializer:
+        new_name = f"{prefix}_init_{initializer.name}"
+        name_map[initializer.name] = new_name
+        array = numpy_helper.to_array(initializer)
+        new_initializers.append(numpy_helper.from_array(array, name=new_name))
+
+    inlined_nodes: list[onnx.NodeProto] = []
+    for node_index, branch_node in enumerate(branch.node):
+        inlined = onnx.NodeProto()
+        inlined.CopyFrom(branch_node)
+        if inlined.name:
+            inlined.name = f"{prefix}_{inlined.name}"
+        else:
+            inlined.name = f"{prefix}_node_{node_index}"
+
+        del inlined.input[:]
+        inlined.input.extend(name_map.get(name, name) for name in branch_node.input)
+
+        mapped_outputs: list[str] = []
+        for output_index, output_name in enumerate(branch_node.output):
+            if not output_name:
+                mapped_outputs.append(output_name)
+                continue
+            mapped = f"{prefix}_value_{node_index}_{output_index}"
+            name_map[output_name] = mapped
+            mapped_outputs.append(mapped)
+        del inlined.output[:]
+        inlined.output.extend(mapped_outputs)
+        inlined_nodes.append(inlined)
+    return inlined_nodes, name_map
+
+
+def _expand_if_node(
+    graph: onnx.GraphProto,
+    node: onnx.NodeProto,
+    node_index: int,
+    *,
+    new_initializers: list[onnx.TensorProto],
+) -> list[onnx.NodeProto] | None:
+    if len(node.input) != 1:
+        return None
+    branches = _if_graph_attrs(node)
+    if branches is None:
+        return None
+    then_branch, else_branch = branches
+    if then_branch.input or else_branch.input:
+        return None
+    if len(node.output) != len(then_branch.output) or len(node.output) != len(
+        else_branch.output
+    ):
+        return None
+    if any(not _is_tensor_output(graph, output_name) for output_name in node.output):
+        return None
+
+    prefix_base = node.name or f"if_{node_index}"
+    then_nodes, then_map = _inline_if_branch(
+        then_branch,
+        prefix=f"{prefix_base}_then",
+        new_initializers=new_initializers,
+    )
+    else_nodes, else_map = _inline_if_branch(
+        else_branch,
+        prefix=f"{prefix_base}_else",
+        new_initializers=new_initializers,
+    )
+
+    where_nodes: list[onnx.NodeProto] = []
+    cond_name = node.input[0]
+    for output_index, output_name in enumerate(node.output):
+        then_name = then_map.get(then_branch.output[output_index].name)
+        else_name = else_map.get(else_branch.output[output_index].name)
+        if then_name is None or else_name is None:
+            return None
+        where_nodes.append(
+            helper.make_node(
+                "Where",
+                inputs=[cond_name, then_name, else_name],
+                outputs=[output_name],
+                name=f"{prefix_base}_select_{output_index}",
+            )
+        )
+
+    return [*then_nodes, *else_nodes, *where_nodes]
+
+
+def _expand_if_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+    graph = model.graph
+    expanded = False
+    while True:
+        changed = False
+        new_nodes: list[onnx.NodeProto] = []
+        new_initializers: list[onnx.TensorProto] = []
+        for node_index, node in enumerate(graph.node):
+            if node.op_type != "If":
+                new_nodes.append(node)
+                continue
+            replacement = _expand_if_node(
+                graph,
+                node,
+                node_index,
+                new_initializers=new_initializers,
+            )
+            if replacement is None:
+                new_nodes.append(node)
+                continue
+            new_nodes.extend(replacement)
+            changed = True
+
+        if not changed:
+            break
+
+        expanded = True
+        del graph.node[:]
+        graph.node.extend(new_nodes)
+        if new_initializers:
+            graph.initializer.extend(new_initializers)
+
+    return model, expanded
+
+
 def _constant_initializer(node: onnx.NodeProto) -> Initializer:
     if len(node.output) != 1:
         raise UnsupportedOpError("Constant must have exactly one output")
@@ -774,6 +923,7 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
 
 def import_onnx(model: onnx.ModelProto) -> Graph:
     model, _ = _expand_scan_nodes(model)
+    model, _ = _expand_if_nodes(model)
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)
     )
