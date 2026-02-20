@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op Loop",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop11 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Loop"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "972646c3762a3789ae55a899167e2a1a07b17821cd687d644fc55cb195c3fdc8"
 }

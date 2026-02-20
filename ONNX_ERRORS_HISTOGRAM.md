@@ -22,9 +22,9 @@
 | Unsupported op SequenceMap | 6 | 17 |
 | Unsupported op SplitToSequence | 6 | 12, 24 |
 | Unsupported op StringSplit | 6 | 20 |
+| Failed to build testbench. | 5 | 11, 12 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
-| Failed to build testbench. | 4 | 11, 12 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
@@ -52,7 +52,6 @@
 | Unsupported op Det | 2 | 22 |
 | Unsupported op Gradient | 2 | 12 |
 | Unsupported op HannWindow | 2 | 17 |
-| Unsupported op Loop | 2 | 11, 13 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | Unsupported op TreeEnsemble | 2 |  |
@@ -60,6 +59,7 @@
 | Dropout mask output is not supported | 1 | 22 |
 | Dynamic dim for tensor '*' | 1 | 12 |
 | Graph must contain at least one node | 1 | 25 |
+| Loop currently supports tensor values only | 1 | 13 |
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
@@ -74,17 +74,16 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Failed to build testbench. | 11 | 2 |
+| Failed to build testbench. | 11 | 3 |
 | Unsupported op If | 11 | 1 |
-| Unsupported op Loop | 11 | 1 |
 | Unsupported op SequenceConstruct | 12 | 4 |
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
 | Unsupported op Gradient | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
+| Loop currently supports tensor values only | 13 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |
-| Unsupported op Loop | 13 | 1 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
 | Unsupported op SequenceLength | 17 | 6 |
