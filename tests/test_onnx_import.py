@@ -94,3 +94,51 @@ def test_import_bfloat16_value_info_keeps_bfloat16() -> None:
 
 def test_bfloat16_scalar_type_uses___bf16_c_type() -> None:
     assert ScalarType.BF16.c_type == "__bf16"
+
+
+def test_import_if_with_tensor_branches_expands_to_where() -> None:
+    cond = helper.make_tensor_value_info("cond", TensorProto.BOOL, [])
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2])
+
+    then_const = helper.make_tensor("then_const", TensorProto.FLOAT, [2], [1.0, 2.0])
+    else_const = helper.make_tensor("else_const", TensorProto.FLOAT, [2], [3.0, 4.0])
+    then_graph = helper.make_graph(
+        [
+            helper.make_node(
+                "Constant", inputs=[], outputs=["then_out"], value=then_const
+            )
+        ],
+        "then_graph",
+        [],
+        [helper.make_tensor_value_info("then_out", TensorProto.FLOAT, [2])],
+    )
+    else_graph = helper.make_graph(
+        [
+            helper.make_node(
+                "Constant", inputs=[], outputs=["else_out"], value=else_const
+            )
+        ],
+        "else_graph",
+        [],
+        [helper.make_tensor_value_info("else_out", TensorProto.FLOAT, [2])],
+    )
+    if_node = helper.make_node(
+        "If",
+        inputs=["cond"],
+        outputs=["out"],
+        then_branch=then_graph,
+        else_branch=else_graph,
+    )
+    graph = helper.make_graph([if_node], "if_graph", [cond], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+
+    imported = import_onnx(model)
+
+    assert [node.op_type for node in imported.nodes] == ["Where"]
+    assert len(imported.initializers) == 2
