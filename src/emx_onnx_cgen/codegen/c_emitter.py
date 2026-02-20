@@ -17,6 +17,7 @@ from jinja2 import (
     select_autoescape,
 )
 import numpy as np
+import onnx
 
 from ..errors import CodegenError
 from ..ops import (
@@ -30,7 +31,8 @@ from ..ir.op_base import (
     EmitContext,
 )
 from ..ir.op_context import OpContext
-from ..ir.model import SequenceType, ValueType
+from ..ir.context import GraphContext
+from ..ir.model import SequenceType, TensorType, ValueType
 from ..ir.ops import (
     AdagradOp,
     ArgReduceOp,
@@ -88,6 +90,7 @@ from ..ir.ops import (
     QLinearMulOp,
     QLinearMatMulOp,
     QLinearConvOp,
+    LoopOp,
     LoopRangeOp,
     RangeOp,
     ReverseSequenceOp,
@@ -117,6 +120,9 @@ from ..ir.ops import (
     UnaryOp,
     WhereOp,
 )
+from ..lowering.common import ensure_supported_dtype
+from ..lowering.registry import get_lowering_registry
+from ..onnx_import import import_onnx_graph
 from shared.scalar_functions import (
     ScalarFunction,
     ScalarFunctionKey,
@@ -616,6 +622,8 @@ class CEmitter:
             | OneHotOp
             | TfIdfVectorizerOp
             | SplitOp
+            | LoopOp
+            | LoopRangeOp
         ),
         name_map: dict[str, str],
     ) -> (
@@ -1768,6 +1776,15 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, LoopOp):
+            return LoopOp(
+                trip_count=name_map.get(op.trip_count, op.trip_count),
+                cond=name_map.get(op.cond, op.cond),
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
+                outputs=tuple(name_map.get(name, name) for name in op.outputs),
+                scan_outputs=tuple(name_map.get(name, name) for name in op.scan_outputs),
+                body=op.body,
+            )
         if isinstance(op, ReverseSequenceOp):
             return ReverseSequenceOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2633,6 +2650,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | LoopOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -2681,6 +2699,12 @@ class CEmitter:
                 return model.op_context.dtype(op.y)
             if isinstance(op, SequenceInsertOp):
                 return model.op_context.dtype(op.tensor)
+            if isinstance(op, LoopOp):
+                if op.outputs:
+                    return model.op_context.dtype(op.outputs[0])
+                if op.scan_outputs:
+                    return model.op_context.dtype(op.scan_outputs[0])
+                raise CodegenError("LoopOp must have at least one output")
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -4471,6 +4495,15 @@ class CEmitter:
                 limit=temp_map.get(op.limit, op.limit),
                 delta=temp_map.get(op.delta, op.delta),
                 output=temp_map.get(op.output, op.output),
+            )
+        if isinstance(op, LoopOp):
+            return LoopOp(
+                trip_count=temp_map.get(op.trip_count, op.trip_count),
+                cond=temp_map.get(op.cond, op.cond),
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
+                outputs=tuple(temp_map.get(name, name) for name in op.outputs),
+                scan_outputs=tuple(temp_map.get(name, name) for name in op.scan_outputs),
+                body=op.body,
             )
         if isinstance(op, LoopRangeOp):
             return LoopRangeOp(
@@ -10000,6 +10033,413 @@ class CEmitter:
                 length=output_shape[0],
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, LoopOp):
+            # Lower the Loop body graph and emit a C `for` loop that executes its ops.
+            body_proto = onnx.GraphProto.FromString(op.body)
+            # Loop bodies often omit value_info for intermediates; run ONNX shape inference
+            # on the subgraph to populate dtype/shape metadata.
+            inferred_body_proto = body_proto
+            try:
+                body_model_proto = onnx.ModelProto()
+                body_model_proto.graph.CopyFrom(body_proto)
+                for domain, version in model.header.opset_imports:
+                    opset = body_model_proto.opset_import.add()
+                    opset.domain = domain
+                    opset.version = int(version)
+                inferred_body_proto = onnx.shape_inference.infer_shapes(
+                    body_model_proto, data_prop=True
+                ).graph
+            except Exception:
+                inferred_body_proto = body_proto
+
+            body_graph = import_onnx_graph(
+                inferred_body_proto, opset_imports=model.header.opset_imports
+            )
+            body_ctx = GraphContext(body_graph)
+            body_registry = get_lowering_registry()
+            body_ops: list[OpBase] = []
+            body_node_infos: list[NodeInfo] = []
+            for body_node in body_ctx.nodes:
+                lowering = body_registry.get(body_node.op_type)
+                if lowering is None:
+                    raise CodegenError(f"Unsupported Loop body op {body_node.op_type}")
+                body_ops.append(lowering(body_ctx, body_node))
+                body_node_infos.append(
+                    NodeInfo(
+                        op_type=body_node.op_type,
+                        name=body_node.name,
+                        inputs=tuple(body_node.inputs),
+                        outputs=tuple(body_node.outputs),
+                        attrs=dict(body_node.attrs),
+                    )
+                )
+            body_op_ctx = OpContext(body_ctx)
+            for body_op in body_ops:
+                body_op.validate(body_op_ctx)
+            for body_op in body_ops:
+                body_op.infer_types(body_op_ctx)
+            for body_op in body_ops:
+                body_op.infer_shapes(body_op_ctx)
+
+            def _body_constants() -> tuple[ConstTensor, ...]:
+                used_initializers = {value.name for value in body_graph.outputs}
+                for body_node in body_graph.nodes:
+                    used_initializers.update(body_node.inputs)
+                constants: list[ConstTensor] = []
+                for initializer in body_graph.initializers:
+                    if initializer.name not in used_initializers:
+                        continue
+                    dtype = ensure_supported_dtype(initializer.type.dtype)
+                    data_array = initializer.data.astype(dtype.np_dtype, copy=False)
+                    constants.append(
+                        ConstTensor(
+                            name=initializer.name,
+                            shape=initializer.type.shape,
+                            data=tuple(data_array.ravel().tolist()),
+                            dtype=dtype,
+                        )
+                    )
+                return tuple(constants)
+
+            def _require_tensor_types(values: tuple[ValueType, ...]) -> None:
+                for value in values:
+                    if not isinstance(value, TensorType):
+                        raise CodegenError("Loop codegen currently supports tensor values only")
+
+            _require_tensor_types(tuple(v.type for v in body_graph.inputs))
+            _require_tensor_types(tuple(v.type for v in body_graph.outputs))
+
+            body_header = ModelHeader(
+                generator=model.header.generator,
+                model_checksum=None,
+                model_name=f"{model.name}__loop_body_{index}",
+                graph_name=None,
+                description=None,
+                graph_description=None,
+                producer_name=None,
+                producer_version=None,
+                domain=None,
+                model_version=None,
+                ir_version=None,
+                opset_imports=model.header.opset_imports,
+                metadata_props=(),
+                input_count=len(body_graph.inputs),
+                output_count=len(body_graph.outputs),
+                node_count=len(body_graph.nodes),
+                initializer_count=len(body_graph.initializers),
+                codegen_settings=(),
+            )
+            body_model = LoweredModel(
+                name=f"{model.name}__loop_body_{index}",
+                input_names=tuple(value.name for value in body_graph.inputs),
+                input_optional_names=(None,) * len(body_graph.inputs),
+                input_shapes=tuple(value.type.shape for value in body_graph.inputs),  # type: ignore[attr-defined]
+                input_dtypes=tuple(value.type.dtype for value in body_graph.inputs),  # type: ignore[attr-defined]
+                input_types=tuple(value.type for value in body_graph.inputs),
+                output_names=tuple(value.name for value in body_graph.outputs),
+                output_optional_names=(None,) * len(body_graph.outputs),
+                output_shapes=tuple(value.type.shape for value in body_graph.outputs),  # type: ignore[attr-defined]
+                output_dtypes=tuple(value.type.dtype for value in body_graph.outputs),  # type: ignore[attr-defined]
+                output_types=tuple(value.type for value in body_graph.outputs),
+                constants=_body_constants(),
+                ops=tuple(body_ops),
+                node_infos=tuple(body_node_infos),
+                header=body_header,
+                op_context=body_op_ctx,
+            )
+
+            original_body_model = body_model
+            body_model_san, body_name_map = self._sanitize_model_names_with_map(body_model)
+            self._copy_derived(
+                body_model_san.op_context, original_body_model.ops, body_model_san.ops
+            )
+
+            outer_state = self.require_emit_state()
+            body_const_decls = ""
+            body_const_defs = ""
+            body_operator_fns = ""
+            body_temp_buffers: dict[str, TempBuffer] = {}
+            body_resolved_ops: list[OpBase] = []
+
+            body_state = _EmitState(
+                model=body_model_san,
+                templates=outer_state.templates,
+                scalar_registry=outer_state.scalar_registry,
+                dim_args=outer_state.dim_args,
+                tensor_dim_names={},
+                op_context=body_model_san.op_context,
+                value_name_map=self._build_value_name_map(body_name_map, {}),
+            )
+            self._emit_state = body_state
+            try:
+                body_reserved_names = {
+                    body_model_san.name,
+                    *body_model_san.input_names,
+                    *body_model_san.output_names,
+                    *(const.name for const in body_model_san.constants),
+                }
+                body_temp_buffers = self._temp_buffers(
+                    body_model_san, reserved_names=body_reserved_names
+                )
+                body_temp_name_map = {
+                    original: buffer.name for original, buffer in body_temp_buffers.items()
+                }
+                body_resolved_ops = [
+                    self._resolve_op(body_op, body_temp_name_map)
+                    for body_op in body_model_san.ops
+                ]
+                self._copy_derived(
+                    body_model_san.op_context, body_model_san.ops, body_resolved_ops
+                )
+                self._emit_state.value_name_map = self._build_value_name_map(
+                    body_name_map, body_temp_name_map
+                )
+
+                body_inline_consts, _body_large_consts = self._partition_constants(
+                    body_model_san.constants
+                )
+                body_const_decls = self._emit_constant_declarations(body_inline_consts)
+                body_const_defs = self._emit_constant_definitions(body_inline_consts)
+                body_operator_fns = "\n\n".join(
+                    body_op.emit(self, EmitContext(op_index=index))
+                    for index, body_op in enumerate(body_resolved_ops)
+                )
+            finally:
+                self._emit_state = outer_state
+
+            # Now emit the Loop op itself in the outer model context.
+            params = self._shared_param_map(
+                [
+                    ("trip_count", op.trip_count),
+                    ("cond", op.cond),
+                    *[(f"in_{i}", name) for i, name in enumerate(op.inputs)],
+                    *[(f"out_{i}", name) for i, name in enumerate(op.outputs)],
+                    *[(f"scan_{i}", name) for i, name in enumerate(op.scan_outputs)],
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            loop_param_specs: list[tuple[str | None, str, str, bool]] = [
+                (params["trip_count"], self._ctx_dtype(op.trip_count).c_type, scalar_suffix, True),
+                (params["cond"], self._ctx_dtype(op.cond).c_type, scalar_suffix, True),
+            ]
+            for i, name in enumerate(op.inputs):
+                dtype = self._ctx_dtype(name)
+                shape = self._ctx_shape(name)
+                loop_param_specs.append(
+                    (
+                        params[f"in_{i}"],
+                        dtype.c_type,
+                        self._param_array_suffix(shape, _dim_names_for(name)),
+                        True,
+                    )
+                )
+            for i, name in enumerate(op.outputs):
+                dtype = self._ctx_dtype(name)
+                shape = self._ctx_shape(name)
+                loop_param_specs.append(
+                    (
+                        params[f"out_{i}"],
+                        dtype.c_type,
+                        self._param_array_suffix(shape, _dim_names_for(name)),
+                        False,
+                    )
+                )
+            for i, name in enumerate(op.scan_outputs):
+                dtype = self._ctx_dtype(name)
+                shape = self._ctx_shape(name)
+                loop_param_specs.append(
+                    (
+                        params[f"scan_{i}"],
+                        dtype.c_type,
+                        self._param_array_suffix(shape, _dim_names_for(name)),
+                        False,
+                    )
+                )
+            loop_param_decls = self._build_param_decls(loop_param_specs)
+            signature = f"{dim_args}{', '.join(loop_param_decls)}"
+            lines: list[str] = [f"static inline void {op_name}({signature}) {{"]
+
+            # Allocate temp buffers for the lowered body ops once and reuse them.
+            for temp in body_temp_buffers.values():
+                lines.append(
+                    f"    {temp.dtype.c_type} {temp.name}{self._array_suffix(temp.shape, temp.dtype)};"
+                )
+
+            # Map body value names to local buffers/expressions.
+            raw_body_input_names = original_body_model.input_names
+            raw_body_output_names = original_body_model.output_names
+            if len(raw_body_input_names) < 2 or len(raw_body_output_names) < 1:
+                raise CodegenError("Loop body graph must have at least iter/cond inputs and cond output")
+            raw_body_iter = raw_body_input_names[0]
+            raw_body_cond_in = raw_body_input_names[1]
+            raw_body_cond_out = raw_body_output_names[0]
+            raw_body_carry_in = raw_body_input_names[2:]
+            raw_body_carry_out = raw_body_output_names[1 : 1 + len(raw_body_carry_in)]
+            raw_body_scan_out = raw_body_output_names[1 + len(raw_body_carry_in) :]
+
+            body_iter = body_name_map.get(raw_body_iter, raw_body_iter)
+            body_cond_in = body_name_map.get(raw_body_cond_in, raw_body_cond_in)
+            body_cond_out = body_name_map.get(raw_body_cond_out, raw_body_cond_out)
+            body_carry_in = tuple(
+                body_name_map.get(name, name) for name in raw_body_carry_in
+            )
+            body_carry_out = tuple(
+                body_name_map.get(name, name) for name in raw_body_carry_out
+            )
+            body_scan_out = tuple(
+                body_name_map.get(name, name) for name in raw_body_scan_out
+            )
+
+            if len(raw_body_carry_in) != len(op.inputs) or len(raw_body_carry_out) != len(op.outputs):
+                raise CodegenError("Loop body loop-carried arity mismatch")
+
+            iter_dtype = body_op_ctx.dtype(raw_body_iter)
+            if iter_dtype not in {ScalarType.I64, ScalarType.I32}:
+                raise CodegenError("Loop iter input must be int32 or int64")
+            cond_in_dtype = body_op_ctx.dtype(raw_body_cond_in)
+            cond_out_dtype = body_op_ctx.dtype(raw_body_cond_out)
+            if cond_in_dtype != ScalarType.BOOL or cond_out_dtype != ScalarType.BOOL:
+                raise CodegenError("Loop cond inputs/outputs must be bool")
+
+            lines.append(f"    {iter_dtype.c_type} loop_iter[1];")
+            lines.append("    bool loop_cond_in[1];")
+            lines.append("    bool loop_cond_out[1];")
+            lines.append(f"    int64_t trip = (int64_t){params['trip_count']}[0];")
+            lines.append(f"    bool enabled = {params['cond']}[0];")
+            lines.append("    if (!enabled || trip <= 0) {")
+            # Copy-through initial values for zero-iteration loops.
+            for i, (in_name, out_name) in enumerate(zip(op.inputs, op.outputs)):
+                dtype = self._ctx_dtype(out_name)
+                shape = self._ctx_shape(out_name)
+                elem_count = CEmitter._element_count_expr(shape)
+                lines.append(
+                    f"        for (idx_t e = 0; e < {elem_count}; ++e) (({dtype.c_type} *){params[f'out_{i}']})[e] = ((const {dtype.c_type} *){params[f'in_{i}']})[e];"
+                )
+            lines.append("        return;")
+            lines.append("    }")
+
+            # Current/next buffers for loop-carried values.
+            carry_cur: list[str] = []
+            carry_next: list[str] = []
+            for i, in_name in enumerate(op.inputs):
+                dtype = self._ctx_dtype(in_name)
+                shape = self._ctx_shape(in_name)
+                cur_name = f"loop_carry_{i}_cur"
+                next_name = f"loop_carry_{i}_next"
+                carry_cur.append(cur_name)
+                carry_next.append(next_name)
+                lines.append(
+                    f"    {dtype.c_type} {cur_name}{self._array_suffix(shape, dtype)};"
+                )
+                lines.append(
+                    f"    {dtype.c_type} {next_name}{self._array_suffix(shape, dtype)};"
+                )
+                elem_count = CEmitter._element_count_expr(shape)
+                lines.append(
+                    f"    for (idx_t e = 0; e < {elem_count}; ++e) (({dtype.c_type} *){cur_name})[e] = ((const {dtype.c_type} *){params[f'in_{i}']})[e];"
+                )
+
+            # Per-iteration scan output buffers.
+            scan_bufs: list[str] = []
+            for i, scan_name in enumerate(op.scan_outputs):
+                dtype = self._ctx_dtype(scan_name)
+                if i >= len(raw_body_scan_out):
+                    raise CodegenError("Loop body scan output arity mismatch")
+                shape = body_op_ctx.shape(raw_body_scan_out[i])
+                buf_name = f"loop_scan_{i}_buf"
+                scan_bufs.append(buf_name)
+                lines.append(
+                    f"    {dtype.c_type} {buf_name}{self._array_suffix(shape, dtype)};"
+                )
+
+            # Limit scan loops to the statically allocated output capacity (first dimension).
+            for i, scan_name in enumerate(op.scan_outputs):
+                out_shape = self._ctx_shape(scan_name)
+                if not out_shape:
+                    raise CodegenError("Loop scan outputs must be at least rank-1")
+                lines.append(f"    if (trip > {out_shape[0]}) trip = {out_shape[0]};")
+
+            # Emit the loop.
+            lines.append("    for (int64_t idx = 0; idx < trip; ++idx) {")
+            lines.append(f"        loop_iter[0] = ({iter_dtype.c_type})idx;")
+            lines.append("        loop_cond_in[0] = enabled;")
+
+            dim_arg_names: list[str] = []
+            if dim_args:
+                for part in dim_args.split(","):
+                    part = part.strip()
+                    if not part:
+                        continue
+                    # Format is "int <name>".
+                    dim_arg_names.append(part.split()[-1])
+
+            # Build argument map for calling body op functions.
+            arg_map: dict[str, str] = {}
+            # Identity mapping for constants/temps (names are valid identifiers after sanitization).
+            for const in body_model_san.constants:
+                arg_map[const.name] = const.name
+            for temp in body_temp_buffers.values():
+                arg_map[temp.name] = temp.name
+            arg_map[body_iter] = "loop_iter"
+            arg_map[body_cond_in] = "loop_cond_in"
+            arg_map[body_cond_out] = "loop_cond_out"
+            for i, name in enumerate(body_carry_in):
+                arg_map[name] = carry_cur[i]
+            for i, name in enumerate(body_carry_out):
+                arg_map[name] = carry_next[i]
+            for i, name in enumerate(body_scan_out):
+                if i < len(scan_bufs):
+                    arg_map[name] = scan_bufs[i]
+
+            # Call lowered body ops.
+            for body_index, body_op in enumerate(body_resolved_ops):
+                body_op_name = self._op_function_name(body_model_san, body_index)
+                call_args = [*dim_arg_names]
+                for arg in body_op.call_args():
+                    call_args.append(arg_map.get(arg, arg))
+                lines.append(f"        {body_op_name}({', '.join(call_args)});")
+
+            lines.append("        enabled = loop_cond_out[0];")
+
+            # Copy next -> current for carried values.
+            for i, (cur_name, next_name) in enumerate(zip(carry_cur, carry_next)):
+                dtype = self._ctx_dtype(op.inputs[i])
+                shape = self._ctx_shape(op.inputs[i])
+                elem_count = CEmitter._element_count_expr(shape)
+                lines.append(
+                    f"        for (idx_t e = 0; e < {elem_count}; ++e) (({dtype.c_type} *){cur_name})[e] = ((const {dtype.c_type} *){next_name})[e];"
+                )
+
+            # Write scan outputs.
+            for i, scan_name in enumerate(op.scan_outputs):
+                dtype = self._ctx_dtype(scan_name)
+                out_shape = self._ctx_shape(scan_name)
+                elem_shape = out_shape[1:]
+                elem_count = CEmitter._element_count_expr(elem_shape)
+                lines.append(
+                    f"        for (idx_t e = 0; e < {elem_count}; ++e) (({dtype.c_type} *){params[f'scan_{i}']})[idx * {elem_count} + e] = ((const {dtype.c_type} *){scan_bufs[i]})[e];"
+                )
+
+            lines.append("        if (!enabled) break;")
+            lines.append("    }")
+
+            # Copy final carried values to outputs.
+            for i, out_name in enumerate(op.outputs):
+                dtype = self._ctx_dtype(out_name)
+                shape = self._ctx_shape(out_name)
+                elem_count = CEmitter._element_count_expr(shape)
+                lines.append(
+                    f"    for (idx_t e = 0; e < {elem_count}; ++e) (({dtype.c_type} *){params[f'out_{i}']})[e] = ((const {dtype.c_type} *){carry_cur[i]})[e];"
+                )
+
+            lines.append("}")
+
+            rendered = "\n\n".join(
+                section
+                for section in (body_const_decls, body_const_defs, body_operator_fns, "\n".join(lines))
+                if section
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, LoopRangeOp):
             params = self._shared_param_map(
                 [
@@ -11919,6 +12359,13 @@ class CEmitter:
                     self._ctx_dtype(op.tensor),
                 ),
             )
+        if isinstance(op, LoopOp):
+            outputs: list[tuple[str, tuple[int, ...], ScalarType]] = []
+            for name in op.outputs:
+                outputs.append((name, self._ctx_shape(name), self._ctx_dtype(name)))
+            for name in op.scan_outputs:
+                outputs.append((name, self._ctx_shape(name), self._ctx_dtype(name)))
+            return tuple(outputs)
         return (
             (
                 op.output,
@@ -12231,6 +12678,12 @@ class CEmitter:
             return self._ctx_dtype(op.output_values)
         if isinstance(op, LoopRangeOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, LoopOp):
+            if op.outputs:
+                return self._ctx_dtype(op.outputs[0])
+            if op.scan_outputs:
+                return self._ctx_dtype(op.scan_outputs[0])
+            raise CodegenError("LoopOp must have at least one output")
         if isinstance(op, OptionalHasElementOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, NonZeroOp):

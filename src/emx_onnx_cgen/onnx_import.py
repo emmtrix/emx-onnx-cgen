@@ -826,3 +826,57 @@ def import_onnx(model: onnx.ModelProto) -> Graph:
         values=values,
         opset_imports=opset_imports,
     )
+
+
+def import_onnx_graph(
+    graph: onnx.GraphProto, *, opset_imports: tuple[tuple[str, int], ...]
+) -> Graph:
+    """Import a GraphProto into the internal IR without running shape inference.
+
+    This is used for ONNX subgraphs such as Loop bodies. The parent model is
+    expected to have run ONNX shape inference already.
+    """
+    dim_param_by_name = _collect_dim_params(tuple(graph.input) + tuple(graph.output))
+    base_initializers = [_initializer(value) for value in graph.initializer]
+    constant_initializers: list[Initializer] = []
+    input_names = {value_info.name for value_info in graph.input}
+    output_names = {value_info.name for value_info in graph.output}
+    nodes: list[Node] = []
+    for node in graph.node:
+        if node.op_type == "Constant":
+            constant_initializers.append(_constant_initializer(node))
+            continue
+        nodes.append(
+            Node(
+                op_type=node.op_type,
+                name=node.name or None,
+                inputs=tuple(node.input),
+                outputs=tuple(node.output),
+                attrs=_node_attrs(node),
+            )
+        )
+    initializers = tuple(base_initializers + constant_initializers)
+    initializer_names = {initializer.name for initializer in initializers}
+    inputs = _values(
+        (
+            value_info
+            for value_info in graph.input
+            if value_info.name not in initializer_names
+        ),
+        dim_param_by_name=dim_param_by_name,
+    )
+    outputs = _values(graph.output, dim_param_by_name=dim_param_by_name)
+    values = _values(
+        value_info
+        for value_info in graph.value_info
+        if value_info.name
+        not in initializer_names | input_names | output_names
+    )
+    return Graph(
+        inputs=inputs,
+        outputs=outputs,
+        nodes=nodes,
+        initializers=initializers,
+        values=values,
+        opset_imports=opset_imports,
+    )

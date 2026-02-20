@@ -874,6 +874,19 @@ class LoopRangeOp(RenderableOpBase):
     final: str
     output: str
 
+
+@dataclass(frozen=True)
+class LoopOp(RenderableOpBase):
+    __io_inputs__ = ("trip_count", "cond", "inputs")
+    __io_outputs__ = ("outputs", "scan_outputs")
+
+    trip_count: str
+    cond: str
+    inputs: tuple[str, ...]
+    outputs: tuple[str, ...]
+    scan_outputs: tuple[str, ...]
+    body: bytes
+
 @dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
     __io_inputs__ = ("start", "limit", "delta")
