@@ -79,6 +79,13 @@ class Compiler:
         )
         load_lowering_registry()
 
+    @dataclass(frozen=True)
+    class _CompileContext:
+        lowered: LoweredModel
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None
+        variable_dim_inputs: dict[int, dict[int, str]]
+        variable_dim_outputs: dict[int, dict[int, str]]
+
     def _time_step(self, label: str, func: Callable[[], _T]) -> _T:
         timings = self._options.timings
         if timings is None:
@@ -88,7 +95,7 @@ class Compiler:
         timings[label] = time.perf_counter() - started
         return result
 
-    def compile(self, model: onnx.ModelProto) -> str:
+    def _build_compile_context(self, model: onnx.ModelProto) -> _CompileContext:
         graph = self._time_step("import_onnx", lambda: import_onnx(model))
         graph = self._time_step(
             "concretize_shapes",
@@ -103,110 +110,104 @@ class Compiler:
         lowered = self._time_step(
             "lower_model", lambda: self._lower_model(model, graph)
         )
+        return Compiler._CompileContext(
+            lowered=lowered,
+            testbench_inputs=testbench_inputs,
+            variable_dim_inputs=variable_dim_inputs,
+            variable_dim_outputs=variable_dim_outputs,
+        )
+
+    def compile(self, model: onnx.ModelProto) -> str:
+        ctx = self._build_compile_context(model)
         return self._time_step(
             "emit_model",
             lambda: self._emitter.emit_model(
-                lowered,
+                ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=testbench_inputs,
+                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
-                variable_dim_inputs=variable_dim_inputs,
-                variable_dim_outputs=variable_dim_outputs,
+                variable_dim_inputs=ctx.variable_dim_inputs,
+                variable_dim_outputs=ctx.variable_dim_outputs,
+            ),
+        )
+
+    def compile_testbench(self, model: onnx.ModelProto) -> str:
+        ctx = self._build_compile_context(model)
+        return self._time_step(
+            "emit_testbench",
+            lambda: self._emitter.emit_testbench(
+                ctx.lowered,
+                testbench_inputs=ctx.testbench_inputs,
+                testbench_optional_inputs=self._options.testbench_optional_inputs,
+                variable_dim_inputs=ctx.variable_dim_inputs,
+                variable_dim_outputs=ctx.variable_dim_outputs,
+            ),
+        )
+
+    def compile_testbench_declarations(self, model: onnx.ModelProto) -> str:
+        ctx = self._build_compile_context(model)
+        return self._time_step(
+            "emit_testbench_decls",
+            lambda: self._emitter.emit_testbench_declarations(
+                ctx.lowered,
+                variable_dim_inputs=ctx.variable_dim_inputs,
+                variable_dim_outputs=ctx.variable_dim_outputs,
             ),
         )
 
     def compile_with_data_file(self, model: onnx.ModelProto) -> tuple[str, str]:
-        graph = self._time_step("import_onnx", lambda: import_onnx(model))
-        graph = self._time_step(
-            "concretize_shapes",
-            lambda: self._concretize_graph_shapes(model, graph),
-        )
-        testbench_inputs = self._time_step(
-            "resolve_testbench_inputs", lambda: self._resolve_testbench_inputs(graph)
-        )
-        variable_dim_inputs, variable_dim_outputs = self._time_step(
-            "collect_variable_dims", lambda: self._collect_variable_dims(graph)
-        )
-        lowered = self._time_step(
-            "lower_model", lambda: self._lower_model(model, graph)
-        )
+        ctx = self._build_compile_context(model)
         return self._time_step(
             "emit_model_with_data_file",
             lambda: self._emitter.emit_model_with_data_file(
-                lowered,
+                ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=testbench_inputs,
+                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
-                variable_dim_inputs=variable_dim_inputs,
-                variable_dim_outputs=variable_dim_outputs,
+                variable_dim_inputs=ctx.variable_dim_inputs,
+                variable_dim_outputs=ctx.variable_dim_outputs,
             ),
         )
 
     def compile_with_weight_data(
         self, model: onnx.ModelProto
     ) -> tuple[str, bytes | None]:
-        graph = self._time_step("import_onnx", lambda: import_onnx(model))
-        graph = self._time_step(
-            "concretize_shapes",
-            lambda: self._concretize_graph_shapes(model, graph),
-        )
-        testbench_inputs = self._time_step(
-            "resolve_testbench_inputs", lambda: self._resolve_testbench_inputs(graph)
-        )
-        variable_dim_inputs, variable_dim_outputs = self._time_step(
-            "collect_variable_dims", lambda: self._collect_variable_dims(graph)
-        )
-        lowered = self._time_step(
-            "lower_model", lambda: self._lower_model(model, graph)
-        )
+        ctx = self._build_compile_context(model)
         generated = self._time_step(
             "emit_model",
             lambda: self._emitter.emit_model(
-                lowered,
+                ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=testbench_inputs,
+                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
-                variable_dim_inputs=variable_dim_inputs,
-                variable_dim_outputs=variable_dim_outputs,
+                variable_dim_inputs=ctx.variable_dim_inputs,
+                variable_dim_outputs=ctx.variable_dim_outputs,
             ),
         )
         weight_data = self._time_step(
             "collect_weight_data",
-            lambda: self._emitter.collect_weight_data(lowered.constants),
+            lambda: self._emitter.collect_weight_data(ctx.lowered.constants),
         )
         return generated, weight_data
 
     def compile_with_data_file_and_weight_data(
         self, model: onnx.ModelProto
     ) -> tuple[str, str, bytes | None]:
-        graph = self._time_step("import_onnx", lambda: import_onnx(model))
-        graph = self._time_step(
-            "concretize_shapes",
-            lambda: self._concretize_graph_shapes(model, graph),
-        )
-        testbench_inputs = self._time_step(
-            "resolve_testbench_inputs", lambda: self._resolve_testbench_inputs(graph)
-        )
-        variable_dim_inputs, variable_dim_outputs = self._time_step(
-            "collect_variable_dims", lambda: self._collect_variable_dims(graph)
-        )
-        lowered = self._time_step(
-            "lower_model", lambda: self._lower_model(model, graph)
-        )
+        ctx = self._build_compile_context(model)
         generated, data_source = self._time_step(
             "emit_model_with_data_file",
             lambda: self._emitter.emit_model_with_data_file(
-                lowered,
+                ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=testbench_inputs,
+                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
-                variable_dim_inputs=variable_dim_inputs,
-                variable_dim_outputs=variable_dim_outputs,
+                variable_dim_inputs=ctx.variable_dim_inputs,
+                variable_dim_outputs=ctx.variable_dim_outputs,
             ),
         )
         weight_data = self._time_step(
             "collect_weight_data",
-            lambda: self._emitter.collect_weight_data(lowered.constants),
+            lambda: self._emitter.collect_weight_data(ctx.lowered.constants),
         )
         return generated, data_source, weight_data
 

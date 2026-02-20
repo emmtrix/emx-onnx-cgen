@@ -2311,6 +2311,58 @@ class CEmitter:
             data_rendered += "\n"
         return main_rendered, data_rendered
 
+    def emit_testbench(
+        self,
+        model: LoweredModel,
+        *,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
+        testbench_optional_inputs: Mapping[str, bool] | None = None,
+        variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
+        variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
+    ) -> str:
+        original_model = model
+        model, name_map = self._sanitize_model_names_with_map(model)
+        self._copy_derived(model.op_context, original_model.ops, model.ops)
+        testbench_inputs = self._sanitize_testbench_inputs(testbench_inputs, name_map)
+        testbench_optional_inputs = self._sanitize_testbench_optional_inputs(
+            testbench_optional_inputs, name_map
+        )
+        dim_order, _in_dims, _out_dims, dim_values = self._build_variable_dim_names(
+            model,
+            variable_dim_inputs,
+            variable_dim_outputs,
+        )
+        dim_args = self._format_dim_args_prefix(dim_order)
+        self._env.globals["dim_args"] = dim_args
+        templates = self._load_templates(True)
+        testbench_template = templates.get("testbench")
+        if testbench_template is None:
+            raise CodegenError("Failed to load testbench template")
+        scalar_registry = ScalarFunctionRegistry()
+        tensor_dim_names = self._build_tensor_dim_names(model, {}, {})
+        initial_name_map = self._build_value_name_map(name_map, {})
+        self._emit_state = _EmitState(
+            model=model,
+            templates=templates,
+            scalar_registry=scalar_registry,
+            dim_args=dim_args,
+            tensor_dim_names=tensor_dim_names,
+            op_context=model.op_context,
+            value_name_map=initial_name_map,
+        )
+        rendered = self._emit_testbench(
+            model,
+            testbench_template,
+            testbench_inputs=testbench_inputs,
+            testbench_optional_inputs=testbench_optional_inputs,
+            dim_order=dim_order,
+            dim_values=dim_values,
+            weight_data_filename=self._weight_data_filename(model),
+        )
+        if not rendered.endswith("\n"):
+            rendered += "\n"
+        return rendered
+
     @staticmethod
     def _emit_header_comment(header: ModelHeader) -> str:
         lines: list[str] = [header.generator, ""]
@@ -3237,7 +3289,40 @@ class CEmitter:
         input_dim_names: Mapping[int, Mapping[int, str]],
         output_dim_names: Mapping[int, Mapping[int, str]],
     ) -> str:
-        params = []
+        signature = self._entrypoint_signature(
+            model,
+            dim_order=dim_order,
+            input_dim_names=input_dim_names,
+            output_dim_names=output_dim_names,
+        )
+        lines = [f"void {model.name}({signature}) {{"]
+        for temp in temp_buffers:
+            c_type = temp.dtype.c_type
+            storage = (
+                "static "
+                if self._temp_buffer_size_bytes(temp) > self._large_temp_threshold_bytes
+                else ""
+            )
+            lines.append(
+                f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape, temp.dtype)};"
+            )
+        for index, op in enumerate(resolved_ops):
+            op_name = self._op_function_name(model, index)
+            args = [*dim_order, *op.call_args()]
+            call = ", ".join(args)
+            lines.append(f"    {op_name}({call});")
+        lines.append("}")
+        return "\n".join(lines)
+
+    def _entrypoint_signature(
+        self,
+        model: LoweredModel,
+        *,
+        dim_order: Sequence[str],
+        input_dim_names: Mapping[int, Mapping[int, str]],
+        output_dim_names: Mapping[int, Mapping[int, str]],
+    ) -> str:
+        params: list[str] = []
         optional_flags = self._optional_input_flag_map(model)
         if dim_order:
             params.extend(self._format_dim_args(dim_order))
@@ -3282,25 +3367,33 @@ class CEmitter:
                 f"{dtype.c_type} {name}"
                 f"{self._param_array_suffix(shape, output_dim_names.get(index), use_restrict=True, dtype=dtype)}"
             )
-        signature = ", ".join(params)
-        lines = [f"void {model.name}({signature}) {{"]
-        for temp in temp_buffers:
-            c_type = temp.dtype.c_type
-            storage = (
-                "static "
-                if self._temp_buffer_size_bytes(temp) > self._large_temp_threshold_bytes
-                else ""
-            )
-            lines.append(
-                f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape, temp.dtype)};"
-            )
-        for index, op in enumerate(resolved_ops):
-            op_name = self._op_function_name(model, index)
-            args = [*dim_order, *op.call_args()]
-            call = ", ".join(args)
-            lines.append(f"    {op_name}({call});")
-        lines.append("}")
-        return "\n".join(lines)
+        return ", ".join(params)
+
+    def emit_testbench_declarations(
+        self,
+        model: LoweredModel,
+        *,
+        variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
+        variable_dim_outputs: Mapping[int, Mapping[int, str]] | None = None,
+    ) -> str:
+        original_model = model
+        model, name_map = self._sanitize_model_names_with_map(model)
+        self._copy_derived(model.op_context, original_model.ops, model.ops)
+        dim_order, input_dim_names, output_dim_names, _dim_values = (
+            self._build_variable_dim_names(model, variable_dim_inputs, variable_dim_outputs)
+        )
+        signature = self._entrypoint_signature(
+            model,
+            dim_order=dim_order,
+            input_dim_names=input_dim_names,
+            output_dim_names=output_dim_names,
+        )
+        return "\n".join(
+            [
+                f"_Bool {model.name}_load(const char *path);",
+                f"void {model.name}({signature});",
+            ]
+        )
 
     @staticmethod
     def _temp_buffer_size_bytes(temp: TempBuffer) -> int:
