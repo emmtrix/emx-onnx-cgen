@@ -52,7 +52,6 @@
 | Unsupported op Det | 2 | 22 |
 | Unsupported op Gradient | 2 | 12 |
 | Unsupported op HannWindow | 2 | 17 |
-| Unsupported op Loop | 2 | 11, 13 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | Unsupported op TreeEnsemble | 2 |  |
@@ -76,7 +75,6 @@
 | Out of tolerance | 9 | 1 |
 | Failed to build testbench. | 11 | 2 |
 | Unsupported op If | 11 | 1 |
-| Unsupported op Loop | 11 | 1 |
 | Unsupported op SequenceConstruct | 12 | 4 |
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
@@ -84,7 +82,6 @@
 | Dynamic dim for tensor '*' | 12 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |
-| Unsupported op Loop | 13 | 1 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
 | Unsupported op SequenceLength | 17 | 6 |
