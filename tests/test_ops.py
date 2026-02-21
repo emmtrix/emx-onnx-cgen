@@ -46,6 +46,7 @@ from emx_onnx_cgen.lowering.sequence_at import lower_sequence_at
 from emx_onnx_cgen.lowering.sequence_construct import lower_sequence_construct
 from emx_onnx_cgen.lowering.sequence_erase import lower_sequence_erase
 from emx_onnx_cgen.lowering.sequence_insert import lower_sequence_insert
+from emx_onnx_cgen.lowering.sequence_length import lower_sequence_length
 from emx_onnx_cgen.lowering.split_to_sequence import lower_split_to_sequence
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
@@ -1022,6 +1023,32 @@ def _make_sequence_at_model() -> onnx.ModelProto:
         [sequence],
         [output],
         initializer=[position],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 11)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_sequence_length_model() -> onnx.ModelProto:
+    sequence = helper.make_tensor_sequence_value_info(
+        "sequence", TensorProto.FLOAT, shape=None
+    )
+    output = helper.make_tensor_value_info("output", TensorProto.INT64, [])
+    node = helper.make_node(
+        "SequenceLength",
+        inputs=["sequence"],
+        outputs=["output"],
+    )
+    graph = helper.make_graph(
+        [node],
+        "sequence_length_graph",
+        [sequence],
+        [output],
     )
     model = helper.make_model(
         graph,
@@ -4254,6 +4281,13 @@ def test_lower_sequence_at() -> None:
     op = lower_sequence_at(graph, graph.nodes[0])
     assert op.input_sequence == "sequence"
     assert op.position == "position"
+    assert op.output == "output"
+
+
+def test_lower_sequence_length() -> None:
+    graph = import_onnx(_make_sequence_length_model())
+    op = lower_sequence_length(graph, graph.nodes[0])
+    assert op.input_sequence == "sequence"
     assert op.output == "output"
 
 

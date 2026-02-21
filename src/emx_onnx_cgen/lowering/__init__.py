@@ -71,6 +71,7 @@ _LOWERING_MODULES = [
     "sequence_construct",
     "sequence_erase",
     "sequence_insert",
+    "sequence_length",
     "rms_normalization",
     "rotary_embedding",
     "scatter",

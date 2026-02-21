@@ -1035,6 +1035,21 @@ class SequenceAtOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class SequenceLengthOp(RenderableOpBase):
+    __io_inputs__ = ("input_sequence",)
+    __io_outputs__ = ("output",)
+    input_sequence: str
+    output: str
+
+    def call_args(self) -> tuple[str, ...]:
+        return (
+            self.input_sequence,
+            f"{self.input_sequence}__count",
+            self.output,
+        )
+
+
+@dataclass(frozen=True)
 class SequenceInsertOp(RenderableOpBase):
     __io_inputs__ = ("input_sequence", "tensor", "position")
     __io_outputs__ = ("output_sequence",)
