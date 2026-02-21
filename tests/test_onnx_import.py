@@ -221,3 +221,29 @@ def test_import_gradient_of_add_and_mul_keeps_forward_and_gradient_paths() -> No
     assert op_types[:2] == ["Add", "Mul"]
     assert op_types.count("Mul") >= 3
     assert op_types[-2:] == ["Identity", "Identity"]
+
+
+def test_import_allows_anonymous_dynamic_dims() -> None:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, [2, 3])
+    output_info = helper.make_tensor_value_info("out", TensorProto.FLOAT, [1])
+    output_dim = output_info.type.tensor_type.shape.dim[0]
+    output_dim.ClearField("dim_value")
+    if output_dim.HasField("dim_param"):
+        output_dim.ClearField("dim_param")
+
+    node = helper.make_node("Shape", inputs=["in0"], outputs=["out"])
+    graph = helper.make_graph(
+        [node], "anonymous_dynamic_dim_graph", [input_info], [output_info]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+
+    imported = import_onnx(model)
+    output_type = imported.find_value("out").type
+
+    assert output_type.shape == (1,)
+    assert output_type.dim_params == ("out_dim_0",)
