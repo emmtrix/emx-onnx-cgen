@@ -78,7 +78,10 @@ def _tensor_type_from_proto(
             if dim_param:
                 shape.append(1)
                 continue
-            raise ShapeInferenceError(f"Dynamic dim for tensor '{name}'")
+            synthetic_dim_param = f"{name}_dim_{dim_index}"
+            dim_params[-1] = synthetic_dim_param
+            shape.append(1)
+            continue
         shape.append(dim.dim_value)
     return TensorType(
         dtype=dtype,
