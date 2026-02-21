@@ -142,3 +142,82 @@ def test_import_if_with_tensor_branches_expands_to_where() -> None:
 
     assert [node.op_type for node in imported.nodes] == ["Where"]
     assert len(imported.initializers) == 2
+
+
+def test_import_gradient_of_add_expands_to_supported_nodes() -> None:
+    a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2])
+    b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2])
+    c = helper.make_tensor_value_info("c", TensorProto.FLOAT, [2])
+    dc_da = helper.make_tensor_value_info("dc_da", TensorProto.FLOAT, [2])
+    dc_db = helper.make_tensor_value_info("dc_db", TensorProto.FLOAT, [2])
+
+    add_node = helper.make_node("Add", inputs=["a", "b"], outputs=["c"])
+    gradient_node = helper.make_node(
+        "Gradient",
+        inputs=["a", "b"],
+        outputs=["dc_da", "dc_db"],
+        domain="ai.onnx.preview.training",
+        y="c",
+        xs=["a", "b"],
+    )
+    graph = helper.make_graph(
+        [add_node, gradient_node],
+        "gradient_add_graph",
+        [a, b],
+        [c, dc_da, dc_db],
+    )
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("ai.onnx.preview.training", 1),
+        ],
+    )
+    model.ir_version = 7
+
+    imported = import_onnx(model)
+
+    assert all(node.op_type != "Gradient" for node in imported.nodes)
+    assert imported.nodes[0].op_type == "Add"
+    assert [node.op_type for node in imported.nodes[-2:]] == ["Identity", "Identity"]
+
+
+def test_import_gradient_of_add_and_mul_keeps_forward_and_gradient_paths() -> None:
+    a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2])
+    b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2])
+    d = helper.make_tensor_value_info("d", TensorProto.FLOAT, [2])
+    dd_da = helper.make_tensor_value_info("dd_da", TensorProto.FLOAT, [2])
+    dd_db = helper.make_tensor_value_info("dd_db", TensorProto.FLOAT, [2])
+
+    add_node = helper.make_node("Add", inputs=["a", "b"], outputs=["c"])
+    mul_node = helper.make_node("Mul", inputs=["c", "a"], outputs=["d"])
+    gradient_node = helper.make_node(
+        "Gradient",
+        inputs=["a", "b"],
+        outputs=["dd_da", "dd_db"],
+        domain="ai.onnx.preview.training",
+        y="d",
+        xs=["a", "b"],
+    )
+    graph = helper.make_graph(
+        [add_node, mul_node, gradient_node],
+        "gradient_add_mul_graph",
+        [a, b],
+        [d, dd_da, dd_db],
+    )
+    model = helper.make_model(
+        graph,
+        opset_imports=[
+            helper.make_operatorsetid("", 13),
+            helper.make_operatorsetid("ai.onnx.preview.training", 1),
+        ],
+    )
+    model.ir_version = 7
+
+    imported = import_onnx(model)
+
+    op_types = [node.op_type for node in imported.nodes]
+    assert "Gradient" not in op_types
+    assert op_types[:2] == ["Add", "Mul"]
+    assert op_types.count("Mul") >= 3
+    assert op_types[-2:] == ["Identity", "Identity"]
