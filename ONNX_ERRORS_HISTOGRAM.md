@@ -30,7 +30,6 @@
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
-| Unsupported op SequenceConstruct | 4 | 12 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op Momentum | 3 |  |
@@ -54,6 +53,7 @@
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
+| Unsupported op SequenceErase | 2 | 12 |
 | Unsupported op TreeEnsemble | 2 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
@@ -73,10 +73,10 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op SequenceConstruct | 12 | 4 |
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
 | Unsupported op Gradient | 12 | 2 |
+| Unsupported op SequenceErase | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |

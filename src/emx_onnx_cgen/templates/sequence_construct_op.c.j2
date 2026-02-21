@@ -1,0 +1,16 @@
+void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+    idx_t count = (idx_t){{ input_count }};
+    if (count > EMX_SEQUENCE_MAX_LEN) {
+        count = EMX_SEQUENCE_MAX_LEN;
+    }
+
+{% for input_name in inputs %}
+    if ((idx_t){{ loop.index0 }} < count) {
+        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+            (({{ c_type }} *){{ output_sequence }}[{{ loop.index0 }}])[elem] = ((const {{ c_type }} *){{ input_name }})[elem];
+        }
+    }
+{% endfor %}
+
+    *{{ output_sequence }}__count = count;
+}
