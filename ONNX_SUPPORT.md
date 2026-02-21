@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1480 / 1802 official ONNX files.
+Support 1481 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1499,7 +1499,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_slice_neg/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_slice_neg_steps/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_slice_negative_axes/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx | 13 | ❌ | Testbench execution failed: exit code 1 |
+| onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_softmax_axis_0_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
