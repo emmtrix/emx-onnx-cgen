@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 172 / 201
+Supported operators: 173 / 201
 
 | Operator | Supported |
 | --- | --- |
@@ -155,7 +155,7 @@ Supported operators: 172 / 201
 | Selu | ✅ |
 | SequenceAt | ✅ |
 | SequenceConstruct | ✅ |
-| SequenceEmpty | ❌ |
+| SequenceEmpty | ✅ |
 | SequenceErase | ✅ |
 | SequenceInsert | ✅ |
 | SequenceLength | ✅ |

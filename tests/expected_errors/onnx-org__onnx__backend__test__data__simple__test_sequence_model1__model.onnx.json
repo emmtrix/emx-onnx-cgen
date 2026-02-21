@@ -1,10 +1,11 @@
 {
-  "error": "Unsupported op SequenceEmpty",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model1 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceEmpty",
     "SequenceInsert",
     "SequenceAt"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "aa833c71029a80bee227f0893cb52520b0a085bdf0fd0d0e09ae303a72572584"
 }

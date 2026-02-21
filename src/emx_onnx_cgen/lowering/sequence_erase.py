@@ -7,7 +7,7 @@ from ..ir.model import Graph, Node
 from ..ir.ops import SequenceEraseOp
 from .common import optional_name, resolve_int_list_from_value, value_dtype, value_shape
 from .registry import register_lowering
-from .sequence_insert import _sequence_type
+from .sequence_insert import _ensure_tensor_shape_compatible, _sequence_type
 
 
 @register_lowering("SequenceErase")
@@ -28,6 +28,11 @@ def lower_sequence_erase(graph: Graph, node: Node) -> SequenceEraseOp:
         raise UnsupportedOpError(
             "SequenceErase output sequence dtype must match input sequence dtype"
         )
+    _ensure_tensor_shape_compatible(
+        output_sequence_type.elem,
+        input_sequence_type.elem,
+        message="SequenceErase output sequence element shape must match input sequence",
+    )
 
     if position_name is not None:
         pos_dtype = value_dtype(graph, position_name, node)
@@ -35,7 +40,9 @@ def lower_sequence_erase(graph: Graph, node: Node) -> SequenceEraseOp:
             raise UnsupportedOpError("SequenceErase position must be int32 or int64")
         pos_shape = value_shape(graph, position_name, node)
         if pos_shape not in {(), (1,)}:
-            raise ShapeInferenceError("SequenceErase position must be a scalar or size-1 tensor")
+            raise ShapeInferenceError(
+                "SequenceErase position must be a scalar or size-1 tensor"
+            )
         resolve_int_list_from_value(graph, position_name, node)
 
     return SequenceEraseOp(

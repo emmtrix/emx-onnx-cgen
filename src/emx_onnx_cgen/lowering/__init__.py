@@ -69,6 +69,7 @@ _LOWERING_MODULES = [
     "reverse_sequence",
     "sequence_at",
     "sequence_construct",
+    "sequence_empty",
     "sequence_erase",
     "sequence_insert",
     "sequence_length",
