@@ -44,6 +44,7 @@ from emx_onnx_cgen.lowering.scatter import lower_scatter
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.sequence_at import lower_sequence_at
 from emx_onnx_cgen.lowering.sequence_construct import lower_sequence_construct
+from emx_onnx_cgen.lowering.sequence_empty import lower_sequence_empty
 from emx_onnx_cgen.lowering.sequence_erase import lower_sequence_erase
 from emx_onnx_cgen.lowering.sequence_insert import lower_sequence_insert
 from emx_onnx_cgen.lowering.sequence_length import lower_sequence_length
@@ -963,6 +964,31 @@ def _make_sequence_construct_model() -> onnx.ModelProto:
     return model
 
 
+def _make_sequence_empty_model() -> onnx.ModelProto:
+    output_sequence = helper.make_tensor_sequence_value_info(
+        "output_sequence", TensorProto.FLOAT, shape=[3]
+    )
+    node = helper.make_node(
+        "SequenceEmpty",
+        inputs=[],
+        outputs=["output_sequence"],
+    )
+    graph = helper.make_graph(
+        [node],
+        "sequence_empty_graph",
+        [],
+        [output_sequence],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 11)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_concat_from_sequence_model(*, axis: int, new_axis: int) -> onnx.ModelProto:
     tensor0 = helper.make_tensor_value_info("tensor0", TensorProto.FLOAT, [2, 3])
     tensor1 = helper.make_tensor_value_info("tensor1", TensorProto.FLOAT, [2, 3])
@@ -1003,7 +1029,7 @@ def _make_concat_from_sequence_model(*, axis: int, new_axis: int) -> onnx.ModelP
 
 def _make_sequence_at_model() -> onnx.ModelProto:
     sequence = helper.make_tensor_sequence_value_info(
-        "sequence", TensorProto.FLOAT, shape=None
+        "sequence", TensorProto.FLOAT, shape=[3]
     )
     position = helper.make_tensor(
         "position",
@@ -1036,7 +1062,7 @@ def _make_sequence_at_model() -> onnx.ModelProto:
 
 def _make_sequence_length_model() -> onnx.ModelProto:
     sequence = helper.make_tensor_sequence_value_info(
-        "sequence", TensorProto.FLOAT, shape=None
+        "sequence", TensorProto.FLOAT, shape=[3]
     )
     output = helper.make_tensor_value_info("output", TensorProto.INT64, [])
     node = helper.make_node(
@@ -1062,7 +1088,7 @@ def _make_sequence_length_model() -> onnx.ModelProto:
 
 def _make_sequence_erase_model(*, with_position: bool) -> onnx.ModelProto:
     sequence = helper.make_tensor_sequence_value_info(
-        "sequence", TensorProto.FLOAT, shape=None
+        "sequence", TensorProto.FLOAT, shape=[3]
     )
     inputs = [sequence]
     node_inputs = ["sequence"]
@@ -1077,7 +1103,7 @@ def _make_sequence_erase_model(*, with_position: bool) -> onnx.ModelProto:
         node_inputs.append("position")
         initializers.append(position)
     output_sequence = helper.make_tensor_sequence_value_info(
-        "output_sequence", TensorProto.FLOAT, shape=None
+        "output_sequence", TensorProto.FLOAT, shape=[3]
     )
     node = helper.make_node(
         "SequenceErase",
@@ -1122,9 +1148,13 @@ def _make_split_to_sequence_model(
     if with_split:
         node_inputs.append("split")
         if split_as_input:
-            inputs.append(helper.make_tensor_value_info("split", TensorProto.INT64, [3]))
+            inputs.append(
+                helper.make_tensor_value_info("split", TensorProto.INT64, [3])
+            )
         else:
-            split = helper.make_tensor("split", TensorProto.INT64, dims=[3], vals=[2, 2, 2])
+            split = helper.make_tensor(
+                "split", TensorProto.INT64, dims=[3], vals=[2, 2, 2]
+            )
             initializers.append(split)
     node = helper.make_node(
         "SplitToSequence",
@@ -1152,7 +1182,7 @@ def _make_split_to_sequence_model(
 
 def _make_sequence_insert_model(*, with_position: bool) -> onnx.ModelProto:
     sequence = helper.make_tensor_sequence_value_info(
-        "sequence", TensorProto.FLOAT, shape=None
+        "sequence", TensorProto.FLOAT, shape=[3]
     )
     tensor = helper.make_tensor_value_info("tensor", TensorProto.FLOAT, [3])
     inputs = [sequence, tensor]
@@ -1168,7 +1198,7 @@ def _make_sequence_insert_model(*, with_position: bool) -> onnx.ModelProto:
         node_inputs.append("position")
         initializers.append(position)
     output_sequence = helper.make_tensor_sequence_value_info(
-        "output_sequence", TensorProto.FLOAT, shape=None
+        "output_sequence", TensorProto.FLOAT, shape=[3]
     )
     node = helper.make_node(
         "SequenceInsert",
@@ -4291,6 +4321,12 @@ def test_lower_sequence_length() -> None:
     assert op.output == "output"
 
 
+def test_lower_sequence_empty() -> None:
+    graph = import_onnx(_make_sequence_empty_model())
+    op = lower_sequence_empty(graph, graph.nodes[0])
+    assert op.output_sequence == "output_sequence"
+
+
 def test_lower_sequence_erase_without_position() -> None:
     graph = import_onnx(_make_sequence_erase_model(with_position=False))
     op = lower_sequence_erase(graph, graph.nodes[0])
@@ -4318,6 +4354,63 @@ def test_lower_sequence_insert_with_position() -> None:
     graph = import_onnx(_make_sequence_insert_model(with_position=True))
     op = lower_sequence_insert(graph, graph.nodes[0])
     assert op.position == "position"
+
+
+def test_lower_sequence_insert_rejects_shape_mismatch() -> None:
+    sequence = helper.make_tensor_sequence_value_info(
+        "sequence", TensorProto.FLOAT, shape=[2]
+    )
+    tensor = helper.make_tensor_value_info("tensor", TensorProto.FLOAT, [3])
+    output_sequence = helper.make_tensor_sequence_value_info(
+        "output_sequence", TensorProto.FLOAT, shape=[2]
+    )
+    node = helper.make_node(
+        "SequenceInsert",
+        inputs=["sequence", "tensor"],
+        outputs=["output_sequence"],
+    )
+    model = helper.make_model(
+        helper.make_graph(
+            [node],
+            "sequence_insert_shape_mismatch_graph",
+            [sequence, tensor],
+            [output_sequence],
+        ),
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 11)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    graph = import_onnx(model)
+    with pytest.raises(ShapeInferenceError, match="tensor shape"):
+        lower_sequence_insert(graph, graph.nodes[0])
+
+
+def test_lower_sequence_at_rejects_shape_mismatch() -> None:
+    sequence = helper.make_tensor_sequence_value_info(
+        "sequence", TensorProto.FLOAT, shape=[2]
+    )
+    position = helper.make_tensor("position", TensorProto.INT64, dims=[1], vals=[0])
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [3])
+    node = helper.make_node(
+        "SequenceAt", inputs=["sequence", "position"], outputs=["output"]
+    )
+    model = helper.make_model(
+        helper.make_graph(
+            [node],
+            "sequence_at_shape_mismatch_graph",
+            [sequence],
+            [output],
+            initializer=[position],
+        ),
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 11)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    graph = import_onnx(model)
+    with pytest.raises(ShapeInferenceError, match="output shape"):
+        lower_sequence_at(graph, graph.nodes[0])
 
 
 def test_lower_split_to_sequence() -> None:

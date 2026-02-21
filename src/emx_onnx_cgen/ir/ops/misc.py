@@ -1091,3 +1091,13 @@ class SequenceConstructOp(RenderableOpBase):
 
     def call_args(self) -> tuple[str, ...]:
         return (*self.inputs, self.output_sequence, f"{self.output_sequence}__count")
+
+
+@dataclass(frozen=True)
+class SequenceEmptyOp(RenderableOpBase):
+    __io_inputs__ = ()
+    __io_outputs__ = ("output_sequence",)
+    output_sequence: str
+
+    def call_args(self) -> tuple[str, ...]:
+        return (self.output_sequence, f"{self.output_sequence}__count")

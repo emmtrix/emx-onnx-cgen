@@ -25,6 +25,35 @@ def _sequence_type(graph: Graph | GraphContext, name: str, node: Node) -> Sequen
     return value.type
 
 
+def _is_fully_static_tensor_type(tensor_type: TensorType) -> bool:
+    if tensor_type.shape == () and not tensor_type.dim_params:
+        # ONNX sequence element shapes may be omitted by exporters; these are
+        # imported as rank-0 placeholders and must be treated as unknown.
+        return False
+    return all(dim_param is None for dim_param in tensor_type.dim_params)
+
+
+def _ensure_tensor_shape_compatible(
+    actual: TensorType,
+    expected: TensorType,
+    *,
+    message: str,
+) -> None:
+    if not _is_fully_static_tensor_type(actual):
+        return
+    if not _is_fully_static_tensor_type(expected):
+        return
+    if actual.shape != expected.shape:
+        raise ShapeInferenceError(message)
+
+
+def _producer_for_output(graph: Graph, output_name: str) -> Node | None:
+    for producer in graph.nodes:
+        if output_name in producer.outputs:
+            return producer
+    return None
+
+
 @register_lowering("SequenceInsert")
 def lower_sequence_insert(graph: Graph, node: Node) -> SequenceInsertOp:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
@@ -49,10 +78,26 @@ def lower_sequence_insert(graph: Graph, node: Node) -> SequenceInsertOp:
         raise UnsupportedOpError(
             "SequenceInsert tensor dtype must match sequence element dtype"
         )
+    _ensure_tensor_shape_compatible(
+        tensor_type,
+        input_sequence_type.elem,
+        message="SequenceInsert tensor shape must match input sequence element shape",
+    )
     if output_sequence_type.elem.dtype != input_sequence_type.elem.dtype:
         raise UnsupportedOpError(
             "SequenceInsert output sequence dtype must match input sequence dtype"
         )
+
+    _ensure_tensor_shape_compatible(
+        output_sequence_type.elem,
+        input_sequence_type.elem,
+        message="SequenceInsert output sequence element shape must match input sequence",
+    )
+    _ensure_tensor_shape_compatible(
+        tensor_type,
+        output_sequence_type.elem,
+        message="SequenceInsert tensor shape must match output sequence element shape",
+    )
 
     if position_name is not None:
         pos_dtype = value_dtype(graph, position_name, node)
@@ -60,7 +105,9 @@ def lower_sequence_insert(graph: Graph, node: Node) -> SequenceInsertOp:
             raise UnsupportedOpError("SequenceInsert position must be int32 or int64")
         pos_shape = value_shape(graph, position_name, node)
         if pos_shape not in {(), (1,)}:
-            raise ShapeInferenceError("SequenceInsert position must be a scalar or size-1 tensor")
+            raise ShapeInferenceError(
+                "SequenceInsert position must be a scalar or size-1 tensor"
+            )
         resolve_int_list_from_value(graph, position_name, node)
 
     return SequenceInsertOp(
