@@ -1,0 +1,38 @@
+void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+    idx_t input_count = {{ input_sequence }}__count;
+    if (input_count > EMX_SEQUENCE_MAX_LEN) {
+        input_count = EMX_SEQUENCE_MAX_LEN;
+    }
+
+    idx_t erase_index = input_count - 1;
+    {% if position %}
+    erase_index = (idx_t){{ position }}[0];
+    if (erase_index < 0) {
+        erase_index += input_count;
+    }
+    if (erase_index < 0) {
+        erase_index = 0;
+    }
+    if (erase_index >= input_count) {
+        erase_index = input_count - 1;
+    }
+    {% endif %}
+
+    if (input_count <= 0) {
+        *{{ output_sequence }}__count = 0;
+        return;
+    }
+
+    for (idx_t seq = 0; seq < erase_index; ++seq) {
+        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+            (({{ c_type }} *){{ output_sequence }}[seq])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
+        }
+    }
+    for (idx_t seq = erase_index + 1; seq < input_count; ++seq) {
+        for (idx_t elem = 0; elem < {{ element_count }}; ++elem) {
+            (({{ c_type }} *){{ output_sequence }}[seq - 1])[elem] = ((const {{ c_type }} *){{ input_sequence }}[seq])[elem];
+        }
+    }
+
+    *{{ output_sequence }}__count = input_count - 1;
+}
