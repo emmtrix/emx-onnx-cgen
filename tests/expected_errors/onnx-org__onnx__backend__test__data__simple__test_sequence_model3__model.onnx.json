@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op SequenceErase",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model3 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceConstruct",
@@ -7,5 +7,6 @@
     "SequenceInsert",
     "SequenceAt"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "cf593ba9659b3d5e23d8f70b0e4f9aca67ba0598c89232188c9a70d4f2ef6eb2"
 }
