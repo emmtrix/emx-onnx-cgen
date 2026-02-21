@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1473 / 1802 official ONNX files.
+Support 1477 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1539,9 +1539,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_split_equal_parts_2d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_split_to_sequence_1/model.onnx | 24 | ❌ | Unsupported op SplitToSequence |
-| onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2/model.onnx | 24 | ❌ | Unsupported op SplitToSequence |
-| onnx-org/onnx/backend/test/data/node/test_split_to_sequence_nokeepdims/model.onnx | 24 | ❌ | Unsupported op SplitToSequence |
+| onnx-org/onnx/backend/test/data/node/test_split_to_sequence_1/model.onnx | 24 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=20971520) |
+| onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2/model.onnx | 24 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
+| onnx-org/onnx/backend/test/data/node/test_split_to_sequence_nokeepdims/model.onnx | 24 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_1d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_1d_opset18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_split_variable_parts_2d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1800,9 +1800,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model3/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model4/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model5/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model6/model.onnx | 12 | ❌ | Unsupported op SplitToSequence |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model7/model.onnx | 12 | ❌ | Unsupported op SplitToSequence |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx | 12 | ❌ | Unsupported op SplitToSequence |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model6/model.onnx | 12 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model7/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx | 12 | ❌ | Unsupported op SequenceLength |
 | onnx-org/onnx/backend/test/data/simple/test_shrink/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sign_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_single_relu_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
