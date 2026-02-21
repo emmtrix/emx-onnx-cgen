@@ -38,7 +38,6 @@
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | BatchNormalization must have 5 inputs and 1 output | 2 | 15 |
-| Failed to build testbench. | 2 | 12 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -73,7 +72,6 @@
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
 | Unsupported op SplitToSequence | 12 | 3 |
-| Failed to build testbench. | 12 | 2 |
 | Unsupported op Gradient | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
