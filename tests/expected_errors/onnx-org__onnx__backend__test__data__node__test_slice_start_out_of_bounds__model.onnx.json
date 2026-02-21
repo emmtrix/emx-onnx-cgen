@@ -1,9 +1,9 @@
 {
-  "error": "Testbench execution failed: exit code 1",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_slice_start_out_of_bounds model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Slice"
   ],
   "opset_version": 13,
-  "generated_checksum": "c22ffd73e4a889f91028d4b8df8789dadcea5dff7f9a72f9eca685577f9b0a71"
+  "generated_checksum": "f881e5546ad2bf718905d061c29dbc0a9d5d40aa0fb5f1f69eac9e2a7323db9e"
 }
