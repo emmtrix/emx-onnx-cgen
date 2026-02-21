@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op SequenceLength",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model6 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SplitToSequence",
     "SequenceLength"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "42eea36d96329f3a3f13019468561b221be32ac59d2ba7a967ad8c8ebb91e545"
 }

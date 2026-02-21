@@ -13,11 +13,11 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Unsupported op SequenceLength | 8 | 12, 17 |
 | Out of tolerance | 7 | 9, 19, 22 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
+| Unsupported op SequenceEmpty | 6 | 17 |
 | Unsupported op SequenceMap | 6 | 17 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
@@ -69,13 +69,12 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op SequenceLength | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
-| Unsupported op SequenceLength | 17 | 6 |
+| Unsupported op SequenceEmpty | 17 | 6 |
 | Unsupported op SequenceMap | 17 | 6 |
 | Unsupported op BlackmanWindow | 17 | 2 |
 | Unsupported op HannWindow | 17 | 2 |

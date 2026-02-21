@@ -97,6 +97,7 @@ from ..ir.ops import (
     SequenceConstructOp,
     SequenceEraseOp,
     SequenceInsertOp,
+    SequenceLengthOp,
     ReduceOp,
     ReshapeOp,
     ResizeOp,
@@ -1839,6 +1840,11 @@ class CEmitter:
                 position=self._map_optional_name(name_map, op.position),
                 output_sequence=name_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SequenceLengthOp):
+            return SequenceLengthOp(
+                input_sequence=name_map.get(op.input_sequence, op.input_sequence),
+                output=name_map.get(op.output, op.output),
+            )
         if isinstance(op, SplitToSequenceOp):
             return SplitToSequenceOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2068,6 +2074,7 @@ class CEmitter:
                 ),
                 "sequence_erase": self._env.get_template("sequence_erase_op.c.j2"),
                 "sequence_insert": self._env.get_template("sequence_insert_op.c.j2"),
+                "sequence_length": self._env.get_template("sequence_length_op.c.j2"),
             }
             if emit_testbench:
                 templates["testbench"] = self._env.get_template("testbench.c.j2")
@@ -2773,6 +2780,7 @@ class CEmitter:
             | SequenceConstructOp
             | SequenceEraseOp
             | SequenceInsertOp
+            | SequenceLengthOp
         ],
         *,
         emit_testbench: bool,
@@ -3102,6 +3110,7 @@ class CEmitter:
             | SequenceConstructOp
             | SequenceEraseOp
             | SequenceInsertOp
+            | SequenceLengthOp
         ],
         op_context: OpContext,
     ) -> bool:
@@ -3291,6 +3300,7 @@ class CEmitter:
             | SequenceConstructOp
             | SequenceEraseOp
             | SequenceInsertOp
+            | SequenceLengthOp
         ],
         op_context: OpContext,
     ) -> bool:
@@ -3405,6 +3415,7 @@ class CEmitter:
             | SequenceConstructOp
             | SequenceEraseOp
             | SequenceInsertOp
+            | SequenceLengthOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
         *,
@@ -3447,6 +3458,7 @@ class CEmitter:
                     SequenceConstructOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
+                    SequenceLengthOp,
                     SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
@@ -3587,6 +3599,7 @@ class CEmitter:
                     SequenceConstructOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
+                    SequenceLengthOp,
                     SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
@@ -4833,6 +4846,11 @@ class CEmitter:
                 position=CEmitter._map_optional_name(temp_map, op.position),
                 output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SequenceLengthOp):
+            return SequenceLengthOp(
+                input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
+                output=temp_map.get(op.output, op.output),
+            )
         if isinstance(op, SplitToSequenceOp):
             return SplitToSequenceOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5195,6 +5213,7 @@ class CEmitter:
             sequence_construct_template=templates["sequence_construct"],
             sequence_erase_template=templates["sequence_erase"],
             sequence_insert_template=templates["sequence_insert"],
+            sequence_length_template=templates["sequence_length"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
             tensor_dim_names=state.tensor_dim_names,
@@ -5713,6 +5732,7 @@ class CEmitter:
         sequence_construct_template,
         sequence_erase_template,
         sequence_insert_template,
+        sequence_length_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
         tensor_dim_names: Mapping[str, Mapping[int, str]] | None = None,
@@ -10787,6 +10807,41 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SequenceLengthOp):
+            output_shape = self._ctx_shape(op.output)
+            params = self._shared_param_map(
+                [
+                    ("input_sequence", op.input_sequence),
+                    ("output", op.output),
+                ]
+            )
+            output_dtype = self._ctx_dtype(op.output)
+            elem_type = self._ctx_sequence_elem_type(op.input_sequence)
+            input_suffix = self._param_array_suffix(
+                elem_type.shape, _dim_names_for(op.input_sequence)
+            )
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input_sequence"],
+                        elem_type.dtype.c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{input_suffix}",
+                        True,
+                    ),
+                    (f"{params['input_sequence']}__count", "idx_t", "", True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
+                ]
+            )
+            rendered = sequence_length_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                output=params["output"],
+                c_type=output_dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SequenceConstructOp):
             if not op.inputs:
                 raise CodegenError("SequenceConstruct requires at least one input")
@@ -12281,6 +12336,7 @@ class CEmitter:
             | SequenceConstructOp
             | SequenceEraseOp
             | SequenceInsertOp
+            | SequenceLengthOp
         ],
         tensor_dim_names: dict[str, dict[int, str]],
     ) -> None:
@@ -12595,6 +12651,14 @@ class CEmitter:
                     self._ctx_dtype(op.output),
                 ),
             )
+        if isinstance(op, SequenceLengthOp):
+            return (
+                (
+                    op.output,
+                    self._ctx_shape(op.output),
+                    self._ctx_dtype(op.output),
+                ),
+            )
         if isinstance(op, SequenceConstructOp):
             return (
                 (
@@ -12867,6 +12931,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, SequenceAtOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, SequenceLengthOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, SequenceConstructOp):
             return self._ctx_shape(op.inputs[0])
         if isinstance(op, SequenceEraseOp):
@@ -12981,6 +13047,8 @@ class CEmitter:
         if isinstance(op, ConcatFromSequenceOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, SequenceAtOp):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, SequenceLengthOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, SequenceConstructOp):
             return self._ctx_dtype(op.inputs[0])
