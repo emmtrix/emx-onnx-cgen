@@ -48,7 +48,6 @@
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op BlackmanWindow | 2 | 17 |
 | Unsupported op Det | 2 | 22 |
-| Unsupported op Gradient | 2 | 12 |
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
@@ -72,7 +71,6 @@
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
 | Unsupported op SplitToSequence | 12 | 3 |
-| Unsupported op Gradient | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |

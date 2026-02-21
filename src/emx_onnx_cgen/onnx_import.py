@@ -293,6 +293,21 @@ def _tensor_shape_from_value_info(graph: onnx.GraphProto, name: str) -> tuple[in
     return tuple(dims)
 
 
+def _tensor_elem_type_from_value_info(graph: onnx.GraphProto, name: str) -> int:
+    value_info = _find_value_info(graph, name)
+    if value_info is not None:
+        tensor_type = value_info.type.tensor_type
+        if tensor_type.HasField("elem_type"):
+            return int(tensor_type.elem_type)
+    for initializer in graph.initializer:
+        if initializer.name == name:
+            return int(initializer.data_type)
+    raise ShapeInferenceError(
+        f"Missing elem_type for '{name}' in Gradient expansion. "
+        "Hint: run ONNX shape inference or export with static shapes."
+    )
+
+
 def _scan_attr_ints(
     attrs: dict[str, object],
     key: str,
@@ -838,6 +853,166 @@ def _expand_if_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
     return model, expanded
 
 
+def _expand_gradient_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+    graph = model.graph
+    new_nodes: list[onnx.NodeProto] = []
+    new_initializers: list[onnx.TensorProto] = []
+    expanded = False
+
+    for node_index, node in enumerate(graph.node):
+        if not (
+            node.op_type == "Gradient" and node.domain == "ai.onnx.preview.training"
+        ):
+            new_nodes.append(node)
+            continue
+
+        attrs = _node_attrs(node)
+        xs_attr = attrs.get("xs")
+        y_attr = attrs.get("y")
+        if not isinstance(xs_attr, (list, tuple)):
+            raise UnsupportedOpError(
+                "Gradient requires 'xs' attribute listing input tensor names"
+            )
+        if not isinstance(y_attr, (bytes, str)):
+            raise UnsupportedOpError("Gradient requires string 'y' attribute")
+        xs = tuple(
+            item.decode("utf-8") if isinstance(item, bytes) else str(item)
+            for item in xs_attr
+        )
+        y_name = y_attr.decode("utf-8") if isinstance(y_attr, bytes) else str(y_attr)
+        if len(node.output) != len(xs):
+            raise UnsupportedOpError(
+                "Gradient output count must match the number of tensors in 'xs'"
+            )
+
+        grad_nodes: list[onnx.NodeProto] = []
+        grad_by_value: dict[str, str] = {}
+
+        y_shape = _tensor_shape_from_value_info(graph, y_name)
+        y_elem_type = _tensor_elem_type_from_value_info(graph, y_name)
+        y_dtype = np.dtype(onnx.helper.tensor_dtype_to_np_dtype(y_elem_type))
+        seed_name = f"__grad_seed_{node_index}_{y_name}"
+        new_initializers.append(
+            numpy_helper.from_array(np.ones(y_shape, dtype=y_dtype), name=seed_name)
+        )
+        grad_by_value[y_name] = seed_name
+
+        forward_nodes = [n for n in new_nodes if any(output for output in n.output)]
+        for reverse_index, forward_node in enumerate(reversed(forward_nodes)):
+            node_outputs = [output for output in forward_node.output if output]
+            if len(node_outputs) != 1:
+                if node_outputs:
+                    raise UnsupportedOpError(
+                        f"Gradient only supports single-output ops, got {forward_node.op_type}"
+                    )
+                continue
+            grad_output_name = grad_by_value.get(node_outputs[0])
+            if grad_output_name is None:
+                continue
+
+            if forward_node.op_type in {"Identity"}:
+                contribution_names = [grad_output_name]
+            elif forward_node.op_type in {"Add", "Sub"}:
+                if len(forward_node.input) != 2:
+                    raise UnsupportedOpError(
+                        f"Gradient expects two inputs for {forward_node.op_type}"
+                    )
+                contribution_names = [grad_output_name, grad_output_name]
+                if forward_node.op_type == "Sub":
+                    neg_name = f"__grad_neg_{node_index}_{reverse_index}"
+                    grad_nodes.append(
+                        helper.make_node(
+                            "Neg",
+                            inputs=[grad_output_name],
+                            outputs=[neg_name],
+                            name=neg_name,
+                        )
+                    )
+                    contribution_names[1] = neg_name
+            elif forward_node.op_type == "Mul":
+                if len(forward_node.input) != 2:
+                    raise UnsupportedOpError("Gradient expects two inputs for Mul")
+                left_name, right_name = forward_node.input
+                left_grad = f"__grad_mul_l_{node_index}_{reverse_index}"
+                right_grad = f"__grad_mul_r_{node_index}_{reverse_index}"
+                grad_nodes.append(
+                    helper.make_node(
+                        "Mul",
+                        inputs=[grad_output_name, right_name],
+                        outputs=[left_grad],
+                        name=left_grad,
+                    )
+                )
+                grad_nodes.append(
+                    helper.make_node(
+                        "Mul",
+                        inputs=[grad_output_name, left_name],
+                        outputs=[right_grad],
+                        name=right_grad,
+                    )
+                )
+                contribution_names = [left_grad, right_grad]
+            else:
+                raise UnsupportedOpError(
+                    "Gradient currently supports Add/Sub/Mul/Identity; "
+                    f"got {forward_node.op_type}"
+                )
+
+            for input_name, contribution_name in zip(
+                forward_node.input,
+                contribution_names,
+                strict=False,
+            ):
+                existing_name = grad_by_value.get(input_name)
+                if existing_name is None:
+                    grad_by_value[input_name] = contribution_name
+                    continue
+                accum_name = f"__grad_acc_{node_index}_{reverse_index}_{input_name}"
+                grad_nodes.append(
+                    helper.make_node(
+                        "Add",
+                        inputs=[existing_name, contribution_name],
+                        outputs=[accum_name],
+                        name=accum_name,
+                    )
+                )
+                grad_by_value[input_name] = accum_name
+
+        for output_name, x_name in zip(node.output, xs, strict=False):
+            grad_name = grad_by_value.get(x_name)
+            if grad_name is None:
+                zero_name = f"__grad_zero_{node_index}_{x_name}"
+                grad_nodes.append(
+                    helper.make_node(
+                        "Sub",
+                        inputs=[x_name, x_name],
+                        outputs=[zero_name],
+                        name=zero_name,
+                    )
+                )
+                grad_name = zero_name
+            grad_nodes.append(
+                helper.make_node(
+                    "Identity",
+                    inputs=[grad_name],
+                    outputs=[output_name],
+                    name=f"__grad_out_{node_index}_{output_name}",
+                )
+            )
+
+        new_nodes.extend(grad_nodes)
+        expanded = True
+
+    if not expanded:
+        return model, False
+
+    del graph.node[:]
+    graph.node.extend(new_nodes)
+    if new_initializers:
+        graph.initializer.extend(new_initializers)
+    return model, True
+
+
 def _constant_initializer(node: onnx.NodeProto) -> Initializer:
     if len(node.output) != 1:
         raise UnsupportedOpError("Constant must have exactly one output")
@@ -924,6 +1099,7 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
 def import_onnx(model: onnx.ModelProto) -> Graph:
     model, _ = _expand_scan_nodes(model)
     model, _ = _expand_if_nodes(model)
+    model, _ = _expand_gradient_nodes(model)
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)
     )
