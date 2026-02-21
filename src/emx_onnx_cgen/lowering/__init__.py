@@ -68,6 +68,7 @@ _LOWERING_MODULES = [
     "resize",
     "reverse_sequence",
     "sequence_construct",
+    "sequence_erase",
     "sequence_insert",
     "rms_normalization",
     "rotary_embedding",

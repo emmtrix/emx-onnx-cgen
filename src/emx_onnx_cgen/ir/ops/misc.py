@@ -1015,6 +1015,22 @@ class SequenceInsertOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class SequenceEraseOp(RenderableOpBase):
+    __io_inputs__ = ("input_sequence", "position")
+    __io_outputs__ = ("output_sequence",)
+    input_sequence: str
+    position: str | None
+    output_sequence: str
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.input_sequence, f"{self.input_sequence}__count"]
+        if self.position is not None:
+            args.append(self.position)
+        args.extend([self.output_sequence, f"{self.output_sequence}__count"])
+        return tuple(args)
+
+
+@dataclass(frozen=True)
 class SequenceConstructOp(RenderableOpBase):
     __io_inputs__ = ("inputs",)
     __io_outputs__ = ("output_sequence",)

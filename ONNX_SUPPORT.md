@@ -1796,8 +1796,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_gradient_of_add/model.onnx | 12 | ❌ | Unsupported op Gradient |
 | onnx-org/onnx/backend/test/data/simple/test_gradient_of_add_and_mul/model.onnx | 12 | ❌ | Unsupported op Gradient |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model1/model.onnx | 12 | ❌ | Dynamic dim for tensor 'out' |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model2/model.onnx | 12 | ❌ | Unsupported op SequenceErase |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model3/model.onnx | 12 | ❌ | Unsupported op SequenceErase |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model2/model.onnx | 12 | ❌ | Unsupported op SequenceAt |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model3/model.onnx | 12 | ❌ | Unsupported op SequenceAt |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model4/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model5/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model6/model.onnx | 12 | ❌ | Unsupported op SplitToSequence |

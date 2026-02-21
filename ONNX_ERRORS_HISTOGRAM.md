@@ -53,7 +53,7 @@
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
-| Unsupported op SequenceErase | 2 | 12 |
+| Unsupported op SequenceAt | 2 | 12 |
 | Unsupported op TreeEnsemble | 2 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
@@ -76,7 +76,7 @@
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
 | Unsupported op Gradient | 12 | 2 |
-| Unsupported op SequenceErase | 12 | 2 |
+| Unsupported op SequenceAt | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |
