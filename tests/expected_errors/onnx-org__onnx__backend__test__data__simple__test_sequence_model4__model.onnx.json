@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op SequenceConstruct",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model4 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceConstruct",
     "ConcatFromSequence"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "408aea83beca431f702175a3828a357b9476932d6fc9b60e93743aa7cc7388ff"
 }

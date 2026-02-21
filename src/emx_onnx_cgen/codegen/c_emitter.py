@@ -43,6 +43,7 @@ from ..ir.ops import (
     ClipOp,
     CompressOp,
     ConcatOp,
+    ConcatFromSequenceOp,
     ConstantOfShapeOp,
     ConvOp,
     ConvIntegerOp,
@@ -92,6 +93,7 @@ from ..ir.ops import (
     LoopSequenceInsertOp,
     RangeOp,
     ReverseSequenceOp,
+    SequenceConstructOp,
     SequenceInsertOp,
     ReduceOp,
     ReshapeOp,
@@ -271,6 +273,7 @@ class TempBuffer:
     name: str
     shape: tuple[int, ...]
     dtype: ScalarType
+    is_sequence: bool = False
 
 
 @dataclass(frozen=True)
@@ -581,6 +584,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | CompressOp
             | GatherElementsOp
             | GatherOp
@@ -660,6 +664,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | ConcatFromSequenceOp
         | CompressOp
         | GatherElementsOp
         | GatherOp
@@ -1451,6 +1456,15 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 axis=op.axis,
             )
+        if isinstance(op, ConcatFromSequenceOp):
+            return ConcatFromSequenceOp(
+                input_sequence=name_map.get(op.input_sequence, op.input_sequence),
+                output=name_map.get(op.output, op.output),
+                axis=op.axis,
+                new_axis=op.new_axis,
+                elem_shape=op.elem_shape,
+            )
+
         if isinstance(op, CompressOp):
             return CompressOp(
                 data=name_map.get(op.data, op.data),
@@ -1790,6 +1804,11 @@ class CEmitter:
                 batch_axis=op.batch_axis,
                 time_axis=op.time_axis,
             )
+        if isinstance(op, SequenceConstructOp):
+            return SequenceConstructOp(
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
+                output_sequence=name_map.get(op.output_sequence, op.output_sequence),
+            )
         if isinstance(op, SequenceInsertOp):
             return SequenceInsertOp(
                 input_sequence=name_map.get(op.input_sequence, op.input_sequence),
@@ -1951,6 +1970,9 @@ class CEmitter:
                 ),
                 "maxpool": self._env.get_template("maxpool_op.c.j2"),
                 "concat": self._env.get_template("concat_op.c.j2"),
+                "concat_from_sequence": self._env.get_template(
+                    "concat_from_sequence_op.c.j2"
+                ),
                 "compress": self._env.get_template("compress_op.c.j2"),
                 "gather_elements": self._env.get_template("gather_elements_op.c.j2"),
                 "gather": self._env.get_template("gather_op.c.j2"),
@@ -2004,6 +2026,9 @@ class CEmitter:
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
                 "reverse_sequence": self._env.get_template("reverse_sequence_op.c.j2"),
+                "sequence_construct": self._env.get_template(
+                    "sequence_construct_op.c.j2"
+                ),
                 "sequence_insert": self._env.get_template("sequence_insert_op.c.j2"),
             }
             if emit_testbench:
@@ -2671,6 +2696,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | CompressOp
             | GatherElementsOp
             | GatherOp
@@ -2705,6 +2731,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceConstructOp
             | SequenceInsertOp
         ],
         *,
@@ -2748,6 +2775,8 @@ class CEmitter:
                 return model.op_context.dtype(op.outputs[0])
             if isinstance(op, UniqueOp):
                 return model.op_context.dtype(op.y)
+            if isinstance(op, SequenceConstructOp):
+                return model.op_context.dtype(op.inputs[0])
             if isinstance(op, SequenceInsertOp):
                 return model.op_context.dtype(op.tensor)
             if isinstance(op, LoopSequenceInsertOp):
@@ -2982,6 +3011,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | CompressOp
             | GatherElementsOp
             | GatherOp
@@ -3016,6 +3046,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceConstructOp
             | SequenceInsertOp
         ],
         op_context: OpContext,
@@ -3170,6 +3201,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | CompressOp
             | GatherElementsOp
             | GatherOp
@@ -3201,6 +3233,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceConstructOp
             | SequenceInsertOp
         ],
         op_context: OpContext,
@@ -3281,6 +3314,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | CompressOp
             | GatherElementsOp
             | GatherOp
@@ -3311,6 +3345,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceConstructOp
             | SequenceInsertOp
         ],
         temp_buffers: tuple[TempBuffer, ...],
@@ -3333,12 +3368,28 @@ class CEmitter:
                 if self._temp_buffer_size_bytes(temp) > self._large_temp_threshold_bytes
                 else ""
             )
-            lines.append(
-                f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape, temp.dtype)};"
-            )
+            if temp.is_sequence:
+                lines.append(
+                    f"    {storage}{c_type} {temp.name}[EMX_SEQUENCE_MAX_LEN]{self._array_suffix(temp.shape, temp.dtype)};"
+                )
+                lines.append(f"    idx_t {temp.name}__count = 0;")
+            else:
+                lines.append(
+                    f"    {storage}{c_type} {temp.name}{self._array_suffix(temp.shape, temp.dtype)};"
+                )
+        sequence_temp_count_names = {
+            f"{temp.name}__count" for temp in temp_buffers if temp.is_sequence
+        }
         for index, op in enumerate(resolved_ops):
             op_name = self._op_function_name(model, index)
-            args = [*dim_order, *op.call_args()]
+            op_args = list(op.call_args())
+            if isinstance(
+                op, (SequenceConstructOp, SequenceInsertOp, LoopSequenceInsertOp)
+            ):
+                output_count_arg = op_args[-1]
+                if output_count_arg in sequence_temp_count_names:
+                    op_args[-1] = f"&{output_count_arg}"
+            args = [*dim_order, *op_args]
             call = ", ".join(args)
             lines.append(f"    {op_name}({call});")
         lines.append("}")
@@ -3410,7 +3461,9 @@ class CEmitter:
         model, name_map = self._sanitize_model_names_with_map(model)
         self._copy_derived(model.op_context, original_model.ops, model.ops)
         dim_order, input_dim_names, output_dim_names, _dim_values = (
-            self._build_variable_dim_names(model, variable_dim_inputs, variable_dim_outputs)
+            self._build_variable_dim_names(
+                model, variable_dim_inputs, variable_dim_outputs
+            )
         )
         signature = self._entrypoint_signature(
             model,
@@ -3430,6 +3483,8 @@ class CEmitter:
         element_count = 1
         for dim in temp.shape:
             element_count *= dim
+        if temp.is_sequence:
+            element_count *= 32
         return element_count * temp.dtype.np_dtype.itemsize
 
     def _temp_buffers(
@@ -3461,12 +3516,23 @@ class CEmitter:
         if len(intermediates) == 1:
             name, shape, dtype = intermediates[0]
             temp_name = allocate_temp_name(f"tmp0_{name}")
-            return {name: TempBuffer(name=temp_name, shape=shape, dtype=dtype)}
+            value_type = model.op_context.find_value(name).type
+            return {
+                name: TempBuffer(
+                    name=temp_name,
+                    shape=shape,
+                    dtype=dtype,
+                    is_sequence=isinstance(value_type, SequenceType),
+                )
+            }
         return {
             name: TempBuffer(
                 name=allocate_temp_name(f"tmp{index}_{name}"),
                 shape=shape,
                 dtype=dtype,
+                is_sequence=isinstance(
+                    model.op_context.find_value(name).type, SequenceType
+                ),
             )
             for index, (name, shape, dtype) in enumerate(intermediates)
         }
@@ -3513,6 +3579,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -3587,6 +3654,7 @@ class CEmitter:
         | SoftmaxCrossEntropyLossOp
         | MaxPoolOp
         | ConcatOp
+        | ConcatFromSequenceOp
         | GatherElementsOp
         | GatherOp
         | GatherNDOp
@@ -4513,6 +4581,14 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
             )
+        if isinstance(op, ConcatFromSequenceOp):
+            return ConcatFromSequenceOp(
+                input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+                new_axis=op.new_axis,
+                elem_shape=op.elem_shape,
+            )
         if isinstance(op, CompressOp):
             return CompressOp(
                 data=temp_map.get(op.data, op.data),
@@ -4655,6 +4731,11 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 batch_axis=op.batch_axis,
                 time_axis=op.time_axis,
+            )
+        if isinstance(op, SequenceConstructOp):
+            return SequenceConstructOp(
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
+                output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
             )
         if isinstance(op, SequenceInsertOp):
             return SequenceInsertOp(
@@ -4966,6 +5047,7 @@ class CEmitter:
             softmax_cross_entropy_loss_template=templates["softmax_cross_entropy_loss"],
             maxpool_template=templates["maxpool"],
             concat_template=templates["concat"],
+            concat_from_sequence_template=templates["concat_from_sequence"],
             compress_template=templates["compress"],
             gather_elements_template=templates["gather_elements"],
             scatter_template=templates["scatter"],
@@ -5009,6 +5091,7 @@ class CEmitter:
             string_normalizer_template=templates["string_normalizer"],
             split_template=templates["split"],
             reverse_sequence_template=templates["reverse_sequence"],
+            sequence_construct_template=templates["sequence_construct"],
             sequence_insert_template=templates["sequence_insert"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
@@ -5479,6 +5562,7 @@ class CEmitter:
         softmax_cross_entropy_loss_template,
         maxpool_template,
         concat_template,
+        concat_from_sequence_template,
         compress_template,
         gather_elements_template,
         scatter_template,
@@ -5522,6 +5606,7 @@ class CEmitter:
         string_normalizer_template,
         split_template,
         reverse_sequence_template,
+        sequence_construct_template,
         sequence_insert_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
@@ -8442,6 +8527,55 @@ class CEmitter:
                 inner=inner,
             ).rstrip()
             return with_node_comment(rendered)
+
+        if isinstance(op, ConcatFromSequenceOp):
+            elem_shape = op.elem_shape
+            output_shape = self._ctx_shape(op.output)
+            params = self._shared_param_map(
+                [
+                    ("input_sequence", op.input_sequence),
+                    ("output", op.output),
+                ]
+            )
+            elem_suffix = self._param_array_suffix(
+                elem_shape, _dim_names_for(op.input_sequence)
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.output)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["input_sequence"],
+                        c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{elem_suffix}",
+                        True,
+                    ),
+                    (f"{params['input_sequence']}__count", "idx_t", "", True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            if op.new_axis:
+                outer = CEmitter._element_count(elem_shape[: op.axis] or (1,))
+                inner = CEmitter._element_count(elem_shape[op.axis :] or (1,))
+                axis_extent = 1
+            else:
+                outer = CEmitter._element_count(elem_shape[: op.axis] or (1,))
+                inner = CEmitter._element_count(elem_shape[op.axis + 1 :] or (1,))
+                axis_extent = elem_shape[op.axis]
+            rendered = concat_from_sequence_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input_sequence=params["input_sequence"],
+                output=params["output"],
+                c_type=c_type,
+                outer=outer,
+                inner=inner,
+                axis_extent=axis_extent,
+                new_axis=op.new_axis,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, CompressOp):
             params = self._shared_param_map(
                 [
@@ -10503,6 +10637,48 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SequenceConstructOp):
+            if not op.inputs:
+                raise CodegenError("SequenceConstruct requires at least one input")
+            elem_shape = self._ctx_shape(op.inputs[0])
+            input_params = [
+                (f"input_{index}", name) for index, name in enumerate(op.inputs)
+            ]
+            params = self._shared_param_map(
+                [*input_params, ("output_sequence", op.output_sequence)]
+            )
+            tensor_suffix = self._param_array_suffix(
+                elem_shape, _dim_names_for(op.inputs[0])
+            )
+            param_specs = [
+                (params[f"input_{index}"], c_type, tensor_suffix, True)
+                for index in range(len(op.inputs))
+            ]
+            param_specs.extend(
+                [
+                    (
+                        params["output_sequence"],
+                        c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{tensor_suffix}",
+                        False,
+                    ),
+                    (f"{params['output_sequence']}__count", "idx_t *", "", False),
+                ]
+            )
+            param_decls = self._build_param_decls(param_specs)
+            rendered = sequence_construct_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                inputs=tuple(
+                    params[f"input_{index}"] for index in range(len(op.inputs))
+                ),
+                output_sequence=params["output_sequence"],
+                element_count=CEmitter._element_count_expr(elem_shape),
+                c_type=c_type,
+                input_count=len(op.inputs),
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SequenceInsertOp):
             tensor_shape = self._ctx_shape(op.tensor)
             params = self._shared_param_map(
@@ -11480,6 +11656,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -11556,6 +11733,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -11748,6 +11926,10 @@ class CEmitter:
             )
         if isinstance(op, SplitOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
+        if isinstance(op, ConcatFromSequenceOp):
+            return ()
+        if isinstance(op, SequenceConstructOp):
+            return tuple((name, self._ctx_shape(name)) for name in op.inputs)
         if isinstance(op, TopKOp):
             return (
                 (op.input0, self._ctx_shape(op.input0)),
@@ -11793,6 +11975,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -11821,6 +12004,7 @@ class CEmitter:
             | HammingWindowOp
             | OneHotOp
             | SplitOp
+            | SequenceConstructOp
             | SequenceInsertOp
         ],
         tensor_dim_names: dict[str, dict[int, str]],
@@ -11872,6 +12056,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -12119,6 +12304,22 @@ class CEmitter:
                     self._ctx_dtype(op.zero_point),
                 ),
             )
+        if isinstance(op, ConcatFromSequenceOp):
+            return (
+                (
+                    op.output,
+                    self._ctx_shape(op.output),
+                    self._ctx_dtype(op.output),
+                ),
+            )
+        if isinstance(op, SequenceConstructOp):
+            return (
+                (
+                    op.output_sequence,
+                    self._ctx_shape(op.inputs[0]),
+                    self._ctx_dtype(op.inputs[0]),
+                ),
+            )
         if isinstance(op, SequenceInsertOp):
             return (
                 (
@@ -12178,6 +12379,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -12364,6 +12566,10 @@ class CEmitter:
             return self._ctx_shape(op.outputs[0])
         if isinstance(op, ReverseSequenceOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, ConcatFromSequenceOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, SequenceConstructOp):
+            return self._ctx_shape(op.inputs[0])
         if isinstance(op, SequenceInsertOp):
             return self._ctx_shape(op.tensor)
         if isinstance(op, LoopSequenceInsertOp):
@@ -12409,6 +12615,7 @@ class CEmitter:
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
             | ConcatOp
+            | ConcatFromSequenceOp
             | GatherElementsOp
             | GatherOp
             | GatherNDOp
@@ -12468,6 +12675,10 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])
+        if isinstance(op, ConcatFromSequenceOp):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, SequenceConstructOp):
+            return self._ctx_dtype(op.inputs[0])
         if isinstance(op, SequenceInsertOp):
             return self._ctx_dtype(op.tensor)
         if isinstance(op, LoopSequenceInsertOp):
@@ -12493,6 +12704,7 @@ class CEmitter:
                 GemmOp,
                 GatherOp,
                 ConcatOp,
+                ConcatFromSequenceOp,
                 CompressOp,
                 GatherElementsOp,
                 GatherNDOp,
