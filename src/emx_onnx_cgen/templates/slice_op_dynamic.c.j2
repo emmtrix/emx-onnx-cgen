@@ -1,11 +1,14 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const idx_t input_rank = {{ input_rank }};
     const idx_t input_dims[] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    const idx_t output_dims[] = { {% for dim in output_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
     idx_t start_indices[{{ input_rank }}];
     idx_t step_values[{{ input_rank }}];
+    idx_t slice_limits[{{ input_rank }}];
     for (idx_t idx = 0; idx < input_rank; ++idx) {
         start_indices[idx] = 0;
         step_values[idx] = 1;
+        slice_limits[idx] = output_dims[idx];
     }
     for (idx_t i = 0; i < {{ starts_len }}; ++i) {
 {% if axes_input %}
@@ -57,11 +60,23 @@ static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 end_value = dim - 1;
             }
         }
+        idx_t slice_length = 0;
+        if (step_value > 0) {
+            if (end_value > start_value) {
+                slice_length = (end_value - start_value + step_value - 1) / step_value;
+            }
+        } else if (start_value > end_value) {
+            idx_t step_abs = -step_value;
+            slice_length = (start_value - end_value + step_abs - 1) / step_abs;
+        }
+        if (slice_length < slice_limits[axis]) {
+            slice_limits[axis] = slice_length;
+        }
         start_indices[axis] = start_value;
         step_values[axis] = step_value;
     }
 {% for dim in output_shape %}
-    for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < {{ dim }}; ++{{ output_loop_vars[loop.index0] }}) {
+    for (idx_t {{ output_loop_vars[loop.index0] }} = 0; {{ output_loop_vars[loop.index0] }} < slice_limits[{{ loop.index0 }}]; ++{{ output_loop_vars[loop.index0] }}) {
 {% endfor %}
         {{ output }}{% for var in output_loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in output_loop_vars %}[start_indices[{{ loop.index0 }}] + ({{ var }} * step_values[{{ loop.index0 }}])]{% endfor %};
 {% for _ in output_shape %}

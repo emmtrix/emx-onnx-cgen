@@ -57,7 +57,6 @@
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
-| Testbench execution failed: exit code 1 | 1 | 13 |
 | Unsupported non-tensor value '*' in op Identity. | 1 | 25 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
@@ -68,7 +67,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
