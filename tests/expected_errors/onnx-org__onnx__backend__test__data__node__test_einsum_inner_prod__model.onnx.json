@@ -1,9 +1,9 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_einsum_inner_prod model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Einsum"
   ],
   "opset_version": 12,
-  "generated_checksum": "ac9e7f4e5fef2247f25bd4354a4a70d8ffd299c1b4a079c9f9193c5ff4bf50bb"
+  "generated_checksum": "26e6bb3a1bc60f6245e4312fec0bcd9e08e9ee0c6d27747c86cfa53a962f7558"
 }
