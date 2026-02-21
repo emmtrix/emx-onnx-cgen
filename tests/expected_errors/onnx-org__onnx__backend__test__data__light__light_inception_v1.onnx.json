@@ -1,19 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_inception_v1.onnx",
-  "operators": [
-    "ConstantOfShape",
-    "Conv",
-    "Relu",
-    "MaxPool",
-    "LRN",
-    "Concat",
-    "AveragePool",
-    "Dropout",
-    "Reshape",
-    "Gemm",
-    "Softmax"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "e4b5378bc17724afaf3b805b479bacb91a1950614e2c1c02eabec0cda990ea31"
+  "error": "'conv1_7x7_s2_w_0'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_inception_v1.onnx"
 }

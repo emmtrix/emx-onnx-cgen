@@ -1,18 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_resnet50.onnx",
-  "operators": [
-    "ConstantOfShape",
-    "Conv",
-    "BatchNormalization",
-    "Relu",
-    "MaxPool",
-    "Sum",
-    "AveragePool",
-    "Reshape",
-    "Gemm",
-    "Softmax"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "7d862564d0571bd65fe225e514f3b46012ae04dd60271e3b2d1eee98bb3e3577"
+  "error": "'gpu_0_conv1_w_0'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_resnet50.onnx"
 }

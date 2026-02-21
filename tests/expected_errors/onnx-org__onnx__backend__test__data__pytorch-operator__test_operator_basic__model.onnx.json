@@ -1,13 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Add",
-    "Mul",
-    "Tanh",
-    "Sigmoid",
-    "Neg"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "9031257b156b81fbbe52f7150546de3f3e00ebe7d527ff5e080bd1899ad1129e"
+  "error": "'v_2'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-operator/test_operator_basic model.onnx --test-data-dir test_data_set_0"
 }

@@ -1,16 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_zfnet512.onnx",
-  "operators": [
-    "ConstantOfShape",
-    "Conv",
-    "Relu",
-    "LRN",
-    "MaxPool",
-    "Reshape",
-    "Gemm",
-    "Softmax"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "e80498a053ca8ba7327a91ebc277b097783a5211f51d14423194d11aa2793843"
+  "error": "'gpu_0_conv1_b_0'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_zfnet512.onnx"
 }

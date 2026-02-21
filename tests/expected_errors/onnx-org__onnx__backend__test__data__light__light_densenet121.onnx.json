@@ -1,19 +1,4 @@
 {
-  "error": "OK (max ULP 73)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_densenet121.onnx",
-  "operators": [
-    "ConstantOfShape",
-    "Conv",
-    "BatchNormalization",
-    "Unsqueeze",
-    "Mul",
-    "Add",
-    "Relu",
-    "MaxPool",
-    "Concat",
-    "AveragePool",
-    "GlobalAveragePool"
-  ],
-  "opset_version": 9,
-  "generated_checksum": "bc906af50ef056a97d83766ed80754d48a14f4ce00207a9489d71737e83ff0ca"
+  "error": "'conv2_1_x1_w_0'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/light light_densenet121.onnx"
 }

@@ -2,6 +2,7 @@
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
+| '*' | 22 |  |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | 25 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | 25 |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | 25 |
@@ -13,7 +14,7 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 7 | 9, 19, 22 |
+| Out of tolerance | 6 | 19, 22 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
@@ -72,7 +73,6 @@
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Out of tolerance | 9 | 1 |
 | Unsupported op SplitToSequence | 12 | 3 |
 | Failed to build testbench. | 12 | 2 |
 | Unsupported op Gradient | 12 | 2 |

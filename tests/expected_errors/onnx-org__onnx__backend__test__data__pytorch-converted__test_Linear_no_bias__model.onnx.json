@@ -1,10 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Transpose",
-    "MatMul"
-  ],
-  "opset_version": 6,
-  "generated_checksum": "bf4004026f30da2648998c1af943d3db6a3525713d40a8946da56179274181ea"
+  "error": "'v_2'",
+  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/pytorch-converted/test_Linear_no_bias model.onnx --test-data-dir test_data_set_0"
 }
