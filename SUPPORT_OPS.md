@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 165 / 201
+Supported operators: 167 / 201
 
 | Operator | Supported |
 | --- | --- |
@@ -37,7 +37,7 @@ Supported operators: 165 / 201
 | Col2Im | ❌ |
 | Compress | ✅ |
 | Concat | ✅ |
-| ConcatFromSequence | ❌ |
+| ConcatFromSequence | ✅ |
 | Constant | ✅ |
 | ConstantOfShape | ✅ |
 | Conv | ✅ |
@@ -154,7 +154,7 @@ Supported operators: 165 / 201
 | ScatterND | ✅ |
 | Selu | ✅ |
 | SequenceAt | ❌ |
-| SequenceConstruct | ❌ |
+| SequenceConstruct | ✅ |
 | SequenceEmpty | ❌ |
 | SequenceErase | ❌ |
 | SequenceInsert | ✅ |

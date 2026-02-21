@@ -980,6 +980,24 @@ class ReverseSequenceOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class ConcatFromSequenceOp(RenderableOpBase):
+    __io_inputs__ = ("input_sequence",)
+    __io_outputs__ = ("output",)
+    input_sequence: str
+    output: str
+    axis: int
+    new_axis: bool
+    elem_shape: tuple[int, ...]
+
+    def call_args(self) -> tuple[str, ...]:
+        return (
+            self.input_sequence,
+            f"{self.input_sequence}__count",
+            self.output,
+        )
+
+
+@dataclass(frozen=True)
 class SequenceInsertOp(RenderableOpBase):
     __io_inputs__ = ("input_sequence", "tensor", "position")
     __io_outputs__ = ("output_sequence",)
@@ -994,3 +1012,14 @@ class SequenceInsertOp(RenderableOpBase):
             args.append(self.position)
         args.extend([self.output_sequence, f"{self.output_sequence}__count"])
         return tuple(args)
+
+
+@dataclass(frozen=True)
+class SequenceConstructOp(RenderableOpBase):
+    __io_inputs__ = ("inputs",)
+    __io_outputs__ = ("output_sequence",)
+    inputs: tuple[str, ...]
+    output_sequence: str
+
+    def call_args(self) -> tuple[str, ...]:
+        return (*self.inputs, self.output_sequence, f"{self.output_sequence}__count")

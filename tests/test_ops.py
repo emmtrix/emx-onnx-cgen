@@ -33,6 +33,7 @@ from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
+from emx_onnx_cgen.lowering.concat_from_sequence import lower_concat_from_sequence
 from emx_onnx_cgen.lowering.matmul_integer import lower_matmul_integer
 from emx_onnx_cgen.lowering.one_hot import lower_onehot
 from emx_onnx_cgen.lowering.depth_space import (
@@ -41,6 +42,7 @@ from emx_onnx_cgen.lowering.depth_space import (
 )
 from emx_onnx_cgen.lowering.scatter import lower_scatter
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
+from emx_onnx_cgen.lowering.sequence_construct import lower_sequence_construct
 from emx_onnx_cgen.lowering.sequence_insert import lower_sequence_insert
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
@@ -924,6 +926,71 @@ def _make_reverse_sequence_model(
         graph,
         producer_name="onnx2c",
         opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_sequence_construct_model() -> onnx.ModelProto:
+    tensor0 = helper.make_tensor_value_info("tensor0", TensorProto.FLOAT, [3])
+    tensor1 = helper.make_tensor_value_info("tensor1", TensorProto.FLOAT, [3])
+    output_sequence = helper.make_tensor_sequence_value_info(
+        "output_sequence", TensorProto.FLOAT, shape=[3]
+    )
+    node = helper.make_node(
+        "SequenceConstruct",
+        inputs=["tensor0", "tensor1"],
+        outputs=["output_sequence"],
+    )
+    graph = helper.make_graph(
+        [node],
+        "sequence_construct_graph",
+        [tensor0, tensor1],
+        [output_sequence],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 11)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_concat_from_sequence_model(*, axis: int, new_axis: int) -> onnx.ModelProto:
+    tensor0 = helper.make_tensor_value_info("tensor0", TensorProto.FLOAT, [2, 3])
+    tensor1 = helper.make_tensor_value_info("tensor1", TensorProto.FLOAT, [2, 3])
+    if new_axis:
+        output_shape = [2, 2, 3] if axis in {1, -2} else [2, 3, 2]
+    else:
+        output_shape = [2, 6] if axis in {1, -1} else [4, 3]
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, output_shape)
+    sequence = helper.make_tensor_sequence_value_info(
+        "sequence", TensorProto.FLOAT, shape=[2, 3]
+    )
+    construct = helper.make_node(
+        "SequenceConstruct", inputs=["tensor0", "tensor1"], outputs=["sequence"]
+    )
+    concat = helper.make_node(
+        "ConcatFromSequence",
+        inputs=["sequence"],
+        outputs=["output"],
+        axis=axis,
+        new_axis=new_axis,
+    )
+    graph = helper.make_graph(
+        [construct, concat],
+        "concat_from_sequence_graph",
+        [tensor0, tensor1],
+        [output],
+        value_info=[sequence],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 11)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -4071,6 +4138,21 @@ def test_lower_sequence_insert_with_position() -> None:
     assert op.position == "position"
 
 
+def test_lower_sequence_construct() -> None:
+    graph = import_onnx(_make_sequence_construct_model())
+    op = lower_sequence_construct(graph, graph.nodes[0])
+    assert op.inputs == ("tensor0", "tensor1")
+    assert op.output_sequence == "output_sequence"
+
+
+def test_lower_concat_from_sequence() -> None:
+    graph = import_onnx(_make_concat_from_sequence_model(axis=-1, new_axis=0))
+    op = lower_concat_from_sequence(graph, graph.nodes[1])
+    assert op.output == "output"
+    assert op.axis == 1
+    assert getattr(op, "inputs", ()) == ("tensor0", "tensor1")
+
+
 def test_lower_depth_space_ops_keep_only_explicit_attrs() -> None:
     depth_to_space_model = _make_operator_model(
         op_type="DepthToSpace",
@@ -4664,6 +4746,11 @@ def test_split_matches_onnxruntime() -> None:
         axis=1,
         dtype=TensorProto.FLOAT,
     )
+    _run_ort_compare(model)
+
+
+def test_concat_from_sequence_matches_onnxruntime() -> None:
+    model = _make_concat_from_sequence_model(axis=1, new_axis=0)
     _run_ort_compare(model)
 
 

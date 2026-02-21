@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op SequenceConstruct",
+  "error": "Unsupported op SequenceErase",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model2 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceConstruct",

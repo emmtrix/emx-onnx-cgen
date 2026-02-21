@@ -1,0 +1,29 @@
+void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+    idx_t count = {{ input_sequence }}__count;
+    if (count > EMX_SEQUENCE_MAX_LEN) {
+        count = EMX_SEQUENCE_MAX_LEN;
+    }
+
+    for (idx_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
+        for (idx_t seq_idx = 0; seq_idx < count; ++seq_idx) {
+            const {{ c_type }} *src = (const {{ c_type }} *){{ input_sequence }}[seq_idx];
+{% if new_axis %}
+            idx_t out_base = (outer_idx * count + seq_idx) * {{ inner }};
+            idx_t in_base = outer_idx * {{ inner }};
+            for (idx_t inner_idx = 0; inner_idx < {{ inner }}; ++inner_idx) {
+                (({{ c_type }} *){{ output }})[out_base + inner_idx] = src[in_base + inner_idx];
+            }
+{% else %}
+            idx_t out_base = (outer_idx * count + seq_idx) * {{ axis_extent }} * {{ inner }};
+            idx_t in_base = outer_idx * {{ axis_extent }} * {{ inner }};
+            for (idx_t axis_idx = 0; axis_idx < {{ axis_extent }}; ++axis_idx) {
+                idx_t out_axis_base = out_base + axis_idx * {{ inner }};
+                idx_t in_axis_base = in_base + axis_idx * {{ inner }};
+                for (idx_t inner_idx = 0; inner_idx < {{ inner }}; ++inner_idx) {
+                    (({{ c_type }} *){{ output }})[out_axis_base + inner_idx] = src[in_axis_base + inner_idx];
+                }
+            }
+{% endif %}
+        }
+    }
+}
