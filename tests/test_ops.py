@@ -46,6 +46,7 @@ from emx_onnx_cgen.lowering.sequence_at import lower_sequence_at
 from emx_onnx_cgen.lowering.sequence_construct import lower_sequence_construct
 from emx_onnx_cgen.lowering.sequence_erase import lower_sequence_erase
 from emx_onnx_cgen.lowering.sequence_insert import lower_sequence_insert
+from emx_onnx_cgen.lowering.split_to_sequence import lower_split_to_sequence
 from emx_onnx_cgen.lowering.shape import lower_shape
 from emx_onnx_cgen.lowering.squeeze import lower_squeeze
 from emx_onnx_cgen.lowering.upsample import lower_upsample
@@ -1067,6 +1068,55 @@ def _make_sequence_erase_model(*, with_position: bool) -> onnx.ModelProto:
         graph,
         producer_name="emx-onnx-cgen",
         opset_imports=[helper.make_operatorsetid("", 11)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_split_to_sequence_model(
+    *,
+    with_split: bool,
+    keepdims: int,
+    split_as_input: bool = False,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [3, 6])
+    output_shape = [3, 2] if with_split else ([3] if keepdims == 0 else [3, 1])
+    if split_as_input:
+        output_shape = None
+    output_sequence = helper.make_tensor_sequence_value_info(
+        "output_sequence",
+        TensorProto.FLOAT,
+        shape=output_shape,
+    )
+    node_inputs = ["input"]
+    inputs = [input_info]
+    initializers = []
+    if with_split:
+        node_inputs.append("split")
+        if split_as_input:
+            inputs.append(helper.make_tensor_value_info("split", TensorProto.INT64, [3]))
+        else:
+            split = helper.make_tensor("split", TensorProto.INT64, dims=[3], vals=[2, 2, 2])
+            initializers.append(split)
+    node = helper.make_node(
+        "SplitToSequence",
+        inputs=node_inputs,
+        outputs=["output_sequence"],
+        axis=1,
+        keepdims=keepdims,
+    )
+    graph = helper.make_graph(
+        [node],
+        "split_to_sequence_graph",
+        inputs,
+        [output_sequence],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 24)],
     )
     model.ir_version = 7
     onnx.checker.check_model(model)
@@ -4234,6 +4284,34 @@ def test_lower_sequence_insert_with_position() -> None:
     graph = import_onnx(_make_sequence_insert_model(with_position=True))
     op = lower_sequence_insert(graph, graph.nodes[0])
     assert op.position == "position"
+
+
+def test_lower_split_to_sequence() -> None:
+    graph = import_onnx(_make_split_to_sequence_model(with_split=True, keepdims=1))
+    op = lower_split_to_sequence(graph, graph.nodes[0])
+    assert op.input0 == "input"
+    assert op.split == "split"
+    assert op.output_sequence == "output_sequence"
+    assert op.axis == 1
+    assert op.keepdims is True
+    assert op.split_sizes == (2, 2, 2)
+
+
+def test_lower_split_to_sequence_with_runtime_split_input() -> None:
+    graph = import_onnx(
+        _make_split_to_sequence_model(with_split=True, keepdims=1, split_as_input=True)
+    )
+    op = lower_split_to_sequence(graph, graph.nodes[0])
+    assert op.split == "split"
+    assert op.split_sizes is None
+    assert op.split_scalar is False
+
+
+def test_lower_split_to_sequence_nokeepdims_default_split() -> None:
+    graph = import_onnx(_make_split_to_sequence_model(with_split=False, keepdims=0))
+    op = lower_split_to_sequence(graph, graph.nodes[0])
+    assert op.keepdims is False
+    assert op.split_sizes == (1, 1, 1, 1, 1, 1)
 
 
 def test_lower_sequence_construct() -> None:

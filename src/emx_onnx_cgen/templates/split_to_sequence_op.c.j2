@@ -1,0 +1,67 @@
+void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
+    const idx_t axis_total = {{ axis_total }};
+    idx_t produced = 0;
+
+    {% if axis_sizes %}
+    const idx_t axis_sizes[] = { {% for axis_size in axis_sizes %}{{ axis_size }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    idx_t split_count = {{ axis_sizes | length }};
+    {% elif split %}
+    idx_t split_count = 0;
+    {% if split_scalar %}
+    idx_t scalar_split = (idx_t)((const {{ split_dtype }} *){{ split }})[0];
+    if (scalar_split < 1) {
+        scalar_split = 1;
+    }
+    split_count = (axis_total + scalar_split - 1) / scalar_split;
+    {% else %}
+    split_count = {{ split_len }};
+    {% endif %}
+    {% else %}
+    idx_t split_count = axis_total;
+    {% endif %}
+
+    if (split_count > EMX_SEQUENCE_MAX_LEN) {
+        split_count = EMX_SEQUENCE_MAX_LEN;
+    }
+
+    for (idx_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
+        idx_t input_base = outer_idx * axis_total * {{ inner }};
+        idx_t axis_offset = 0;
+        for (idx_t sequence_idx = 0; sequence_idx < split_count; ++sequence_idx) {
+            idx_t chunk = 1;
+            {% if axis_sizes %}
+            chunk = axis_sizes[sequence_idx];
+            {% elif split %}
+            {% if split_scalar %}
+            chunk = scalar_split;
+            if (chunk > axis_total - axis_offset) {
+                chunk = axis_total - axis_offset;
+            }
+            {% else %}
+            chunk = (idx_t)((const {{ split_dtype }} *){{ split }})[sequence_idx];
+            if (chunk < 0) {
+                chunk = 0;
+            }
+            {% endif %}
+            {% endif %}
+            idx_t copy_elems = {{ inner }};
+            {% if keepdims %}
+            copy_elems *= chunk;
+            {% endif %}
+            {{ c_type }} *output_ptr =
+                (({{ c_type }} *){{ output_sequence }}[sequence_idx]) + outer_idx * copy_elems;
+            memcpy(
+                output_ptr,
+                input_data + input_base + axis_offset,
+                copy_elems * sizeof({{ c_type }})
+            );
+            axis_offset += chunk * {{ inner }};
+            if (outer_idx == 0) {
+                produced += 1;
+            }
+        }
+    }
+
+    *{{ output_sequence }}__count = produced;
+}

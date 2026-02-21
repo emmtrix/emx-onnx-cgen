@@ -81,6 +81,7 @@ _LOWERING_MODULES = [
     "softmax",
     "softmax_cross_entropy_loss",
     "split",
+    "split_to_sequence",
     "string_normalizer",
     "squeeze",
     "tensor_scatter",

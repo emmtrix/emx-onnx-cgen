@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op SplitToSequence",
+  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SplitToSequence"
   ],
-  "opset_version": 24
+  "opset_version": 24,
+  "generated_checksum": "18c8621a24ff9d0395027056b0290b651b9b5bc6962092adf9e3e714f615138f"
 }

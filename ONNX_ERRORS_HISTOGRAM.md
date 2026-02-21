@@ -13,13 +13,12 @@
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
+| Unsupported op SequenceLength | 8 | 12, 17 |
 | Out of tolerance | 7 | 9, 19, 22 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
-| Unsupported op SequenceLength | 6 | 17 |
 | Unsupported op SequenceMap | 6 | 17 |
-| Unsupported op SplitToSequence | 6 | 12, 24 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op If | 5 | 13, 20 |
@@ -70,7 +69,7 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op SplitToSequence | 12 | 3 |
+| Unsupported op SequenceLength | 12 | 2 |
 | Dynamic dim for tensor '*' | 12 | 1 |
 | Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op If | 13 | 1 |
@@ -116,7 +115,6 @@
 | Unsupported op MaxUnpool | 22 | 2 |
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
-| Unsupported op SplitToSequence | 24 | 3 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |

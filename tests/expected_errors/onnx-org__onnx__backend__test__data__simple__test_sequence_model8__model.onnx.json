@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op SplitToSequence",
+  "error": "Unsupported op SequenceLength",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model8 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SplitToSequence",
