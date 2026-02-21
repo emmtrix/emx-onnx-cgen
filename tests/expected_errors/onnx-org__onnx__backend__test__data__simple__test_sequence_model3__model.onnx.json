@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op SequenceErase",
+  "error": "Unsupported op SequenceAt",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_sequence_model3 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceConstruct",
