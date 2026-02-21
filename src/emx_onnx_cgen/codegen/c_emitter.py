@@ -111,6 +111,7 @@ from ..ir.ops import (
     SoftmaxOp,
     SpaceToDepthOp,
     SplitOp,
+    SplitToSequenceOp,
     TensorScatterOp,
     TfIdfVectorizerOp,
     StringNormalizerOp,
@@ -1838,6 +1839,16 @@ class CEmitter:
                 position=self._map_optional_name(name_map, op.position),
                 output_sequence=name_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SplitToSequenceOp):
+            return SplitToSequenceOp(
+                input0=name_map.get(op.input0, op.input0),
+                split=self._map_optional_name(name_map, op.split),
+                output_sequence=name_map.get(op.output_sequence, op.output_sequence),
+                axis=op.axis,
+                keepdims=op.keepdims,
+                split_sizes=op.split_sizes,
+                split_scalar=op.split_scalar,
+            )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
@@ -2047,6 +2058,9 @@ class CEmitter:
                     "string_normalizer_op.c.j2"
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
+                "split_to_sequence": self._env.get_template(
+                    "split_to_sequence_op.c.j2"
+                ),
                 "reverse_sequence": self._env.get_template("reverse_sequence_op.c.j2"),
                 "sequence_at": self._env.get_template("sequence_at_op.c.j2"),
                 "sequence_construct": self._env.get_template(
@@ -2799,6 +2813,11 @@ class CEmitter:
                 return model.op_context.dtype(op.input0)
             if isinstance(op, SplitOp):
                 return model.op_context.dtype(op.outputs[0])
+            if isinstance(op, SplitToSequenceOp):
+                sequence_value = model.op_context.find_value(op.output_sequence)
+                if not isinstance(sequence_value.type, SequenceType):
+                    raise CodegenError("SplitToSequence output must be a sequence")
+                return sequence_value.type.elem.dtype
             if isinstance(op, UniqueOp):
                 return model.op_context.dtype(op.y)
             if isinstance(op, SequenceAtOp):
@@ -2905,7 +2924,7 @@ class CEmitter:
         if CEmitter._needs_limits(resolved_ops, model.op_context):
             includes.add("#include <limits.h>")
         if any(
-            isinstance(op, (ConcatOp, ReshapeOp, SplitOp, IdentityOp))
+            isinstance(op, (ConcatOp, ReshapeOp, SplitOp, SplitToSequenceOp, IdentityOp))
             for op in resolved_ops
         ):
             includes.add("#include <string.h>")
@@ -3428,6 +3447,7 @@ class CEmitter:
                     SequenceConstructOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
+                    SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
             ):
@@ -3567,6 +3587,7 @@ class CEmitter:
                     SequenceConstructOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
+                    SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
             )
@@ -4812,6 +4833,16 @@ class CEmitter:
                 position=CEmitter._map_optional_name(temp_map, op.position),
                 output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SplitToSequenceOp):
+            return SplitToSequenceOp(
+                input0=temp_map.get(op.input0, op.input0),
+                split=CEmitter._map_optional_name(temp_map, op.split),
+                output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
+                axis=op.axis,
+                keepdims=op.keepdims,
+                split_sizes=op.split_sizes,
+                split_scalar=op.split_scalar,
+            )
         if isinstance(op, TransposeOp):
             return TransposeOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5158,6 +5189,7 @@ class CEmitter:
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
             split_template=templates["split"],
+            split_to_sequence_template=templates["split_to_sequence"],
             reverse_sequence_template=templates["reverse_sequence"],
             sequence_at_template=templates["sequence_at"],
             sequence_construct_template=templates["sequence_construct"],
@@ -5675,6 +5707,7 @@ class CEmitter:
         tfidf_vectorizer_template,
         string_normalizer_template,
         split_template,
+        split_to_sequence_template,
         reverse_sequence_template,
         sequence_at_template,
         sequence_construct_template,
@@ -10915,6 +10948,71 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SplitToSequenceOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_sequence_elem_type(op.output_sequence).shape
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("split", op.split),
+                    ("output_sequence", op.output_sequence),
+                ]
+            )
+            input_suffix = self._param_array_suffix(input_shape, _dim_names_for(op.input0))
+            output_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.output_sequence)
+            )
+            param_specs = [
+                (params["input0"], c_type, input_suffix, True),
+            ]
+            if params["split"] is not None:
+                split_shape = self._ctx_shape(op.split)
+                split_dtype = self._ctx_dtype(op.split)
+                param_specs.append(
+                    (
+                        params["split"],
+                        split_dtype.c_type,
+                        self._param_array_suffix(split_shape, _dim_names_for(op.split)),
+                        True,
+                    )
+                )
+            param_specs.extend(
+                [
+                    (
+                        params["output_sequence"],
+                        c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{output_suffix}",
+                        False,
+                    ),
+                    (f"{params['output_sequence']}__count", "idx_t *", "", False),
+                ]
+            )
+            param_decls = self._build_param_decls(param_specs)
+            outer = 1
+            for dim in input_shape[: op.axis]:
+                outer *= dim
+            inner = 1
+            for dim in input_shape[op.axis + 1 :]:
+                inner *= dim
+            split_len = self._ctx_shape(op.split)[0] if op.split is not None and len(self._ctx_shape(op.split)) == 1 else 0
+            rendered = split_to_sequence_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                split=params["split"],
+                split_dtype=(self._ctx_dtype(op.split).c_type if op.split is not None else "int64_t"),
+                split_scalar=op.split_scalar,
+                split_len=split_len,
+                axis_sizes=op.split_sizes,
+                output_sequence=params["output_sequence"],
+                axis_total=input_shape[op.axis],
+                outer=outer,
+                inner=inner,
+                keepdims=op.keepdims,
+                c_type=c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SplitOp):
             input_shape = self._ctx_shape(op.input0)
             output_shapes = tuple(self._ctx_shape(name) for name in op.outputs)
@@ -12522,6 +12620,9 @@ class CEmitter:
                     self._ctx_dtype(op.tensor),
                 ),
             )
+        if isinstance(op, SplitToSequenceOp):
+            elem_type = self._ctx_sequence_elem_type(op.output_sequence)
+            return ((op.output_sequence, elem_type.shape, elem_type.dtype),)
         if isinstance(op, LoopSequenceInsertOp):
             return ((op.output_sequence, op.elem_shape, op.elem_dtype),)
         if isinstance(op, LoopRangeOp):
@@ -12758,6 +12859,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_shape(op.outputs[0])
+        if isinstance(op, SplitToSequenceOp):
+            return self._ctx_sequence_elem_type(op.output_sequence).shape
         if isinstance(op, ReverseSequenceOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ConcatFromSequenceOp):
@@ -12873,6 +12976,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])
+        if isinstance(op, SplitToSequenceOp):
+            return self._ctx_sequence_elem_type(op.output_sequence).dtype
         if isinstance(op, ConcatFromSequenceOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, SequenceAtOp):

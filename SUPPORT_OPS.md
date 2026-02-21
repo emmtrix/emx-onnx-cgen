@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 170 / 201
+Supported operators: 171 / 201
 
 | Operator | Supported |
 | --- | --- |
@@ -174,7 +174,7 @@ Supported operators: 170 / 201
 | Softsign | ✅ |
 | SpaceToDepth | ✅ |
 | Split | ✅ |
-| SplitToSequence | ❌ |
+| SplitToSequence | ✅ |
 | Sqrt | ✅ |
 | Squeeze | ✅ |
 | StringConcat | ❌ |

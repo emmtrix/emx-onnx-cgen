@@ -969,6 +969,26 @@ class SplitOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class SplitToSequenceOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "split")
+    __io_outputs__ = ("output_sequence",)
+    input0: str
+    split: str | None
+    output_sequence: str
+    axis: int
+    keepdims: bool
+    split_sizes: tuple[int, ...] | None
+    split_scalar: bool
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.input0]
+        if self.split is not None:
+            args.append(self.split)
+        args.extend([self.output_sequence, f"{self.output_sequence}__count"])
+        return tuple(args)
+
+
+@dataclass(frozen=True)
 class ReverseSequenceOp(RenderableOpBase):
     __io_inputs__ = ("input0", "sequence_lens")
     __io_outputs__ = ("output",)
