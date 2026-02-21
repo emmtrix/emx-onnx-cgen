@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1477 / 1802 official ONNX files.
+Support 1479 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1454,17 +1454,17 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8972011810649449542, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8247628798212575849, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
 | onnx-org/onnx/backend/test/data/node/test_shape/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_end/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_start/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -1800,9 +1800,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model3/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model4/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model5/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model6/model.onnx | 12 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model6/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model7/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx | 12 | ❌ | Unsupported op SequenceLength |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model8/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_shrink/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sign_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_single_relu_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
