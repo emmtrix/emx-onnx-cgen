@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 169 / 201
+Supported operators: 170 / 201
 
 | Operator | Supported |
 | --- | --- |
@@ -203,7 +203,7 @@ Supported operators: 169 / 201
 | ai.onnx.ml::TreeEnsemble | ❌ |
 | ai.onnx.preview.training::Adagrad | ✅ |
 | ai.onnx.preview.training::Adam | ❌ |
-| ai.onnx.preview.training::Gradient | ❌ |
+| ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ❌ |
 | com.microsoft::QLinearAdd | ❌ |
 | com.microsoft::QLinearMul | ✅ |

@@ -1,10 +1,11 @@
 {
-  "error": "Unsupported op Gradient",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/simple/test_gradient_of_add_and_mul model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Add",
     "Mul",
     "ai.onnx.preview.training::Gradient"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "422ca1a23cce8b555ba7492a94fbfe5d90b261d5b94a0466ec34e4dac49c6160"
 }
