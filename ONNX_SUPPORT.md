@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1479 / 1802 official ONNX files.
+Support 1480 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -1454,17 +1454,17 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8972011810649449542, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8247628798212575849, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op SequenceEmpty |
+| onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_shape/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_end/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_shape_clip_start/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -1795,7 +1795,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/simple/test_expand_shape_model4/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_gradient_of_add/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_gradient_of_add_and_mul/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/simple/test_sequence_model1/model.onnx | 12 | ❌ | Unsupported op SequenceEmpty |
+| onnx-org/onnx/backend/test/data/simple/test_sequence_model1/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model2/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model3/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/simple/test_sequence_model4/model.onnx | 12 | ✅ | OK (max ULP 0) |

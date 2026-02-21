@@ -7,7 +7,7 @@ from ..ir.model import Graph, Node, TensorType
 from ..ir.ops import SequenceAtOp
 from .common import value_dtype, value_shape
 from .registry import register_lowering
-from .sequence_insert import _sequence_type
+from .sequence_insert import _ensure_tensor_shape_compatible, _sequence_type
 
 
 @register_lowering("SequenceAt")
@@ -29,6 +29,11 @@ def lower_sequence_at(graph: Graph, node: Node) -> SequenceAtOp:
         raise UnsupportedOpError(
             "SequenceAt output dtype must match sequence element dtype"
         )
+    _ensure_tensor_shape_compatible(
+        output_value.type,
+        input_sequence_type.elem,
+        message="SequenceAt output shape must match sequence element shape",
+    )
 
     pos_dtype = value_dtype(graph, position_name, node)
     if pos_dtype not in {ScalarType.I32, ScalarType.I64}:
