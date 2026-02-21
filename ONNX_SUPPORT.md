@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1469 / 1802 official ONNX files.
+Support 1471 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -605,8 +605,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_edge_pad/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_einsum_batch_diagonal/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_einsum_batch_matmul/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_einsum_inner_prod/model.onnx | 12 | ❌ | Failed to build testbench. |
-| onnx-org/onnx/backend/test/data/node/test_einsum_scalar/model.onnx | 12 | ❌ | Failed to build testbench. |
+| onnx-org/onnx/backend/test/data/node/test_einsum_inner_prod/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| onnx-org/onnx/backend/test/data/node/test_einsum_scalar/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_einsum_sum/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_einsum_transpose/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_elu/model.onnx | 22 | ✅ | OK (max ULP 0) |

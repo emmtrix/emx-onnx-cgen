@@ -6221,7 +6221,7 @@ class CEmitter:
             output_dim_names = _dim_names_for(op.output)
             output_shape = CEmitter._shape_dim_exprs(op.output_shape, output_dim_names)
             output_loop_vars = CEmitter._loop_vars(op.output_shape)
-            if output_loop_vars:
+            if op.output_shape:
                 output_expr = f"{params['output']}" + "".join(
                     f"[{var}]" for var in output_loop_vars
                 )
