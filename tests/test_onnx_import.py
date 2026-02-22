@@ -144,6 +144,64 @@ def test_import_if_with_tensor_branches_expands_to_where() -> None:
     assert len(imported.initializers) == 2
 
 
+def test_import_if_with_sequence_construct_branches_expands_to_where_and_sequence_construct() -> (
+    None
+):
+    cond = helper.make_tensor_value_info("cond", TensorProto.BOOL, [])
+    output = helper.make_tensor_sequence_value_info("out", TensorProto.FLOAT, [2])
+
+    then_tensor = helper.make_tensor("then_tensor", TensorProto.FLOAT, [2], [1.0, 2.0])
+    else_tensor = helper.make_tensor("else_tensor", TensorProto.FLOAT, [2], [3.0, 4.0])
+    then_graph = helper.make_graph(
+        [
+            helper.make_node(
+                "Constant", inputs=[], outputs=["then_elem"], value=then_tensor
+            ),
+            helper.make_node(
+                "SequenceConstruct", inputs=["then_elem"], outputs=["then_out"]
+            ),
+        ],
+        "then_graph",
+        [],
+        [helper.make_tensor_sequence_value_info("then_out", TensorProto.FLOAT, [2])],
+    )
+    else_graph = helper.make_graph(
+        [
+            helper.make_node(
+                "Constant", inputs=[], outputs=["else_elem"], value=else_tensor
+            ),
+            helper.make_node(
+                "SequenceConstruct", inputs=["else_elem"], outputs=["else_out"]
+            ),
+        ],
+        "else_graph",
+        [],
+        [helper.make_tensor_sequence_value_info("else_out", TensorProto.FLOAT, [2])],
+    )
+
+    if_node = helper.make_node(
+        "If",
+        inputs=["cond"],
+        outputs=["out"],
+        then_branch=then_graph,
+        else_branch=else_graph,
+    )
+    graph = helper.make_graph([if_node], "if_sequence_graph", [cond], [output])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+
+    imported = import_onnx(model)
+
+    op_types = [node.op_type for node in imported.nodes]
+    assert op_types[-2:] == ["Where", "SequenceConstruct"]
+    assert len(imported.initializers) == 2
+
+
 def test_import_gradient_of_add_expands_to_supported_nodes() -> None:
     a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2])
     b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2])

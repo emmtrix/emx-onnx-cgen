@@ -358,12 +358,13 @@ class Compiler:
         except Exception:
             return graph
 
-        shapes_by_name: dict[str, tuple[int, ...]] = {
-            name: tuple(int(dim) for dim in array.shape)
-            for name, array in zip(output_names, output_arrays)
-        }
+        shapes_by_name: dict[str, tuple[int, ...]] = {}
+        for name, array in zip(output_names, output_arrays):
+            if isinstance(array, np.ndarray):
+                shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
         for name, array in self._options.testbench_inputs.items():
-            shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
+            if isinstance(array, np.ndarray):
+                shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
 
         def concretize_value(value: Value) -> Value:
             shape = shapes_by_name.get(value.name)

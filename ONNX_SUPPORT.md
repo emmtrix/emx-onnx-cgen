@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1481 / 1802 official ONNX files.
+Support 1482 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -755,7 +755,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | 25 | ❌ | Unsupported non-tensor value 'x' in op Identity. |
 | onnx-org/onnx/backend/test/data/node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs. |
-| onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx | 13 | ❌ | Unsupported op If |
+| onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
