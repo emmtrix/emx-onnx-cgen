@@ -1260,9 +1260,13 @@ class CEmitter:
                 mean=name_map.get(op.mean, op.mean),
                 variance=name_map.get(op.variance, op.variance),
                 output=name_map.get(op.output, op.output),
+                running_mean=name_map.get(op.running_mean, op.running_mean),
+                running_variance=name_map.get(op.running_variance, op.running_variance),
                 shape=op.shape,
                 channels=op.channels,
                 epsilon=op.epsilon,
+                momentum=op.momentum,
+                training_mode=op.training_mode,
                 dtype=op.dtype,
             )
         if isinstance(op, LpNormalizationOp):
@@ -4484,9 +4488,13 @@ class CEmitter:
                 mean=temp_map.get(op.mean, op.mean),
                 variance=temp_map.get(op.variance, op.variance),
                 output=temp_map.get(op.output, op.output),
+                running_mean=temp_map.get(op.running_mean, op.running_mean),
+                running_variance=temp_map.get(op.running_variance, op.running_variance),
                 shape=op.shape,
                 channels=op.channels,
                 epsilon=op.epsilon,
+                momentum=op.momentum,
+                training_mode=op.training_mode,
                 dtype=op.dtype,
             )
         if isinstance(op, LpNormalizationOp):
@@ -7449,6 +7457,8 @@ class CEmitter:
                     ("mean", op.mean),
                     ("variance", op.variance),
                     ("output", op.output),
+                    ("running_mean", op.running_mean),
+                    ("running_variance", op.running_variance),
                 ]
             )
             shape = CEmitter._codegen_shape(op.shape)
@@ -7467,7 +7477,12 @@ class CEmitter:
                     (params["mean"], c_type, mean_suffix, True),
                     (params["variance"], c_type, variance_suffix, True),
                     (params["output"], c_type, output_suffix, False),
+                    (params.get("running_mean"), c_type, mean_suffix, False),
+                    (params.get("running_variance"), c_type, variance_suffix, False),
                 ]
+            )
+            reduce_count_expr = " * ".join(
+                str(dim) for idx, dim in enumerate(shape) if idx != 1
             )
             rendered = batch_norm_template.render(
                 model_name=model.name,
@@ -7478,6 +7493,8 @@ class CEmitter:
                 mean=params["mean"],
                 variance=params["variance"],
                 output=params["output"],
+                running_mean=params.get("running_mean"),
+                running_variance=params.get("running_variance"),
                 params=param_decls,
                 c_type=c_type,
                 input_suffix=input_suffix,
@@ -7488,6 +7505,11 @@ class CEmitter:
                 variance_suffix=variance_suffix,
                 shape=shape,
                 loop_vars=loop_vars,
+                channels=op.channels,
+                reduce_count_expr=reduce_count_expr or "1",
+                training_mode=op.training_mode,
+                momentum_literal=CEmitter._format_floating(op.momentum, op.dtype),
+                one_minus_momentum_literal=CEmitter._format_floating(1.0 - op.momentum, op.dtype),
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
                 sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
             ).rstrip()

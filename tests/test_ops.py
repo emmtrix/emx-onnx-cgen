@@ -2670,6 +2670,43 @@ def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
     return model, params
 
 
+def _make_batchnorm_training_model() -> onnx.ModelProto:
+    input_shape = [2, 3, 2, 2]
+    channel_shape = [3]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    scale_info = helper.make_tensor_value_info("scale", TensorProto.FLOAT, channel_shape)
+    bias_info = helper.make_tensor_value_info("bias", TensorProto.FLOAT, channel_shape)
+    mean_info = helper.make_tensor_value_info("mean", TensorProto.FLOAT, channel_shape)
+    var_info = helper.make_tensor_value_info("var", TensorProto.FLOAT, channel_shape)
+
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
+    running_mean = helper.make_tensor_value_info("running_mean", TensorProto.FLOAT, channel_shape)
+    running_var = helper.make_tensor_value_info("running_var", TensorProto.FLOAT, channel_shape)
+
+    node = helper.make_node(
+        "BatchNormalization",
+        inputs=["in0", "scale", "bias", "mean", "var"],
+        outputs=[output.name, running_mean.name, running_var.name],
+        epsilon=1e-5,
+        momentum=0.9,
+        training_mode=1,
+    )
+    graph = helper.make_graph(
+        [node],
+        "batchnorm_training_graph",
+        [input_info, scale_info, bias_info, mean_info, var_info],
+        [output, running_mean, running_var],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 15)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_lp_normalization_model(
     *, input_shape: list[int], axis: int, p: int
 ) -> onnx.ModelProto:
@@ -5497,6 +5534,11 @@ def test_dynamic_quantize_linear_matches_onnxruntime() -> None:
 def test_batchnorm_op_matches_onnxruntime() -> None:
     model, _ = _make_batchnorm_model()
     _run_ort_compare(model)
+
+
+def test_batchnorm_training_mode_matches_onnxruntime() -> None:
+    model = _make_batchnorm_training_model()
+    _run_testbench_compare(model)
 
 
 def test_lp_normalization_op_matches_onnxruntime() -> None:

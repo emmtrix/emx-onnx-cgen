@@ -36,7 +36,6 @@
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
-| BatchNormalization must have 5 inputs and 1 output | 2 | 15 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -67,7 +66,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
 | Unsupported op Loop | 17 | 6 |
 | Unsupported op SequenceMap | 17 | 6 |

@@ -1,6 +1,6 @@
 # Official ONNX file support
 
-Support 1482 / 1802 official ONNX files.
+Support 1484 / 1802 official ONNX files.
 
 ONNX version: 1.20.1
 
@@ -249,9 +249,9 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_basic_deform_conv_with_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
 | onnx-org/onnx/backend/test/data/node/test_basic_deform_conv_without_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
 | onnx-org/onnx/backend/test/data/node/test_batchnorm_epsilon/model.onnx | 15 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_batchnorm_epsilon_training_mode/model.onnx | 15 | ❌ | BatchNormalization must have 5 inputs and 1 output |
+| onnx-org/onnx/backend/test/data/node/test_batchnorm_epsilon_training_mode/model.onnx | 15 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_batchnorm_example/model.onnx | 15 | ✅ | OK (max ULP 2) |
-| onnx-org/onnx/backend/test/data/node/test_batchnorm_example_training_mode/model.onnx | 15 | ❌ | BatchNormalization must have 5 inputs and 1 output |
+| onnx-org/onnx/backend/test/data/node/test_batchnorm_example_training_mode/model.onnx | 15 | ✅ | OK (max ULP 6) |
 | onnx-org/onnx/backend/test/data/node/test_bernoulli/model.onnx | 22 | ✅ | OK (non-deterministic output) |
 | onnx-org/onnx/backend/test/data/node/test_bernoulli_double/model.onnx | 22 | ✅ | OK (non-deterministic output) |
 | onnx-org/onnx/backend/test/data/node/test_bernoulli_double_expanded/model.onnx | 22 | ❌ | Unsupported op RandomUniformLike |

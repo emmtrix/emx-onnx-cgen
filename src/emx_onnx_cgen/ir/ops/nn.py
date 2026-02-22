@@ -845,16 +845,20 @@ class SoftmaxCrossEntropyLossOp(RenderableOpBase):
 @dataclass(frozen=True)
 class BatchNormOp(RenderableOpBase):
     __io_inputs__ = ("input0", "scale", "bias", "mean", "variance")
-    __io_outputs__ = ("output",)
+    __io_outputs__ = ("output", "running_mean", "running_variance")
     input0: str
     scale: str
     bias: str
     mean: str
     variance: str
     output: str
+    running_mean: str | None
+    running_variance: str | None
     shape: tuple[int, ...]
     channels: int
     epsilon: float
+    momentum: float
+    training_mode: bool
     dtype: ScalarType
 
 
