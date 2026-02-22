@@ -1,8 +1,9 @@
 {
-  "error": "BatchNormalization must have 5 inputs and 1 output",
+  "error": "OK (max ULP 1)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_batchnorm_epsilon_training_mode model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "BatchNormalization"
   ],
-  "opset_version": 15
+  "opset_version": 15,
+  "generated_checksum": "2fd7cb81dcc00549b45c3064b1b49f7f3edce57c0e5d983da1d25569ef92e17b"
 }
