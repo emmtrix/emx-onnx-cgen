@@ -1,4 +1,47 @@
 static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% if training_mode %}
+{{ c_type }} channel_mean[{{ channels }}];
+{{ c_type }} channel_var[{{ channels }}];
+{{ c_type }} inv_count = ({{ c_type }})1.0 / ({{ c_type }})({{ reduce_count_expr }});
+for (idx_t c = 0; c < {{ channels }}; ++c) {
+    channel_mean[c] = ({{ c_type }})0;
+    channel_var[c] = ({{ c_type }})0;
+}
+{% for dim in shape %}
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+idx_t c = {{ loop_vars[1] }};
+channel_mean[c] += {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %};
+{% for _ in shape %}
+}
+{% endfor %}
+for (idx_t c = 0; c < {{ channels }}; ++c) {
+    channel_mean[c] *= inv_count;
+}
+{% for dim in shape %}
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+idx_t c = {{ loop_vars[1] }};
+{{ c_type }} centered = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - channel_mean[c];
+channel_var[c] += centered * centered;
+{% for _ in shape %}
+}
+{% endfor %}
+for (idx_t c = 0; c < {{ channels }}; ++c) {
+    channel_var[c] *= inv_count;
+    {{ running_mean }}[c] = {{ mean }}[c] * {{ momentum_literal }} + channel_mean[c] * {{ one_minus_momentum_literal }};
+    {{ running_variance }}[c] = {{ variance }}[c] * {{ momentum_literal }} + channel_var[c] * {{ one_minus_momentum_literal }};
+}
+{% for dim in shape %}
+for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+idx_t c = {{ loop_vars[1] }};
+{{ c_type }} denom = {{ sqrt_fn }}(channel_var[c] + {{ epsilon_literal }});
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - channel_mean[c]) / denom * {{ scale }}[c] + {{ bias }}[c];
+{% for _ in shape %}
+}
+{% endfor %}
+{% else %}
 {% for dim in shape %}
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
@@ -8,4 +51,5 @@ idx_t c = {{ loop_vars[1] }};
 {% for _ in shape %}
 }
 {% endfor %}
+{% endif %}
 }

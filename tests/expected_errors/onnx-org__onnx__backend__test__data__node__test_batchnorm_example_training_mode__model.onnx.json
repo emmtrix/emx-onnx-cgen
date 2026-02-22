@@ -1,8 +1,9 @@
 {
-  "error": "BatchNormalization must have 5 inputs and 1 output",
+  "error": "OK (max ULP 6)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_batchnorm_example_training_mode model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "BatchNormalization"
   ],
-  "opset_version": 15
+  "opset_version": 15,
+  "generated_checksum": "a4d7fbd7326ec13dd9a227379a3d4b67bd5e3e26742d7d1072b5a98a458b31de"
 }
