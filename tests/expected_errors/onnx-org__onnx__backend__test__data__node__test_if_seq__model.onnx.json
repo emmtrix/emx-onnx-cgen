@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op If",
+  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_seq model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "If"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "cbf2935a4bb0b2d0d92f87b3c8f75e659a2de61d8b66e73125c148faa4607848"
 }
