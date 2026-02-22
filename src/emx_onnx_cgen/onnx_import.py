@@ -729,6 +729,27 @@ def _is_tensor_output(graph: onnx.GraphProto, name: str) -> bool:
     )
 
 
+def _is_sequence_output(graph: onnx.GraphProto, name: str) -> bool:
+    value_info = _find_value_info(graph, name)
+    return (
+        value_info is not None
+        and value_info.type.WhichOneof("value") == "sequence_type"
+    )
+
+
+def _sequence_construct_inputs(
+    branch: onnx.GraphProto,
+    output_name: str,
+) -> tuple[str, ...] | None:
+    for branch_node in branch.node:
+        if output_name not in branch_node.output:
+            continue
+        if branch_node.op_type != "SequenceConstruct":
+            return None
+        return tuple(branch_node.input)
+    return None
+
+
 def _inline_if_branch(
     branch: onnx.GraphProto,
     *,
@@ -787,7 +808,18 @@ def _expand_if_node(
         else_branch.output
     ):
         return None
-    if any(not _is_tensor_output(graph, output_name) for output_name in node.output):
+    output_is_tensor = tuple(
+        _is_tensor_output(graph, output_name) for output_name in node.output
+    )
+    output_is_sequence = tuple(
+        _is_sequence_output(graph, output_name) for output_name in node.output
+    )
+    if any(
+        not (is_tensor or is_sequence)
+        for is_tensor, is_sequence in zip(output_is_tensor, output_is_sequence)
+    ):
+        return None
+    if any(is_tensor != output_is_tensor[0] for is_tensor in output_is_tensor):
         return None
 
     prefix_base = node.name or f"if_{node_index}"
@@ -802,23 +834,63 @@ def _expand_if_node(
         new_initializers=new_initializers,
     )
 
-    where_nodes: list[onnx.NodeProto] = []
+    select_nodes: list[onnx.NodeProto] = []
     cond_name = node.input[0]
+    if output_is_tensor[0]:
+        for output_index, output_name in enumerate(node.output):
+            then_name = then_map.get(then_branch.output[output_index].name)
+            else_name = else_map.get(else_branch.output[output_index].name)
+            if then_name is None or else_name is None:
+                return None
+            select_nodes.append(
+                helper.make_node(
+                    "Where",
+                    inputs=[cond_name, then_name, else_name],
+                    outputs=[output_name],
+                    name=f"{prefix_base}_select_{output_index}",
+                )
+            )
+        return [*then_nodes, *else_nodes, *select_nodes]
+
     for output_index, output_name in enumerate(node.output):
-        then_name = then_map.get(then_branch.output[output_index].name)
-        else_name = else_map.get(else_branch.output[output_index].name)
-        if then_name is None or else_name is None:
+        then_output_name = then_branch.output[output_index].name
+        else_output_name = else_branch.output[output_index].name
+        then_inputs = _sequence_construct_inputs(then_branch, then_output_name)
+        else_inputs = _sequence_construct_inputs(else_branch, else_output_name)
+        if then_inputs is None or else_inputs is None:
             return None
-        where_nodes.append(
+        if len(then_inputs) != len(else_inputs):
+            return None
+
+        selected_elements: list[str] = []
+        for elem_index, (then_elem, else_elem) in enumerate(
+            zip(then_inputs, else_inputs)
+        ):
+            then_name = then_map.get(then_elem)
+            else_name = else_map.get(else_elem)
+            if then_name is None or else_name is None:
+                return None
+            selected_name = f"{prefix_base}_sequence_{output_index}_{elem_index}"
+            select_nodes.append(
+                helper.make_node(
+                    "Where",
+                    inputs=[cond_name, then_name, else_name],
+                    outputs=[selected_name],
+                    name=f"{prefix_base}_select_{output_index}_{elem_index}",
+                )
+            )
+            selected_elements.append(selected_name)
+
+        select_nodes.append(
             helper.make_node(
-                "Where",
-                inputs=[cond_name, then_name, else_name],
+                "SequenceConstruct",
+                inputs=selected_elements,
                 outputs=[output_name],
-                name=f"{prefix_base}_select_{output_index}",
+                name=f"{prefix_base}_sequence_construct_{output_index}",
             )
         )
 
-    return [*then_nodes, *else_nodes, *where_nodes]
+    return [*then_nodes, *else_nodes, *select_nodes]
 
 
 def _expand_if_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:

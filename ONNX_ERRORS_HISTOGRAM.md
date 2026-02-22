@@ -21,12 +21,12 @@
 | Unsupported op SequenceMap | 6 | 17 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
-| Unsupported op If | 5 | 13, 20 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
+| Unsupported op If | 4 | 20 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
@@ -67,7 +67,6 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported op If | 13 | 1 |
 | BatchNormalization must have 5 inputs and 1 output | 15 | 2 |
 | Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
 | Unsupported op Loop | 17 | 6 |
