@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs.",
+  "error": "Unsupported op Loop",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop16_seq_none model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Loop"

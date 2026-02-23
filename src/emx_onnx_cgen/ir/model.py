@@ -19,6 +19,7 @@ class TensorType:
 @dataclass(frozen=True)
 class SequenceType:
     elem: TensorType
+    is_optional: bool = False
 
 
 ValueType = TensorType | SequenceType
