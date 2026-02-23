@@ -291,3 +291,42 @@ class QLinearMulOp(RenderableOpBase):
     input0_zero_shape: tuple[int, ...]
     input1_zero_shape: tuple[int, ...]
     output_zero_shape: tuple[int, ...]
+
+
+@dataclass(frozen=True)
+class QLinearAddOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input0_scale",
+        "input0_zero_point",
+        "input1",
+        "input1_scale",
+        "input1_zero_point",
+        "output_scale",
+        "output_zero_point",
+    )
+    __io_outputs__ = ("output",)
+    input0: str
+    input0_scale: str
+    input0_zero_point: str
+    input1: str
+    input1_scale: str
+    input1_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    output: str
+    input0_shape: tuple[int, ...]
+    input1_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    input0_dtype: ScalarType
+    input1_dtype: ScalarType
+    dtype: ScalarType
+    input0_scale_dtype: ScalarType
+    input1_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input0_scale_shape: tuple[int, ...]
+    input1_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input0_zero_shape: tuple[int, ...]
+    input1_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
