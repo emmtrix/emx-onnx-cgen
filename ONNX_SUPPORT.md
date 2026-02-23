@@ -38,12 +38,12 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_add_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_affine_grid_2d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
 | onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | ❌ | Unsupported op If |
-| onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded/model.onnx | 20 | ❌ | Unsupported op If |
+| onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
+| onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
 | onnx-org/onnx/backend/test/data/node/test_affine_grid_3d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
 | onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | ❌ | Unsupported op If |
-| onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx | 20 | ❌ | Unsupported op If |
+| onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
+| onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
 | onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | ❌ | Unsupported op ArrayFeatureExtractor |
 | onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_binarizer/model.onnx |  | ❌ | Unsupported op Binarizer |
 | onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | ❌ | Unsupported op LabelEncoder |

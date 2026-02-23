@@ -21,7 +21,6 @@
 | Unsupported op SequenceMap | 6 | 17 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
-| Unsupported op If | 5 | 16, 20 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
@@ -40,6 +39,7 @@
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
 | QuantizeLinear block_size is not supported | 2 | 25 |
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
+| Split output shape must be (1,), got (2,) | 2 | 20 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported non-tensor value '*' in op Identity. | 2 | 16, 25 |
 | Unsupported op Adam | 2 |  |
@@ -50,6 +50,7 @@
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | Unsupported op TreeEnsemble | 2 |  |
+| Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
@@ -58,6 +59,7 @@
 | ReduceMin does not support dtype bool | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
+| Unsupported op If | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 
 ## Error frequency by opset
@@ -86,10 +88,11 @@
 | Unsupported op StringSplit | 20 | 6 |
 | Unsupported op StringConcat | 20 | 5 |
 | Unsupported op AffineGrid | 20 | 4 |
-| Unsupported op If | 20 | 4 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
+| Split output shape must be (1,), got (2,) | 20 | 2 |
+| Where inputs must be broadcastable, got ((), (1,), (0,)) | 20 | 2 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
