@@ -1882,8 +1882,8 @@ Support 69 / 74 local ONNX files.
 | test_pad_edge_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_pad_reflect_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | test_pad_reflect_nopadding/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_qlinearadd_int8/model.onnx |  | ❌ | Unsupported op QLinearAdd |
-| test_qlinearadd_uint8/model.onnx |  | ❌ | Unsupported op QLinearAdd |
+| test_qlinearadd_int8/model.onnx |  | ❌ | Failed to build testbench. |
+| test_qlinearadd_uint8/model.onnx |  | ❌ | Failed to build testbench. |
 | test_qlinearmul_int8/model.onnx |  | ✅ | OK (max ULP 0) |
 | test_qlinearmul_uint8/model.onnx |  | ✅ | OK (max ULP 0) |
 | test_resize_downsample_sizes_linear_1D/model.onnx | 12 | ✅ | OK (max ULP 0) |

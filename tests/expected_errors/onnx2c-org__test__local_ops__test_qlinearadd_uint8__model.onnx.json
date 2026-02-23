@@ -1,7 +1,8 @@
 {
-  "error": "Unsupported op QLinearAdd",
+  "error": "Failed to build testbench.",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_qlinearadd_uint8 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "com.microsoft::QLinearAdd"
-  ]
+  ],
+  "generated_checksum": "24e50dc6d88b576e5e0ab27575221f8b309d1b641121e31dff8d3896266c5d90"
 }

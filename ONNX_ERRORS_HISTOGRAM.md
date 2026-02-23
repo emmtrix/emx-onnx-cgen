@@ -131,8 +131,8 @@
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
+| Failed to build testbench. | 2 |  |
 | Unsupported LSTM direction b'*' | 2 | 11 |
-| Unsupported op QLinearAdd | 2 |  |
 | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | 12 |
 
 ## Error frequency by opset
