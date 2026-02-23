@@ -2449,6 +2449,59 @@ def _make_qlinearconv_model(
     return model
 
 
+def _make_qlinearadd_model() -> onnx.ModelProto:
+    input_info0 = helper.make_tensor_value_info("in0", TensorProto.UINT8, [1, 2, 3])
+    input_info1 = helper.make_tensor_value_info("in1", TensorProto.UINT8, [1, 1, 3])
+    output = helper.make_tensor_value_info("out", TensorProto.UINT8, [1, 2, 3])
+    a_scale = helper.make_tensor("a_scale", TensorProto.FLOAT, dims=[], vals=[0.25])
+    a_zero_point = helper.make_tensor(
+        "a_zero_point", TensorProto.UINT8, dims=[], vals=[10]
+    )
+    b_scale = helper.make_tensor("b_scale", TensorProto.FLOAT, dims=[], vals=[0.5])
+    b_zero_point = helper.make_tensor(
+        "b_zero_point", TensorProto.UINT8, dims=[], vals=[3]
+    )
+    y_scale = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[0.125])
+    y_zero_point = helper.make_tensor(
+        "y_zero_point", TensorProto.UINT8, dims=[], vals=[20]
+    )
+    node = helper.make_node(
+        "QLinearAdd",
+        inputs=[
+            "in0",
+            "a_scale",
+            "a_zero_point",
+            "in1",
+            "b_scale",
+            "b_zero_point",
+            "y_scale",
+            "y_zero_point",
+        ],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "qlinearadd_graph",
+        [input_info0, input_info1],
+        [output],
+        initializer=[
+            a_scale,
+            a_zero_point,
+            b_scale,
+            b_zero_point,
+            y_scale,
+            y_zero_point,
+        ],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 10)],
+    )
+    model.ir_version = 7
+    return model
+
+
 def _make_matmulinteger_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
     weight_values = np.arange(12, dtype=np.uint8).reshape(3, 4)
@@ -2674,14 +2727,20 @@ def _make_batchnorm_training_model() -> onnx.ModelProto:
     input_shape = [2, 3, 2, 2]
     channel_shape = [3]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
-    scale_info = helper.make_tensor_value_info("scale", TensorProto.FLOAT, channel_shape)
+    scale_info = helper.make_tensor_value_info(
+        "scale", TensorProto.FLOAT, channel_shape
+    )
     bias_info = helper.make_tensor_value_info("bias", TensorProto.FLOAT, channel_shape)
     mean_info = helper.make_tensor_value_info("mean", TensorProto.FLOAT, channel_shape)
     var_info = helper.make_tensor_value_info("var", TensorProto.FLOAT, channel_shape)
 
     output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
-    running_mean = helper.make_tensor_value_info("running_mean", TensorProto.FLOAT, channel_shape)
-    running_var = helper.make_tensor_value_info("running_var", TensorProto.FLOAT, channel_shape)
+    running_mean = helper.make_tensor_value_info(
+        "running_mean", TensorProto.FLOAT, channel_shape
+    )
+    running_var = helper.make_tensor_value_info(
+        "running_var", TensorProto.FLOAT, channel_shape
+    )
 
     node = helper.make_node(
         "BatchNormalization",
@@ -4540,6 +4599,16 @@ def test_lower_convinteger_per_channel_zero_point() -> None:
     assert op.out_spatial == (4, 4)
 
 
+def test_lower_qlinearadd() -> None:
+    model = _make_qlinearadd_model()
+    graph = import_onnx(model)
+    op = get_lowering("QLinearAdd")(graph, graph.nodes[0])
+    assert op.input0_dtype == ScalarType.U8
+    assert op.input1_dtype == ScalarType.U8
+    assert op.dtype == ScalarType.U8
+    assert op.output_shape == (1, 2, 3)
+
+
 def test_lower_qlinearconv_per_channel_weights() -> None:
     model = _make_qlinearconv_model(per_channel_weights=True)
     graph = import_onnx(model)
@@ -5504,6 +5573,12 @@ def test_conv_op_matches_onnxruntime() -> None:
 def test_convinteger_op_matches_onnxruntime() -> None:
     model = _make_convinteger_model(per_channel_zero_point=False)
     _run_testbench_compare(model)
+
+
+def test_qlinearadd_codegen_smoke() -> None:
+    model = _make_qlinearadd_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "OpType: QLinearAdd" in generated
 
 
 def test_qlinearconv_op_matches_onnxruntime() -> None:
