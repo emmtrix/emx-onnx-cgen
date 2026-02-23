@@ -751,10 +751,10 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_hardswish/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | onnx-org/onnx/backend/test/data/node/test_hardswish_expanded/model.onnx | 22 | ❌ | HardSigmoid only supports alpha=0.2 |
 | onnx-org/onnx/backend/test/data/node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_in'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_identity_opt/model.onnx | 16 | ❌ | Unsupported non-tensor value 'opt_in' in op Identity. |
 | onnx-org/onnx/backend/test/data/node/test_identity_sequence/model.onnx | 25 | ❌ | Unsupported non-tensor value 'x' in op Identity. |
 | onnx-org/onnx/backend/test/data/node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'sequence'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx | 16 | ❌ | Unsupported op If |
 | onnx-org/onnx/backend/test/data/node/test_if_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | onnx-org/onnx/backend/test/data/node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
@@ -890,7 +890,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | onnx-org/onnx/backend/test/data/node/test_loop11/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_loop13_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=58382658) |
-| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported optional element type 'sequence_type' for 'opt_seq'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported op Loop |
 | onnx-org/onnx/backend/test/data/node/test_lpnormalization_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_lppool_1d_default/model.onnx | 22 | ❌ | LpPool expects 2D kernel_shape |
 | onnx-org/onnx/backend/test/data/node/test_lppool_2d_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1052,7 +1052,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_with_negative_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | onnx-org/onnx/backend/test/data/node/test_onehot_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | 18 | ❌ | Unsupported optional element type 'sequence_type' for 'optional_input'. Hint: export the model with optional tensor inputs/outputs. |
+| onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_tensor/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
 | onnx-org/onnx/backend/test/data/node/test_optional_get_element_tensor/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
