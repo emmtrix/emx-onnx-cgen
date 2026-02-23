@@ -305,3 +305,27 @@ def test_import_allows_anonymous_dynamic_dims() -> None:
 
     assert output_type.shape == (1,)
     assert output_type.dim_params == ("out_dim_0",)
+
+
+def test_import_optional_sequence_value_info_marks_sequence_optional() -> None:
+    sequence_type = helper.make_sequence_type_proto(
+        helper.make_tensor_type_proto(TensorProto.FLOAT, [2])
+    )
+    optional_sequence_type = helper.make_optional_type_proto(sequence_type)
+    input_info = helper.make_value_info("opt_seq", optional_sequence_type)
+    output_info = helper.make_tensor_value_info("out", TensorProto.BOOL, [])
+    node = helper.make_node("OptionalHasElement", inputs=["opt_seq"], outputs=["out"])
+    graph = helper.make_graph(
+        [node], "optional_sequence_graph", [input_info], [output_info]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 18)],
+    )
+    model.ir_version = 8
+
+    imported = import_onnx(model)
+
+    assert imported.inputs[0].name == "opt_seq"
+    assert imported.inputs[0].type.is_optional

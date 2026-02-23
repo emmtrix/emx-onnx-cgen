@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported optional element type 'sequence_type' for 'opt_in'. Hint: export the model with optional tensor inputs/outputs.",
+  "error": "Unsupported non-tensor value 'opt_in' in op Identity.",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_opt model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Identity"

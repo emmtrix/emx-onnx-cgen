@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported optional element type 'sequence_type' for 'optional_input'. Hint: export the model with optional tensor inputs/outputs.",
+  "error": "Unsupported op OptionalGetElement",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_optional_sequence model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "OptionalGetElement"

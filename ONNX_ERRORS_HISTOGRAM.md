@@ -14,25 +14,24 @@
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 7 | 9, 19, 22 |
+| Unsupported op Loop | 7 | 16, 17 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
-| Unsupported op Loop | 6 | 17 |
 | Unsupported op ScatterElements | 6 | 18 |
 | Unsupported op SequenceMap | 6 | 17 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
+| Unsupported op If | 5 | 16, 20 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
-| Unsupported op If | 4 | 20 |
 | Unsupported op LabelEncoder | 4 |  |
+| Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
-| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 4 | 16, 18 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op Momentum | 3 |  |
-| Unsupported op OptionalGetElement | 3 | 18 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
@@ -42,6 +41,7 @@
 | QuantizeLinear block_size is not supported | 2 | 25 |
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
+| Unsupported non-tensor value '*' in op Identity. | 2 | 16, 25 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op BlackmanWindow | 2 | 17 |
@@ -56,7 +56,6 @@
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
-| Unsupported non-tensor value '*' in op Identity. | 1 | 25 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op MelWeightMatrix | 1 | 17 |
@@ -66,7 +65,9 @@
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
-| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 16 | 3 |
+| Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
+| Unsupported op If | 16 | 1 |
+| Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |
 | Unsupported op SequenceMap | 17 | 6 |
 | Unsupported op BlackmanWindow | 17 | 2 |
@@ -77,9 +78,8 @@
 | Unsupported op ScatterElements | 18 | 6 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
-| Unsupported op OptionalGetElement | 18 | 3 |
+| Unsupported op OptionalGetElement | 18 | 4 |
 | Unsupported op BitwiseNot | 18 | 2 |
-| Unsupported optional element type '*' for '*'. Hint: export the model with optional tensor inputs/outputs. | 18 | 1 |
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |

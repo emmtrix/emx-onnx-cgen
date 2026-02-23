@@ -105,21 +105,36 @@ def _value_type(
     if value_kind == "optional_type":
         elem_type = value_info.type.optional_type.elem_type
         elem_kind = elem_type.WhichOneof("value")
-        if elem_kind != "tensor_type":
-            raise UnsupportedOpError(
-                f"Unsupported optional element type '{elem_kind}' for '{value_info.name}'. "
-                "Hint: export the model with optional tensor inputs/outputs."
+        if elem_kind == "tensor_type":
+            tensor_type = _tensor_type_from_proto(
+                elem_type.tensor_type,
+                value_info.name,
+                dim_param_override=dim_param_override,
             )
-        tensor_type = _tensor_type_from_proto(
-            elem_type.tensor_type,
-            value_info.name,
-            dim_param_override=dim_param_override,
-        )
-        return TensorType(
-            dtype=tensor_type.dtype,
-            shape=tensor_type.shape,
-            dim_params=tensor_type.dim_params,
-            is_optional=True,
+            return TensorType(
+                dtype=tensor_type.dtype,
+                shape=tensor_type.shape,
+                dim_params=tensor_type.dim_params,
+                is_optional=True,
+            )
+        if elem_kind == "sequence_type":
+            sequence_elem = elem_type.sequence_type.elem_type
+            if sequence_elem.WhichOneof("value") != "tensor_type":
+                raise UnsupportedOpError(
+                    f"Unsupported optional element type '{elem_kind}' for '{value_info.name}'. "
+                    "Hint: export the model with optional tensor or optional sequence<tensor<...>> inputs/outputs."
+                )
+            return SequenceType(
+                elem=_tensor_type_from_proto(
+                    sequence_elem.tensor_type,
+                    value_info.name,
+                    dim_param_override=dim_param_override,
+                ),
+                is_optional=True,
+            )
+        raise UnsupportedOpError(
+            f"Unsupported optional element type '{elem_kind}' for '{value_info.name}'. "
+            "Hint: export the model with optional tensor or optional sequence<tensor<...>> inputs/outputs."
         )
     if value_kind == "sequence_type":
         elem_type = value_info.type.sequence_type.elem_type

@@ -437,10 +437,14 @@ class Compiler:
             return elem
 
         input_names = tuple(value.name for value in graph.inputs)
+
+        def is_optional_value_type(value_type: ValueType) -> bool:
+            return bool(getattr(value_type, "is_optional", False))
+
         input_optional_names = tuple(
             (
                 _optional_flag_name(value.name)
-                if isinstance(value.type, TensorType) and value.type.is_optional
+                if is_optional_value_type(value.type)
                 else None
             )
             for value in graph.inputs
@@ -456,7 +460,7 @@ class Compiler:
         output_optional_names = tuple(
             (
                 _optional_flag_name(value.name)
-                if isinstance(value.type, TensorType) and value.type.is_optional
+                if is_optional_value_type(value.type)
                 else None
             )
             for value in graph.outputs
