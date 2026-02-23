@@ -1,7 +1,8 @@
 {
-  "error": "Unsupported op QLinearAdd",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_qlinearadd_int8 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "com.microsoft::QLinearAdd"
-  ]
+  ],
+  "generated_checksum": "4cb8d981286e1902d3536b83174bdff67a40abc08c057411f72ead47e1e14332"
 }
