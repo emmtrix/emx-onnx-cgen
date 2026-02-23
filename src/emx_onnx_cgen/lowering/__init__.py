@@ -59,6 +59,7 @@ _LOWERING_MODULES = [
     "one_hot",
     "pad",
     "qlinear_conv",
+    "qlinear_add",
     "qlinear_matmul",
     "qlinear_mul",
     "quantize_linear",
