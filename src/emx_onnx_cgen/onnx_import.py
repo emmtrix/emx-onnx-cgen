@@ -737,19 +737,60 @@ def _if_graph_attrs(
     return then_branch, else_branch
 
 
-def _is_tensor_output(graph: onnx.GraphProto, name: str) -> bool:
-    value_info = _find_value_info(graph, name)
-    return (
-        value_info is not None and value_info.type.WhichOneof("value") == "tensor_type"
-    )
+def _value_info_kind(value_info: onnx.ValueInfoProto) -> str | None:
+    value_kind = value_info.type.WhichOneof("value")
+    if value_kind == "tensor_type":
+        return "tensor"
+    if value_kind == "sequence_type":
+        return "sequence"
+    if value_kind != "optional_type":
+        return None
+    elem_kind = value_info.type.optional_type.elem_type.WhichOneof("value")
+    if elem_kind == "tensor_type":
+        return "optional_tensor"
+    if elem_kind == "sequence_type":
+        return "optional_sequence"
+    return None
 
 
-def _is_sequence_output(graph: onnx.GraphProto, name: str) -> bool:
-    value_info = _find_value_info(graph, name)
-    return (
-        value_info is not None
-        and value_info.type.WhichOneof("value") == "sequence_type"
-    )
+def _branch_output_kind(branch: onnx.GraphProto, output_name: str) -> str | None:
+    for value_info in branch.output:
+        if value_info.name != output_name:
+            continue
+        value_kind = _value_info_kind(value_info)
+        if value_kind is not None:
+            return value_kind
+        break
+
+    for branch_node in branch.node:
+        if output_name not in branch_node.output:
+            continue
+        if branch_node.op_type == "SequenceConstruct":
+            return "sequence"
+        if branch_node.op_type == "Optional":
+            return "optional_tensor"
+        return "tensor"
+    return None
+
+
+def _if_output_kind(
+    graph: onnx.GraphProto,
+    node_output_name: str,
+    then_branch: onnx.GraphProto,
+    then_output: onnx.ValueInfoProto,
+    else_branch: onnx.GraphProto,
+    else_output: onnx.ValueInfoProto,
+) -> str | None:
+    value_info = _find_value_info(graph, node_output_name)
+    if value_info is not None:
+        value_kind = _value_info_kind(value_info)
+        if value_kind is not None:
+            return value_kind
+    then_kind = _branch_output_kind(then_branch, then_output.name)
+    else_kind = _branch_output_kind(else_branch, else_output.name)
+    if then_kind != else_kind:
+        return None
+    return then_kind
 
 
 def _sequence_construct_inputs(
@@ -823,18 +864,20 @@ def _expand_if_node(
         else_branch.output
     ):
         return None
-    output_is_tensor = tuple(
-        _is_tensor_output(graph, output_name) for output_name in node.output
+    output_kinds = tuple(
+        _if_output_kind(
+            graph,
+            output_name,
+            then_branch,
+            then_branch.output[output_index],
+            else_branch,
+            else_branch.output[output_index],
+        )
+        for output_index, output_name in enumerate(node.output)
     )
-    output_is_sequence = tuple(
-        _is_sequence_output(graph, output_name) for output_name in node.output
-    )
-    if any(
-        not (is_tensor or is_sequence)
-        for is_tensor, is_sequence in zip(output_is_tensor, output_is_sequence)
-    ):
+    if any(kind not in {"tensor", "sequence"} for kind in output_kinds):
         return None
-    if any(is_tensor != output_is_tensor[0] for is_tensor in output_is_tensor):
+    if any(kind != output_kinds[0] for kind in output_kinds):
         return None
 
     prefix_base = node.name or f"if_{node_index}"
@@ -851,7 +894,7 @@ def _expand_if_node(
 
     select_nodes: list[onnx.NodeProto] = []
     cond_name = node.input[0]
-    if output_is_tensor[0]:
+    if output_kinds[0] == "tensor":
         for output_index, output_name in enumerate(node.output):
             then_name = then_map.get(then_branch.output[output_index].name)
             else_name = else_map.get(else_branch.output[output_index].name)

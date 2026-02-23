@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op If",
+  "error": "Split output shape must be (1,), got (2,)",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Constant",

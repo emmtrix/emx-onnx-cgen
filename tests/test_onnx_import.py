@@ -202,6 +202,47 @@ def test_import_if_with_sequence_construct_branches_expands_to_where_and_sequenc
     assert len(imported.initializers) == 2
 
 
+def test_import_if_without_parent_value_info_uses_branch_output_types() -> None:
+    cond = helper.make_tensor_value_info("cond", TensorProto.BOOL, [])
+    x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2])
+    y = helper.make_tensor_value_info("y", TensorProto.FLOAT, [2])
+    out = helper.make_tensor_value_info("out", TensorProto.FLOAT, [2])
+
+    then_graph = helper.make_graph(
+        [helper.make_node("Identity", inputs=["x"], outputs=["then_out"])],
+        "then_graph",
+        [],
+        [helper.make_tensor_value_info("then_out", TensorProto.FLOAT, [2])],
+    )
+    else_graph = helper.make_graph(
+        [helper.make_node("Identity", inputs=["y"], outputs=["else_out"])],
+        "else_graph",
+        [],
+        [helper.make_tensor_value_info("else_out", TensorProto.FLOAT, [2])],
+    )
+
+    if_node = helper.make_node(
+        "If",
+        inputs=["cond"],
+        outputs=["branch_out"],
+        then_branch=then_graph,
+        else_branch=else_graph,
+    )
+    add_node = helper.make_node("Add", inputs=["branch_out", "x"], outputs=["out"])
+    graph = helper.make_graph([if_node, add_node], "if_graph", [cond, x, y], [out])
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 13)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+
+    imported = import_onnx(model)
+
+    assert [node.op_type for node in imported.nodes] == ["Identity", "Identity", "Where", "Add"]
+
+
 def test_import_gradient_of_add_expands_to_supported_nodes() -> None:
     a = helper.make_tensor_value_info("a", TensorProto.FLOAT, [2])
     b = helper.make_tensor_value_info("b", TensorProto.FLOAT, [2])

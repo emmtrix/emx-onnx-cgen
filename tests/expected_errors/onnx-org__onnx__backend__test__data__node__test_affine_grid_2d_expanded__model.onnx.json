@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op If",
+  "error": "Where inputs must be broadcastable, got ((), (1,), (0,))",
   "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Constant",
