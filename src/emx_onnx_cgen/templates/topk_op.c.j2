@@ -2,7 +2,7 @@ static inline int {{ op_name }}_better({{ input_c_type }} a, {{ output_indices_c
     return {{ compare_expr }};
 }
 
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for dim in outer_shape %}
 for (idx_t {{ outer_loop_vars[loop.index0] }} = 0; {{ outer_loop_vars[loop.index0] }} < {{ dim }}; ++{{ outer_loop_vars[loop.index0] }}) {
 {% endfor %}

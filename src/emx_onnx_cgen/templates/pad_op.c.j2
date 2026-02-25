@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if pads_input %}, const {{ pads_c_type }} {{ pads_input }}{{ pads_suffix }}{% endif %}{% if axes_input %}, const {{ axes_c_type }} {{ axes_input }}{{ axes_suffix }}{% endif %}{% if value_input %}, const {{ c_type }} {{ value_input }}{{ value_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if pads_input %}, const {{ pads_c_type }} {{ pads_input }}{{ pads_suffix }}{% endif %}{% if axes_input %}, const {{ axes_c_type }} {{ axes_input }}{{ axes_suffix }}{% endif %}{% if value_input %}, const {{ c_type }} {{ value_input }}{{ value_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
 const {{ c_type }} *{{ input0_flat }} = (const {{ c_type }} *){{ input0 }};
 {% if axes_input %}
 {% if pads_values %}

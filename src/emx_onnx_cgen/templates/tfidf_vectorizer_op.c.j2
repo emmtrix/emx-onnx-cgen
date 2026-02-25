@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int64_t pool[{{ pool_size if pool_size > 0 else 1 }}] = { {% if pool_values %}{{ pool_values | join(', ') }}{% else %}0{% endif %} };
     const int64_t ngram_counts[{{ ngram_counts_len if ngram_counts_len > 0 else 1 }}] = { {% if ngram_counts_values %}{{ ngram_counts_values | join(', ') }}{% else %}0{% endif %} };
     const int64_t ngram_indexes[{{ ngram_index_len if ngram_index_len > 0 else 1 }}] = { {% if ngram_indexes_values %}{{ ngram_indexes_values | join(', ') }}{% else %}0{% endif %} };

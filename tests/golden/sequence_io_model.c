@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -53,7 +56,7 @@
  * Outputs: y
  * Attrs: n/a
  */
-static inline void node0_identity(const float input0[1], float output[1]) {
+EMX_NODE_FN void node0_identity(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = input0[i0];
     }

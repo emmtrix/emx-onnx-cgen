@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     {{ input_c_type }} *input_flat = ({{ input_c_type }} *){{ input0 }};
     {{ input_c_type }} *y_flat = ({{ input_c_type }} *){{ y }};
     int64_t *indices_flat = (int64_t *){{ indices }};

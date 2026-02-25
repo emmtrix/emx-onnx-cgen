@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} r = {{ rate }}[0] / ({{ one_literal }} + ({{ c_type }}){{ timestep }}[0] * {{ decay_factor_literal }});
 {% for tensor in tensors %}
 {% for dim in tensor.shape %}

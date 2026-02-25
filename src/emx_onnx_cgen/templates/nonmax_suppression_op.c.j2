@@ -81,7 +81,7 @@ static inline int {{ op_name }}_suppress_by_iou(
     return intersection_over_union > iou_threshold;
 }
 
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     idx_t output_index = 0;
     const idx_t output_capacity = {{ output_capacity }};
     int64_t max_output_boxes_per_class_value = 0;

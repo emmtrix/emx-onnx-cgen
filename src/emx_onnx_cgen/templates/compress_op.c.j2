@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if axis_is_none %}
     idx_t out_index = 0;
     for (idx_t cond_index = 0; cond_index < {{ condition_length }}; ++cond_index) {

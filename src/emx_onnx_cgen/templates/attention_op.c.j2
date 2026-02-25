@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} scale = {{ scale_literal }};
     const {{ c_type }} softcap = {{ softcap_literal }};
     {% if output_present_key %}
