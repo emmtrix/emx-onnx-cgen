@@ -14017,6 +14017,7 @@ class CEmitter:
         lines.append(f"_Bool {model.name}_load(const char *path) {{")
         lines.append('    FILE *file = fopen(path, "rb");')
         lines.append("    if (!file) {")
+        lines.append('        fprintf(stderr, "Failed to open weight file: %s\\n", path);')
         lines.append("        return 0;")
         lines.append("    }")
         lines.append(f"    _Bool ok = {model.name}_load_file(file);")
