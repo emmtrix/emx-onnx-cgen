@@ -768,6 +768,18 @@ def _branch_output_kind(branch: onnx.GraphProto, output_name: str) -> str | None
         if branch_node.op_type == "SequenceConstruct":
             return "sequence"
         if branch_node.op_type == "Optional":
+            if branch_node.input:
+                nested_kind = _branch_output_kind(branch, branch_node.input[0])
+                if nested_kind in {"sequence", "optional_sequence"}:
+                    return "optional_sequence"
+            for attr in branch_node.attribute:
+                if attr.name != "type" or not attr.HasField("tp"):
+                    continue
+                elem_kind = attr.tp.WhichOneof("value")
+                if elem_kind == "sequence_type":
+                    return "optional_sequence"
+                if elem_kind == "tensor_type":
+                    return "optional_tensor"
             return "optional_tensor"
         return "tensor"
     return None
@@ -800,7 +812,15 @@ def _sequence_construct_inputs(
     for branch_node in branch.node:
         if output_name not in branch_node.output:
             continue
+        if branch_node.op_type == "Optional":
+            if len(branch_node.input) == 0:
+                return ()
+            if len(branch_node.input) == 1:
+                return _sequence_construct_inputs(branch, branch_node.input[0])
+            return None
         if branch_node.op_type != "SequenceConstruct":
+            if branch_node.op_type == "SequenceEmpty":
+                return ()
             return None
         return tuple(branch_node.input)
     return None
@@ -821,6 +841,36 @@ def _inline_if_branch(
 
     inlined_nodes: list[onnx.NodeProto] = []
     for node_index, branch_node in enumerate(branch.node):
+        if branch_node.op_type == "Optional":
+            if len(branch_node.input) == 1 and len(branch_node.output) == 1:
+                mapped_input = name_map.get(branch_node.input[0], branch_node.input[0])
+                name_map[branch_node.output[0]] = mapped_input
+                continue
+            if len(branch_node.input) == 0 and len(branch_node.output) == 1:
+                elem_type: int | None = None
+                for attr in branch_node.attribute:
+                    if attr.name != "type" or not attr.HasField("tp"):
+                        continue
+                    if attr.tp.WhichOneof("value") != "sequence_type":
+                        break
+                    seq_elem = attr.tp.sequence_type.elem_type
+                    if seq_elem.WhichOneof("value") != "tensor_type":
+                        break
+                    elem_type = seq_elem.tensor_type.elem_type
+                    break
+                if elem_type is not None:
+                    inlined_nodes.append(
+                        helper.make_node(
+                            "SequenceEmpty",
+                            inputs=[],
+                            outputs=[f"{prefix}_value_{node_index}_0"],
+                            name=f"{prefix}_node_{node_index}",
+                            dtype=elem_type,
+                        )
+                    )
+                    name_map[branch_node.output[0]] = f"{prefix}_value_{node_index}_0"
+                    continue
+
         inlined = onnx.NodeProto()
         inlined.CopyFrom(branch_node)
         if inlined.name:
@@ -875,7 +925,10 @@ def _expand_if_node(
         )
         for output_index, output_name in enumerate(node.output)
     )
-    if any(kind not in {"tensor", "sequence"} for kind in output_kinds):
+    if any(
+        kind not in {"tensor", "sequence", "optional_tensor", "optional_sequence"}
+        for kind in output_kinds
+    ):
         return None
     if any(kind != output_kinds[0] for kind in output_kinds):
         return None
@@ -894,7 +947,7 @@ def _expand_if_node(
 
     select_nodes: list[onnx.NodeProto] = []
     cond_name = node.input[0]
-    if output_kinds[0] == "tensor":
+    if output_kinds[0] in {"tensor", "optional_tensor"}:
         for output_index, output_name in enumerate(node.output):
             then_name = then_map.get(then_branch.output[output_index].name)
             else_name = else_map.get(else_branch.output[output_index].name)
@@ -918,7 +971,24 @@ def _expand_if_node(
         if then_inputs is None or else_inputs is None:
             return None
         if len(then_inputs) != len(else_inputs):
-            return None
+            if output_kinds[0] != "optional_sequence":
+                return None
+            selected_inputs = then_inputs if then_inputs else else_inputs
+            selected_map = then_map if then_inputs else else_map
+            selected_elements = [
+                selected_map.get(elem) for elem in selected_inputs if selected_map.get(elem)
+            ]
+            if len(selected_elements) != len(selected_inputs):
+                return None
+            select_nodes.append(
+                helper.make_node(
+                    "SequenceConstruct",
+                    inputs=selected_elements,
+                    outputs=[output_name],
+                    name=f"{prefix_base}_sequence_construct_{output_index}",
+                )
+            )
+            continue
 
         selected_elements: list[str] = []
         for elem_index, (then_elem, else_elem) in enumerate(
