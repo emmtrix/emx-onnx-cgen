@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int32_t input0_zero = (int32_t){{ input0_zero_expr }};
     const int32_t input1_zero = (int32_t){{ input1_zero_expr }};
 {% for idx in range(output_loop_vars | length) %}

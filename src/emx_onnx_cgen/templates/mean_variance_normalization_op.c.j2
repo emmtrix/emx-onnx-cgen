@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% for axis in non_axes %}
 for (idx_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
 {% endfor %}

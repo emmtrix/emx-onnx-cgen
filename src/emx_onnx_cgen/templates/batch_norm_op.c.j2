@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if training_mode %}
 {{ c_type }} channel_mean[{{ channels }}];
 {{ c_type }} channel_var[{{ channels }}];

@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     (void){{ input0 }};
     {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
     idx_t total = (idx_t){{ batch_size }} * {{ rows }} * {{ cols }};

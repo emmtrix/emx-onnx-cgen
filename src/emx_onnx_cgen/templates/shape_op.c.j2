@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     (void){{ input0 }};
 {% for value in values %}
     {{ output }}[{{ loop.index0 }}] = {{ value }};

@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const int64_t trip = (int64_t){{ trip_count }}[0];
     const bool enabled = {{ cond }}[0];
 {% if add_table_data is not none %}

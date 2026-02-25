@@ -41,6 +41,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -59,7 +62,7 @@
  *   is_case_sensitive: 1
  *   stopwords: [monday]
  */
-static inline void node0_stringnormalizer(const char input0[4][EMX_STRING_MAX_LEN], char output[3][EMX_STRING_MAX_LEN]) {
+EMX_NODE_FN void node0_stringnormalizer(const char input0[4][EMX_STRING_MAX_LEN], char output[3][EMX_STRING_MAX_LEN]) {
     const char (*input0_flat)[EMX_STRING_MAX_LEN] =
     (const char (*)[EMX_STRING_MAX_LEN])input0;
     char (*output_flat)[EMX_STRING_MAX_LEN] =
