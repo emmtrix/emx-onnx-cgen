@@ -2680,6 +2680,70 @@ def _make_dynamic_quantize_linear_model() -> onnx.ModelProto:
     return model
 
 
+def _make_dequantize_linear_int32_model() -> onnx.ModelProto:
+    input_shape = [2, 2]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.INT32, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
+    scale_tensor = helper.make_tensor(
+        "scale",
+        TensorProto.FLOAT,
+        dims=[],
+        vals=[0.25],
+    )
+    node = helper.make_node(
+        "DequantizeLinear",
+        inputs=["in0", "scale"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "dequantize_linear_int32_graph",
+        [input_info],
+        [output],
+        initializer=[scale_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 19)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_dequantize_linear_uint32_model() -> onnx.ModelProto:
+    input_shape = [2, 2]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT32, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, input_shape)
+    scale_tensor = helper.make_tensor(
+        "scale",
+        TensorProto.FLOAT,
+        dims=[],
+        vals=[0.25],
+    )
+    node = helper.make_node(
+        "DequantizeLinear",
+        inputs=["in0", "scale"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "dequantize_linear_uint32_graph",
+        [input_info],
+        [output],
+        initializer=[scale_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 19)],
+    )
+    model.ir_version = 9
+    # Intentionally skip ONNX checker: uint32 is a compiler extension for lowering tests.
+    return model
+
+
 def _make_batchnorm_model() -> tuple[onnx.ModelProto, dict[str, np.ndarray]]:
     input_shape = [2, 3, 2, 2]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -5604,6 +5668,17 @@ def test_quantize_linear_matches_onnxruntime() -> None:
 def test_dynamic_quantize_linear_matches_onnxruntime() -> None:
     model = _make_dynamic_quantize_linear_model()
     _run_ort_compare(model)
+
+
+def test_dequantize_linear_int32_matches_onnxruntime() -> None:
+    model = _make_dequantize_linear_int32_model()
+    _run_ort_compare(model)
+
+
+def test_dequantize_linear_uint32_codegen_smoke() -> None:
+    model = _make_dequantize_linear_uint32_model()
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "OpType: DequantizeLinear" in generated
 
 
 def test_batchnorm_op_matches_onnxruntime() -> None:
