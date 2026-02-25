@@ -39,6 +39,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -59,7 +62,7 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
  * Attrs:
  *   reduction: mean
  */
-static inline void node0_softmaxcrossentropyloss(const float input0[2][3], const int64_t target[2], float output[1], float log_prob[2][3]) {
+EMX_NODE_FN void node0_softmaxcrossentropyloss(const float input0[2][3], const int64_t target[2], float output[1], float log_prob[2][3]) {
     const float *input_flat = (const float *)input0;
     const int64_t *target_flat = (const int64_t *)target;
     float *output_flat = (float *)output;

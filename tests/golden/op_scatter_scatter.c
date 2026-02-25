@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -71,7 +74,7 @@ const EMX_UNUSED int64_t weight1_indices[2][3] = {
  * Attrs:
  *   axis: 1
  */
-static inline void node0_scatter(const float data[2][3], const int64_t indices[2][3], const float updates[2][3], float output[2][3]) {
+EMX_NODE_FN void node0_scatter(const float data[2][3], const int64_t indices[2][3], const float updates[2][3], float output[2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = data[i0][i1];

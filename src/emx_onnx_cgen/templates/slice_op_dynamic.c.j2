@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const idx_t input_rank = {{ input_rank }};
     const idx_t input_dims[] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const idx_t output_dims[] = { {% for dim in output_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };

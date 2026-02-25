@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -79,7 +82,7 @@ const EMX_UNUSED float weight2_value[1] = {
  * Attrs:
  *   mode: constant
  */
-static inline void node0_pad(const float input[2][3], float output[2][5]) {
+EMX_NODE_FN void node0_pad(const float input[2][3], float output[2][5]) {
     const float *input_flat = (const float *)input;
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 5; ++i1) {

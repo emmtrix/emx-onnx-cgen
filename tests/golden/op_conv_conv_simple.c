@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -91,7 +94,7 @@ const EMX_UNUSED float weight2_bias[1] = {
  *   pads: [1, 1, 1, 1]
  *   strides: [1, 1]
  */
-static inline void node0_conv(const float input0[1][1][4][4], const float weights[1][1][3][3], const float bias[1], float output[1][1][4][4]) {
+EMX_NODE_FN void node0_conv(const float input0[1][1][4][4], const float weights[1][1][3][3], const float bias[1], float output[1][1][4][4]) {
     for (idx_t n = 0; n < 1; ++n) {
         for (idx_t g = 0; g < 1; ++g) {
             for (idx_t oc = 0; oc < 1; ++oc) {

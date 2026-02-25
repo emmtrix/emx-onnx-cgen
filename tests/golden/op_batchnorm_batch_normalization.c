@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -103,7 +106,7 @@ const EMX_UNUSED float weight4_var[3] = {
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  */
-static inline void node0_batchnormalization(const float input0[2][3][2][2], const float scale[3], const float bias[3], const float mean[3], const float variance[3], float output[2][3][2][2]) {
+EMX_NODE_FN void node0_batchnormalization(const float input0[2][3][2][2], const float scale[3], const float bias[3], const float mean[3], const float variance[3], float output[2][3][2][2]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 2; ++i2) {

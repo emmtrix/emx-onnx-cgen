@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -69,7 +72,7 @@ const EMX_UNUSED int64_t weight1_sizes[4] = {
  *   mode: nearest
  *   nearest_mode: floor
  */
-static inline void node0_resize(const float input0[1][1][2][2], const int64_t sizes_input[4], float output[1][1][4][4]) {
+EMX_NODE_FN void node0_resize(const float input0[1][1][2][2], const int64_t sizes_input[4], float output[1][1][4][4]) {
     const int64_t input_shape[4] = { 1, 1, 2, 2 };
     const int64_t output_shape[4] EMX_UNUSED = { 1, 1, 4, 4 };
     double scales[4] EMX_UNUSED;

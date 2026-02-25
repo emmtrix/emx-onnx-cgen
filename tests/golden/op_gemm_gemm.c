@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -54,7 +57,7 @@
  *   alpha: 1.0
  *   beta: 1.0
  */
-static inline void node0_gemm(const float input_a[2][3], const float input_b[3][4], const float input_c[2][4], float output[2][4]) {
+EMX_NODE_FN void node0_gemm(const float input_a[2][3], const float input_b[3][4], const float input_c[2][4], float output[2][4]) {
     for (idx_t i = 0; i < 2; ++i) {
         for (idx_t j = 0; j < 4; ++j) {
             float acc = 0.0f;

@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -89,7 +92,7 @@ const EMX_UNUSED int64_t weight3_delta[1] = {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void node0_range(const int64_t start[1], const int64_t limit[1], const int64_t delta[1], int64_t output[4]) {
+EMX_NODE_FN void node0_range(const int64_t start[1], const int64_t limit[1], const int64_t delta[1], int64_t output[4]) {
     (void)limit;
     const int64_t start_value = start[0];
     const int64_t delta_value = delta[0];

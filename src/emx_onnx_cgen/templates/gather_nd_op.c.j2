@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if indices_prefix_shape %}
 {% for dim in indices_prefix_shape %}
 for (idx_t {{ indices_prefix_loop_vars[loop.index0] }} = 0; {{ indices_prefix_loop_vars[loop.index0] }} < {{ dim }}; ++{{ indices_prefix_loop_vars[loop.index0] }}) {

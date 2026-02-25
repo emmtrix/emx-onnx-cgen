@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -54,7 +57,7 @@
  * Attrs:
  *   axes: [-1]
  */
-static inline void node0_meanvariancenormalization(const float input0[2][3][4], float output[2][3][4]) {
+EMX_NODE_FN void node0_meanvariancenormalization(const float input0[2][3][4], float output[2][3][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;

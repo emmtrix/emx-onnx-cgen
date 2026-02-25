@@ -39,6 +39,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -58,7 +61,7 @@ static inline float ref_scalar_f32_relu(float a) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_relu(int N, int C, const float input0[N][C], float output[N][C]) {
+EMX_NODE_FN void node0_relu(int N, int C, const float input0[N][C], float output[N][C]) {
     for (idx_t i0 = 0; i0 < N; ++i0) {
         for (idx_t i1 = 0; i1 < C; ++i1) {
             output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);

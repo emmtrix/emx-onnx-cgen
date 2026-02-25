@@ -39,6 +39,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -58,7 +61,7 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_attention(const float input_q[1][2][3][4], const float input_k[1][2][5][4], const float input_v[1][2][5][4], float output[1][2][3][4]) {
+EMX_NODE_FN void node0_attention(const float input_q[1][2][3][4], const float input_k[1][2][5][4], const float input_v[1][2][5][4], float output[1][2][3][4]) {
     const float scale = 0.5f;
     const float softcap = 0.0f;
     for (int b = 0; b < 1; ++b) {

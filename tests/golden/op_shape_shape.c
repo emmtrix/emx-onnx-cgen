@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -52,7 +55,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_shape(const float input0[2][3][4], int64_t output[3]) {
+EMX_NODE_FN void node0_shape(const float input0[2][3][4], int64_t output[3]) {
     (void)input0;
     output[0] = 2LL;
     output[1] = 3LL;

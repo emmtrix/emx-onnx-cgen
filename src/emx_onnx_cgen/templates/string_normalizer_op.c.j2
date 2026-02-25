@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const char (*input0_flat)[EMX_STRING_MAX_LEN] =
         (const char (*)[EMX_STRING_MAX_LEN]){{ input0 }};
     char (*output_flat)[EMX_STRING_MAX_LEN] =

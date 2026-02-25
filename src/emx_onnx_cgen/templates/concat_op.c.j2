@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const void *inputs[] = { {% for input in inputs %}{{ input }}{% if not loop.last %}, {% endif %}{% endfor %} };
     const idx_t axis_sizes[] = { {% for axis in axis_sizes %}{{ axis }}{% if not loop.last %}, {% endif %}{% endfor %} };
     idx_t concat_axis = 0;

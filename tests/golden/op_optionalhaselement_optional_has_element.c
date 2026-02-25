@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -53,7 +56,7 @@
  * Outputs: output
  * Attrs: n/a
  */
-static inline void node0_optionalhaselement(const float input0[4], const _Bool optional_input_present, bool output[1]) {
+EMX_NODE_FN void node0_optionalhaselement(const float input0[4], const _Bool optional_input_present, bool output[1]) {
     (void)input0;
     output[0] = optional_input_present;
 }

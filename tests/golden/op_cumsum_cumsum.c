@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -67,7 +70,7 @@ const EMX_UNUSED int64_t weight1_axis[1] = {
  *   exclusive: 0
  *   reverse: 0
  */
-static inline void node0_cumsum(const float input0[2][3], float output[2][3]) {
+EMX_NODE_FN void node0_cumsum(const float input0[2][3], float output[2][3]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     const idx_t dims[2] = { 2, 3 };

@@ -39,6 +39,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -64,7 +67,7 @@ static inline float ref_scalar_f32_tanh(float a) {
  *   hidden_size: 3
  *   layout: 0
  */
-static inline void node0_lstm(const float input_x[1][1][2], const float input_w[1][12][2], const float input_r[1][12][3], float output_y[1][1][1][3], float output_y_h[1][1][3], float output_y_c[1][1][3]) {
+EMX_NODE_FN void node0_lstm(const float input_x[1][1][2], const float input_w[1][12][2], const float input_r[1][12][3], float output_y[1][1][1][3], float output_y_h[1][1][3], float output_y_c[1][1][3]) {
     {
         const int dir = 0;
         const int reverse = 0;

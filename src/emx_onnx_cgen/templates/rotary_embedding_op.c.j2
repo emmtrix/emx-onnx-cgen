@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if input_rank == 3 %}
 for (idx_t b = 0; b < {{ batch }}; ++b) {
     for (idx_t s = 0; s < {{ seq_len }}; ++s) {

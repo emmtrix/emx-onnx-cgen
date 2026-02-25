@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if axis_input %}, const {{ axis_c_type }} {{ axis_input }}{{ axis_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}const {{ c_type }} {{ input0 }}{{ input_suffix }}{% if axis_input %}, const {{ axis_c_type }} {{ axis_input }}{{ axis_suffix }}{% endif %}, {{ c_type }} {{ output }}{{ output_suffix }}) {
     const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
     {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
     const idx_t dims[{{ rank }}] = { {% for dim in input_shape %}{{ dim }}{% if not loop.last %}, {% endif %}{% endfor %} };

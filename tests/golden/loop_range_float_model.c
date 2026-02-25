@@ -40,6 +40,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -71,7 +74,7 @@ static inline float ref_scalar_f32_relu(float a) {
  * Outputs: Range_test_range_float_type_positive_delta_expanded_function_sub_result
  * Attrs: n/a
  */
-static inline void node0_sub(const float input0[1], const float input1[1], float output[1]) {
+EMX_NODE_FN void node0_sub(const float input0[1], const float input1[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = ref_scalar_f32_sub(input0[0], input1[0]);
     }
@@ -86,7 +89,7 @@ static inline void node0_sub(const float input0[1], const float input1[1], float
  * Attrs:
  *   to: 1
  */
-static inline void node1_cast(const float input0[1], float output[1]) {
+EMX_NODE_FN void node1_cast(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = (float)input0[i0];
     }
@@ -101,7 +104,7 @@ static inline void node1_cast(const float input0[1], float output[1]) {
  * Attrs:
  *   to: 1
  */
-static inline void node2_cast(const float input0[1], float output[1]) {
+EMX_NODE_FN void node2_cast(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = (float)input0[i0];
     }
@@ -115,7 +118,7 @@ static inline void node2_cast(const float input0[1], float output[1]) {
  * Outputs: Range_test_range_float_type_positive_delta_expanded_function_div_result
  * Attrs: n/a
  */
-static inline void node3_div(const float input0[1], const float input1[1], float output[1]) {
+EMX_NODE_FN void node3_div(const float input0[1], const float input1[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = ref_scalar_f32_div(input0[0], input1[0]);
     }
@@ -129,7 +132,7 @@ static inline void node3_div(const float input0[1], const float input1[1], float
  * Outputs: Range_test_range_float_type_positive_delta_expanded_function_ceil_result
  * Attrs: n/a
  */
-static inline void node4_ceil(const float input0[1], float output[1]) {
+EMX_NODE_FN void node4_ceil(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = ref_scalar_f32_ceil(input0[i0]);
     }
@@ -143,7 +146,7 @@ static inline void node4_ceil(const float input0[1], float output[1]) {
  * Outputs: Range_test_range_float_type_positive_delta_expanded_function_ceil_result_relu
  * Attrs: n/a
  */
-static inline void node5_relu(const float input0[1], float output[1]) {
+EMX_NODE_FN void node5_relu(const float input0[1], float output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = ref_scalar_f32_relu(input0[i0]);
     }
@@ -158,7 +161,7 @@ static inline void node5_relu(const float input0[1], float output[1]) {
  * Attrs:
  *   to: 7
  */
-static inline void node6_cast(const float input0[1], int64_t output[1]) {
+EMX_NODE_FN void node6_cast(const float input0[1], int64_t output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = (int64_t)input0[i0];
     }
@@ -173,7 +176,7 @@ static inline void node6_cast(const float input0[1], int64_t output[1]) {
  * Attrs:
  *   to: 9
  */
-static inline void node7_cast(const float input0[1], bool output[1]) {
+EMX_NODE_FN void node7_cast(const float input0[1], bool output[1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         output[i0] = (bool)input0[i0];
     }
@@ -188,7 +191,7 @@ static inline void node7_cast(const float input0[1], bool output[1]) {
  * Attrs:
  *   body: GraphProto('loop_body_attribute', input=<3 inputs>, output=<3 outputs>, node=<3 nodes>, value_info=<3 value_info>)
  */
-static inline void node8_loop(const int64_t trip_count[1], const bool cond[1], const float start[1], const float delta[1], float final[1], float output[2]) {
+EMX_NODE_FN void node8_loop(const int64_t trip_count[1], const bool cond[1], const float start[1], const float delta[1], float final[1], float output[2]) {
     const int64_t trip = (int64_t)trip_count[0];
     const bool enabled = cond[0];
     float current = start[0];

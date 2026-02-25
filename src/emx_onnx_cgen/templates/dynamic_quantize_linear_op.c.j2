@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     {{ compute_type }} input_min = ({{ compute_type }})0;
     {{ compute_type }} input_max = ({{ compute_type }})0;
 {% for dim in shape %}

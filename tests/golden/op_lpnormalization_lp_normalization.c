@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -55,7 +58,7 @@
  *   axis: -1
  *   p: 1
  */
-static inline void node0_lpnormalization(const float input0[2][3], float output[2][3]) {
+EMX_NODE_FN void node0_lpnormalization(const float input0[2][3], float output[2][3]) {
     const float *input_flat = (const float *)input0;
     float *output_flat = (float *)output;
     const idx_t outer = 2;
