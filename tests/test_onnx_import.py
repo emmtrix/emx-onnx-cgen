@@ -202,6 +202,15 @@ def test_import_if_with_sequence_construct_branches_expands_to_where_and_sequenc
     assert len(imported.initializers) == 2
 
 
+def test_import_if_with_optional_sequence_branches_expands_to_supported_ops() -> None:
+    model = onnx.load("onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx")
+
+    imported = import_onnx(model)
+
+    assert all(node.op_type != "If" for node in imported.nodes)
+    assert all(node.op_type != "Optional" for node in imported.nodes)
+
+
 def test_import_if_without_parent_value_info_uses_branch_output_types() -> None:
     cond = helper.make_tensor_value_info("cond", TensorProto.BOOL, [])
     x = helper.make_tensor_value_info("x", TensorProto.FLOAT, [2])

@@ -1654,7 +1654,7 @@ def _load_test_data_outputs(
         )
     for value_info in model_outputs:
         value_kind = value_info.type.WhichOneof("value")
-        if value_kind not in {"tensor_type", "sequence_type"}:
+        if value_kind not in {"tensor_type", "sequence_type", "optional_type"}:
             LOGGER.warning(
                 "Skipping test data load for unsupported output %s (type %s).",
                 value_info.name,
@@ -1664,16 +1664,46 @@ def _load_test_data_outputs(
     outputs: dict[str, np.ndarray | list[np.ndarray]] = {}
     for index, path in enumerate(output_files):
         value_info = model_outputs[index]
-        if value_info.type.WhichOneof("value") == "tensor_type":
+        value_kind = value_info.type.WhichOneof("value")
+        if value_kind == "tensor_type":
             tensor = onnx.TensorProto()
             tensor.ParseFromString(path.read_bytes())
             outputs[value_info.name] = numpy_helper.to_array(tensor)
             continue
-        seq = onnx.SequenceProto()
-        seq.ParseFromString(path.read_bytes())
-        outputs[value_info.name] = [
-            numpy_helper.to_array(tensor) for tensor in seq.tensor_values
-        ]
+        if value_kind == "sequence_type":
+            seq = onnx.SequenceProto()
+            seq.ParseFromString(path.read_bytes())
+            outputs[value_info.name] = [
+                numpy_helper.to_array(tensor) for tensor in seq.tensor_values
+            ]
+            continue
+        optional = onnx.OptionalProto()
+        optional.ParseFromString(path.read_bytes())
+        elem_kind = value_info.type.optional_type.elem_type.WhichOneof("value")
+        if elem_kind == "sequence_type":
+            if optional.HasField("sequence_value"):
+                outputs[value_info.name] = [
+                    numpy_helper.to_array(tensor)
+                    for tensor in optional.sequence_value.tensor_values
+                ]
+            else:
+                outputs[value_info.name] = []
+            continue
+        if elem_kind == "tensor_type":
+            if optional.HasField("tensor_value"):
+                outputs[value_info.name] = numpy_helper.to_array(optional.tensor_value)
+            else:
+                tensor_type = value_info.type.optional_type.elem_type.tensor_type
+                dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+                if dtype_info is None:
+                    return None
+                shape = [
+                    dim.dim_value if dim.HasField("dim_value") else 1
+                    for dim in tensor_type.shape.dim
+                ]
+                outputs[value_info.name] = np.zeros(shape, dtype=dtype_info.np_dtype)
+            continue
+        return None
     return outputs
 
 
