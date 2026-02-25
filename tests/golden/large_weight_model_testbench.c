@@ -83,6 +83,7 @@ static _Bool large_weight_model_load_file(FILE *file);
 _Bool large_weight_model_load(const char *path) {
     FILE *file = fopen(path, "rb");
     if (!file) {
+        fprintf(stderr, "Failed to open weight file: %s\n", path);
         return 0;
     }
     _Bool ok = large_weight_model_load_file(file);
