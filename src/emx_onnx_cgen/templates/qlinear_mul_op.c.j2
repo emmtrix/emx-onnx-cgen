@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ compute_type }} scale = (({{ compute_type }}){{ input0_scale_expr }}) * (({{ compute_type }}){{ input1_scale_expr }}) / (({{ compute_type }}){{ output_scale_expr }});
     const int32_t input0_zero = (int32_t){{ input0_zero_expr }};
     const int32_t input1_zero = (int32_t){{ input1_zero_expr }};

@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -54,7 +57,7 @@
  *   kernel_shape: [2, 2]
  *   strides: [2, 2]
  */
-static inline void node0_averagepool(const float input0[1][1][4][4], float output[1][1][2][2]) {
+EMX_NODE_FN void node0_averagepool(const float input0[1][1][4][4], float output[1][1][2][2]) {
     for (idx_t n = 0; n < 1; ++n) {
         for (idx_t c = 0; c < 1; ++c) {
             for (idx_t oh = 0; oh < 2; ++oh) {

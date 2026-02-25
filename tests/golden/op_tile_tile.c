@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -65,7 +68,7 @@ const EMX_UNUSED int64_t weight1_repeats[2] = {
  * Outputs: output
  * Attrs: n/a
  */
-static inline void node0_tile(const float input0[2][3], const int64_t repeats_input[2], float output[4][3]) {
+EMX_NODE_FN void node0_tile(const float input0[2][3], const int64_t repeats_input[2], float output[4][3]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     idx_t output_index = 0;

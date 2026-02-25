@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const double size_value = (double){{ size }}[0];
     const double denom = {{ periodic_literal }} ? size_value : (size_value - 1.0);
     const double alpha = 25.0 / 46.0;

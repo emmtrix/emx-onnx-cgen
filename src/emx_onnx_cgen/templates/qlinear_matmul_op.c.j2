@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if scale_is_float16 %}
     const {{ scale_type }} scale_product = ({{ scale_type }})((( {{ scale_type }}){{ input0_scale_expr }}) * (({{ scale_type }}){{ input1_scale_expr }}));
     const {{ scale_type }} scale = ({{ scale_type }})(scale_product / ({{ scale_type }}){{ output_scale_expr }});

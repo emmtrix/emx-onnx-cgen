@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     (void){{ depth }};
     const {{ c_type }} off_value = {{ values }}[0];
     const {{ c_type }} on_value = {{ values }}[1];

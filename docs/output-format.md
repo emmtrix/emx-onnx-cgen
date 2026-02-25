@@ -65,8 +65,8 @@ irrelevant details omitted:
 // Scalar helpers used by kernels (pure functions).
 static inline float ref_scalar_f32_relu(float a) { return a > 0.0f ? a : 0.0f; }
 
-// Per-node kernels (static inline, explicit loops).
-static inline void node0_relu(const float input0[1][16], float output[1][16]) {
+// Per-node kernels (EMX_NODE_FN, explicit loops).
+EMX_NODE_FN void node0_relu(const float input0[1][16], float output[1][16]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 16; ++i1) {
             output[i0][i1] = ref_scalar_f32_relu(input0[i0][i1]);
@@ -281,7 +281,7 @@ Design rules:
 Example:
 
 ```c
-static inline void node0_add(const float input0[2][3][4],
+EMX_NODE_FN void node0_add(const float input0[2][3][4],
                              const float input1[2][3][4],
                              float output[2][3][4]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
@@ -430,6 +430,7 @@ Macros:
 
 - `idx_t`: loop index type; defaults to `int32_t` but can be overridden.
 - `EMX_UNUSED`: attribute/helper for unused parameters.
+- `EMX_NODE_FN`: storage/inline specifier for generated per-node kernel functions; defaults to `static inline` and can be overridden at compile time by defining `EMX_NODE_FN` before compiling the generated translation unit.
 - `EMX_STRING_MAX_LEN`: fixed upper bound for string element storage.
 
 ## Optional Testbench Output (`--emit-testbench`, `--testbench-file`)

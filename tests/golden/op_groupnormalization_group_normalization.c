@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -55,7 +58,7 @@
  *   epsilon: 9.999999747378752e-06
  *   num_groups: 2
  */
-static inline void node0_groupnormalization(const float input0[1][4][2][2], const float scale[4], const float bias[4], float output[1][4][2][2]) {
+EMX_NODE_FN void node0_groupnormalization(const float input0[1][4][2][2], const float scale[4], const float bias[4], float output[1][4][2][2]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t g = 0; g < 2; ++g) {
             float sum = 0.0f;

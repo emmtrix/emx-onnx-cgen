@@ -2289,6 +2289,7 @@ class CEmitter:
             "",
             self._emit_index_type_define(),
             self._emit_unused_define(),
+            self._emit_node_function_define(),
             self._emit_string_max_len_define(),
             self._emit_sequence_max_len_define(),
         ]
@@ -2447,6 +2448,7 @@ class CEmitter:
             *includes,
             "",
             self._emit_index_type_define(),
+            self._emit_node_function_define(),
             self._emit_string_max_len_define(),
             self._emit_sequence_max_len_define(),
         ]
@@ -3093,6 +3095,16 @@ class CEmitter:
                 "#else",
                 "#define EMX_UNUSED",
                 "#endif",
+                "#endif",
+            )
+        )
+
+    @staticmethod
+    def _emit_node_function_define() -> str:
+        return "\n".join(
+            (
+                "#ifndef EMX_NODE_FN",
+                "#define EMX_NODE_FN static inline",
                 "#endif",
             )
         )
@@ -9414,7 +9426,7 @@ class CEmitter:
             if c_type == "char":
                 rendered = "\n".join(
                     (
-                        f"static inline void {op_name}({dim_args}{', '.join(param_decls)}) {{",
+                        f"EMX_NODE_FN void {op_name}({dim_args}{', '.join(param_decls)}) {{",
                         f"    memcpy({params['output']}, {params['input0']}, sizeof(char) * {CEmitter._element_count_expr(shape)} * EMX_STRING_MAX_LEN);",
                         "}",
                     )

@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -54,7 +57,7 @@
  *   blocksize: 2
  *   mode: DCR
  */
-static inline void node0_depthtospace(const float input0[1][4][2][2], float output[1][1][4][4]) {
+EMX_NODE_FN void node0_depthtospace(const float input0[1][4][2][2], float output[1][1][4][4]) {
     const float *input_data = (const float *)input0;
     float *output_data = (float *)output;
     idx_t output_index = 0;

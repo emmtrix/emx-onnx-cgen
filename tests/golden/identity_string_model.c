@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -53,7 +56,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_identity(const char input0[2][EMX_STRING_MAX_LEN], char output[2][EMX_STRING_MAX_LEN]) {
+EMX_NODE_FN void node0_identity(const char input0[2][EMX_STRING_MAX_LEN], char output[2][EMX_STRING_MAX_LEN]) {
     memcpy(output, input0, sizeof(char) * 2 * EMX_STRING_MAX_LEN);
 }
 

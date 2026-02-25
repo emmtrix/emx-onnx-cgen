@@ -11,7 +11,7 @@ static inline double {{ op_name }}_rng_next_double(uint64_t *state) {
     return (double){{ op_name }}_rng_next_u64(state) * (1.0 / 18446744073709551616.0);
 }
 
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     uint64_t rng_state = {{ seed }}ull;
     if (!rng_state) {
         rng_state = 0x243f6a8885a308d3ull;

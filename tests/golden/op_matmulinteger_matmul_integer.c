@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -97,7 +100,7 @@ const EMX_UNUSED uint8_t weight3_b_zero_point[1] = {
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_matmulinteger(const uint8_t input0[2][3], const uint8_t input1[3][4], const uint8_t input0_zero_point[1], const uint8_t input1_zero_point[1], int32_t output[2][4]) {
+EMX_NODE_FN void node0_matmulinteger(const uint8_t input0[2][3], const uint8_t input1[3][4], const uint8_t input0_zero_point[1], const uint8_t input1_zero_point[1], int32_t output[2][4]) {
     const int32_t input0_zero = (int32_t)input0_zero_point[0];
     const int32_t input1_zero = (int32_t)input1_zero_point[0];
     for (idx_t i0 = 0; i0 < 2; ++i0) {

@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% if kind == "reduce_all" %}
     {{ acc_type }} acc = {{ zero_literal }};
 {% for var in input_loop_vars %}

@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -67,7 +70,7 @@ const EMX_UNUSED int64_t weight1_split[3] = {
  * Attrs:
  *   axis: 1
  */
-static inline void node0_split(const float input0[2][6], float output_0[2][2], float output_1[2][2], float output_2[2][2]) {
+EMX_NODE_FN void node0_split(const float input0[2][6], float output_0[2][2], float output_1[2][2], float output_2[2][2]) {
     const float *input_data = (const float *)input0;
     float *output_ptrs[] = { (float *)output_0, (float *)output_1, (float *)output_2 };
     const idx_t axis_sizes[] = { 2, 2, 2 };

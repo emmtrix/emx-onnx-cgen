@@ -1,4 +1,4 @@
-static inline void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     for (idx_t i = 0; i < {{ m }}; ++i) {
         for (idx_t j = 0; j < {{ n }}; ++j) {
             {{ acc_type }} acc = {{ zero_literal }};
