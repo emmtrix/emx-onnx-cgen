@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -53,7 +56,7 @@
  * Attrs:
  *   k: 0
  */
-static inline void node0_eyelike(const float input0[3][3], float output[3][3]) {
+EMX_NODE_FN void node0_eyelike(const float input0[3][3], float output[3][3]) {
     (void)input0;
     float *output_data = (float *)output;
     idx_t total = (idx_t)1 * 3 * 3;

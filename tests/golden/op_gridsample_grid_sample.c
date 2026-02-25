@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -76,7 +79,7 @@ static inline double node0_gridsample_reflect(double value, double x_min, double
     return value;
 }
 
-static inline void node0_gridsample(const float x[1][1][2][2], const float grid[1][2][2][2], float y[1][1][2][2]) {
+EMX_NODE_FN void node0_gridsample(const float x[1][1][2][2], const float grid[1][2][2][2], float y[1][1][2][2]) {
     const int input_spatial[2] = { 2, 2 };
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 1; ++i1) {

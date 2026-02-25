@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -54,7 +57,7 @@
  * Attrs:
  *   epsilon: 9.999999747378752e-06
  */
-static inline void node0_instancenormalization(const float input0[1][3][2][2], const float scale[3], const float bias[3], float output[1][3][2][2]) {
+EMX_NODE_FN void node0_instancenormalization(const float input0[1][3][2][2], const float scale[3], const float bias[3], float output[1][3][2][2]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             float sum = 0.0f;

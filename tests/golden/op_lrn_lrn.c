@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -57,7 +60,7 @@
  *   bias: 1.0
  *   size: 3
  */
-static inline void node0_lrn(const float input0[1][3][4][4], float output[1][3][4][4]) {
+EMX_NODE_FN void node0_lrn(const float input0[1][3][4][4], float output[1][3][4][4]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {

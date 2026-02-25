@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -53,7 +56,7 @@
  * Outputs: out
  * Attrs: n/a
  */
-static inline void node0_globalmaxpool(const float input0[1][2][4][3], float output[1][2][1][1]) {
+EMX_NODE_FN void node0_globalmaxpool(const float input0[1][2][4][3], float output[1][2][1][1]) {
     for (idx_t i0 = 0; i0 < 1; ++i0) {
         for (idx_t i1 = 0; i1 < 2; ++i1) {
             for (idx_t i2 = 0; i2 < 1; ++i2) {

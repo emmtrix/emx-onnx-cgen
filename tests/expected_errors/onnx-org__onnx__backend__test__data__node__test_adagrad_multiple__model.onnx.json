@@ -4,5 +4,5 @@
   "operators": [
     "ai.onnx.preview.training::Adagrad"
   ],
-  "generated_checksum": "b04360cc76378cf183172f6f9896058143ec820e15d9ab7f5555cd51b83df0b1"
+  "generated_checksum": "ca56121c4719318b7a94adaf46c4feee606ebe93dda7ea36dcacadbaab82279e"
 }

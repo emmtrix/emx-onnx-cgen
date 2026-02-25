@@ -37,6 +37,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -53,7 +56,7 @@
  * Attrs:
  *   to: 6
  */
-static inline void node0_cast(const float input0[2][3], int32_t output[2][3]) {
+EMX_NODE_FN void node0_cast(const float input0[2][3], int32_t output[2][3]) {
     for (idx_t i0 = 0; i0 < 2; ++i0) {
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             output[i0][i1] = (int32_t)input0[i0][i1];

@@ -38,6 +38,9 @@
 #define EMX_UNUSED
 #endif
 #endif
+#ifndef EMX_NODE_FN
+#define EMX_NODE_FN static inline
+#endif
 #ifndef EMX_STRING_MAX_LEN
 #define EMX_STRING_MAX_LEN 256
 #endif
@@ -54,7 +57,7 @@
  * Attrs:
  *   axis: 2
  */
-static inline void node0_concat(const float input_0[1][2][3], const float input_1[1][2][1], float output[1][2][4]) {
+EMX_NODE_FN void node0_concat(const float input_0[1][2][3], const float input_1[1][2][1], float output[1][2][4]) {
     const void *inputs[] = { input_0, input_1 };
     const idx_t axis_sizes[] = { 3, 1 };
     idx_t concat_axis = 0;
