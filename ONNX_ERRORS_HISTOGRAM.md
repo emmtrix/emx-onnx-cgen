@@ -59,7 +59,6 @@
 | ReduceMin does not support dtype bool | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
-| Unsupported op If | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 
 ## Error frequency by opset
@@ -68,7 +67,6 @@
 | --- | --- | --- |
 | Out of tolerance | 9 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
-| Unsupported op If | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |
 | Unsupported op SequenceMap | 17 | 6 |
