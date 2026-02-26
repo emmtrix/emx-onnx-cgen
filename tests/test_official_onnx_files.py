@@ -15,9 +15,9 @@ from emx_onnx_cgen import cli
 
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
-LOCAL_ONNX_PREFIX = "onnx2c-org/test/local_ops/"
+LOCAL_ONNX_PREFIX = "onnx2c-org/test/"
 LOCAL_ONNX_DATA_ROOT = (
-    Path(__file__).resolve().parents[1] / "onnx2c-org" / "test" / "local_ops"
+    Path(__file__).resolve().parents[1] / "onnx2c-org" / "test"
 )
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False

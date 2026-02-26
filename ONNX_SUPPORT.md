@@ -1824,83 +1824,83 @@ Coverage 1485 / 1802 ONNX files (82.4%).
 
 ## ONNX2C test coverage
 
-Test directory: `onnx2c-org/test/local_ops`
+Test directory: `onnx2c-org/test`
 
 Coverage 71 / 74 ONNX files (95.9%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
-| test_gather_basic/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_gather_output_scalar/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_gather_scalar_axis0/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_gather_scalar_axis1/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_gemm_C1/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1x1/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1x1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1xN/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_C1xN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CM_transA/model.onnx | 12 | ❌ | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) |
-| test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CMx1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_CMx1_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_CMxN/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CMxN_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_CMxN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_CMxN_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CN/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_gemm_CN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_gemm_CN_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_lstm_activations/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| test_lstm_all_outputs/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| test_lstm_bidirectional/model.onnx | 11 | ❌ | Unsupported LSTM direction b'bidirectional' |
-| test_lstm_clip/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| test_lstm_intermediate_h/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| test_lstm_missing_inputs/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_lstm_reverse/model.onnx | 11 | ❌ | Unsupported LSTM direction b'reverse' |
-| test_lstm_seq_length/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| test_lstm_simple/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_lstm_with_initial_state/model.onnx | 12 | ✅ | OK (max ULP 5) |
-| test_lstm_y_c/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| test_matmul_1x1x3x4_2x3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_1x3x4_2x3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_1x3x4_3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_2x1x3x4_2x3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_2x3_3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_2x3x3x4_1x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_2x3x4_4/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_2x3x4_4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_2x3x4x5_5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_3_2x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_3_3/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_3_3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_3x4_2x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_3x4_4/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_4x5x2x3_4x5x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_5x2x3_5x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| test_matmul_precision/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_maxpool_stride_1/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_maxpool_stride_2/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_nodes_out_of_order/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_pad_constant_default/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_pad_constant_input/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_pad_edge/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_pad_edge_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_pad_reflect_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_pad_reflect_nopadding/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_qlinearadd_int8/model.onnx |  | ✅ | OK (max ULP 0) |
-| test_qlinearadd_uint8/model.onnx |  | ✅ | OK (max ULP 0) |
-| test_qlinearmul_int8/model.onnx |  | ✅ | OK (max ULP 0) |
-| test_qlinearmul_uint8/model.onnx |  | ✅ | OK (max ULP 0) |
-| test_resize_downsample_sizes_linear_1D/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_resize_downsample_sizes_linear_1D_align/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| test_scalar_input_to_node/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| test_scatternd_indices_1x1x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_scatternd_indices_1x2x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_scatternd_indices_2x2x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_scatternd_indices_3x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_shape_const_out/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| test_slice_end_INT64_MAX/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gather_basic/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_gather_output_scalar/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_gather_scalar_axis0/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_gather_scalar_axis1/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_C1/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_C1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_C1_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_C1x1/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_C1x1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_C1xN/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_gemm_C1xN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | ❌ | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) |
+| local_ops/test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_gemm_CMx1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_CMx1_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_CMxN/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_gemm_CMxN_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_CMxN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_CMxN_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_gemm_CN/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_gemm_CN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_gemm_CN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_gemm_CN_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_activations/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_all_outputs/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_bidirectional/model.onnx | 11 | ❌ | Unsupported LSTM direction b'bidirectional' |
+| local_ops/test_lstm_clip/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_intermediate_h/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_missing_inputs/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_reverse/model.onnx | 11 | ❌ | Unsupported LSTM direction b'reverse' |
+| local_ops/test_lstm_seq_length/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_simple/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_lstm_with_initial_state/model.onnx | 12 | ✅ | OK (max ULP 5) |
+| local_ops/test_lstm_y_c/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_1x1x3x4_2x3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_1x3x4_2x3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_1x3x4_3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_2x1x3x4_2x3x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_2x3_3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_2x3x3x4_1x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_2x3x4_4/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_2x3x4_4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_2x3x4x5_5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_3_2x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_3_3/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_3_3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_3x4_2x4x5/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_3x4_4/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_4x5x2x3_4x5x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_5x2x3_5x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| local_ops/test_matmul_precision/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_maxpool_stride_1/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_maxpool_stride_2/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_nodes_out_of_order/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_pad_constant_default/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_pad_constant_input/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_pad_edge/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_pad_edge_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_pad_reflect_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_pad_reflect_nopadding/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_qlinearadd_int8/model.onnx |  | ✅ | OK (max ULP 0) |
+| local_ops/test_qlinearadd_uint8/model.onnx |  | ✅ | OK (max ULP 0) |
+| local_ops/test_qlinearmul_int8/model.onnx |  | ✅ | OK (max ULP 0) |
+| local_ops/test_qlinearmul_uint8/model.onnx |  | ✅ | OK (max ULP 0) |
+| local_ops/test_resize_downsample_sizes_linear_1D/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx | 12 | ✅ | OK (max ULP 1) |
+| local_ops/test_scalar_input_to_node/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| local_ops/test_scatternd_indices_1x1x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_scatternd_indices_1x2x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_scatternd_indices_2x2x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_scatternd_indices_3x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_shape_const_out/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | ✅ | OK (max ULP 0) |
