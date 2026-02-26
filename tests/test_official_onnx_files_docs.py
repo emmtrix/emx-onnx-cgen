@@ -57,29 +57,72 @@ def _render_onnx_file_support_table(
     return lines
 
 
+def _render_onnx_file_support_section(
+    *,
+    title: str,
+    test_directory: str,
+    expectations: list[OnnxFileExpectation],
+) -> list[str]:
+    supported_count = sum(
+        1 for expectation in expectations if _is_success_message(expectation.error)
+    )
+    total_count = len(expectations)
+    support_percent = (
+        (supported_count / total_count) * 100.0 if total_count else 0.0
+    )
+    return [
+        f"## {title}",
+        "",
+        f"Test directory: `{test_directory}`",
+        "",
+        f"Coverage {supported_count} / {total_count} ONNX files ({support_percent:.1f}%).",
+        "",
+        *_render_onnx_file_support_table(expectations),
+    ]
+
+
 def _render_onnx_file_support_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
 ) -> str:
-    supported_count = sum(
+    onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
+    official_supported_count = sum(
         1
         for expectation in official_expectations
         if _is_success_message(expectation.error)
     )
-    total_count = len(official_expectations)
-    onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
-    local_supported = sum(
-        1
-        for expectation in local_expectations
-        if _is_success_message(expectation.error)
+    official_total_count = len(official_expectations)
+    local_supported_count = sum(
+        1 for expectation in local_expectations if _is_success_message(expectation.error)
     )
-    local_total = len(local_expectations)
+    local_total_count = len(local_expectations)
+    official_support_percent = (
+        (official_supported_count / official_total_count) * 100.0
+        if official_total_count
+        else 0.0
+    )
+    local_support_percent = (
+        (local_supported_count / local_total_count) * 100.0
+        if local_total_count
+        else 0.0
+    )
     lines = [
-        "# Official ONNX file support",
+        "# ONNX test coverage",
         "",
-        f"Support {supported_count} / {total_count} official ONNX files.",
+        "Overview:",
         "",
-        f"ONNX version: {onnx_version}",
+        "| Test suite | Coverage | Version |",
+        "| --- | --- | --- |",
+        (
+            "| [Official ONNX test coverage](#official-onnx-test-coverage) "
+            f"| {official_supported_count} / {official_total_count}, "
+            f"{official_support_percent:.1f}% | {onnx_version} |"
+        ),
+        (
+            "| [ONNX2C test coverage](#onnx2c-test-coverage) "
+            f"| {local_supported_count} / {local_total_count}, "
+            f"{local_support_percent:.1f}% | n/a |"
+        ),
         "",
         "See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.",
         "",
@@ -91,15 +134,17 @@ def _render_onnx_file_support_markdown(
             "computed, and the maximum ULP distance is reported."
         ),
         "",
-        *_render_onnx_file_support_table(official_expectations),
+        *_render_onnx_file_support_section(
+            title="Official ONNX test coverage",
+            test_directory="onnx-org/onnx/backend/test/data",
+            expectations=official_expectations,
+        ),
         "",
-        "## Local ONNX file support",
-        "",
-        "Local tests: `onnx2c-org/test/local_ops`.",
-        "",
-        f"Support {local_supported} / {local_total} local ONNX files.",
-        "",
-        *_render_onnx_file_support_table(local_expectations),
+        *_render_onnx_file_support_section(
+            title="ONNX2C test coverage",
+            test_directory="onnx2c-org/test/local_ops",
+            expectations=local_expectations,
+        ),
     ]
     return "\n".join(lines)
 
@@ -238,10 +283,24 @@ def test_official_onnx_file_support_doc() -> None:
             "onnx-org version metadata is unavailable. Initialize the onnx-org "
             "submodule and fetch its data files or set ONNX_ORG_AUTO_INIT=0 to skip auto-init."
         )
-    official_expectations = [
-        _load_expectation_for_repo_relative(path)
-        for path in _official_onnx_file_paths()
-    ]
+    official_test_directory = "onnx-org/onnx/backend/test/data"
+    official_prefix = f"{official_test_directory}/"
+    official_expectations: list[OnnxFileExpectation] = []
+    for path in _official_onnx_file_paths():
+        expectation = _load_expectation_for_repo_relative(path)
+        relative_path = (
+            path[len(official_prefix) :] if path.startswith(official_prefix) else path
+        )
+        official_expectations.append(
+            OnnxFileExpectation(
+                path=relative_path,
+                error=expectation.error,
+                command_line=expectation.command_line,
+                operators=expectation.operators,
+                opset_version=expectation.opset_version,
+            )
+        )
+
     repo_root = _repo_root()
     local_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(
         repo_root
