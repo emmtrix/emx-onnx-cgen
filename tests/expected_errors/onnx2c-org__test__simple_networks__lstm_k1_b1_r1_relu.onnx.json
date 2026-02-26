@@ -1,10 +1,11 @@
 {
-  "error": "Unsupported LSTM direction b'forward'",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks lstm_k1_b1_r1_relu.onnx",
   "operators": [
     "Transpose",
     "LSTM",
     "Squeeze"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "4329ba181b53a6fa832e56d099618485b5b71fca72ba607ae78696f73fd7ec30"
 }

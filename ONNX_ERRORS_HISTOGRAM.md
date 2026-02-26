@@ -25,7 +25,6 @@ This histogram is test-suite-overarching.
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
-| Unsupported LSTM direction b'*' | 4 | 11 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
@@ -75,7 +74,6 @@ This histogram is test-suite-overarching.
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
 | Out of tolerance | 9 | 5 |
-| Unsupported LSTM direction b'*' | 11 | 4 |
 | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 12 | 1 |
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
 | Resize coordinate_transformation_mode '*' is not supported | 13 | 1 |
