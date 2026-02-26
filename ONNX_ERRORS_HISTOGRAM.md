@@ -1,5 +1,7 @@
 # Error frequency
 
+This histogram is test-suite-overarching.
+
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | 25 |
@@ -11,9 +13,9 @@
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
+| Out of tolerance | 12 | 8, 9, 19, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 7 | 9, 19, 22 |
 | Unsupported op Loop | 7 | 16, 17 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -23,6 +25,7 @@
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
+| Unsupported LSTM direction b'*' | 4 | 11 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
@@ -34,6 +37,7 @@
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
+| Cast input and output shapes must match | 2 | 22 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -53,19 +57,28 @@
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
+| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | 12 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
+| Resize coordinate_transformation_mode '*' is not supported | 1 | 13 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op MelWeightMatrix | 1 | 17 |
+| Unsupported op RandomUniform | 1 | 22 |
+| Unsupported op TreeEnsembleClassifier | 1 | 12 |
 
 ## Error frequency by opset
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Out of tolerance | 9 | 1 |
+| Out of tolerance | 8 | 1 |
+| Out of tolerance | 9 | 5 |
+| Unsupported LSTM direction b'*' | 11 | 4 |
+| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 12 | 1 |
+| Unsupported op TreeEnsembleClassifier | 12 | 1 |
+| Resize coordinate_transformation_mode '*' is not supported | 13 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |
@@ -100,6 +113,7 @@
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
+| Cast input and output shapes must match | 22 | 2 |
 | LpPool expects 2D kernel_shape | 22 | 2 |
 | LpPool supports auto_pad=NOTSET only | 22 | 2 |
 | Selu only supports alpha=1.6732632423543772 | 22 | 2 |
@@ -108,6 +122,7 @@
 | Unsupported op MaxUnpool | 22 | 2 |
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
+| Unsupported op RandomUniform | 22 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
@@ -122,30 +137,3 @@
 | QuantizeLinear block_size is not supported | 25 | 2 |
 | Graph must contain at least one node | 25 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 25 | 1 |
-
-## Local ONNX file support histogram
-
-### Error frequency
-
-| Error message | Count | Opset versions |
-| --- | --- | --- |
-| Out of tolerance | 5 | 8, 9 |
-| Unsupported LSTM direction b'*' | 4 | 11 |
-| Cast input and output shapes must match | 2 | 22 |
-| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | 12 |
-| Resize coordinate_transformation_mode '*' is not supported | 1 | 13 |
-| Unsupported op RandomUniform | 1 | 22 |
-| Unsupported op TreeEnsembleClassifier | 1 | 12 |
-
-## Error frequency by opset
-
-| Error message | Opset | Count |
-| --- | --- | --- |
-| Out of tolerance | 8 | 1 |
-| Out of tolerance | 9 | 4 |
-| Unsupported LSTM direction b'*' | 11 | 4 |
-| Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 12 | 1 |
-| Unsupported op TreeEnsembleClassifier | 12 | 1 |
-| Resize coordinate_transformation_mode '*' is not supported | 13 | 1 |
-| Cast input and output shapes must match | 22 | 2 |
-| Unsupported op RandomUniform | 22 | 1 |
