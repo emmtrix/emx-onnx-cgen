@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-wheel-metadata/
