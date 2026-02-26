@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 8)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/benchmarks/benchmark_conv_yolov6n_lastconv model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "Conv"
+  ],
+  "opset_version": 12,
+  "generated_checksum": "0405552e910bf7488dc7f1e58ce43741af9737f5ef23647d9a59446f72d3b986"
+}

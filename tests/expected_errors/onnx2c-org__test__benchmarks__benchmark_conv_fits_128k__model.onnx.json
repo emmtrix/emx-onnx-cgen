@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 16)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/benchmarks/benchmark_conv_fits_128k model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "Conv"
+  ],
+  "opset_version": 12,
+  "generated_checksum": "3c49394ca199cd793cfa00782ecadae35897b3708c965dcc5b8ea0ee86144448"
+}

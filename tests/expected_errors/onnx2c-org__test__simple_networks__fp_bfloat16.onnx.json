@@ -1,0 +1,8 @@
+{
+  "error": "Cast input and output shapes must match",
+  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks fp_bfloat16.onnx",
+  "operators": [
+    "Cast"
+  ],
+  "opset_version": 22
+}

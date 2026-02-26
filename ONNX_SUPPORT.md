@@ -5,7 +5,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1485 / 1802, 82.4% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 71 / 74, 95.9% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 110 / 125, 88.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -1826,10 +1826,14 @@ Coverage 1485 / 1802 ONNX files (82.4%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 71 / 74 ONNX files (95.9%).
+Coverage 110 / 125 ONNX files (88.0%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
+| benchmarks/benchmark_conv_fits_128k/model.onnx | 12 | ✅ | OK (max ULP 16) |
+| benchmarks/benchmark_conv_yolov6n_biggestconv/model.onnx | 12 | ✅ | OK (max ULP 18) |
+| benchmarks/benchmark_conv_yolov6n_inputlayer/model.onnx | 12 | ✅ | OK (max ULP 4) |
+| benchmarks/benchmark_conv_yolov6n_lastconv/model.onnx | 12 | ✅ | OK (max ULP 8) |
 | local_ops/test_gather_basic/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | local_ops/test_gather_output_scalar/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | local_ops/test_gather_scalar_axis0/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1904,3 +1908,50 @@ Coverage 71 / 74 ONNX files (95.9%).
 | local_ops/test_scatternd_indices_3x2/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_shape_const_out/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| mnist/model.onnx | 8 | ❌ | Out of tolerance (max ULP 160) |
+| mnist/pytorch.onnx | 9 | ❌ | Out of tolerance (max ULP 2295973698) |
+| old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | ❌ | Out of tolerance (max ULP 46450665) |
+| old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | ❌ | Out of tolerance (max ULP 27819707) |
+| old_onnx_backend/11/test_softmax_default_axis/model.onnx | 9 | ❌ | Out of tolerance (max ULP 24092299) |
+| old_onnx_backend/11/test_squeeze/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_squeeze_negative_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_axis_0/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_axis_1/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_axis_2/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_axis_3/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_negative_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_three_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_two_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_unsqueeze_unsorted_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/12/test_pow_types_float/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/12/test_pow_types_int/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/5/test_resize_downsample_sizes_nearest_tf_half_pixel_for_nn/model.onnx | 13 | ❌ | Resize coordinate_transformation_mode 'tf_half_pixel_for_nn' is not supported |
+| old_onnx_backend/7/test_split_variable_parts_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/7/test_split_variable_parts_2d/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/7/test_split_variable_parts_default_axis/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/8/test_convtranspose_with_kernel/model.onnx | 8 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/9/test_slice/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/9/test_slice_default_axes/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/9/test_slice_end_out_of_bounds/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/9/test_slice_neg/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | ✅ | OK (max ULP 1) |
+| simple_networks/conv_2kernels.onnx | 11 | ✅ | OK (max ULP 0) |
+| simple_networks/conv_2kernels_randombias.onnx | 11 | ✅ | OK (max ULP 2) |
+| simple_networks/conv_3ch.onnx | 11 | ✅ | OK (max ULP 1) |
+| simple_networks/conv_k2.onnx | 11 | ✅ | OK (max ULP 0) |
+| simple_networks/conv_k2_maxpool_k2.onnx | 12 | ✅ | OK (max ULP 0) |
+| simple_networks/conv_k2_s2.onnx | 11 | ✅ | OK (max ULP 0) |
+| simple_networks/fp_bfloat16.onnx | 22 | ❌ | Cast input and output shapes must match |
+| simple_networks/fp_float16.onnx | 22 | ❌ | Cast input and output shapes must match |
+| simple_networks/lstm_k1_b1_r1.onnx | 11 | ❌ | Unsupported LSTM direction b'forward' |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | ❌ | Unsupported LSTM direction b'forward' |
+| simple_networks/maxpool_k2.onnx | 12 | ✅ | OK (max ULP 0) |
+| simple_networks/maxpool_k2_s2.onnx | 12 | ✅ | OK (max ULP 0) |
+| simple_networks/random_uniform.onnx | 22 | ❌ | Unsupported op RandomUniform |
+| simple_networks/scalar_abs.onnx | 13 | ✅ | OK (max ULP 0) |
+| simple_networks/scalar_add.onnx | 13 | ✅ | OK (max ULP 0) |
+| simple_networks/scalar_identity.onnx | 13 | ✅ | OK (max ULP 0) |
+| simple_networks/treeensembleclassifier.onnx | 12 | ❌ | Unsupported op TreeEnsembleClassifier |
+| tfl_helloworld/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| velardo/lesson14.onnx | 11 | ✅ | OK (max ULP 0) |
+| velardo/lesson9.onnx | 9 | ✅ | OK (max ULP 0) |

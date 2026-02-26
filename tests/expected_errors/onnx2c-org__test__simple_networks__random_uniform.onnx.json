@@ -1,0 +1,8 @@
+{
+  "error": "Unsupported op RandomUniform",
+  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks random_uniform.onnx",
+  "operators": [
+    "RandomUniform"
+  ],
+  "opset_version": 22
+}

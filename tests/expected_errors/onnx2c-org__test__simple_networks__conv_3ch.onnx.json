@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 1)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks conv_3ch.onnx",
+  "operators": [
+    "Transpose",
+    "Conv",
+    "Flatten"
+  ],
+  "opset_version": 11,
+  "generated_checksum": "d871014f593ad837015c91f0c1ba1041c6a64e984b214e92c235beb7a2f32f07"
+}

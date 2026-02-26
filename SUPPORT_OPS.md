@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 174 / 201
+Supported operators: 174 / 203
 
 | Operator | Supported |
 | --- | --- |
@@ -126,6 +126,7 @@ Supported operators: 174 / 201
 | QuantizeLinear | ✅ |
 | RMSNormalization | ✅ |
 | RNN | ❌ |
+| RandomUniform | ❌ |
 | RandomUniformLike | ❌ |
 | Range | ✅ |
 | Reciprocal | ✅ |
@@ -201,6 +202,7 @@ Supported operators: 174 / 201
 | ai.onnx.ml::Binarizer | ❌ |
 | ai.onnx.ml::LabelEncoder | ❌ |
 | ai.onnx.ml::TreeEnsemble | ❌ |
+| ai.onnx.ml::TreeEnsembleClassifier | ❌ |
 | ai.onnx.preview.training::Adagrad | ✅ |
 | ai.onnx.preview.training::Adam | ❌ |
 | ai.onnx.preview.training::Gradient | ✅ |

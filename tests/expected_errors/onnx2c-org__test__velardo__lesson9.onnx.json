@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/velardo lesson9.onnx",
+  "operators": [
+    "MatMul",
+    "Add",
+    "Sigmoid"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "e1539863e199516f9004d71471e0c3956796a21650b552df6adcd6da17a0b9f2"
+}
