@@ -265,16 +265,21 @@ class GemmOp(GemmLikeOpBase):
     @staticmethod
     def _validate_bias_shape(
         output_shape: tuple[int, int], bias_shape: tuple[int, ...]
-    ) -> tuple[int, ...]:
+    ) -> tuple[tuple[int, ...], str]:
         if len(bias_shape) == 0:
-            return bias_shape
+            return bias_shape, "scalar"
         if len(bias_shape) == 1:
-            if bias_shape[0] not in {1, output_shape[1]}:
-                raise ShapeInferenceError(
-                    "Gemm bias input must be broadcastable to output shape, "
-                    f"got {bias_shape} vs {output_shape}"
-                )
-            return bias_shape
+            m, n = output_shape
+            if bias_shape[0] == 1:
+                return bias_shape, "scalar"
+            if bias_shape[0] == n:
+                return bias_shape, "col"
+            if bias_shape[0] == m:
+                return bias_shape, "row"
+            raise ShapeInferenceError(
+                "Gemm bias input must be broadcastable to output shape, "
+                f"got {bias_shape} vs {output_shape}"
+            )
         if len(bias_shape) == 2:
             m, n = output_shape
             if bias_shape[0] not in {1, m} or bias_shape[1] not in {1, n}:
@@ -282,7 +287,7 @@ class GemmOp(GemmLikeOpBase):
                     "Gemm bias input must be broadcastable to output shape, "
                     f"got {bias_shape} vs {output_shape}"
                 )
-            return bias_shape
+            return bias_shape, "matrix"
         raise ShapeInferenceError(
             f"Gemm bias input must be rank 1 or 2, got {bias_shape}"
         )
@@ -357,13 +362,15 @@ class GemmOp(GemmLikeOpBase):
             )
         ctx.set_shape(self.output, output_shape)
         c_shape = None
+        c_axis = "none"
         if self.input_c is not None:
             bias_shape = ctx.shape(self.input_c)
-            c_shape = self._validate_bias_shape(output_shape, bias_shape)
+            c_shape, c_axis = self._validate_bias_shape(output_shape, bias_shape)
         ctx.set_derived(self, "m", m)
         ctx.set_derived(self, "n", n)
         ctx.set_derived(self, "k", k_left)
         ctx.set_derived(self, "c_shape", c_shape)
+        ctx.set_derived(self, "c_axis", c_axis)
 
 
 @dataclass(frozen=True)
