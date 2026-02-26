@@ -129,12 +129,23 @@
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Unsupported LSTM direction b'*' | 2 | 11 |
+| Out of tolerance | 5 | 8, 9 |
+| Unsupported LSTM direction b'*' | 4 | 11 |
+| Cast input and output shapes must match | 2 | 22 |
 | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 1 | 12 |
+| Resize coordinate_transformation_mode '*' is not supported | 1 | 13 |
+| Unsupported op RandomUniform | 1 | 22 |
+| Unsupported op TreeEnsembleClassifier | 1 | 12 |
 
 ## Error frequency by opset
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Unsupported LSTM direction b'*' | 11 | 2 |
+| Out of tolerance | 8 | 1 |
+| Out of tolerance | 9 | 4 |
+| Unsupported LSTM direction b'*' | 11 | 4 |
 | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) | 12 | 1 |
+| Unsupported op TreeEnsembleClassifier | 12 | 1 |
+| Resize coordinate_transformation_mode '*' is not supported | 13 | 1 |
+| Cast input and output shapes must match | 22 | 2 |
+| Unsupported op RandomUniform | 22 | 1 |

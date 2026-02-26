@@ -1,0 +1,11 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/tfl_helloworld model.onnx",
+  "operators": [
+    "MatMul",
+    "Add",
+    "Relu"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "75c97dd44e24524630790491e59bc17c5b4ee14696517b0bde9fcc3ffd022d68"
+}

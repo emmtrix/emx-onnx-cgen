@@ -142,7 +142,7 @@ def _render_onnx_file_support_markdown(
         "",
         *_render_onnx_file_support_section(
             title="ONNX2C test coverage",
-            test_directory="onnx2c-org/test/local_ops",
+            test_directory="onnx2c-org/test",
             expectations=local_expectations,
         ),
     ]

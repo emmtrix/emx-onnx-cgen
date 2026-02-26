@@ -1,0 +1,11 @@
+{
+  "error": "Out of tolerance (max ULP 2295973698)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/mnist pytorch.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "MatMul",
+    "Constant",
+    "BatchNormalization"
+  ],
+  "opset_version": 9,
+  "generated_checksum": "9b606e13a05b461534477b8a4a7746be39274fb7b798fa645d532bc9f1826851"
+}

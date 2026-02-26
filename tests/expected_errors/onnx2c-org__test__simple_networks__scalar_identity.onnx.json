@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks scalar_identity.onnx",
+  "operators": [
+    "Identity"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "100d6e3f7f59db427dd263cf8e2acc04bdf136cdc38c99e5939b8b194ad8d78a"
+}

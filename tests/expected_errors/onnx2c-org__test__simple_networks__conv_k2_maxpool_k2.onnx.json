@@ -1,0 +1,12 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks conv_k2_maxpool_k2.onnx",
+  "operators": [
+    "Transpose",
+    "Conv",
+    "MaxPool",
+    "Flatten"
+  ],
+  "opset_version": 12,
+  "generated_checksum": "658ecf8ead132ef7b97921009bf66f93f3cb34b97522654d1bdf719ad63cb92d"
+}

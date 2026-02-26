@@ -1,0 +1,14 @@
+{
+  "error": "Out of tolerance (max ULP 160)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/mnist model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "Reshape",
+    "Conv",
+    "Add",
+    "Relu",
+    "MaxPool",
+    "MatMul"
+  ],
+  "opset_version": 8,
+  "generated_checksum": "7df60f18febd8ec70024d45f0d7c5d5d36f6d6f66ed64ac1291773898bb2a102"
+}

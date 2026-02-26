@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks scalar_abs.onnx",
+  "operators": [
+    "Abs"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "b15e9ac381d873ef731f57c30c19d62ae3c044f36997f0d7077512a98dd5a5d6"
+}
