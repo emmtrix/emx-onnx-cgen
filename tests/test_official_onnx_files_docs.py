@@ -224,19 +224,16 @@ def _render_support_histogram_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
 ) -> str:
-    official_histogram = _render_error_histogram_markdown(official_expectations)
-    local_histogram = _render_error_histogram_markdown(
-        local_expectations,
-        title="### Error frequency",
+    merged_expectations = [*official_expectations, *local_expectations]
+    histogram_markdown = _render_error_histogram_markdown(
+        merged_expectations,
+        title="# Error frequency",
     )
-    return "\n".join(
-        [
-            official_histogram,
-            "## Local ONNX file support histogram",
-            "",
-            local_histogram,
-        ]
-    ).strip() + "\n"
+    lines = histogram_markdown.splitlines()
+    if lines and lines[0] == "# Error frequency":
+        lines.insert(2, "This histogram is test-suite-overarching.")
+        lines.insert(3, "")
+    return "\n".join(lines) + "\n"
 
 
 def _render_supported_ops_markdown(
