@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --model-base-dir onnx2c-org/test/old_onnx_backend/11/test_unsqueeze_negative_axes model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "Unsqueeze"
+  ],
+  "opset_version": 11,
+  "generated_checksum": "4dccd2f6a3c30fe9e62eeaec0c980f7cd89dfd59034ac0425cb910c518b467ec"
+}
