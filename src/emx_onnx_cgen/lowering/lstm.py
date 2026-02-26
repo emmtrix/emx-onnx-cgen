@@ -85,6 +85,14 @@ def _normalize_activation_names(values: Iterable[object]) -> list[str]:
     return names
 
 
+def _normalize_direction(value: object) -> str:
+    if isinstance(value, bytes):
+        return value.decode("utf-8")
+    if isinstance(value, str):
+        return value
+    raise UnsupportedOpError("LSTM direction must be a string")
+
+
 def _resolve_activation_params(
     activations: Sequence[str],
     activation_alpha: Sequence[float] | None,
@@ -218,8 +226,8 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
         hidden_size = w_shape[1] // 4
     else:
         hidden_size = int(hidden_size_attr)
-    _validate_direction(str(node.attrs.get("direction", "forward")), num_directions)
-    direction = str(node.attrs.get("direction", "forward"))
+    direction = _normalize_direction(node.attrs.get("direction", "forward"))
+    _validate_direction(direction, num_directions)
     expected_w_shape = (num_directions, 4 * hidden_size, input_size)
     _expect_shape(input_w, w_shape, expected_w_shape)
     r_shape = value_shape(graph, input_r, node)
