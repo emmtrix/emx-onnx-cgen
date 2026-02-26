@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported LSTM direction b'reverse'",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_lstm_reverse model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "LSTM"
   ],
-  "opset_version": 11
+  "opset_version": 11,
+  "generated_checksum": "db6b78c80c4b3abdd2f77613cd6391fa2be4b73d4b5fbea1dbfb2b2262ded1aa"
 }

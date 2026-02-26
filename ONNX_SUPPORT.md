@@ -5,7 +5,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1485 / 1802, 82.4% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 110 / 125, 88.0% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 114 / 125, 91.2% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -1826,7 +1826,7 @@ Coverage 1485 / 1802 ONNX files (82.4%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 110 / 125 ONNX files (88.0%).
+Coverage 114 / 125 ONNX files (91.2%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1860,11 +1860,11 @@ Coverage 110 / 125 ONNX files (88.0%).
 | local_ops/test_gemm_CN_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_activations/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_all_outputs/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| local_ops/test_lstm_bidirectional/model.onnx | 11 | ❌ | Unsupported LSTM direction b'bidirectional' |
+| local_ops/test_lstm_bidirectional/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_clip/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_intermediate_h/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_missing_inputs/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| local_ops/test_lstm_reverse/model.onnx | 11 | ❌ | Unsupported LSTM direction b'reverse' |
+| local_ops/test_lstm_reverse/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_seq_length/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_simple/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_lstm_with_initial_state/model.onnx | 12 | ✅ | OK (max ULP 5) |
@@ -1943,8 +1943,8 @@ Coverage 110 / 125 ONNX files (88.0%).
 | simple_networks/conv_k2_s2.onnx | 11 | ✅ | OK (max ULP 0) |
 | simple_networks/fp_bfloat16.onnx | 22 | ❌ | Cast input and output shapes must match |
 | simple_networks/fp_float16.onnx | 22 | ❌ | Cast input and output shapes must match |
-| simple_networks/lstm_k1_b1_r1.onnx | 11 | ❌ | Unsupported LSTM direction b'forward' |
-| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | ❌ | Unsupported LSTM direction b'forward' |
+| simple_networks/lstm_k1_b1_r1.onnx | 11 | ✅ | OK (max ULP 0) |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple_networks/random_uniform.onnx | 22 | ❌ | Unsupported op RandomUniform |
