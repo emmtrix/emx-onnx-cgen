@@ -5,7 +5,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1485 / 1802, 82.4% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 114 / 125, 91.2% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 115 / 125, 92.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -1826,7 +1826,7 @@ Coverage 1485 / 1802 ONNX files (82.4%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 114 / 125 ONNX files (91.2%).
+Coverage 115 / 125 ONNX files (92.0%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1846,7 +1846,7 @@ Coverage 114 / 125 ONNX files (91.2%).
 | local_ops/test_gemm_C1xN/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_C1xN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | ❌ | Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4) |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | ✅ | OK |
 | local_ops/test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_CMx1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_CMx1_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |

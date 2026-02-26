@@ -1,8 +1,9 @@
 {
-  "error": "Gemm bias input must be broadcastable to output shape, got (2,) vs (2, 4)",
+  "error": "OK",
   "command_line": "verify --model-base-dir onnx2c-org/test/local_ops/test_gemm_CM_transA model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Gemm"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "8ddd3797edf9b6ce81cd786f56dad79eebddcb5af60de8ec335e4ec07a44ae29"
 }

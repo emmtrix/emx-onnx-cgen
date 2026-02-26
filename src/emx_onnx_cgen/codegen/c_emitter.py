@@ -6580,6 +6580,7 @@ class CEmitter:
             trans_a = bool(self._derived(op, "trans_a"))
             trans_b = bool(self._derived(op, "trans_b"))
             c_shape = self._derived(op, "c_shape")
+            c_axis = str(self._derived(op, "c_axis"))
             input_a_shape = (k, m) if trans_a else (m, k)
             input_b_shape = (n, k) if trans_b else (k, n)
             input_a_suffix = self._param_array_suffix(input_a_shape)
@@ -6649,6 +6650,7 @@ class CEmitter:
                 c_rank=c_rank,
                 c_dim0=c_dim0,
                 c_dim1=c_dim1,
+                c_axis=c_axis,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AttentionOp):
