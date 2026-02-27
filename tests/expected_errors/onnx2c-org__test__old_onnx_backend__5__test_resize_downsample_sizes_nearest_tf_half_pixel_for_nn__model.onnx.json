@@ -1,8 +1,9 @@
 {
-  "error": "Resize coordinate_transformation_mode 'tf_half_pixel_for_nn' is not supported",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/old_onnx_backend/5/test_resize_downsample_sizes_nearest_tf_half_pixel_for_nn model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Resize"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "82740238376294567813c01da233100da85cef37585dad35fc014744d223f89f"
 }

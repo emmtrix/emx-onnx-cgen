@@ -5,7 +5,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1485 / 1802, 82.4% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 115 / 125, 92.0% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 116 / 125, 92.8% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -1826,7 +1826,7 @@ Coverage 1485 / 1802 ONNX files (82.4%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 115 / 125 ONNX files (92.0%).
+Coverage 116 / 125 ONNX files (92.8%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1925,7 +1925,7 @@ Coverage 115 / 125 ONNX files (92.0%).
 | old_onnx_backend/11/test_unsqueeze_unsorted_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/12/test_pow_types_float/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/12/test_pow_types_int/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| old_onnx_backend/5/test_resize_downsample_sizes_nearest_tf_half_pixel_for_nn/model.onnx | 13 | ❌ | Resize coordinate_transformation_mode 'tf_half_pixel_for_nn' is not supported |
+| old_onnx_backend/5/test_resize_downsample_sizes_nearest_tf_half_pixel_for_nn/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/7/test_split_variable_parts_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/7/test_split_variable_parts_2d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/7/test_split_variable_parts_default_axis/model.onnx | 13 | ✅ | OK (max ULP 0) |
