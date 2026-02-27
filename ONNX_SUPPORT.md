@@ -4,8 +4,6 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1485 / 1802, 82.4% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 116 / 125, 92.8% | n/a |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
 
@@ -1828,7 +1826,6 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 116 / 125 ONNX files (92.8%).
 Coverage 118 / 125 ONNX files (94.4%).
 
 | File | Opset | Supported | Error |
@@ -1849,7 +1846,7 @@ Coverage 118 / 125 ONNX files (94.4%).
 | local_ops/test_gemm_C1xN/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_C1xN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | ✅ | OK |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
 | local_ops/test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_CMx1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_CMx1_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
