@@ -492,6 +492,14 @@ def _build_parser() -> argparse.ArgumentParser:
         help="C compiler command to build the testbench binary",
     )
     verify_parser.add_argument(
+        "--sanitize",
+        action="store_true",
+        help=(
+            "Build the verification binary with sanitizers enabled "
+            "(-fsanitize=address,undefined)"
+        ),
+    )
+    verify_parser.add_argument(
         "--truncate-weights-after",
         type=int,
         default=None,
@@ -1120,14 +1128,19 @@ def _verify_model(
                 *compiler_cmd,
                 "-std=c99",
                 "-O1",
-                "-fsanitize=address,undefined",
-                "-Wall",
-                "-Werror",
-                str(c_path.name),
-                "-o",
-                str(exe_path.name),
-                "-lm",
             ]
+            if args.sanitize:
+                compile_cmd.append("-fsanitize=address,undefined")
+            compile_cmd.extend(
+                [
+                    "-Wall",
+                    "-Werror",
+                    str(c_path.name),
+                    "-o",
+                    str(exe_path.name),
+                    "-lm",
+                ]
+            )
             active_reporter.info("")
             compile_started = active_reporter.start_step("Compiling C code")
             subprocess.run(
