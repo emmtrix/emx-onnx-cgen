@@ -1846,7 +1846,7 @@ Coverage 118 / 125 ONNX files (94.4%).
 | local_ops/test_gemm_C1xN/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_C1xN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | ✅ | OK |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
 | local_ops/test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_CMx1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_CMx1_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
@@ -1925,7 +1925,7 @@ Coverage 118 / 125 ONNX files (94.4%).
 | old_onnx_backend/11/test_unsqueeze_unsorted_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/12/test_pow_types_float/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/12/test_pow_types_int/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| old_onnx_backend/5/test_resize_downsample_sizes_nearest_tf_half_pixel_for_nn/model.onnx | 13 | ❌ | Resize coordinate_transformation_mode 'tf_half_pixel_for_nn' is not supported |
+| old_onnx_backend/5/test_resize_downsample_sizes_nearest_tf_half_pixel_for_nn/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/7/test_split_variable_parts_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/7/test_split_variable_parts_2d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/7/test_split_variable_parts_default_axis/model.onnx | 13 | ✅ | OK (max ULP 0) |

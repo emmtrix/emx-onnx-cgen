@@ -16,6 +16,7 @@ _SUPPORTED_COORD_MODES = {
     "align_corners",
     "pytorch_half_pixel",
     "tf_crop_and_resize",
+    "tf_half_pixel_for_nn",
 }
 _SUPPORTED_MODES = {"nearest", "linear", "cubic"}
 _SUPPORTED_NEAREST_MODES = {
