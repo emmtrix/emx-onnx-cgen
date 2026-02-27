@@ -6,6 +6,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 0 / 3, 0.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -1955,3 +1956,15 @@ Coverage 118 / 125 ONNX files (94.4%).
 | tfl_helloworld/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | velardo/lesson14.onnx | 11 | ✅ | OK (max ULP 0) |
 | velardo/lesson9.onnx | 9 | ✅ | OK (max ULP 0) |
+
+## Local ONNX test coverage
+
+Test directory: `tests/onnx`
+
+Coverage 0 / 3 ONNX files (0.0%).
+
+| File | Opset | Supported | Error |
+| --- | --- | --- | --- |
+| micro_kws_m_qdq.onnx |  | ❌ | Error parsing message with type 'onnx.ModelProto' |
+| micro_kws_m_qoperator_avg_pool.onnx |  | ❌ | Error parsing message with type 'onnx.ModelProto' |
+| micro_kws_m_qoperator_softmax.onnx |  | ❌ | Error parsing message with type 'onnx.ModelProto' |

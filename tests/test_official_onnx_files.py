@@ -16,9 +16,11 @@ from emx_onnx_cgen import cli
 EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
 LOCAL_ONNX_PREFIX = "onnx2c-org/test/"
+LOCAL_REPO_ONNX_PREFIX = "tests/onnx/"
 LOCAL_ONNX_DATA_ROOT = (
     Path(__file__).resolve().parents[1] / "onnx2c-org" / "test"
 )
+LOCAL_REPO_ONNX_DATA_ROOT = Path(__file__).resolve().parent / "onnx"
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
 MODEL_EXTRA_VERIFY_ARGS = {
@@ -142,6 +144,24 @@ def _local_onnx_file_paths() -> tuple[str, ...]:
             EXPECTED_ERRORS_ROOT,
             path_filter=lambda repo_relative: repo_relative.startswith(
                 LOCAL_ONNX_PREFIX
+            ),
+        )
+    )
+
+
+@cache
+def _local_repo_onnx_file_paths() -> tuple[str, ...]:
+    if os.getenv("UPDATE_REFS"):
+        return tuple(_collect_onnx_files(LOCAL_REPO_ONNX_DATA_ROOT))
+    repo_relative_prefix = LOCAL_REPO_ONNX_DATA_ROOT.relative_to(
+        _repo_root()
+    ).as_posix()
+    return tuple(
+        Path(path).relative_to(repo_relative_prefix).as_posix()
+        for path in _list_expectation_repo_paths(
+            EXPECTED_ERRORS_ROOT,
+            path_filter=lambda repo_relative: repo_relative.startswith(
+                LOCAL_REPO_ONNX_PREFIX
             ),
         )
     )
@@ -337,6 +357,11 @@ def _ensure_local_onnx_files_present(data_root: Path) -> None:
         )
 
 
+def _ensure_local_repo_onnx_files_present(data_root: Path) -> None:
+    if not data_root.exists():
+        pytest.skip("tests/onnx local test data is unavailable.")
+
+
 def _find_test_data_dir(model_path: Path) -> Path | None:
     test_data_dir = model_path.parent / "test_data_set_0"
     if not test_data_dir.exists():
@@ -516,6 +541,38 @@ def test_local_onnx_expected_errors(
 ) -> None:
     data_root = LOCAL_ONNX_DATA_ROOT
     _ensure_local_onnx_files_present(data_root)
+    repo_root = _repo_root()
+    expectation = _load_expectation_for_repo_relative(
+        repo_relative_path
+    )
+    rel_path = Path(repo_relative_path).relative_to(
+        data_root.relative_to(repo_root)
+    )
+    model_path = data_root / rel_path
+    _run_expected_error_test(
+        repo_root=repo_root,
+        repo_relative_path=repo_relative_path,
+        model_path=model_path,
+        expectation=expectation,
+        expectation_path=rel_path.as_posix(),
+        request=request,
+    )
+
+
+@pytest.mark.order(3)
+@pytest.mark.parametrize(
+    "repo_relative_path",
+    [
+        f"{LOCAL_REPO_ONNX_DATA_ROOT.relative_to(_repo_root()).as_posix()}/{path}"
+        for path in _local_repo_onnx_file_paths()
+    ],
+)
+def test_local_repo_onnx_expected_errors(
+    repo_relative_path: str,
+    request: Any,
+) -> None:
+    data_root = LOCAL_REPO_ONNX_DATA_ROOT
+    _ensure_local_repo_onnx_files_present(data_root)
     repo_root = _repo_root()
     expectation = _load_expectation_for_repo_relative(
         repo_relative_path

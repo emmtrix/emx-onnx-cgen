@@ -1,0 +1,4 @@
+{
+  "error": "Error parsing message with type 'onnx.ModelProto'",
+  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qdq.onnx"
+}
