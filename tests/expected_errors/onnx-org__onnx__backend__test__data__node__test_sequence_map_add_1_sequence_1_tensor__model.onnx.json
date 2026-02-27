@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op SequenceMap",
-  "command_line": "verify --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceMap"
   ],

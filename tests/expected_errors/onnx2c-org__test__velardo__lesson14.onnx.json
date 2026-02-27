@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx2c-org/test/velardo lesson14.onnx",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/velardo lesson14.onnx",
   "operators": [
     "Flatten",
     "MatMul",

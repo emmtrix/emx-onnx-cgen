@@ -1,6 +1,6 @@
 {
   "error": "DequantizeLinear zero_point shape must match scale shape",
-  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qdq.onnx",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qdq.onnx",
   "operators": [
     "DequantizeLinear",
     "Reshape",

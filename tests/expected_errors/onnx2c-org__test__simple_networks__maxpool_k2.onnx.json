@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks maxpool_k2.onnx",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks maxpool_k2.onnx",
   "operators": [
     "Transpose",
     "MaxPool",

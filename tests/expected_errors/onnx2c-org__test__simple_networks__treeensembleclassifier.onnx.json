@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op TreeEnsembleClassifier",
-  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks treeensembleclassifier.onnx",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks treeensembleclassifier.onnx",
   "operators": [
     "ai.onnx.ml::TreeEnsembleClassifier"
   ],

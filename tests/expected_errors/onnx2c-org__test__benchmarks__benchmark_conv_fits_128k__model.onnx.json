@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 16)",
-  "command_line": "verify --model-base-dir onnx2c-org/test/benchmarks/benchmark_conv_fits_128k model.onnx --test-data-dir test_data_set_0",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/benchmarks/benchmark_conv_fits_128k model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Conv"
   ],
