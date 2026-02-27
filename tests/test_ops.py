@@ -1944,7 +1944,9 @@ def _make_slice_model() -> onnx.ModelProto:
     return model
 
 
-def _make_resize_model() -> onnx.ModelProto:
+def _make_resize_model(
+    coordinate_transformation_mode: str = "asymmetric",
+) -> onnx.ModelProto:
     input_shape = [1, 1, 2, 2]
     output_shape = [1, 1, 4, 4]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -1961,7 +1963,7 @@ def _make_resize_model() -> onnx.ModelProto:
         inputs=["in0", "", "", "sizes"],
         outputs=[output.name],
         mode="nearest",
-        coordinate_transformation_mode="asymmetric",
+        coordinate_transformation_mode=coordinate_transformation_mode,
         nearest_mode="floor",
     )
     graph = helper.make_graph(
@@ -5559,6 +5561,13 @@ def test_squeeze_op_matches_onnxruntime() -> None:
 def test_cast_op_matches_onnxruntime() -> None:
     model = _make_cast_model()
     _run_ort_compare(model)
+
+
+
+
+def test_resize_tf_half_pixel_for_nn_matches_onnxruntime() -> None:
+    model = _make_resize_model(coordinate_transformation_mode="tf_half_pixel_for_nn")
+    _run_testbench_compare(model)
 
 
 def test_resize_op_matches_onnxruntime() -> None:
