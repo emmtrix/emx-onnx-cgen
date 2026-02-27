@@ -5876,3 +5876,45 @@ def test_rms_normalization_run_matches_numpy() -> None:
     expected = data / np.sqrt(mean_square + 1e-5)
     expected = expected * scale.reshape(1, 1, 4)
     np.testing.assert_allclose(outputs["out"], expected, rtol=1e-5, atol=1e-6)
+
+
+def test_softmax_uses_legacy_axis_semantics_before_opset13() -> None:
+    model = _make_operator_model(
+        op_type="Softmax",
+        input_shapes=[[2, 3, 4]],
+        output_shape=[2, 3, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": 1},
+        opset=11,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    op = get_lowering("Softmax")(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_shapes(op_ctx)
+
+    assert op.use_legacy_axis_semantics is True
+    assert op_ctx.require_derived(op, "outer") == 2
+    assert op_ctx.require_derived(op, "axis_size") == 12
+    assert op_ctx.require_derived(op, "inner") == 1
+
+
+def test_softmax_uses_axis_dimension_from_opset13() -> None:
+    model = _make_operator_model(
+        op_type="Softmax",
+        input_shapes=[[2, 3, 4]],
+        output_shape=[2, 3, 4],
+        dtype=TensorProto.FLOAT,
+        attrs={"axis": 1},
+        opset=13,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    op = get_lowering("Softmax")(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_shapes(op_ctx)
+
+    assert op.use_legacy_axis_semantics is False
+    assert op_ctx.require_derived(op, "outer") == 2
+    assert op_ctx.require_derived(op, "axis_size") == 3
+    assert op_ctx.require_derived(op, "inner") == 4

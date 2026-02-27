@@ -6,6 +6,8 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1485 / 1802, 82.4% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 116 / 125, 92.8% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -15,7 +17,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1485 / 1802 ONNX files (82.4%).
+Coverage 1486 / 1802 ONNX files (82.5%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -25,7 +27,7 @@ Coverage 1485 / 1802 ONNX files (82.4%).
 | light/light_inception_v2.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_resnet50.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_shufflenet.onnx | 9 | ✅ | OK (max ULP 0) |
-| light/light_squeezenet.onnx | 9 | ❌ | Out of tolerance (max ULP 83684753) |
+| light/light_squeezenet.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_vgg19.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_zfnet512.onnx | 9 | ✅ | OK (max ULP 0) |
 | node/test_abs/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1827,6 +1829,7 @@ Coverage 1485 / 1802 ONNX files (82.4%).
 Test directory: `onnx2c-org/test`
 
 Coverage 116 / 125 ONNX files (92.8%).
+Coverage 118 / 125 ONNX files (94.4%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1910,9 +1913,9 @@ Coverage 116 / 125 ONNX files (92.8%).
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | mnist/model.onnx | 8 | ❌ | Out of tolerance (max ULP 160) |
 | mnist/pytorch.onnx | 9 | ❌ | Out of tolerance (max ULP 2295973698) |
-| old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | ❌ | Out of tolerance (max ULP 46450665) |
-| old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | ❌ | Out of tolerance (max ULP 27819707) |
-| old_onnx_backend/11/test_softmax_default_axis/model.onnx | 9 | ❌ | Out of tolerance (max ULP 24092299) |
+| old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/11/test_softmax_default_axis/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_squeeze/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_squeeze_negative_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_unsqueeze_axis_0/model.onnx | 11 | ✅ | OK (max ULP 0) |

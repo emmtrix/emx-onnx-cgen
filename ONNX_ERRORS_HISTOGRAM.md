@@ -13,9 +13,9 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 12 | 8, 9, 19, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
+| Out of tolerance | 8 | 8, 9, 19, 22 |
 | Unsupported op Loop | 7 | 16, 17 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -71,7 +71,7 @@ This histogram is test-suite-overarching.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
-| Out of tolerance | 9 | 5 |
+| Out of tolerance | 9 | 1 |
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |

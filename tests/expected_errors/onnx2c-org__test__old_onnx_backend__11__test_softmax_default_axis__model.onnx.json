@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 24092299)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --model-base-dir onnx2c-org/test/old_onnx_backend/11/test_softmax_default_axis model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Softmax"
   ],
   "opset_version": 9,
-  "generated_checksum": "20f71b9917b735c2fcbf0c5726edfada153a1dbbdd3efc292d749a23459161fd"
+  "generated_checksum": "dcddc8130e8e9f281f93fe3641a5fba58f9978b54170dd98d6d322927bb3bbe2"
 }
