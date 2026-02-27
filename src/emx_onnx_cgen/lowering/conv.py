@@ -33,6 +33,7 @@ def resolve_conv_spec(
     input_name: str,
     weight_name: str,
     bias_name: str | None,
+    require_output_shape: bool = True,
 ) -> ConvSpec:
     supported_attrs = {
         "auto_pad",
@@ -145,12 +146,20 @@ def resolve_conv_spec(
         if out_dim < 0:
             raise ShapeInferenceError("Conv output shape must be non-negative")
         out_spatial.append(out_dim)
-    output_shape = _value_shape(graph, node.outputs[0], node)
     expected_output_shape = (batch, out_channels, *out_spatial)
-    if output_shape != expected_output_shape:
+    try:
+        output_shape = _value_shape(graph, node.outputs[0], node)
+    except ShapeInferenceError:
+        output_shape = None
+    if output_shape is not None and output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "Conv output shape must be "
             f"{expected_output_shape}, got {output_shape}"
+        )
+    if output_shape is None and require_output_shape:
+        raise ShapeInferenceError(
+            f"Missing shape for value '{node.outputs[0]}' in op {node.op_type}. "
+            "Hint: run ONNX shape inference or export with static shapes."
         )
     return ConvSpec(
         batch=batch,
