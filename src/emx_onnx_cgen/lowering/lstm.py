@@ -152,9 +152,7 @@ def _resolve_activations(
     )
 
 
-def _expect_shape(
-    name: str, shape: tuple[int, ...], expected: tuple[int, ...]
-) -> None:
+def _expect_shape(name: str, shape: tuple[int, ...], expected: tuple[int, ...]) -> None:
     if shape != expected:
         raise UnsupportedOpError(
             f"LSTM input {name} must have shape {expected}, got {shape}"
@@ -198,13 +196,15 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
         input_x,
         input_w,
         input_r,
-        *(name for name in (input_b, input_initial_h, input_initial_c, input_p) if name),
+        *(
+            name
+            for name in (input_b, input_initial_h, input_initial_c, input_p)
+            if name
+        ),
         *(name for name in (output_y, output_y_h, output_y_c) if name),
     )
     if not op_dtype.is_float:
-        raise UnsupportedOpError(
-            "LSTM supports float16, float, and double inputs only"
-        )
+        raise UnsupportedOpError("LSTM supports float16, float, and double inputs only")
     x_shape = value_shape(graph, input_x, node)
     if len(x_shape) != 3:
         raise UnsupportedOpError("LSTM input X must be rank 3")
@@ -242,9 +242,7 @@ def resolve_lstm_spec(graph: Graph, node: Node) -> LstmSpec:
             raise UnsupportedOpError("LSTM sequence_lens must be int32 or int64")
         seq_shape = value_shape(graph, input_sequence_lens, node)
         if seq_shape != (batch_size,):
-            raise UnsupportedOpError(
-                "LSTM sequence_lens must match batch size"
-            )
+            raise UnsupportedOpError("LSTM sequence_lens must match batch size")
     state_shape = (
         (num_directions, batch_size, hidden_size)
         if layout == 0

@@ -58,15 +58,11 @@ def _resolve_target_shape(
     input_product = _shape_product(input_shape)
     if unknown_index is not None:
         if known_product == 0 or input_product % known_product != 0:
-            raise ShapeInferenceError(
-                "Reshape cannot infer dimension from input shape"
-            )
+            raise ShapeInferenceError("Reshape cannot infer dimension from input shape")
         output_dims[unknown_index] = input_product // known_product
     output_shape = tuple(output_dims)
     if _shape_product(output_shape) != input_product:
-        raise ShapeInferenceError(
-            "Reshape input and output element counts must match"
-        )
+        raise ShapeInferenceError("Reshape input and output element counts must match")
     return output_shape
 
 
@@ -110,9 +106,7 @@ def _resolve_shape_from_reshape(
             allowzero=allowzero,
             node=node,
         )
-    shape_values = _shape_values_from_shape_node(
-        graph, reshape_node.inputs[1], node
-    )
+    shape_values = _shape_values_from_shape_node(graph, reshape_node.inputs[1], node)
     if shape_values is None:
         return None
     return _resolve_target_shape(
@@ -184,9 +178,7 @@ def lower_negative_log_likelihood_loss(
         graph, input_name, target_shape, weight_name, node
     )
     if len(input_shape) < 2:
-        raise ShapeInferenceError(
-            "NegativeLogLikelihoodLoss input must be at least 2D"
-        )
+        raise ShapeInferenceError("NegativeLogLikelihoodLoss input must be at least 2D")
     if len(target_shape) != len(input_shape) - 1:
         raise ShapeInferenceError(
             "NegativeLogLikelihoodLoss target rank must be input rank - 1"

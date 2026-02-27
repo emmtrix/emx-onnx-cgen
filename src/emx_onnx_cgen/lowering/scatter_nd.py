@@ -52,8 +52,7 @@ def lower_scatternd(graph: Graph, node: Node) -> ScatterNDOp:
     indices_dtype = value_dtype(graph, indices_name, node)
     if indices_dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
-            "ScatterND indices must be int32 or int64, "
-            f"got {indices_dtype.onnx_name}"
+            f"ScatterND indices must be int32 or int64, got {indices_dtype.onnx_name}"
         )
     reduction_attr = node.attrs.get("reduction", "none")
     if isinstance(reduction_attr, bytes):

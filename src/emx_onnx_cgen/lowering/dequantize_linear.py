@@ -105,9 +105,7 @@ def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:
             "DequantizeLinear supports float16/float/double scales and outputs only"
         )
     if output_dtype != scale_dtype:
-        raise UnsupportedOpError(
-            "DequantizeLinear output dtype must match scale dtype"
-        )
+        raise UnsupportedOpError("DequantizeLinear output dtype must match scale dtype")
     zero_point_name = optional_name(node.inputs, 2)
     if zero_point_name is not None:
         zero_point_dtype = _value_dtype(graph, zero_point_name, node)

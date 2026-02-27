@@ -44,16 +44,12 @@ def lower_clip(graph: Graph, node: Node) -> ClipOp:
             try:
                 min_value = float(node.attrs["min"])
             except (TypeError, ValueError) as exc:
-                raise UnsupportedOpError(
-                    "Clip min attribute must be numeric"
-                ) from exc
+                raise UnsupportedOpError("Clip min attribute must be numeric") from exc
         if max_name is None and "max" in node.attrs:
             try:
                 max_value = float(node.attrs["max"])
             except (TypeError, ValueError) as exc:
-                raise UnsupportedOpError(
-                    "Clip max attribute must be numeric"
-                ) from exc
+                raise UnsupportedOpError("Clip max attribute must be numeric") from exc
     input_dtype = value_dtype(graph, input_name, node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if input_dtype != output_dtype:
@@ -65,15 +61,13 @@ def lower_clip(graph: Graph, node: Node) -> ClipOp:
         min_dtype = value_dtype(graph, min_name, node)
         if min_dtype != input_dtype:
             raise UnsupportedOpError(
-                "Clip min dtype must match input dtype, "
-                f"got {min_dtype.onnx_name}"
+                f"Clip min dtype must match input dtype, got {min_dtype.onnx_name}"
             )
     if max_name is not None:
         max_dtype = value_dtype(graph, max_name, node)
         if max_dtype != input_dtype:
             raise UnsupportedOpError(
-                "Clip max dtype must match input dtype, "
-                f"got {max_dtype.onnx_name}"
+                f"Clip max dtype must match input dtype, got {max_dtype.onnx_name}"
             )
     output_shape = value_shape(graph, node.outputs[0], node)
     input_shape = value_shape(graph, input_name, node)
@@ -136,9 +130,7 @@ def lower_leaky_relu(graph: Graph, node: Node) -> UnaryOp:
         raise UnsupportedOpError("LeakyRelu only supports floating-point inputs")
     for key in node.attrs:
         if key != "alpha":
-            raise UnsupportedOpError(
-                f"LeakyRelu does not support attribute {key}"
-            )
+            raise UnsupportedOpError(f"LeakyRelu does not support attribute {key}")
     try:
         alpha = float(node.attrs.get("alpha", 0.01))
     except (TypeError, ValueError) as exc:
@@ -209,13 +201,9 @@ def _infer_binary_output_shape(
 ) -> tuple[int, ...]:
     if function != ScalarFunction.PRELU:
         return BroadcastingOpBase.broadcast_shapes(input0_shape, input1_shape)
-    if BroadcastingOpBase.unidirectional_broadcastable(
-        input1_shape, input0_shape
-    ):
+    if BroadcastingOpBase.unidirectional_broadcastable(input1_shape, input0_shape):
         return input0_shape
-    channel_axis = BroadcastingOpBase.prelu_channel_axis(
-        input0_shape, input1_shape
-    )
+    channel_axis = BroadcastingOpBase.prelu_channel_axis(input0_shape, input1_shape)
     if channel_axis is None:
         raise ShapeInferenceError(
             "Broadcasting mismatch for shapes: "
@@ -234,9 +222,7 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         else:
             direction = str(direction_attr)
         if direction not in {"LEFT", "RIGHT"}:
-            raise UnsupportedOpError(
-                "BitShift direction must be LEFT or RIGHT"
-            )
+            raise UnsupportedOpError("BitShift direction must be LEFT or RIGHT")
         op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
         if not op_dtype.is_integer:
             raise UnsupportedOpError("BitShift expects integer inputs")
@@ -261,16 +247,12 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         fmod = int(node.attrs.get("fmod", 0))
         if fmod not in {0, 1}:
             raise UnsupportedOpError("Mod only supports fmod=0 or fmod=1")
-        function = (
-            ScalarFunction.FMOD if fmod == 1 else ScalarFunction.REMAINDER
-        )
+        function = ScalarFunction.FMOD if fmod == 1 else ScalarFunction.REMAINDER
     else:
         try:
             function = ScalarFunction.from_onnx_op(node.op_type)
         except ScalarFunctionError as exc:
-            raise UnsupportedOpError(
-                f"Unsupported op {node.op_type}"
-            ) from exc
+            raise UnsupportedOpError(f"Unsupported op {node.op_type}") from exc
     validate_unary_attrs(node.op_type, node.attrs)
     if function in COMPARE_FUNCTIONS:
         input_dtype = node_dtype(graph, node, *node.inputs)
@@ -279,9 +261,7 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         if op_spec is None:
             raise UnsupportedOpError(f"Unsupported op {node.op_type}")
         if len(node.inputs) != 2 or len(node.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node.op_type} must have 2 inputs and 1 output"
-            )
+            raise UnsupportedOpError(f"{node.op_type} must have 2 inputs and 1 output")
         if output_dtype != ScalarType.BOOL:
             raise UnsupportedOpError(
                 f"{node.op_type} expects bool output, got {output_dtype.onnx_name}"
@@ -310,9 +290,7 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
         raise UnsupportedOpError(f"Unsupported op {node.op_type}")
     if op_spec is not None:
         if len(node.inputs) != 2 or len(node.outputs) != 1:
-            raise UnsupportedOpError(
-                f"{node.op_type} must have 2 inputs and 1 output"
-            )
+            raise UnsupportedOpError(f"{node.op_type} must have 2 inputs and 1 output")
         input0_shape = value_shape(graph, node.inputs[0], node)
         input1_shape = value_shape(graph, node.inputs[1], node)
         op = BinaryOp(
@@ -331,9 +309,7 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
             graph.set_shape(node.outputs[0], inferred_shape)
         return op
     if len(node.inputs) != 1 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} must have 1 input and 1 output"
-        )
+        raise UnsupportedOpError(f"{node.op_type} must have 1 input and 1 output")
     op = UnaryOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -346,8 +322,8 @@ def _lower_binary_unary(graph: Graph | GraphContext, node: Node) -> BinaryOp | U
     return op
 
 
-_DEFAULT_ELEMENTWISE_TYPES = (
-    BINARY_OP_TYPES.union(UNARY_OP_TYPES) - set(VARIADIC_OP_FUNCTIONS.keys())
+_DEFAULT_ELEMENTWISE_TYPES = BINARY_OP_TYPES.union(UNARY_OP_TYPES) - set(
+    VARIADIC_OP_FUNCTIONS.keys()
 )
 
 for _op_type in _DEFAULT_ELEMENTWISE_TYPES:

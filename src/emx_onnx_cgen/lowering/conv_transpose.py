@@ -26,9 +26,7 @@ class ConvTransposeSpec:
     group: int
 
 
-def _split_padding(
-    total_padding: int, auto_pad: str, *, dim: int
-) -> tuple[int, int]:
+def _split_padding(total_padding: int, auto_pad: str, *, dim: int) -> tuple[int, int]:
     if total_padding < 0:
         raise ShapeInferenceError(
             "ConvTranspose output shape must be fully defined and non-negative"
@@ -50,9 +48,7 @@ def _split_padding(
 
 def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "ConvTranspose must have 2 or 3 inputs and 1 output"
-        )
+        raise UnsupportedOpError("ConvTranspose must have 2 or 3 inputs and 1 output")
     supported_attrs = {
         "auto_pad",
         "dilations",
@@ -73,9 +69,7 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
     if spatial_rank not in {1, 2, 3}:
         raise UnsupportedOpError("ConvTranspose supports 1D/2D/3D inputs only")
     if len(weight_shape) != spatial_rank + 2:
-        raise UnsupportedOpError(
-            "ConvTranspose weight rank must match spatial rank"
-        )
+        raise UnsupportedOpError("ConvTranspose weight rank must match spatial rank")
     batch, in_channels = input_shape[0], input_shape[1]
     in_spatial = input_shape[2:]
     weight_in_channels, weight_out_channels, *kernel_shape = weight_shape
@@ -130,8 +124,7 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
     if len(dilations) != spatial_rank:
         raise UnsupportedOpError("ConvTranspose dilation rank mismatch")
     output_padding = tuple(
-        int(value)
-        for value in node.attrs.get("output_padding", (0,) * spatial_rank)
+        int(value) for value in node.attrs.get("output_padding", (0,) * spatial_rank)
     )
     if len(output_padding) != spatial_rank:
         raise UnsupportedOpError("ConvTranspose output_padding rank mismatch")
@@ -145,8 +138,7 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
                 "ConvTranspose output_padding must be smaller than stride"
             )
     pads = tuple(
-        int(value)
-        for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
+        int(value) for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
     )
     if len(pads) != 2 * spatial_rank:
         raise UnsupportedOpError("ConvTranspose pads rank mismatch")
@@ -177,15 +169,8 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
             )
         ):
             effective_kernel = dilation * (kernel - 1) + 1
-            total_padding = (
-                stride * (in_dim - 1)
-                + out_pad
-                + effective_kernel
-                - out_dim
-            )
-            pad_start, pad_finish = _split_padding(
-                total_padding, auto_pad, dim=dim
-            )
+            total_padding = stride * (in_dim - 1) + out_pad + effective_kernel - out_dim
+            pad_start, pad_finish = _split_padding(total_padding, auto_pad, dim=dim)
             pad_begin.append(pad_start)
             pad_end.append(pad_finish)
         out_spatial = output_shape
@@ -202,14 +187,9 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
                 effective_kernel = dilation * (kernel - 1) + 1
                 out_dim = in_dim * stride
                 total_padding = (
-                    stride * (in_dim - 1)
-                    + out_pad
-                    + effective_kernel
-                    - out_dim
+                    stride * (in_dim - 1) + out_pad + effective_kernel - out_dim
                 )
-                pad_start, pad_finish = _split_padding(
-                    total_padding, auto_pad, dim=dim
-                )
+                pad_start, pad_finish = _split_padding(total_padding, auto_pad, dim=dim)
                 pad_begin.append(pad_start)
                 pad_end.append(pad_finish)
         elif auto_pad in {"NOTSET"}:
@@ -220,7 +200,15 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
                 f"ConvTranspose has unsupported auto_pad mode '{auto_pad}'"
             )
         out_spatial = []
-        for dim, (in_dim, stride, dilation, kernel, pad_start, pad_finish, out_pad) in enumerate(
+        for dim, (
+            in_dim,
+            stride,
+            dilation,
+            kernel,
+            pad_start,
+            pad_finish,
+            out_pad,
+        ) in enumerate(
             zip(
                 in_spatial,
                 strides,
@@ -270,9 +258,7 @@ def resolve_conv_transpose_spec(graph: Graph, node: Node) -> ConvTransposeSpec:
 @register_lowering("ConvTranspose")
 def lower_conv_transpose(graph: Graph, node: Node) -> ConvTransposeOp:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "ConvTranspose must have 2 or 3 inputs and 1 output"
-        )
+        raise UnsupportedOpError("ConvTranspose must have 2 or 3 inputs and 1 output")
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
     if not op_dtype.is_float:
         raise UnsupportedOpError(

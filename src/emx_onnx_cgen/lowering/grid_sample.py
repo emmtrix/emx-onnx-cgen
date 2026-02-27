@@ -37,14 +37,10 @@ def _resolve_shapes(graph: Graph, node: Node) -> _GridSampleShapes:
     grid_shape = value_shape(graph, node.inputs[1], node)
     output_shape = value_shape(graph, node.outputs[0], node)
     if len(input_shape) < 3:
-        raise ShapeInferenceError(
-            "GridSample expects input rank of at least 3"
-        )
+        raise ShapeInferenceError("GridSample expects input rank of at least 3")
     spatial_rank = len(input_shape) - 2
     if any(dim < 0 for dim in (*input_shape, *grid_shape, *output_shape)):
-        raise ShapeInferenceError(
-            "GridSample requires static, non-negative shapes"
-        )
+        raise ShapeInferenceError("GridSample requires static, non-negative shapes")
     return _GridSampleShapes(
         input_shape=input_shape,
         grid_shape=grid_shape,
@@ -79,14 +75,11 @@ def _validate_shapes(shapes: _GridSampleShapes) -> None:
     )
     if output_shape != expected_output:
         raise ShapeInferenceError(
-            "GridSample output shape must be "
-            f"{expected_output}, got {output_shape}"
+            f"GridSample output shape must be {expected_output}, got {output_shape}"
         )
 
 
-def _validate_dtypes(
-    graph: Graph, node: Node
-) -> tuple[ScalarType, ScalarType]:
+def _validate_dtypes(graph: Graph, node: Node) -> tuple[ScalarType, ScalarType]:
     input_dtype = value_dtype(graph, node.inputs[0], node)
     grid_dtype = value_dtype(graph, node.inputs[1], node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
@@ -107,30 +100,23 @@ def _validate_dtypes(
 @register_lowering("GridSample")
 def lower_grid_sample(graph: Graph, node: Node) -> GridSampleOp:
     if len(node.inputs) != 2 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "GridSample expects 2 inputs (X, grid) and 1 output"
-        )
+        raise UnsupportedOpError("GridSample expects 2 inputs (X, grid) and 1 output")
     shapes = _resolve_shapes(graph, node)
     _validate_shapes(shapes)
     mode = _decode_attr(node.attrs.get("mode"), "linear")
     padding_mode = _decode_attr(node.attrs.get("padding_mode"), "zeros")
     align_corners = int(node.attrs.get("align_corners", 0))
     if mode not in _SUPPORTED_MODES:
-        raise UnsupportedOpError(
-            f"GridSample mode {mode!r} is not supported"
-        )
+        raise UnsupportedOpError(f"GridSample mode {mode!r} is not supported")
     if padding_mode not in _SUPPORTED_PADDING_MODES:
         raise UnsupportedOpError(
-            "GridSample padding_mode "
-            f"{padding_mode!r} is not supported"
+            f"GridSample padding_mode {padding_mode!r} is not supported"
         )
     if align_corners not in {0, 1}:
         raise UnsupportedOpError("GridSample align_corners must be 0 or 1")
     _validate_dtypes(graph, node)
     if shapes.spatial_rank > 3:
-        raise UnsupportedOpError(
-            "GridSample supports up to 3 spatial dimensions"
-        )
+        raise UnsupportedOpError("GridSample supports up to 3 spatial dimensions")
     return GridSampleOp(
         input0=node.inputs[0],
         grid=node.inputs[1],

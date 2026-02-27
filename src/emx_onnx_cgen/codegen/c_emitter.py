@@ -6513,12 +6513,11 @@ class CEmitter:
                 )
                 reduce_loop_bound = input_shape_exprs[1]
                 input_expr = (
-                    f"{params['input0']}" f"[{output_loop_vars[0]}][{reduce_loop_var}]"
+                    f"{params['input0']}[{output_loop_vars[0]}][{reduce_loop_var}]"
                 )
             elif op.kind == EinsumKind.TRANSPOSE:
                 input_expr = (
-                    f"{params['input0']}"
-                    f"[{output_loop_vars[1]}][{output_loop_vars[0]}]"
+                    f"{params['input0']}[{output_loop_vars[1]}][{output_loop_vars[0]}]"
                 )
             elif op.kind == EinsumKind.DOT:
                 input_shape_exprs = CEmitter._shape_dim_exprs(

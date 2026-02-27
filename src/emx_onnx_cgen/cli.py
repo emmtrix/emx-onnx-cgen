@@ -212,9 +212,7 @@ def _worst_ulp_diff(
     expected_cast = expected.astype(dtype, copy=False)
     max_diff = 0
     worst: tuple[tuple[int, ...], float, float] | None = None
-    iterator = np.nditer(
-        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
-    )
+    iterator = np.nditer([actual_cast, expected_cast], flags=["refs_ok", "multi_index"])
     for actual_value, expected_value in iterator:
         actual_scalar = float(actual_value[()])
         expected_scalar = float(expected_value[()])
@@ -243,9 +241,7 @@ def _worst_abs_diff(
     expected_cast = expected.astype(dtype, copy=False)
     max_diff: float | int = 0
     worst: tuple[tuple[int, ...], object, object] | None = None
-    iterator = np.nditer(
-        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
-    )
+    iterator = np.nditer([actual_cast, expected_cast], flags=["refs_ok", "multi_index"])
     for actual_value, expected_value in iterator:
         actual_scalar = actual_value[()]
         expected_scalar = expected_value[()]
@@ -339,9 +335,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "--color",
             choices=("auto", "always", "never"),
             default="auto",
-            help=(
-                "Colorize CLI output (default: auto; options: auto, always, never)"
-            ),
+            help=("Colorize CLI output (default: auto; options: auto, always, never)"),
         )
 
     def add_verbose_flag(subparser: argparse.ArgumentParser) -> None:
@@ -454,7 +448,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Truncate inline weight initializers after N values and insert "
-            "\"...\" placeholders (default: no truncation)"
+            '"..." placeholders (default: no truncation)'
         ),
     )
     compile_parser.add_argument(
@@ -525,7 +519,7 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help=(
             "Truncate inline weight initializers after N values and insert "
-            "\"...\" placeholders (default: no truncation)"
+            '"..." placeholders (default: no truncation)'
         ),
     )
     verify_parser.add_argument(
@@ -624,9 +618,7 @@ def _resolve_with_base_dir(base_dir: Path, path: Path) -> Path:
     return Path(os.path.normpath(os.path.join(base_dir, path)))
 
 
-def _apply_base_dir(
-    args: argparse.Namespace, parser: argparse.ArgumentParser
-) -> None:
+def _apply_base_dir(args: argparse.Namespace, parser: argparse.ArgumentParser) -> None:
     model_base_dir: Path | None = args.model_base_dir
     if model_base_dir is None:
         return
@@ -677,7 +669,9 @@ def _handle_compile(args: argparse.Namespace) -> int:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generated or "", encoding="utf-8")
     if testbench is not None:
-        testbench_path = _resolve_testbench_output_path(output_path, args.testbench_file)
+        testbench_path = _resolve_testbench_output_path(
+            output_path, args.testbench_file
+        )
         if args.testbench_file:
             testbench_decls = _compile_testbench_declarations(args, reporter=reporter)
             testbench_path.write_text(
@@ -707,9 +701,7 @@ def _compile_model(
     model_path: Path = args.model
     model_name = args.model_name or "model"
     active_reporter = reporter or _NullVerifyReporter()
-    load_started = active_reporter.start_step(
-        f"Loading model {model_path.name}"
-    )
+    load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     timings: dict[str, float] = {}
     try:
         model, model_checksum = _load_model_and_checksum(model_path)
@@ -769,10 +761,14 @@ def _compile_model(
     output_path: Path = args.output or model_path.with_suffix(".c")
     artifacts = [(str(output_path), len(generated.encode("utf-8")))]
     if testbench is not None:
-        testbench_path = _resolve_testbench_output_path(output_path, args.testbench_file)
+        testbench_path = _resolve_testbench_output_path(
+            output_path, args.testbench_file
+        )
         if args.testbench_file:
             testbench_decls = _compile_testbench_declarations(args, reporter=reporter)
-            wrapped_testbench = _wrap_separate_testbench_source(testbench_decls, testbench)
+            wrapped_testbench = _wrap_separate_testbench_source(
+                testbench_decls, testbench
+            )
             artifacts.append(
                 (str(testbench_path), len(wrapped_testbench.encode("utf-8")))
             )
@@ -942,9 +938,7 @@ def _augment_model_with_tensor_node_outputs(
                     dims.append(dim_param)
                 else:
                     dims.append(int(dim) if dim is not None else None)
-            elem_type = onnx.helper.np_dtype_to_tensor_dtype(
-                value.type.dtype.np_dtype
-            )
+            elem_type = onnx.helper.np_dtype_to_tensor_dtype(value.type.dtype.np_dtype)
             value_info = onnx.helper.make_tensor_value_info(
                 output_name,
                 elem_type,
@@ -970,7 +964,9 @@ def _report_per_node_accuracy(
             if output_name:
                 producer_by_output[output_name] = node_index
 
-    node_dependencies: dict[int, set[int]] = {index: set() for index, _ in enumerate(graph.nodes)}
+    node_dependencies: dict[int, set[int]] = {
+        index: set() for index, _ in enumerate(graph.nodes)
+    }
     for node_index, node in enumerate(graph.nodes):
         for input_name in node.inputs:
             if not input_name:
@@ -1033,9 +1029,7 @@ def _report_per_node_accuracy(
         reporter.note("Per-node accuracy: no tensor node outputs were comparable.")
         return
 
-    failing_nodes = {
-        node_index for node_index, failed in node_failed.items() if failed
-    }
+    failing_nodes = {node_index for node_index, failed in node_failed.items() if failed}
     if not failing_nodes:
         reporter.info("Suspects: none (no failing nodes).")
         return
@@ -1051,7 +1045,9 @@ def _report_per_node_accuracy(
         )
         return
 
-    failing_children: dict[int, set[int]] = {node_index: set() for node_index in failing_nodes}
+    failing_children: dict[int, set[int]] = {
+        node_index: set() for node_index in failing_nodes
+    }
     for child_index in failing_nodes:
         for parent_index in node_dependencies[child_index]:
             if parent_index in failing_nodes:
@@ -1168,9 +1164,7 @@ def _verify_model(
     keep_label = (
         "--keep-temp-dir set" if args.keep_temp_dir else "--keep-temp-dir not set"
     )
-    active_reporter.note(
-        f"Using temporary folder [{keep_label}]: {temp_path}"
-    )
+    active_reporter.note(f"Using temporary folder [{keep_label}]: {temp_path}")
     active_reporter.info("")
     load_started = active_reporter.start_step(f"Loading model {model_path.name}")
     try:
@@ -1211,8 +1205,7 @@ def _verify_model(
         added_outputs = len(model.graph.output) - original_output_count
         if added_outputs > 0:
             active_reporter.note(
-                "Per-node accuracy enabled: "
-                f"added {added_outputs} tensor node outputs."
+                f"Per-node accuracy enabled: added {added_outputs} tensor node outputs."
             )
         try:
             graph = import_onnx(model)
@@ -1226,8 +1219,7 @@ def _verify_model(
             )
     output_compare_names = set(original_output_names)
     has_non_tensor_output = any(
-        value.name in output_compare_names
-        and not isinstance(value.type, TensorType)
+        value.name in output_compare_names and not isinstance(value.type, TensorType)
         for value in graph.outputs
     )
     has_non_tensor_input = any(
@@ -1317,7 +1309,9 @@ def _verify_model(
         testbench_input_path: Path | None = None
         if testbench_inputs:
             input_order = [
-                value.name for value in graph.inputs if isinstance(value.type, TensorType)
+                value.name
+                for value in graph.inputs
+                if isinstance(value.type, TensorType)
             ]
             testbench_input_path = temp_path / "testbench_inputs.bin"
             with testbench_input_path.open("wb") as handle:
@@ -1373,18 +1367,14 @@ def _verify_model(
                 cwd=temp_path,
             )
             active_reporter.step_ok(compile_started)
-            active_reporter.info(
-                f"  Compile command: {shlex.join(compile_cmd)}"
-            )
+            active_reporter.info(f"  Compile command: {shlex.join(compile_cmd)}")
             active_reporter.info("")
             if args.test_data_dir is not None:
                 active_reporter.info(
                     f"Verifying using test data set: {args.test_data_dir.name}"
                 )
             else:
-                active_reporter.info(
-                    "Verifying using generated random inputs"
-                )
+                active_reporter.info("Verifying using generated random inputs")
         except subprocess.CalledProcessError as exc:
             message = "Failed to build testbench."
             if include_build_details:
@@ -1394,9 +1384,7 @@ def _verify_model(
             active_reporter.step_fail(message)
             return None, message, operators, opset_version, generated_checksum
         try:
-            run_started = active_reporter.start_step(
-                "  Running generated binary"
-            )
+            run_started = active_reporter.start_step("  Running generated binary")
             run_cmd = [str(exe_path)]
             if testbench_input_path is not None:
                 run_cmd.append(str(testbench_input_path))
@@ -1422,9 +1410,13 @@ def _verify_model(
                 )
         except subprocess.CalledProcessError as exc:
             active_reporter.step_fail(describe_exit_code(exc.returncode))
-            return None, (
-                "Testbench execution failed: " + describe_exit_code(exc.returncode)
-            ), operators, opset_version, generated_checksum
+            return (
+                None,
+                ("Testbench execution failed: " + describe_exit_code(exc.returncode)),
+                operators,
+                opset_version,
+                generated_checksum,
+            )
         if payload is None:
             return (
                 None,
@@ -1539,9 +1531,7 @@ def _verify_model(
             }
         else:
             inputs = {
-                name: decode_testbench_array(
-                    value["data"], input_dtypes[name].np_dtype
-                )
+                name: decode_testbench_array(value["data"], input_dtypes[name].np_dtype)
                 for name, value in payload["inputs"].items()
             }
         runtime_outputs: dict[str, np.ndarray] | None = None
@@ -1647,13 +1637,9 @@ def _verify_model(
         max_abs_diff: float | int = 0
         worst_abs_diff: _WorstAbsDiff | None = None
         output_nodes = {
-            output_name: node
-            for node in graph.nodes
-            for output_name in node.outputs
+            output_name: node for node in graph.nodes for output_name in node.outputs
         }
-        active_reporter.start_step(
-            f"  Comparing outputs [--max-ulp={args.max_ulp}]"
-        )
+        active_reporter.start_step(f"  Comparing outputs [--max-ulp={args.max_ulp}]")
         try:
             for value in graph.outputs:
                 if value.name not in output_compare_names:
@@ -1684,9 +1670,7 @@ def _verify_model(
                                 ulp=output_max,
                             )
                 else:
-                    output_max, output_worst = _worst_abs_diff(
-                        output_data, runtime_out
-                    )
+                    output_max, output_worst = _worst_abs_diff(output_data, runtime_out)
                     if output_max > max_abs_diff:
                         max_abs_diff = output_max
                         if output_worst is not None:
@@ -1853,7 +1837,9 @@ def _load_test_data_inputs(
                     dim.dim_value if dim.HasField("dim_value") else 1
                     for dim in tensor_type.shape.dim
                 ]
-                inputs[value_info.name] = np.zeros((0, *shape), dtype=dtype_info.np_dtype)
+                inputs[value_info.name] = np.zeros(
+                    (0, *shape), dtype=dtype_info.np_dtype
+                )
                 continue
             first_shape = tensors[0].shape
             if any(tensor.shape != first_shape for tensor in tensors[1:]):
@@ -1888,9 +1874,7 @@ def _load_test_data_inputs(
             return None, None
         tensor_type = elem_type.tensor_type
         if optional.HasField("tensor_value"):
-            inputs[value_info.name] = numpy_helper.to_array(
-                optional.tensor_value
-            )
+            inputs[value_info.name] = numpy_helper.to_array(optional.tensor_value)
             optional_flags[value_info.name] = True
             continue
         if not tensor_type.HasField("elem_type"):
@@ -1912,9 +1896,7 @@ def _load_test_data_inputs(
                 raise CodegenError(
                     f"Optional input {value_info.name} has unknown shape."
                 )
-        inputs[value_info.name] = np.zeros(
-            tuple(shape), dtype=dtype_info.np_dtype
-        )
+        inputs[value_info.name] = np.zeros(tuple(shape), dtype=dtype_info.np_dtype)
         optional_flags[value_info.name] = False
     return inputs, optional_flags
 
@@ -2045,9 +2027,7 @@ def _report_model_details(
     output_count: int,
 ) -> None:
     operators_display = ", ".join(operators) if operators else "(none)"
-    reporter.info(
-        f"  Model operators ({len(operators)}): {operators_display}"
-    )
+    reporter.info(f"  Model operators ({len(operators)}): {operators_display}")
     reporter.info(
         f"  Model file size: {_format_artifact_size(model_path.stat().st_size)}"
     )

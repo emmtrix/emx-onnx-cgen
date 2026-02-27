@@ -90,8 +90,7 @@ def _resolve_lp_pool_spec(graph: Graph, node: Node) -> LpPoolSpec:
     expected_output_shape = (batch, channels, out_h, out_w)
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
-            "LpPool output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
+            f"LpPool output shape must be {expected_output_shape}, got {output_shape}"
         )
     return LpPoolSpec(
         batch=batch,

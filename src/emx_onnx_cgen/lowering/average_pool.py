@@ -102,8 +102,7 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     if len(strides) != spatial_rank:
         raise UnsupportedOpError("AveragePool stride rank mismatch")
     dilations = tuple(
-        int(value)
-        for value in node.attrs.get("dilations", (1,) * spatial_rank)
+        int(value) for value in node.attrs.get("dilations", (1,) * spatial_rank)
     )
     if len(dilations) != spatial_rank:
         raise UnsupportedOpError("AveragePool dilation rank mismatch")
@@ -152,9 +151,7 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
         else:
             out_dim = numerator // stride + 1
         if out_dim < 0:
-            raise ShapeInferenceError(
-                "AveragePool output shape must be non-negative"
-            )
+            raise ShapeInferenceError("AveragePool output shape must be non-negative")
         out_spatial.append(out_dim)
     output_shape = _value_shape(graph, node.outputs[0], node)
     expected_output_shape = (batch, channels, *out_spatial)

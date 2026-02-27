@@ -222,15 +222,30 @@ def _shape_values_from_input(
             if len(left) != len(right):
                 return None
             if source_node.op_type == "Equal":
-                return [1 if left_value == right_value else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    1 if left_value == right_value else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "And":
-                return [1 if (left_value and right_value) else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    1 if (left_value and right_value) else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Or":
-                return [1 if (left_value or right_value) else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    1 if (left_value or right_value) else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Div":
-                return [int(left_value / right_value) if right_value != 0 else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    int(left_value / right_value) if right_value != 0 else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Mod":
-                return [left_value % right_value if right_value != 0 else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    left_value % right_value if right_value != 0 else 0
+                    for left_value, right_value in zip(left, right)
+                ]
         if source_node.op_type in {"Add", "Sub", "Mul"}:
             if len(source_node.inputs) != 2 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError(
@@ -257,11 +272,20 @@ def _shape_values_from_input(
             if len(left) != len(right):
                 return None
             if source_node.op_type == "Add":
-                return [left_value + right_value for left_value, right_value in zip(left, right)]
+                return [
+                    left_value + right_value
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Sub":
-                return [left_value - right_value for left_value, right_value in zip(left, right)]
+                return [
+                    left_value - right_value
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Mul":
-                return [left_value * right_value for left_value, right_value in zip(left, right)]
+                return [
+                    left_value * right_value
+                    for left_value, right_value in zip(left, right)
+                ]
         if source_node.op_type == "Not":
             if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Not must have 1 input and 1 output")

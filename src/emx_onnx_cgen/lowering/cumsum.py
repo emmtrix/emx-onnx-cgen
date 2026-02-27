@@ -37,18 +37,12 @@ def _is_scalar_shape(shape: tuple[int, ...]) -> bool:
 def _validate_static_shape(shape: tuple[int, ...], node: Node) -> None:
     for dim in shape:
         if dim < 0:
-            raise ShapeInferenceError(
-                f"{node.op_type} does not support dynamic dims"
-            )
+            raise ShapeInferenceError(f"{node.op_type} does not support dynamic dims")
 
 
-def _read_axis_initializer(
-    initializer: Initializer, node: Node
-) -> int:
+def _read_axis_initializer(initializer: Initializer, node: Node) -> int:
     if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
-        raise UnsupportedOpError(
-            f"{node.op_type} axis input must be int64 or int32"
-        )
+        raise UnsupportedOpError(f"{node.op_type} axis input must be int64 or int32")
     axis_data = np.array(initializer.data, dtype=np.int64).reshape(-1)
     if axis_data.size != 1:
         raise UnsupportedOpError(f"{node.op_type} axis input must be scalar")
@@ -93,9 +87,7 @@ def lower_cumsum(graph: Graph, node: Node) -> CumSumOp:
             raise UnsupportedOpError("CumSum axis input must be scalar")
         axis_input_dtype = value_dtype(graph, axis_name, node)
         if axis_input_dtype not in {ScalarType.I64, ScalarType.I32}:
-            raise UnsupportedOpError(
-                "CumSum axis input must be int64 or int32"
-            )
+            raise UnsupportedOpError("CumSum axis input must be int64 or int32")
         axis_input = axis_name
     exclusive = int(node.attrs.get("exclusive", 0))
     reverse = int(node.attrs.get("reverse", 0))

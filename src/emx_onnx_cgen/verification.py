@@ -9,9 +9,7 @@ from shared.ulp import ulp_intdiff_float
 WorstUlpDiff: TypeAlias = tuple[tuple[int, ...], float, float]
 
 
-def _validate_ulp_inputs(
-    actual: np.ndarray, expected: np.ndarray
-) -> np.dtype | None:
+def _validate_ulp_inputs(actual: np.ndarray, expected: np.ndarray) -> np.dtype | None:
     if actual.shape != expected.shape:
         raise ValueError(
             f"Shape mismatch for ULP calculation: {actual.shape} vs {expected.shape}"
@@ -40,14 +38,9 @@ def worst_ulp_diff(
     abs_tol = np.finfo(dtype).eps * atol_eps
     max_diff = 0
     worst: WorstUlpDiff | None = None
-    iterator = np.nditer(
-        [actual_cast, expected_cast], flags=["refs_ok", "multi_index"]
-    )
+    iterator = np.nditer([actual_cast, expected_cast], flags=["refs_ok", "multi_index"])
     for actual_value, expected_value in iterator:
-        if (
-            abs(float(actual_value[()]) - float(expected_value[()]))
-            <= abs_tol
-        ):
+        if abs(float(actual_value[()]) - float(expected_value[()])) <= abs_tol:
             continue
         diff = ulp_intdiff_float(actual_value[()], expected_value[()])
         if diff > max_diff:

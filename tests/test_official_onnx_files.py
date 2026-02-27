@@ -17,9 +17,7 @@ EXPECTED_ERRORS_ROOT = Path(__file__).resolve().parent / "expected_errors"
 OFFICIAL_ONNX_PREFIX = "onnx-org/onnx/backend/test/data/"
 LOCAL_ONNX_PREFIX = "onnx2c-org/test/"
 LOCAL_REPO_ONNX_PREFIX = "tests/onnx/"
-LOCAL_ONNX_DATA_ROOT = (
-    Path(__file__).resolve().parents[1] / "onnx2c-org" / "test"
-)
+LOCAL_ONNX_DATA_ROOT = Path(__file__).resolve().parents[1] / "onnx2c-org" / "test"
 LOCAL_REPO_ONNX_DATA_ROOT = Path(__file__).resolve().parent / "onnx"
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
@@ -99,14 +97,10 @@ def _list_expectation_repo_paths(
     path_filter: Callable[[str], bool],
 ) -> list[str]:
     if not root.exists():
-        raise AssertionError(
-            f"Expected errors directory {root} is missing."
-        )
+        raise AssertionError(f"Expected errors directory {root} is missing.")
     repo_relative_paths: list[str] = []
     for expectation_file in sorted(root.glob("*.json")):
-        repo_relative = _repo_relative_path_from_expectation_file(
-            expectation_file
-        )
+        repo_relative = _repo_relative_path_from_expectation_file(expectation_file)
         if not path_filter(repo_relative):
             continue
         repo_relative_paths.append(repo_relative)
@@ -135,9 +129,7 @@ def _official_onnx_file_paths() -> tuple[str, ...]:
 def _local_onnx_file_paths() -> tuple[str, ...]:
     if os.getenv("UPDATE_REFS"):
         return tuple(_collect_onnx_files(LOCAL_ONNX_DATA_ROOT))
-    repo_relative_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(
-        _repo_root()
-    ).as_posix()
+    repo_relative_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(_repo_root()).as_posix()
     return tuple(
         Path(path).relative_to(repo_relative_prefix).as_posix()
         for path in _list_expectation_repo_paths(
@@ -228,9 +220,7 @@ def _read_expectation_file(
 def _load_expectation_for_repo_relative(
     repo_relative_path: str,
 ) -> OnnxFileExpectation:
-    expectation_path = _expected_errors_path_for_repo_relative(
-        repo_relative_path
-    )
+    expectation_path = _expected_errors_path_for_repo_relative(repo_relative_path)
     if not expectation_path.exists():
         if os.getenv("UPDATE_REFS"):
             return OnnxFileExpectation(
@@ -238,9 +228,7 @@ def _load_expectation_for_repo_relative(
                 error="",
                 command_line="",
             )
-        raise AssertionError(
-            f"Missing expectation file for {repo_relative_path}"
-        )
+        raise AssertionError(f"Missing expectation file for {repo_relative_path}")
     return _read_expectation_file(
         expectation_path,
         fallback_path=repo_relative_path,
@@ -252,9 +240,7 @@ def _write_expectation_file(
     *,
     repo_relative_path: str,
 ) -> None:
-    expectation_path = _expected_errors_path_for_repo_relative(
-        repo_relative_path
-    )
+    expectation_path = _expected_errors_path_for_repo_relative(repo_relative_path)
     expectation_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "error": expectation.error,
@@ -278,8 +264,7 @@ def _write_expectation_file(
 
 def _collect_onnx_files(data_root: Path) -> list[str]:
     return sorted(
-        p.relative_to(data_root).as_posix()
-        for p in data_root.rglob("*.onnx")
+        p.relative_to(data_root).as_posix() for p in data_root.rglob("*.onnx")
     )[:ONNX_FILE_LIMIT]
 
 
@@ -466,17 +451,13 @@ def _run_expected_error_test(
         if reporter is not None:
             if not _VERBOSE_FLAGS_REPORTED:
                 update_refs = os.getenv("UPDATE_REFS", "").strip() or "0"
-                disable_checksum = (
-                    os.getenv("DISABLE_CHECKSUM", "").strip() or "0"
-                )
+                disable_checksum = os.getenv("DISABLE_CHECKSUM", "").strip() or "0"
                 reporter.write_line(
                     "env: UPDATE_REFS="
                     f"{update_refs} DISABLE_CHECKSUM={disable_checksum}"
                 )
                 _VERBOSE_FLAGS_REPORTED = True
-            reporter.write_line(
-                f"{expectation_path}: result={actual_error}"
-            )
+            reporter.write_line(f"{expectation_path}: result={actual_error}")
 
     if actual_error == "CHECKSUM":
         actual_error = expected_error
@@ -543,12 +524,8 @@ def test_local_onnx_expected_errors(
     data_root = LOCAL_ONNX_DATA_ROOT
     _ensure_local_onnx_files_present(data_root)
     repo_root = _repo_root()
-    expectation = _load_expectation_for_repo_relative(
-        repo_relative_path
-    )
-    rel_path = Path(repo_relative_path).relative_to(
-        data_root.relative_to(repo_root)
-    )
+    expectation = _load_expectation_for_repo_relative(repo_relative_path)
+    rel_path = Path(repo_relative_path).relative_to(data_root.relative_to(repo_root))
     model_path = data_root / rel_path
     _run_expected_error_test(
         repo_root=repo_root,
@@ -575,12 +552,8 @@ def test_local_repo_onnx_expected_errors(
     data_root = LOCAL_REPO_ONNX_DATA_ROOT
     _ensure_local_repo_onnx_files_present(data_root)
     repo_root = _repo_root()
-    expectation = _load_expectation_for_repo_relative(
-        repo_relative_path
-    )
-    rel_path = Path(repo_relative_path).relative_to(
-        data_root.relative_to(repo_root)
-    )
+    expectation = _load_expectation_for_repo_relative(repo_relative_path)
+    rel_path = Path(repo_relative_path).relative_to(data_root.relative_to(repo_root))
     model_path = data_root / rel_path
     _run_expected_error_test(
         repo_root=repo_root,

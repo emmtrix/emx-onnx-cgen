@@ -58,15 +58,15 @@ def _scalar_function_spec(
     )
 
 
-def _common_unary_from_f32_spec(value: str) -> tuple[
-    str, bool, bool, bool, bool, int | None, int | None
-]:
+def _common_unary_from_f32_spec(
+    value: str,
+) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
     return _scalar_function_spec(value, int_from_f32_arity=1, bool_from_f32_arity=1)
 
 
-def _common_binary_from_f32_spec(value: str) -> tuple[
-    str, bool, bool, bool, bool, int | None, int | None
-]:
+def _common_binary_from_f32_spec(
+    value: str,
+) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
     return _scalar_function_spec(value, int_from_f32_arity=2, bool_from_f32_arity=2)
 
 
@@ -80,21 +80,27 @@ def _bool_unary_from_f32_spec(
     )
 
 
-def _bool_binary_from_f32_spec(value: str) -> tuple[
-    str, bool, bool, bool, bool, int | None, int | None
-]:
+def _bool_binary_from_f32_spec(
+    value: str,
+) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
     return _scalar_function_spec(value, bool_from_f32_arity=2)
 
 
-def _no_float_spec(value: str) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
+def _no_float_spec(
+    value: str,
+) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
     return _scalar_function_spec(value, supports_float=False)
 
 
-def _int_only_spec(value: str) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
+def _int_only_spec(
+    value: str,
+) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
     return _scalar_function_spec(value, supports_float=False, supports_bool=False)
 
 
-def _conversion_spec(value: str) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
+def _conversion_spec(
+    value: str,
+) -> tuple[str, bool, bool, bool, bool, int | None, int | None]:
     return _scalar_function_spec(
         value,
         supports_float=False,
@@ -153,7 +159,9 @@ class ScalarFunction(str, Enum):
     CLAMP_MAX = _bool_binary_from_f32_spec("clamp_max")
     CLAMP_MIN = _bool_binary_from_f32_spec("clamp_min")
     CONJ = _bool_unary_from_f32_spec("conj", supports_unsigned_int=False)
-    CONJ_PHYSICAL = _bool_unary_from_f32_spec("conj_physical", supports_unsigned_int=False)
+    CONJ_PHYSICAL = _bool_unary_from_f32_spec(
+        "conj_physical", supports_unsigned_int=False
+    )
     COPYSIGN = _bool_binary_from_f32_spec("copysign")
     COS = _common_unary_from_f32_spec("cos")
     COSH = _common_unary_from_f32_spec("cosh")
@@ -303,9 +311,7 @@ class ScalarFunction(str, Enum):
         try:
             return _ONNX_OP_TO_SCALAR_FUNCTION[op_type]
         except KeyError as exc:
-            raise ScalarFunctionError(
-                f"unsupported ONNX scalar op: {op_type}"
-            ) from exc
+            raise ScalarFunctionError(f"unsupported ONNX scalar op: {op_type}") from exc
 
 
 @dataclass(frozen=True)
@@ -339,9 +345,7 @@ def _conversion_key_from_alias(
     raise ScalarFunctionError(f"unknown conversion alias: {alias}")
 
 
-def _scalar_key_from_op(
-    dtype_info: _ScalarTypeInfo, op_name: str
-) -> ScalarFunctionKey:
+def _scalar_key_from_op(dtype_info: _ScalarTypeInfo, op_name: str) -> ScalarFunctionKey:
     canonical_name = _normalize_op_name(op_name)
     if canonical_name in {"from_f32", "to_f32"}:
         return _conversion_key_from_alias(dtype_info, canonical_name)
@@ -483,7 +487,9 @@ def _cast_value(expr: str, dtype_info: _ScalarTypeInfo) -> str:
     return expr
 
 
-def _simple_unary(dtype_info: _ScalarTypeInfo, name: str, expr: str) -> _GeneratedScalar:
+def _simple_unary(
+    dtype_info: _ScalarTypeInfo, name: str, expr: str
+) -> _GeneratedScalar:
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}{name}({dtype_info.c_type} a) {{",
         f"    return {expr};",
@@ -492,7 +498,9 @@ def _simple_unary(dtype_info: _ScalarTypeInfo, name: str, expr: str) -> _Generat
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
-def _simple_binary(dtype_info: _ScalarTypeInfo, name: str, expr: str) -> _GeneratedScalar:
+def _simple_binary(
+    dtype_info: _ScalarTypeInfo, name: str, expr: str
+) -> _GeneratedScalar:
     lines = [
         f"static inline {dtype_info.c_type} {dtype_info.prefix}{name}({dtype_info.c_type} a, {dtype_info.c_type} b) {{",
         f"    return {expr};",
@@ -501,11 +509,15 @@ def _simple_binary(dtype_info: _ScalarTypeInfo, name: str, expr: str) -> _Genera
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
-def _float_unary_math(dtype_info: _ScalarTypeInfo, name: str, base: str) -> _GeneratedScalar:
+def _float_unary_math(
+    dtype_info: _ScalarTypeInfo, name: str, base: str
+) -> _GeneratedScalar:
     return _simple_unary(dtype_info, name, f"{_math_fn(base, dtype_info)}(a)")
 
 
-def _float_binary_math(dtype_info: _ScalarTypeInfo, name: str, base: str) -> _GeneratedScalar:
+def _float_binary_math(
+    dtype_info: _ScalarTypeInfo, name: str, base: str
+) -> _GeneratedScalar:
     return _simple_binary(dtype_info, name, f"{_math_fn(base, dtype_info)}(a, b)")
 
 
@@ -663,9 +675,7 @@ def _float_heaviside(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _float_ldexp(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    return _simple_binary(
-        dtype_info, "ldexp", f"a * {_math_fn('exp2', dtype_info)}(b)"
-    )
+    return _simple_binary(dtype_info, "ldexp", f"a * {_math_fn('exp2', dtype_info)}(b)")
 
 
 def _float_reciprocal(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -680,12 +690,16 @@ def _float_relu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 def _float_rsqrt(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     one = _float_literal(1.0, dtype_info)
-    return _simple_unary(dtype_info, "rsqrt", f"{one} / {_math_fn('sqrt', dtype_info)}(a)")
+    return _simple_unary(
+        dtype_info, "rsqrt", f"{one} / {_math_fn('sqrt', dtype_info)}(a)"
+    )
 
 
 def _float_sigmoid(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     one = _float_literal(1.0, dtype_info)
-    return _simple_unary(dtype_info, "sigmoid", f"{one} / ({one} + {_math_fn('exp', dtype_info)}(-a))")
+    return _simple_unary(
+        dtype_info, "sigmoid", f"{one} / ({one} + {_math_fn('exp', dtype_info)}(-a))"
+    )
 
 
 def _float_log_sigmoid(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -961,7 +975,9 @@ def _float_softsign(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 def _float_silu(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     one = _float_literal(1.0, dtype_info)
-    return _simple_unary(dtype_info, "silu", f"a / ({one} + {_math_fn('exp', dtype_info)}(-a))")
+    return _simple_unary(
+        dtype_info, "silu", f"a / ({one} + {_math_fn('exp', dtype_info)}(-a))"
+    )
 
 
 def _float_mish(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -1216,7 +1232,7 @@ def _float_i0(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         f"    if (ax < {three_seven_five}) {{",
         f"        {dtype_info.c_type} y = x / {three_seven_five};",
         "        y *= y;",
-        f"        return { _float_literal(1.0, dtype_info)} + y * ({_float_literal(3.5156229, dtype_info)} + y * ({_float_literal(3.0899424, dtype_info)} + y * ({_float_literal(1.2067492, dtype_info)}",
+        f"        return {_float_literal(1.0, dtype_info)} + y * ({_float_literal(3.5156229, dtype_info)} + y * ({_float_literal(3.0899424, dtype_info)} + y * ({_float_literal(1.2067492, dtype_info)}",
         f"            + y * ({_float_literal(0.2659732, dtype_info)} + y * ({_float_literal(0.0360768, dtype_info)} + y * {_float_literal(0.0045813, dtype_info)})))));",
         "    }",
         f"    {dtype_info.c_type} y = {three_seven_five} / ax;",
@@ -1314,22 +1330,29 @@ def _float_positive(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 
 
 def _float_clamp_min(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    return _simple_binary(dtype_info, "clamp_min", f"{_math_fn('fmax', dtype_info)}(a, b)")
+    return _simple_binary(
+        dtype_info, "clamp_min", f"{_math_fn('fmax', dtype_info)}(a, b)"
+    )
 
 
 def _float_clamp_max(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
-    return _simple_binary(dtype_info, "clamp_max", f"{_math_fn('fmin', dtype_info)}(a, b)")
+    return _simple_binary(
+        dtype_info, "clamp_max", f"{_math_fn('fmin', dtype_info)}(a, b)"
+    )
 
-def _float_binary_op_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+
+def _float_binary_op_handler(
+    name: str, op: str
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         return _simple_binary(dtype_info, name, f"a {op} b")
 
     return handler
 
 
-def _float_unary_math_handler(name: str, base: str | None = None) -> Callable[
-    [_ScalarTypeInfo], _GeneratedScalar
-]:
+def _float_unary_math_handler(
+    name: str, base: str | None = None
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     base_name = base or name
 
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -1338,9 +1361,9 @@ def _float_unary_math_handler(name: str, base: str | None = None) -> Callable[
     return handler
 
 
-def _float_binary_math_handler(name: str, base: str | None = None) -> Callable[
-    [_ScalarTypeInfo], _GeneratedScalar
-]:
+def _float_binary_math_handler(
+    name: str, base: str | None = None
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     base_name = base or name
 
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
@@ -1349,7 +1372,9 @@ def _float_binary_math_handler(name: str, base: str | None = None) -> Callable[
     return handler
 
 
-def _float_comparison_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+def _float_comparison_handler(
+    name: str, op: str
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         return _float_comparison(dtype_info, name, op)
 
@@ -1358,17 +1383,23 @@ def _float_comparison_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo],
 
 def _float_logical_or(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     zero = _float_literal(0.0, dtype_info)
-    return _float_logical_binary(dtype_info, "logical_or", f"(a != {zero} || b != {zero})")
+    return _float_logical_binary(
+        dtype_info, "logical_or", f"(a != {zero} || b != {zero})"
+    )
 
 
 def _float_logical_and(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     zero = _float_literal(0.0, dtype_info)
-    return _float_logical_binary(dtype_info, "logical_and", f"(a != {zero} && b != {zero})")
+    return _float_logical_binary(
+        dtype_info, "logical_and", f"(a != {zero} && b != {zero})"
+    )
 
 
 def _float_logical_xor(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     zero = _float_literal(0.0, dtype_info)
-    return _float_logical_binary(dtype_info, "logical_xor", f"((a != {zero}) != (b != {zero}))")
+    return _float_logical_binary(
+        dtype_info, "logical_xor", f"((a != {zero}) != (b != {zero}))"
+    )
 
 
 _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] = {
@@ -1602,11 +1633,15 @@ def _int_binary_op(dtype_info: _ScalarTypeInfo, name: str, op: str) -> _Generate
     return _simple_binary(dtype_info, name, expr)
 
 
-def _int_unary_op(dtype_info: _ScalarTypeInfo, name: str, expr: str) -> _GeneratedScalar:
+def _int_unary_op(
+    dtype_info: _ScalarTypeInfo, name: str, expr: str
+) -> _GeneratedScalar:
     return _simple_unary(dtype_info, name, _cast_value(expr, dtype_info))
 
 
-def _int_comparison(dtype_info: _ScalarTypeInfo, name: str, op: str) -> _GeneratedScalar:
+def _int_comparison(
+    dtype_info: _ScalarTypeInfo, name: str, op: str
+) -> _GeneratedScalar:
     one = _int_bool_literal(dtype_info, True)
     zero = _int_bool_literal(dtype_info, False)
     return _simple_binary(dtype_info, name, f"a {op} b ? {one} : {zero}")
@@ -1840,28 +1875,37 @@ def _int_sgn(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
 def _int_square(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _simple_unary(dtype_info, "square", _cast_value("a * a", dtype_info))
 
-def _int_binary_op_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+
+def _int_binary_op_handler(
+    name: str, op: str
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         return _int_binary_op(dtype_info, name, op)
 
     return handler
 
 
-def _int_simple_binary_handler(name: str, expr: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+def _int_simple_binary_handler(
+    name: str, expr: str
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         return _simple_binary(dtype_info, name, expr)
 
     return handler
 
 
-def _int_comparison_handler(name: str, op: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+def _int_comparison_handler(
+    name: str, op: str
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         return _int_comparison(dtype_info, name, op)
 
     return handler
 
 
-def _int_logical_handler(name: str, expr: str) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
+def _int_logical_handler(
+    name: str, expr: str
+) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
     def handler(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
         return _int_logical(dtype_info, name, expr)
 
@@ -1961,7 +2005,9 @@ def _bool_from_f32() -> _GeneratedScalar:
     return _GeneratedScalar(lines=lines, deps=set(), includes=set())
 
 
-def _bool_bitwise(dtype_info: _ScalarTypeInfo, name: str, expr: str) -> _GeneratedScalar:
+def _bool_bitwise(
+    dtype_info: _ScalarTypeInfo, name: str, expr: str
+) -> _GeneratedScalar:
     return _simple_binary(dtype_info, name, expr)
 
 
@@ -1969,7 +2015,9 @@ def _bool_bitwise_not(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _simple_unary(dtype_info, "bitwise_not", "!a")
 
 
-def _bool_logical(dtype_info: _ScalarTypeInfo, name: str, expr: str) -> _GeneratedScalar:
+def _bool_logical(
+    dtype_info: _ScalarTypeInfo, name: str, expr: str
+) -> _GeneratedScalar:
     return _simple_binary(dtype_info, name, expr)
 
 
@@ -1977,7 +2025,9 @@ def _bool_logical_not(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
     return _simple_unary(dtype_info, "logical_not", "!a")
 
 
-def _bool_comparison(dtype_info: _ScalarTypeInfo, name: str, op: str) -> _GeneratedScalar:
+def _bool_comparison(
+    dtype_info: _ScalarTypeInfo, name: str, op: str
+) -> _GeneratedScalar:
     return _simple_binary(dtype_info, name, f"a {op} b")
 
 
@@ -2016,13 +2066,25 @@ def _bool_binary_from_f32(name: str) -> _GeneratedScalar:
 _BOOL_OP_DISPATCH: Mapping[str, Callable[[], _GeneratedScalar]] = {
     "to_f32": _bool_to_f32,
     "from_f32": _bool_from_f32,
-    "bitwise_and": lambda: _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], "bitwise_and", "a & b"),
-    "bitwise_or": lambda: _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], "bitwise_or", "a | b"),
-    "bitwise_xor": lambda: _simple_binary(_SCALAR_TYPES[ScalarType.BOOL], "bitwise_xor", "a ^ b"),
+    "bitwise_and": lambda: _simple_binary(
+        _SCALAR_TYPES[ScalarType.BOOL], "bitwise_and", "a & b"
+    ),
+    "bitwise_or": lambda: _simple_binary(
+        _SCALAR_TYPES[ScalarType.BOOL], "bitwise_or", "a | b"
+    ),
+    "bitwise_xor": lambda: _simple_binary(
+        _SCALAR_TYPES[ScalarType.BOOL], "bitwise_xor", "a ^ b"
+    ),
     "bitwise_not": lambda: _bool_bitwise_not(_SCALAR_TYPES[ScalarType.BOOL]),
-    "logical_or": lambda: _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], "logical_or", "a || b"),
-    "logical_and": lambda: _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], "logical_and", "a && b"),
-    "logical_xor": lambda: _bool_logical(_SCALAR_TYPES[ScalarType.BOOL], "logical_xor", "a != b"),
+    "logical_or": lambda: _bool_logical(
+        _SCALAR_TYPES[ScalarType.BOOL], "logical_or", "a || b"
+    ),
+    "logical_and": lambda: _bool_logical(
+        _SCALAR_TYPES[ScalarType.BOOL], "logical_and", "a && b"
+    ),
+    "logical_xor": lambda: _bool_logical(
+        _SCALAR_TYPES[ScalarType.BOOL], "logical_xor", "a != b"
+    ),
     "logical_not": lambda: _bool_logical_not(_SCALAR_TYPES[ScalarType.BOOL]),
     "le": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "le", "<="),
     "lt": lambda: _bool_comparison(_SCALAR_TYPES[ScalarType.BOOL], "lt", "<"),
@@ -2225,9 +2287,7 @@ def _scalar_type_info(dtype: ScalarType) -> _ScalarTypeInfo:
     try:
         return _SCALAR_TYPE_BY_ENUM[dtype]
     except KeyError as exc:
-        raise ScalarFunctionError(
-            f"unsupported scalar dtype: {dtype.value}"
-        ) from exc
+        raise ScalarFunctionError(f"unsupported scalar dtype: {dtype.value}") from exc
 
 
 def _supported_ops(dtype_info: _ScalarTypeInfo) -> Set[str]:

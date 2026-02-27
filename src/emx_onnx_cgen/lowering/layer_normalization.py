@@ -27,17 +27,11 @@ def _ensure_broadcastable(
 
 
 @register_lowering("LayerNormalization")
-def lower_layer_normalization(
-    graph: Graph, node: Node
-) -> LayerNormalizationOp:
+def lower_layer_normalization(graph: Graph, node: Node) -> LayerNormalizationOp:
     if len(node.inputs) < 2 or len(node.inputs) > 3:
-        raise UnsupportedOpError(
-            "LayerNormalization must have 2 or 3 inputs"
-        )
+        raise UnsupportedOpError("LayerNormalization must have 2 or 3 inputs")
     if len(node.outputs) < 1 or len(node.outputs) > 3:
-        raise UnsupportedOpError(
-            "LayerNormalization must have 1 to 3 outputs"
-        )
+        raise UnsupportedOpError("LayerNormalization must have 1 to 3 outputs")
     op_dtype = node_dtype(graph, node, *node.inputs, node.outputs[0])
     if not op_dtype.is_float:
         raise UnsupportedOpError(
@@ -58,9 +52,7 @@ def lower_layer_normalization(
     epsilon = float(node.attrs.get("epsilon", 1e-5))
     stash_type = int(node.attrs.get("stash_type", 1))
     if stash_type != 1:
-        raise UnsupportedOpError(
-            "LayerNormalization supports stash_type=1 only"
-        )
+        raise UnsupportedOpError("LayerNormalization supports stash_type=1 only")
     mean_output = node.outputs[1] if len(node.outputs) > 1 else None
     invstd_output = node.outputs[2] if len(node.outputs) > 2 else None
     if mean_output is not None:

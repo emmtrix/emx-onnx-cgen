@@ -27,9 +27,7 @@ def _ensure_broadcastable(
 
 
 @register_lowering("RMSNormalization")
-def lower_rms_normalization(
-    graph: Graph, node: Node
-) -> RMSNormalizationOp:
+def lower_rms_normalization(graph: Graph, node: Node) -> RMSNormalizationOp:
     if len(node.inputs) != 2 or len(node.outputs) != 1:
         raise UnsupportedOpError("RMSNormalization must have 2 inputs and 1 output")
     op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
@@ -47,9 +45,7 @@ def lower_rms_normalization(
     epsilon = float(node.attrs.get("epsilon", 1e-5))
     stash_type = int(node.attrs.get("stash_type", 1))
     if stash_type != 1:
-        raise UnsupportedOpError(
-            "RMSNormalization supports stash_type=1 only"
-        )
+        raise UnsupportedOpError("RMSNormalization supports stash_type=1 only")
     outer = shape_product(input_shape[:axis]) if axis > 0 else 1
     inner = shape_product(normalized_shape)
     return RMSNormalizationOp(

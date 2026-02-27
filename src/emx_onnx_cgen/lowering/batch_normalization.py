@@ -85,16 +85,13 @@ def _resolve_batch_norm_spec(graph: Graph, node: Node) -> _BatchNormSpec:
 
     input_shape = _value_shape(graph, node.inputs[0], node)
     if len(input_shape) < 2:
-        raise UnsupportedOpError(
-            "BatchNormalization expects input rank of at least 2"
-        )
+        raise UnsupportedOpError("BatchNormalization expects input rank of at least 2")
     channels = input_shape[1]
     for name in node.inputs[1:]:
         shape = _value_shape(graph, name, node)
         if shape != (channels,):
             raise ShapeInferenceError(
-                "BatchNormalization parameter shape must be "
-                f"({channels},), got {shape}"
+                f"BatchNormalization parameter shape must be ({channels},), got {shape}"
             )
 
     output_shape = _value_shape(graph, node.outputs[0], node)

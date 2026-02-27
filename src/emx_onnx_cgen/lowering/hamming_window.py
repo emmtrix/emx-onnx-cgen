@@ -35,17 +35,13 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _read_scalar_initializer(
-    graph: Graph, name: str, node: Node
-) -> int | None:
+def _read_scalar_initializer(graph: Graph, name: str, node: Node) -> int | None:
     initializer = _find_initializer(graph, name)
     if initializer is None:
         return None
     data = np.array(initializer.data)
     if data.size != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} size input must be a scalar"
-        )
+        raise UnsupportedOpError(f"{node.op_type} size input must be a scalar")
     return int(data.reshape(-1)[0].item())
 
 
@@ -71,8 +67,7 @@ def lower_hamming_window(graph: Graph, node: Node) -> HammingWindowOp:
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if output_dtype not in _SUPPORTED_OUTPUT_DTYPES:
         raise UnsupportedOpError(
-            "HammingWindow output dtype must be numeric, "
-            f"got {output_dtype.onnx_name}"
+            f"HammingWindow output dtype must be numeric, got {output_dtype.onnx_name}"
         )
     output_datatype = node.attrs.get("output_datatype")
     if output_datatype is not None:
@@ -87,9 +82,7 @@ def lower_hamming_window(graph: Graph, node: Node) -> HammingWindowOp:
     size_value = _read_scalar_initializer(graph, node.inputs[0], node)
     if size_value is not None:
         if size_value < 0:
-            raise ShapeInferenceError(
-                "HammingWindow size must be non-negative"
-            )
+            raise ShapeInferenceError("HammingWindow size must be non-negative")
         if output_shape[0] != size_value:
             raise ShapeInferenceError(
                 "HammingWindow output length does not match size input"

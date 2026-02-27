@@ -8,7 +8,11 @@ from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from ..validation import normalize_axis
-from .common import optional_name, value_dtype as _value_dtype, value_shape as _value_shape
+from .common import (
+    optional_name,
+    value_dtype as _value_dtype,
+    value_shape as _value_shape,
+)
 from .registry import register_lowering
 from ..ir.ops import QuantizeLinearOp
 
@@ -44,9 +48,7 @@ def _resolve_output_dtype(
 
 def resolve_quantize_spec(graph: Graph, node: Node) -> QuantizeSpec:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "QuantizeLinear must have 2 or 3 inputs and 1 output"
-        )
+        raise UnsupportedOpError("QuantizeLinear must have 2 or 3 inputs and 1 output")
     supported_attrs = {"axis", "block_size", "output_dtype", "precision", "saturate"}
     if set(node.attrs) - supported_attrs:
         raise UnsupportedOpError("QuantizeLinear has unsupported attributes")

@@ -53,9 +53,7 @@ def lower_arg_reduce(graph: Graph, node: Node) -> ArgReduceOp:
     if node.op_type not in ARG_REDUCE_KIND_BY_OP:
         raise UnsupportedOpError(f"Unsupported op {node.op_type}")
     if len(node.inputs) != 1 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} must have 1 input and 1 output"
-        )
+        raise UnsupportedOpError(f"{node.op_type} must have 1 input and 1 output")
     input_name = node.inputs[0]
     output_name = node.outputs[0]
     input_shape = value_shape(graph, input_name, node)

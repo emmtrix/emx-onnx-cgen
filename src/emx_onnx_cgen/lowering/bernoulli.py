@@ -11,7 +11,12 @@ from .common import value_shape as _value_shape
 from .registry import register_lowering
 
 
-_SUPPORTED_INPUT_DTYPES = {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}
+_SUPPORTED_INPUT_DTYPES = {
+    ScalarType.F16,
+    ScalarType.BF16,
+    ScalarType.F32,
+    ScalarType.F64,
+}
 _SUPPORTED_OUTPUT_DTYPES = {
     ScalarType.U8,
     ScalarType.U16,
@@ -42,8 +47,7 @@ def lower_bernoulli(graph: Graph, node: Node) -> BernoulliOp:
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     if input_dtype not in _SUPPORTED_INPUT_DTYPES:
         raise UnsupportedOpError(
-            "Bernoulli input dtype must be float, "
-            f"got {input_dtype.onnx_name}"
+            f"Bernoulli input dtype must be float, got {input_dtype.onnx_name}"
         )
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     dtype_attr = node.attrs.get("dtype")

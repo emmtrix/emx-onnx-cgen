@@ -278,18 +278,10 @@ BINARY_SPECS_INT = {
     ScalarFunction.DIV: BinaryOpSpec(
         "/", OperatorKind.INFIX, lambda left, right: left // right
     ),
-    ScalarFunction.FMOD: BinaryOpSpec(
-        "%", OperatorKind.INFIX, np.fmod
-    ),
-    ScalarFunction.REMAINDER: BinaryOpSpec(
-        "remainder", OperatorKind.FUNC, np.mod
-    ),
-    ScalarFunction.MAXIMUM: BinaryOpSpec(
-        "maximum", OperatorKind.FUNC, np.maximum
-    ),
-    ScalarFunction.MINIMUM: BinaryOpSpec(
-        "minimum", OperatorKind.FUNC, np.minimum
-    ),
+    ScalarFunction.FMOD: BinaryOpSpec("%", OperatorKind.INFIX, np.fmod),
+    ScalarFunction.REMAINDER: BinaryOpSpec("remainder", OperatorKind.FUNC, np.mod),
+    ScalarFunction.MAXIMUM: BinaryOpSpec("maximum", OperatorKind.FUNC, np.maximum),
+    ScalarFunction.MINIMUM: BinaryOpSpec("minimum", OperatorKind.FUNC, np.minimum),
     ScalarFunction.POW: BinaryOpSpec("pow", OperatorKind.FUNC, np.power),
     ScalarFunction.SUB: BinaryOpSpec(
         "-", OperatorKind.INFIX, lambda left, right: left - right
@@ -420,13 +412,9 @@ UNARY_APPLY_FUNCS = {
     "exp": np.exp,
     "floorf": np.floor,
     "floor": np.floor,
-    "gelu": lambda value: 0.5
-    * value
-    * (1.0 + _NP_ERF(value / np.sqrt(2.0))),
+    "gelu": lambda value: 0.5 * value * (1.0 + _NP_ERF(value / np.sqrt(2.0))),
     "hardsigmoid": lambda value: np.clip(value * 0.2 + 0.5, 0.0, 1.0),
-    "hardswish": lambda value: value
-    * np.clip(value + 3.0, 0.0, 6.0)
-    / 6.0,
+    "hardswish": lambda value: value * np.clip(value + 3.0, 0.0, 6.0) / 6.0,
     "leaky_relu": lambda value: np.where(value > 0.0, value, 0.01 * value),
     "logf": np.log,
     "log": np.log,
@@ -437,9 +425,7 @@ UNARY_APPLY_FUNCS = {
     "selu": lambda value: np.where(
         value > 0.0,
         1.0507009873554805 * value,
-        1.0507009873554805
-        * 1.6732632423543772
-        * (np.exp(value) - 1.0),
+        1.0507009873554805 * 1.6732632423543772 * (np.exp(value) - 1.0),
     ),
     "sigmoid": lambda value: 1.0 / (1.0 + np.exp(-value)),
     "sign": np.sign,
@@ -447,9 +433,7 @@ UNARY_APPLY_FUNCS = {
     "sin": np.sin,
     "sqrtf": np.sqrt,
     "sqrt": np.sqrt,
-    "softplus": lambda value: np.where(
-        value > 20.0, value, np.log1p(np.exp(value))
-    ),
+    "softplus": lambda value: np.where(value > 20.0, value, np.log1p(np.exp(value))),
     "softsign": lambda value: value / (1.0 + np.abs(value)),
     "sinhf": np.sinh,
     "sinh": np.sinh,
@@ -457,9 +441,7 @@ UNARY_APPLY_FUNCS = {
     "tan": np.tan,
     "tanhf": np.tanh,
     "tanh": np.tanh,
-    "thresholded_relu": lambda value: np.where(
-        value > 1.0, value, 0.0
-    ),
+    "thresholded_relu": lambda value: np.where(value > 1.0, value, 0.0),
     "mish": lambda value: value * np.tanh(np.log1p(np.exp(value))),
     "atanhf": np.arctanh,
     "atanh": np.arctanh,
@@ -490,18 +472,14 @@ def validate_unary_attrs(op_type: str, attrs: Mapping[str, object]) -> None:
         return
     for key in attrs:
         if key not in defaults:
-            raise UnsupportedOpError(
-                f"{op_type} does not support attribute {key}"
-            )
+            raise UnsupportedOpError(f"{op_type} does not support attribute {key}")
     for key, default in defaults.items():
         if key not in attrs:
             continue
         value = attrs[key]
         if isinstance(default, str):
             if str(value) != default:
-                raise UnsupportedOpError(
-                    f"{op_type} only supports {key}={default}"
-                )
+                raise UnsupportedOpError(f"{op_type} only supports {key}={default}")
             continue
         try:
             numeric_value = float(value)
@@ -510,9 +488,7 @@ def validate_unary_attrs(op_type: str, attrs: Mapping[str, object]) -> None:
                 f"{op_type} only supports {key}={default}"
             ) from exc
         if not math.isclose(numeric_value, float(default), abs_tol=1e-6):
-            raise UnsupportedOpError(
-                f"{op_type} only supports {key}={default}"
-            )
+            raise UnsupportedOpError(f"{op_type} only supports {key}={default}")
 
 
 def binary_op_symbol(
@@ -541,7 +517,9 @@ def binary_op_symbol(
                 "Mod only supports fmod=1 for floating point types"
             )
         func = (
-            "fmodf" if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32} else "fmod"
+            "fmodf"
+            if dtype in {ScalarType.F16, ScalarType.BF16, ScalarType.F32}
+            else "fmod"
         )
         return BinaryOpSpec(func, OperatorKind.FUNC, np.fmod)
     return None

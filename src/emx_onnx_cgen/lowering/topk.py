@@ -24,19 +24,13 @@ def _read_k(graph: Graph, name: str, node: Node) -> int | None:
     if initializer is None:
         return None
     if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
-        raise UnsupportedOpError(
-            f"{node.op_type} k input must be int64 or int32"
-        )
+        raise UnsupportedOpError(f"{node.op_type} k input must be int64 or int32")
     data = np.array(initializer.data, dtype=np.int64).reshape(-1)
     if data.size != 1:
-        raise ShapeInferenceError(
-            f"{node.op_type} k input must contain a single value"
-        )
+        raise ShapeInferenceError(f"{node.op_type} k input must contain a single value")
     k = int(data[0])
     if k <= 0:
-        raise ShapeInferenceError(
-            f"{node.op_type} k must be a positive value, got {k}"
-        )
+        raise ShapeInferenceError(f"{node.op_type} k must be a positive value, got {k}")
     return k
 
 
@@ -48,9 +42,7 @@ def lower_topk(graph: Graph, node: Node) -> TopKOp:
     if node.op_type != "TopK":
         raise UnsupportedOpError(f"Unsupported op {node.op_type}")
     if len(node.inputs) != 2 or len(node.outputs) != 2:
-        raise UnsupportedOpError(
-            f"{node.op_type} must have 2 inputs and 2 outputs"
-        )
+        raise UnsupportedOpError(f"{node.op_type} must have 2 inputs and 2 outputs")
     input_name = node.inputs[0]
     k_name = node.inputs[1]
     output_values = node.outputs[0]
@@ -110,9 +102,7 @@ def lower_topk(graph: Graph, node: Node) -> TopKOp:
         )
     indices_dtype = value_dtype(graph, output_indices, node)
     if indices_dtype != ScalarType.I64:
-        raise UnsupportedOpError(
-            f"{node.op_type} indices output dtype must be int64"
-        )
+        raise UnsupportedOpError(f"{node.op_type} indices output dtype must be int64")
     largest = bool(int(node.attrs.get("largest", 1)))
     sorted_output = bool(int(node.attrs.get("sorted", 1)))
     return TopKOp(

@@ -21,9 +21,7 @@ def normalize_concat_axis(axis: int, rank: int) -> int:
     if axis < 0:
         axis += rank
     if axis < 0 or axis >= rank:
-        raise ShapeInferenceError(
-            f"Concat axis out of range for rank {rank}: {axis}"
-        )
+        raise ShapeInferenceError(f"Concat axis out of range for rank {rank}: {axis}")
     return axis
 
 
@@ -70,7 +68,6 @@ def validate_concat_shapes(
     expected_output_shape = tuple(base_shape)
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
-            "Concat output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
+            f"Concat output shape must be {expected_output_shape}, got {output_shape}"
         )
     return axis
