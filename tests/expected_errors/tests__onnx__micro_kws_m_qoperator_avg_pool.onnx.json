@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op QLinearAveragePool",
-  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qoperator_avg_pool.onnx",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_avg_pool.onnx",
   "operators": [
     "Reshape",
     "QuantizeLinear",

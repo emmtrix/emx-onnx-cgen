@@ -1,6 +1,6 @@
 {
   "error": "Unsupported op QLinearSoftmax",
-  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx",
   "operators": [
     "Reshape",
     "QuantizeLinear",
