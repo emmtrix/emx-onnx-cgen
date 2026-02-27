@@ -1,0 +1,36 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ input_c_type }} *input_flat = (const {{ input_c_type }} *){{ input0 }};
+    {{ output_c_type }} *output_flat = ({{ output_c_type }} *){{ output }};
+    const {{ compute_type }} input_scale_value = ({{ compute_type }}){{ input_scale_expr }};
+    const {{ compute_type }} output_scale_value = ({{ compute_type }}){{ output_scale_expr }};
+    const int32_t input_zero = (int32_t){{ input_zero_expr }};
+    const {{ compute_type }} output_zero = ({{ compute_type }}){{ output_zero_expr }};
+    const {{ compute_type }} output_min = ({{ compute_type }}){{ min_literal }};
+    const {{ compute_type }} output_max = ({{ compute_type }}){{ max_literal }};
+    for (idx_t outer_idx = 0; outer_idx < {{ outer }}; ++outer_idx) {
+        for (idx_t inner_idx = 0; inner_idx < {{ inner }}; ++inner_idx) {
+            idx_t base = (outer_idx * {{ axis_size }} * {{ inner }}) + inner_idx;
+            {{ compute_type }} max_value = ((({{ compute_type }})((int32_t)input_flat[base] - input_zero)) * input_scale_value);
+            for (idx_t axis_idx = 1; axis_idx < {{ axis_size }}; ++axis_idx) {
+                idx_t axis_offset = base + axis_idx * {{ inner }};
+                {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
+                max_value = {{ max_fn }}(max_value, value);
+            }
+            {{ compute_type }} sum = ({{ compute_type }})0;
+            for (idx_t axis_idx = 0; axis_idx < {{ axis_size }}; ++axis_idx) {
+                idx_t axis_offset = base + axis_idx * {{ inner }};
+                {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
+                sum += {{ exp_fn }}(value - max_value);
+            }
+            for (idx_t axis_idx = 0; axis_idx < {{ axis_size }}; ++axis_idx) {
+                idx_t axis_offset = base + axis_idx * {{ inner }};
+                {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
+                {{ compute_type }} scaled = ({{ exp_fn }}(value - max_value) / sum) / output_scale_value + output_zero;
+                {{ compute_type }} rounded = {{ round_fn }}(scaled);
+                rounded = {{ max_fn }}(rounded, output_min);
+                rounded = {{ min_fn }}(rounded, output_max);
+                output_flat[axis_offset] = ({{ output_c_type }})rounded;
+            }
+        }
+    }
+}
