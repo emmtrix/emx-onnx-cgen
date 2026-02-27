@@ -60,7 +60,6 @@ This histogram is test-suite-overarching.
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
-| Resize coordinate_transformation_mode '*' is not supported | 1 | 13 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op MelWeightMatrix | 1 | 17 |
@@ -74,7 +73,6 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 8 | 1 |
 | Out of tolerance | 9 | 1 |
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
-| Resize coordinate_transformation_mode '*' is not supported | 13 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |

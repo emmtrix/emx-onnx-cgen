@@ -115,6 +115,8 @@ if (output_shape[{{ dim }}] == 1) {
 } else {
     x_orig{{ dim }} = ((double){{ loop_vars[dim] }} + 0.5) / scales[{{ dim }}] - 0.5;
 }
+{% elif coordinate_transformation_mode == "tf_half_pixel_for_nn" %}
+x_orig{{ dim }} = ((double){{ loop_vars[dim] }} + 0.5) / scales[{{ dim }}];
 {% elif coordinate_transformation_mode == "half_pixel_symmetric" %}
 {
     const double output_width = scales[{{ dim }}] * (double)input_shape[{{ dim }}];
