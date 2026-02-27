@@ -431,6 +431,7 @@ def _run_expected_error_test(
     verify_args = [
         "emx-onnx-cgen",
         "verify",
+        "--sanitize",
         "--model-base-dir",
         str(base_dir.relative_to(repo_root)),
         model_argument,
