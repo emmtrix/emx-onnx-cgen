@@ -1485,12 +1485,14 @@ class CEmitter:
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
                 axis=op.axis,
+                use_legacy_axis_semantics=op.use_legacy_axis_semantics,
             )
         if isinstance(op, LogSoftmaxOp):
             return LogSoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
                 axis=op.axis,
+                use_legacy_axis_semantics=op.use_legacy_axis_semantics,
             )
         if isinstance(op, HardmaxOp):
             return HardmaxOp(
@@ -4695,12 +4697,14 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
+                use_legacy_axis_semantics=op.use_legacy_axis_semantics,
             )
         if isinstance(op, LogSoftmaxOp):
             return LogSoftmaxOp(
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
                 axis=op.axis,
+                use_legacy_axis_semantics=op.use_legacy_axis_semantics,
             )
         if isinstance(op, HardmaxOp):
             return HardmaxOp(
@@ -14031,7 +14035,9 @@ class CEmitter:
         lines.append(f"_Bool {model.name}_load(const char *path) {{")
         lines.append('    FILE *file = fopen(path, "rb");')
         lines.append("    if (!file) {")
-        lines.append('        fprintf(stderr, "Failed to open weight file: %s\\n", path);')
+        lines.append(
+            '        fprintf(stderr, "Failed to open weight file: %s\\n", path);'
+        )
         lines.append("        return 0;")
         lines.append("    }")
         lines.append(f"    _Bool ok = {model.name}_load_file(file);")
