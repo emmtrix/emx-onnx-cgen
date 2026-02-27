@@ -31,6 +31,7 @@ This histogram is test-suite-overarching.
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
+| Error parsing message with type '*' | 3 |  |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op Momentum | 3 |  |
 | Unsupported op RandomUniformLike | 3 | 22 |

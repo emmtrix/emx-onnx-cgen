@@ -9,10 +9,12 @@ import pytest
 
 from test_official_onnx_files import (
     LOCAL_ONNX_DATA_ROOT,
+    LOCAL_REPO_ONNX_DATA_ROOT,
     MODEL_EXTRA_VERIFY_ARGS,
     OnnxFileExpectation,
     _load_expectation_for_repo_relative,
     _local_onnx_file_paths,
+    _local_repo_onnx_file_paths,
     _maybe_init_onnx_org,
     _official_onnx_file_paths,
     _repo_root,
@@ -84,6 +86,7 @@ def _render_onnx_file_support_section(
 def _render_onnx_file_support_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
+    local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
     onnx_version = ONNX_VERSION_PATH.read_text(encoding="utf-8").strip()
     official_supported_count = sum(
@@ -106,6 +109,17 @@ def _render_onnx_file_support_markdown(
         if local_total_count
         else 0.0
     )
+    local_repo_supported_count = sum(
+        1
+        for expectation in local_repo_expectations
+        if _is_success_message(expectation.error)
+    )
+    local_repo_total_count = len(local_repo_expectations)
+    local_repo_support_percent = (
+        (local_repo_supported_count / local_repo_total_count) * 100.0
+        if local_repo_total_count
+        else 0.0
+    )
     lines = [
         "# ONNX test coverage",
         "",
@@ -122,6 +136,11 @@ def _render_onnx_file_support_markdown(
             "| [ONNX2C test coverage](#onnx2c-test-coverage) "
             f"| {local_supported_count} / {local_total_count}, "
             f"{local_support_percent:.1f}% | n/a |"
+        ),
+        (
+            "| [Local ONNX test coverage](#local-onnx-test-coverage) "
+            f"| {local_repo_supported_count} / {local_repo_total_count}, "
+            f"{local_repo_support_percent:.1f}% | n/a |"
         ),
         "",
         "See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.",
@@ -144,6 +163,12 @@ def _render_onnx_file_support_markdown(
             title="ONNX2C test coverage",
             test_directory="onnx2c-org/test",
             expectations=local_expectations,
+        ),
+        "",
+        *_render_onnx_file_support_section(
+            title="Local ONNX test coverage",
+            test_directory="tests/onnx",
+            expectations=local_repo_expectations,
         ),
     ]
     return "\n".join(lines)
@@ -223,8 +248,13 @@ def _render_error_histogram_markdown(
 def _render_support_histogram_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
+    local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
-    merged_expectations = [*official_expectations, *local_expectations]
+    merged_expectations = [
+        *official_expectations,
+        *local_expectations,
+        *local_repo_expectations,
+    ]
     histogram_markdown = _render_error_histogram_markdown(
         merged_expectations,
         title="# Error frequency",
@@ -239,10 +269,15 @@ def _render_support_histogram_markdown(
 def _render_supported_ops_markdown(
     official_expectations: list[OnnxFileExpectation],
     local_expectations: list[OnnxFileExpectation],
+    local_repo_expectations: list[OnnxFileExpectation],
 ) -> str:
     supported_ops: set[str] = set()
     all_ops: set[str] = set()
-    for expectation in (*official_expectations, *local_expectations):
+    for expectation in (
+        *official_expectations,
+        *local_expectations,
+        *local_repo_expectations,
+    ):
         if not expectation.operators:
             continue
         all_ops.update(expectation.operators)
@@ -270,7 +305,7 @@ def _render_supported_ops_markdown(
 
 
 @pytest.mark.order(
-    after="tests/test_official_onnx_files.py::test_local_onnx_expected_errors"
+    after="tests/test_official_onnx_files.py::test_local_repo_onnx_expected_errors"
 )
 def test_official_onnx_file_support_doc() -> None:
     if not ONNX_VERSION_PATH.exists():
@@ -315,17 +350,37 @@ def test_official_onnx_file_support_doc() -> None:
                 opset_version=expectation.opset_version,
             )
         )
+
+    local_repo_prefix = LOCAL_REPO_ONNX_DATA_ROOT.relative_to(
+        repo_root
+    ).as_posix()
+    local_repo_expectations: list[OnnxFileExpectation] = []
+    for local_path in _local_repo_onnx_file_paths():
+        repo_relative = f"{local_repo_prefix}/{local_path}"
+        expectation = _load_expectation_for_repo_relative(repo_relative)
+        local_repo_expectations.append(
+            OnnxFileExpectation(
+                path=local_path,
+                error=expectation.error,
+                command_line=expectation.command_line,
+                operators=expectation.operators,
+                opset_version=expectation.opset_version,
+            )
+        )
     expected_markdown = _render_onnx_file_support_markdown(
         official_expectations,
         local_expectations,
+        local_repo_expectations,
     )
     expected_histogram = _render_support_histogram_markdown(
         official_expectations,
         local_expectations,
+        local_repo_expectations,
     )
     expected_support_ops = _render_supported_ops_markdown(
         official_expectations,
         local_expectations,
+        local_repo_expectations,
     )
     if os.getenv("UPDATE_REFS"):
         OFFICIAL_ONNX_FILE_SUPPORT_PATH.write_text(
