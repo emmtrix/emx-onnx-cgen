@@ -12149,8 +12149,15 @@ class CEmitter:
             compute_dtype = ScalarType.F64
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
             round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            mod_fn = CEmitter._math_fn(compute_dtype, "fmodf", "fmod")
+            max_fn = CEmitter._math_fn(compute_dtype, "fmaxf", "fmax")
+            min_fn = CEmitter._math_fn(compute_dtype, "fminf", "fmin")
             scale_index = "0"
+            if op.dtype.is_signed:
+                min_literal = "-128.0"
+                max_literal = "127.0"
+            else:
+                min_literal = "0.0"
+                max_literal = "255.0"
             rendered = qlinear_matmul_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -12181,8 +12188,10 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                mod_fn=mod_fn,
-                output_is_signed=op.dtype.is_signed,
+                min_fn=min_fn,
+                max_fn=max_fn,
+                min_literal=min_literal,
+                max_literal=max_literal,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
