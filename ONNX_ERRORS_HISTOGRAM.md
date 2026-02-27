@@ -31,7 +31,6 @@ This histogram is test-suite-overarching.
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
-| Error parsing message with type '*' | 3 |  |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op Momentum | 3 |  |
 | Unsupported op RandomUniformLike | 3 | 22 |
@@ -56,6 +55,7 @@ This histogram is test-suite-overarching.
 | Unsupported op TreeEnsemble | 2 |  |
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
+| DequantizeLinear zero_point shape must match scale shape | 1 | 15 |
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
@@ -64,6 +64,8 @@ This histogram is test-suite-overarching.
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op MelWeightMatrix | 1 | 17 |
+| Unsupported op QLinearAveragePool | 1 | 15 |
+| Unsupported op QLinearSoftmax | 1 | 15 |
 | Unsupported op RandomUniform | 1 | 22 |
 | Unsupported op TreeEnsembleClassifier | 1 | 12 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
@@ -76,6 +78,9 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 9 | 1 |
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| DequantizeLinear zero_point shape must match scale shape | 15 | 1 |
+| Unsupported op QLinearAveragePool | 15 | 1 |
+| Unsupported op QLinearSoftmax | 15 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |

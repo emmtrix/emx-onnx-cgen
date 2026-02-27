@@ -1,4 +1,18 @@
 {
-  "error": "Error parsing message with type 'onnx.ModelProto'",
-  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qoperator_avg_pool.onnx"
+  "error": "Unsupported op QLinearAveragePool",
+  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qoperator_avg_pool.onnx",
+  "operators": [
+    "Reshape",
+    "QuantizeLinear",
+    "QLinearConv",
+    "MaxPool",
+    "com.microsoft::QLinearAveragePool",
+    "DequantizeLinear",
+    "Transpose",
+    "QLinearMatMul",
+    "Add",
+    "Relu",
+    "Softmax"
+  ],
+  "opset_version": 15
 }

@@ -1,4 +1,17 @@
 {
-  "error": "Error parsing message with type 'onnx.ModelProto'",
-  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qdq.onnx"
+  "error": "DequantizeLinear zero_point shape must match scale shape",
+  "command_line": "verify --model-base-dir tests/onnx micro_kws_m_qdq.onnx",
+  "operators": [
+    "DequantizeLinear",
+    "Reshape",
+    "QuantizeLinear",
+    "Conv",
+    "MaxPool",
+    "AveragePool",
+    "Transpose",
+    "MatMul",
+    "Add",
+    "Softmax"
+  ],
+  "opset_version": 15
 }
