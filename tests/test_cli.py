@@ -174,3 +174,15 @@ def test_cli_verify_sanitize_flag_can_be_enabled() -> None:
     parser = cli._build_parser()
     args = parser.parse_args(["verify", "model.onnx", "--sanitize"])
     assert args.sanitize is True
+
+
+def test_cli_verify_per_node_accuracy_flag_defaults_to_false() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(["verify", "model.onnx"])
+    assert args.per_node_accuracy is False
+
+
+def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(["verify", "model.onnx", "--per-node-accuracy"])
+    assert args.per_node_accuracy is True
