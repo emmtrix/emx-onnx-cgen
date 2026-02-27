@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks lstm_k1_b1_r1_relu.onnx",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks lstm_k1_b1_r1_relu.onnx",
   "operators": [
     "Transpose",
     "LSTM",

@@ -1350,14 +1350,19 @@ def _verify_model(
                 *compiler_cmd,
                 "-std=c99",
                 "-O1",
-                "-fsanitize=address,undefined",
-                "-Wall",
-                "-Werror",
-                str(c_path.name),
-                "-o",
-                str(exe_path.name),
-                "-lm",
             ]
+            if args.sanitize:
+                compile_cmd.append("-fsanitize=address,undefined")
+            compile_cmd.extend(
+                [
+                    "-Wall",
+                    "-Werror",
+                    str(c_path.name),
+                    "-o",
+                    str(exe_path.name),
+                    "-lm",
+                ]
+            )
             active_reporter.info("")
             compile_started = active_reporter.start_step("Compiling C code")
             subprocess.run(
