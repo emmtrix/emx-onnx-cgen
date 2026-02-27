@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from shared.scalar_types import ScalarType
 
-from ..errors import UnsupportedOpError
+from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
 from ..ir.ops import QLinearConvOp
 from .common import optional_name, value_dtype as _value_dtype
@@ -52,7 +53,10 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
 
     input_dtype = _value_dtype(graph, input_name, node)
     weight_dtype = _value_dtype(graph, weight_name, node)
-    output_dtype = _value_dtype(graph, node.outputs[0], node)
+    try:
+        output_dtype = _value_dtype(graph, node.outputs[0], node)
+    except ShapeInferenceError:
+        output_dtype = input_dtype
     if input_dtype not in {ScalarType.U8, ScalarType.I8}:
         raise UnsupportedOpError("QLinearConv supports uint8/int8 inputs only")
     if weight_dtype not in {ScalarType.U8, ScalarType.I8}:
@@ -98,6 +102,7 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
         input_name=input_name,
         weight_name=weight_name,
         bias_name=None,
+        require_output_shape=False,
     )
 
     weight_scale_shape = _value_shape(graph, weight_scale_name, node)
@@ -119,7 +124,7 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
         if _value_dtype(graph, bias_name, node) != ScalarType.I32:
             raise UnsupportedOpError("QLinearConv bias must have int32 dtype")
 
-    return QLinearConvOp(
+    lowered = QLinearConvOp(
         input0=input_name,
         input_scale=input_scale_name,
         input_zero_point=input_zero_name,
@@ -156,3 +161,7 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
         weight_scale_per_channel=weight_scale_per_channel,
         weight_zero_per_channel=weight_zero_per_channel,
     )
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], (spec.batch, spec.out_channels, *spec.out_spatial))
+        graph.set_dtype(node.outputs[0], output_dtype)
+    return lowered

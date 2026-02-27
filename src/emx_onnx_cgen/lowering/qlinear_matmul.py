@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from shared.scalar_types import ScalarType
 
 from ..ir.ops import QLinearMatMulOp
+from ..ir.context import GraphContext
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import value_dtype as _value_dtype
@@ -124,7 +125,10 @@ def lower_qlinear_matmul(graph: Graph, node: Node) -> QLinearMatMulOp:
     spec = resolve_qlinear_matmul_spec(graph, node)
     input0_dtype = _value_dtype(graph, node.inputs[0], node)
     input1_dtype = _value_dtype(graph, node.inputs[3], node)
-    output_dtype = _value_dtype(graph, node.outputs[0], node)
+    try:
+        output_dtype = _value_dtype(graph, node.outputs[0], node)
+    except ShapeInferenceError:
+        output_dtype = input0_dtype
     if input0_dtype not in {ScalarType.U8, ScalarType.I8}:
         raise UnsupportedOpError(
             "QLinearMatMul supports uint8/int8 inputs only"
@@ -176,7 +180,7 @@ def lower_qlinear_matmul(graph: Graph, node: Node) -> QLinearMatMulOp:
     output_zero_shape = _ensure_scalar_input(
         graph, node.inputs[7], node, "y_zero_point"
     )
-    return QLinearMatMulOp(
+    lowered = QLinearMatMulOp(
         input0=node.inputs[0],
         input0_scale=node.inputs[1],
         input0_zero_point=node.inputs[2],
@@ -210,3 +214,7 @@ def lower_qlinear_matmul(graph: Graph, node: Node) -> QLinearMatMulOp:
         input1_zero_shape=input1_zero_shape,
         output_zero_shape=output_zero_shape,
     )
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], spec.output_shape)
+        graph.set_dtype(node.outputs[0], output_dtype)
+    return lowered

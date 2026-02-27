@@ -87,6 +87,7 @@ from ..ir.ops import (
     QuantizeLinearOp,
     PowOp,
     QLinearAddOp,
+    QLinearAveragePoolOp,
     QLinearMulOp,
     QLinearMatMulOp,
     QLinearConvOp,
@@ -916,6 +917,52 @@ class CEmitter:
                 output_scale_shape=op.output_scale_shape,
                 input0_zero_shape=op.input0_zero_shape,
                 input1_zero_shape=op.input1_zero_shape,
+                output_zero_shape=op.output_zero_shape,
+            )
+        if isinstance(op, QLinearAveragePoolOp):
+            return QLinearAveragePoolOp(
+                input0=name_map.get(op.input0, op.input0),
+                input_scale=name_map.get(op.input_scale, op.input_scale),
+                input_zero_point=name_map.get(
+                    op.input_zero_point, op.input_zero_point
+                ),
+                output_scale=name_map.get(op.output_scale, op.output_scale),
+                output_zero_point=name_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_d=op.out_d,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_d=op.kernel_d,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                stride_d=op.stride_d,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_front=op.pad_front,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                pad_back=op.pad_back,
+                pad_bottom=op.pad_bottom,
+                pad_right=op.pad_right,
+                count_include_pad=op.count_include_pad,
+                input_dtype=op.input_dtype,
+                dtype=op.dtype,
+                input_scale_dtype=op.input_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input_scale_shape=op.input_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input_zero_shape=op.input_zero_shape,
                 output_zero_shape=op.output_zero_shape,
             )
         if isinstance(op, QLinearMatMulOp):
@@ -2075,6 +2122,9 @@ class CEmitter:
                 "qlinear_add": self._env.get_template("qlinear_add_op.c.j2"),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
+                "qlinear_avg_pool": self._env.get_template(
+                    "qlinear_average_pool_op.c.j2"
+                ),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
@@ -4122,6 +4172,52 @@ class CEmitter:
                 input1_zero_shape=op.input1_zero_shape,
                 output_zero_shape=op.output_zero_shape,
             )
+        if isinstance(op, QLinearAveragePoolOp):
+            return QLinearAveragePoolOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input_scale=temp_map.get(op.input_scale, op.input_scale),
+                input_zero_point=temp_map.get(
+                    op.input_zero_point, op.input_zero_point
+                ),
+                output_scale=temp_map.get(op.output_scale, op.output_scale),
+                output_zero_point=temp_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                channels=op.channels,
+                spatial_rank=op.spatial_rank,
+                in_d=op.in_d,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_d=op.out_d,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_d=op.kernel_d,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                stride_d=op.stride_d,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_front=op.pad_front,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                pad_back=op.pad_back,
+                pad_bottom=op.pad_bottom,
+                pad_right=op.pad_right,
+                count_include_pad=op.count_include_pad,
+                input_dtype=op.input_dtype,
+                dtype=op.dtype,
+                input_scale_dtype=op.input_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input_scale_shape=op.input_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input_zero_shape=op.input_zero_shape,
+                output_zero_shape=op.output_zero_shape,
+            )
         if isinstance(op, QLinearMatMulOp):
             return QLinearMatMulOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5313,6 +5409,7 @@ class CEmitter:
             qlinear_add_template=templates["qlinear_add"],
             qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
+            qlinear_avg_pool_template=templates["qlinear_avg_pool"],
             qlinear_conv_template=templates["qlinear_conv"],
             matmul_integer_template=templates["matmul_integer"],
             matmul_template=templates["matmul"],
@@ -5834,6 +5931,7 @@ class CEmitter:
         qlinear_add_template,
         qlinear_mul_template,
         qlinear_matmul_template,
+        qlinear_avg_pool_template,
         qlinear_conv_template,
         matmul_integer_template,
         matmul_template,
@@ -11959,6 +12057,138 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, QLinearAveragePoolOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for QLinearAveragePool."
+                )
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input_scale", op.input_scale),
+                    ("input_zero_point", op.input_zero_point),
+                    ("output_scale", op.output_scale),
+                    ("output_zero_point", op.output_zero_point),
+                    ("output", op.output),
+                ]
+            )
+            input_shape = (
+                (op.batch, op.channels, op.in_d, op.in_h, op.in_w)
+                if op.spatial_rank == 3
+                else (
+                    (op.batch, op.channels, op.in_w)
+                    if op.spatial_rank == 1
+                    else (op.batch, op.channels, op.in_h, op.in_w)
+                )
+            )
+            output_shape = (
+                (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
+                if op.spatial_rank == 3
+                else (
+                    (op.batch, op.channels, op.out_w)
+                    if op.spatial_rank == 1
+                    else (op.batch, op.channels, op.out_h, op.out_w)
+                )
+            )
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            input_scale_suffix = self._param_array_suffix(op.input_scale_shape)
+            output_scale_suffix = self._param_array_suffix(op.output_scale_shape)
+            input_zero_suffix = self._param_array_suffix(op.input_zero_shape)
+            output_zero_suffix = self._param_array_suffix(op.output_zero_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (
+                        params["input_scale"],
+                        op.input_scale_dtype.c_type,
+                        input_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["input_zero_point"],
+                        op.input_dtype.c_type,
+                        input_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_scale"],
+                        op.output_scale_dtype.c_type,
+                        output_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_zero_point"],
+                        op.dtype.c_type,
+                        output_zero_suffix,
+                        True,
+                    ),
+                    (params["output"], op.dtype.c_type, output_suffix, False),
+                ]
+            )
+            compute_dtype = (
+                ScalarType.F64
+                if ScalarType.F64 in {op.input_scale_dtype, op.output_scale_dtype}
+                else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
+            )
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
+            )
+            if max_fn is None or min_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for QLinearAveragePool."
+                )
+            rendered = qlinear_avg_pool_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                input_scale=params["input_scale"],
+                input_zero_point=params["input_zero_point"],
+                output_scale=params["output_scale"],
+                output_zero_point=params["output_zero_point"],
+                output=params["output"],
+                params=param_decls,
+                compute_type=compute_type,
+                round_fn=round_fn,
+                min_fn=min_fn,
+                max_fn=max_fn,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
+                input_scale_expr=f"{params['input_scale']}[0]",
+                input_zero_expr=f"{params['input_zero_point']}[0]",
+                output_scale_expr=f"{params['output_scale']}[0]",
+                output_zero_expr=f"{params['output_zero_point']}[0]",
+                spatial_rank=op.spatial_rank,
+                batch=op.batch,
+                channels=op.channels,
+                in_d=op.in_d,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_d=op.out_d,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_d=op.kernel_d,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                dilation_d=op.dilation_d,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                stride_d=op.stride_d,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_front=op.pad_front,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                count_include_pad=op.count_include_pad,
+                dim_args=dim_args,
+                output_c_type=op.dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, QLinearMatMulOp):
             params = self._shared_param_map(
                 [
@@ -12090,7 +12320,16 @@ class CEmitter:
             compute_dtype = ScalarType.F64
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
             round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            mod_fn = CEmitter._math_fn(compute_dtype, "fmodf", "fmod")
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
+            )
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
+            )
+            if max_fn is None or min_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for QLinearMatMul."
+                )
             scale_index = "0"
             rendered = qlinear_matmul_template.render(
                 model_name=model.name,
@@ -12122,8 +12361,10 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                mod_fn=mod_fn,
-                output_is_signed=op.dtype.is_signed,
+                max_fn=max_fn,
+                min_fn=min_fn,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -13195,6 +13436,12 @@ class CEmitter:
             return op.output_shape
         if isinstance(op, QLinearMatMulOp):
             return op.output_shape
+        if isinstance(op, QLinearAveragePoolOp):
+            if op.spatial_rank == 3:
+                return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
+            if op.spatial_rank == 1:
+                return (op.batch, op.channels, op.out_w)
+            return (op.batch, op.channels, op.out_h, op.out_w)
         if isinstance(op, MatMulOp):
             return self._ctx_shape(op.output)
         if isinstance(op, MatMulIntegerOp):
