@@ -89,6 +89,7 @@ from ..ir.ops import (
     QLinearAddOp,
     QLinearMulOp,
     QLinearMatMulOp,
+    QLinearSoftmaxOp,
     QLinearConvOp,
     LoopRangeOp,
     LoopSequenceInsertOp,
@@ -627,6 +628,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -708,6 +710,7 @@ class CEmitter:
         | QLinearAddOp
         | QLinearMulOp
         | QLinearMatMulOp
+        | QLinearSoftmaxOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -813,6 +816,29 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 function=op.function,
                 params=op.params,
+            )
+        if isinstance(op, QLinearSoftmaxOp):
+            return QLinearSoftmaxOp(
+                input0=name_map.get(op.input0, op.input0),
+                input_scale=name_map.get(op.input_scale, op.input_scale),
+                input_zero_point=name_map.get(op.input_zero_point, op.input_zero_point),
+                output_scale=name_map.get(op.output_scale, op.output_scale),
+                output_zero_point=name_map.get(op.output_zero_point, op.output_zero_point),
+                output=name_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                axis=op.axis,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                input_scale_dtype=op.input_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input_scale_shape=op.input_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input_zero_shape=op.input_zero_shape,
+                output_zero_shape=op.output_zero_shape,
             )
         if isinstance(op, ClipOp):
             return ClipOp(
@@ -2075,6 +2101,7 @@ class CEmitter:
                 "qlinear_add": self._env.get_template("qlinear_add_op.c.j2"),
                 "qlinear_mul": self._env.get_template("qlinear_mul_op.c.j2"),
                 "qlinear_matmul": self._env.get_template("qlinear_matmul_op.c.j2"),
+                "qlinear_softmax": self._env.get_template("qlinear_softmax_op.c.j2"),
                 "qlinear_conv": self._env.get_template("qlinear_conv_op.c.j2"),
                 "matmul_integer": self._env.get_template("matmul_integer_op.c.j2"),
                 "matmul": self._env.get_template("matmul_op.c.j2"),
@@ -2822,6 +2849,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3170,6 +3198,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3344,6 +3373,7 @@ class CEmitter:
                     QLinearAddOp,
                     QLinearMulOp,
                     QLinearMatMulOp,
+                    QLinearSoftmaxOp,
                     QLinearConvOp,
                 ),
             )
@@ -3366,6 +3396,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3461,7 +3492,7 @@ class CEmitter:
             return True
         if any(
             isinstance(
-                op, (QuantizeLinearOp, QLinearAddOp, QLinearMulOp, QLinearMatMulOp)
+                op, (QuantizeLinearOp, QLinearAddOp, QLinearMulOp, QLinearMatMulOp, QLinearSoftmaxOp)
             )
             and op_context.dtype(op.output).is_integer
             for op in resolved_ops
@@ -3485,6 +3516,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3775,6 +3807,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3852,6 +3885,7 @@ class CEmitter:
         | QLinearAddOp
         | QLinearMulOp
         | QLinearMatMulOp
+        | QLinearSoftmaxOp
         | MatMulOp
         | EinsumOp
         | GemmOp
@@ -5223,6 +5257,29 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 seed=op.seed,
             )
+        if isinstance(op, QLinearSoftmaxOp):
+            return QLinearSoftmaxOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input_scale=temp_map.get(op.input_scale, op.input_scale),
+                input_zero_point=temp_map.get(op.input_zero_point, op.input_zero_point),
+                output_scale=temp_map.get(op.output_scale, op.output_scale),
+                output_zero_point=temp_map.get(op.output_zero_point, op.output_zero_point),
+                output=temp_map.get(op.output, op.output),
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+                axis=op.axis,
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                dtype=op.dtype,
+                input_dtype=op.input_dtype,
+                input_scale_dtype=op.input_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input_scale_shape=op.input_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input_zero_shape=op.input_zero_shape,
+                output_zero_shape=op.output_zero_shape,
+            )
         if isinstance(op, UniqueOp):
             return UniqueOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5313,6 +5370,7 @@ class CEmitter:
             qlinear_add_template=templates["qlinear_add"],
             qlinear_mul_template=templates["qlinear_mul"],
             qlinear_matmul_template=templates["qlinear_matmul"],
+            qlinear_softmax_template=templates["qlinear_softmax"],
             qlinear_conv_template=templates["qlinear_conv"],
             matmul_integer_template=templates["matmul_integer"],
             matmul_template=templates["matmul"],
@@ -5834,6 +5892,7 @@ class CEmitter:
         qlinear_add_template,
         qlinear_mul_template,
         qlinear_matmul_template,
+        qlinear_softmax_template,
         qlinear_conv_template,
         matmul_integer_template,
         matmul_template,
@@ -12090,8 +12149,15 @@ class CEmitter:
             compute_dtype = ScalarType.F64
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
             round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            mod_fn = CEmitter._math_fn(compute_dtype, "fmodf", "fmod")
+            max_fn = CEmitter._math_fn(compute_dtype, "fmaxf", "fmax")
+            min_fn = CEmitter._math_fn(compute_dtype, "fminf", "fmin")
             scale_index = "0"
+            if op.dtype.is_signed:
+                min_literal = "-128.0"
+                max_literal = "127.0"
+            else:
+                min_literal = "0.0"
+                max_literal = "255.0"
             rendered = qlinear_matmul_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -12122,8 +12188,105 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                mod_fn=mod_fn,
-                output_is_signed=op.dtype.is_signed,
+                min_fn=min_fn,
+                max_fn=max_fn,
+                min_literal=min_literal,
+                max_literal=max_literal,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, QLinearSoftmaxOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for QLinearSoftmax."
+                )
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input_scale", op.input_scale),
+                    ("input_zero_point", op.input_zero_point),
+                    ("output_scale", op.output_scale),
+                    ("output_zero_point", op.output_zero_point),
+                    ("output", op.output),
+                ]
+            )
+            input_suffix = self._param_array_suffix(op.input_shape)
+            output_suffix = self._param_array_suffix(op.output_shape)
+            input_scale_suffix = self._param_array_suffix(op.input_scale_shape)
+            output_scale_suffix = self._param_array_suffix(op.output_scale_shape)
+            input_zero_suffix = self._param_array_suffix(op.input_zero_shape)
+            output_zero_suffix = self._param_array_suffix(op.output_zero_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], op.input_dtype.c_type, input_suffix, True),
+                    (
+                        params["input_scale"],
+                        op.input_scale_dtype.c_type,
+                        input_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["input_zero_point"],
+                        op.input_dtype.c_type,
+                        input_zero_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_scale"],
+                        op.output_scale_dtype.c_type,
+                        output_scale_suffix,
+                        True,
+                    ),
+                    (
+                        params["output_zero_point"],
+                        op.dtype.c_type,
+                        output_zero_suffix,
+                        True,
+                    ),
+                    (params["output"], op.dtype.c_type, output_suffix, False),
+                ]
+            )
+            compute_dtype = ScalarType.F32
+            if (
+                op.input_scale_dtype == ScalarType.F64
+                or op.output_scale_dtype == ScalarType.F64
+            ):
+                compute_dtype = ScalarType.F64
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            exp_fn = CEmitter._math_fn(compute_dtype, "expf", "exp")
+            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
+            min_fn = self._scalar_function_name(
+                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
+            )
+            max_fn = self._scalar_function_name(
+                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
+            )
+            if min_fn is None or max_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar min/max functions for QLinearSoftmax."
+                )
+            rendered = qlinear_softmax_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                compute_type=compute_type,
+                input_c_type=op.input_dtype.c_type,
+                output_c_type=op.dtype.c_type,
+                input0=params["input0"],
+                output=params["output"],
+                input_scale_expr=f"{params['input_scale']}[0]",
+                output_scale_expr=f"{params['output_scale']}[0]",
+                input_zero_expr=f"{params['input_zero_point']}[0]",
+                output_zero_expr=f"{params['output_zero_point']}[0]",
+                outer=op.outer,
+                axis_size=op.axis_size,
+                inner=op.inner,
+                min_literal=op.dtype.min_literal,
+                max_literal=op.dtype.max_literal,
+                exp_fn=exp_fn,
+                round_fn=round_fn,
+                min_fn=min_fn,
+                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -12339,6 +12502,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -12416,6 +12580,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | DequantizeLinearOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -12659,6 +12824,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | DequantizeLinearOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -12742,6 +12908,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | DequantizeLinearOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -13110,6 +13277,7 @@ class CEmitter:
             | QuantizeLinearOp
             | DequantizeLinearOp
             | QLinearMatMulOp
+        | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -13194,6 +13362,8 @@ class CEmitter:
         if isinstance(op, QLinearMulOp):
             return op.output_shape
         if isinstance(op, QLinearMatMulOp):
+            return op.output_shape
+        if isinstance(op, QLinearSoftmaxOp):
             return op.output_shape
         if isinstance(op, MatMulOp):
             return self._ctx_shape(op.output)
@@ -13358,6 +13528,7 @@ class CEmitter:
             | CastOp
             | QuantizeLinearOp
             | DequantizeLinearOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
