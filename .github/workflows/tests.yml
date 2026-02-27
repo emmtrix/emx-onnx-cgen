@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          lfs: true
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -25,10 +26,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install dependencies
+      - name: Initialize submodules and pull LFS assets
         run: |
           git submodule sync --recursive
           git submodule update --init --recursive
+          git lfs pull --include="*"
+          git submodule foreach --recursive 'git lfs pull --include="*" || true'
+
+      - name: Install dependencies
+        run: |
           python -m pip install -r requirements-ci.txt
 
       - name: Run Ruff
