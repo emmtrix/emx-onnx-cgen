@@ -179,6 +179,7 @@ Options:
 
 - `--cc`: Explicit C compiler command for building the testbench binary.
 - `--sanitize`: Enable sanitizer instrumentation when compiling the verification binary (`-fsanitize=address,undefined`).
+- `--per-node-accuracy`: Also compare intermediate tensor outputs and print max error per node.
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--atol-eps`: Absolute tolerance as a multiple of machine epsilon for floating outputs (default: `1.0`).
 - `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
