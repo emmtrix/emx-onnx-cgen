@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1496 / 1802, 83.0% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1498 / 1802, 83.1% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1496 / 1802 ONNX files (83.0%).
+Coverage 1498 / 1802 ONNX files (83.1%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -741,9 +741,9 @@ Coverage 1496 / 1802 ONNX files (83.0%).
 | node/test_hammingwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 5) |
 | node/test_hammingwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| node/test_hannwindow/model.onnx | 17 | ❌ | Unsupported op HannWindow |
+| node/test_hannwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hannwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 3) |
-| node/test_hannwindow_symmetric/model.onnx | 17 | ❌ | Unsupported op HannWindow |
+| node/test_hannwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 5) |
 | node/test_hannwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hardmax_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_hardmax_axis_1/model.onnx | 13 | ✅ | OK (max ULP 0) |

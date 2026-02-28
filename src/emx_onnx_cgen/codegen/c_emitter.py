@@ -3536,9 +3536,7 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
-        if any(isinstance(op, HammingWindowOp) for op in resolved_ops):
-            return True
-        if any(isinstance(op, HannWindowOp) for op in resolved_ops):
+        if any(isinstance(op, (HammingWindowOp, HannWindowOp)) for op in resolved_ops):
             return True
         return False
 
@@ -13644,9 +13642,7 @@ class CEmitter:
             return ((op.trip_count, ()), (op.cond, ()))
         if isinstance(op, LoopSequenceMapOp):
             return ((op.trip_count, ()), (op.cond, ()))
-        if isinstance(op, HammingWindowOp):
-            return ((op.size, ()),)
-        if isinstance(op, HannWindowOp):
+        if isinstance(op, (HammingWindowOp, HannWindowOp)):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
             return (
