@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 175 / 204
+Supported operators: 175 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -208,5 +208,6 @@ Supported operators: 175 / 204
 | ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ❌ |
 | com.microsoft::QLinearAdd | ✅ |
+| com.microsoft::QLinearAveragePool | ❌ |
 | com.microsoft::QLinearMul | ✅ |
 | com.microsoft::QLinearSoftmax | ✅ |

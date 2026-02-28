@@ -1,4 +1,19 @@
 {
-  "error": "'QLinearAveragePoolOp' object has no attribute 'function'",
-  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_avg_pool.onnx"
+  "error": "Out of tolerance (max ULP 93391266)",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_avg_pool.onnx",
+  "operators": [
+    "Reshape",
+    "QuantizeLinear",
+    "QLinearConv",
+    "MaxPool",
+    "com.microsoft::QLinearAveragePool",
+    "DequantizeLinear",
+    "Transpose",
+    "QLinearMatMul",
+    "Add",
+    "Relu",
+    "Softmax"
+  ],
+  "opset_version": 15,
+  "generated_checksum": "ba6de52b221b9d78159dcbeef3a5403988f0f32aad9749420804b75c3d3e0b55"
 }

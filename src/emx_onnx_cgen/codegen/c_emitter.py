@@ -953,9 +953,7 @@ class CEmitter:
             return QLinearAveragePoolOp(
                 input0=name_map.get(op.input0, op.input0),
                 input_scale=name_map.get(op.input_scale, op.input_scale),
-                input_zero_point=name_map.get(
-                    op.input_zero_point, op.input_zero_point
-                ),
+                input_zero_point=name_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=name_map.get(op.output_scale, op.output_scale),
                 output_zero_point=name_map.get(
                     op.output_zero_point, op.output_zero_point
@@ -4262,9 +4260,7 @@ class CEmitter:
             return QLinearAveragePoolOp(
                 input0=temp_map.get(op.input0, op.input0),
                 input_scale=temp_map.get(op.input_scale, op.input_scale),
-                input_zero_point=temp_map.get(
-                    op.input_zero_point, op.input_zero_point
-                ),
+                input_zero_point=temp_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=temp_map.get(op.output_scale, op.output_scale),
                 output_zero_point=temp_map.get(
                     op.output_zero_point, op.output_zero_point

@@ -1965,8 +1965,6 @@ Coverage 1 / 3 ONNX files (33.3%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
-| micro_kws_m_qdq.onnx | 15 | ❌ | DequantizeLinear zero_point shape must match scale shape |
-| micro_kws_m_qoperator_avg_pool.onnx |  | ❌ | 'QLinearAveragePoolOp' object has no attribute 'function' |
 | micro_kws_m_qdq.onnx | 15 | ❌ | Out of tolerance (max ULP 65793) |
-| micro_kws_m_qoperator_avg_pool.onnx | 15 | ✅ | OK (max ULP 0) |
+| micro_kws_m_qoperator_avg_pool.onnx | 15 | ❌ | Out of tolerance (max ULP 93391266) |
 | micro_kws_m_qoperator_softmax.onnx | 15 | ✅ | OK (max ULP 0) |
