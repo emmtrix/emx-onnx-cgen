@@ -46,6 +46,7 @@ class CompilerOptions:
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
     large_weight_threshold: int = 100 * 1024
+    replicate_ort_bugs: bool = False
     timings: dict[str, float] | None = None
 
 
@@ -76,6 +77,7 @@ class Compiler:
             truncate_weights_after=options.truncate_weights_after,
             large_temp_threshold_bytes=options.large_temp_threshold_bytes,
             large_weight_threshold=options.large_weight_threshold,
+            replicate_ort_bugs=options.replicate_ort_bugs,
         )
         load_lowering_registry()
 

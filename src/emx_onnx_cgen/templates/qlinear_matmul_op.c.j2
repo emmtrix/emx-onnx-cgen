@@ -17,9 +17,24 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} scaled = (({{ compute_type }})acc) * scale + output_zero;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} rounded = {{ round_fn }}(scaled);
+{% if output_wrap and output_is_signed %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} wrapped = {{ mod_fn }}(rounded + ({{ compute_type }})128.0, ({{ compute_type }})256.0);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}if (wrapped < ({{ compute_type }})0.0) {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}wrapped += ({{ compute_type }})256.0;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}wrapped -= ({{ compute_type }})128.0;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})wrapped;
+{% elif output_wrap %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} wrapped = {{ mod_fn }}(rounded, ({{ compute_type }})256.0);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}if (wrapped < ({{ compute_type }})0.0) {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}wrapped += ({{ compute_type }})256.0;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})wrapped;
+{% else %}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})rounded;
+{% endif %}
 {% for idx in range(output_loop_vars | length) | reverse %}
     {% for indent in range(loop.index0) %}    {% endfor %}}
 {% endfor %}
