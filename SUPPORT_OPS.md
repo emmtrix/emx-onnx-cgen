@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 178 / 205
+Supported operators: 179 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -27,7 +27,7 @@ Supported operators: 178 / 205
 | BitwiseNot | ✅ |
 | BitwiseOr | ✅ |
 | BitwiseXor | ✅ |
-| BlackmanWindow | ❌ |
+| BlackmanWindow | ✅ |
 | Cast | ✅ |
 | CastLike | ✅ |
 | Ceil | ✅ |

@@ -39,6 +39,7 @@ from ..ir.ops import (
     BatchNormOp,
     BernoulliOp,
     BinaryOp,
+    BlackmanWindowOp,
     CastOp,
     ClipOp,
     CompressOp,
@@ -694,6 +695,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
@@ -776,7 +778,8 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
-        | HammingWindowOp
+        | BlackmanWindowOp
+            | HammingWindowOp
         | OneHotOp
         | SplitOp
         | TfIdfVectorizerOp
@@ -1935,6 +1938,12 @@ class CEmitter:
                 delta=name_map.get(op.delta, op.delta),
                 output=name_map.get(op.output, op.output),
             )
+        if isinstance(op, BlackmanWindowOp):
+            return BlackmanWindowOp(
+                size=name_map.get(op.size, op.size),
+                output=name_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=name_map.get(op.size, op.size),
@@ -2291,6 +2300,7 @@ class CEmitter:
                 "loop_sequence_insert": self._env.get_template(
                     "loop_sequence_insert_op.c.j2"
                 ),
+                "blackman_window": self._env.get_template("blackman_window_op.c.j2"),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
@@ -3019,6 +3029,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -3373,6 +3384,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -3495,7 +3507,9 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
-        if any(isinstance(op, HammingWindowOp) for op in resolved_ops):
+        if any(
+            isinstance(op, BlackmanWindowOp | HammingWindowOp) for op in resolved_ops
+        ):
             return True
         return False
 
@@ -3567,6 +3581,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -3693,6 +3708,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -3995,6 +4011,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
@@ -4072,7 +4089,8 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
-        | HammingWindowOp
+        | BlackmanWindowOp
+            | HammingWindowOp
         | OneHotOp
         | SplitOp
         | TfIdfVectorizerOp
@@ -5153,6 +5171,12 @@ class CEmitter:
                 elem_shape=op.elem_shape,
                 elem_dtype=op.elem_dtype,
             )
+        if isinstance(op, BlackmanWindowOp):
+            return BlackmanWindowOp(
+                size=temp_map.get(op.size, op.size),
+                output=temp_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=temp_map.get(op.size, op.size),
@@ -5667,6 +5691,7 @@ class CEmitter:
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
             loop_sequence_insert_template=templates["loop_sequence_insert"],
+            blackman_window_template=templates["blackman_window"],
             hamming_window_template=templates["hamming_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
@@ -6193,6 +6218,7 @@ class CEmitter:
         range_template,
         loop_range_template,
         loop_sequence_insert_template,
+        blackman_window_template,
         hamming_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
@@ -10996,6 +11022,39 @@ class CEmitter:
                 c_type=seq_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, BlackmanWindowOp):
+            params = self._shared_param_map(
+                [
+                    ("size", op.size),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["size"],
+                        self._ctx_dtype(op.size).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = blackman_window_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if op.periodic else "0",
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, HammingWindowOp):
             params = self._shared_param_map(
                 [
@@ -13154,6 +13213,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | LoopRangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -13231,6 +13291,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -13386,6 +13447,8 @@ class CEmitter:
             return ((op.trip_count, ()), (op.cond, ()), (op.start, ()), (op.delta, ()))
         if isinstance(op, LoopSequenceInsertOp):
             return ((op.trip_count, ()), (op.cond, ()))
+        if isinstance(op, BlackmanWindowOp):
+            return ((op.size, ()),)
         if isinstance(op, HammingWindowOp):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
@@ -13472,6 +13535,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -13560,6 +13624,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | SplitOp
@@ -13941,6 +14006,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
@@ -14100,6 +14166,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, LoopRangeOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, BlackmanWindowOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, HammingWindowOp):
             return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
@@ -14200,6 +14268,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
@@ -14300,6 +14369,7 @@ class CEmitter:
                 EyeLikeOp,
                 RangeOp,
                 ReverseSequenceOp,
+                BlackmanWindowOp,
                 HammingWindowOp,
                 GridSampleOp,
                 ResizeOp,

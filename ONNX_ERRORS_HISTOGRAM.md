@@ -47,7 +47,6 @@ This histogram is test-suite-overarching.
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
-| Unsupported op BlackmanWindow | 2 | 17 |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
@@ -77,7 +76,6 @@ This histogram is test-suite-overarching.
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |
 | Unsupported op SequenceMap | 17 | 6 |
-| Unsupported op BlackmanWindow | 17 | 2 |
 | Unsupported op HannWindow | 17 | 2 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |

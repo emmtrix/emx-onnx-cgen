@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1488 / 1802, 82.6% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1486 / 1802 ONNX files (82.5%).
+Coverage 1488 / 1802 ONNX files (82.6%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -291,9 +291,9 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_bitwise_xor_i32_2d/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_blackmanwindow/model.onnx | 17 | ❌ | Unsupported op BlackmanWindow |
+| node/test_blackmanwindow/model.onnx | 17 | ✅ | OK (max ULP 3) |
 | node/test_blackmanwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 4) |
-| node/test_blackmanwindow_symmetric/model.onnx | 17 | ❌ | Unsupported op BlackmanWindow |
+| node/test_blackmanwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_blackmanwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_cast_BFLOAT16_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_cast_DOUBLE_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
