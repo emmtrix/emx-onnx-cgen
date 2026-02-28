@@ -6,6 +6,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 3, 100.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -1961,6 +1962,12 @@ Coverage 118 / 125 ONNX files (94.4%).
 
 Test directory: `tests/onnx`
 
+Coverage 3 / 4 ONNX files (75.0%).
+
+| File | Opset | Supported | Error |
+| --- | --- | --- | --- |
+| micro_kws_m_qdq.onnx | 15 | ❌ | Out of tolerance (max ULP 65793) |
+| micro_kws_m_qoperator_add_shape.onnx | 15 | ✅ | OK (max ULP 0) |
 Coverage 3 / 3 ONNX files (100.0%).
 
 | File | Opset | Supported | Error |
