@@ -24,6 +24,15 @@ class DequantizeSpec:
     block_size: int | None
 
 
+def _shapes_match_or_both_scalar_like(
+    lhs: tuple[int, ...], rhs: tuple[int, ...]
+) -> bool:
+    if lhs == rhs:
+        return True
+    scalar_like_shapes = {(), (1,)}
+    return lhs in scalar_like_shapes and rhs in scalar_like_shapes
+
+
 def resolve_dequantize_spec(graph: Graph, node: Node) -> DequantizeSpec:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
         raise UnsupportedOpError(
@@ -43,7 +52,7 @@ def resolve_dequantize_spec(graph: Graph, node: Node) -> DequantizeSpec:
     zero_point_name = optional_name(node.inputs, 2)
     if zero_point_name is not None:
         zero_point_shape = _value_shape(graph, zero_point_name, node)
-        if zero_point_shape != scale_shape:
+        if not _shapes_match_or_both_scalar_like(zero_point_shape, scale_shape):
             raise ShapeInferenceError(
                 "DequantizeLinear zero_point shape must match scale shape"
             )
