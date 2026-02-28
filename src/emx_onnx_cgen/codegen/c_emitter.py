@@ -101,6 +101,7 @@ from ..ir.ops import (
     SequenceEmptyOp,
     SequenceEraseOp,
     SequenceInsertOp,
+    SequenceIdentityOp,
     SequenceLengthOp,
     ReduceOp,
     ReshapeOp,
@@ -2016,6 +2017,13 @@ class CEmitter:
                 position=self._map_optional_name(name_map, op.position),
                 output_sequence=name_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SequenceIdentityOp):
+            return SequenceIdentityOp(
+                input_sequence=name_map.get(op.input_sequence, op.input_sequence),
+                output_sequence=name_map.get(op.output_sequence, op.output_sequence),
+                input_present=self._map_optional_name(name_map, op.input_present),
+                output_present=self._map_optional_name(name_map, op.output_present),
+            )
         if isinstance(op, SequenceLengthOp):
             return SequenceLengthOp(
                 input_sequence=name_map.get(op.input_sequence, op.input_sequence),
@@ -2256,6 +2264,7 @@ class CEmitter:
                 "sequence_empty": self._env.get_template("sequence_empty_op.c.j2"),
                 "sequence_erase": self._env.get_template("sequence_erase_op.c.j2"),
                 "sequence_insert": self._env.get_template("sequence_insert_op.c.j2"),
+                "sequence_identity": self._env.get_template("sequence_identity_op.c.j2"),
                 "sequence_length": self._env.get_template("sequence_length_op.c.j2"),
             }
             if emit_testbench:
@@ -3030,6 +3039,11 @@ class CEmitter:
                 return sequence_value.type.elem.dtype
             if isinstance(op, SequenceInsertOp):
                 return model.op_context.dtype(op.tensor)
+            if isinstance(op, SequenceIdentityOp):
+                sequence_value = model.op_context.find_value(op.output_sequence)
+                if not isinstance(sequence_value.type, SequenceType):
+                    raise CodegenError("SequenceIdentity output must be a sequence")
+                return sequence_value.type.elem.dtype
             if isinstance(op, LoopSequenceInsertOp):
                 return op.elem_dtype
             if hasattr(op, "output") and isinstance(op.output, str):
@@ -5159,6 +5173,13 @@ class CEmitter:
                 position=CEmitter._map_optional_name(temp_map, op.position),
                 output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SequenceIdentityOp):
+            return SequenceIdentityOp(
+                input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
+                output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
+                input_present=CEmitter._map_optional_name(temp_map, op.input_present),
+                output_present=CEmitter._map_optional_name(temp_map, op.output_present),
+            )
         if isinstance(op, SequenceLengthOp):
             return SequenceLengthOp(
                 input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
@@ -5555,6 +5576,7 @@ class CEmitter:
             sequence_empty_template=templates["sequence_empty"],
             sequence_erase_template=templates["sequence_erase"],
             sequence_insert_template=templates["sequence_insert"],
+            sequence_identity_template=templates["sequence_identity"],
             sequence_length_template=templates["sequence_length"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
@@ -6078,6 +6100,7 @@ class CEmitter:
         sequence_empty_template,
         sequence_erase_template,
         sequence_insert_template,
+        sequence_identity_template,
         sequence_length_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
@@ -11171,6 +11194,56 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SequenceIdentityOp):
+            elem_type = self._ctx_sequence_elem_type(op.input_sequence)
+            elem_shape = self._sequence_storage_shape(op.input_sequence)
+            tensor_suffix = self._param_array_suffix(
+                elem_shape, _dim_names_for(op.input_sequence)
+            )
+            params = self._shared_param_map(
+                [
+                    ("input_sequence", op.input_sequence),
+                    ("output_sequence", op.output_sequence),
+                    ("input_present", op.input_present),
+                    ("output_present", op.output_present),
+                ]
+            )
+            param_specs = [
+                (
+                    params["input_sequence"],
+                    elem_type.dtype.c_type,
+                    f"[EMX_SEQUENCE_MAX_LEN]{tensor_suffix}",
+                    True,
+                ),
+                (f"{params['input_sequence']}__count", "idx_t", "", True),
+                (
+                    params["output_sequence"],
+                    elem_type.dtype.c_type,
+                    f"[EMX_SEQUENCE_MAX_LEN]{tensor_suffix}",
+                    False,
+                ),
+                (f"{params['output_sequence']}__count", "idx_t *", "", False),
+            ]
+            if params["input_present"] is not None and params["output_present"] is not None:
+                param_specs.extend(
+                    [
+                        (params["input_present"], "_Bool", "", True),
+                        (params["output_present"], "_Bool *", "", False),
+                    ]
+                )
+            rendered = sequence_identity_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=self._build_param_decls(param_specs),
+                input_sequence=params["input_sequence"],
+                output_sequence=params["output_sequence"],
+                input_present=params["input_present"],
+                output_present=params["output_present"],
+                element_count=CEmitter._element_count_expr(elem_shape),
+                c_type=elem_type.dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
+
         if isinstance(op, SequenceLengthOp):
             output_shape = self._ctx_shape(op.output)
             params = self._shared_param_map(
@@ -13479,6 +13552,14 @@ class CEmitter:
                     self._ctx_sequence_elem_type(op.output_sequence).dtype,
                 ),
             )
+        if isinstance(op, SequenceIdentityOp):
+            return (
+                (
+                    op.output_sequence,
+                    self._sequence_storage_shape(op.output_sequence),
+                    self._ctx_sequence_elem_type(op.output_sequence).dtype,
+                ),
+            )
         if isinstance(op, SplitToSequenceOp):
             elem_type = self._ctx_sequence_elem_type(op.output_sequence)
             return (
@@ -13879,6 +13960,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, OneHotOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, SequenceIdentityOp):
+            return self._ctx_sequence_elem_type(op.output_sequence).dtype
         if isinstance(
             op,
             (

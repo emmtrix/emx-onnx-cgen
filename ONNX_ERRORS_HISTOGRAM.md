@@ -45,7 +45,6 @@ This histogram is test-suite-overarching.
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
 | Split output shape must be (1,), got (2,) | 2 | 20 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
-| Unsupported non-tensor value '*' in op Identity. | 2 | 16, 25 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op BlackmanWindow | 2 | 17 |
@@ -59,6 +58,7 @@ This histogram is test-suite-overarching.
 | Arrays are not equal (max abs diff 248) | 1 | 21 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
+| Failed to build testbench. | 1 |  |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
@@ -78,7 +78,6 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 9 | 1 |
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |
 | Unsupported op SequenceMap | 17 | 6 |
@@ -138,4 +137,3 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 25 | 4 |
 | QuantizeLinear block_size is not supported | 25 | 2 |
 | Graph must contain at least one node | 25 | 1 |
-| Unsupported non-tensor value '*' in op Identity. | 25 | 1 |

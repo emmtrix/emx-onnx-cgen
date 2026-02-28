@@ -1050,6 +1050,27 @@ class SequenceLengthOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class SequenceIdentityOp(RenderableOpBase):
+    __io_inputs__ = ("input_sequence",)
+    __io_outputs__ = ("output_sequence",)
+    input_sequence: str
+    output_sequence: str
+    input_present: str | None = None
+    output_present: str | None = None
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [
+            self.input_sequence,
+            f"{self.input_sequence}__count",
+            self.output_sequence,
+            f"{self.output_sequence}__count",
+        ]
+        if self.input_present is not None and self.output_present is not None:
+            args.extend([self.input_present, self.output_present])
+        return tuple(args)
+
+
+@dataclass(frozen=True)
 class SequenceInsertOp(RenderableOpBase):
     __io_inputs__ = ("input_sequence", "tensor", "position")
     __io_outputs__ = ("output_sequence",)

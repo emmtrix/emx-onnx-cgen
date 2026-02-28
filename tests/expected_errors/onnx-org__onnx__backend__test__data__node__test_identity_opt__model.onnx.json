@@ -1,8 +1,4 @@
 {
-  "error": "Unsupported non-tensor value 'opt_in' in op Identity.",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_opt model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "Identity"
-  ],
-  "opset_version": 16
+  "error": "Failed to build testbench.",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_opt model.onnx --test-data-dir test_data_set_0"
 }
