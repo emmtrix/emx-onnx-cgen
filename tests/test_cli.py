@@ -191,3 +191,45 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
     parser = cli._build_parser()
     args = parser.parse_args(["verify", "model.onnx", "--per-node-accuracy"])
     assert args.per_node_accuracy is True
+
+
+def test_cli_verify_runtime_defaults_to_auto() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(["verify", "model.onnx"])
+    assert args.runtime == "auto"
+
+
+def test_select_runtime_backend_auto_uses_reference_without_custom_domains() -> None:
+    model = onnx.helper.make_model(
+        onnx.helper.make_graph([], "g", [], []),
+        opset_imports=[onnx.helper.make_operatorsetid("", 13)],
+    )
+    runtime_name, runtime_note = cli._select_runtime_backend("auto", model)
+    assert runtime_name == "onnx-reference"
+    assert runtime_note == "Runtime: auto selected onnx-reference"
+
+
+def test_select_runtime_backend_auto_uses_onnxruntime_for_custom_domains() -> None:
+    model = onnx.helper.make_model(
+        onnx.helper.make_graph([], "g", [], []),
+        opset_imports=[
+            onnx.helper.make_operatorsetid("", 13),
+            onnx.helper.make_operatorsetid("com.example", 1),
+        ],
+    )
+    runtime_name, runtime_note = cli._select_runtime_backend("auto", model)
+    assert runtime_name == "onnxruntime"
+    assert runtime_note == "Runtime: auto selected onnxruntime for custom domains com.example"
+
+
+def test_select_runtime_backend_explicit_backend_is_fixed() -> None:
+    model = onnx.helper.make_model(
+        onnx.helper.make_graph([], "g", [], []),
+        opset_imports=[
+            onnx.helper.make_operatorsetid("", 13),
+            onnx.helper.make_operatorsetid("com.example", 1),
+        ],
+    )
+    runtime_name, runtime_note = cli._select_runtime_backend("onnx-reference", model)
+    assert runtime_name == "onnx-reference"
+    assert runtime_note is None
