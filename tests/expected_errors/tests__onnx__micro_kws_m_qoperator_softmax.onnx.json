@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx --replicate-ort-bugs",
   "operators": [
     "Reshape",
     "QuantizeLinear",
@@ -15,5 +15,5 @@
     "com.microsoft::QLinearSoftmax"
   ],
   "opset_version": 15,
-  "generated_checksum": "fd6eb608f0f83cc9bb40c236258f678c91b86001267cafc4fbbe501d24a03aa6"
+  "generated_checksum": "e0d03de5b5093a1e023b334b67fd151ef6db68cfa0f3324b5992cee7d946ef3a"
 }

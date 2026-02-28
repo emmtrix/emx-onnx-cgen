@@ -22,6 +22,9 @@ LOCAL_REPO_ONNX_DATA_ROOT = Path(__file__).resolve().parent / "onnx"
 ONNX_FILE_LIMIT = 5000
 _VERBOSE_FLAGS_REPORTED = False
 MODEL_EXTRA_VERIFY_ARGS = {
+    "tests/onnx/micro_kws_m_qoperator_softmax.onnx": (
+        "--replicate-ort-bugs",
+    ),
     "onnx-org/onnx/backend/test/data/node/test_nllloss_NCd1d2d3d4d5_mean_weight/model.onnx": (
         "--fp32-accumulation-strategy",
         "fp64",
