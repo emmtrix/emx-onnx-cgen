@@ -949,6 +949,15 @@ class HammingWindowOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class HannWindowOp(RenderableOpBase):
+    __io_inputs__ = ("size",)
+    __io_outputs__ = ("output",)
+    size: str
+    output: str
+    periodic: bool
+
+
+@dataclass(frozen=True)
 class OneHotOp(RenderableOpBase):
     __io_inputs__ = ("indices", "depth", "values")
     __io_outputs__ = ("output",)
