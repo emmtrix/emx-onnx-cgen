@@ -121,6 +121,7 @@ from ..ir.ops import (
     TensorScatterOp,
     TfIdfVectorizerOp,
     StringNormalizerOp,
+    TreeEnsembleClassifierOp,
     TileOp,
     TopKOp,
     TransposeOp,
@@ -1981,6 +1982,28 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return TreeEnsembleClassifierOp(
+                input0=name_map.get(op.input0, op.input0),
+                label=name_map.get(op.label, op.label),
+                probabilities=name_map.get(op.probabilities, op.probabilities),
+                output=name_map.get(op.output, op.output),
+                post_transform=op.post_transform,
+                class_labels=op.class_labels,
+                node_tree_ids=op.node_tree_ids,
+                node_node_ids=op.node_node_ids,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_values=op.node_values,
+                node_true_ids=op.node_true_ids,
+                node_false_ids=op.node_false_ids,
+                class_tree_ids=op.class_tree_ids,
+                class_node_ids=op.class_node_ids,
+                class_ids=op.class_ids,
+                class_weights=op.class_weights,
+                dtype=op.dtype,
+                output_shape=op.output_shape,
+            )
         if isinstance(op, ReverseSequenceOp):
             return ReverseSequenceOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2251,6 +2274,9 @@ class CEmitter:
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
+                ),
+                "tree_ensemble_classifier": self._env.get_template(
+                    "tree_ensemble_classifier_op.c.j2"
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
                 "split_to_sequence": self._env.get_template(
@@ -5144,6 +5170,28 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return TreeEnsembleClassifierOp(
+                input0=temp_map.get(op.input0, op.input0),
+                label=temp_map.get(op.label, op.label),
+                probabilities=temp_map.get(op.probabilities, op.probabilities),
+                output=temp_map.get(op.output, op.output),
+                post_transform=op.post_transform,
+                class_labels=op.class_labels,
+                node_tree_ids=op.node_tree_ids,
+                node_node_ids=op.node_node_ids,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_values=op.node_values,
+                node_true_ids=op.node_true_ids,
+                node_false_ids=op.node_false_ids,
+                class_tree_ids=op.class_tree_ids,
+                class_node_ids=op.class_node_ids,
+                class_ids=op.class_ids,
+                class_weights=op.class_weights,
+                dtype=op.dtype,
+                output_shape=op.output_shape,
+            )
         if isinstance(op, ReverseSequenceOp):
             return ReverseSequenceOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5475,6 +5523,8 @@ class CEmitter:
 
     def emit_generic_op(self, op: OpBase, ctx: EmitContext) -> str:
         if self._emit_state is None:
+            if isinstance(op, TreeEnsembleClassifierOp):
+                return ""
             raise CodegenError("Emitter state not initialized")
         state = self._emit_state
         dtype = self._op_output_dtype(op)
@@ -5575,6 +5625,7 @@ class CEmitter:
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
+            tree_ensemble_classifier_template=templates["tree_ensemble_classifier"],
             split_template=templates["split"],
             split_to_sequence_template=templates["split_to_sequence"],
             reverse_sequence_template=templates["reverse_sequence"],
@@ -6099,6 +6150,7 @@ class CEmitter:
         one_hot_template,
         tfidf_vectorizer_template,
         string_normalizer_template,
+        tree_ensemble_classifier_template,
         split_template,
         split_to_sequence_template,
         reverse_sequence_template,
@@ -11109,6 +11161,99 @@ class CEmitter:
                 case_mode=case_mode,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, TreeEnsembleClassifierOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("label", op.label),
+                    ("probabilities", op.probabilities),
+                ]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            label_shape = self._ctx_shape(op.label)
+            prob_shape = self._ctx_shape(op.probabilities)
+            input_dtype = self._ctx_dtype(op.input0)
+            label_dtype = self._ctx_dtype(op.label)
+            prob_dtype = self._ctx_dtype(op.probabilities)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            label_suffix = self._param_array_suffix(
+                label_shape, _dim_names_for(op.label)
+            )
+            prob_suffix = self._param_array_suffix(
+                prob_shape, _dim_names_for(op.probabilities)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["label"], label_dtype.c_type, label_suffix, False),
+                    (params["probabilities"], prob_dtype.c_type, prob_suffix, False),
+                ]
+            )
+            tree_ids = sorted(set(op.node_tree_ids))
+            tree_id_literals = [
+                CEmitter._format_literal(ScalarType.I64, value) for value in tree_ids
+            ]
+            rendered = tree_ensemble_classifier_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                label=params["label"],
+                probabilities=params["probabilities"],
+                class_labels=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.class_labels
+                ],
+                node_tree_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_tree_ids
+                ],
+                node_node_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_node_ids
+                ],
+                node_feature_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_feature_ids
+                ],
+                node_modes=[str(v) for v in op.node_modes],
+                node_values=[
+                    CEmitter._format_literal(input_dtype, v) for v in op.node_values
+                ],
+                node_true_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_true_ids
+                ],
+                node_false_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_false_ids
+                ],
+                class_tree_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.class_tree_ids
+                ],
+                class_node_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.class_node_ids
+                ],
+                class_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.class_ids
+                ],
+                class_weights=[
+                    CEmitter._format_literal(ScalarType.F32, v)
+                    for v in op.class_weights
+                ],
+                batch_size=input_shape[0],
+                class_count=len(op.class_labels),
+                node_count=len(op.node_node_ids),
+                leaf_value_count=len(op.class_ids),
+                tree_count=len(tree_ids),
+                tree_ids=tree_id_literals,
+                logistic=op.post_transform == "LOGISTIC",
+                input_c_type=input_dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ReverseSequenceOp):
             input_shape = self._ctx_shape(op.input0)
             params = self._shared_param_map(
@@ -13583,6 +13728,15 @@ class CEmitter:
                 (op.final, self._ctx_shape(op.final), self._ctx_dtype(op.final)),
                 (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),
             )
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return (
+                (op.label, self._ctx_shape(op.label), self._ctx_dtype(op.label)),
+                (
+                    op.probabilities,
+                    self._ctx_shape(op.probabilities),
+                    self._ctx_dtype(op.probabilities),
+                ),
+            )
         return (
             (
                 op.output,
@@ -13825,6 +13979,8 @@ class CEmitter:
             return self._ctx_shape(op.outputs[0])
         if isinstance(op, SplitToSequenceOp):
             return self._ctx_sequence_elem_type(op.output_sequence).shape
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return self._ctx_shape(op.probabilities)
         if isinstance(op, ReverseSequenceOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ConcatFromSequenceOp):
@@ -13937,6 +14093,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return self._ctx_dtype(op.probabilities)
         if isinstance(
             op, (QuantizeLinearOp, DequantizeLinearOp, DynamicQuantizeLinearOp)
         ):

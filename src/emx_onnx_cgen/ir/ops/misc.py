@@ -959,6 +959,31 @@ class StringNormalizerOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class TreeEnsembleClassifierOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("label", "probabilities")
+    input0: str
+    label: str
+    probabilities: str
+    output: str
+    post_transform: str
+    class_labels: tuple[int, ...]
+    node_tree_ids: tuple[int, ...]
+    node_node_ids: tuple[int, ...]
+    node_feature_ids: tuple[int, ...]
+    node_modes: tuple[int, ...]
+    node_values: tuple[float, ...]
+    node_true_ids: tuple[int, ...]
+    node_false_ids: tuple[int, ...]
+    class_tree_ids: tuple[int, ...]
+    class_node_ids: tuple[int, ...]
+    class_ids: tuple[int, ...]
+    class_weights: tuple[float, ...]
+    dtype: ScalarType = ScalarType.F32
+    output_shape: tuple[int, ...] = ()
+
+
+@dataclass(frozen=True)
 class SplitOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("outputs",)

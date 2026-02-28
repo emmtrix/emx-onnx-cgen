@@ -6,6 +6,8 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1484 / 1802, 82.4% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -1827,7 +1829,7 @@ Coverage 1484 / 1802 ONNX files (82.4%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 118 / 125 ONNX files (94.4%).
+Coverage 119 / 125 ONNX files (95.2%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1952,7 +1954,7 @@ Coverage 118 / 125 ONNX files (94.4%).
 | simple_networks/scalar_abs.onnx | 13 | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | ✅ | OK (max ULP 0) |
-| simple_networks/treeensembleclassifier.onnx | 12 | ❌ | Unsupported op TreeEnsembleClassifier |
+| simple_networks/treeensembleclassifier.onnx | 12 | ✅ | OK (max ULP 0) |
 | tfl_helloworld/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | velardo/lesson14.onnx | 11 | ✅ | OK (max ULP 0) |
 | velardo/lesson9.onnx | 9 | ✅ | OK (max ULP 0) |
