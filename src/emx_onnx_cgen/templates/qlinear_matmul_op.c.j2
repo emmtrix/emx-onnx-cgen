@@ -1,5 +1,14 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-{% if use_integer_requant %}
+{% if scale_is_float16 %}
+    const {{ scale_type }} scale_product = ({{ scale_type }})((( {{ scale_type }}){{ input0_scale_expr }}) * (({{ scale_type }}){{ input1_scale_expr }}));
+    const {{ scale_type }} scale = ({{ scale_type }})(scale_product / ({{ scale_type }}){{ output_scale_expr }});
+{% else %}
+    const {{ scale_type }} scale = (({{ scale_type }}){{ input0_scale_expr }}) * (({{ scale_type }}){{ input1_scale_expr }}) / (({{ scale_type }}){{ output_scale_expr }});
+{% endif %}
+    const int32_t input0_zero = (int32_t){{ input0_zero_expr }};
+    const int32_t input1_zero = (int32_t){{ input1_zero_expr }};
+    const int32_t output_zero = (int32_t){{ output_zero_expr }};
+{% if enable_integer_requant %}
     const double real_multiplier =
         ((double){{ input0_scale_expr }}) *
         ((double){{ input1_scale_expr }}) /
@@ -11,23 +20,14 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         scaled_multiplier = ldexp(real_multiplier, frac_bits);
     }
     const int64_t requant_multiplier = (int64_t)llround(scaled_multiplier);
-    const int32_t input0_zero = (int32_t){{ input0_zero_expr }};
-    const int32_t input1_zero = (int32_t){{ input1_zero_expr }};
-    const int32_t output_zero = (int32_t){{ output_zero_expr }};
+    const double requant_scale = ldexp((double)requant_multiplier, -frac_bits);
+    const double requant_error = fabs(real_multiplier - requant_scale);
+    const double requant_tolerance = fmax(1e-12, fabs(real_multiplier) * 1e-12);
+    const int use_integer_requant = isfinite(real_multiplier) && requant_error <= requant_tolerance;
     const uint64_t shift_mask =
         frac_bits > 0 ? (((uint64_t)1u << frac_bits) - (uint64_t)1u) : (uint64_t)0u;
     const uint64_t shift_half =
         frac_bits > 0 ? ((uint64_t)1u << (frac_bits - 1)) : (uint64_t)0u;
-{% else %}
-{% if scale_is_float16 %}
-    const {{ scale_type }} scale_product = ({{ scale_type }})((( {{ scale_type }}){{ input0_scale_expr }}) * (({{ scale_type }}){{ input1_scale_expr }}));
-    const {{ scale_type }} scale = ({{ scale_type }})(scale_product / ({{ scale_type }}){{ output_scale_expr }});
-{% else %}
-    const {{ scale_type }} scale = (({{ scale_type }}){{ input0_scale_expr }}) * (({{ scale_type }}){{ input1_scale_expr }}) / (({{ scale_type }}){{ output_scale_expr }});
-{% endif %}
-    const int32_t input0_zero = (int32_t){{ input0_zero_expr }};
-    const int32_t input1_zero = (int32_t){{ input1_zero_expr }};
-    const int32_t output_zero = (int32_t){{ output_zero_expr }};
 {% endif %}
 {% for idx in range(output_loop_vars | length) %}
     {% for indent in range(loop.index0) %}    {% endfor %}for (idx_t {{ output_loop_vars[idx] }} = 0; {{ output_loop_vars[idx] }} < {{ output_loop_bounds[idx] }}; ++{{ output_loop_vars[idx] }}) {
@@ -36,7 +36,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}for (idx_t k = 0; k < {{ k }}; ++k) {
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}acc += ((int32_t){{ input0_index_expr }} - input0_zero) * ((int32_t){{ input1_index_expr }} - input1_zero);
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
-{% if use_integer_requant %}
+{% if enable_integer_requant %}
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}int64_t quantized;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}if (use_integer_requant) {
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}int64_t requantized = (int64_t)acc * requant_multiplier;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}if (frac_bits > 0) {
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}uint64_t mag = requantized < 0 ? (uint64_t)(-requantized) : (uint64_t)requantized;
@@ -47,7 +49,12 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}}
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}requantized = requantized < 0 ? -(int64_t)quotient : (int64_t)quotient;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}int64_t quantized = requantized + (int64_t)output_zero;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}quantized = requantized + (int64_t)output_zero;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}} else {
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ compute_type }} scaled = (({{ compute_type }})acc) * ({{ compute_type }})scale + ({{ compute_type }})output_zero;
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ compute_type }} rounded = {{ round_fn }}(scaled);
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}quantized = (int64_t)rounded;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
 {% else %}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} scaled = (({{ compute_type }})acc) * ({{ compute_type }})scale + ({{ compute_type }})output_zero;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} rounded = {{ round_fn }}(scaled);

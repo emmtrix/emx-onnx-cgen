@@ -12151,7 +12151,6 @@ class CEmitter:
             compute_dtype = ScalarType.F64
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
             round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            mod_fn = CEmitter._math_fn(compute_dtype, "fmodf", "fmod")
             max_fn = CEmitter._math_fn(compute_dtype, "fmaxf", "fmax")
             min_fn = CEmitter._math_fn(compute_dtype, "fminf", "fmin")
             scale_index = "0"
@@ -12191,12 +12190,11 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                mod_fn=mod_fn,
                 min_fn=min_fn,
                 max_fn=max_fn,
                 min_literal=min_literal,
                 max_literal=max_literal,
-                use_integer_requant=scale_dtype != ScalarType.F16,
+                enable_integer_requant=scale_dtype != ScalarType.F16,
                 output_wrap=not self._replicate_ort_bugs,
                 output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
