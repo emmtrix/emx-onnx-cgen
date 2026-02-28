@@ -13,9 +13,9 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
+| Out of tolerance | 9 | 8, 9, 15, 19, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 8 | 8, 9, 19, 22 |
 | Unsupported op Loop | 7 | 16, 17 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -56,7 +56,6 @@ This histogram is test-suite-overarching.
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
 | '*' object has no attribute '*' | 1 |  |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
-| DequantizeLinear zero_point shape must match scale shape | 1 | 15 |
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
@@ -77,7 +76,7 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 9 | 1 |
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| DequantizeLinear zero_point shape must match scale shape | 15 | 1 |
+| Out of tolerance | 15 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |
