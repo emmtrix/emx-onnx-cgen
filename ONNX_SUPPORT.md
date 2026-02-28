@@ -6,7 +6,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 1 / 3, 33.3% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 2 / 3, 66.7% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -1961,12 +1961,10 @@ Coverage 118 / 125 ONNX files (94.4%).
 
 Test directory: `tests/onnx`
 
-Coverage 1 / 3 ONNX files (33.3%).
+Coverage 2 / 3 ONNX files (66.7%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
 | micro_kws_m_qdq.onnx | 15 | ❌ | DequantizeLinear zero_point shape must match scale shape |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | ✅ | OK (max ULP 0) |
-| micro_kws_m_qoperator_softmax.onnx | 15 | ❌ | Unsupported op QLinearSoftmax |
-| micro_kws_m_qoperator_avg_pool.onnx | 15 | ❌ | Unsupported op QLinearAveragePool |
-| micro_kws_m_qoperator_softmax.onnx | 15 | ❌ | Out of tolerance (max ULP 1058537472) |
+| micro_kws_m_qoperator_softmax.onnx | 15 | ✅ | OK (max ULP 0) |
