@@ -902,6 +902,34 @@ class LoopSequenceInsertOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class LoopSequenceMapOp(RenderableOpBase):
+    __io_inputs__ = ("trip_count", "cond")
+    __io_outputs__ = ("output_sequences",)
+    trip_count: str
+    cond: str
+    input_sequences: tuple[str, ...]
+    input_tensors: tuple[str, ...]
+    output_sequences: tuple[str, ...]
+    output_kinds: tuple[str, ...]
+    output_input0: tuple[str, ...]
+    output_input1: tuple[str | None, ...]
+    output_input0_is_sequence: tuple[bool, ...]
+    output_input1_is_sequence: tuple[bool, ...]
+    output_elem_shapes: tuple[tuple[int, ...], ...]
+    output_elem_dtypes: tuple[ScalarType, ...]
+
+    def call_args(self) -> tuple[str, ...]:
+        args: list[str] = [self.trip_count, self.cond]
+        for name in self.input_sequences:
+            args.extend((name, f"{name}__count"))
+        for name in self.input_tensors:
+            args.append(name)
+        for name in self.output_sequences:
+            args.extend((name, f"{name}__count"))
+        return tuple(args)
+
+
+@dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
     __io_inputs__ = ("start", "limit", "delta")
     __io_outputs__ = ("output",)

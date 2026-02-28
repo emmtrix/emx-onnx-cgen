@@ -1,4 +1,4 @@
-void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     idx_t input_count = {{ input_sequence }}__count;
     if (input_count >= EMX_SEQUENCE_MAX_LEN) {
         input_count = EMX_SEQUENCE_MAX_LEN - 1;

@@ -4,7 +4,7 @@ from onnx import GraphProto, NodeProto, numpy_helper
 
 from ..errors import UnsupportedOpError
 from ..ir.model import Graph, Node, SequenceType
-from ..ir.ops import LoopRangeOp, LoopSequenceInsertOp
+from ..ir.ops import LoopRangeOp, LoopSequenceInsertOp, LoopSequenceMapOp
 from ..lowering.common import node_dtype, shape_product, value_shape
 from .registry import register_lowering
 
@@ -191,6 +191,172 @@ def _lower_loop_tensor_scan_add(
     )
 
 
+def _lower_loop_sequence_map(
+    graph: Graph, node: Node, body: GraphProto
+) -> LoopSequenceMapOp:
+    if len(node.inputs) < 3 or len(node.outputs) < 1:
+        raise UnsupportedOpError("Unsupported op Loop")
+    if len(body.input) != len(node.inputs) or len(body.output) != len(node.outputs) + 1:
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    iter_name = body.input[0].name
+    cond_in_name = body.input[1].name
+    cond_out_name = body.output[0].name
+    _match_single_node(list(body.node), "Identity", (cond_in_name,), (cond_out_name,))
+
+    state_inputs = tuple(inp.name for inp in body.input[2:])
+    state_outputs = tuple(out.name for out in body.output[1:])
+    if len(state_inputs) != len(state_outputs):
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    sequence_inputs: set[str] = set()
+    tensor_inputs: set[str] = set()
+    produced_by: dict[str, tuple[str, tuple[str, ...]]] = {}
+    for body_node in body.node:
+        if body_node.op_type == "Identity" and tuple(body_node.input) == (
+            cond_in_name,
+        ):
+            continue
+        if body_node.op_type == "SequenceAt":
+            if len(body_node.input) != 2 or body_node.input[1] != iter_name:
+                raise UnsupportedOpError("Unsupported op Loop")
+            produced_by[body_node.output[0]] = ("sequence_elem", (body_node.input[0],))
+            sequence_inputs.add(body_node.input[0])
+            continue
+        if body_node.op_type == "Identity":
+            if len(body_node.input) != 1 or len(body_node.output) != 1:
+                raise UnsupportedOpError("Unsupported op Loop")
+            source = body_node.input[0]
+            if source in state_inputs:
+                continue
+            if source in produced_by:
+                produced_by[body_node.output[0]] = produced_by[source]
+            else:
+                produced_by[body_node.output[0]] = ("tensor", (source,))
+                tensor_inputs.add(source)
+            continue
+        if body_node.op_type == "Add":
+            if len(body_node.input) != 2 or len(body_node.output) != 1:
+                raise UnsupportedOpError("Unsupported op Loop")
+            produced_by[body_node.output[0]] = (
+                "add",
+                (body_node.input[0], body_node.input[1]),
+            )
+            continue
+        if body_node.op_type == "Shape":
+            if len(body_node.input) != 1 or len(body_node.output) != 1:
+                raise UnsupportedOpError("Unsupported op Loop")
+            produced_by[body_node.output[0]] = ("shape", (body_node.input[0],))
+            continue
+        if body_node.op_type == "SequenceInsert":
+            continue
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    output_kinds: list[str] = []
+    output_input0: list[str] = []
+    output_input1: list[str | None] = []
+    output_input0_is_sequence: list[bool] = []
+    output_input1_is_sequence: list[bool] = []
+    output_elem_shapes: list[tuple[int, ...]] = []
+    output_elem_dtypes = []
+
+    for state_in, state_out, output_name in zip(
+        state_inputs, state_outputs, node.outputs
+    ):
+        insert_nodes = [
+            body_node
+            for body_node in body.node
+            if body_node.op_type == "SequenceInsert"
+            and tuple(body_node.input[:1]) == (state_in,)
+            and tuple(body_node.output) == (state_out,)
+            and len(body_node.input) == 2
+        ]
+        if len(insert_nodes) != 1:
+            raise UnsupportedOpError("Unsupported op Loop")
+        inserted_value = insert_nodes[0].input[1]
+        spec = produced_by.get(inserted_value)
+        if spec is None:
+            raise UnsupportedOpError("Unsupported op Loop")
+        kind, args = spec
+        if kind == "shape":
+            src_name = args[0]
+            src_value = graph.find_value(src_name)
+            if src_name in sequence_inputs:
+                if not isinstance(src_value.type, SequenceType):
+                    raise UnsupportedOpError("Unsupported op Loop")
+                src_shape = src_value.type.elem.shape
+            else:
+                src_shape = src_value.type.shape
+            output_kinds.append("shape")
+            output_input0.append(src_name)
+            output_input1.append(None)
+            output_input0_is_sequence.append(src_name in sequence_inputs)
+            output_input1_is_sequence.append(False)
+            output_elem_shapes.append((len(src_shape),))
+        elif kind in {"sequence_elem", "tensor"}:
+            src_name = args[0]
+            output_kinds.append("identity")
+            output_input0.append(src_name)
+            output_input1.append(None)
+            output_input0_is_sequence.append(kind == "sequence_elem")
+            output_input1_is_sequence.append(False)
+            if kind == "sequence_elem":
+                src_shape = graph.find_value(src_name).type.elem.shape
+            else:
+                src_shape = graph.find_value(src_name).type.shape
+            output_elem_shapes.append(src_shape)
+        elif kind == "add":
+            a_name, b_name = args
+            a_spec = produced_by.get(a_name)
+            b_spec = produced_by.get(b_name)
+            if a_spec is None or b_spec is None:
+                raise UnsupportedOpError("Unsupported op Loop")
+            a_kind, a_args = a_spec
+            b_kind, b_args = b_spec
+            if a_kind not in {"sequence_elem", "tensor"} or b_kind not in {
+                "sequence_elem",
+                "tensor",
+            }:
+                raise UnsupportedOpError("Unsupported op Loop")
+            output_kinds.append("add")
+            output_input0.append(a_args[0])
+            output_input1.append(b_args[0])
+            output_input0_is_sequence.append(a_kind == "sequence_elem")
+            output_input1_is_sequence.append(b_kind == "sequence_elem")
+            if a_kind == "sequence_elem":
+                src_shape = graph.find_value(a_args[0]).type.elem.shape
+            else:
+                src_shape = graph.find_value(a_args[0]).type.shape
+            output_elem_shapes.append(src_shape)
+        else:
+            raise UnsupportedOpError("Unsupported op Loop")
+
+        output_value = graph.find_value(output_name)
+        if not isinstance(output_value.type, SequenceType):
+            raise UnsupportedOpError("Unsupported op Loop")
+        output_elem_dtypes.append(output_value.type.elem.dtype)
+
+    trip_count_shape = value_shape(graph, node.inputs[0], node)
+    cond_shape = value_shape(graph, node.inputs[1], node)
+    if trip_count_shape not in {(), (1,)} or cond_shape not in {(), (1,)}:
+        raise UnsupportedOpError("Unsupported op Loop")
+
+    return LoopSequenceMapOp(
+        trip_count=node.inputs[0],
+        cond=node.inputs[1],
+        input_sequences=tuple(sorted(sequence_inputs)),
+        input_tensors=tuple(sorted(tensor_inputs)),
+        output_sequences=tuple(node.outputs),
+        output_kinds=tuple(output_kinds),
+        output_input0=tuple(output_input0),
+        output_input1=tuple(output_input1),
+        output_input0_is_sequence=tuple(output_input0_is_sequence),
+        output_input1_is_sequence=tuple(output_input1_is_sequence),
+        output_elem_shapes=tuple(output_elem_shapes),
+        output_elem_dtypes=tuple(output_elem_dtypes),
+    )
+
+
 def _lower_loop_sequence_insert(
     graph: Graph, node: Node, body: GraphProto
 ) -> LoopSequenceInsertOp:
@@ -251,7 +417,9 @@ def _lower_loop_sequence_insert(
 
 
 @register_lowering("Loop")
-def lower_loop(graph: Graph, node: Node) -> LoopRangeOp | LoopSequenceInsertOp:
+def lower_loop(
+    graph: Graph, node: Node
+) -> LoopRangeOp | LoopSequenceInsertOp | LoopSequenceMapOp:
     body = _find_body(node)
     try:
         return _lower_loop_range(graph, node, body)
@@ -259,4 +427,7 @@ def lower_loop(graph: Graph, node: Node) -> LoopRangeOp | LoopSequenceInsertOp:
         try:
             return _lower_loop_tensor_scan_add(graph, node, body)
         except UnsupportedOpError:
-            return _lower_loop_sequence_insert(graph, node, body)
+            try:
+                return _lower_loop_sequence_insert(graph, node, body)
+            except UnsupportedOpError:
+                return _lower_loop_sequence_map(graph, node, body)
