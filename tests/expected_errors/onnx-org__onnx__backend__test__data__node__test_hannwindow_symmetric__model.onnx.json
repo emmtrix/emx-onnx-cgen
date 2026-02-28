@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op HannWindow",
+  "error": "OK (max ULP 5)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_hannwindow_symmetric model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "HannWindow"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "b4a877b13a2d8f94298c30788fb9971a05e15e53a92ea73336439f72ddc2ad56"
 }
