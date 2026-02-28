@@ -59,7 +59,10 @@ def resolve_qlinear_matmul_spec(graph: Graph, node: Node) -> QLinearMatMulSpec:
         output_shape = batch_shape + (m,)
     else:
         output_shape = batch_shape + (m, n)
-    expected_output_shape = _value_shape(graph, node.outputs[0], node)
+    try:
+        expected_output_shape = _value_shape(graph, node.outputs[0], node)
+    except ShapeInferenceError:
+        expected_output_shape = output_shape
     if expected_output_shape != output_shape:
         raise ShapeInferenceError(
             "QLinearMatMul output shape must be "

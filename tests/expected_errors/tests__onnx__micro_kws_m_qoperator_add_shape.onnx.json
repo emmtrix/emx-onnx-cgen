@@ -1,0 +1,18 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_add_shape.onnx",
+  "operators": [
+    "Reshape",
+    "QuantizeLinear",
+    "QLinearConv",
+    "MaxPool",
+    "DequantizeLinear",
+    "AveragePool",
+    "Transpose",
+    "QLinearMatMul",
+    "com.microsoft::QLinearAdd",
+    "com.microsoft::QLinearSoftmax"
+  ],
+  "opset_version": 15,
+  "generated_checksum": "fe4481e32bfd5e8de2586fb41759fa09d9b54f7729a9258c8868766efe116930"
+}
