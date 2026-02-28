@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 0)",
-  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx --replicate-ort-bugs",
   "operators": [
     "Reshape",
     "QuantizeLinear",
