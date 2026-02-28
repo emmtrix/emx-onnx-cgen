@@ -356,9 +356,7 @@ def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
 @register_lowering("QLinearAveragePool")
 def lower_qlinear_average_pool(graph: Graph, node: Node) -> QLinearAveragePoolOp:
     if len(node.inputs) != 5 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "QLinearAveragePool must have 5 inputs and 1 output"
-        )
+        raise UnsupportedOpError("QLinearAveragePool must have 5 inputs and 1 output")
     input_name = node.inputs[0]
     input_scale_name = node.inputs[1]
     input_zero_name = node.inputs[2]
@@ -372,13 +370,9 @@ def lower_qlinear_average_pool(graph: Graph, node: Node) -> QLinearAveragePoolOp
     except ShapeInferenceError:
         output_dtype = input_dtype
     if input_dtype not in {ScalarType.U8, ScalarType.I8}:
-        raise UnsupportedOpError(
-            "QLinearAveragePool supports uint8/int8 inputs only"
-        )
+        raise UnsupportedOpError("QLinearAveragePool supports uint8/int8 inputs only")
     if output_dtype not in {ScalarType.U8, ScalarType.I8}:
-        raise UnsupportedOpError(
-            "QLinearAveragePool supports uint8/int8 outputs only"
-        )
+        raise UnsupportedOpError("QLinearAveragePool supports uint8/int8 outputs only")
 
     input_scale_dtype = _value_dtype(graph, input_scale_name, node)
     output_scale_dtype = _value_dtype(graph, output_scale_name, node)
@@ -414,11 +408,16 @@ def lower_qlinear_average_pool(graph: Graph, node: Node) -> QLinearAveragePoolOp
     )
     if isinstance(graph, GraphContext):
         if spec.spatial_rank == 3:
-            graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_d, spec.out_h, spec.out_w))
+            graph.set_shape(
+                output_name,
+                (spec.batch, spec.channels, spec.out_d, spec.out_h, spec.out_w),
+            )
         elif spec.spatial_rank == 1:
             graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_w))
         else:
-            graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_h, spec.out_w))
+            graph.set_shape(
+                output_name, (spec.batch, spec.channels, spec.out_h, spec.out_w)
+            )
         graph.set_dtype(output_name, output_dtype)
     return QLinearAveragePoolOp(
         input0=input_name,
