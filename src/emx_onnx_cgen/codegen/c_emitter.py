@@ -348,6 +348,7 @@ class CEmitter:
         truncate_weights_after: int | None = None,
         large_temp_threshold_bytes: int = 1024,
         large_weight_threshold: int = 1024,
+        replicate_ort_bugs: bool = False,
     ) -> None:
         loader = (
             FileSystemLoader(str(template_dir))
@@ -376,6 +377,7 @@ class CEmitter:
         if large_weight_threshold < 0:
             raise CodegenError("large_weight_threshold must be >= 0")
         self._large_weight_threshold = large_weight_threshold
+        self._replicate_ort_bugs = replicate_ort_bugs
         self._emit_state: _EmitState | None = None
 
     @staticmethod
@@ -4213,6 +4215,47 @@ class CEmitter:
                 input1_zero_shape=op.input1_zero_shape,
                 output_zero_shape=op.output_zero_shape,
             )
+        if isinstance(op, QLinearMatMulOp):
+            return QLinearMatMulOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input0_scale=temp_map.get(op.input0_scale, op.input0_scale),
+                input0_zero_point=temp_map.get(
+                    op.input0_zero_point, op.input0_zero_point
+                ),
+                input1=temp_map.get(op.input1, op.input1),
+                input1_scale=temp_map.get(op.input1_scale, op.input1_scale),
+                input1_zero_point=temp_map.get(
+                    op.input1_zero_point, op.input1_zero_point
+                ),
+                output_scale=temp_map.get(op.output_scale, op.output_scale),
+                output_zero_point=temp_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
+                output=temp_map.get(op.output, op.output),
+                input0_shape=op.input0_shape,
+                input1_shape=op.input1_shape,
+                output_shape=op.output_shape,
+                batch_shape=op.batch_shape,
+                input0_batch_shape=op.input0_batch_shape,
+                input1_batch_shape=op.input1_batch_shape,
+                m=op.m,
+                n=op.n,
+                k=op.k,
+                left_vector=op.left_vector,
+                right_vector=op.right_vector,
+                input0_dtype=op.input0_dtype,
+                input1_dtype=op.input1_dtype,
+                dtype=op.dtype,
+                input0_scale_dtype=op.input0_scale_dtype,
+                input1_scale_dtype=op.input1_scale_dtype,
+                output_scale_dtype=op.output_scale_dtype,
+                input0_scale_shape=op.input0_scale_shape,
+                input1_scale_shape=op.input1_scale_shape,
+                output_scale_shape=op.output_scale_shape,
+                input0_zero_shape=op.input0_zero_shape,
+                input1_zero_shape=op.input1_zero_shape,
+                output_zero_shape=op.output_zero_shape,
+            )
         if isinstance(op, QLinearAveragePoolOp):
             return QLinearAveragePoolOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4255,47 +4298,6 @@ class CEmitter:
                 input_scale_shape=op.input_scale_shape,
                 output_scale_shape=op.output_scale_shape,
                 input_zero_shape=op.input_zero_shape,
-                output_zero_shape=op.output_zero_shape,
-            )
-        if isinstance(op, QLinearMatMulOp):
-            return QLinearMatMulOp(
-                input0=temp_map.get(op.input0, op.input0),
-                input0_scale=temp_map.get(op.input0_scale, op.input0_scale),
-                input0_zero_point=temp_map.get(
-                    op.input0_zero_point, op.input0_zero_point
-                ),
-                input1=temp_map.get(op.input1, op.input1),
-                input1_scale=temp_map.get(op.input1_scale, op.input1_scale),
-                input1_zero_point=temp_map.get(
-                    op.input1_zero_point, op.input1_zero_point
-                ),
-                output_scale=temp_map.get(op.output_scale, op.output_scale),
-                output_zero_point=temp_map.get(
-                    op.output_zero_point, op.output_zero_point
-                ),
-                output=temp_map.get(op.output, op.output),
-                input0_shape=op.input0_shape,
-                input1_shape=op.input1_shape,
-                output_shape=op.output_shape,
-                batch_shape=op.batch_shape,
-                input0_batch_shape=op.input0_batch_shape,
-                input1_batch_shape=op.input1_batch_shape,
-                m=op.m,
-                n=op.n,
-                k=op.k,
-                left_vector=op.left_vector,
-                right_vector=op.right_vector,
-                input0_dtype=op.input0_dtype,
-                input1_dtype=op.input1_dtype,
-                dtype=op.dtype,
-                input0_scale_dtype=op.input0_scale_dtype,
-                input1_scale_dtype=op.input1_scale_dtype,
-                output_scale_dtype=op.output_scale_dtype,
-                input0_scale_shape=op.input0_scale_shape,
-                input1_scale_shape=op.input1_scale_shape,
-                output_scale_shape=op.output_scale_shape,
-                input0_zero_shape=op.input0_zero_shape,
-                input1_zero_shape=op.input1_zero_shape,
                 output_zero_shape=op.output_zero_shape,
             )
         if isinstance(op, GemmOp):
@@ -12385,17 +12387,15 @@ class CEmitter:
             compute_dtype = ScalarType.F64
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
             round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearMatMul."
-                )
+            max_fn = CEmitter._math_fn(compute_dtype, "fmaxf", "fmax")
+            min_fn = CEmitter._math_fn(compute_dtype, "fminf", "fmin")
             scale_index = "0"
+            if op.dtype.is_signed:
+                min_literal = "-128.0"
+                max_literal = "127.0"
+            else:
+                min_literal = "0.0"
+                max_literal = "255.0"
             rendered = qlinear_matmul_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -12426,10 +12426,13 @@ class CEmitter:
                 output_index_expr=output_index_expr,
                 k=op.k,
                 round_fn=round_fn,
-                max_fn=max_fn,
                 min_fn=min_fn,
-                min_literal=op.dtype.min_literal,
-                max_literal=op.dtype.max_literal,
+                max_fn=max_fn,
+                min_literal=min_literal,
+                max_literal=max_literal,
+                enable_integer_requant=scale_dtype != ScalarType.F16,
+                output_wrap=not self._replicate_ort_bugs,
+                output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
