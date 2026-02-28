@@ -5,8 +5,6 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1484 / 1802, 82.4% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 

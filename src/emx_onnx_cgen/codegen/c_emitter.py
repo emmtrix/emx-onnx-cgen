@@ -2290,7 +2290,9 @@ class CEmitter:
                 "sequence_empty": self._env.get_template("sequence_empty_op.c.j2"),
                 "sequence_erase": self._env.get_template("sequence_erase_op.c.j2"),
                 "sequence_insert": self._env.get_template("sequence_insert_op.c.j2"),
-                "sequence_identity": self._env.get_template("sequence_identity_op.c.j2"),
+                "sequence_identity": self._env.get_template(
+                    "sequence_identity_op.c.j2"
+                ),
                 "sequence_length": self._env.get_template("sequence_length_op.c.j2"),
             }
             if emit_testbench:
@@ -11376,7 +11378,10 @@ class CEmitter:
                 ),
                 (f"{params['output_sequence']}__count", "idx_t *", "", False),
             ]
-            if params["input_present"] is not None and params["output_present"] is not None:
+            if (
+                params["input_present"] is not None
+                and params["output_present"] is not None
+            ):
                 param_specs.extend(
                     [
                         (params["input_present"], "_Bool", "", True),
