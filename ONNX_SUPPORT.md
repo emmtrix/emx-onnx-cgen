@@ -4,9 +4,9 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 2 / 3, 66.7% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 1 / 3, 33.3% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1482 / 1802 ONNX files (82.2%).
+Coverage 1486 / 1802 ONNX files (82.5%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1098,12 +1098,12 @@ Coverage 1482 / 1802 ONNX files (82.2%).
 | node/test_prelu_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | node/test_prelu_example_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | node/test_qlinearconv/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_2D_int8_float16/model.onnx | 21 | ❌ | Arrays are not equal (max abs diff 148) |
-| node/test_qlinearmatmul_2D_int8_float32/model.onnx | 21 | ❌ | Arrays are not equal (max abs diff 148) |
+| node/test_qlinearmatmul_2D_int8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
+| node/test_qlinearmatmul_2D_int8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
 | node/test_qlinearmatmul_2D_uint8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
 | node/test_qlinearmatmul_2D_uint8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_3D_int8_float16/model.onnx | 21 | ❌ | Arrays are not equal (max abs diff 247) |
-| node/test_qlinearmatmul_3D_int8_float32/model.onnx | 21 | ❌ | Arrays are not equal (max abs diff 248) |
+| node/test_qlinearmatmul_3D_int8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
+| node/test_qlinearmatmul_3D_int8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
 | node/test_qlinearmatmul_3D_uint8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
 | node/test_qlinearmatmul_3D_uint8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
 | node/test_quantizelinear/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -1961,10 +1961,12 @@ Coverage 118 / 125 ONNX files (94.4%).
 
 Test directory: `tests/onnx`
 
-Coverage 2 / 3 ONNX files (66.7%).
+Coverage 1 / 3 ONNX files (33.3%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
+| micro_kws_m_qdq.onnx | 15 | ❌ | DequantizeLinear zero_point shape must match scale shape |
+| micro_kws_m_qoperator_avg_pool.onnx |  | ❌ | 'QLinearAveragePoolOp' object has no attribute 'function' |
 | micro_kws_m_qdq.onnx | 15 | ❌ | Out of tolerance (max ULP 65793) |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_softmax.onnx | 15 | ✅ | OK (max ULP 0) |
