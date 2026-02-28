@@ -3,7 +3,10 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from ..ir.ops import AveragePoolOp
+from shared.scalar_types import ScalarType
+
+from ..ir.ops import AveragePoolOp, QLinearAveragePoolOp
+from ..ir.context import GraphContext
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .registry import register_lowering
@@ -39,6 +42,10 @@ class _AveragePoolSpec:
 
 
 def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
+    if isinstance(graph, GraphContext):
+        if graph.has_shape(name):
+            return graph.shape(name, node)
+        return graph.shape(name, node)
     try:
         return graph.find_value(name).type.shape
     except KeyError as exc:
@@ -49,6 +56,8 @@ def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
 
 
 def _value_dtype(graph: Graph, name: str, node: Node) -> str:
+    if isinstance(graph, GraphContext):
+        return graph.dtype(name, node)
     try:
         return graph.find_value(name).type.dtype
     except KeyError as exc:
@@ -58,9 +67,14 @@ def _value_dtype(graph: Graph, name: str, node: Node) -> str:
         ) from exc
 
 
-def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
-    if len(node.inputs) != 1 or len(node.outputs) != 1:
-        raise UnsupportedOpError("AveragePool must have 1 input and 1 output")
+def _resolve_average_pool_spec(
+    graph: Graph,
+    node: Node,
+    *,
+    input_name: str,
+    output_name: str,
+    require_output_shape: bool = True,
+) -> _AveragePoolSpec:
     supported_attrs = {
         "auto_pad",
         "ceil_mode",
@@ -85,7 +99,7 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
     if kernel_shape is None:
         raise UnsupportedOpError("AveragePool requires kernel_shape")
     kernel_shape = tuple(int(value) for value in kernel_shape)
-    input_shape = _value_shape(graph, node.inputs[0], node)
+    input_shape = _value_shape(graph, input_name, node)
     if len(input_shape) < 3:
         raise UnsupportedOpError("AveragePool expects NCHW inputs with spatial dims")
     spatial_rank = len(input_shape) - 2
@@ -156,12 +170,20 @@ def _resolve_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolSpec:
                 "AveragePool output shape must be non-negative"
             )
         out_spatial.append(out_dim)
-    output_shape = _value_shape(graph, node.outputs[0], node)
     expected_output_shape = (batch, channels, *out_spatial)
-    if output_shape != expected_output_shape:
+    try:
+        output_shape = _value_shape(graph, output_name, node)
+    except ShapeInferenceError:
+        output_shape = None
+    if output_shape is not None and output_shape != expected_output_shape:
         raise ShapeInferenceError(
             "AveragePool output shape must be "
             f"{expected_output_shape}, got {output_shape}"
+        )
+    if output_shape is None and require_output_shape:
+        raise ShapeInferenceError(
+            f"Missing shape for value '{output_name}' in op {node.op_type}. "
+            "Hint: run ONNX shape inference or export with static shapes."
         )
     in_d = in_spatial[0] if spatial_rank == 3 else 1
     in_h = in_spatial[-2] if spatial_rank >= 2 else 1
@@ -269,6 +291,8 @@ def _resolve_global_average_pool_spec(graph: Graph, node: Node) -> _AveragePoolS
 
 @register_lowering("AveragePool")
 def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
+    if len(node.inputs) != 1 or len(node.outputs) != 1:
+        raise UnsupportedOpError("AveragePool must have 1 input and 1 output")
     op_dtype = _value_dtype(graph, node.inputs[0], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     if op_dtype != output_dtype:
@@ -280,7 +304,12 @@ def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
         raise UnsupportedOpError(
             "AveragePool supports float16, float, and double inputs only"
         )
-    spec = _resolve_average_pool_spec(graph, node)
+    spec = _resolve_average_pool_spec(
+        graph,
+        node,
+        input_name=node.inputs[0],
+        output_name=node.outputs[0],
+    )
     return AveragePoolOp(
         input0=node.inputs[0],
         output=node.outputs[0],
@@ -310,6 +339,130 @@ def lower_average_pool(graph: Graph, node: Node) -> AveragePoolOp:
         pad_right=spec.pad_right,
         count_include_pad=spec.count_include_pad,
         dtype=op_dtype,
+    )
+
+
+def _ensure_scalar_shape(shape: tuple[int, ...], label: str) -> None:
+    if shape not in {(), (1,)}:
+        raise UnsupportedOpError(
+            f"QLinearAveragePool {label} must be scalar, got shape {shape}"
+        )
+
+
+def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
+    if not dtype.is_float:
+        raise UnsupportedOpError(
+            f"QLinearAveragePool {label} must be float16/float/double"
+        )
+
+
+@register_lowering("QLinearAveragePool")
+def lower_qlinear_average_pool(graph: Graph, node: Node) -> QLinearAveragePoolOp:
+    if len(node.inputs) != 5 or len(node.outputs) != 1:
+        raise UnsupportedOpError(
+            "QLinearAveragePool must have 5 inputs and 1 output"
+        )
+    input_name = node.inputs[0]
+    input_scale_name = node.inputs[1]
+    input_zero_name = node.inputs[2]
+    output_scale_name = node.inputs[3]
+    output_zero_name = node.inputs[4]
+    output_name = node.outputs[0]
+
+    input_dtype = _value_dtype(graph, input_name, node)
+    try:
+        output_dtype = _value_dtype(graph, output_name, node)
+    except ShapeInferenceError:
+        output_dtype = input_dtype
+    if input_dtype not in {ScalarType.U8, ScalarType.I8}:
+        raise UnsupportedOpError(
+            "QLinearAveragePool supports uint8/int8 inputs only"
+        )
+    if output_dtype not in {ScalarType.U8, ScalarType.I8}:
+        raise UnsupportedOpError(
+            "QLinearAveragePool supports uint8/int8 outputs only"
+        )
+
+    input_scale_dtype = _value_dtype(graph, input_scale_name, node)
+    output_scale_dtype = _value_dtype(graph, output_scale_name, node)
+    _ensure_scale_dtype(input_scale_dtype, "x_scale")
+    _ensure_scale_dtype(output_scale_dtype, "y_scale")
+
+    input_zero_dtype = _value_dtype(graph, input_zero_name, node)
+    output_zero_dtype = _value_dtype(graph, output_zero_name, node)
+    if input_zero_dtype != input_dtype:
+        raise UnsupportedOpError(
+            "QLinearAveragePool x_zero_point dtype must match input dtype"
+        )
+    if output_zero_dtype != output_dtype:
+        raise UnsupportedOpError(
+            "QLinearAveragePool y_zero_point dtype must match output dtype"
+        )
+
+    input_scale_shape = _value_shape(graph, input_scale_name, node)
+    output_scale_shape = _value_shape(graph, output_scale_name, node)
+    input_zero_shape = _value_shape(graph, input_zero_name, node)
+    output_zero_shape = _value_shape(graph, output_zero_name, node)
+    _ensure_scalar_shape(input_scale_shape, "x_scale")
+    _ensure_scalar_shape(output_scale_shape, "y_scale")
+    _ensure_scalar_shape(input_zero_shape, "x_zero_point")
+    _ensure_scalar_shape(output_zero_shape, "y_zero_point")
+
+    spec = _resolve_average_pool_spec(
+        graph,
+        node,
+        input_name=input_name,
+        output_name=output_name,
+        require_output_shape=False,
+    )
+    if isinstance(graph, GraphContext):
+        if spec.spatial_rank == 3:
+            graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_d, spec.out_h, spec.out_w))
+        elif spec.spatial_rank == 1:
+            graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_w))
+        else:
+            graph.set_shape(output_name, (spec.batch, spec.channels, spec.out_h, spec.out_w))
+        graph.set_dtype(output_name, output_dtype)
+    return QLinearAveragePoolOp(
+        input0=input_name,
+        input_scale=input_scale_name,
+        input_zero_point=input_zero_name,
+        output_scale=output_scale_name,
+        output_zero_point=output_zero_name,
+        output=output_name,
+        batch=spec.batch,
+        channels=spec.channels,
+        spatial_rank=spec.spatial_rank,
+        in_d=spec.in_d,
+        in_h=spec.in_h,
+        in_w=spec.in_w,
+        out_d=spec.out_d,
+        out_h=spec.out_h,
+        out_w=spec.out_w,
+        kernel_d=spec.kernel_d,
+        kernel_h=spec.kernel_h,
+        kernel_w=spec.kernel_w,
+        dilation_d=spec.dilation_d,
+        dilation_h=spec.dilation_h,
+        dilation_w=spec.dilation_w,
+        stride_d=spec.stride_d,
+        stride_h=spec.stride_h,
+        stride_w=spec.stride_w,
+        pad_front=spec.pad_front,
+        pad_top=spec.pad_top,
+        pad_left=spec.pad_left,
+        pad_back=spec.pad_back,
+        pad_bottom=spec.pad_bottom,
+        pad_right=spec.pad_right,
+        count_include_pad=spec.count_include_pad,
+        input_dtype=input_dtype,
+        dtype=output_dtype,
+        input_scale_dtype=input_scale_dtype,
+        output_scale_dtype=output_scale_dtype,
+        input_scale_shape=input_scale_shape,
+        output_scale_shape=output_scale_shape,
+        input_zero_shape=input_zero_shape,
+        output_zero_shape=output_zero_shape,
     )
 
 

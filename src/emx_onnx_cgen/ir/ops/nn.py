@@ -623,6 +623,57 @@ class AveragePoolOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class QLinearAveragePoolOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input_scale",
+        "input_zero_point",
+        "output_scale",
+        "output_zero_point",
+    )
+    __io_outputs__ = ("output",)
+    input0: str
+    input_scale: str
+    input_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    output: str
+    batch: int
+    channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_h: int
+    kernel_w: int
+    dilation_h: int
+    dilation_w: int
+    stride_h: int
+    stride_w: int
+    pad_top: int
+    pad_left: int
+    pad_bottom: int
+    pad_right: int
+    count_include_pad: bool
+    input_dtype: ScalarType
+    dtype: ScalarType
+    input_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
+    spatial_rank: int = 2
+    in_d: int = 1
+    out_d: int = 1
+    kernel_d: int = 1
+    dilation_d: int = 1
+    stride_d: int = 1
+    pad_front: int = 0
+    pad_back: int = 0
+
+
+@dataclass(frozen=True)
 class LpPoolOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)

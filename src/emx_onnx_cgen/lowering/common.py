@@ -53,10 +53,10 @@ def value_shape(
     graph: Graph | GraphContext, name: str, node: Node | None = None
 ) -> tuple[int, ...]:
     if isinstance(graph, GraphContext):
+        if graph.has_shape(name):
+            return graph.shape(name, node)
         shape = graph.shape(name, node)
         value = graph.find_value(name)
-        if graph.has_shape(name):
-            return shape
     else:
         try:
             value = graph.find_value(name)

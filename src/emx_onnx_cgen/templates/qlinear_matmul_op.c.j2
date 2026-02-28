@@ -17,16 +17,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} scaled = (({{ compute_type }})acc) * scale + output_zero;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} rounded = {{ round_fn }}(scaled);
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} wrapped = {{ mod_fn }}(rounded, ({{ compute_type }})256.0);
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}if (wrapped < ({{ compute_type }})0.0) {
-            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}wrapped += ({{ compute_type }})256.0;
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
-{% if output_is_signed %}
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}if (wrapped >= ({{ compute_type }})128.0) {
-            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}wrapped -= ({{ compute_type }})256.0;
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
-{% endif %}
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})wrapped;
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})rounded;
 {% for idx in range(output_loop_vars | length) | reverse %}
     {% for indent in range(loop.index0) %}    {% endfor %}}
 {% endfor %}
