@@ -2504,6 +2504,40 @@ def _make_qlinearadd_model() -> onnx.ModelProto:
     return model
 
 
+
+
+def _make_qlinearsoftmax_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [1, 2, 4])
+    output = helper.make_tensor_value_info("out", TensorProto.UINT8, [1, 2, 4])
+    x_scale = helper.make_tensor("x_scale", TensorProto.FLOAT, dims=[], vals=[0.125])
+    x_zero_point = helper.make_tensor("x_zero_point", TensorProto.UINT8, dims=[], vals=[3])
+    y_scale = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[1.0 / 256.0])
+    y_zero_point = helper.make_tensor("y_zero_point", TensorProto.UINT8, dims=[], vals=[0])
+    node = helper.make_node(
+        "QLinearSoftmax",
+        inputs=["in0", "x_scale", "x_zero_point", "y_scale", "y_zero_point"],
+        outputs=[output.name],
+        domain="com.microsoft",
+        opset=13,
+    )
+    graph = helper.make_graph(
+        [node],
+        "qlinearsoftmax_graph",
+        [input_info],
+        [output],
+        initializer=[x_scale, x_zero_point, y_scale, y_zero_point],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[
+            helper.make_operatorsetid("", 15),
+            helper.make_operatorsetid("com.microsoft", 1),
+        ],
+    )
+    model.ir_version = 7
+    return model
+
 def _make_matmulinteger_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
     weight_values = np.arange(12, dtype=np.uint8).reshape(3, 4)
@@ -4675,6 +4709,18 @@ def test_lower_qlinearadd() -> None:
     assert op.output_shape == (1, 2, 3)
 
 
+def test_lower_qlinearsoftmax() -> None:
+    model = _make_qlinearsoftmax_model()
+    graph = import_onnx(model)
+    op = get_lowering("QLinearSoftmax")(graph, graph.nodes[0])
+    assert op.input_dtype == ScalarType.U8
+    assert op.dtype == ScalarType.U8
+    assert op.axis == 2
+    assert op.outer == 2
+    assert op.axis_size == 4
+    assert op.inner == 1
+
+
 def test_lower_qlinearconv_per_channel_weights() -> None:
     model = _make_qlinearconv_model(per_channel_weights=True)
     graph = import_onnx(model)
@@ -5652,6 +5698,11 @@ def test_qlinearadd_codegen_smoke() -> None:
     model = _make_qlinearadd_model()
     generated = Compiler(CompilerOptions()).compile(model)
     assert "OpType: QLinearAdd" in generated
+
+
+def test_qlinearsoftmax_op_matches_onnxruntime() -> None:
+    model = _make_qlinearsoftmax_model()
+    _run_testbench_compare(model)
 
 
 def test_qlinearconv_op_matches_onnxruntime() -> None:

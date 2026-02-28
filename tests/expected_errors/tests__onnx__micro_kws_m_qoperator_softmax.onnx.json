@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op QLinearSoftmax",
+  "error": "Out of tolerance (max ULP 1058537472)",
   "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx",
   "operators": [
     "Reshape",
@@ -14,5 +14,6 @@
     "Relu",
     "com.microsoft::QLinearSoftmax"
   ],
-  "opset_version": 15
+  "opset_version": 15,
+  "generated_checksum": "57bd9ac78a5ba79e9aeb55f3b918c46db8cb93004d192850fc20f294306ef3f4"
 }

@@ -1968,3 +1968,5 @@ Coverage 1 / 3 ONNX files (33.3%).
 | micro_kws_m_qdq.onnx | 15 | ❌ | DequantizeLinear zero_point shape must match scale shape |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_softmax.onnx | 15 | ❌ | Unsupported op QLinearSoftmax |
+| micro_kws_m_qoperator_avg_pool.onnx | 15 | ❌ | Unsupported op QLinearAveragePool |
+| micro_kws_m_qoperator_softmax.onnx | 15 | ❌ | Out of tolerance (max ULP 1058537472) |
