@@ -62,6 +62,7 @@ _LOWERING_MODULES = [
     "qlinear_add",
     "qlinear_matmul",
     "qlinear_mul",
+    "qlinear_softmax",
     "quantize_linear",
     "range",
     "reduce",

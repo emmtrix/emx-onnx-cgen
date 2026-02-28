@@ -704,6 +704,62 @@ class SoftmaxOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class QLinearSoftmaxOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input_scale",
+        "input_zero_point",
+        "output_scale",
+        "output_zero_point",
+    )
+    __io_outputs__ = ("output",)
+    input0: str
+    input_scale: str
+    input_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    output: str
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+    axis: int
+    outer: int
+    axis_size: int
+    inner: int
+    dtype: ScalarType
+    input_dtype: ScalarType
+    input_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_dtype = ctx.dtype(self.input0)
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input_dtype)
+            return None
+        if output_dtype != input_dtype:
+            raise UnsupportedOpError(
+                "QLinearSoftmax expects output dtype to match input dtype"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        try:
+            output_shape = ctx.shape(self.output)
+        except ShapeInferenceError:
+            ctx.set_shape(self.output, input_shape)
+            return None
+        if output_shape != input_shape:
+            raise ShapeInferenceError(
+                f"QLinearSoftmax output shape must be {input_shape}, got {output_shape}"
+            )
+
+
+@dataclass(frozen=True)
 class LogSoftmaxOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)

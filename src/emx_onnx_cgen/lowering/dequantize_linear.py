@@ -35,7 +35,10 @@ def resolve_dequantize_spec(graph: Graph, node: Node) -> DequantizeSpec:
     block_size = int(node.attrs.get("block_size", 0))
     if block_size < 0:
         raise UnsupportedOpError("DequantizeLinear block_size must be >= 0")
-    input_shape = _value_shape(graph, node.inputs[0], node)
+    try:
+        input_shape = _value_shape(graph, node.inputs[0], node)
+    except ShapeInferenceError:
+        input_shape = _infer_missing_input_shape(graph, node)
     scale_shape = _value_shape(graph, node.inputs[1], node)
     zero_point_name = optional_name(node.inputs, 2)
     if zero_point_name is not None:
@@ -84,9 +87,41 @@ def resolve_dequantize_spec(graph: Graph, node: Node) -> DequantizeSpec:
     )
 
 
+
+
+def _producer_by_output(graph: Graph, output_name: str) -> Node | None:
+    for producer in graph.nodes:
+        if output_name in producer.outputs:
+            return producer
+    return None
+
+
+
+
+def _infer_missing_input_shape(graph: Graph, node: Node) -> tuple[int, ...]:
+    producer = _producer_by_output(graph, node.inputs[0])
+    if producer is None or producer.op_type != "QLinearSoftmax" or len(producer.inputs) < 1:
+        raise ShapeInferenceError(
+            f"Missing shape for value '{node.inputs[0]}' in op {node.op_type}. "
+            "Hint: run ONNX shape inference or export with static shapes."
+        )
+    return _value_shape(graph, producer.inputs[0], producer)
+
+def _infer_missing_input_dtype(graph: Graph, node: Node) -> ScalarType:
+    producer = _producer_by_output(graph, node.inputs[0])
+    if producer is None or producer.op_type != "QLinearSoftmax" or len(producer.inputs) < 3:
+        raise ShapeInferenceError(
+            f"Missing dtype for value '{node.inputs[0]}' in op {node.op_type}. "
+            "Hint: run ONNX shape inference or export with static shapes."
+        )
+    return _value_dtype(graph, producer.inputs[2], producer)
+
 @register_lowering("DequantizeLinear")
 def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:
-    input_dtype = _value_dtype(graph, node.inputs[0], node)
+    try:
+        input_dtype = _value_dtype(graph, node.inputs[0], node)
+    except ShapeInferenceError:
+        input_dtype = _infer_missing_input_dtype(graph, node)
     scale_dtype = _value_dtype(graph, node.inputs[1], node)
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     if input_dtype not in {
