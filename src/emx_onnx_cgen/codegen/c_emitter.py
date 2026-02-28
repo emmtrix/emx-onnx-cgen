@@ -64,6 +64,7 @@ from ..ir.ops import (
     GridSampleOp,
     GroupNormalizationOp,
     HammingWindowOp,
+    HannWindowOp,
     HardmaxOp,
     IdentityOp,
     InstanceNormalizationOp,
@@ -696,6 +697,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
             | SplitOp
@@ -778,6 +780,7 @@ class CEmitter:
         | CumSumOp
         | RangeOp
         | HammingWindowOp
+        | HannWindowOp
         | OneHotOp
         | SplitOp
         | TfIdfVectorizerOp
@@ -1942,6 +1945,12 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 periodic=op.periodic,
             )
+        if isinstance(op, HannWindowOp):
+            return HannWindowOp(
+                size=name_map.get(op.size, op.size),
+                output=name_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, BernoulliOp):
             return BernoulliOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2319,6 +2328,7 @@ class CEmitter:
                     "loop_sequence_insert_op.c.j2"
                 ),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
+                "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
                 "string_normalizer": self._env.get_template(
@@ -3047,6 +3057,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -3403,6 +3414,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -3524,7 +3536,7 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
-        if any(isinstance(op, HammingWindowOp) for op in resolved_ops):
+        if any(isinstance(op, (HammingWindowOp, HannWindowOp)) for op in resolved_ops):
             return True
         return False
 
@@ -3597,6 +3609,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -3723,6 +3736,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -4023,6 +4037,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
             | SplitOp
@@ -4100,6 +4115,7 @@ class CEmitter:
         | CumSumOp
         | RangeOp
         | HammingWindowOp
+        | HannWindowOp
         | OneHotOp
         | SplitOp
         | TfIdfVectorizerOp
@@ -5186,6 +5202,12 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 periodic=op.periodic,
             )
+        if isinstance(op, HannWindowOp):
+            return HannWindowOp(
+                size=temp_map.get(op.size, op.size),
+                output=temp_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=temp_map.get(op.indices, op.indices),
@@ -5721,6 +5743,7 @@ class CEmitter:
             loop_range_template=templates["loop_range"],
             loop_sequence_insert_template=templates["loop_sequence_insert"],
             hamming_window_template=templates["hamming_window"],
+            hann_window_template=templates["hann_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
@@ -6247,6 +6270,7 @@ class CEmitter:
         loop_range_template,
         loop_sequence_insert_template,
         hamming_window_template,
+        hann_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
         string_normalizer_template,
@@ -11224,6 +11248,39 @@ class CEmitter:
                 periodic_literal="1" if op.periodic else "0",
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, HannWindowOp):
+            params = self._shared_param_map(
+                [
+                    ("size", op.size),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["size"],
+                        self._ctx_dtype(op.size).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = hann_window_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if op.periodic else "0",
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
             params = self._shared_param_map(
                 [
@@ -13350,6 +13407,7 @@ class CEmitter:
             | RangeOp
             | LoopRangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
         ),
@@ -13427,6 +13485,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
         ),
@@ -13583,7 +13642,7 @@ class CEmitter:
             return ((op.trip_count, ()), (op.cond, ()))
         if isinstance(op, LoopSequenceMapOp):
             return ((op.trip_count, ()), (op.cond, ()))
-        if isinstance(op, HammingWindowOp):
+        if isinstance(op, (HammingWindowOp, HannWindowOp)):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
             return (
@@ -13670,6 +13729,7 @@ class CEmitter:
             | ExpandOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -13758,6 +13818,7 @@ class CEmitter:
             | ExpandOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
         ),
@@ -14150,6 +14211,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
             | StringNormalizerOp
@@ -14310,6 +14372,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, HammingWindowOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, HannWindowOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
             return self._ctx_shape(op.output)
         if isinstance(op, TfIdfVectorizerOp):
@@ -14411,6 +14475,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
             | StringNormalizerOp
@@ -14513,6 +14578,7 @@ class CEmitter:
                 RangeOp,
                 ReverseSequenceOp,
                 HammingWindowOp,
+                HannWindowOp,
                 GridSampleOp,
                 ResizeOp,
                 PadOp,
