@@ -629,7 +629,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -824,7 +824,9 @@ class CEmitter:
                 input_scale=name_map.get(op.input_scale, op.input_scale),
                 input_zero_point=name_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=name_map.get(op.output_scale, op.output_scale),
-                output_zero_point=name_map.get(op.output_zero_point, op.output_zero_point),
+                output_zero_point=name_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
                 output=name_map.get(op.output, op.output),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
@@ -949,9 +951,7 @@ class CEmitter:
             return QLinearAveragePoolOp(
                 input0=name_map.get(op.input0, op.input0),
                 input_scale=name_map.get(op.input_scale, op.input_scale),
-                input_zero_point=name_map.get(
-                    op.input_zero_point, op.input_zero_point
-                ),
+                input_zero_point=name_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=name_map.get(op.output_scale, op.output_scale),
                 output_zero_point=name_map.get(
                     op.output_zero_point, op.output_zero_point
@@ -2899,7 +2899,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3248,7 +3248,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3446,7 +3446,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3542,7 +3542,14 @@ class CEmitter:
             return True
         if any(
             isinstance(
-                op, (QuantizeLinearOp, QLinearAddOp, QLinearMulOp, QLinearMatMulOp, QLinearSoftmaxOp)
+                op,
+                (
+                    QuantizeLinearOp,
+                    QLinearAddOp,
+                    QLinearMulOp,
+                    QLinearMatMulOp,
+                    QLinearSoftmaxOp,
+                ),
             )
             and op_context.dtype(op.output).is_integer
             for op in resolved_ops
@@ -3566,7 +3573,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3857,7 +3864,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -4210,9 +4217,7 @@ class CEmitter:
             return QLinearAveragePoolOp(
                 input0=temp_map.get(op.input0, op.input0),
                 input_scale=temp_map.get(op.input_scale, op.input_scale),
-                input_zero_point=temp_map.get(
-                    op.input_zero_point, op.input_zero_point
-                ),
+                input_zero_point=temp_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=temp_map.get(op.output_scale, op.output_scale),
                 output_zero_point=temp_map.get(
                     op.output_zero_point, op.output_zero_point
@@ -5359,7 +5364,9 @@ class CEmitter:
                 input_scale=temp_map.get(op.input_scale, op.input_scale),
                 input_zero_point=temp_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=temp_map.get(op.output_scale, op.output_scale),
-                output_zero_point=temp_map.get(op.output_zero_point, op.output_zero_point),
+                output_zero_point=temp_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
                 output=temp_map.get(op.output, op.output),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
@@ -12733,7 +12740,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -13508,7 +13515,7 @@ class CEmitter:
             | QuantizeLinearOp
             | DequantizeLinearOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 73)",
+  "error": "OK (max ULP 71)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/light light_densenet121.onnx",
   "operators": [
     "ConstantOfShape",

@@ -34,8 +34,7 @@ def lower_qlinear_softmax(graph: Graph, node: Node) -> QLinearSoftmaxOp:
         output_shape = input_shape
     if output_shape != input_shape:
         raise ShapeInferenceError(
-            "QLinearSoftmax output shape must be "
-            f"{input_shape}, got {output_shape}"
+            f"QLinearSoftmax output shape must be {input_shape}, got {output_shape}"
         )
 
     input_dtype = _value_dtype(graph, node.inputs[0], node)
@@ -53,30 +52,20 @@ def lower_qlinear_softmax(graph: Graph, node: Node) -> QLinearSoftmaxOp:
     input_scale_dtype = _value_dtype(graph, node.inputs[1], node)
     output_scale_dtype = _value_dtype(graph, node.inputs[3], node)
     if not input_scale_dtype.is_float:
-        raise UnsupportedOpError(
-            "QLinearSoftmax x_scale must be float16/float/double"
-        )
+        raise UnsupportedOpError("QLinearSoftmax x_scale must be float16/float/double")
     if not output_scale_dtype.is_float:
-        raise UnsupportedOpError(
-            "QLinearSoftmax y_scale must be float16/float/double"
-        )
+        raise UnsupportedOpError("QLinearSoftmax y_scale must be float16/float/double")
 
     input_zero_dtype = _value_dtype(graph, node.inputs[2], node)
     output_zero_dtype = _value_dtype(graph, node.inputs[4], node)
     if input_zero_dtype != input_dtype:
-        raise UnsupportedOpError(
-            "QLinearSoftmax x_zero_point dtype must match x"
-        )
+        raise UnsupportedOpError("QLinearSoftmax x_zero_point dtype must match x")
     if output_zero_dtype != output_dtype:
-        raise UnsupportedOpError(
-            "QLinearSoftmax y_zero_point dtype must match y"
-        )
+        raise UnsupportedOpError("QLinearSoftmax y_zero_point dtype must match y")
 
     input_scale_shape = _ensure_scalar_input(graph, node.inputs[1], node, "x_scale")
     output_scale_shape = _ensure_scalar_input(graph, node.inputs[3], node, "y_scale")
-    input_zero_shape = _ensure_scalar_input(
-        graph, node.inputs[2], node, "x_zero_point"
-    )
+    input_zero_shape = _ensure_scalar_input(graph, node.inputs[2], node, "x_zero_point")
     output_zero_shape = _ensure_scalar_input(
         graph, node.inputs[4], node, "y_zero_point"
     )
