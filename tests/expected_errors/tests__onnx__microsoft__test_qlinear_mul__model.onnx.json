@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx/microsoft/test_qlinear_mul model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "com.microsoft::QLinearMul"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "fc9482b7a9cf00af66aa61b381f1a60c04859e383b41f3ca2b4f710f6c952730"
+}

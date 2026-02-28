@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx/microsoft/test_qlinear_average_pool model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "com.microsoft::QLinearAveragePool"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "1e36dc6326e4e836dd1a024cfb1fa182502d1ea53bfcc3b4d78f6da1dc325996"
+}
