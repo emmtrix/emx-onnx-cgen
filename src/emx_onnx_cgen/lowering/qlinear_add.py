@@ -3,6 +3,7 @@ from __future__ import annotations
 from shared.scalar_types import ScalarType
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
 from ..ir.op_base import BroadcastingOpBase
 from ..ir.ops import QLinearAddOp
@@ -34,7 +35,10 @@ def lower_qlinear_add(graph: Graph, node: Node) -> QLinearAddOp:
     input0_shape = _value_shape(graph, node.inputs[0], node)
     input1_shape = _value_shape(graph, node.inputs[3], node)
     output_shape = BroadcastingOpBase.broadcast_shapes(input0_shape, input1_shape)
-    expected_output_shape = _value_shape(graph, node.outputs[0], node)
+    try:
+        expected_output_shape = _value_shape(graph, node.outputs[0], node)
+    except ShapeInferenceError:
+        expected_output_shape = output_shape
     if expected_output_shape != output_shape:
         raise ShapeInferenceError(
             "QLinearAdd output shape must be "
@@ -42,7 +46,10 @@ def lower_qlinear_add(graph: Graph, node: Node) -> QLinearAddOp:
         )
     input0_dtype = _value_dtype(graph, node.inputs[0], node)
     input1_dtype = _value_dtype(graph, node.inputs[3], node)
-    output_dtype = _value_dtype(graph, node.outputs[0], node)
+    try:
+        output_dtype = _value_dtype(graph, node.outputs[0], node)
+    except ShapeInferenceError:
+        output_dtype = input0_dtype
     if input0_dtype not in {ScalarType.U8, ScalarType.I8}:
         raise UnsupportedOpError("QLinearAdd supports uint8/int8 inputs only")
     if input1_dtype not in {ScalarType.U8, ScalarType.I8}:
@@ -76,7 +83,7 @@ def lower_qlinear_add(graph: Graph, node: Node) -> QLinearAddOp:
     output_zero_shape = _ensure_scalar_input(
         graph, node.inputs[7], node, "y_zero_point"
     )
-    return QLinearAddOp(
+    lowered = QLinearAddOp(
         input0=node.inputs[0],
         input0_scale=node.inputs[1],
         input0_zero_point=node.inputs[2],
@@ -102,3 +109,7 @@ def lower_qlinear_add(graph: Graph, node: Node) -> QLinearAddOp:
         input1_zero_shape=input1_zero_shape,
         output_zero_shape=output_zero_shape,
     )
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], output_shape)
+        graph.set_dtype(node.outputs[0], output_dtype)
+    return lowered

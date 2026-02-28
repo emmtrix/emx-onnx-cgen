@@ -4708,6 +4708,19 @@ def test_lower_qlinearadd() -> None:
     assert op.output_shape == (1, 2, 3)
 
 
+def test_lower_qlinearadd_no_output_shape() -> None:
+    model = _make_qlinearadd_model()
+    # Remove output type/shape info to simulate missing shape inference
+    del model.graph.value_info[:]
+    del model.graph.output[:]
+    graph = import_onnx(model)
+    op = get_lowering("QLinearAdd")(graph, graph.nodes[0])
+    assert op.input0_dtype == ScalarType.U8
+    assert op.input1_dtype == ScalarType.U8
+    assert op.dtype == ScalarType.U8
+    assert op.output_shape == (1, 2, 3)
+
+
 def test_lower_qlinearsoftmax() -> None:
     model = _make_qlinearsoftmax_model()
     graph = import_onnx(model)
