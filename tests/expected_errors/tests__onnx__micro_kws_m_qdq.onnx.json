@@ -1,5 +1,5 @@
 {
-  "error": "DequantizeLinear zero_point shape must match scale shape",
+  "error": "Out of tolerance (max ULP 65793)",
   "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qdq.onnx",
   "operators": [
     "DequantizeLinear",
@@ -13,5 +13,6 @@
     "Add",
     "Softmax"
   ],
-  "opset_version": 15
+  "opset_version": 15,
+  "generated_checksum": "3c39501cfc47118924c28839d56f82462de039b8bf4a0928def47624f8d60744"
 }
