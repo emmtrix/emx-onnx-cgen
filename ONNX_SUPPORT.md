@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1483 / 1802, 82.3% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1484 / 1802, 82.4% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1483 / 1802 ONNX files (82.3%).
+Coverage 1484 / 1802 ONNX files (82.4%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -761,8 +761,8 @@ Coverage 1483 / 1802 ONNX files (82.3%).
 | node/test_hardswish/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | node/test_hardswish_expanded/model.onnx | 22 | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_identity_opt/model.onnx |  | ❌ | Failed to build testbench. |
-| node/test_identity_sequence/model.onnx |  | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
+| node/test_identity_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=30123182) |
+| node/test_identity_sequence/model.onnx | 25 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_if_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | node/test_if_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |

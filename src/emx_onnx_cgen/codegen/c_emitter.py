@@ -3717,6 +3717,7 @@ class CEmitter:
     ) -> str:
         params: list[str] = []
         optional_flags = self._optional_input_flag_map(model)
+        output_optional_flags = self._optional_output_flag_map(model)
         if dim_order:
             params.extend(self._format_dim_args(dim_order))
         for index, (name, shape, dtype, value_type) in enumerate(
@@ -3733,6 +3734,9 @@ class CEmitter:
                     f"const {dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
                 params.append(f"idx_t {name}__count")
+                optional_flag = optional_flags.get(name)
+                if optional_flag is not None:
+                    params.append(f"_Bool {optional_flag}")
                 continue
             params.append(
                 f"const {dtype.c_type} {name}"
@@ -3755,6 +3759,9 @@ class CEmitter:
                     f"{dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
                 params.append(f"idx_t *{name}__count")
+                optional_flag = output_optional_flags.get(name)
+                if optional_flag is not None:
+                    params.append(f"_Bool *{optional_flag}")
                 continue
             params.append(
                 f"{dtype.c_type} {name}"
@@ -14067,6 +14074,14 @@ class CEmitter:
             if flag is not None
         }
 
+    @staticmethod
+    def _optional_output_flag_map(model: LoweredModel) -> dict[str, str]:
+        return {
+            name: flag
+            for name, flag in zip(model.output_names, model.output_optional_names)
+            if flag is not None
+        }
+
     def _build_variable_dim_names(
         self,
         model: LoweredModel,
@@ -14404,11 +14419,12 @@ class CEmitter:
                 }
             )
         outputs = []
-        for name, shape, dtype, value_type in zip(
+        for name, shape, dtype, value_type, optional_flag in zip(
             model.output_names,
             model.output_shapes,
             model.output_dtypes,
             model.output_types,
+            model.output_optional_names,
         ):
             json_name = self._ctx_name(name)
             codegen_shape = self._codegen_shape(shape)
@@ -14441,6 +14457,7 @@ class CEmitter:
                     "json_name": json_name,
                     "is_sequence": is_sequence_output,
                     "count_name": f"{name}__count",
+                    "optional_flag_name": optional_flag,
                 }
             )
         rendered = testbench_template.render(

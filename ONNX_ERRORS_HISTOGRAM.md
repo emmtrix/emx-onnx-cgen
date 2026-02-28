@@ -58,7 +58,6 @@ This histogram is test-suite-overarching.
 | Arrays are not equal (max abs diff 248) | 1 | 21 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
-| Failed to build testbench. | 1 |  |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
