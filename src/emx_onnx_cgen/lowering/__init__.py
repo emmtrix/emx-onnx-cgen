@@ -40,6 +40,7 @@ _LOWERING_MODULES = [
     "group_normalization",
     "hardmax",
     "hamming_window",
+    "hann_window",
     "identity",
     "instance_normalization",
     "layer_normalization",

@@ -1,11 +1,4 @@
 {
-  "error": "Unsupported op Loop",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded model.onnx --test-data-dir test_data_set_0",
-  "operators": [
-    "SequenceLength",
-    "Constant",
-    "SequenceEmpty",
-    "Loop"
-  ],
-  "opset_version": 17
+  "error": "'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x'",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_extract_shapes_expanded model.onnx --test-data-dir test_data_set_0"
 }

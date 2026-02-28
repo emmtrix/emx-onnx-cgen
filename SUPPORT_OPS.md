@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 179 / 205
+Supported operators: 180 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -27,7 +27,7 @@ Supported operators: 179 / 205
 | BitwiseNot | ✅ |
 | BitwiseOr | ✅ |
 | BitwiseXor | ✅ |
-| BlackmanWindow | ✅ |
+| BlackmanWindow | ❌ |
 | Cast | ✅ |
 | CastLike | ✅ |
 | Ceil | ✅ |
@@ -76,7 +76,7 @@ Supported operators: 179 / 205
 | GridSample | ✅ |
 | GroupNormalization | ✅ |
 | HammingWindow | ✅ |
-| HannWindow | ❌ |
+| HannWindow | ✅ |
 | HardSigmoid | ✅ |
 | HardSwish | ✅ |
 | Hardmax | ✅ |
@@ -160,7 +160,7 @@ Supported operators: 179 / 205
 | SequenceErase | ✅ |
 | SequenceInsert | ✅ |
 | SequenceLength | ✅ |
-| SequenceMap | ❌ |
+| SequenceMap | ✅ |
 | Shape | ✅ |
 | Shrink | ✅ |
 | Sigmoid | ✅ |
