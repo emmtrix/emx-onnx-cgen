@@ -12196,6 +12196,7 @@ class CEmitter:
                 max_fn=max_fn,
                 min_literal=min_literal,
                 max_literal=max_literal,
+                use_integer_requant=scale_dtype != ScalarType.F16,
                 output_wrap=not self._replicate_ort_bugs,
                 output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
