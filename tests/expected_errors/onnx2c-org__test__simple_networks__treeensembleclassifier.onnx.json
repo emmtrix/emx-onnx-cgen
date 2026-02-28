@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op TreeEnsembleClassifier",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks treeensembleclassifier.onnx",
   "operators": [
     "ai.onnx.ml::TreeEnsembleClassifier"
   ],
-  "opset_version": 12
+  "opset_version": 12,
+  "generated_checksum": "958efe7ab68050eca5d48078dc9d67011475f8ba076e0a721fc44b2ddc3bd4be"
 }
