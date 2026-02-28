@@ -18,9 +18,7 @@ def _ensure_scalar_shape(shape: tuple[int, ...], label: str) -> None:
         )
 
 
-def _resolve_w_zero_point_shape(
-    shape: tuple[int, ...], out_channels: int
-) -> bool:
+def _resolve_w_zero_point_shape(shape: tuple[int, ...], out_channels: int) -> bool:
     if shape in {(), (1,)}:
         return False
     if shape == (out_channels,):
@@ -34,9 +32,7 @@ def _resolve_w_zero_point_shape(
 @register_lowering("ConvInteger")
 def lower_conv_integer(graph: Graph, node: Node) -> ConvIntegerOp:
     if len(node.inputs) not in {2, 3, 4} or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "ConvInteger must have 2 to 4 inputs and 1 output"
-        )
+        raise UnsupportedOpError("ConvInteger must have 2 to 4 inputs and 1 output")
     input_name = node.inputs[0]
     weight_name = node.inputs[1]
     x_zero_point_name = optional_name(node.inputs, 2)

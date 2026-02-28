@@ -45,7 +45,7 @@ def resolve_matmul_integer_spec(graph: Graph, node: Node) -> MatMulIntegerSpec:
     k_right, n = input1_effective[-2], input1_effective[-1]
     if k_left != k_right:
         raise ShapeInferenceError(
-            "MatMulInteger inner dimensions must match, " f"got {k_left} and {k_right}"
+            f"MatMulInteger inner dimensions must match, got {k_left} and {k_right}"
         )
     batch_shape, input0_batch_shape, input1_batch_shape = _broadcast_batch_shapes(
         input0_effective[:-2], input1_effective[:-2], node

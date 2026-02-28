@@ -35,9 +35,7 @@ def _infer_repeats_from_shapes(
     output_shape: tuple[int, ...],
 ) -> tuple[int, ...]:
     if len(input_shape) != len(output_shape):
-        raise ShapeInferenceError(
-            "Tile repeats must have the same rank as input shape"
-        )
+        raise ShapeInferenceError("Tile repeats must have the same rank as input shape")
     repeats: list[int] = []
     for input_dim, output_dim in zip(input_shape, output_shape):
         if input_dim < 0 or output_dim < 0:
@@ -93,9 +91,7 @@ def lower_tile(graph: Graph, node: Node) -> TileOp:
             raise UnsupportedOpError("Tile repeats input must be a 1D tensor")
         repeats = _infer_repeats_from_shapes(input_shape, output_shape)
     if len(repeats) != len(input_shape):
-        raise ShapeInferenceError(
-            "Tile repeats must have the same rank as input shape"
-        )
+        raise ShapeInferenceError("Tile repeats must have the same rank as input shape")
     if any(value < 0 for value in repeats):
         raise UnsupportedOpError("Tile repeats must be non-negative")
     expected_shape = tuple(
@@ -103,8 +99,7 @@ def lower_tile(graph: Graph, node: Node) -> TileOp:
     )
     if output_shape and output_shape != expected_shape:
         raise ShapeInferenceError(
-            "Tile output shape mismatch: "
-            f"expected {expected_shape}, got {output_shape}"
+            f"Tile output shape mismatch: expected {expected_shape}, got {output_shape}"
         )
     return TileOp(
         input0=node.inputs[0],

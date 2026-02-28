@@ -141,9 +141,7 @@ def _resolve_activations(
     )
 
 
-def _expect_shape(
-    name: str, shape: tuple[int, ...], expected: tuple[int, ...]
-) -> None:
+def _expect_shape(name: str, shape: tuple[int, ...], expected: tuple[int, ...]) -> None:
     if shape != expected:
         raise UnsupportedOpError(
             f"GRU input {name} must have shape {expected}, got {shape}"
@@ -188,9 +186,7 @@ def resolve_gru_spec(graph: Graph, node: Node) -> GruSpec:
         *(name for name in (output_y, output_y_h) if name),
     )
     if not op_dtype.is_float:
-        raise UnsupportedOpError(
-            "GRU supports float16, float, and double inputs only"
-        )
+        raise UnsupportedOpError("GRU supports float16, float, and double inputs only")
     x_shape = value_shape(graph, input_x, node)
     if len(x_shape) != 3:
         raise UnsupportedOpError("GRU input X must be rank 3")

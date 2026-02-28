@@ -75,10 +75,15 @@ def test_cli_verify_reduce_model() -> None:
 
 def test_cli_testbench_filename_and_include() -> None:
     output_path = Path("out.c")
-    testbench_path = output_path.with_name(f"{output_path.stem}_testbench{output_path.suffix}")
+    testbench_path = output_path.with_name(
+        f"{output_path.stem}_testbench{output_path.suffix}"
+    )
     assert testbench_path.name == "out_testbench.c"
 
-    from emx_onnx_cgen.cli import _resolve_testbench_output_path, _wrap_separate_testbench_source
+    from emx_onnx_cgen.cli import (
+        _resolve_testbench_output_path,
+        _wrap_separate_testbench_source,
+    )
 
     rendered = _wrap_separate_testbench_source(
         "void model(int x);",

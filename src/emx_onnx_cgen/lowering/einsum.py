@@ -25,9 +25,7 @@ def lower_einsum(graph: Graph, node: Node) -> EinsumOp:
         else str(equation_value)
     )
     normalized = _normalize_equation(equation)
-    input_shapes = tuple(
-        _value_shape(graph, name, node) for name in node.inputs
-    )
+    input_shapes = tuple(_value_shape(graph, name, node) for name in node.inputs)
     output_shape = _value_shape(graph, node.outputs[0], node)
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
     if normalized == "->":
@@ -35,8 +33,7 @@ def lower_einsum(graph: Graph, node: Node) -> EinsumOp:
             raise UnsupportedOpError("Einsum '->' must have 1 input")
         if output_shape:
             raise ShapeInferenceError(
-                "Einsum '->' output must be scalar, "
-                f"got shape {output_shape}"
+                f"Einsum '->' output must be scalar, got shape {output_shape}"
             )
         kind = EinsumKind.REDUCE_ALL
     elif normalized == "ij->i":
@@ -45,14 +42,12 @@ def lower_einsum(graph: Graph, node: Node) -> EinsumOp:
         input_shape = input_shapes[0]
         if len(input_shape) != 2:
             raise ShapeInferenceError(
-                "Einsum 'ij->i' input must be 2D, "
-                f"got shape {input_shape}"
+                f"Einsum 'ij->i' input must be 2D, got shape {input_shape}"
             )
         expected = (input_shape[0],)
         if output_shape != expected:
             raise ShapeInferenceError(
-                f"Einsum 'ij->i' output must match shape {expected}, "
-                f"got {output_shape}"
+                f"Einsum 'ij->i' output must match shape {expected}, got {output_shape}"
             )
         kind = EinsumKind.SUM_J
     elif normalized == "ij->ji":
@@ -61,8 +56,7 @@ def lower_einsum(graph: Graph, node: Node) -> EinsumOp:
         input_shape = input_shapes[0]
         if len(input_shape) != 2:
             raise ShapeInferenceError(
-                "Einsum 'ij->ji' input must be 2D, "
-                f"got shape {input_shape}"
+                f"Einsum 'ij->ji' input must be 2D, got shape {input_shape}"
             )
         expected = (input_shape[1], input_shape[0])
         if output_shape != expected:
@@ -87,8 +81,7 @@ def lower_einsum(graph: Graph, node: Node) -> EinsumOp:
             )
         if output_shape:
             raise ShapeInferenceError(
-                "Einsum 'i,i' output must be scalar, "
-                f"got shape {output_shape}"
+                f"Einsum 'i,i' output must be scalar, got shape {output_shape}"
             )
         kind = EinsumKind.DOT
     elif normalized == "bij,bjk->bik":
@@ -139,9 +132,7 @@ def lower_einsum(graph: Graph, node: Node) -> EinsumOp:
             )
         kind = EinsumKind.BATCH_DIAGONAL
     else:
-        raise UnsupportedOpError(
-            f"Unsupported Einsum equation '{equation}'"
-        )
+        raise UnsupportedOpError(f"Unsupported Einsum equation '{equation}'")
     return EinsumOp(
         inputs=tuple(node.inputs),
         output=node.outputs[0],

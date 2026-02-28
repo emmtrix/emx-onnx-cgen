@@ -38,8 +38,7 @@ def _broadcast_batch_shapes(
     for left_dim, right_dim in zip(left_padded, right_padded):
         if not (left_dim == right_dim or left_dim == 1 or right_dim == 1):
             raise ShapeInferenceError(
-                "MatMul batch dimensions must be broadcastable, "
-                f"got {left} x {right}"
+                f"MatMul batch dimensions must be broadcastable, got {left} x {right}"
             )
         broadcast_shape.append(max(left_dim, right_dim))
     return tuple(broadcast_shape), left_padded, right_padded
@@ -50,7 +49,7 @@ def _resolve_matmul_spec(ctx: OpContext, input0: str, input1: str) -> dict[str, 
     input1_shape = ctx.shape(input1)
     if len(input0_shape) < 1 or len(input1_shape) < 1:
         raise UnsupportedOpError(
-            "MatMul inputs must be at least 1D, " f"got {input0_shape} x {input1_shape}"
+            f"MatMul inputs must be at least 1D, got {input0_shape} x {input1_shape}"
         )
     left_vector = len(input0_shape) == 1
     right_vector = len(input1_shape) == 1
@@ -336,8 +335,7 @@ class GemmOp(GemmLikeOpBase):
         input_b_shape = ctx.shape(self.input_b)
         if len(input_a_shape) != 2 or len(input_b_shape) != 2:
             raise UnsupportedOpError(
-                "Gemm supports 2D inputs only, "
-                f"got {input_a_shape} x {input_b_shape}"
+                f"Gemm supports 2D inputs only, got {input_a_shape} x {input_b_shape}"
             )
         if trans_a:
             m, k_left = input_a_shape[1], input_a_shape[0]
@@ -612,6 +610,57 @@ class AveragePoolOp(RenderableOpBase):
     pad_right: int
     count_include_pad: bool
     dtype: ScalarType
+    spatial_rank: int = 2
+    in_d: int = 1
+    out_d: int = 1
+    kernel_d: int = 1
+    dilation_d: int = 1
+    stride_d: int = 1
+    pad_front: int = 0
+    pad_back: int = 0
+
+
+@dataclass(frozen=True)
+class QLinearAveragePoolOp(RenderableOpBase):
+    __io_inputs__ = (
+        "input0",
+        "input_scale",
+        "input_zero_point",
+        "output_scale",
+        "output_zero_point",
+    )
+    __io_outputs__ = ("output",)
+    input0: str
+    input_scale: str
+    input_zero_point: str
+    output_scale: str
+    output_zero_point: str
+    output: str
+    batch: int
+    channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_h: int
+    kernel_w: int
+    dilation_h: int
+    dilation_w: int
+    stride_h: int
+    stride_w: int
+    pad_top: int
+    pad_left: int
+    pad_bottom: int
+    pad_right: int
+    count_include_pad: bool
+    input_dtype: ScalarType
+    dtype: ScalarType
+    input_scale_dtype: ScalarType
+    output_scale_dtype: ScalarType
+    input_scale_shape: tuple[int, ...]
+    output_scale_shape: tuple[int, ...]
+    input_zero_shape: tuple[int, ...]
+    output_zero_shape: tuple[int, ...]
     spatial_rank: int = 2
     in_d: int = 1
     out_d: int = 1

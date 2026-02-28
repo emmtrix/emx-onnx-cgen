@@ -67,7 +67,6 @@ This histogram is test-suite-overarching.
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op MelWeightMatrix | 1 | 17 |
-| Unsupported op QLinearAveragePool | 1 | 15 |
 | Unsupported op RandomUniform | 1 | 22 |
 | Unsupported op TreeEnsembleClassifier | 1 | 12 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
@@ -81,7 +80,6 @@ This histogram is test-suite-overarching.
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | DequantizeLinear zero_point shape must match scale shape | 15 | 1 |
-| Unsupported op QLinearAveragePool | 15 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |

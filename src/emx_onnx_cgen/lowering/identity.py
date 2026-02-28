@@ -21,15 +21,11 @@ def lower_identity(graph: Graph, node: Node) -> IdentityOp:
     if input_shape and output_shape:
         if len(input_shape) != len(output_shape):
             raise ShapeInferenceError("Identity input and output shapes must match")
-        for index, (input_dim, output_dim) in enumerate(
-            zip(input_shape, output_shape)
-        ):
+        for index, (input_dim, output_dim) in enumerate(zip(input_shape, output_shape)):
             if input_dim != output_dim and not (
                 input_dim_params[index] or output_dim_params[index]
             ):
-                raise ShapeInferenceError(
-                    "Identity input and output shapes must match"
-                )
+                raise ShapeInferenceError("Identity input and output shapes must match")
     input_dtype = value_dtype(graph, node.inputs[0], node)
     output_dtype = value_dtype(graph, node.outputs[0], node)
     if input_dtype != output_dtype:

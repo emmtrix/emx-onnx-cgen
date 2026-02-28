@@ -40,9 +40,7 @@ def lower_depth_to_space(graph: Graph, node: Node) -> DepthToSpaceOp:
     else:
         mode = str(mode_attr)
     if mode not in {"DCR", "CRD"}:
-        raise UnsupportedOpError(
-            "DepthToSpace only supports mode DCR or CRD"
-        )
+        raise UnsupportedOpError("DepthToSpace only supports mode DCR or CRD")
     n, c, h, w = input_shape
     if c % (blocksize * blocksize) != 0:
         raise ShapeInferenceError(

@@ -33,9 +33,7 @@ def _validate_shape(shape: tuple[int, ...], node: Node, label: str) -> None:
             )
 
 
-def _normalize_axes(
-    axes: list[int], output_rank: int, node: Node
-) -> tuple[int, ...]:
+def _normalize_axes(axes: list[int], output_rank: int, node: Node) -> tuple[int, ...]:
     normalized: list[int] = []
     for axis in axes:
         if axis < 0:
@@ -116,9 +114,7 @@ def lower_unsqueeze(graph: Graph, node: Node) -> ReshapeOp:
                     f"got {axes_dtype.onnx_name}"
                 )
         if len(output_shape) <= len(input_shape):
-            raise ShapeInferenceError(
-                "Unsqueeze output rank must exceed input rank"
-            )
+            raise ShapeInferenceError("Unsqueeze output rank must exceed input rank")
         input_index = 0
         for dim in output_shape:
             if input_index < len(input_shape) and dim == input_shape[input_index]:
@@ -136,8 +132,7 @@ def lower_unsqueeze(graph: Graph, node: Node) -> ReshapeOp:
         expected_shape = _expected_output_shape(input_shape, axes, node)
         if output_shape and expected_shape != output_shape:
             raise ShapeInferenceError(
-                "Unsqueeze output shape must be "
-                f"{expected_shape}, got {output_shape}"
+                f"Unsqueeze output shape must be {expected_shape}, got {output_shape}"
             )
         output_shape = expected_shape
     if isinstance(graph, GraphContext):

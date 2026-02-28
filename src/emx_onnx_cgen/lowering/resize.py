@@ -87,9 +87,7 @@ def _decode_attr(value: object, default: str) -> str:
     return str(value)
 
 
-def _normalize_axes(
-    axes: tuple[int, ...], rank: int, node: Node
-) -> tuple[int, ...]:
+def _normalize_axes(axes: tuple[int, ...], rank: int, node: Node) -> tuple[int, ...]:
     normalized: list[int] = []
     for axis in axes:
         axis = int(axis)
@@ -131,9 +129,7 @@ def _parse_axes(node: Node, rank: int) -> tuple[int, ...]:
     return _normalize_axes(axes, rank, node)
 
 
-def _resolve_input_shapes(
-    graph: Graph, node: Node, input_name: str
-) -> _InputConfig:
+def _resolve_input_shapes(graph: Graph, node: Node, input_name: str) -> _InputConfig:
     input_shape = _value_shape(graph, input_name, node)
     output_shape = _value_shape(graph, node.outputs[0], node)
     input_dtype = _value_dtype(graph, input_name, node)
@@ -165,10 +161,7 @@ def _resolve_scales_from_sizes(
         for axis in axes:
             full_sizes[axis] = _round_half_up(scale * input_shape[axis])
         return _ResolvedScales(
-            scales=tuple(
-                scale if axis in axes else 1.0
-                for axis in range(rank)
-            ),
+            scales=tuple(scale if axis in axes else 1.0 for axis in range(rank)),
             output_shape=tuple(full_sizes),
             axes=axes,
         )
@@ -326,9 +319,7 @@ def lower_resize(graph: Graph, node: Node) -> ResizeOp:
     coordinate_mode = _decode_attr(
         node.attrs.get("coordinate_transformation_mode"), "half_pixel"
     )
-    nearest_mode = _decode_attr(
-        node.attrs.get("nearest_mode"), "round_prefer_floor"
-    )
+    nearest_mode = _decode_attr(node.attrs.get("nearest_mode"), "round_prefer_floor")
     keep_aspect_ratio_policy = _decode_attr(
         node.attrs.get("keep_aspect_ratio_policy"), "stretch"
     )

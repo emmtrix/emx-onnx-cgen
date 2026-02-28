@@ -3530,8 +3530,7 @@ def _run_ort_compare_or_skip(
     except Exception as exc:  # noqa: BLE001 - keep test behavior aligned with CLI skip
         if any(substr in str(exc) for substr in skip_substrings):
             pytest.skip(
-                "onnxruntime does not implement this operator in the test "
-                "environment."
+                "onnxruntime does not implement this operator in the test environment."
             )
         raise
 
@@ -5607,8 +5606,6 @@ def test_squeeze_op_matches_onnxruntime() -> None:
 def test_cast_op_matches_onnxruntime() -> None:
     model = _make_cast_model()
     _run_ort_compare(model)
-
-
 
 
 def test_resize_tf_half_pixel_for_nn_matches_onnxruntime() -> None:

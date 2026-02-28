@@ -90,9 +90,7 @@ def _compile_and_run_testbench(
                         raise AssertionError(
                             f"Missing testbench input {value_info.name}"
                         )
-                    handle.write(
-                        np.ascontiguousarray(array).tobytes(order="C")
-                    )
+                    handle.write(np.ascontiguousarray(array).tobytes(order="C"))
             run_cmd.append(str(input_path))
         result = subprocess.run(
             run_cmd,
@@ -143,9 +141,7 @@ def test_initializer_weights_emitted_as_static_arrays() -> None:
 
 def test_testbench_accepts_constant_inputs() -> None:
     model, weights = _make_add_initializer_model()
-    input_values = np.linspace(1.0, 6.0, num=6, dtype=np.float32).reshape(
-        weights.shape
-    )
+    input_values = np.linspace(1.0, 6.0, num=6, dtype=np.float32).reshape(weights.shape)
     options = CompilerOptions(emit_testbench=True)
     payload, generated = _compile_and_run_testbench(
         model, compiler_options=options, testbench_inputs={"in0": input_values}

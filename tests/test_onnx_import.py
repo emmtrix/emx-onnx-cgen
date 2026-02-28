@@ -249,7 +249,12 @@ def test_import_if_without_parent_value_info_uses_branch_output_types() -> None:
 
     imported = import_onnx(model)
 
-    assert [node.op_type for node in imported.nodes] == ["Identity", "Identity", "Where", "Add"]
+    assert [node.op_type for node in imported.nodes] == [
+        "Identity",
+        "Identity",
+        "Where",
+        "Add",
+    ]
 
 
 def test_import_gradient_of_add_expands_to_supported_nodes() -> None:

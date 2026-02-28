@@ -96,9 +96,7 @@ def resolve_attention_spec(
         q_seq = q_shape[1]
         kv_seq = k_shape[1]
         if kv_seq != v_shape[1]:
-            raise ShapeInferenceError(
-                "Attention key/value sequence lengths must match"
-            )
+            raise ShapeInferenceError("Attention key/value sequence lengths must match")
         q_hidden_size = q_shape[2]
         k_hidden_size = k_shape[2]
         v_hidden_size = v_shape[2]
@@ -127,9 +125,7 @@ def resolve_attention_spec(
         q_seq = q_shape[2]
         kv_seq = k_shape[2]
         if kv_seq != v_shape[2]:
-            raise ShapeInferenceError(
-                "Attention key/value sequence lengths must match"
-            )
+            raise ShapeInferenceError("Attention key/value sequence lengths must match")
         qk_head_size = q_shape[3]
         k_head_size = k_shape[3]
         v_head_size = v_shape[3]
@@ -313,9 +309,7 @@ def resolve_attention_spec(
             )
         nonpad_dtype = _value_dtype(graph, nonpad_name, node)
         if nonpad_dtype != ScalarType.I64:
-            raise UnsupportedOpError(
-                "Attention nonpad_kv_seqlen must be int64"
-            )
+            raise UnsupportedOpError("Attention nonpad_kv_seqlen must be int64")
     scale = float(node.attrs.get("scale", 1.0 / math.sqrt(qk_head_size)))
     softcap = float(node.attrs.get("softcap", 0.0))
     is_causal = int(node.attrs.get("is_causal", 0))

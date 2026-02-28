@@ -27,11 +27,7 @@ def lower_lp_normalization(graph: Graph, node: Node) -> LpNormalizationOp:
         raise UnsupportedOpError("LpNormalization only supports p=1 or p=2")
     outer = shape_product(input_shape[:axis]) if axis > 0 else 1
     axis_size = input_shape[axis]
-    inner = (
-        shape_product(input_shape[axis + 1 :])
-        if axis + 1 < len(input_shape)
-        else 1
-    )
+    inner = shape_product(input_shape[axis + 1 :]) if axis + 1 < len(input_shape) else 1
     return LpNormalizationOp(
         input0=node.inputs[0],
         output=node.outputs[0],

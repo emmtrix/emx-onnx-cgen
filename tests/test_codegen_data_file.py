@@ -7,12 +7,8 @@ from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 
 
 def test_compile_with_data_file_emits_externs() -> None:
-    input_info = helper.make_tensor_value_info(
-        "input0", TensorProto.FLOAT, [2, 2]
-    )
-    output_info = helper.make_tensor_value_info(
-        "output0", TensorProto.FLOAT, [2, 2]
-    )
+    input_info = helper.make_tensor_value_info("input0", TensorProto.FLOAT, [2, 2])
+    output_info = helper.make_tensor_value_info("output0", TensorProto.FLOAT, [2, 2])
     weights_array = np.array([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32)
     weights_initializer = helper.make_tensor(
         name="weights",

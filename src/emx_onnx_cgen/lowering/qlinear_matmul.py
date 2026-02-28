@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from shared.scalar_types import ScalarType
 
 from ..ir.ops import QLinearMatMulOp
+from ..ir.context import GraphContext
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.model import Graph, Node
 from .common import value_dtype as _value_dtype
@@ -29,9 +30,7 @@ class QLinearMatMulSpec:
 
 def resolve_qlinear_matmul_spec(graph: Graph, node: Node) -> QLinearMatMulSpec:
     if len(node.inputs) != 8 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "QLinearMatMul must have 8 inputs and 1 output"
-        )
+        raise UnsupportedOpError("QLinearMatMul must have 8 inputs and 1 output")
     input0_shape = _value_shape(graph, node.inputs[0], node)
     input1_shape = _value_shape(graph, node.inputs[3], node)
     if len(input0_shape) < 1 or len(input1_shape) < 1:
@@ -47,13 +46,10 @@ def resolve_qlinear_matmul_spec(graph: Graph, node: Node) -> QLinearMatMulSpec:
     k_right, n = input1_effective[-2], input1_effective[-1]
     if k_left != k_right:
         raise ShapeInferenceError(
-            "QLinearMatMul inner dimensions must match, "
-            f"got {k_left} and {k_right}"
+            f"QLinearMatMul inner dimensions must match, got {k_left} and {k_right}"
         )
-    batch_shape, input0_batch_shape, input1_batch_shape = (
-        _broadcast_batch_shapes(
-            input0_effective[:-2], input1_effective[:-2], node
-        )
+    batch_shape, input0_batch_shape, input1_batch_shape = _broadcast_batch_shapes(
+        input0_effective[:-2], input1_effective[:-2], node
     )
     if left_vector and right_vector:
         output_shape = batch_shape
@@ -114,9 +110,7 @@ def _ensure_scalar_input(
 
 def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
     if not dtype.is_float:
-        raise UnsupportedOpError(
-            f"QLinearMatMul {label} must be float16/float/double"
-        )
+        raise UnsupportedOpError(f"QLinearMatMul {label} must be float16/float/double")
 
 
 @register_lowering("QLinearMatMul")
@@ -124,19 +118,16 @@ def lower_qlinear_matmul(graph: Graph, node: Node) -> QLinearMatMulOp:
     spec = resolve_qlinear_matmul_spec(graph, node)
     input0_dtype = _value_dtype(graph, node.inputs[0], node)
     input1_dtype = _value_dtype(graph, node.inputs[3], node)
-    output_dtype = _value_dtype(graph, node.outputs[0], node)
+    try:
+        output_dtype = _value_dtype(graph, node.outputs[0], node)
+    except ShapeInferenceError:
+        output_dtype = input0_dtype
     if input0_dtype not in {ScalarType.U8, ScalarType.I8}:
-        raise UnsupportedOpError(
-            "QLinearMatMul supports uint8/int8 inputs only"
-        )
+        raise UnsupportedOpError("QLinearMatMul supports uint8/int8 inputs only")
     if input1_dtype not in {ScalarType.U8, ScalarType.I8}:
-        raise UnsupportedOpError(
-            "QLinearMatMul supports uint8/int8 inputs only"
-        )
+        raise UnsupportedOpError("QLinearMatMul supports uint8/int8 inputs only")
     if output_dtype not in {ScalarType.U8, ScalarType.I8}:
-        raise UnsupportedOpError(
-            "QLinearMatMul supports uint8/int8 outputs only"
-        )
+        raise UnsupportedOpError("QLinearMatMul supports uint8/int8 outputs only")
     input0_scale_dtype = _value_dtype(graph, node.inputs[1], node)
     input1_scale_dtype = _value_dtype(graph, node.inputs[4], node)
     output_scale_dtype = _value_dtype(graph, node.inputs[6], node)
@@ -147,26 +138,14 @@ def lower_qlinear_matmul(graph: Graph, node: Node) -> QLinearMatMulOp:
     input1_zero_dtype = _value_dtype(graph, node.inputs[5], node)
     output_zero_dtype = _value_dtype(graph, node.inputs[7], node)
     if input0_zero_dtype != input0_dtype:
-        raise UnsupportedOpError(
-            "QLinearMatMul a_zero_point dtype must match a"
-        )
+        raise UnsupportedOpError("QLinearMatMul a_zero_point dtype must match a")
     if input1_zero_dtype != input1_dtype:
-        raise UnsupportedOpError(
-            "QLinearMatMul b_zero_point dtype must match b"
-        )
+        raise UnsupportedOpError("QLinearMatMul b_zero_point dtype must match b")
     if output_zero_dtype != output_dtype:
-        raise UnsupportedOpError(
-            "QLinearMatMul y_zero_point dtype must match y"
-        )
-    input0_scale_shape = _ensure_scalar_input(
-        graph, node.inputs[1], node, "a_scale"
-    )
-    input1_scale_shape = _ensure_scalar_input(
-        graph, node.inputs[4], node, "b_scale"
-    )
-    output_scale_shape = _ensure_scalar_input(
-        graph, node.inputs[6], node, "y_scale"
-    )
+        raise UnsupportedOpError("QLinearMatMul y_zero_point dtype must match y")
+    input0_scale_shape = _ensure_scalar_input(graph, node.inputs[1], node, "a_scale")
+    input1_scale_shape = _ensure_scalar_input(graph, node.inputs[4], node, "b_scale")
+    output_scale_shape = _ensure_scalar_input(graph, node.inputs[6], node, "y_scale")
     input0_zero_shape = _ensure_scalar_input(
         graph, node.inputs[2], node, "a_zero_point"
     )
@@ -176,7 +155,7 @@ def lower_qlinear_matmul(graph: Graph, node: Node) -> QLinearMatMulOp:
     output_zero_shape = _ensure_scalar_input(
         graph, node.inputs[7], node, "y_zero_point"
     )
-    return QLinearMatMulOp(
+    lowered = QLinearMatMulOp(
         input0=node.inputs[0],
         input0_scale=node.inputs[1],
         input0_zero_point=node.inputs[2],
@@ -210,3 +189,7 @@ def lower_qlinear_matmul(graph: Graph, node: Node) -> QLinearMatMulOp:
         input1_zero_shape=input1_zero_shape,
         output_zero_shape=output_zero_shape,
     )
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], spec.output_shape)
+        graph.set_dtype(node.outputs[0], output_dtype)
+    return lowered

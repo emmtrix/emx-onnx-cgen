@@ -23,11 +23,7 @@ def test_ulp_intdiff_same_sign_neighbors(dtype: np.dtype) -> None:
     base = np.array(1.0, dtype=dtype)
     next_val = np.nextafter(base, np.array(2.0, dtype=dtype))
     assert ulp_intdiff_float(base, next_val) == 1
-    assert (
-        ulp_intdiff_float(base, base)
-        == _expected_same_sign_diff(base, base)
-        == 0
-    )
+    assert ulp_intdiff_float(base, base) == _expected_same_sign_diff(base, base) == 0
 
 
 @pytest.mark.parametrize("dtype", [np.float16, np.float32, np.float64])

@@ -24,9 +24,7 @@ def _is_scalar_shape(shape: tuple[int, ...]) -> bool:
 
 def _read_k_initializer(initializer: Initializer, node: Node) -> int:
     if initializer.type.dtype != ScalarType.I64:
-        raise UnsupportedOpError(
-            f"{node.op_type} k input must be int64"
-        )
+        raise UnsupportedOpError(f"{node.op_type} k input must be int64")
     data = np.array(initializer.data, dtype=np.int64).reshape(-1)
     if data.size != 1:
         raise UnsupportedOpError(f"{node.op_type} k input must be scalar")

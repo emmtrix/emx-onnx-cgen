@@ -8,21 +8,11 @@ from emx_onnx_cgen.compiler import Compiler, CompilerOptions
 
 
 def test_multi_output_graph_compile_and_run() -> None:
-    input_info = helper.make_tensor_value_info(
-        "in0", TensorProto.FLOAT, [2, 2]
-    )
-    add_output = helper.make_tensor_value_info(
-        "out_add", TensorProto.FLOAT, [2, 2]
-    )
-    mul_output = helper.make_tensor_value_info(
-        "out_mul", TensorProto.FLOAT, [2, 2]
-    )
-    add_node = helper.make_node(
-        "Add", inputs=["in0", "in0"], outputs=["out_add"]
-    )
-    mul_node = helper.make_node(
-        "Mul", inputs=["in0", "in0"], outputs=["out_mul"]
-    )
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, [2, 2])
+    add_output = helper.make_tensor_value_info("out_add", TensorProto.FLOAT, [2, 2])
+    mul_output = helper.make_tensor_value_info("out_mul", TensorProto.FLOAT, [2, 2])
+    add_node = helper.make_node("Add", inputs=["in0", "in0"], outputs=["out_add"])
+    mul_node = helper.make_node("Mul", inputs=["in0", "in0"], outputs=["out_mul"])
     graph = helper.make_graph(
         [add_node, mul_node],
         "multi_output",
@@ -40,9 +30,5 @@ def test_multi_output_graph_compile_and_run() -> None:
     reference_outputs = evaluator.run(None, inputs)
     output_names = [output.name for output in model.graph.output]
     output_map = dict(zip(output_names, reference_outputs))
-    np.testing.assert_allclose(
-        output_map["out_add"], 2.0, rtol=1e-6, atol=1e-6
-    )
-    np.testing.assert_allclose(
-        output_map["out_mul"], 1.0, rtol=1e-6, atol=1e-6
-    )
+    np.testing.assert_allclose(output_map["out_add"], 2.0, rtol=1e-6, atol=1e-6)
+    np.testing.assert_allclose(output_map["out_mul"], 1.0, rtol=1e-6, atol=1e-6)

@@ -71,8 +71,7 @@ def resolve_maxpool_spec(graph: Graph, node: Node) -> MaxPoolSpec:
     if len(dilations) != spatial_rank:
         raise UnsupportedOpError("MaxPool dilation rank mismatch")
     pads = tuple(
-        int(value)
-        for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
+        int(value) for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
     )
     if len(pads) != 2 * spatial_rank:
         raise UnsupportedOpError("MaxPool pads rank mismatch")
@@ -93,9 +92,7 @@ def resolve_maxpool_spec(graph: Graph, node: Node) -> MaxPoolSpec:
         ):
             effective_kernel = dilation * (kernel - 1) + 1
             out_dim = math.ceil(dim / stride)
-            pad_needed = max(
-                0, (out_dim - 1) * stride + effective_kernel - dim
-            )
+            pad_needed = max(0, (out_dim - 1) * stride + effective_kernel - dim)
             if auto_pad == "SAME_UPPER":
                 pad_start = pad_needed // 2
             else:
@@ -124,16 +121,13 @@ def resolve_maxpool_spec(graph: Graph, node: Node) -> MaxPoolSpec:
         else:
             out_dim = numerator // stride + 1
         if out_dim < 0:
-            raise ShapeInferenceError(
-                "MaxPool output shape must be non-negative"
-            )
+            raise ShapeInferenceError("MaxPool output shape must be non-negative")
         out_spatial.append(out_dim)
     expected_output_shape = (batch, channels, *out_spatial)
     output_shape = _value_shape(graph, node.outputs[0], node)
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
-            "MaxPool output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
+            f"MaxPool output shape must be {expected_output_shape}, got {output_shape}"
         )
     if len(node.outputs) == 2:
         indices_shape = _value_shape(graph, node.outputs[1], node)
@@ -170,9 +164,7 @@ def lower_maxpool(graph: Graph, node: Node) -> MaxPoolOp:
         raise UnsupportedOpError("MaxPool supports numeric inputs only")
     spec = resolve_maxpool_spec(graph, node)
     indices = node.outputs[1] if len(node.outputs) == 2 else None
-    indices_dtype = (
-        _value_dtype(graph, indices, node) if indices is not None else None
-    )
+    indices_dtype = _value_dtype(graph, indices, node) if indices is not None else None
     if indices_dtype is not None and indices_dtype != ScalarType.I64:
         raise UnsupportedOpError("MaxPool indices output must be int64")
     return MaxPoolOp(

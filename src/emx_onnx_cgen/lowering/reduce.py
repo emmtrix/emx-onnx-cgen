@@ -119,9 +119,7 @@ def _axes_input_info(graph: Graph, node: Node) -> _AxesInputSpec:
             True,
         )
     if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
-        raise UnsupportedOpError(
-            f"{node.op_type} axes input must be int64 or int32"
-        )
+        raise UnsupportedOpError(f"{node.op_type} axes input must be int64 or int32")
     data = np.array(initializer.data, dtype=np.int64).ravel()
     return _AxesInputSpec(
         tuple(int(value) for value in data),
@@ -190,11 +188,7 @@ def _axes_values_from_shape_ops(
             start_value = resolve_value(producer.inputs[0])
             limit_value = resolve_value(producer.inputs[1])
             delta_value = resolve_value(producer.inputs[2])
-            if (
-                start_value is None
-                or limit_value is None
-                or delta_value is None
-            ):
+            if start_value is None or limit_value is None or delta_value is None:
                 return None
             start = np.array(start_value).reshape(-1)[0]
             limit = np.array(limit_value).reshape(-1)[0]
@@ -202,9 +196,7 @@ def _axes_values_from_shape_ops(
             if float(delta) == 0.0:
                 raise UnsupportedOpError("Range delta must be non-zero")
             dtype = _value_dtype(graph, producer.outputs[0], node)
-            value = np.arange(
-                start, limit, delta, dtype=dtype.np_dtype
-            )
+            value = np.arange(start, limit, delta, dtype=dtype.np_dtype)
         elif op_type in {"Add", "Sub"}:
             if len(producer.inputs) != 2:
                 return None
@@ -225,9 +217,7 @@ def _axes_values_from_shape_ops(
     if axes_value is None:
         return None
     if axes_value.dtype.kind not in {"i", "u"}:
-        raise UnsupportedOpError(
-            f"{node.op_type} axes input must be int64 or int32"
-        )
+        raise UnsupportedOpError(f"{node.op_type} axes input must be int64 or int32")
     return tuple(int(axis) for axis in axes_value.ravel())
 
 
@@ -255,9 +245,7 @@ def _infer_axes_from_shapes(
         if len(input_shape) != len(output_shape):
             return None
         axes: list[int] = []
-        for axis, (in_dim, out_dim) in enumerate(
-            zip(input_shape, output_shape)
-        ):
+        for axis, (in_dim, out_dim) in enumerate(zip(input_shape, output_shape)):
             if out_dim == in_dim:
                 if in_dim == 1:
                     return None
@@ -273,9 +261,7 @@ def _infer_axes_from_shapes(
 
     results: list[tuple[int, ...]] = []
 
-    def backtrack(
-        input_index: int, output_index: int, reduced_axes: list[int]
-    ) -> None:
+    def backtrack(input_index: int, output_index: int, reduced_axes: list[int]) -> None:
         if output_index == len(output_shape):
             results.append(
                 tuple(reduced_axes + list(range(input_index, len(input_shape))))
@@ -285,9 +271,7 @@ def _infer_axes_from_shapes(
             return
         if input_shape[input_index] == output_shape[output_index]:
             backtrack(input_index + 1, output_index + 1, reduced_axes)
-        backtrack(
-            input_index + 1, output_index, reduced_axes + [input_index]
-        )
+        backtrack(input_index + 1, output_index, reduced_axes + [input_index])
 
     backtrack(0, 0, [])
     unique = {axes for axes in results}
@@ -342,14 +326,10 @@ def resolve_reduce_axes(
     elif axes_input.present:
         axes = None
         if axes_input.input_name:
-            axes = _axes_values_from_shape_ops(
-                graph, axes_input.input_name, node
-            )
+            axes = _axes_values_from_shape_ops(graph, axes_input.input_name, node)
         if axes is None:
             output_shape = _value_shape(graph, node.outputs[0], node)
-            axes = _infer_axes_from_shapes(
-                input_shape, output_shape, keepdims, node
-            )
+            axes = _infer_axes_from_shapes(input_shape, output_shape, keepdims, node)
         if axes is None:
             axes_input_name = axes_input.input_name
             axes_input_shape = axes_input.input_shape
@@ -401,9 +381,7 @@ def resolve_reduce_axes(
 
 def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
     if len(node.inputs) not in {1, 2} or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} must have 1 or 2 inputs and 1 output"
-        )
+        raise UnsupportedOpError(f"{node.op_type} must have 1 or 2 inputs and 1 output")
     input_shape = _value_shape(graph, node.inputs[0], node)
     axes_spec, noop = resolve_reduce_axes(graph, node, input_shape)
     if noop:
@@ -429,14 +407,11 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
     keepdims = axes_spec.keepdims
     if keepdims:
         output_shape = tuple(
-            1 if axis in axes else dim
-            for axis, dim in enumerate(input_shape)
+            1 if axis in axes else dim for axis, dim in enumerate(input_shape)
         )
     else:
         output_shape = tuple(
-            dim
-            for axis, dim in enumerate(input_shape)
-            if axis not in axes
+            dim for axis, dim in enumerate(input_shape) if axis not in axes
         )
     expected_output_shape = _value_shape(graph, node.outputs[0], node)
     if expected_output_shape != output_shape:
@@ -447,8 +422,7 @@ def _resolve_reduce_spec(graph: Graph, node: Node) -> _ReduceSpec | None:
         elif not (
             _all_ones_shape(expected_output_shape)
             and _all_ones_shape(output_shape)
-            and _shape_product(expected_output_shape)
-            == _shape_product(output_shape)
+            and _shape_product(expected_output_shape) == _shape_product(output_shape)
         ):
             raise ShapeInferenceError(
                 f"{node.op_type} output shape must be {output_shape}, got {expected_output_shape}"

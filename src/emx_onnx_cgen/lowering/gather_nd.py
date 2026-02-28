@@ -50,13 +50,12 @@ def lower_gather_nd(graph: Graph, node: Node) -> GatherNDOp:
     expected_output_shape = indices_shape[:-1] + data_shape[batch_dims + index_depth :]
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
-            "GatherND output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
+            f"GatherND output shape must be {expected_output_shape}, got {output_shape}"
         )
     indices_dtype = _value_dtype(graph, indices_name, node)
     if indices_dtype not in {ScalarType.I64, ScalarType.I32}:
         raise UnsupportedOpError(
-            "GatherND indices must be int32 or int64, " f"got {indices_dtype.onnx_name}"
+            f"GatherND indices must be int32 or int64, got {indices_dtype.onnx_name}"
         )
     return GatherNDOp(
         data=data_name,

@@ -15,9 +15,7 @@ _ALLOWED_MODES = {"linear", "circular"}
 @register_lowering("TensorScatter")
 def lower_tensor_scatter(graph: Graph, node: Node) -> TensorScatterOp:
     if len(node.inputs) not in {2, 3} or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "TensorScatter must have 2 or 3 inputs and 1 output"
-        )
+        raise UnsupportedOpError("TensorScatter must have 2 or 3 inputs and 1 output")
     past_cache_name = node.inputs[0]
     update_name = node.inputs[1]
     write_indices_name = optional_name(node.inputs, 2)
@@ -37,9 +35,7 @@ def lower_tensor_scatter(graph: Graph, node: Node) -> TensorScatterOp:
         )
     axis = normalize_axis(int(node.attrs.get("axis", -2)), past_cache_shape, node)
     if axis == 0:
-        raise UnsupportedOpError(
-            "TensorScatter axis cannot be 0 (batch dimension)"
-        )
+        raise UnsupportedOpError("TensorScatter axis cannot be 0 (batch dimension)")
     for dim_index, (past_dim, update_dim) in enumerate(
         zip(past_cache_shape, update_shape)
     ):
@@ -60,8 +56,7 @@ def lower_tensor_scatter(graph: Graph, node: Node) -> TensorScatterOp:
         mode = mode.decode("utf-8")
     if mode not in _ALLOWED_MODES:
         raise UnsupportedOpError(
-            "TensorScatter mode must be one of "
-            f"{sorted(_ALLOWED_MODES)}, got {mode}"
+            f"TensorScatter mode must be one of {sorted(_ALLOWED_MODES)}, got {mode}"
         )
     dtype = value_dtype(graph, past_cache_name, node)
     update_dtype = value_dtype(graph, update_name, node)
@@ -78,17 +73,13 @@ def lower_tensor_scatter(graph: Graph, node: Node) -> TensorScatterOp:
     if write_indices_name is not None:
         write_indices_shape = value_shape(graph, write_indices_name, node)
         if len(write_indices_shape) != 1:
-            raise ShapeInferenceError(
-                "TensorScatter write_indices must be a 1D tensor"
-            )
+            raise ShapeInferenceError("TensorScatter write_indices must be a 1D tensor")
         if write_indices_shape[0] != past_cache_shape[0]:
             raise ShapeInferenceError(
                 "TensorScatter write_indices length must match batch size, "
                 f"got {write_indices_shape[0]} vs {past_cache_shape[0]}"
             )
-        write_indices_dtype = value_dtype(
-            graph, write_indices_name, node
-        )
+        write_indices_dtype = value_dtype(graph, write_indices_name, node)
         if write_indices_dtype not in {ScalarType.I64, ScalarType.I32}:
             raise UnsupportedOpError(
                 "TensorScatter write_indices must be int32 or int64, "
