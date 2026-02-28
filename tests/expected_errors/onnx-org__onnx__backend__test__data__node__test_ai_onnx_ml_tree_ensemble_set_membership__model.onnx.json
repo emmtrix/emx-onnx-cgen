@@ -1,7 +1,8 @@
 {
-  "error": "Unsupported op TreeEnsemble",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_ai_onnx_ml_tree_ensemble_set_membership model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ai.onnx.ml::TreeEnsemble"
-  ]
+  ],
+  "generated_checksum": "01351eb03f8718a45307594fc1fa130dd134ac66e3919124621894680299755c"
 }

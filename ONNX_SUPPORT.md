@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1484 / 1802, 82.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1484 / 1802 ONNX files (82.4%).
+Coverage 1486 / 1802 ONNX files (82.5%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -60,8 +60,8 @@ Coverage 1484 / 1802 ONNX files (82.4%).
 | node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx |  | ❌ | Unsupported op LabelEncoder |
 | node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx |  | ❌ | Unsupported op LabelEncoder |
 | node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx |  | ❌ | Unsupported op LabelEncoder |
-| node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx |  | ❌ | Unsupported op TreeEnsemble |
-| node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx |  | ❌ | Unsupported op TreeEnsemble |
+| node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx |  | ✅ | OK (max ULP 0) |
+| node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_and2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
 | node/test_and3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
 | node/test_and4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
