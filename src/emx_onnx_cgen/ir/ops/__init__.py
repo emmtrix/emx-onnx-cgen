@@ -12,6 +12,7 @@ from .elementwise import (
 )
 from .misc import (
     BernoulliOp,
+    BlackmanWindowOp,
     CastOp,
     CompressOp,
     ConcatOp,
@@ -111,6 +112,7 @@ __all__ = [
     "AveragePoolOp",
     "BatchNormOp",
     "BernoulliOp",
+    "BlackmanWindowOp",
     "BinaryOp",
     "CastOp",
     "CompressOp",

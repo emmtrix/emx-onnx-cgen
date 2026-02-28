@@ -11,6 +11,7 @@ _LOWERING_MODULES = [
     "average_pool",
     "batch_normalization",
     "bernoulli",
+    "blackman_window",
     "cast",
     "compress",
     "concat",
