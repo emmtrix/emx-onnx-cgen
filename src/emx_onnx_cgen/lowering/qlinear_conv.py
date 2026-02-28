@@ -162,6 +162,8 @@ def lower_qlinear_conv(graph: Graph, node: Node) -> QLinearConvOp:
         weight_zero_per_channel=weight_zero_per_channel,
     )
     if isinstance(graph, GraphContext):
-        graph.set_shape(node.outputs[0], (spec.batch, spec.out_channels, *spec.out_spatial))
+        graph.set_shape(
+            node.outputs[0], (spec.batch, spec.out_channels, *spec.out_spatial)
+        )
         graph.set_dtype(node.outputs[0], output_dtype)
     return lowered
