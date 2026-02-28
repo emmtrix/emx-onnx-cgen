@@ -984,6 +984,30 @@ class TreeEnsembleClassifierOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class TreeEnsembleOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    aggregate_function: int
+    post_transform: int
+    tree_roots: tuple[int, ...]
+    node_feature_ids: tuple[int, ...]
+    node_modes: tuple[int, ...]
+    node_splits: tuple[float, ...]
+    node_true_ids: tuple[int, ...]
+    node_true_leafs: tuple[int, ...]
+    node_false_ids: tuple[int, ...]
+    node_false_leafs: tuple[int, ...]
+    membership_values: tuple[float, ...] | None
+    member_range_starts: tuple[int, ...]
+    member_range_ends: tuple[int, ...]
+    leaf_target_ids: tuple[int, ...]
+    leaf_weights: tuple[float, ...]
+    n_targets: int
+
+
+@dataclass(frozen=True)
 class SplitOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("outputs",)

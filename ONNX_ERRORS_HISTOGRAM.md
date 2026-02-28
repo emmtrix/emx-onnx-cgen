@@ -52,7 +52,6 @@ This histogram is test-suite-overarching.
 | Unsupported op HannWindow | 2 | 17 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
-| Unsupported op TreeEnsemble | 2 |  |
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
 | Arrays are not equal (max abs diff 247) | 1 | 21 |
 | Arrays are not equal (max abs diff 248) | 1 | 21 |

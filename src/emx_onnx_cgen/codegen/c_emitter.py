@@ -121,6 +121,7 @@ from ..ir.ops import (
     TensorScatterOp,
     TfIdfVectorizerOp,
     StringNormalizerOp,
+    TreeEnsembleOp,
     TreeEnsembleClassifierOp,
     TileOp,
     TopKOp,
@@ -1982,6 +1983,27 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, TreeEnsembleOp):
+            return TreeEnsembleOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                aggregate_function=op.aggregate_function,
+                post_transform=op.post_transform,
+                tree_roots=op.tree_roots,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_splits=op.node_splits,
+                node_true_ids=op.node_true_ids,
+                node_true_leafs=op.node_true_leafs,
+                node_false_ids=op.node_false_ids,
+                node_false_leafs=op.node_false_leafs,
+                membership_values=op.membership_values,
+                member_range_starts=op.member_range_starts,
+                member_range_ends=op.member_range_ends,
+                leaf_target_ids=op.leaf_target_ids,
+                leaf_weights=op.leaf_weights,
+                n_targets=op.n_targets,
+            )
         if isinstance(op, TreeEnsembleClassifierOp):
             return TreeEnsembleClassifierOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2275,6 +2297,7 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
+                "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),
                 "tree_ensemble_classifier": self._env.get_template(
                     "tree_ensemble_classifier_op.c.j2"
                 ),
@@ -5172,6 +5195,27 @@ class CEmitter:
                 axis=op.axis,
                 split_sizes=op.split_sizes,
             )
+        if isinstance(op, TreeEnsembleOp):
+            return TreeEnsembleOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                aggregate_function=op.aggregate_function,
+                post_transform=op.post_transform,
+                tree_roots=op.tree_roots,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_splits=op.node_splits,
+                node_true_ids=op.node_true_ids,
+                node_true_leafs=op.node_true_leafs,
+                node_false_ids=op.node_false_ids,
+                node_false_leafs=op.node_false_leafs,
+                membership_values=op.membership_values,
+                member_range_starts=op.member_range_starts,
+                member_range_ends=op.member_range_ends,
+                leaf_target_ids=op.leaf_target_ids,
+                leaf_weights=op.leaf_weights,
+                n_targets=op.n_targets,
+            )
         if isinstance(op, TreeEnsembleClassifierOp):
             return TreeEnsembleClassifierOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5627,6 +5671,7 @@ class CEmitter:
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
+            tree_ensemble_template=templates["tree_ensemble"],
             tree_ensemble_classifier_template=templates["tree_ensemble_classifier"],
             split_template=templates["split"],
             split_to_sequence_template=templates["split_to_sequence"],
@@ -6152,6 +6197,7 @@ class CEmitter:
         one_hot_template,
         tfidf_vectorizer_template,
         string_normalizer_template,
+        tree_ensemble_template,
         tree_ensemble_classifier_template,
         split_template,
         split_to_sequence_template,
@@ -11163,6 +11209,88 @@ class CEmitter:
                 case_mode=case_mode,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, TreeEnsembleOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.output)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
+                ]
+            )
+            rendered = tree_ensemble_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                tree_roots=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.tree_roots
+                ],
+                node_feature_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_feature_ids
+                ],
+                node_modes=[str(v) for v in op.node_modes],
+                node_splits=[
+                    CEmitter._format_literal(input_dtype, v) for v in op.node_splits
+                ],
+                node_true_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_true_ids
+                ],
+                node_true_leafs=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_true_leafs
+                ],
+                node_false_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_false_ids
+                ],
+                node_false_leafs=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_false_leafs
+                ],
+                membership_values=[
+                    CEmitter._format_literal(input_dtype, v)
+                    for v in (op.membership_values or ())
+                ],
+                member_range_starts=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.member_range_starts
+                ],
+                member_range_ends=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.member_range_ends
+                ],
+                leaf_target_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.leaf_target_ids
+                ],
+                leaf_weights=[
+                    CEmitter._format_literal(output_dtype, v) for v in op.leaf_weights
+                ],
+                batch_size=input_shape[0],
+                tree_count=len(op.tree_roots),
+                target_count=op.n_targets,
+                node_count=len(op.node_modes),
+                leaf_count=len(op.leaf_target_ids),
+                zero_literal=output_dtype.zero_literal,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, TreeEnsembleClassifierOp):
             params = self._shared_param_map(
                 [
@@ -13984,6 +14112,8 @@ class CEmitter:
             return self._ctx_shape(op.outputs[0])
         if isinstance(op, SplitToSequenceOp):
             return self._ctx_sequence_elem_type(op.output_sequence).shape
+        if isinstance(op, TreeEnsembleOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, TreeEnsembleClassifierOp):
             return self._ctx_shape(op.probabilities)
         if isinstance(op, ReverseSequenceOp):
@@ -14098,6 +14228,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
+        if isinstance(op, TreeEnsembleOp):
+            return self._ctx_dtype(op.output)
         if isinstance(op, TreeEnsembleClassifierOp):
             return self._ctx_dtype(op.probabilities)
         if isinstance(
