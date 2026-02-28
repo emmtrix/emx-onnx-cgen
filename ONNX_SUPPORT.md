@@ -7,6 +7,7 @@ Overview:
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 3, 100.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -21,7 +22,7 @@ Coverage 1482 / 1802 ONNX files (82.2%).
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
 | light/light_bvlc_alexnet.onnx | 9 | ✅ | OK (max ULP 0) |
-| light/light_densenet121.onnx | 9 | ✅ | OK (max ULP 73) |
+| light/light_densenet121.onnx | 9 | ✅ | OK (max ULP 71) |
 | light/light_inception_v1.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_inception_v2.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_resnet50.onnx | 9 | ✅ | OK (max ULP 0) |
@@ -1935,7 +1936,7 @@ Coverage 118 / 125 ONNX files (94.4%).
 | old_onnx_backend/9/test_slice_default_axes/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_end_out_of_bounds/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_neg/model.onnx | 9 | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | ✅ | OK (max ULP 1) |
+| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | ✅ | OK (max ULP 2) |
 | simple_networks/conv_2kernels.onnx | 11 | ✅ | OK (max ULP 0) |
 | simple_networks/conv_2kernels_randombias.onnx | 11 | ✅ | OK (max ULP 2) |
 | simple_networks/conv_3ch.onnx | 11 | ✅ | OK (max ULP 1) |
@@ -1967,5 +1968,10 @@ Coverage 3 / 4 ONNX files (75.0%).
 | --- | --- | --- | --- |
 | micro_kws_m_qdq.onnx | 15 | ❌ | Out of tolerance (max ULP 65793) |
 | micro_kws_m_qoperator_add_shape.onnx | 15 | ✅ | OK (max ULP 0) |
+Coverage 3 / 3 ONNX files (100.0%).
+
+| File | Opset | Supported | Error |
+| --- | --- | --- | --- |
+| micro_kws_m_qdq.onnx | 15 | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_softmax.onnx | 15 | ✅ | OK (max ULP 0) |
