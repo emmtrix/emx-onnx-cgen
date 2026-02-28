@@ -2267,7 +2267,9 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
-                "tree_ensemble_classifier": self._env.get_template("tree_ensemble_classifier_op.c.j2"),
+                "tree_ensemble_classifier": self._env.get_template(
+                    "tree_ensemble_classifier_op.c.j2"
+                ),
                 "split": self._env.get_template("split_op.c.j2"),
                 "split_to_sequence": self._env.get_template(
                     "split_to_sequence_op.c.j2"
@@ -11131,7 +11133,11 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, TreeEnsembleClassifierOp):
             params = self._shared_param_map(
-                [("input0", op.input0), ("label", op.label), ("probabilities", op.probabilities)]
+                [
+                    ("input0", op.input0),
+                    ("label", op.label),
+                    ("probabilities", op.probabilities),
+                ]
             )
             input_shape = self._ctx_shape(op.input0)
             label_shape = self._ctx_shape(op.label)
@@ -11139,9 +11145,15 @@ class CEmitter:
             input_dtype = self._ctx_dtype(op.input0)
             label_dtype = self._ctx_dtype(op.label)
             prob_dtype = self._ctx_dtype(op.probabilities)
-            input_suffix = self._param_array_suffix(input_shape, _dim_names_for(op.input0))
-            label_suffix = self._param_array_suffix(label_shape, _dim_names_for(op.label))
-            prob_suffix = self._param_array_suffix(prob_shape, _dim_names_for(op.probabilities))
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            label_suffix = self._param_array_suffix(
+                label_shape, _dim_names_for(op.label)
+            )
+            prob_suffix = self._param_array_suffix(
+                prob_shape, _dim_names_for(op.probabilities)
+            )
             param_decls = self._build_param_decls(
                 [
                     (params["input0"], input_dtype.c_type, input_suffix, True),
@@ -11150,7 +11162,9 @@ class CEmitter:
                 ]
             )
             tree_ids = sorted(set(op.node_tree_ids))
-            tree_id_literals = [CEmitter._format_literal(ScalarType.I64, value) for value in tree_ids]
+            tree_id_literals = [
+                CEmitter._format_literal(ScalarType.I64, value) for value in tree_ids
+            ]
             rendered = tree_ensemble_classifier_template.render(
                 op_name=op_name,
                 dim_args=dim_args,
@@ -11158,18 +11172,48 @@ class CEmitter:
                 input0=params["input0"],
                 label=params["label"],
                 probabilities=params["probabilities"],
-                class_labels=[CEmitter._format_literal(ScalarType.I64, v) for v in op.class_labels],
-                node_tree_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.node_tree_ids],
-                node_node_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.node_node_ids],
-                node_feature_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.node_feature_ids],
+                class_labels=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.class_labels
+                ],
+                node_tree_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_tree_ids
+                ],
+                node_node_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_node_ids
+                ],
+                node_feature_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_feature_ids
+                ],
                 node_modes=[str(v) for v in op.node_modes],
-                node_values=[CEmitter._format_literal(input_dtype, v) for v in op.node_values],
-                node_true_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.node_true_ids],
-                node_false_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.node_false_ids],
-                class_tree_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.class_tree_ids],
-                class_node_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.class_node_ids],
-                class_ids=[CEmitter._format_literal(ScalarType.I64, v) for v in op.class_ids],
-                class_weights=[CEmitter._format_literal(ScalarType.F32, v) for v in op.class_weights],
+                node_values=[
+                    CEmitter._format_literal(input_dtype, v) for v in op.node_values
+                ],
+                node_true_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_true_ids
+                ],
+                node_false_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_false_ids
+                ],
+                class_tree_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.class_tree_ids
+                ],
+                class_node_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.class_node_ids
+                ],
+                class_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.class_ids
+                ],
+                class_weights=[
+                    CEmitter._format_literal(ScalarType.F32, v)
+                    for v in op.class_weights
+                ],
                 batch_size=input_shape[0],
                 class_count=len(op.class_labels),
                 node_count=len(op.node_node_ids),
