@@ -6,3 +6,4 @@ __pycache__/
 dist/
 build/
 pip-wheel-metadata/
+src/emx_onnx_cgen/_version.py
