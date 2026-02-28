@@ -16,6 +16,7 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 10 | 8, 9, 15, 19, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
+| Out of tolerance | 8 | 8, 9, 19, 22 |
 | Unsupported op Loop | 7 | 16, 17 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
