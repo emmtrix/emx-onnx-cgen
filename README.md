@@ -182,7 +182,7 @@ Options:
 - `--per-node-accuracy`: Also compare intermediate tensor outputs and print max error per node.
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--atol-eps`: Absolute tolerance as a multiple of machine epsilon for floating outputs (default: `1.0`).
-- `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
+- `--runtime`: Runtime backend for verification (`auto`, `onnxruntime`, or `onnx-reference`, default: `auto`). In `auto` mode, `onnx-reference` is preferred and `onnxruntime` is selected when custom domains require it.
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
 - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
@@ -195,7 +195,7 @@ How verification works:
    (`--cc`, `CC`, or a detected `cc/gcc/clang`) and executed in a temporary
    directory.
 3. **Run runtime backend**: the JSON inputs from the testbench are fed to the
-   selected runtime (`onnxruntime` or `onnx-reference`) using the same model.
+   selected runtime (`auto`, `onnxruntime`, or `onnx-reference`) using the same model.
    The compiler no longer ships a Python runtime evaluator.
 4. **Compare outputs**: floating outputs are compared by maximum ULP distance.
    Floating-point verification first ignores very small differences up to
