@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 65793)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qdq.onnx",
   "operators": [
     "DequantizeLinear",

@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 1)",
+  "error": "OK (max ULP 2)",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_2ch_3kernels_randombias.onnx",
   "operators": [
     "Transpose",
