@@ -14,7 +14,7 @@ import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping, Sequence, TextIO
+from typing import Any, Callable, Mapping, Sequence, TextIO
 
 import numpy as np
 import onnx
@@ -90,6 +90,7 @@ class _VerifyReporter:
     ) -> None:
         self._stream = stream or sys.stdout
         self._use_color = self._should_use_color(color_mode)
+        self._deferred_actions: list[Callable[[], None]] = []
 
     def _should_use_color(self, color_mode: str) -> bool:
         if color_mode == "always":
@@ -138,6 +139,17 @@ class _VerifyReporter:
     def result(self, message: str, *, ok: bool) -> None:
         colored = self._color(message, "32" if ok else "31")
         print(f"Result: {colored}", file=self._stream)
+
+    def defer(self, action: Callable[[], None]) -> None:
+        self._deferred_actions.append(action)
+
+    def flush_deferred(self) -> None:
+        if not self._deferred_actions:
+            return
+        print("", file=self._stream)
+        while self._deferred_actions:
+            action = self._deferred_actions.pop(0)
+            action()
 
 
 class _NullVerifyReporter(_VerifyReporter):
@@ -490,6 +502,22 @@ def _build_parser() -> argparse.ArgumentParser:
         type=str,
         default=None,
         help="C compiler command to build the testbench binary",
+    )
+    verify_parser.add_argument(
+        "--sanitize",
+        action="store_true",
+        help=(
+            "Build the verification binary with sanitizers enabled "
+            "(-fsanitize=address,undefined)"
+        ),
+    )
+    verify_parser.add_argument(
+        "--per-node-accuracy",
+        action="store_true",
+        help=(
+            "Compare intermediate tensor outputs and print accuracy per node "
+            "(runs verification with all tensor node outputs exposed)"
+        ),
     )
     verify_parser.add_argument(
         "--truncate-weights-after",
@@ -875,13 +903,186 @@ def _handle_verify(args: argparse.Namespace) -> int:
         generated_checksum,
     ) = _verify_model(args, include_build_details=True, reporter=reporter)
     if error is not None:
+        reporter.flush_deferred()
         reporter.info("")
         reporter.result(error, ok=False)
         return 1
+    reporter.flush_deferred()
     if success_message:
         reporter.info("")
         reporter.result(success_message, ok=True)
     return 0
+
+
+def _augment_model_with_tensor_node_outputs(
+    model: onnx.ModelProto,
+    graph: Any,
+) -> onnx.ModelProto:
+    augmented = onnx.ModelProto()
+    augmented.CopyFrom(model)
+    existing_output_names = {output.name for output in augmented.graph.output}
+    value_by_name = {
+        value.name: value
+        for value in (*graph.values, *graph.outputs)
+        if isinstance(value.type, TensorType)
+    }
+    for node in graph.nodes:
+        for output_name in node.outputs:
+            if not output_name or output_name in existing_output_names:
+                continue
+            value = value_by_name.get(output_name)
+            if value is None:
+                continue
+            dims: list[int | str | None] = []
+            for index, dim in enumerate(value.type.shape):
+                dim_param = None
+                if index < len(value.type.dim_params):
+                    dim_param = value.type.dim_params[index]
+                if dim_param:
+                    dims.append(dim_param)
+                else:
+                    dims.append(int(dim) if dim is not None else None)
+            elem_type = onnx.helper.np_dtype_to_tensor_dtype(
+                value.type.dtype.np_dtype
+            )
+            value_info = onnx.helper.make_tensor_value_info(
+                output_name,
+                elem_type,
+                dims,
+            )
+            augmented.graph.output.append(value_info)
+            existing_output_names.add(output_name)
+    return augmented
+
+
+def _report_per_node_accuracy(
+    reporter: _VerifyReporter,
+    *,
+    graph: Any,
+    decoded_outputs: Mapping[str, tuple[np.ndarray, np.ndarray]],
+    output_dtypes: Mapping[str, ScalarType],
+    atol_eps: float,
+    max_ulp_limit: int,
+) -> None:
+    producer_by_output: dict[str, int] = {}
+    for node_index, node in enumerate(graph.nodes):
+        for output_name in node.outputs:
+            if output_name:
+                producer_by_output[output_name] = node_index
+
+    node_dependencies: dict[int, set[int]] = {index: set() for index, _ in enumerate(graph.nodes)}
+    for node_index, node in enumerate(graph.nodes):
+        for input_name in node.inputs:
+            if not input_name:
+                continue
+            producer_index = producer_by_output.get(input_name)
+            if producer_index is None:
+                continue
+            if producer_index != node_index:
+                node_dependencies[node_index].add(producer_index)
+
+    reporter.info("Per-node accuracy:")
+    compared_nodes = 0
+    node_failed: dict[int, bool] = {}
+    node_max_ulp: dict[int, int] = {}
+    node_max_abs: dict[int, float | int] = {}
+    for node_index, node in enumerate(graph.nodes):
+        compared_output_names = [
+            output_name
+            for output_name in node.outputs
+            if output_name in decoded_outputs
+        ]
+        if not compared_output_names:
+            continue
+        compared_nodes += 1
+        node_has_failure = False
+        node_peak_ulp = 0
+        node_peak_abs: float | int = 0
+        node_name = node.name or f"node_{node_index}"
+        reporter.info(f"    {node_name} [{node.op_type}]")
+        for output_name in compared_output_names:
+            actual, reference = decoded_outputs[output_name]
+            dtype = output_dtypes[output_name].np_dtype
+            reporter.start_step(f"      {output_name}")
+            if np.issubdtype(dtype, np.floating):
+                output_max_ulp, _ = worst_ulp_diff(
+                    actual,
+                    reference,
+                    atol_eps=atol_eps,
+                )
+                if output_max_ulp > node_peak_ulp:
+                    node_peak_ulp = output_max_ulp
+                if output_max_ulp > max_ulp_limit:
+                    node_has_failure = True
+                    reporter.step_fail(f"max ULP {output_max_ulp}")
+                else:
+                    reporter.step_ok_detail(f"max ULP {output_max_ulp}")
+            else:
+                output_max_abs, _ = _worst_abs_diff(actual, reference)
+                if output_max_abs > node_peak_abs:
+                    node_peak_abs = output_max_abs
+                if output_max_abs > 0:
+                    node_has_failure = True
+                    reporter.step_fail(f"max abs diff {output_max_abs}")
+                else:
+                    reporter.step_ok_detail("max abs diff 0")
+        node_failed[node_index] = node_has_failure
+        node_max_ulp[node_index] = node_peak_ulp
+        node_max_abs[node_index] = node_peak_abs
+    if compared_nodes == 0:
+        reporter.note("Per-node accuracy: no tensor node outputs were comparable.")
+        return
+
+    failing_nodes = {
+        node_index for node_index, failed in node_failed.items() if failed
+    }
+    if not failing_nodes:
+        reporter.info("Suspects: none (no failing nodes).")
+        return
+
+    suspects = [
+        node_index
+        for node_index in sorted(failing_nodes)
+        if not any(parent in failing_nodes for parent in node_dependencies[node_index])
+    ]
+    if not suspects:
+        reporter.info(
+            "Suspects: none (every failing node depends on earlier failing nodes)."
+        )
+        return
+
+    failing_children: dict[int, set[int]] = {node_index: set() for node_index in failing_nodes}
+    for child_index in failing_nodes:
+        for parent_index in node_dependencies[child_index]:
+            if parent_index in failing_nodes:
+                failing_children[parent_index].add(child_index)
+
+    def impact_score(source_node_index: int) -> int:
+        seen: set[int] = set()
+        stack = [source_node_index]
+        while stack:
+            current = stack.pop()
+            if current in seen:
+                continue
+            seen.add(current)
+            stack.extend(failing_children.get(current, ()))
+        return len(seen)
+
+    ranked_suspects = sorted(
+        suspects,
+        key=lambda node_index: (-impact_score(node_index), node_index),
+    )
+    reporter.info("Suspects (likely root causes):")
+    for node_index in ranked_suspects:
+        node = graph.nodes[node_index]
+        name = node.name or f"node_{node_index}"
+        reporter.info(
+            "    "
+            f"{name} [{node.op_type}] "
+            f"(impact={impact_score(node_index)}, "
+            f"max_ulp={node_max_ulp.get(node_index, 0)}, "
+            f"max_abs={node_max_abs.get(node_index, 0)})"
+        )
 
 
 def _verify_model(
@@ -1003,8 +1204,31 @@ def _verify_model(
             opset_version,
             None,
         )
+    original_output_names = tuple(value.name for value in graph.outputs)
+    if args.per_node_accuracy:
+        original_output_count = len(model.graph.output)
+        model = _augment_model_with_tensor_node_outputs(model, graph)
+        added_outputs = len(model.graph.output) - original_output_count
+        if added_outputs > 0:
+            active_reporter.note(
+                "Per-node accuracy enabled: "
+                f"added {added_outputs} tensor node outputs."
+            )
+        try:
+            graph = import_onnx(model)
+        except (KeyError, UnsupportedOpError, ShapeInferenceError) as exc:
+            return (
+                None,
+                str(exc),
+                operators,
+                opset_version,
+                None,
+            )
+    output_compare_names = set(original_output_names)
     has_non_tensor_output = any(
-        not isinstance(value.type, TensorType) for value in graph.outputs
+        value.name in output_compare_names
+        and not isinstance(value.type, TensorType)
+        for value in graph.outputs
     )
     has_non_tensor_input = any(
         not isinstance(value.type, TensorType) for value in graph.inputs
@@ -1018,6 +1242,12 @@ def _verify_model(
             model, args.test_data_dir
         )
         testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
+        if args.per_node_accuracy and testbench_outputs is not None:
+            active_reporter.note(
+                "Per-node accuracy: ignoring --test-data-dir reference outputs "
+                "and running runtime backend for all node outputs."
+            )
+            testbench_outputs = None
         if has_non_tensor_input:
             testbench_inputs = None
             testbench_optional_inputs = None
@@ -1120,14 +1350,19 @@ def _verify_model(
                 *compiler_cmd,
                 "-std=c99",
                 "-O1",
-                "-fsanitize=address,undefined",
-                "-Wall",
-                "-Werror",
-                str(c_path.name),
-                "-o",
-                str(exe_path.name),
-                "-lm",
             ]
+            if args.sanitize:
+                compile_cmd.append("-fsanitize=address,undefined")
+            compile_cmd.extend(
+                [
+                    "-Wall",
+                    "-Werror",
+                    str(c_path.name),
+                    "-o",
+                    str(exe_path.name),
+                    "-lm",
+                ]
+            )
             active_reporter.info("")
             compile_started = active_reporter.start_step("Compiling C code")
             subprocess.run(
@@ -1212,6 +1447,8 @@ def _verify_model(
             max_non_tensor_ulp = 0
             max_non_tensor_abs: float | int = 0
             for value in graph.outputs:
+                if value.name not in output_compare_names:
+                    continue
                 if isinstance(value.type, TensorType):
                     continue
                 expected_sequence = testbench_outputs.get(value.name)
@@ -1386,6 +1623,25 @@ def _verify_model(
                 generated_checksum,
             )
         payload_outputs = payload.get("outputs", {})
+        decoded_outputs: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+        for value in graph.outputs:
+            if not isinstance(value.type, TensorType):
+                continue
+            output_name = value.name
+            runtime_out = runtime_outputs.get(output_name)
+            output_payload = payload_outputs.get(output_name)
+            if runtime_out is None or output_payload is None:
+                continue
+            info = output_dtypes.get(output_name)
+            if info is None:
+                continue
+            output_data = decode_testbench_array(
+                output_payload["data"], info.np_dtype
+            ).astype(info.np_dtype, copy=False)
+            runtime_cast = runtime_out.astype(info.np_dtype, copy=False)
+            output_data = output_data.reshape(runtime_cast.shape)
+            decoded_outputs[output_name] = (output_data, runtime_cast)
+
         max_ulp = 0
         worst_diff: _WorstDiff | None = None
         max_abs_diff: float | int = 0
@@ -1400,18 +1656,15 @@ def _verify_model(
         )
         try:
             for value in graph.outputs:
-                runtime_out = runtime_outputs[value.name]
-                output_payload = payload_outputs.get(value.name)
-                if output_payload is None:
+                if value.name not in output_compare_names:
+                    continue
+                pair = decoded_outputs.get(value.name)
+                if pair is None:
                     raise AssertionError(
                         f"Missing output {value.name} in testbench data"
                     )
+                output_data, runtime_out = pair
                 info = output_dtypes[value.name]
-                output_data = decode_testbench_array(
-                    output_payload["data"], info.np_dtype
-                ).astype(info.np_dtype, copy=False)
-                runtime_out = runtime_out.astype(info.np_dtype, copy=False)
-                output_data = output_data.reshape(runtime_out.shape)
                 if np.issubdtype(info.np_dtype, np.floating):
                     output_max, output_worst = worst_ulp_diff(
                         output_data,
@@ -1462,6 +1715,17 @@ def _verify_model(
                     f"ref={worst_abs_diff.reference} "
                     f"abs_diff={worst_abs_diff.abs_diff}"
                 )
+            if args.per_node_accuracy:
+                active_reporter.defer(
+                    lambda: _report_per_node_accuracy(
+                        active_reporter,
+                        graph=graph,
+                        decoded_outputs=decoded_outputs,
+                        output_dtypes=output_dtypes,
+                        atol_eps=args.atol_eps,
+                        max_ulp_limit=args.max_ulp,
+                    )
+                )
             return (
                 None,
                 f"Arrays are not equal (max abs diff {max_abs_diff})",
@@ -1482,6 +1746,17 @@ def _verify_model(
                     f"ref={worst_diff.reference:.8g} "
                     f"ulp={worst_diff.ulp}"
                 )
+            if args.per_node_accuracy:
+                active_reporter.defer(
+                    lambda: _report_per_node_accuracy(
+                        active_reporter,
+                        graph=graph,
+                        decoded_outputs=decoded_outputs,
+                        output_dtypes=output_dtypes,
+                        atol_eps=args.atol_eps,
+                        max_ulp_limit=args.max_ulp,
+                    )
+                )
             return (
                 None,
                 f"Out of tolerance (max ULP {max_ulp})",
@@ -1491,6 +1766,17 @@ def _verify_model(
             )
         active_reporter.step_ok_simple()
         active_reporter.info(f"    Maximum ULP: {max_ulp}")
+        if args.per_node_accuracy:
+            active_reporter.defer(
+                lambda: _report_per_node_accuracy(
+                    active_reporter,
+                    graph=graph,
+                    decoded_outputs=decoded_outputs,
+                    output_dtypes=output_dtypes,
+                    atol_eps=args.atol_eps,
+                    max_ulp_limit=args.max_ulp,
+                )
+            )
         return (
             format_success_message(max_ulp),
             None,

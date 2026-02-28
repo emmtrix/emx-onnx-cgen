@@ -1,6 +1,6 @@
 {
   "error": "OK (max ULP 1)",
-  "command_line": "verify --model-base-dir onnx2c-org/test/simple_networks conv_3ch.onnx",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_3ch.onnx",
   "operators": [
     "Transpose",
     "Conv",
