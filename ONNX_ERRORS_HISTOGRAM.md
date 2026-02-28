@@ -16,11 +16,9 @@ This histogram is test-suite-overarching.
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 8 | 8, 9, 19, 22 |
-| Unsupported op Loop | 7 | 16, 17 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
-| Unsupported op SequenceMap | 6 | 17 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
@@ -36,6 +34,7 @@ This histogram is test-suite-overarching.
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
+| '*' | 2 |  |
 | Arrays are not equal (max abs diff 148) | 2 | 21 |
 | Cast input and output shapes must match | 2 | 22 |
 | Gelu only supports approximate=none | 2 | 20 |
@@ -63,6 +62,7 @@ This histogram is test-suite-overarching.
 | ReduceMin does not support dtype bool | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
+| Unsupported op Loop | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op RandomUniform | 1 | 22 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
@@ -75,8 +75,6 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 9 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Unsupported op Loop | 16 | 1 |
-| Unsupported op Loop | 17 | 6 |
-| Unsupported op SequenceMap | 17 | 6 |
 | Unsupported op BlackmanWindow | 17 | 2 |
 | Unsupported op HannWindow | 17 | 2 |
 | Unsupported op STFT | 17 | 2 |
