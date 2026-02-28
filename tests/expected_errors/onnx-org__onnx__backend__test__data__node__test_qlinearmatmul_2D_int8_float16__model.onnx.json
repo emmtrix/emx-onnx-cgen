@@ -1,9 +1,9 @@
 {
-  "error": "Arrays are not equal (max abs diff 148)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float16 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "QLinearMatMul"
   ],
   "opset_version": 21,
-  "generated_checksum": "795329943d1d07bb6b0b90e59345e5fab91742112246b896f69f124e5825864f"
+  "generated_checksum": "d5b19979ce660d127813da748ce4b0cb5d2557be8c75f5f02fa740bc7d583054"
 }

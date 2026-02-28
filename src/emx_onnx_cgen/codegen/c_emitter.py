@@ -631,7 +631,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -826,7 +826,9 @@ class CEmitter:
                 input_scale=name_map.get(op.input_scale, op.input_scale),
                 input_zero_point=name_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=name_map.get(op.output_scale, op.output_scale),
-                output_zero_point=name_map.get(op.output_zero_point, op.output_zero_point),
+                output_zero_point=name_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
                 output=name_map.get(op.output, op.output),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
@@ -2901,7 +2903,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3250,7 +3252,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3448,7 +3450,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3544,7 +3546,14 @@ class CEmitter:
             return True
         if any(
             isinstance(
-                op, (QuantizeLinearOp, QLinearAddOp, QLinearMulOp, QLinearMatMulOp, QLinearSoftmaxOp)
+                op,
+                (
+                    QuantizeLinearOp,
+                    QLinearAddOp,
+                    QLinearMulOp,
+                    QLinearMatMulOp,
+                    QLinearSoftmaxOp,
+                ),
             )
             and op_context.dtype(op.output).is_integer
             for op in resolved_ops
@@ -3568,7 +3577,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -3859,7 +3868,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -5361,7 +5370,9 @@ class CEmitter:
                 input_scale=temp_map.get(op.input_scale, op.input_scale),
                 input_zero_point=temp_map.get(op.input_zero_point, op.input_zero_point),
                 output_scale=temp_map.get(op.output_scale, op.output_scale),
-                output_zero_point=temp_map.get(op.output_zero_point, op.output_zero_point),
+                output_zero_point=temp_map.get(
+                    op.output_zero_point, op.output_zero_point
+                ),
                 output=temp_map.get(op.output, op.output),
                 input_shape=op.input_shape,
                 output_shape=op.output_shape,
@@ -6672,12 +6683,11 @@ class CEmitter:
                 )
                 reduce_loop_bound = input_shape_exprs[1]
                 input_expr = (
-                    f"{params['input0']}" f"[{output_loop_vars[0]}][{reduce_loop_var}]"
+                    f"{params['input0']}[{output_loop_vars[0]}][{reduce_loop_var}]"
                 )
             elif op.kind == EinsumKind.TRANSPOSE:
                 input_expr = (
-                    f"{params['input0']}"
-                    f"[{output_loop_vars[1]}][{output_loop_vars[0]}]"
+                    f"{params['input0']}[{output_loop_vars[1]}][{output_loop_vars[0]}]"
                 )
             elif op.kind == EinsumKind.DOT:
                 input_shape_exprs = CEmitter._shape_dim_exprs(
@@ -12737,7 +12747,7 @@ class CEmitter:
             | QLinearAddOp
             | QLinearMulOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp
@@ -13512,7 +13522,7 @@ class CEmitter:
             | QuantizeLinearOp
             | DequantizeLinearOp
             | QLinearMatMulOp
-        | QLinearSoftmaxOp
+            | QLinearSoftmaxOp
             | MatMulOp
             | EinsumOp
             | GemmOp

@@ -87,8 +87,6 @@ def resolve_dequantize_spec(graph: Graph, node: Node) -> DequantizeSpec:
     )
 
 
-
-
 def _producer_by_output(graph: Graph, output_name: str) -> Node | None:
     for producer in graph.nodes:
         if output_name in producer.outputs:
@@ -96,25 +94,33 @@ def _producer_by_output(graph: Graph, output_name: str) -> Node | None:
     return None
 
 
-
-
 def _infer_missing_input_shape(graph: Graph, node: Node) -> tuple[int, ...]:
     producer = _producer_by_output(graph, node.inputs[0])
-    if producer is None or producer.op_type != "QLinearSoftmax" or len(producer.inputs) < 1:
+    if (
+        producer is None
+        or producer.op_type != "QLinearSoftmax"
+        or len(producer.inputs) < 1
+    ):
         raise ShapeInferenceError(
             f"Missing shape for value '{node.inputs[0]}' in op {node.op_type}. "
             "Hint: run ONNX shape inference or export with static shapes."
         )
     return _value_shape(graph, producer.inputs[0], producer)
 
+
 def _infer_missing_input_dtype(graph: Graph, node: Node) -> ScalarType:
     producer = _producer_by_output(graph, node.inputs[0])
-    if producer is None or producer.op_type != "QLinearSoftmax" or len(producer.inputs) < 3:
+    if (
+        producer is None
+        or producer.op_type != "QLinearSoftmax"
+        or len(producer.inputs) < 3
+    ):
         raise ShapeInferenceError(
             f"Missing dtype for value '{node.inputs[0]}' in op {node.op_type}. "
             "Hint: run ONNX shape inference or export with static shapes."
         )
     return _value_dtype(graph, producer.inputs[2], producer)
+
 
 @register_lowering("DequantizeLinear")
 def lower_dequantize_linear(graph: Graph, node: Node) -> DequantizeLinearOp:

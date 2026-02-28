@@ -2504,15 +2504,19 @@ def _make_qlinearadd_model() -> onnx.ModelProto:
     return model
 
 
-
-
 def _make_qlinearsoftmax_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [1, 2, 4])
     output = helper.make_tensor_value_info("out", TensorProto.UINT8, [1, 2, 4])
     x_scale = helper.make_tensor("x_scale", TensorProto.FLOAT, dims=[], vals=[0.125])
-    x_zero_point = helper.make_tensor("x_zero_point", TensorProto.UINT8, dims=[], vals=[3])
-    y_scale = helper.make_tensor("y_scale", TensorProto.FLOAT, dims=[], vals=[1.0 / 256.0])
-    y_zero_point = helper.make_tensor("y_zero_point", TensorProto.UINT8, dims=[], vals=[0])
+    x_zero_point = helper.make_tensor(
+        "x_zero_point", TensorProto.UINT8, dims=[], vals=[3]
+    )
+    y_scale = helper.make_tensor(
+        "y_scale", TensorProto.FLOAT, dims=[], vals=[1.0 / 256.0]
+    )
+    y_zero_point = helper.make_tensor(
+        "y_zero_point", TensorProto.UINT8, dims=[], vals=[0]
+    )
     node = helper.make_node(
         "QLinearSoftmax",
         inputs=["in0", "x_scale", "x_zero_point", "y_scale", "y_zero_point"],
@@ -2537,6 +2541,7 @@ def _make_qlinearsoftmax_model() -> onnx.ModelProto:
     )
     model.ir_version = 7
     return model
+
 
 def _make_matmulinteger_model() -> onnx.ModelProto:
     input_info = helper.make_tensor_value_info("in0", TensorProto.UINT8, [2, 3])
