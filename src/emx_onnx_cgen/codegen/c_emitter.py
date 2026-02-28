@@ -94,6 +94,7 @@ from ..ir.ops import (
     QLinearConvOp,
     LoopRangeOp,
     LoopSequenceInsertOp,
+    LoopSequenceMapOp,
     RangeOp,
     ReverseSequenceOp,
     SequenceAtOp,
@@ -2084,6 +2085,32 @@ class CEmitter:
                 split_sizes=op.split_sizes,
                 split_scalar=op.split_scalar,
             )
+        if isinstance(op, LoopSequenceMapOp):
+            return LoopSequenceMapOp(
+                trip_count=name_map.get(op.trip_count, op.trip_count),
+                cond=name_map.get(op.cond, op.cond),
+                input_sequences=tuple(
+                    name_map.get(name, name) for name in op.input_sequences
+                ),
+                input_tensors=tuple(
+                    name_map.get(name, name) for name in op.input_tensors
+                ),
+                output_sequences=tuple(
+                    name_map.get(name, name) for name in op.output_sequences
+                ),
+                output_kinds=op.output_kinds,
+                output_input0=tuple(
+                    name_map.get(name, name) for name in op.output_input0
+                ),
+                output_input1=tuple(
+                    name_map.get(name, name) if name is not None else None
+                    for name in op.output_input1
+                ),
+                output_input0_is_sequence=op.output_input0_is_sequence,
+                output_input1_is_sequence=op.output_input1_is_sequence,
+                output_elem_shapes=op.output_elem_shapes,
+                output_elem_dtypes=op.output_elem_dtypes,
+            )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
             output=name_map.get(op.output, op.output),
@@ -3097,6 +3124,8 @@ class CEmitter:
                 return sequence_value.type.elem.dtype
             if isinstance(op, LoopSequenceInsertOp):
                 return op.elem_dtype
+            if isinstance(op, LoopSequenceMapOp):
+                return op.output_elem_dtypes[0]
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -3744,7 +3773,6 @@ class CEmitter:
                     SequenceEmptyOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
-                    SequenceLengthOp,
                     SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
@@ -3893,7 +3921,6 @@ class CEmitter:
                     SequenceEmptyOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
-                    SequenceLengthOp,
                     SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
@@ -5295,6 +5322,32 @@ class CEmitter:
                 keepdims=op.keepdims,
                 split_sizes=op.split_sizes,
                 split_scalar=op.split_scalar,
+            )
+        if isinstance(op, LoopSequenceMapOp):
+            return LoopSequenceMapOp(
+                trip_count=temp_map.get(op.trip_count, op.trip_count),
+                cond=temp_map.get(op.cond, op.cond),
+                input_sequences=tuple(
+                    temp_map.get(name, name) for name in op.input_sequences
+                ),
+                input_tensors=tuple(
+                    temp_map.get(name, name) for name in op.input_tensors
+                ),
+                output_sequences=tuple(
+                    temp_map.get(name, name) for name in op.output_sequences
+                ),
+                output_kinds=op.output_kinds,
+                output_input0=tuple(
+                    temp_map.get(name, name) for name in op.output_input0
+                ),
+                output_input1=tuple(
+                    temp_map.get(name, name) if name is not None else None
+                    for name in op.output_input1
+                ),
+                output_input0_is_sequence=op.output_input0_is_sequence,
+                output_input1_is_sequence=op.output_input1_is_sequence,
+                output_elem_shapes=op.output_elem_shapes,
+                output_elem_dtypes=op.output_elem_dtypes,
             )
         if isinstance(op, TransposeOp):
             return TransposeOp(
@@ -10996,6 +11049,148 @@ class CEmitter:
                 c_type=seq_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, LoopSequenceMapOp):
+            params = self._shared_param_map(
+                [
+                    ("trip_count", op.trip_count),
+                    ("cond", op.cond),
+                    *[
+                        (f"input_sequence_{idx}", name)
+                        for idx, name in enumerate(op.input_sequences)
+                    ],
+                    *[
+                        (f"input_tensor_{idx}", name)
+                        for idx, name in enumerate(op.input_tensors)
+                    ],
+                    *[
+                        (f"output_sequence_{idx}", name)
+                        for idx, name in enumerate(op.output_sequences)
+                    ],
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            decls: list[tuple[str, str, str, bool]] = [
+                (
+                    params["trip_count"],
+                    self._ctx_dtype(op.trip_count).c_type,
+                    scalar_suffix,
+                    True,
+                ),
+                (params["cond"], self._ctx_dtype(op.cond).c_type, scalar_suffix, True),
+            ]
+            seq_param_by_name = {
+                name: params[f"input_sequence_{idx}"]
+                for idx, name in enumerate(op.input_sequences)
+            }
+            tensor_param_by_name = {
+                name: params[f"input_tensor_{idx}"]
+                for idx, name in enumerate(op.input_tensors)
+            }
+            for idx, name in enumerate(op.input_sequences):
+                seq_dtype = self._ctx_sequence_elem_type(name).dtype
+                seq_shape = self._ctx_sequence_elem_type(name).shape
+                decls.append(
+                    (
+                        params[f"input_sequence_{idx}"],
+                        seq_dtype.c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(seq_shape)}",
+                        True,
+                    )
+                )
+                decls.append(
+                    (f"{params[f'input_sequence_{idx}']}__count", "idx_t", "", True)
+                )
+            for idx, name in enumerate(op.input_tensors):
+                dtype = self._ctx_dtype(name)
+                shape = self._ctx_shape(name)
+                decls.append(
+                    (
+                        params[f"input_tensor_{idx}"],
+                        dtype.c_type,
+                        self._param_array_suffix(shape),
+                        True,
+                    )
+                )
+            for idx, name in enumerate(op.output_sequences):
+                seq_dtype = self._ctx_sequence_elem_type(name).dtype
+                seq_shape = self._ctx_sequence_elem_type(name).shape
+                decls.append(
+                    (
+                        params[f"output_sequence_{idx}"],
+                        seq_dtype.c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(seq_shape)}",
+                        False,
+                    )
+                )
+                decls.append(
+                    (f"{params[f'output_sequence_{idx}']}__count", "idx_t *", "", False)
+                )
+            param_decls = self._build_param_decls(decls)
+
+            lines = [f"void {op_name}({dim_args}{', '.join(param_decls)}) {{"]
+            lines.append(
+                f"    const int64_t trip_raw = (int64_t){params['trip_count']}[0];"
+            )
+            lines.append(f"    const bool enabled = {params['cond']}[0];")
+            lines.append(
+                "    int64_t iter_limit = (enabled && trip_raw > 0) ? trip_raw : 0;"
+            )
+            for idx, name in enumerate(op.input_sequences):
+                lines.append(
+                    f"    if (iter_limit > (int64_t){params[f'input_sequence_{idx}']}__count) iter_limit = (int64_t){params[f'input_sequence_{idx}']}__count;"
+                )
+            lines.append(
+                "    if (iter_limit > (int64_t)EMX_SEQUENCE_MAX_LEN) iter_limit = (int64_t)EMX_SEQUENCE_MAX_LEN;"
+            )
+            lines.append("    for (int64_t i = 0; i < iter_limit; ++i) {")
+            for out_idx, out_name in enumerate(op.output_sequences):
+                out_param = params[f"output_sequence_{out_idx}"]
+                kind = op.output_kinds[out_idx]
+                in0 = op.output_input0[out_idx]
+                in1 = op.output_input1[out_idx]
+                in0_seq = op.output_input0_is_sequence[out_idx]
+                in1_seq = op.output_input1_is_sequence[out_idx]
+                elem_count = CEmitter._element_count_expr(
+                    op.output_elem_shapes[out_idx]
+                )
+                if kind == "shape":
+                    source_shape = (
+                        self._ctx_sequence_elem_type(in0).shape
+                        if in0_seq
+                        else self._ctx_shape(in0)
+                    )
+                    for dim_idx, dim in enumerate(source_shape):
+                        lines.append(
+                            f"        {out_param}[(idx_t)i][{dim_idx}] = {dim};"
+                        )
+                elif kind == "identity":
+                    src_name = (
+                        seq_param_by_name[in0] if in0_seq else tensor_param_by_name[in0]
+                    )
+                    src = f"{src_name}[(idx_t)i]" if in0_seq else src_name
+                    lines.append(
+                        f"        for (idx_t e = 0; e < {elem_count}; ++e) {{ {out_param}[(idx_t)i][e] = {src}[e]; }}"
+                    )
+                elif kind == "add" and in1 is not None:
+                    src0_name = (
+                        seq_param_by_name[in0] if in0_seq else tensor_param_by_name[in0]
+                    )
+                    src1_name = (
+                        seq_param_by_name[in1] if in1_seq else tensor_param_by_name[in1]
+                    )
+                    src0 = f"{src0_name}[(idx_t)i]" if in0_seq else src0_name
+                    src1 = f"{src1_name}[(idx_t)i]" if in1_seq else src1_name
+                    lines.append(
+                        f"        for (idx_t e = 0; e < {elem_count}; ++e) {{ {out_param}[(idx_t)i][e] = {src0}[e] + {src1}[e]; }}"
+                    )
+            lines.append("    }")
+            for out_idx, _ in enumerate(op.output_sequences):
+                lines.append(
+                    f"    *{params[f'output_sequence_{out_idx}']}__count = (idx_t)iter_limit;"
+                )
+            lines.append("}")
+            return with_node_comment("\n".join(lines))
+
         if isinstance(op, HammingWindowOp):
             params = self._shared_param_map(
                 [
@@ -13386,6 +13581,8 @@ class CEmitter:
             return ((op.trip_count, ()), (op.cond, ()), (op.start, ()), (op.delta, ()))
         if isinstance(op, LoopSequenceInsertOp):
             return ((op.trip_count, ()), (op.cond, ()))
+        if isinstance(op, LoopSequenceMapOp):
+            return ((op.trip_count, ()), (op.cond, ()))
         if isinstance(op, HammingWindowOp):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
@@ -13856,6 +14053,17 @@ class CEmitter:
             )
         if isinstance(op, LoopSequenceInsertOp):
             return ((op.output_sequence, op.elem_shape, op.elem_dtype),)
+        if isinstance(op, LoopSequenceMapOp):
+            return tuple(
+                (
+                    output_name,
+                    self._sequence_storage_shape(output_name),
+                    output_dtype,
+                )
+                for output_name, output_dtype in zip(
+                    op.output_sequences, op.output_elem_dtypes
+                )
+            )
         if isinstance(op, LoopRangeOp):
             return (
                 (op.final, self._ctx_shape(op.final), self._ctx_dtype(op.final)),
@@ -14134,6 +14342,8 @@ class CEmitter:
             return self._sequence_storage_shape(op.output_sequence)
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_shape
+        if isinstance(op, LoopSequenceMapOp):
+            return op.output_elem_shapes[0]
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -14258,6 +14468,8 @@ class CEmitter:
             return self._ctx_sequence_elem_type(op.output_sequence).dtype
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_dtype
+        if isinstance(op, LoopSequenceMapOp):
+            return op.output_elem_dtypes[0]
         if isinstance(op, (DepthToSpaceOp, SpaceToDepthOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, OneHotOp):
