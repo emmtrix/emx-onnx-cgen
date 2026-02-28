@@ -25,9 +25,7 @@ def _read_scalar_initializer(
         return None
     data = np.array(initializer.data)
     if data.size != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} {label} input must be a scalar"
-        )
+        raise UnsupportedOpError(f"{node.op_type} {label} input must be a scalar")
     return int(data.reshape(-1)[0])
 
 
@@ -57,9 +55,7 @@ def lower_onehot(graph: Graph, node: Node) -> OneHotOp:
     if not _is_scalar_shape(depth_shape):
         raise UnsupportedOpError("OneHot depth input must be a scalar")
     if len(values_shape) != 1 or values_shape[0] != 2:
-        raise UnsupportedOpError(
-            "OneHot values input must be a 1D tensor of size 2"
-        )
+        raise UnsupportedOpError("OneHot values input must be a 1D tensor of size 2")
     output_rank = len(indices_shape) + 1
     if len(output_shape) != output_rank:
         raise ShapeInferenceError(
@@ -74,21 +70,17 @@ def lower_onehot(graph: Graph, node: Node) -> OneHotOp:
             raise ShapeInferenceError("OneHot depth must be non-negative")
         if output_shape[axis] != depth_value:
             raise ShapeInferenceError(
-                "OneHot output depth must be "
-                f"{depth_value}, got {output_shape[axis]}"
+                f"OneHot output depth must be {depth_value}, got {output_shape[axis]}"
             )
         depth_dim = depth_value
     else:
         depth_dim = output_shape[axis]
         if depth_dim < 0:
             raise ShapeInferenceError("OneHot output depth must be non-negative")
-    expected_output_shape = (
-        indices_shape[:axis] + (depth_dim,) + indices_shape[axis:]
-    )
+    expected_output_shape = indices_shape[:axis] + (depth_dim,) + indices_shape[axis:]
     if output_shape != expected_output_shape:
         raise ShapeInferenceError(
-            "OneHot output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
+            f"OneHot output shape must be {expected_output_shape}, got {output_shape}"
         )
     indices_dtype = value_dtype(graph, indices_name, node)
     depth_dtype = value_dtype(graph, depth_name, node)

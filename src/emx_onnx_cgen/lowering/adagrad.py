@@ -25,9 +25,7 @@ def lower_adagrad(graph: Graph, node: Node) -> AdagradOp:
         )
     tensor_count = (len(node.inputs) - 2) // 3
     if len(node.outputs) != tensor_count * 2:
-        raise UnsupportedOpError(
-            "Adagrad outputs must be X_news followed by H_news"
-        )
+        raise UnsupportedOpError("Adagrad outputs must be X_news followed by H_news")
     rate_name = node.inputs[0]
     timestep_name = node.inputs[1]
     rate_shape = value_shape(graph, rate_name, node)
@@ -38,9 +36,7 @@ def lower_adagrad(graph: Graph, node: Node) -> AdagradOp:
         raise UnsupportedOpError("Adagrad T input must be a scalar")
     rate_dtype = value_dtype(graph, rate_name, node)
     if rate_dtype not in {ScalarType.F32, ScalarType.F64}:
-        raise UnsupportedOpError(
-            "Adagrad R input must be float or double"
-        )
+        raise UnsupportedOpError("Adagrad R input must be float or double")
     timestep_dtype = value_dtype(graph, timestep_name, node)
     if timestep_dtype != ScalarType.I64:
         raise UnsupportedOpError("Adagrad T input must be int64")
@@ -56,9 +52,7 @@ def lower_adagrad(graph: Graph, node: Node) -> AdagradOp:
     if dtype not in {ScalarType.F32, ScalarType.F64}:
         raise UnsupportedOpError("Adagrad supports float and double tensors only")
     if rate_dtype != dtype:
-        raise UnsupportedOpError(
-            "Adagrad R input dtype must match tensor dtype"
-        )
+        raise UnsupportedOpError("Adagrad R input dtype must match tensor dtype")
     input_shapes: list[tuple[int, ...]] = []
     output_shapes: list[tuple[int, ...]] = []
     for index, (x_name, g_name, h_name, out_name, h_out_name) in enumerate(

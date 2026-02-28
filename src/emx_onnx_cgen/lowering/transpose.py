@@ -28,9 +28,7 @@ def lower_transpose(graph: Graph, node: Node) -> TransposeOp:
             f"got perm {perm} for shape {input_shape}"
         )
     if set(perm) != set(range(len(input_shape))):
-        raise UnsupportedOpError(
-            f"Transpose perm must be a permutation, got {perm}"
-        )
+        raise UnsupportedOpError(f"Transpose perm must be a permutation, got {perm}")
     expected_shape = tuple(input_shape[axis] for axis in perm)
     if output_shape and output_shape != expected_shape:
         raise ShapeInferenceError(

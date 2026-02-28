@@ -180,15 +180,30 @@ def _shape_values_from_input(
             if len(left) != len(right):
                 return None
             if source_node.op_type == "Equal":
-                return [1 if left_value == right_value else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    1 if left_value == right_value else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "And":
-                return [1 if (left_value and right_value) else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    1 if (left_value and right_value) else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Or":
-                return [1 if (left_value or right_value) else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    1 if (left_value or right_value) else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Div":
-                return [int(left_value / right_value) if right_value != 0 else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    int(left_value / right_value) if right_value != 0 else 0
+                    for left_value, right_value in zip(left, right)
+                ]
             if source_node.op_type == "Mod":
-                return [left_value % right_value if right_value != 0 else 0 for left_value, right_value in zip(left, right)]
+                return [
+                    left_value % right_value if right_value != 0 else 0
+                    for left_value, right_value in zip(left, right)
+                ]
         if source_node.op_type == "Not":
             if len(source_node.inputs) != 1 or len(source_node.outputs) != 1:
                 raise UnsupportedOpError("Not must have 1 input and 1 output")
@@ -235,8 +250,7 @@ def _shape_values_from_input(
             if not (len(condition) == len(on_true) == len(on_false)):
                 return None
             return [
-                t if cond else f
-                for cond, t, f in zip(condition, on_true, on_false)
+                t if cond else f for cond, t, f in zip(condition, on_true, on_false)
             ]
         return None
     finally:
@@ -324,12 +338,13 @@ def lower_reshape(graph: Graph, node: Node) -> ReshapeOp:
             allowzero=allowzero,
             node=node,
         )
-        if output_shape and resolved_shape != output_shape and not any(
-            output_dim_params
+        if (
+            output_shape
+            and resolved_shape != output_shape
+            and not any(output_dim_params)
         ):
             raise ShapeInferenceError(
-                "Reshape output shape must be "
-                f"{resolved_shape}, got {output_shape}"
+                f"Reshape output shape must be {resolved_shape}, got {output_shape}"
             )
     else:
         if _shape_product(output_shape) != _shape_product(input_shape):

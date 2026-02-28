@@ -30,7 +30,7 @@ def lower_compress(graph: Graph, node: Node) -> CompressOp:
     condition_dtype = value_dtype(graph, condition_name, node)
     if condition_dtype != ScalarType.BOOL:
         raise UnsupportedOpError(
-            "Compress condition must be bool, " f"got {condition_dtype.onnx_name}"
+            f"Compress condition must be bool, got {condition_dtype.onnx_name}"
         )
 
     axis_attr = node.attrs.get("axis")

@@ -62,7 +62,7 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
     input_dtype = _value_dtype(graph, node.inputs[0], node)
     if input_dtype != ScalarType.I64:
         raise UnsupportedOpError(
-            "ConstantOfShape expects int64 shape input, " f"got {input_dtype.onnx_name}"
+            f"ConstantOfShape expects int64 shape input, got {input_dtype.onnx_name}"
         )
     output_dtype = _value_dtype(graph, node.outputs[0], node)
     value_dtype, value = _parse_value_attr(node)

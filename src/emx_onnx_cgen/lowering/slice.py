@@ -55,18 +55,14 @@ def _find_initializer(graph: Graph, name: str) -> Initializer | None:
     return None
 
 
-def _read_int_list(
-    graph: Graph, name: str, node: Node, *, label: str
-) -> list[int]:
+def _read_int_list(graph: Graph, name: str, node: Node, *, label: str) -> list[int]:
     initializer = _find_initializer(graph, name)
     if initializer is None:
         raise UnsupportedOpError(
             f"{node.op_type} {label} input must be a constant initializer"
         )
     if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
-        raise UnsupportedOpError(
-            f"{node.op_type} {label} input must be int64 or int32"
-        )
+        raise UnsupportedOpError(f"{node.op_type} {label} input must be int64 or int32")
     data = np.array(initializer.data, dtype=np.int64).reshape(-1)
     return [int(value) for value in data]
 
@@ -85,20 +81,14 @@ def _validate_int_input(
 ) -> tuple[tuple[int, ...], ScalarType]:
     dtype = value_dtype(graph, name, node)
     if dtype not in {ScalarType.I64, ScalarType.I32}:
-        raise UnsupportedOpError(
-            f"{node.op_type} {label} input must be int64 or int32"
-        )
+        raise UnsupportedOpError(f"{node.op_type} {label} input must be int64 or int32")
     shape = value_shape(graph, name, node)
     if len(shape) != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} {label} input must be a 1D tensor"
-        )
+        raise UnsupportedOpError(f"{node.op_type} {label} input must be a 1D tensor")
     return shape, dtype
 
 
-def _resolve_inputs(
-    graph: Graph, node: Node
-) -> SliceInputs:
+def _resolve_inputs(graph: Graph, node: Node) -> SliceInputs:
     if "starts" in node.attrs or "ends" in node.attrs:
         if len(node.inputs) != 1:
             raise UnsupportedOpError(
@@ -124,9 +114,7 @@ def _resolve_inputs(
             steps_input=None,
         )
     if len(node.inputs) < 3:
-        raise UnsupportedOpError(
-            f"{node.op_type} expects at least 3 inputs"
-        )
+        raise UnsupportedOpError(f"{node.op_type} expects at least 3 inputs")
     starts_name = node.inputs[1]
     ends_name = node.inputs[2]
     axes_name = node.inputs[3] if len(node.inputs) >= 4 else ""
@@ -222,9 +210,7 @@ def _normalize_slices(
 ) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
     rank = len(input_shape)
     if rank == 0:
-        raise ShapeInferenceError(
-            f"{node.op_type} does not support scalar inputs"
-        )
+        raise ShapeInferenceError(f"{node.op_type} does not support scalar inputs")
     if len(starts) != len(ends):
         raise ShapeInferenceError(
             f"{node.op_type} starts and ends must have matching lengths"
@@ -244,22 +230,16 @@ def _normalize_slices(
     for index, axis in enumerate(axes):
         normalized_axis = normalize_axis(int(axis), input_shape, node)
         if normalized_axis in seen_axes:
-            raise ShapeInferenceError(
-                f"{node.op_type} axes must be unique"
-            )
+            raise ShapeInferenceError(f"{node.op_type} axes must be unique")
         seen_axes.add(normalized_axis)
         dim = input_shape[normalized_axis]
         if dim < 0:
             raise ShapeInferenceError("Dynamic dims are not supported")
         step = int(steps[index])
         if step == 0:
-            raise UnsupportedOpError(
-                f"{node.op_type} steps must be non-zero"
-            )
+            raise UnsupportedOpError(f"{node.op_type} steps must be non-zero")
         if step < 0:
-            raise UnsupportedOpError(
-                f"{node.op_type} only supports positive steps"
-            )
+            raise UnsupportedOpError(f"{node.op_type} only supports positive steps")
         start = int(starts[index])
         end = int(ends[index])
         if start < 0:
@@ -298,8 +278,7 @@ def resolve_slice_spec(graph: Graph, node: Node) -> SliceSpec:
     inputs = _resolve_inputs(graph, node)
     if inputs.starts is None or inputs.ends is None:
         raise UnsupportedOpError(
-            f"{node.op_type} starts/ends inputs must be constant for shape "
-            "inference"
+            f"{node.op_type} starts/ends inputs must be constant for shape inference"
         )
     starts = inputs.starts
     ends = inputs.ends
@@ -362,9 +341,7 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
             steps_input=None,
         )
     if output_shape and len(output_shape) != len(input_shape):
-        raise ShapeInferenceError(
-            f"{node.op_type} output rank must match input rank"
-        )
+        raise ShapeInferenceError(f"{node.op_type} output rank must match input rank")
     if inputs.starts_shape is None or inputs.ends_shape is None:
         raise UnsupportedOpError(
             f"{node.op_type} starts and ends inputs must be provided"
@@ -375,9 +352,7 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         )
     starts_len = inputs.starts_shape[0]
     if starts_len > len(input_shape):
-        raise ShapeInferenceError(
-            f"{node.op_type} starts length exceeds input rank"
-        )
+        raise ShapeInferenceError(f"{node.op_type} starts length exceeds input rank")
     if starts_len == 0 and output_shape != input_shape:
         raise ShapeInferenceError(
             f"{node.op_type} empty starts expects output shape to match input"

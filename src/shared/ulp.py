@@ -17,9 +17,7 @@ def _coerce_float_scalar(value: object, dtype: np.dtype) -> np.ndarray:
     return np.asarray(value, dtype=dtype).reshape(())
 
 
-def _ulp_intdiff_same_sign(
-    f1: np.ndarray, f2: np.ndarray, uint_dtype: np.dtype
-) -> int:
+def _ulp_intdiff_same_sign(f1: np.ndarray, f2: np.ndarray, uint_dtype: np.dtype) -> int:
     i1 = f1.view(uint_dtype).item()
     i2 = f2.view(uint_dtype).item()
     return int(i1 - i2) if i1 > i2 else int(i2 - i1)
@@ -30,9 +28,7 @@ def ulp_intdiff_float(f1: object, f2: object) -> int:
     try:
         uint_dtype = _FLOAT_TO_UINT[dtype]
     except KeyError as exc:
-        raise ScalarFunctionError(
-            f"unsupported dtype for ULP diff: {dtype}"
-        ) from exc
+        raise ScalarFunctionError(f"unsupported dtype for ULP diff: {dtype}") from exc
 
     f1_scalar = _coerce_float_scalar(f1, dtype)
     f2_scalar = _coerce_float_scalar(f2, dtype)
@@ -59,7 +55,5 @@ def max_ulp_value(dtype: np.dtype) -> int:
     try:
         uint_dtype = _FLOAT_TO_UINT[dtype]
     except KeyError as exc:
-        raise ScalarFunctionError(
-            f"unsupported dtype for ULP diff: {dtype}"
-        ) from exc
+        raise ScalarFunctionError(f"unsupported dtype for ULP diff: {dtype}") from exc
     return int(np.iinfo(uint_dtype).max)

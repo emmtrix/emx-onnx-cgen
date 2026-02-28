@@ -89,15 +89,19 @@ def lower_upsample(graph: Graph, node: Node) -> ResizeOp:
             raise UnsupportedOpError("Upsample expects scales to be 1D")
         if scales_shape[0] != rank:
             raise UnsupportedOpError("Upsample scales length mismatch")
-        if value_dtype(graph, scales_input, node) not in {ScalarType.F16, ScalarType.BF16, ScalarType.F32, ScalarType.F64}:
+        if value_dtype(graph, scales_input, node) not in {
+            ScalarType.F16,
+            ScalarType.BF16,
+            ScalarType.F32,
+            ScalarType.F64,
+        }:
             raise UnsupportedOpError(
                 "Upsample expects scales input to be bfloat16/float16/float32/float64"
             )
         values = _load_initializer_values(graph, scales_input, node)
         if values is None:
             scales = tuple(
-                output_shape[axis] / input_shape[axis]
-                for axis in range(rank)
+                output_shape[axis] / input_shape[axis] for axis in range(rank)
             )
         else:
             scales = tuple(float(value) for value in values)
@@ -112,9 +116,7 @@ def lower_upsample(graph: Graph, node: Node) -> ResizeOp:
         scales = tuple(float(value) for value in scales_attr)
         if len(scales) != rank:
             raise UnsupportedOpError("Upsample scales length mismatch")
-        expected = tuple(
-            int(input_shape[axis] * scales[axis]) for axis in range(rank)
-        )
+        expected = tuple(int(input_shape[axis] * scales[axis]) for axis in range(rank))
         _validate_output_shape(expected, output_shape)
     return ResizeOp(
         input0=input_name,

@@ -38,8 +38,7 @@ def _broadcast_batch_shapes(
     for left_dim, right_dim in zip(left_padded, right_padded):
         if not (left_dim == right_dim or left_dim == 1 or right_dim == 1):
             raise ShapeInferenceError(
-                "MatMul batch dimensions must be broadcastable, "
-                f"got {left} x {right}"
+                f"MatMul batch dimensions must be broadcastable, got {left} x {right}"
             )
         broadcast_shape.append(max(left_dim, right_dim))
     return tuple(broadcast_shape), left_padded, right_padded
@@ -50,7 +49,7 @@ def _resolve_matmul_spec(ctx: OpContext, input0: str, input1: str) -> dict[str, 
     input1_shape = ctx.shape(input1)
     if len(input0_shape) < 1 or len(input1_shape) < 1:
         raise UnsupportedOpError(
-            "MatMul inputs must be at least 1D, " f"got {input0_shape} x {input1_shape}"
+            f"MatMul inputs must be at least 1D, got {input0_shape} x {input1_shape}"
         )
     left_vector = len(input0_shape) == 1
     right_vector = len(input1_shape) == 1
@@ -336,8 +335,7 @@ class GemmOp(GemmLikeOpBase):
         input_b_shape = ctx.shape(self.input_b)
         if len(input_a_shape) != 2 or len(input_b_shape) != 2:
             raise UnsupportedOpError(
-                "Gemm supports 2D inputs only, "
-                f"got {input_a_shape} x {input_b_shape}"
+                f"Gemm supports 2D inputs only, got {input_a_shape} x {input_b_shape}"
             )
         if trans_a:
             m, k_left = input_a_shape[1], input_a_shape[0]

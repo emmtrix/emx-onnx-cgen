@@ -37,9 +37,7 @@ def _read_scalar_initializer(
         return None
     data = np.array(initializer.data)
     if data.size != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} {label} input must be a scalar"
-        )
+        raise UnsupportedOpError(f"{node.op_type} {label} input must be a scalar")
     return data.reshape(-1)[0].item()
 
 
@@ -62,25 +60,17 @@ def lower_range(graph: Graph, node: Node) -> RangeOp:
         raise UnsupportedOpError("Range inputs must be scalars")
     dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
     if dtype not in _SUPPORTED_RANGE_DTYPES:
-        raise UnsupportedOpError(
-            f"Range does not support dtype {dtype.onnx_name}"
-        )
+        raise UnsupportedOpError(f"Range does not support dtype {dtype.onnx_name}")
     output_shape = value_shape(graph, node.outputs[0], node)
     if len(output_shape) != 1:
         raise ShapeInferenceError("Range output must be 1D")
     start_value = _read_scalar_initializer(graph, node.inputs[0], node, "start")
     limit_value = _read_scalar_initializer(graph, node.inputs[1], node, "limit")
     delta_value = _read_scalar_initializer(graph, node.inputs[2], node, "delta")
-    if (
-        start_value is not None
-        and limit_value is not None
-        and delta_value is not None
-    ):
+    if start_value is not None and limit_value is not None and delta_value is not None:
         if float(delta_value) == 0.0:
             raise UnsupportedOpError("Range delta must be non-zero")
-        raw_count = (
-            float(limit_value) - float(start_value)
-        ) / float(delta_value)
+        raw_count = (float(limit_value) - float(start_value)) / float(delta_value)
         length = max(int(math.ceil(raw_count)), 0)
         if length < 0:
             raise ShapeInferenceError("Range output length must be non-negative")

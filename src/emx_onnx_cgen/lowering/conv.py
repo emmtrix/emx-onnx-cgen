@@ -102,8 +102,7 @@ def resolve_conv_spec(
     if len(dilations) != spatial_rank:
         raise UnsupportedOpError("Conv dilation rank mismatch")
     pads = tuple(
-        int(value)
-        for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
+        int(value) for value in node.attrs.get("pads", (0,) * (2 * spatial_rank))
     )
     if len(pads) != 2 * spatial_rank:
         raise UnsupportedOpError("Conv pads rank mismatch")
@@ -124,9 +123,7 @@ def resolve_conv_spec(
         ):
             effective_kernel = dilation * (kernel - 1) + 1
             out_dim = math.ceil(dim / stride)
-            pad_needed = max(
-                0, (out_dim - 1) * stride + effective_kernel - dim
-            )
+            pad_needed = max(0, (out_dim - 1) * stride + effective_kernel - dim)
             if auto_pad == "SAME_UPPER":
                 pad_start = pad_needed // 2
             else:
@@ -153,8 +150,7 @@ def resolve_conv_spec(
         output_shape = None
     if output_shape is not None and output_shape != expected_output_shape:
         raise ShapeInferenceError(
-            "Conv output shape must be "
-            f"{expected_output_shape}, got {output_shape}"
+            f"Conv output shape must be {expected_output_shape}, got {output_shape}"
         )
     if output_shape is None and require_output_shape:
         raise ShapeInferenceError(
@@ -182,9 +178,7 @@ def lower_conv(graph: Graph, node: Node) -> ConvOp:
         raise UnsupportedOpError("Conv must have 2 or 3 inputs and 1 output")
     op_dtype = _node_dtype(graph, node, *node.inputs, *node.outputs)
     if not op_dtype.is_float:
-        raise UnsupportedOpError(
-            "Conv supports float16, float, and double inputs only"
-        )
+        raise UnsupportedOpError("Conv supports float16, float, and double inputs only")
     spec = resolve_conv_spec(
         graph,
         node,

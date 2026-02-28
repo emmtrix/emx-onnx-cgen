@@ -54,9 +54,9 @@ def get_lowering(
     return _LOWERING_REGISTRY.get(op_type)
 
 
-def get_lowering_registry() -> (
-    Mapping[str, Callable[[Graph | GraphContext, Node], OpBase]]
-):
+def get_lowering_registry() -> Mapping[
+    str, Callable[[Graph | GraphContext, Node], OpBase]
+]:
     return _LOWERING_REGISTRY
 
 

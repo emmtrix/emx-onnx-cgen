@@ -49,7 +49,7 @@ def lower_shape(graph: Graph, node: Node) -> ShapeOp:
     expected_shape = (max(0, end_index - start_index),)
     if output_shape and expected_shape != output_shape:
         raise ShapeInferenceError(
-            "Shape output shape must be " f"{expected_shape}, got {output_shape}"
+            f"Shape output shape must be {expected_shape}, got {output_shape}"
         )
     if isinstance(graph, GraphContext):
         graph.set_shape(node.outputs[0], expected_shape)

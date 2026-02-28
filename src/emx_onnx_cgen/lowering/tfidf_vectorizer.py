@@ -64,9 +64,7 @@ def _validate_output_shape(
 @register_lowering("TfIdfVectorizer")
 def lower_tfidf_vectorizer(graph: Graph, node: Node) -> TfIdfVectorizerOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} expects 1 input and 1 output"
-        )
+        raise UnsupportedOpError(f"{node.op_type} expects 1 input and 1 output")
     input_name = node.inputs[0]
     output_name = node.outputs[0]
     input_shape = value_shape(graph, input_name, node)
@@ -80,8 +78,7 @@ def lower_tfidf_vectorizer(graph: Graph, node: Node) -> TfIdfVectorizerOp:
         )
     if output_dtype not in _SUPPORTED_OUTPUT_DTYPES:
         raise UnsupportedOpError(
-            f"{node.op_type} output dtype must be float, "
-            f"got {output_dtype.onnx_name}"
+            f"{node.op_type} output dtype must be float, got {output_dtype.onnx_name}"
         )
     if len(input_shape) not in {1, 2}:
         raise UnsupportedOpError(
@@ -89,14 +86,11 @@ def lower_tfidf_vectorizer(graph: Graph, node: Node) -> TfIdfVectorizerOp:
         )
     mode_value = node.attrs.get("mode")
     if mode_value is None:
-        raise UnsupportedOpError(
-            f"{node.op_type} requires mode attribute"
-        )
+        raise UnsupportedOpError(f"{node.op_type} requires mode attribute")
     mode = _decode_mode(mode_value)
     if mode not in _SUPPORTED_MODES:
         raise UnsupportedOpError(
-            f"{node.op_type} mode must be one of {sorted(_SUPPORTED_MODES)}, "
-            f"got {mode}"
+            f"{node.op_type} mode must be one of {sorted(_SUPPORTED_MODES)}, got {mode}"
         )
     min_gram_length = int(node.attrs.get("min_gram_length", 0))
     max_gram_length = int(node.attrs.get("max_gram_length", 0))
@@ -111,9 +105,7 @@ def lower_tfidf_vectorizer(graph: Graph, node: Node) -> TfIdfVectorizerOp:
             f"max_gram_length {max_gram_length}"
         )
     if max_skip_count < 0:
-        raise UnsupportedOpError(
-            f"{node.op_type} max_skip_count must be non-negative"
-        )
+        raise UnsupportedOpError(f"{node.op_type} max_skip_count must be non-negative")
     ngram_counts = _ensure_int_list(
         node.attrs.get("ngram_counts"), name="ngram_counts", node=node
     )
@@ -121,34 +113,21 @@ def lower_tfidf_vectorizer(graph: Graph, node: Node) -> TfIdfVectorizerOp:
         node.attrs.get("ngram_indexes"), name="ngram_indexes", node=node
     )
     if "pool_strings" in node.attrs:
-        raise UnsupportedOpError(
-            f"{node.op_type} string pools are not supported"
-        )
+        raise UnsupportedOpError(f"{node.op_type} string pools are not supported")
     pool_int64s = _ensure_int_list(
         node.attrs.get("pool_int64s"), name="pool_int64s", node=node
     )
-    weights = _ensure_float_list(
-        node.attrs.get("weights"), name="weights", node=node
-    )
+    weights = _ensure_float_list(node.attrs.get("weights"), name="weights", node=node)
     if len(ngram_counts) < max_gram_length:
         raise UnsupportedOpError(
             f"{node.op_type} ngram_counts length must be >= max_gram_length"
         )
     if ngram_counts and ngram_counts[0] != 0:
-        raise UnsupportedOpError(
-            f"{node.op_type} ngram_counts must start with 0"
-        )
+        raise UnsupportedOpError(f"{node.op_type} ngram_counts must start with 0")
     if any(value < 0 for value in ngram_counts):
-        raise UnsupportedOpError(
-            f"{node.op_type} ngram_counts must be non-negative"
-        )
-    if any(
-        later < earlier
-        for earlier, later in zip(ngram_counts, ngram_counts[1:])
-    ):
-        raise UnsupportedOpError(
-            f"{node.op_type} ngram_counts must be non-decreasing"
-        )
+        raise UnsupportedOpError(f"{node.op_type} ngram_counts must be non-negative")
+    if any(later < earlier for earlier, later in zip(ngram_counts, ngram_counts[1:])):
+        raise UnsupportedOpError(f"{node.op_type} ngram_counts must be non-decreasing")
     pool_size = len(pool_int64s)
     if ngram_counts and ngram_counts[-1] > pool_size:
         raise UnsupportedOpError(
@@ -158,9 +137,7 @@ def lower_tfidf_vectorizer(graph: Graph, node: Node) -> TfIdfVectorizerOp:
     for gram_length in range(1, max_gram_length + 1):
         start = ngram_counts[gram_length - 1]
         end = (
-            ngram_counts[gram_length]
-            if gram_length < len(ngram_counts)
-            else pool_size
+            ngram_counts[gram_length] if gram_length < len(ngram_counts) else pool_size
         )
         count = end - start
         if count < 0 or count % gram_length != 0:

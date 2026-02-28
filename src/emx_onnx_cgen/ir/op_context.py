@@ -38,9 +38,7 @@ class OpContext:
     def set_derived(self, op: object, key: str, value: object) -> None:
         self._derived.setdefault(id(op), {})[key] = value
 
-    def get_derived(
-        self, op: object, key: str, default: object = _MISSING
-    ) -> object:
+    def get_derived(self, op: object, key: str, default: object = _MISSING) -> object:
         derived = self._derived.get(id(op), {})
         if key in derived:
             return derived[key]
@@ -52,9 +50,7 @@ class OpContext:
         derived = self._derived.get(id(op), {})
         if key in derived:
             return derived[key]
-        raise KeyError(
-            f"Missing derived value '{key}' for op {op.__class__.__name__}"
-        )
+        raise KeyError(f"Missing derived value '{key}' for op {op.__class__.__name__}")
 
     def copy_derived(self, source_op: object, target_op: object) -> None:
         derived = self._derived.get(id(source_op))

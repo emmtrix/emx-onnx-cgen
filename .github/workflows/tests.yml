@@ -31,6 +31,9 @@ jobs:
           git submodule update --init --recursive
           python -m pip install -r requirements-ci.txt
 
+      - name: Auto-format with Ruff
+        run: ruff format src tests
+
       - name: Run Ruff
         run: ruff check src tests
 

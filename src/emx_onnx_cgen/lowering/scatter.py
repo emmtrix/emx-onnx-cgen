@@ -60,7 +60,7 @@ def lower_scatter(graph: Graph, node: Node) -> ScatterOp:
     indices_dtype = value_dtype(graph, indices_name, node)
     if indices_dtype not in {ScalarType.I32, ScalarType.I64}:
         raise UnsupportedOpError(
-            "Scatter indices must be int32 or int64, " f"got {indices_dtype.onnx_name}"
+            f"Scatter indices must be int32 or int64, got {indices_dtype.onnx_name}"
         )
 
     return ScatterOp(

@@ -10,14 +10,13 @@ from .common import value_shape as _value_shape
 from .registry import register_lowering
 
 
-def _broadcast_shape(shapes: tuple[tuple[int, ...], ...], node: Node) -> tuple[int, ...]:
+def _broadcast_shape(
+    shapes: tuple[tuple[int, ...], ...], node: Node
+) -> tuple[int, ...]:
     if not shapes:
         return ()
     max_rank = max(len(shape) for shape in shapes)
-    padded = [
-        (1,) * (max_rank - len(shape)) + shape
-        for shape in shapes
-    ]
+    padded = [(1,) * (max_rank - len(shape)) + shape for shape in shapes]
     broadcast: list[int] = []
     for dims in zip(*padded):
         dim = max(dims)

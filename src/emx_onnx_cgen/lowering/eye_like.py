@@ -24,9 +24,7 @@ def lower_eye_like(graph: Graph, node: Node) -> EyeLikeOp:
     if dtype_attr is not None:
         target_dtype = scalar_type_from_onnx(int(dtype_attr))
         if target_dtype is None:
-            raise UnsupportedOpError(
-                f"EyeLike dtype {dtype_attr} is not supported"
-            )
+            raise UnsupportedOpError(f"EyeLike dtype {dtype_attr} is not supported")
         if output_dtype != target_dtype:
             raise UnsupportedOpError(
                 "EyeLike output dtype must match dtype attribute, "

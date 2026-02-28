@@ -9,9 +9,7 @@ from .registry import register_lowering
 
 
 @register_lowering("InstanceNormalization")
-def lower_instance_normalization(
-    graph: Graph, node: Node
-) -> InstanceNormalizationOp:
+def lower_instance_normalization(graph: Graph, node: Node) -> InstanceNormalizationOp:
     if len(node.inputs) != 3 or len(node.outputs) != 1:
         raise UnsupportedOpError(
             "InstanceNormalization must have 3 inputs and 1 output"

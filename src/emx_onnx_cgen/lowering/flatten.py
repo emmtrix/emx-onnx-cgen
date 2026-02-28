@@ -15,9 +15,7 @@ def _normalize_axis(axis: int, rank: int) -> int:
     return axis
 
 
-def _flatten_output_shape(
-    input_shape: tuple[int, ...], axis: int
-) -> tuple[int, int]:
+def _flatten_output_shape(input_shape: tuple[int, ...], axis: int) -> tuple[int, int]:
     rank = len(input_shape)
     axis = _normalize_axis(axis, rank)
     if rank == 0:
@@ -47,8 +45,7 @@ def lower_flatten(graph: Graph, node: Node) -> ReshapeOp:
     expected_shape = value_shape(graph, node.outputs[0], node)
     if expected_shape and output_shape != expected_shape:
         raise ShapeInferenceError(
-            "Flatten output shape must be "
-            f"{output_shape}, got {expected_shape}"
+            f"Flatten output shape must be {output_shape}, got {expected_shape}"
         )
     return ReshapeOp(
         input0=node.inputs[0],

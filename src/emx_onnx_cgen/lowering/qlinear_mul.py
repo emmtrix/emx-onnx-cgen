@@ -24,9 +24,7 @@ def _ensure_scalar_input(
 
 def _ensure_scale_dtype(dtype: ScalarType, label: str) -> None:
     if not dtype.is_float:
-        raise UnsupportedOpError(
-            f"QLinearMul {label} must be float16/float/double"
-        )
+        raise UnsupportedOpError(f"QLinearMul {label} must be float16/float/double")
 
 
 @register_lowering("QLinearMul")
@@ -35,9 +33,7 @@ def lower_qlinear_mul(graph: Graph, node: Node) -> QLinearMulOp:
         raise UnsupportedOpError("QLinearMul must have 8 inputs and 1 output")
     input0_shape = _value_shape(graph, node.inputs[0], node)
     input1_shape = _value_shape(graph, node.inputs[3], node)
-    output_shape = BroadcastingOpBase.broadcast_shapes(
-        input0_shape, input1_shape
-    )
+    output_shape = BroadcastingOpBase.broadcast_shapes(input0_shape, input1_shape)
     expected_output_shape = _value_shape(graph, node.outputs[0], node)
     if expected_output_shape != output_shape:
         raise ShapeInferenceError(
@@ -52,9 +48,7 @@ def lower_qlinear_mul(graph: Graph, node: Node) -> QLinearMulOp:
     if input1_dtype not in {ScalarType.U8, ScalarType.I8}:
         raise UnsupportedOpError("QLinearMul supports uint8/int8 inputs only")
     if output_dtype not in {ScalarType.U8, ScalarType.I8}:
-        raise UnsupportedOpError(
-            "QLinearMul supports uint8/int8 outputs only"
-        )
+        raise UnsupportedOpError("QLinearMul supports uint8/int8 outputs only")
     input0_scale_dtype = _value_dtype(graph, node.inputs[1], node)
     input1_scale_dtype = _value_dtype(graph, node.inputs[4], node)
     output_scale_dtype = _value_dtype(graph, node.inputs[6], node)
@@ -70,15 +64,9 @@ def lower_qlinear_mul(graph: Graph, node: Node) -> QLinearMulOp:
         raise UnsupportedOpError("QLinearMul b_zero_point dtype must match b")
     if output_zero_dtype != output_dtype:
         raise UnsupportedOpError("QLinearMul y_zero_point dtype must match y")
-    input0_scale_shape = _ensure_scalar_input(
-        graph, node.inputs[1], node, "a_scale"
-    )
-    input1_scale_shape = _ensure_scalar_input(
-        graph, node.inputs[4], node, "b_scale"
-    )
-    output_scale_shape = _ensure_scalar_input(
-        graph, node.inputs[6], node, "y_scale"
-    )
+    input0_scale_shape = _ensure_scalar_input(graph, node.inputs[1], node, "a_scale")
+    input1_scale_shape = _ensure_scalar_input(graph, node.inputs[4], node, "b_scale")
+    output_scale_shape = _ensure_scalar_input(graph, node.inputs[6], node, "y_scale")
     input0_zero_shape = _ensure_scalar_input(
         graph, node.inputs[2], node, "a_zero_point"
     )

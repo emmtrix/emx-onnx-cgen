@@ -43,9 +43,7 @@ def _validate_shape(shape: tuple[int, ...], node: Node, label: str) -> None:
             )
 
 
-def _normalize_axes(
-    axes: list[int], input_rank: int, node: Node
-) -> tuple[int, ...]:
+def _normalize_axes(axes: list[int], input_rank: int, node: Node) -> tuple[int, ...]:
     normalized: list[int] = []
     for axis in axes:
         if axis < 0:
@@ -83,9 +81,7 @@ def _expected_output_shape(
     input_shape: tuple[int, ...], axes: tuple[int, ...]
 ) -> tuple[int, ...]:
     axis_set = set(axes)
-    return tuple(
-        dim for index, dim in enumerate(input_shape) if index not in axis_set
-    )
+    return tuple(dim for index, dim in enumerate(input_shape) if index not in axis_set)
 
 
 def _validate_output_shape_for_unknown_axes(
@@ -135,8 +131,7 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
             expected_shape = tuple(dim for dim in input_shape if dim != 1)
             if expected_shape != output_shape:
                 raise ShapeInferenceError(
-                    "Squeeze output shape must be "
-                    f"{expected_shape}, got {output_shape}"
+                    f"Squeeze output shape must be {expected_shape}, got {output_shape}"
                 )
     else:
         normalized_axes = _normalize_axes(list(axes), len(input_shape), node)
@@ -148,8 +143,7 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
         expected_shape = _expected_output_shape(input_shape, normalized_axes)
         if expected_shape != output_shape:
             raise ShapeInferenceError(
-                "Squeeze output shape must be "
-                f"{expected_shape}, got {output_shape}"
+                f"Squeeze output shape must be {expected_shape}, got {output_shape}"
             )
     return ReshapeOp(
         input0=node.inputs[0],

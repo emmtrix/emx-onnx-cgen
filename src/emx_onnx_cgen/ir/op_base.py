@@ -295,14 +295,13 @@ class GatherLikeOpBase(RenderableOpBase):
             axis += len(data_shape)
         if axis < 0 or axis >= len(data_shape):
             raise ShapeInferenceError(
-                f"{self.kind} axis {axis} is out of range for rank "
-                f"{len(data_shape)}"
+                f"{self.kind} axis {axis} is out of range for rank {len(data_shape)}"
             )
         if self._gather_mode() == "gather":
             output_shape = data_shape[:axis] + indices_shape + data_shape[axis + 1 :]
         else:
             raise UnsupportedOpError(
-                f"{self.kind} does not support gather mode " f"{self._gather_mode()}"
+                f"{self.kind} does not support gather mode {self._gather_mode()}"
             )
         try:
             expected = ctx.shape(self._gather_output())

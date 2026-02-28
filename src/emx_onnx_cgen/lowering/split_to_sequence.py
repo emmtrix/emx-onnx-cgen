@@ -37,7 +37,9 @@ def _split_metadata(
         if split_values is None:
             return None, True
         if len(split_values) != 1:
-            raise ShapeInferenceError("SplitToSequence scalar split must contain one value")
+            raise ShapeInferenceError(
+                "SplitToSequence scalar split must contain one value"
+            )
         split_size = split_values[0]
         if split_size <= 0:
             raise ShapeInferenceError("SplitToSequence scalar split must be positive")
@@ -48,7 +50,9 @@ def _split_metadata(
         return tuple(sizes), True
 
     if len(split_shape) != 1:
-        raise UnsupportedOpError("SplitToSequence split input must be a scalar or 1D tensor")
+        raise UnsupportedOpError(
+            "SplitToSequence split input must be a scalar or 1D tensor"
+        )
 
     split_values = resolve_int_list_from_value(graph, split_name, node)
     if split_values is None:
@@ -56,7 +60,9 @@ def _split_metadata(
     if any(size <= 0 for size in split_values):
         raise ShapeInferenceError("SplitToSequence split sizes must be positive")
     if sum(split_values) != axis_size:
-        raise ShapeInferenceError("SplitToSequence split sizes must sum to axis dimension")
+        raise ShapeInferenceError(
+            "SplitToSequence split sizes must sum to axis dimension"
+        )
     return tuple(split_values), False
 
 

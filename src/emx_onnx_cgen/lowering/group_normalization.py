@@ -9,13 +9,9 @@ from .registry import register_lowering
 
 
 @register_lowering("GroupNormalization")
-def lower_group_normalization(
-    graph: Graph, node: Node
-) -> GroupNormalizationOp:
+def lower_group_normalization(graph: Graph, node: Node) -> GroupNormalizationOp:
     if len(node.inputs) != 3 or len(node.outputs) != 1:
-        raise UnsupportedOpError(
-            "GroupNormalization must have 3 inputs and 1 output"
-        )
+        raise UnsupportedOpError("GroupNormalization must have 3 inputs and 1 output")
     op_dtype = node_dtype(graph, node, *node.inputs, *node.outputs)
     if not op_dtype.is_float:
         raise UnsupportedOpError(
@@ -25,9 +21,7 @@ def lower_group_normalization(
     output_shape = value_shape(graph, node.outputs[0], node)
     ensure_output_shape_matches_input(node, input_shape, output_shape)
     if len(input_shape) < 3:
-        raise ShapeInferenceError(
-            "GroupNormalization expects input rank of at least 3"
-        )
+        raise ShapeInferenceError("GroupNormalization expects input rank of at least 3")
     channels = input_shape[1]
     num_groups_attr = node.attrs.get("num_groups")
     if num_groups_attr is None:
@@ -50,9 +44,7 @@ def lower_group_normalization(
     epsilon = float(node.attrs.get("epsilon", 1e-5))
     stash_type = int(node.attrs.get("stash_type", 1))
     if stash_type != 1:
-        raise UnsupportedOpError(
-            "GroupNormalization supports stash_type=1 only"
-        )
+        raise UnsupportedOpError("GroupNormalization supports stash_type=1 only")
     return GroupNormalizationOp(
         input0=node.inputs[0],
         scale=node.inputs[1],

@@ -30,26 +30,18 @@ def _read_split_sizes(graph: Graph, name: str, node: Node) -> list[int] | None:
     if initializer is None:
         return None
     if initializer.type.dtype not in {ScalarType.I64, ScalarType.I32}:
-        raise UnsupportedOpError(
-            f"{node.op_type} split input must be int64 or int32"
-        )
+        raise UnsupportedOpError(f"{node.op_type} split input must be int64 or int32")
     if len(initializer.type.shape) != 1:
-        raise UnsupportedOpError(
-            f"{node.op_type} split input must be a 1D tensor"
-        )
+        raise UnsupportedOpError(f"{node.op_type} split input must be a 1D tensor")
     values = np.array(initializer.data, dtype=np.int64).reshape(-1)
     if values.size == 0:
-        raise ShapeInferenceError(
-            f"{node.op_type} split input cannot be empty"
-        )
+        raise ShapeInferenceError(f"{node.op_type} split input cannot be empty")
     return [int(value) for value in values]
 
 
 def _validate_static_dims(shape: tuple[int, ...], node: Node) -> None:
     if any(dim < 0 for dim in shape):
-        raise ShapeInferenceError(
-            f"{node.op_type} does not support dynamic dims"
-        )
+        raise ShapeInferenceError(f"{node.op_type} does not support dynamic dims")
 
 
 def _validate_output_ranks(
@@ -94,9 +86,7 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
     input_shape = value_shape(graph, input_name, node)
     _validate_static_dims(input_shape, node)
     axis = normalize_axis(int(node.attrs.get("axis", 0)), input_shape, node)
-    output_shapes = [
-        value_shape(graph, output, node) for output in node.outputs
-    ]
+    output_shapes = [value_shape(graph, output, node) for output in node.outputs]
     _validate_output_ranks(output_shapes, input_shape, node)
     input_dtype = value_dtype(graph, input_name, node)
     output_dtypes = {value_dtype(graph, output, node) for output in node.outputs}
@@ -104,9 +94,7 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
         dtype_names = ", ".join(
             dtype.onnx_name for dtype in sorted(output_dtypes, key=str)
         )
-        raise UnsupportedOpError(
-            f"Split expects matching dtypes, got {dtype_names}"
-        )
+        raise UnsupportedOpError(f"Split expects matching dtypes, got {dtype_names}")
     split_name = optional_name(node.inputs, 1)
     if split_name is not None and "num_outputs" in node.attrs:
         raise UnsupportedOpError(
@@ -115,9 +103,10 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
     if split_name is not None:
         split_sizes = _read_split_sizes(graph, split_name, node)
         if split_sizes is None:
-            split_shape, split_dtype = value_shape(
-                graph, split_name, node
-            ), value_dtype(graph, split_name, node)
+            split_shape, split_dtype = (
+                value_shape(graph, split_name, node),
+                value_dtype(graph, split_name, node),
+            )
             if split_dtype not in {ScalarType.I64, ScalarType.I32}:
                 raise UnsupportedOpError(
                     f"{node.op_type} split input must be int64 or int32"
@@ -146,17 +135,13 @@ def lower_split(graph: Graph, node: Node) -> SplitOp:
         if any(size < 0 for size in split_sizes):
             raise ShapeInferenceError("Split sizes must be non-negative")
         if sum(split_sizes) != input_shape[axis]:
-            raise ShapeInferenceError(
-                "Split sizes must sum to the axis dimension"
-            )
+            raise ShapeInferenceError("Split sizes must sum to the axis dimension")
     else:
         num_outputs = _normalize_num_outputs(node, len(node.outputs))
         axis_dim = input_shape[axis]
         base = axis_dim // num_outputs
         remainder = axis_dim % num_outputs
-        split_sizes = [base + 1] * remainder + [base] * (
-            num_outputs - remainder
-        )
+        split_sizes = [base + 1] * remainder + [base] * (num_outputs - remainder)
     computed_shapes: list[tuple[int, ...]] = []
     for size, output_shape in zip(split_sizes, output_shapes):
         if size < 0:

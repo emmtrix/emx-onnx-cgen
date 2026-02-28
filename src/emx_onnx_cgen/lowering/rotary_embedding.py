@@ -65,9 +65,7 @@ def _resolve_rotary_spec(
             "RotaryEmbedding rotary_embedding_dim must be in [0, head_size]"
         )
     if rotary_dim % 2 != 0:
-        raise ShapeInferenceError(
-            "RotaryEmbedding rotary_embedding_dim must be even"
-        )
+        raise ShapeInferenceError("RotaryEmbedding rotary_embedding_dim must be even")
     rotary_dim_half = rotary_dim // 2
     return RotaryEmbeddingSpec(
         batch=batch,
@@ -90,22 +88,16 @@ def lower_rotary_embedding(graph: Graph, node: Node) -> RotaryEmbeddingOp:
     cos_dtype = value_dtype(graph, cos_name, node)
     sin_dtype = value_dtype(graph, sin_name, node)
     if cos_dtype != dtype or sin_dtype != dtype:
-        raise ShapeInferenceError(
-            "RotaryEmbedding inputs must share the same dtype"
-        )
+        raise ShapeInferenceError("RotaryEmbedding inputs must share the same dtype")
     spec = _resolve_rotary_spec(graph, node, dtype)
     input_shape = value_shape(graph, input_name, node)
     output_shape = value_shape(graph, node.outputs[0], node)
     if output_shape != input_shape:
-        raise ShapeInferenceError(
-            "RotaryEmbedding output shape must match input shape"
-        )
+        raise ShapeInferenceError("RotaryEmbedding output shape must match input shape")
     cos_shape = value_shape(graph, cos_name, node)
     sin_shape = value_shape(graph, sin_name, node)
     if cos_shape != sin_shape:
-        raise ShapeInferenceError(
-            "RotaryEmbedding cos/sin cache shapes must match"
-        )
+        raise ShapeInferenceError("RotaryEmbedding cos/sin cache shapes must match")
     position_shape = None
     position_dtype = None
     if position_ids is not None:

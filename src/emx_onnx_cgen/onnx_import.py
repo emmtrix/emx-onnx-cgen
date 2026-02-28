@@ -976,7 +976,9 @@ def _expand_if_node(
             selected_inputs = then_inputs if then_inputs else else_inputs
             selected_map = then_map if then_inputs else else_map
             selected_elements = [
-                selected_map.get(elem) for elem in selected_inputs if selected_map.get(elem)
+                selected_map.get(elem)
+                for elem in selected_inputs
+                if selected_map.get(elem)
             ]
             if len(selected_elements) != len(selected_inputs):
                 return None

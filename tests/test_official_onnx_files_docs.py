@@ -53,9 +53,7 @@ def _render_onnx_file_support_table(
         if extra_args:
             flag_text = " ".join(extra_args)
             message = f"{message} (flags: {flag_text})".strip()
-        lines.append(
-            f"| {expectation.path} | {opset} | {supported} | {message} |"
-        )
+        lines.append(f"| {expectation.path} | {opset} | {supported} | {message} |")
     return lines
 
 
@@ -69,9 +67,7 @@ def _render_onnx_file_support_section(
         1 for expectation in expectations if _is_success_message(expectation.error)
     )
     total_count = len(expectations)
-    support_percent = (
-        (supported_count / total_count) * 100.0 if total_count else 0.0
-    )
+    support_percent = (supported_count / total_count) * 100.0 if total_count else 0.0
     return [
         f"## {title}",
         "",
@@ -96,7 +92,9 @@ def _render_onnx_file_support_markdown(
     )
     official_total_count = len(official_expectations)
     local_supported_count = sum(
-        1 for expectation in local_expectations if _is_success_message(expectation.error)
+        1
+        for expectation in local_expectations
+        if _is_success_message(expectation.error)
     )
     local_total_count = len(local_expectations)
     official_support_percent = (
@@ -202,12 +200,8 @@ def _render_error_histogram_markdown(
         errors.append(sanitized_error)
         if expectation.opset_version is None:
             continue
-        error_opsets.setdefault(sanitized_error, set()).add(
-            expectation.opset_version
-        )
-        error_opset_pairs.append(
-            (sanitized_error, expectation.opset_version)
-        )
+        error_opsets.setdefault(sanitized_error, set()).add(expectation.opset_version)
+        error_opset_pairs.append((sanitized_error, expectation.opset_version))
     counts = Counter(errors)
     if not counts:
         return ""
@@ -334,9 +328,7 @@ def test_official_onnx_file_support_doc() -> None:
         )
 
     repo_root = _repo_root()
-    local_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(
-        repo_root
-    ).as_posix()
+    local_prefix = LOCAL_ONNX_DATA_ROOT.relative_to(repo_root).as_posix()
     local_expectations: list[OnnxFileExpectation] = []
     for local_path in _local_onnx_file_paths():
         repo_relative = f"{local_prefix}/{local_path}"
@@ -351,9 +343,7 @@ def test_official_onnx_file_support_doc() -> None:
             )
         )
 
-    local_repo_prefix = LOCAL_REPO_ONNX_DATA_ROOT.relative_to(
-        repo_root
-    ).as_posix()
+    local_repo_prefix = LOCAL_REPO_ONNX_DATA_ROOT.relative_to(repo_root).as_posix()
     local_repo_expectations: list[OnnxFileExpectation] = []
     for local_path in _local_repo_onnx_file_paths():
         repo_relative = f"{local_repo_prefix}/{local_path}"
