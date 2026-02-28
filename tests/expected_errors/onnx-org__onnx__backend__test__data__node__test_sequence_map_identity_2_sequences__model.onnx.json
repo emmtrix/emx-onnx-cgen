@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op SequenceMap",
+  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=35691269)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceMap"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "881ac35befb02263c6ce6cd008cbca06c64ec38bfa40d31f47e00a88d6d66cf1"
 }
