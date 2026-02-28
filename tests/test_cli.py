@@ -219,7 +219,10 @@ def test_select_runtime_backend_auto_uses_onnxruntime_for_custom_domains() -> No
     )
     runtime_name, runtime_note = cli._select_runtime_backend("auto", model)
     assert runtime_name == "onnxruntime"
-    assert runtime_note == "Runtime: auto selected onnxruntime for custom domains com.example"
+    assert (
+        runtime_note
+        == "Runtime: auto selected onnxruntime for custom domains com.example"
+    )
 
 
 def test_select_runtime_backend_explicit_backend_is_fixed() -> None:

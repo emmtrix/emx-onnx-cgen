@@ -12,10 +12,10 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
+| Out of tolerance | 15 | 8, 9, 11, 19, 22 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 8 | 8, 9, 19, 22 |
 | Unsupported op Loop | 7 | 16, 17 |
 | Unsupported op CenterCropPad | 6 | 18 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -55,6 +55,8 @@ This histogram is test-suite-overarching.
 | Unsupported op STFT | 2 | 17 |
 | Unsupported op TreeEnsemble | 2 |  |
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
+| cannot reshape array of size 16 into shape (1,25) | 2 |  |
+| cannot reshape array of size 32 into shape (1,50) | 2 |  |
 | Arrays are not equal (max abs diff 247) | 1 | 21 |
 | Arrays are not equal (max abs diff 248) | 1 | 21 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
@@ -68,16 +70,19 @@ This histogram is test-suite-overarching.
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op RandomUniform | 1 | 22 |
 | Unsupported op TreeEnsembleClassifier | 1 | 12 |
-| onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
+| cannot reshape array of size 4 into shape (1,9) | 1 |  |
+| cannot reshape array of size 48 into shape (1,75) | 1 |  |
+| onnx-reference failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: operands could not be broadcast together with shapes (2,4) (2,) (2,4)  | 1 | 12 |
 
 ## Error frequency by opset
 
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
-| Out of tolerance | 9 | 1 |
+| Out of tolerance | 9 | 7 |
+| Out of tolerance | 11 | 1 |
 | Unsupported op TreeEnsembleClassifier | 12 | 1 |
-| onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| onnx-reference failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: operands could not be broadcast together with shapes (2,4) (2,) (2,4)  | 12 | 1 |
 | Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op Loop | 17 | 6 |

@@ -1,5 +1,5 @@
 {
-  "error": "onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast",
+  "error": "onnx-reference failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: operands could not be broadcast together with shapes (2,4) (2,) (2,4) ",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/local_ops/test_gemm_CM_transA model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Gemm"

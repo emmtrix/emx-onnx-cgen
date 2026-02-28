@@ -1,11 +1,4 @@
 {
-  "error": "OK (max ULP 2)",
-  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_2kernels_randombias.onnx",
-  "operators": [
-    "Transpose",
-    "Conv",
-    "Flatten"
-  ],
-  "opset_version": 11,
-  "generated_checksum": "79f6a540331ef9bbc9a2558a8f570bd2119506d7ebaa2cb70ae6dc68deec05bc"
+  "error": "cannot reshape array of size 32 into shape (1,50)",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_2kernels_randombias.onnx"
 }

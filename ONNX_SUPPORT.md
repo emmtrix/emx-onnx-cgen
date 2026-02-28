@@ -4,8 +4,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1476 / 1802, 81.9% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 111 / 125, 88.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -16,19 +16,19 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1482 / 1802 ONNX files (82.2%).
+Coverage 1476 / 1802 ONNX files (81.9%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
-| light/light_bvlc_alexnet.onnx | 9 | ✅ | OK (max ULP 0) |
-| light/light_densenet121.onnx | 9 | ✅ | OK (max ULP 71) |
-| light/light_inception_v1.onnx | 9 | ✅ | OK (max ULP 0) |
+| light/light_bvlc_alexnet.onnx | 9 | ❌ | Out of tolerance (max ULP 981668463) |
+| light/light_densenet121.onnx | 9 | ❌ | Out of tolerance (max ULP 50389) |
+| light/light_inception_v1.onnx | 9 | ❌ | Out of tolerance (max ULP 981668463) |
 | light/light_inception_v2.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_resnet50.onnx | 9 | ✅ | OK (max ULP 0) |
 | light/light_shufflenet.onnx | 9 | ✅ | OK (max ULP 0) |
-| light/light_squeezenet.onnx | 9 | ✅ | OK (max ULP 0) |
-| light/light_vgg19.onnx | 9 | ✅ | OK (max ULP 0) |
-| light/light_zfnet512.onnx | 9 | ✅ | OK (max ULP 0) |
+| light/light_squeezenet.onnx | 9 | ❌ | Out of tolerance (max ULP 83684753) |
+| light/light_vgg19.onnx | 9 | ❌ | Out of tolerance (max ULP 981668463) |
+| light/light_zfnet512.onnx | 9 | ❌ | Out of tolerance (max ULP 981668463) |
 | node/test_abs/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_acos/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_acos_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1827,7 +1827,7 @@ Coverage 1482 / 1802 ONNX files (82.2%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 118 / 125 ONNX files (94.4%).
+Coverage 111 / 125 ONNX files (88.8%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1847,7 +1847,7 @@ Coverage 118 / 125 ONNX files (94.4%).
 | local_ops/test_gemm_C1xN/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_C1xN_transA/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_C1xN_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 1) |
-| local_ops/test_gemm_CM_transA/model.onnx | 12 | ❌ | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'sclbl-onnx-node1' Status Message: Gemm: Invalid bias shape for broadcast |
+| local_ops/test_gemm_CM_transA/model.onnx | 12 | ❌ | onnx-reference failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: operands could not be broadcast together with shapes (2,4) (2,) (2,4) |
 | local_ops/test_gemm_CMx1/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_gemm_CMx1_transA/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_gemm_CMx1_transA_transB/model.onnx | 12 | ✅ | OK (max ULP 0) |
@@ -1935,17 +1935,17 @@ Coverage 118 / 125 ONNX files (94.4%).
 | old_onnx_backend/9/test_slice_default_axes/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_end_out_of_bounds/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_neg/model.onnx | 9 | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | ✅ | OK (max ULP 2) |
-| simple_networks/conv_2kernels.onnx | 11 | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2kernels_randombias.onnx | 11 | ✅ | OK (max ULP 2) |
-| simple_networks/conv_3ch.onnx | 11 | ✅ | OK (max ULP 1) |
-| simple_networks/conv_k2.onnx | 11 | ✅ | OK (max ULP 0) |
+| simple_networks/conv_2ch_3kernels_randombias.onnx |  | ❌ | cannot reshape array of size 48 into shape (1,75) |
+| simple_networks/conv_2kernels.onnx |  | ❌ | cannot reshape array of size 32 into shape (1,50) |
+| simple_networks/conv_2kernels_randombias.onnx |  | ❌ | cannot reshape array of size 32 into shape (1,50) |
+| simple_networks/conv_3ch.onnx |  | ❌ | cannot reshape array of size 16 into shape (1,25) |
+| simple_networks/conv_k2.onnx |  | ❌ | cannot reshape array of size 16 into shape (1,25) |
 | simple_networks/conv_k2_maxpool_k2.onnx | 12 | ✅ | OK (max ULP 0) |
-| simple_networks/conv_k2_s2.onnx | 11 | ✅ | OK (max ULP 0) |
+| simple_networks/conv_k2_s2.onnx |  | ❌ | cannot reshape array of size 4 into shape (1,9) |
 | simple_networks/fp_bfloat16.onnx | 22 | ❌ | Cast input and output shapes must match |
 | simple_networks/fp_float16.onnx | 22 | ❌ | Cast input and output shapes must match |
 | simple_networks/lstm_k1_b1_r1.onnx | 11 | ✅ | OK (max ULP 0) |
-| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | ✅ | OK (max ULP 0) |
+| simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | ❌ | Out of tolerance (max ULP 18616322) |
 | simple_networks/maxpool_k2.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2_s2.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple_networks/random_uniform.onnx | 22 | ❌ | Unsupported op RandomUniform |
