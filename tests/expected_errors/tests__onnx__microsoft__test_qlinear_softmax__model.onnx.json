@@ -1,0 +1,9 @@
+{
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx/microsoft/test_qlinear_softmax model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "com.microsoft::QLinearSoftmax"
+  ],
+  "opset_version": 15,
+  "generated_checksum": "3dc1e0043c40189ecd074371d1a3d1d07fad622ffb371d0f26561c39652b4407"
+}
