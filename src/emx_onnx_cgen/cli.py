@@ -590,11 +590,11 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     verify_parser.add_argument(
         "--runtime",
-        choices=("onnxruntime", "onnx-reference"),
-        default="onnxruntime",
+        choices=("auto", "onnxruntime", "onnx-reference"),
+        default="auto",
         help=(
-            "Runtime backend for verification (default: onnxruntime; "
-            "options: onnxruntime, onnx-reference)"
+            "Runtime backend for verification (default: auto; "
+            "options: auto, onnxruntime, onnx-reference)"
         ),
     )
     verify_parser.add_argument(
@@ -634,6 +634,27 @@ def _apply_base_dir(args: argparse.Namespace, parser: argparse.ArgumentParser) -
         if not isinstance(value, Path):
             continue
         setattr(args, field, _resolve_with_base_dir(model_base_dir, value))
+
+
+def _select_runtime_backend(
+    requested_runtime: str, model: onnx.ModelProto
+) -> tuple[str, str | None]:
+    if requested_runtime != "auto":
+        return requested_runtime, None
+    custom_domains = sorted(
+        {
+            opset.domain
+            for opset in model.opset_import
+            if opset.domain not in {"", "ai.onnx"}
+        }
+    )
+    if custom_domains:
+        return (
+            "onnxruntime",
+            "Runtime: auto selected onnxruntime for custom domains "
+            f"{', '.join(custom_domains)}",
+        )
+    return "onnx-reference", "Runtime: auto selected onnx-reference"
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -1541,20 +1562,9 @@ def _verify_model(
                 for name, output in testbench_outputs.items()
             }
         else:
-            runtime_name = args.runtime
-            custom_domains = sorted(
-                {
-                    opset.domain
-                    for opset in model.opset_import
-                    if opset.domain not in {"", "ai.onnx"}
-                }
-            )
-            if runtime_name == "onnx-reference" and custom_domains:
-                active_reporter.note(
-                    "Runtime: switching to onnxruntime for custom domains "
-                    f"{', '.join(custom_domains)}"
-                )
-                runtime_name = "onnxruntime"
+            runtime_name, runtime_note = _select_runtime_backend(args.runtime, model)
+            if runtime_note:
+                active_reporter.note(runtime_note)
             runtime_started = active_reporter.start_step(
                 f"  Running {runtime_name} [--runtime={args.runtime}]"
             )

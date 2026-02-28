@@ -1,11 +1,4 @@
 {
-  "error": "OK (max ULP 0)",
-  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_k2_s2.onnx",
-  "operators": [
-    "Transpose",
-    "Conv",
-    "Flatten"
-  ],
-  "opset_version": 11,
-  "generated_checksum": "63e6be4dc0d5a54c25aa2b42631a3e9652d399fc72e0c1ac5a6dfd285a81e8c2"
+  "error": "cannot reshape array of size 4 into shape (1,9)",
+  "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_k2_s2.onnx"
 }
