@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op QLinearSoftmax",
+  "error": "Out of tolerance (max ULP 1058537472)",
   "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx",
   "operators": [
     "Reshape",
