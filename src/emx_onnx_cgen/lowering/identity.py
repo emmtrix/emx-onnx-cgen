@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
-from ..ir.model import Graph, Node
-from ..ir.ops import IdentityOp
+from ..ir.model import Graph, Node, SequenceType
+from ..ir.ops import IdentityOp, SequenceIdentityOp
 from .common import value_dtype, value_has_dim_params, value_shape
 from .registry import register_lowering
 
@@ -12,6 +12,27 @@ from .registry import register_lowering
 def lower_identity(graph: Graph, node: Node) -> IdentityOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
         raise UnsupportedOpError("Identity must have 1 input and 1 output")
+    input_value_type = graph.find_value(node.inputs[0]).type
+    output_value_type = graph.find_value(node.outputs[0]).type
+    if isinstance(input_value_type, SequenceType):
+        if not isinstance(output_value_type, SequenceType):
+            raise UnsupportedOpError(
+                "Identity expects matching input/output types for sequence values"
+            )
+        input_optional = input_value_type.is_optional
+        output_optional = output_value_type.is_optional
+        if input_optional != output_optional:
+            raise UnsupportedOpError(
+                "Identity expects matching optionality for sequence values"
+            )
+        input_present = f"{node.inputs[0]}_present" if input_optional else None
+        output_present = f"{node.outputs[0]}_present" if output_optional else None
+        return SequenceIdentityOp(
+            input_sequence=node.inputs[0],
+            output_sequence=node.outputs[0],
+            input_present=input_present,
+            output_present=output_present,
+        )
     input_shape = value_shape(graph, node.inputs[0], node)
     output_shape = value_shape(graph, node.outputs[0], node)
     if value_has_dim_params(graph, node.outputs[0]) or not output_shape:

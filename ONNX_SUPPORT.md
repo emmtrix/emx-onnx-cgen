@@ -4,6 +4,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1484 / 1802, 82.4% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1482 / 1802, 82.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
@@ -16,7 +18,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1482 / 1802 ONNX files (82.2%).
+Coverage 1484 / 1802 ONNX files (82.4%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -761,8 +763,8 @@ Coverage 1482 / 1802 ONNX files (82.2%).
 | node/test_hardswish/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | node/test_hardswish_expanded/model.onnx | 22 | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_identity_opt/model.onnx | 16 | ❌ | Unsupported non-tensor value 'opt_in' in op Identity. |
-| node/test_identity_sequence/model.onnx | 25 | ❌ | Unsupported non-tensor value 'x' in op Identity. |
+| node/test_identity_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=30123182) |
+| node/test_identity_sequence/model.onnx | 25 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_if_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | node/test_if_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
