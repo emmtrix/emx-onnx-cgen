@@ -4,6 +4,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1503 / 1802, 83.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1500 / 1802, 83.2% | 1.20.1 |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1506 / 1802, 83.6% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
@@ -16,6 +18,8 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
+Coverage 1503 / 1802 ONNX files (83.4%).
+Coverage 1500 / 1802 ONNX files (83.2%).
 Coverage 1506 / 1802 ONNX files (83.6%).
 
 | File | Opset | Supported | Error |
@@ -507,11 +511,11 @@ Coverage 1506 / 1802 ONNX files (83.6%).
 | node/test_clip_outbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_col2im/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_5d/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_dilations/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_pads/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_strides/model.onnx | 18 | ❌ | Unsupported op Col2Im |
+| node/test_col2im/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_5d/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_dilations/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_pads/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_strides/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_compress_0/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_compress_1/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_compress_default_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |

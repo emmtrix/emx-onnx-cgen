@@ -13,6 +13,7 @@ _LOWERING_MODULES = [
     "bernoulli",
     "blackman_window",
     "cast",
+    "col2im",
     "compress",
     "concat",
     "concat_from_sequence",
