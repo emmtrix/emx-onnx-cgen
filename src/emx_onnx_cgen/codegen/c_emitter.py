@@ -49,6 +49,7 @@ from ..ir.ops import (
     ConvOp,
     ConvIntegerOp,
     ConvTransposeOp,
+    DeformConvOp,
     CumSumOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
@@ -649,6 +650,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -737,6 +739,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
         | BatchNormOp
@@ -1328,6 +1331,33 @@ class CEmitter:
                 dilations=op.dilations,
                 output_padding=op.output_padding,
                 group=op.group,
+                dtype=op.dtype,
+            )
+        if isinstance(op, DeformConvOp):
+            return DeformConvOp(
+                input0=name_map.get(op.input0, op.input0),
+                weights=name_map.get(op.weights, op.weights),
+                offset=name_map.get(op.offset, op.offset),
+                bias=self._map_optional_name(name_map, op.bias),
+                mask=self._map_optional_name(name_map, op.mask),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
                 dtype=op.dtype,
             )
         if isinstance(op, AveragePoolOp):
@@ -2330,6 +2360,7 @@ class CEmitter:
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
                 "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
+                "deform_conv": self._env.get_template("deform_conv_op.c.j2"),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
                 "lp_pool": self._env.get_template("lp_pool_op.c.j2"),
                 "batch_norm": self._env.get_template("batch_norm_op.c.j2"),
@@ -3089,6 +3120,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3457,6 +3489,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3601,6 +3634,7 @@ class CEmitter:
                     SoftmaxCrossEntropyLossOp,
                     ResizeOp,
                     GridSampleOp,
+                    DeformConvOp,
                     AffineGridOp,
                 ),
             )
@@ -3666,6 +3700,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3797,6 +3832,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -4098,6 +4134,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -4181,6 +4218,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
         | BatchNormOp
@@ -4912,6 +4950,33 @@ class CEmitter:
                 dilations=op.dilations,
                 output_padding=op.output_padding,
                 group=op.group,
+                dtype=op.dtype,
+            )
+        if isinstance(op, DeformConvOp):
+            return DeformConvOp(
+                input0=temp_map.get(op.input0, op.input0),
+                weights=temp_map.get(op.weights, op.weights),
+                offset=temp_map.get(op.offset, op.offset),
+                bias=temp_map.get(op.bias, op.bias) if op.bias else None,
+                mask=temp_map.get(op.mask, op.mask) if op.mask else None,
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
                 dtype=op.dtype,
             )
         if isinstance(op, AveragePoolOp):
@@ -5869,6 +5934,7 @@ class CEmitter:
             conv_template=templates["conv"],
             conv_integer_template=templates["conv_integer"],
             conv_transpose_template=templates["conv_transpose"],
+            deform_conv_template=templates["deform_conv"],
             avg_pool_template=templates["avg_pool"],
             lp_pool_template=templates["lp_pool"],
             batch_norm_template=templates["batch_norm"],
@@ -6402,6 +6468,7 @@ class CEmitter:
         conv_template,
         conv_integer_template,
         conv_transpose_template,
+        deform_conv_template,
         avg_pool_template,
         lp_pool_template,
         batch_norm_template,
@@ -7997,6 +8064,118 @@ class CEmitter:
                 in_indices=in_indices,
                 kernel_indices=kernel_indices,
                 out_indices=out_indices,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, DeformConvOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("weights", op.weights),
+                    ("offset", op.offset),
+                    ("bias", op.bias),
+                    ("mask", op.mask),
+                    ("output", op.output),
+                ]
+            )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for DeformConv codegen."
+                )
+            acc_dtype = self._accumulation_dtype(op.dtype)
+            acc_type = acc_dtype.c_type
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
+            acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
+            floor_fn = self._scalar_function_name(
+                ScalarFunction.FLOOR, acc_dtype, scalar_registry
+            )
+            if floor_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar floor function for DeformConv."
+                )
+            input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
+            weight_shape = (
+                op.out_channels,
+                op.in_channels // op.group,
+                op.kernel_h,
+                op.kernel_w,
+            )
+            offset_shape = (
+                op.batch,
+                op.offset_group * op.kernel_h * op.kernel_w * 2,
+                op.out_h,
+                op.out_w,
+            )
+            bias_shape = (op.out_channels,)
+            mask_shape = (
+                op.batch,
+                op.offset_group * op.kernel_h * op.kernel_w,
+                op.out_h,
+                op.out_w,
+            )
+            output_shape = (op.batch, op.out_channels, op.out_h, op.out_w)
+            group_in_channels = op.in_channels // op.group
+            group_out_channels = op.out_channels // op.group
+            ics_per_offset_group = op.in_channels // op.offset_group
+            input_suffix = self._param_array_suffix(input_shape)
+            weight_suffix = self._param_array_suffix(weight_shape)
+            offset_suffix = self._param_array_suffix(offset_shape)
+            bias_suffix = self._param_array_suffix(bias_shape)
+            mask_suffix = self._param_array_suffix(mask_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["weights"], c_type, weight_suffix, True),
+                    (params["offset"], c_type, offset_suffix, True),
+                    (
+                        (params["bias"], c_type, bias_suffix, True)
+                        if params["bias"]
+                        else (None, "", "", True)
+                    ),
+                    (
+                        (params["mask"], c_type, mask_suffix, True)
+                        if params["mask"]
+                        else (None, "", "", True)
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = deform_conv_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                weights=params["weights"],
+                offset=params["offset"],
+                bias=params["bias"],
+                mask=params["mask"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                zero_literal=acc_zero_literal,
+                one_literal=acc_one_literal,
+                floor_fn=floor_fn,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                ics_per_offset_group=ics_per_offset_group,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AveragePoolOp):
@@ -13954,6 +14133,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14037,6 +14217,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14307,6 +14488,7 @@ class CEmitter:
             | AttentionOp
             | ConvOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14396,6 +14578,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14929,6 +15112,8 @@ class CEmitter:
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, DeformConvOp):
+            return (op.batch, op.out_channels, op.out_h, op.out_w)
         if isinstance(op, AveragePoolOp):
             if op.spatial_rank == 3:
                 return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
@@ -15102,6 +15287,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp

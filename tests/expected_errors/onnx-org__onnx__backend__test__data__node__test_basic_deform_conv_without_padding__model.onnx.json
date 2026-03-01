@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op DeformConv",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_basic_deform_conv_without_padding model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "DeformConv"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "893297973b98c2565d7b7800c2ec8d66fa63da39c34a537f3ac729d248beb820"
 }
