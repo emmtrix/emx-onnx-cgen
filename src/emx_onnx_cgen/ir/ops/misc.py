@@ -156,6 +156,18 @@ class ScatterNDOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class ScatterElementsOp(RenderableOpBase):
+    __io_inputs__ = ("data", "indices", "updates")
+    __io_outputs__ = ("output",)
+    data: str
+    indices: str
+    updates: str
+    output: str
+    axis: int
+    reduction: str
+
+
+@dataclass(frozen=True)
 class ScatterOp(RenderableOpBase):
     __io_inputs__ = ("data", "indices", "updates")
     __io_outputs__ = ("output",)
