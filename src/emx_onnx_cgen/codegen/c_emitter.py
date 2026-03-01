@@ -2308,9 +2308,7 @@ class CEmitter:
                 "gather": self._env.get_template("gather_op.c.j2"),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
                 "scatter": self._env.get_template("scatter_op.c.j2"),
-                "scatter_elements": self._env.get_template(
-                    "scatter_elements_op.c.j2"
-                ),
+                "scatter_elements": self._env.get_template("scatter_elements_op.c.j2"),
                 "scatter_nd": self._env.get_template("scatter_nd_op.c.j2"),
                 "tensor_scatter": self._env.get_template("tensor_scatter_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
