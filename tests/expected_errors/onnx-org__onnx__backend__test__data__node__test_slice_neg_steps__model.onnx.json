@@ -1,9 +1,8 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Slice only supports positive steps",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_slice_neg_steps model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Slice"
   ],
-  "opset_version": 13,
-  "generated_checksum": "f6c7b4318ce471f358a1ec738d620d527c644e01032df2ed0060756dd9737105"
+  "opset_version": 13
 }

@@ -4,8 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1515 / 1802, 84.1% | 1.20.1 |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1518 / 1802, 84.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1523 / 1802, 84.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -17,8 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1515 / 1802 ONNX files (84.1%).
-Coverage 1518 / 1802 ONNX files (84.2%).
+Coverage 1523 / 1802 ONNX files (84.5%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -509,11 +507,11 @@ Coverage 1518 / 1802 ONNX files (84.2%).
 | node/test_clip_outbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_col2im/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
-| node/test_col2im_5d/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
-| node/test_col2im_dilations/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
-| node/test_col2im_pads/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
-| node/test_col2im_strides/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
+| node/test_col2im/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_5d/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_dilations/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_pads/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_col2im_strides/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_compress_0/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_compress_1/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_compress_default_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
@@ -1509,9 +1507,9 @@ Coverage 1518 / 1802 ONNX files (84.2%).
 | node/test_slice_default_steps/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_slice_end_out_of_bounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_slice_neg/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_slice_neg_steps/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_slice_neg_steps/model.onnx | 13 | ❌ | Slice only supports positive steps |
 | node/test_slice_negative_axes/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_slice_start_out_of_bounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_slice_start_out_of_bounds/model.onnx | 13 | ❌ | Testbench execution failed: exit code 1 |
 | node/test_softmax_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_softmax_axis_0_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_softmax_axis_0_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1814,7 +1812,7 @@ Coverage 1518 / 1802 ONNX files (84.2%).
 | simple/test_sequence_model5/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model6/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model7/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model8/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| simple/test_sequence_model8/model.onnx | 12 | ❌ | SplitToSequence split sizes must be positive |
 | simple/test_shrink/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | simple/test_sign_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | simple/test_single_relu_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
