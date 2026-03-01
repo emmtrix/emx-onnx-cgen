@@ -1,8 +1,9 @@
 {
-  "error": "Col2Im requires image_shape to be a static initializer",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_col2im_5d model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Col2Im"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "90b2e2d3d6f043eecd4be4328ae8a4b73296053244241e0f75af66a4389453e5"
 }

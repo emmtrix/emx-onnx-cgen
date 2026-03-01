@@ -23,9 +23,23 @@ def lower_col2im(graph: Graph, node: Node) -> Col2ImOp:
         )
     image_shape_vals = resolve_int_list_from_value(graph, node.inputs[1], node)
     if image_shape_vals is None:
-        raise UnsupportedOpError(
-            "Col2Im requires image_shape to be a static initializer"
-        )
+        # Derive image_shape from the output tensor shape: output is (N, C, *image_shape)
+        try:
+            output_shape = _value_shape(graph, node.outputs[0], node)
+        except ShapeInferenceError:
+            raise UnsupportedOpError(
+                "Col2Im requires image_shape to be a static initializer "
+                "or the output shape to be known from ONNX shape inference"
+            )
+        if len(output_shape) < 3:
+            raise UnsupportedOpError(
+                f"Col2Im output must have at least 3 dimensions, got {len(output_shape)}"
+            )
+        image_shape_vals = list(output_shape[2:])
+        if any(dim <= 0 for dim in image_shape_vals):
+            raise UnsupportedOpError(
+                f"Col2Im image_shape dimensions must be positive, got {image_shape_vals}"
+            )
     block_shape_vals = resolve_int_list_from_value(graph, node.inputs[2], node)
     if block_shape_vals is None:
         raise UnsupportedOpError(
