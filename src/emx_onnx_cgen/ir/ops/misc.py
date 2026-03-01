@@ -1031,6 +1031,17 @@ class StringNormalizerOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class StringSplitOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output_y", "output_z")
+    input0: str
+    output_y: str
+    output_z: str
+    delimiter: str
+    maxsplit: int
+
+
+@dataclass(frozen=True)
 class TreeEnsembleClassifierOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("label", "probabilities")
