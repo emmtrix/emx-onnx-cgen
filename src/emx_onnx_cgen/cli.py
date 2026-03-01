@@ -388,6 +388,20 @@ def _build_parser() -> argparse.ArgumentParser:
             ),
         )
 
+    def add_runtime_compat_flag(
+        subparser: argparse.ArgumentParser,
+    ) -> None:
+        subparser.add_argument(
+            "--replicate-ort-bugs",
+            action="store_true",
+            default=False,
+            help=(
+                "Verification/debug compatibility mode: replicate known behavior "
+                "differences of the ONNX Runtime version pinned in "
+                "requirements-ci.txt (default: disabled)"
+            ),
+        )
+
     compile_parser = subparsers.add_parser(
         "compile", help="Compile an ONNX model into C source"
     )
@@ -473,6 +487,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_restrict_flags(compile_parser)
     add_fp32_accumulation_strategy_flag(compile_parser)
     add_fp16_accumulation_strategy_flag(compile_parser)
+    add_runtime_compat_flag(compile_parser)
 
     verify_parser = subparsers.add_parser(
         "verify",
@@ -609,6 +624,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add_restrict_flags(verify_parser)
     add_fp32_accumulation_strategy_flag(verify_parser)
     add_fp16_accumulation_strategy_flag(verify_parser)
+    add_runtime_compat_flag(verify_parser)
     return parser
 
 
@@ -735,6 +751,7 @@ def _compile_model(
             restrict_arrays=args.restrict_arrays,
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
+            replicate_ort_bugs=args.replicate_ort_bugs,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
@@ -807,6 +824,7 @@ def _compile_testbench_declarations(
         restrict_arrays=args.restrict_arrays,
         fp32_accumulation_strategy=args.fp32_accumulation_strategy,
         fp16_accumulation_strategy=args.fp16_accumulation_strategy,
+        replicate_ort_bugs=args.replicate_ort_bugs,
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
         large_weight_threshold=args.large_weight_threshold,
@@ -1251,6 +1269,7 @@ def _verify_model(
             restrict_arrays=args.restrict_arrays,
             fp32_accumulation_strategy=args.fp32_accumulation_strategy,
             fp16_accumulation_strategy=args.fp16_accumulation_strategy,
+            replicate_ort_bugs=args.replicate_ort_bugs,
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
