@@ -1240,3 +1240,21 @@ class MaxPoolOp(RenderableOpBase):
     storage_order: int
     dtype: ScalarType
     indices_dtype: ScalarType | None
+
+
+@dataclass(frozen=True)
+class Col2ImOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    batch: int
+    channels: int
+    spatial_rank: int
+    image_shape: tuple[int, ...]
+    block_shape: tuple[int, ...]
+    strides: tuple[int, ...]
+    dilations: tuple[int, ...]
+    pads: tuple[int, ...]
+    out_blocks: tuple[int, ...]
+    dtype: ScalarType
