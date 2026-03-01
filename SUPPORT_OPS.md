@@ -32,7 +32,7 @@ Supported operators: 182 / 205
 | CastLike | ✅ |
 | Ceil | ✅ |
 | Celu | ✅ |
-| CenterCropPad | ❌ |
+| CenterCropPad | ✅ |
 | Clip | ✅ |
 | Col2Im | ❌ |
 | Compress | ✅ |

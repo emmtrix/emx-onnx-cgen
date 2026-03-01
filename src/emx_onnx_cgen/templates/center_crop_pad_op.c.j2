@@ -1,0 +1,25 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_data = ({{ c_type }} *){{ output }};
+    idx_t output_index = 0;
+{% for dim in output_shape %}
+    for (idx_t {{ out_loop_vars[loop.index0] }} = 0; {{ out_loop_vars[loop.index0] }} < {{ dim }}; ++{{ out_loop_vars[loop.index0] }}) {
+{% endfor %}
+        int in_bounds = 1;
+        idx_t input_index = 0;
+{% for i in range(output_shape | length) %}
+        {
+            idx_t in_{{ i }} = (idx_t){{ out_loop_vars[i] }} - (idx_t){{ pad_starts[i] }} + (idx_t){{ crop_starts[i] }};
+            if (in_{{ i }} < 0 || in_{{ i }} >= (idx_t){{ input_shape[i] }}) {
+                in_bounds = 0;
+            } else {
+                input_index += in_{{ i }} * (idx_t){{ input_strides[i] }};
+            }
+        }
+{% endfor %}
+        output_data[output_index] = in_bounds ? input_data[input_index] : ({{ c_type }})0;
+        output_index++;
+{% for _ in output_shape %}
+    }
+{% endfor %}
+}

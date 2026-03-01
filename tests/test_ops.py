@@ -704,6 +704,48 @@ def _make_trilu_model(
     return model
 
 
+def _make_center_crop_pad_model(
+    *,
+    input_shape: list[int],
+    target_shape: list[int],
+    dtype: int,
+    axes: list[int] | None = None,
+    opset: int = 18,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("output", dtype, target_shape)
+    shape_tensor = helper.make_tensor(
+        "shape",
+        TensorProto.INT64,
+        dims=[len(target_shape)],
+        vals=target_shape,
+    )
+    node_attrs: dict = {}
+    if axes is not None:
+        node_attrs["axes"] = axes
+    node = helper.make_node(
+        "CenterCropPad",
+        inputs=["input", "shape"],
+        outputs=["output"],
+        **node_attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "center_crop_pad_graph",
+        [input_info],
+        [output_info],
+        initializer=[shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 8
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_tile_model(
     *,
     input_shape: list[int],
@@ -4397,6 +4439,30 @@ REARRANGE_ORT_CASES = [
         ),
     },
     {
+        "name": "CenterCropPadCrop",
+        "model": lambda: _make_center_crop_pad_model(
+            input_shape=[4, 6],
+            target_shape=[2, 4],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
+        "name": "CenterCropPadPad",
+        "model": lambda: _make_center_crop_pad_model(
+            input_shape=[2, 3],
+            target_shape=[4, 6],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
+        "name": "CenterCropPadMixed",
+        "model": lambda: _make_center_crop_pad_model(
+            input_shape=[6, 2],
+            target_shape=[4, 6],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
         "name": "PadConstant",
         "model": lambda: _make_pad_model(
             input_shape=[2, 3],
@@ -4469,8 +4535,29 @@ REARRANGE_UNIT_CASES = [
         "expected": lambda value: np.tile(value, (2, 3)),
     },
     {
-        "name": "PadConstant",
+        "name": "CenterCropPadCrop",
         "model": REARRANGE_ORT_CASES[3]["model"],
+        "input_name": "input",
+        "input_shape": (4, 6),
+        "expected": lambda value: value[1:3, 1:5],
+    },
+    {
+        "name": "CenterCropPadPad",
+        "model": REARRANGE_ORT_CASES[4]["model"],
+        "input_name": "input",
+        "input_shape": (2, 3),
+        "expected": lambda value: np.pad(value, ((1, 1), (1, 2))),
+    },
+    {
+        "name": "CenterCropPadMixed",
+        "model": REARRANGE_ORT_CASES[5]["model"],
+        "input_name": "input",
+        "input_shape": (6, 2),
+        "expected": lambda value: np.pad(value[1:5, :], ((0, 0), (2, 2))),
+    },
+    {
+        "name": "PadConstant",
+        "model": REARRANGE_ORT_CASES[6]["model"],
         "input_name": "input",
         "input_shape": (2, 3),
         "expected": lambda value: np.pad(
@@ -4479,7 +4566,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "DepthToSpace",
-        "model": REARRANGE_ORT_CASES[4]["model"],
+        "model": REARRANGE_ORT_CASES[7]["model"],
         "input_name": "in0",
         "input_shape": (1, 8, 2, 2),
         "expected": lambda value: _depth_to_space_reference(
@@ -4488,7 +4575,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "SpaceToDepth",
-        "model": REARRANGE_ORT_CASES[5]["model"],
+        "model": REARRANGE_ORT_CASES[8]["model"],
         "input_name": "in0",
         "input_shape": (1, 2, 4, 4),
         "expected": lambda value: _space_to_depth_reference(value, blocksize=2),
@@ -4507,7 +4594,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "ReverseSequence",
-        "model": REARRANGE_ORT_CASES[7]["model"],
+        "model": REARRANGE_ORT_CASES[10]["model"],
         "input_name": "input",
         "input_shape": (4, 3, 2),
         "expected": lambda value: _reverse_sequence_reference(
