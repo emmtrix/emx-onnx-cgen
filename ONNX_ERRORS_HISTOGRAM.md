@@ -34,11 +34,11 @@ This histogram is test-suite-overarching.
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
-| OptionalGetElement expects an optional input. | 2 | 18 |
 | QuantizeLinear block_size is not supported | 2 | 25 |
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
 | Split output shape must be (1,), got (2,) | 2 | 20 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
+| Unsupported non-tensor value '*' in op unknown. | 2 | 18 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op Det | 2 | 22 |
@@ -53,7 +53,6 @@ This histogram is test-suite-overarching.
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
-| Unsupported non-tensor value '*' in op unknown. | 1 | 18 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
@@ -73,9 +72,8 @@ This histogram is test-suite-overarching.
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
-| OptionalGetElement expects an optional input. | 18 | 2 |
+| Unsupported non-tensor value '*' in op unknown. | 18 | 2 |
 | Unsupported op BitwiseNot | 18 | 2 |
-| Unsupported non-tensor value '*' in op unknown. | 18 | 1 |
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |

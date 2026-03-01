@@ -4,8 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1513 / 1802, 84.0% | 1.20.1 |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1524 / 1802, 84.6% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1526 / 1802, 84.7% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -17,8 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1513 / 1802 ONNX files (84.0%).
-Coverage 1524 / 1802 ONNX files (84.6%).
+Coverage 1526 / 1802 ONNX files (84.7%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1066,8 +1064,8 @@ Coverage 1524 / 1802 ONNX files (84.6%).
 | node/test_onehot_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_optional_get_element_optional_sequence/model.onnx | 18 | ❌ | Unsupported non-tensor value 'optional_input' in op unknown. |
 | node/test_optional_get_element_optional_tensor/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_optional_get_element_sequence/model.onnx | 18 | ❌ | OptionalGetElement expects an optional input. |
-| node/test_optional_get_element_tensor/model.onnx | 18 | ❌ | OptionalGetElement expects an optional input. |
+| node/test_optional_get_element_sequence/model.onnx | 18 | ❌ | Unsupported non-tensor value 'optional_input' in op unknown. |
+| node/test_optional_get_element_tensor/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | 18 | ❌ | OptionalHasElement expects exactly one non-empty input. |
 | node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 18 | ❌ | OptionalHasElement expects exactly one non-empty input. |
 | node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 18 | ❌ | OptionalHasElement expects exactly one non-empty input. |
