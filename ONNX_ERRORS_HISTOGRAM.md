@@ -56,6 +56,9 @@ This histogram is test-suite-overarching.
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
+| Slice only supports positive steps | 1 | 13 |
+| SplitToSequence split sizes must be positive | 1 | 12 |
+| Testbench execution failed: exit code 1 | 1 | 13 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
@@ -69,13 +72,14 @@ This histogram is test-suite-overarching.
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
 | Out of tolerance | 9 | 1 |
+| SplitToSequence split sizes must be positive | 12 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| Slice only supports positive steps | 13 | 1 |
+| Testbench execution failed: exit code 1 | 13 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op CenterCropPad | 18 | 6 |
-| Unsupported op ScatterElements | 18 | 6 |
-| Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op OptionalGetElement | 18 | 4 |
 | Unsupported op BitwiseNot | 18 | 2 |

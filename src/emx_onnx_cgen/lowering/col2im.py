@@ -80,19 +80,13 @@ def lower_col2im(graph: Graph, node: Node) -> Col2ImOp:
     image_shape = tuple(int(v) for v in image_shape_values)
     block_shape = tuple(int(v) for v in block_shape_values)
 
-    strides = tuple(
-        int(v) for v in node.attrs.get("strides", (1,) * spatial_rank)
-    )
+    strides = tuple(int(v) for v in node.attrs.get("strides", (1,) * spatial_rank))
     if len(strides) != spatial_rank:
         raise UnsupportedOpError("Col2Im strides rank must match spatial rank")
-    dilations = tuple(
-        int(v) for v in node.attrs.get("dilations", (1,) * spatial_rank)
-    )
+    dilations = tuple(int(v) for v in node.attrs.get("dilations", (1,) * spatial_rank))
     if len(dilations) != spatial_rank:
         raise UnsupportedOpError("Col2Im dilations rank must match spatial rank")
-    pads = tuple(
-        int(v) for v in node.attrs.get("pads", (0,) * (2 * spatial_rank))
-    )
+    pads = tuple(int(v) for v in node.attrs.get("pads", (0,) * (2 * spatial_rank)))
     if len(pads) != 2 * spatial_rank:
         raise UnsupportedOpError("Col2Im pads must have length 2 * spatial_rank")
 
