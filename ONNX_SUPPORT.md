@@ -5,6 +5,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1503 / 1802, 83.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1500 / 1802, 83.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -17,6 +18,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1503 / 1802 ONNX files (83.4%).
+Coverage 1500 / 1802 ONNX files (83.2%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -291,9 +293,9 @@ Coverage 1503 / 1802 ONNX files (83.4%).
 | node/test_bitwise_xor_i32_2d/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_blackmanwindow/model.onnx | 17 | ❌ | Unsupported op BlackmanWindow |
+| node/test_blackmanwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_blackmanwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 4) |
-| node/test_blackmanwindow_symmetric/model.onnx | 17 | ❌ | Unsupported op BlackmanWindow |
+| node/test_blackmanwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_blackmanwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_cast_BFLOAT16_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_cast_DOUBLE_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -739,11 +741,11 @@ Coverage 1503 / 1802 ONNX files (83.4%).
 | node/test_gru_with_initial_bias/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| node/test_hammingwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 5) |
+| node/test_hammingwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hannwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hannwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 3) |
-| node/test_hannwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 5) |
+| node/test_hannwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hannwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hardmax_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_hardmax_axis_1/model.onnx | 13 | ✅ | OK (max ULP 0) |

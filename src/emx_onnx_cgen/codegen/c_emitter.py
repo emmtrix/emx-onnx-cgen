@@ -39,6 +39,7 @@ from ..ir.ops import (
     BatchNormOp,
     BernoulliOp,
     BinaryOp,
+    BlackmanWindowOp,
     CastOp,
     ClipOp,
     CompressOp,
@@ -698,6 +699,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -782,6 +784,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | BlackmanWindowOp
         | HammingWindowOp
         | HannWindowOp
         | OneHotOp
@@ -1957,6 +1960,12 @@ class CEmitter:
                 delta=name_map.get(op.delta, op.delta),
                 output=name_map.get(op.output, op.output),
             )
+        if isinstance(op, BlackmanWindowOp):
+            return BlackmanWindowOp(
+                size=name_map.get(op.size, op.size),
+                output=name_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=name_map.get(op.size, op.size),
@@ -2346,6 +2355,7 @@ class CEmitter:
                 "loop_sequence_insert": self._env.get_template(
                     "loop_sequence_insert_op.c.j2"
                 ),
+                "blackman_window": self._env.get_template("blackman_window_op.c.j2"),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
@@ -3076,6 +3086,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -3434,6 +3445,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -3557,7 +3569,10 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
-        if any(isinstance(op, (HammingWindowOp, HannWindowOp)) for op in resolved_ops):
+        if any(
+            isinstance(op, (BlackmanWindowOp, HammingWindowOp, HannWindowOp))
+            for op in resolved_ops
+        ):
             return True
         return False
 
@@ -3630,6 +3645,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -3758,6 +3774,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -4060,6 +4077,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -4139,6 +4157,7 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | BlackmanWindowOp
         | HammingWindowOp
         | HannWindowOp
         | OneHotOp
@@ -5236,6 +5255,12 @@ class CEmitter:
                 elem_shape=op.elem_shape,
                 elem_dtype=op.elem_dtype,
             )
+        if isinstance(op, BlackmanWindowOp):
+            return BlackmanWindowOp(
+                size=temp_map.get(op.size, op.size),
+                output=temp_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
                 size=temp_map.get(op.size, op.size),
@@ -5783,6 +5808,7 @@ class CEmitter:
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
             loop_sequence_insert_template=templates["loop_sequence_insert"],
+            blackman_window_template=templates["blackman_window"],
             hamming_window_template=templates["hamming_window"],
             hann_window_template=templates["hann_window"],
             one_hot_template=templates["one_hot"],
@@ -6311,6 +6337,7 @@ class CEmitter:
         range_template,
         loop_range_template,
         loop_sequence_insert_template,
+        blackman_window_template,
         hamming_window_template,
         hann_window_template,
         one_hot_template,
@@ -11169,6 +11196,63 @@ class CEmitter:
                 c_type=seq_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, BlackmanWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
+            params = self._shared_param_map(
+                [
+                    ("size", op.size),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["size"],
+                        self._ctx_dtype(op.size).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
+            rendered = blackman_window_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                c042_literal=self._format_literal(compute_dtype, 0.42),
+                c05_literal=self._format_literal(compute_dtype, 0.5),
+                c008_literal=self._format_literal(compute_dtype, 0.08),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, LoopSequenceMapOp):
             params = self._shared_param_map(
                 [
@@ -11310,8 +11394,11 @@ class CEmitter:
                 )
             lines.append("}")
             return with_node_comment("\n".join(lines))
-
         if isinstance(op, HammingWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -11332,6 +11419,18 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
             rendered = hamming_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11342,9 +11441,20 @@ class CEmitter:
                 output_suffix=output_suffix,
                 length=output_shape[0],
                 periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                alpha_literal=self._format_literal(compute_dtype, 25.0 / 46.0),
+                beta_literal=self._format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HannWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -11365,6 +11475,18 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
             rendered = hann_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11375,6 +11497,13 @@ class CEmitter:
                 output_suffix=output_suffix,
                 length=output_shape[0],
                 periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                alpha_literal=self._format_literal(compute_dtype, 0.5),
+                beta_literal=self._format_literal(compute_dtype, 0.5),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
@@ -13503,6 +13632,7 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | LoopRangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -13582,6 +13712,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -13740,6 +13871,8 @@ class CEmitter:
             return ((op.trip_count, ()), (op.cond, ()))
         if isinstance(op, LoopSequenceMapOp):
             return ((op.trip_count, ()), (op.cond, ()))
+        if isinstance(op, BlackmanWindowOp):
+            return ((op.size, ()),)
         if isinstance(op, (HammingWindowOp, HannWindowOp)):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
@@ -13827,6 +13960,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -13917,6 +14051,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -14310,6 +14445,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -14472,6 +14608,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, LoopRangeOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, BlackmanWindowOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, HammingWindowOp):
             return self._ctx_shape(op.output)
         if isinstance(op, HannWindowOp):
@@ -14577,6 +14715,7 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
             | HannWindowOp
             | OneHotOp
@@ -14680,6 +14819,7 @@ class CEmitter:
                 EyeLikeOp,
                 RangeOp,
                 ReverseSequenceOp,
+                BlackmanWindowOp,
                 HammingWindowOp,
                 HannWindowOp,
                 GridSampleOp,

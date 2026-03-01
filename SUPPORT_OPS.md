@@ -27,7 +27,7 @@ Supported operators: 181 / 205
 | BitwiseNot | ✅ |
 | BitwiseOr | ✅ |
 | BitwiseXor | ✅ |
-| BlackmanWindow | ❌ |
+| BlackmanWindow | ✅ |
 | Cast | ✅ |
 | CastLike | ✅ |
 | Ceil | ✅ |
