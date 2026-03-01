@@ -30,7 +30,7 @@ from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
 from .testbench import decode_testbench_array
-from .verification import format_success_message, worst_ulp_diff
+from .verification import worst_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
 _NONDETERMINISTIC_OPERATORS = {"Bernoulli"}
@@ -79,6 +79,95 @@ class _WorstAbsDiff:
     got: object
     reference: object
     abs_diff: float | int
+
+
+@dataclass(frozen=True)
+class _ComparisonMetrics:
+    has_abs_diff: bool = False
+    max_abs_diff: float | int = 0
+    has_ulp: bool = False
+    max_ulp: int = 0
+
+    def format_metrics(self) -> str:
+        parts: list[str] = []
+        if self.has_abs_diff:
+            parts.append(f"max abs diff {self.max_abs_diff}")
+        if self.has_ulp:
+            parts.append(f"max ULP {self.max_ulp}")
+        if not parts:
+            return "no numeric comparisons"
+        return ", ".join(parts)
+
+    def failing_metric_detail(self, *, max_ulp_limit: int) -> str | None:
+        if self.has_abs_diff and self.max_abs_diff > 0:
+            return f"max abs diff {self.max_abs_diff}"
+        if self.has_ulp and self.max_ulp > max_ulp_limit:
+            return f"max ULP {self.max_ulp}"
+        return None
+
+    def format_ok_with_metrics(self) -> str:
+        return f"OK ({self.format_metrics()})"
+
+
+@dataclass(frozen=True)
+class _VerificationIssue:
+    code: str
+    message: str
+    metrics: _ComparisonMetrics | None = None
+    details: Mapping[str, object] | None = None
+
+    def format(self) -> str:
+        parts: list[str] = []
+        if self.metrics is not None:
+            parts.append(self.metrics.format_metrics())
+        if self.details:
+            parts.extend(
+                f"{key}={value}" for key, value in sorted(self.details.items())
+            )
+        if not parts:
+            return self.message
+        return f"{self.message} ({', '.join(parts)})"
+
+    @classmethod
+    def missing_output(cls, output_name: str) -> "_VerificationIssue":
+        return cls(
+            code="missing_output",
+            message=f"Missing output {output_name} in testbench data",
+            details={"output": output_name},
+        )
+
+    @classmethod
+    def shape_mismatch(
+        cls,
+        *,
+        output_name: str,
+        actual_shape: tuple[int, ...],
+        expected_shape: tuple[int, ...],
+        actual_size: int,
+        expected_size: int,
+    ) -> "_VerificationIssue":
+        return cls(
+            code="shape_mismatch",
+            message=f"Output shape mismatch for {output_name}",
+            details={
+                "output": output_name,
+                "actual_shape": actual_shape,
+                "expected_shape": expected_shape,
+                "actual_size": actual_size,
+                "expected_size": expected_size,
+            },
+        )
+
+    @classmethod
+    def out_of_tolerance(
+        cls, metrics: _ComparisonMetrics, *, max_ulp_limit: int
+    ) -> "_VerificationIssue":
+        assert metrics.failing_metric_detail(max_ulp_limit=max_ulp_limit) is not None
+        return cls(
+            code="out_of_tolerance",
+            message="Out of tolerance",
+            metrics=metrics,
+        )
 
 
 class _VerifyReporter:
@@ -1218,7 +1307,7 @@ def _verify_model(
                 None,
             )
     output_compare_names = set(original_output_names)
-    has_non_tensor_output = any(
+    requires_non_tensor_reference = any(
         value.name in output_compare_names and not isinstance(value.type, TensorType)
         for value in graph.outputs
     )
@@ -1426,99 +1515,10 @@ def _verify_model(
                 generated_checksum,
             )
 
-        if has_non_tensor_output:
-            if testbench_outputs is None:
-                return (
-                    None,
-                    "Verification for non-tensor outputs requires --test-data-dir.",
-                    operators,
-                    opset_version,
-                    generated_checksum,
-                )
-            payload_outputs = payload.get("outputs", {})
-            max_non_tensor_ulp = 0
-            max_non_tensor_abs: float | int = 0
-            for value in graph.outputs:
-                if value.name not in output_compare_names:
-                    continue
-                if isinstance(value.type, TensorType):
-                    continue
-                expected_sequence = testbench_outputs.get(value.name)
-                if not isinstance(expected_sequence, list):
-                    return (
-                        None,
-                        f"Missing sequence reference output for {value.name}.",
-                        operators,
-                        opset_version,
-                        generated_checksum,
-                    )
-                output_payload = payload_outputs.get(value.name)
-                if output_payload is None:
-                    return (
-                        None,
-                        f"Missing output {value.name} in testbench data.",
-                        operators,
-                        opset_version,
-                        generated_checksum,
-                    )
-                actual_data = decode_testbench_array(
-                    output_payload["data"], value.type.elem.dtype.np_dtype
-                )
-                sequence_count = int(output_payload.get("sequence_count", 0))
-                expected_count = len(expected_sequence)
-                if sequence_count != expected_count:
-                    active_reporter.note(
-                        f"Sequence length differs for {value.name}: "
-                        f"{sequence_count} vs {expected_count}."
-                    )
-                compare_count = min(sequence_count, expected_count)
-                actual_sequence = [actual_data[index] for index in range(compare_count)]
-                expected_sequence = expected_sequence[:compare_count]
-                for index, (actual_item, expected_item) in enumerate(
-                    zip(actual_sequence, expected_sequence)
-                ):
-                    if actual_item.ndim != expected_item.ndim:
-                        active_reporter.note(
-                            f"Skipping rank-mismatched sequence item {value.name}[{index}]: "
-                            f"{actual_item.ndim} vs {expected_item.ndim}."
-                        )
-                        continue
-                    overlap_shape = tuple(
-                        min(actual_dim, expected_dim)
-                        for actual_dim, expected_dim in zip(
-                            actual_item.shape, expected_item.shape
-                        )
-                    )
-                    if overlap_shape != expected_item.shape:
-                        active_reporter.note(
-                            f"Comparing overlapping region for {value.name}[{index}] "
-                            f"with shapes {actual_item.shape} vs {expected_item.shape}."
-                        )
-                    slices = tuple(slice(0, dim) for dim in overlap_shape)
-                    actual_trimmed = actual_item[slices]
-                    expected_trimmed = expected_item[slices]
-                    if np.issubdtype(expected_item.dtype, np.floating):
-                        output_max, _ = worst_ulp_diff(
-                            actual_trimmed,
-                            expected_trimmed,
-                            atol_eps=args.atol_eps,
-                        )
-                        if output_max > max_non_tensor_ulp:
-                            max_non_tensor_ulp = output_max
-                    else:
-                        output_max, _ = _worst_abs_diff(
-                            actual_trimmed,
-                            expected_trimmed,
-                        )
-                        if output_max > max_non_tensor_abs:
-                            max_non_tensor_abs = output_max
-            active_reporter.note(
-                f"Non-tensor accuracy: max_abs_diff={max_non_tensor_abs}, max_ulp={max_non_tensor_ulp}."
-            )
+        if requires_non_tensor_reference and testbench_outputs is None:
             return (
-                "OK (non-tensor outputs matched; "
-                f"max_abs_diff={max_non_tensor_abs}, max_ulp={max_non_tensor_ulp})",
                 None,
+                "Verification for non-tensor outputs requires --test-data-dir.",
                 operators,
                 opset_version,
                 generated_checksum,
@@ -1614,6 +1614,15 @@ def _verify_model(
             )
         payload_outputs = payload.get("outputs", {})
         decoded_outputs: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+        output_nodes = {
+            output_name: node for node in graph.nodes for output_name in node.outputs
+        }
+        max_ulp = 0
+        saw_ulp = False
+        worst_diff: _WorstDiff | None = None
+        max_abs_diff: float | int = 0
+        saw_abs_diff = False
+        worst_abs_diff: _WorstAbsDiff | None = None
         for value in graph.outputs:
             if not isinstance(value.type, TensorType):
                 continue
@@ -1629,29 +1638,129 @@ def _verify_model(
                 output_payload["data"], info.np_dtype
             ).astype(info.np_dtype, copy=False)
             runtime_cast = runtime_out.astype(info.np_dtype, copy=False)
-            output_data = output_data.reshape(runtime_cast.shape)
+            try:
+                output_data = output_data.reshape(runtime_cast.shape)
+            except ValueError:
+                issue = _VerificationIssue.shape_mismatch(
+                    output_name=output_name,
+                    actual_shape=tuple(output_data.shape),
+                    expected_shape=tuple(runtime_cast.shape),
+                    actual_size=int(output_data.size),
+                    expected_size=int(runtime_cast.size),
+                )
+                active_reporter.step_fail(issue.message)
+                return (
+                    None,
+                    issue.format(),
+                    operators,
+                    opset_version,
+                    generated_checksum,
+                )
             decoded_outputs[output_name] = (output_data, runtime_cast)
 
-        max_ulp = 0
-        worst_diff: _WorstDiff | None = None
-        max_abs_diff: float | int = 0
-        worst_abs_diff: _WorstAbsDiff | None = None
-        output_nodes = {
-            output_name: node for node in graph.nodes for output_name in node.outputs
-        }
         active_reporter.start_step(f"  Comparing outputs [--max-ulp={args.max_ulp}]")
         try:
             for value in graph.outputs:
                 if value.name not in output_compare_names:
                     continue
+                if isinstance(value.type, TensorType):
+                    continue
+                expected_sequence = None if testbench_outputs is None else testbench_outputs.get(value.name)
+                if not isinstance(expected_sequence, list):
+                    raise AssertionError(
+                        f"Missing sequence reference output for {value.name}."
+                    )
+                output_payload = payload_outputs.get(value.name)
+                if output_payload is None:
+                    issue = _VerificationIssue.missing_output(value.name)
+                    raise AssertionError(issue.format())
+                actual_data = decode_testbench_array(
+                    output_payload["data"], value.type.elem.dtype.np_dtype
+                )
+                sequence_count = int(output_payload.get("sequence_count", 0))
+                expected_count = len(expected_sequence)
+                if sequence_count != expected_count:
+                    active_reporter.note(
+                        f"Sequence length differs for {value.name}: "
+                        f"{sequence_count} vs {expected_count}."
+                    )
+                compare_count = min(sequence_count, expected_count)
+                actual_sequence = [actual_data[index] for index in range(compare_count)]
+                expected_trimmed_sequence = expected_sequence[:compare_count]
+                for sequence_index, (actual_item, expected_item) in enumerate(
+                    zip(actual_sequence, expected_trimmed_sequence)
+                ):
+                    if actual_item.ndim != expected_item.ndim:
+                        active_reporter.note(
+                            f"Skipping rank-mismatched sequence item {value.name}[{sequence_index}]: "
+                            f"{actual_item.ndim} vs {expected_item.ndim}."
+                        )
+                        continue
+                    overlap_shape = tuple(
+                        min(actual_dim, expected_dim)
+                        for actual_dim, expected_dim in zip(
+                            actual_item.shape, expected_item.shape
+                        )
+                    )
+                    if overlap_shape != expected_item.shape:
+                        active_reporter.note(
+                            f"Comparing overlapping region for {value.name}[{sequence_index}] "
+                            f"with shapes {actual_item.shape} vs {expected_item.shape}."
+                        )
+                    slices = tuple(slice(0, dim) for dim in overlap_shape)
+                    actual_trimmed = actual_item[slices]
+                    expected_trimmed = expected_item[slices]
+                    if np.issubdtype(expected_item.dtype, np.floating):
+                        saw_ulp = True
+                        output_max, output_worst = worst_ulp_diff(
+                            actual_trimmed,
+                            expected_trimmed,
+                            atol_eps=args.atol_eps,
+                        )
+                        if output_max > max_ulp:
+                            max_ulp = output_max
+                            if output_worst is not None:
+                                node = output_nodes.get(value.name)
+                                worst_diff = _WorstDiff(
+                                    output_name=value.name,
+                                    node_name=node.name if node else None,
+                                    index=(sequence_index, *output_worst[0]),
+                                    got=float(output_worst[1]),
+                                    reference=float(output_worst[2]),
+                                    ulp=output_max,
+                                )
+                    else:
+                        saw_abs_diff = True
+                        output_max, output_worst = _worst_abs_diff(
+                            actual_trimmed,
+                            expected_trimmed,
+                        )
+                        if output_max > max_abs_diff:
+                            max_abs_diff = output_max
+                            if output_worst is not None:
+                                node = output_nodes.get(value.name)
+                                worst_abs_diff = _WorstAbsDiff(
+                                    output_name=value.name,
+                                    node_name=node.name if node else None,
+                                    index=(sequence_index, *output_worst[0]),
+                                    got=output_worst[1],
+                                    reference=output_worst[2],
+                                    abs_diff=output_max,
+                                )
+
+            for value in graph.outputs:
+                if value.name not in output_compare_names:
+                    continue
+                if not isinstance(value.type, TensorType):
+                    continue
                 pair = decoded_outputs.get(value.name)
                 if pair is None:
-                    raise AssertionError(
-                        f"Missing output {value.name} in testbench data"
-                    )
+                    issue = _VerificationIssue.missing_output(value.name)
+                    raise AssertionError(issue.format())
                 output_data, runtime_out = pair
                 info = output_dtypes[value.name]
                 if np.issubdtype(info.np_dtype, np.floating):
+                    saw_ulp = True
                     output_max, output_worst = worst_ulp_diff(
                         output_data,
                         runtime_out,
@@ -1670,6 +1779,7 @@ def _verify_model(
                                 ulp=output_max,
                             )
                 else:
+                    saw_abs_diff = True
                     output_max, output_worst = _worst_abs_diff(output_data, runtime_out)
                     if output_max > max_abs_diff:
                         max_abs_diff = output_max
@@ -1686,8 +1796,16 @@ def _verify_model(
         except AssertionError as exc:
             active_reporter.step_fail(str(exc))
             return None, str(exc), operators, opset_version, generated_checksum
-        if max_abs_diff > 0:
-            active_reporter.step_fail(f"max abs diff {max_abs_diff}")
+        metrics = _ComparisonMetrics(
+            has_abs_diff=saw_abs_diff,
+            max_abs_diff=max_abs_diff,
+            has_ulp=saw_ulp,
+            max_ulp=max_ulp,
+        )
+        failure_detail = metrics.failing_metric_detail(max_ulp_limit=args.max_ulp)
+        if failure_detail is not None:
+            active_reporter.step_fail(failure_detail)
+        if metrics.has_abs_diff and metrics.max_abs_diff > 0:
             if worst_abs_diff is not None:
                 node_label = worst_abs_diff.node_name or "(unknown)"
                 index_display = ", ".join(str(dim) for dim in worst_abs_diff.index)
@@ -1710,15 +1828,17 @@ def _verify_model(
                         max_ulp_limit=args.max_ulp,
                     )
                 )
+            issue = _VerificationIssue.out_of_tolerance(
+                metrics, max_ulp_limit=args.max_ulp
+            )
             return (
                 None,
-                f"Arrays are not equal (max abs diff {max_abs_diff})",
+                issue.format(),
                 operators,
                 opset_version,
                 generated_checksum,
             )
-        if max_ulp > args.max_ulp:
-            active_reporter.step_fail(f"max ULP {max_ulp}")
+        if metrics.has_ulp and metrics.max_ulp > args.max_ulp:
             if worst_diff is not None:
                 node_label = worst_diff.node_name or "(unknown)"
                 index_display = ", ".join(str(dim) for dim in worst_diff.index)
@@ -1741,15 +1861,18 @@ def _verify_model(
                         max_ulp_limit=args.max_ulp,
                     )
                 )
+            issue = _VerificationIssue.out_of_tolerance(
+                metrics, max_ulp_limit=args.max_ulp
+            )
             return (
                 None,
-                f"Out of tolerance (max ULP {max_ulp})",
+                issue.format(),
                 operators,
                 opset_version,
                 generated_checksum,
             )
         active_reporter.step_ok_simple()
-        active_reporter.info(f"    Maximum ULP: {max_ulp}")
+        active_reporter.info(f"    Output metrics: {metrics.format_metrics()}")
         if args.per_node_accuracy:
             active_reporter.defer(
                 lambda: _report_per_node_accuracy(
@@ -1762,7 +1885,7 @@ def _verify_model(
                 )
             )
         return (
-            format_success_message(max_ulp),
+            metrics.format_ok_with_metrics(),
             None,
             operators,
             opset_version,
@@ -1992,7 +2115,7 @@ def _format_command_line(argv: Sequence[str] | None) -> str:
             continue
         if arg.startswith("--expected-checksum="):
             continue
-        filtered.append(arg)
+        filtered.append(arg.replace("\\", "/"))
     if not filtered:
         return ""
     return shlex.join(filtered)
