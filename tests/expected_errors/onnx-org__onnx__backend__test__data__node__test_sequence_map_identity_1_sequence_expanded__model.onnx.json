@@ -1,4 +1,12 @@
 {
-  "error": "'x'",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded model.onnx --test-data-dir test_data_set_0"
+  "error": "Out of tolerance (max ULP 14100826)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence_expanded model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "SequenceLength",
+    "Constant",
+    "SequenceEmpty",
+    "Loop"
+  ],
+  "opset_version": 17,
+  "generated_checksum": "d60e65418b650f9530060e3243b5a31c4b3dff8c58606bf9054fb585889158b2"
 }

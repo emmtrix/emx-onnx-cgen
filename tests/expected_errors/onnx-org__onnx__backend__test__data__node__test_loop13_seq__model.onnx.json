@@ -1,4 +1,9 @@
 {
-  "error": "'seq_empty'",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop13_seq model.onnx --test-data-dir test_data_set_0"
+  "error": "Out of tolerance (max ULP 58382658)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop13_seq model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "Loop"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "21aeb438a920b5f2667515a1a63959bc2f66ccd89636e418b78fcb3d6aab19f6"
 }

@@ -1,4 +1,9 @@
 {
-  "error": "'list' object has no attribute 'astype'",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2 model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_2 model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "SplitToSequence"
+  ],
+  "opset_version": 24,
+  "generated_checksum": "3fd1a85f8c11aa1c386fb457ae831d6b07f25ff1b7f51e84b0b4c4e62af11e8d"
 }

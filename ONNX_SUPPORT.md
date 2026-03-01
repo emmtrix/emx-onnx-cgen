@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1513 / 1802, 84.0% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1518 / 1802, 84.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1513 / 1802 ONNX files (84.0%).
+Coverage 1518 / 1802 ONNX files (84.2%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -761,11 +761,11 @@ Coverage 1513 / 1802 ONNX files (84.0%).
 | node/test_hardswish/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | node/test_hardswish_expanded/model.onnx | 22 | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_identity_opt/model.onnx |  | ❌ | 'opt_in' |
-| node/test_identity_sequence/model.onnx |  | ❌ | 'x' |
+| node/test_identity_opt/model.onnx | 16 | ❌ | Out of tolerance (max ULP 30123182) |
+| node/test_identity_sequence/model.onnx | 25 | ✅ | OK (no numeric comparisons) |
 | node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_if_opt/model.onnx |  | ❌ | 'list' object has no attribute 'astype' |
-| node/test_if_seq/model.onnx |  | ❌ | 'list' object has no attribute 'astype' |
+| node/test_if_opt/model.onnx | 16 | ✅ | OK (max ULP 0) |
+| node/test_if_seq/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
@@ -899,7 +899,7 @@ Coverage 1513 / 1802 ONNX files (84.0%).
 | node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | node/test_loop11/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_loop13_seq/model.onnx |  | ❌ | 'seq_empty' |
+| node/test_loop13_seq/model.onnx | 13 | ❌ | Out of tolerance (max ULP 58382658) |
 | node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported op Loop |
 | node/test_lpnormalization_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_lppool_1d_default/model.onnx | 22 | ❌ | LpPool expects 2D kernel_shape |
@@ -1461,20 +1461,20 @@ Coverage 1513 / 1802 ONNX files (84.0%).
 | node/test_selu_example/model.onnx | 22 | ❌ | Selu only supports alpha=1.6732632423543772 |
 | node/test_selu_example_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | node/test_selu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
-| node/test_sequence_insert_at_back/model.onnx |  | ❌ | 'sequence' |
-| node/test_sequence_insert_at_front/model.onnx |  | ❌ | 'sequence' |
-| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx |  | ❌ | 'x0' |
-| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx |  | ❌ | 'x0' |
-| node/test_sequence_map_add_2_sequences/model.onnx |  | ❌ | 'x0' |
-| node/test_sequence_map_add_2_sequences_expanded/model.onnx |  | ❌ | 'x0' |
+| node/test_sequence_insert_at_back/model.onnx | 11 | ❌ | Out of tolerance (max abs diff 8972011810649449542) |
+| node/test_sequence_insert_at_front/model.onnx | 11 | ❌ | Out of tolerance (max abs diff 8247628798212575849) |
+| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ❌ | Out of tolerance (max ULP 15143681) |
+| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Out of tolerance (max ULP 15143681) |
+| node/test_sequence_map_add_2_sequences/model.onnx | 17 | ❌ | Out of tolerance (max ULP 12512942) |
+| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Out of tolerance (max ULP 12512942) |
 | node/test_sequence_map_extract_shapes/model.onnx |  | ❌ | 'SequenceMap_0_in_0' |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
-| node/test_sequence_map_identity_1_sequence/model.onnx |  | ❌ | 'x' |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx |  | ❌ | 'x0' |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx |  | ❌ | 'x0' |
-| node/test_sequence_map_identity_1_sequence_expanded/model.onnx |  | ❌ | 'x' |
-| node/test_sequence_map_identity_2_sequences/model.onnx |  | ❌ | 'x0' |
-| node/test_sequence_map_identity_2_sequences_expanded/model.onnx |  | ❌ | 'x0' |
+| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ❌ | Out of tolerance (max ULP 14100826) |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ❌ | Out of tolerance (max ULP 29804413) |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Out of tolerance (max ULP 29804413) |
+| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Out of tolerance (max ULP 14100826) |
+| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ❌ | Out of tolerance (max ULP 35691269) |
+| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Out of tolerance (max ULP 35691269) |
 | node/test_shape/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_end/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_shape_clip_start/model.onnx | 25 | ✅ | OK (max abs diff 0) |
@@ -1549,9 +1549,9 @@ Coverage 1513 / 1802 ONNX files (84.0%).
 | node/test_split_equal_parts_2d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_1/model.onnx |  | ❌ | 'list' object has no attribute 'astype' |
-| node/test_split_to_sequence_2/model.onnx |  | ❌ | 'list' object has no attribute 'astype' |
-| node/test_split_to_sequence_nokeepdims/model.onnx |  | ❌ | 'list' object has no attribute 'astype' |
+| node/test_split_to_sequence_1/model.onnx | 24 | ❌ | Out of tolerance (max ULP 20971520) |
+| node/test_split_to_sequence_2/model.onnx | 24 | ✅ | OK (max ULP 0) |
+| node/test_split_to_sequence_nokeepdims/model.onnx | 24 | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_2d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |

@@ -1,4 +1,9 @@
 {
-  "error": "'x'",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_sequence model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (no numeric comparisons)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_sequence model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "Identity"
+  ],
+  "opset_version": 25,
+  "generated_checksum": "7e547bc4fa34883458c388e8863c54f2c00aff2c3a99b9f85ec1b6c011d048fc"
 }

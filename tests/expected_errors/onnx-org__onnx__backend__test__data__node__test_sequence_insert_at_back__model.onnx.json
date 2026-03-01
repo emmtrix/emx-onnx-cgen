@@ -1,4 +1,9 @@
 {
-  "error": "'sequence'",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0"
+  "error": "Out of tolerance (max abs diff 8972011810649449542)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "SequenceInsert"
+  ],
+  "opset_version": 11,
+  "generated_checksum": "7fa5048e7896b62ac11ba2c684554b653376cbb351d6301cfdfbcd5021a8dfeb"
 }

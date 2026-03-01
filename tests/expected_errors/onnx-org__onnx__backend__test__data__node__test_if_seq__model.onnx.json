@@ -1,4 +1,9 @@
 {
-  "error": "'list' object has no attribute 'astype'",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_seq model.onnx --test-data-dir test_data_set_0"
+  "error": "OK (max ULP 0)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_seq model.onnx --test-data-dir test_data_set_0",
+  "operators": [
+    "If"
+  ],
+  "opset_version": 13,
+  "generated_checksum": "29fd8a21c0bb64e968a071a9f61ef1f349f2ac6231fe2719fd3ce7a919d6b59e"
 }
