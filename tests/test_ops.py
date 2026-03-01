@@ -3802,7 +3802,7 @@ def test_string_concat_codegen_broadcasting() -> None:
     assert "input1[0]" in generated
 
 
-
+def test_tfidf_vectorizer_testbench_match() -> None:
     model = _make_tfidf_vectorizer_model(
         input_shape=[4],
         output_shape=[3],
