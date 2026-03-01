@@ -4,12 +4,9 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 2 / 4, 50.0% | n/a |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1533 / 1802, 85.1% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1537 / 1802, 85.3% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 2 / 4, 50.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -19,8 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1486 / 1802 ONNX files (82.5%).
-Coverage 1533 / 1802 ONNX files (85.1%).
+Coverage 1537 / 1802 ONNX files (85.3%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |

@@ -13,12 +13,7 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 10 | 8, 9, 15, 19, 22 |
-| Unsupported op ImageDecoder | 9 | 20 |
-| Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Unsupported op Loop | 7 | 16, 17 |
-| Unsupported op CenterCropPad | 6 | 18 |
-| Out of tolerance | 9 | 8, 9, 19, 20, 22 |
+| Out of tolerance | 11 | 8, 9, 15, 19, 20, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -33,7 +28,6 @@ This histogram is test-suite-overarching.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
-| Arrays are not equal (max abs diff 148) | 2 | 21 |
 | Cast input and output shapes must match | 2 | 22 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
@@ -69,7 +63,6 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 9 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 15 | 2 |
-| Unsupported non-tensor value '*' in op Identity. | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
