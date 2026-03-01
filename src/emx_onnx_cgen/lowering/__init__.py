@@ -14,6 +14,7 @@ _LOWERING_MODULES = [
     "blackman_window",
     "cast",
     "col2im",
+    "center_crop_pad",
     "compress",
     "concat",
     "concat_from_sequence",
