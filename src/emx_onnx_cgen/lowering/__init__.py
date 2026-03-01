@@ -13,6 +13,7 @@ _LOWERING_MODULES = [
     "bernoulli",
     "blackman_window",
     "cast",
+    "center_crop_pad",
     "compress",
     "concat",
     "concat_from_sequence",

@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1506 / 1802, 83.6% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1512 / 1802, 83.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1506 / 1802 ONNX files (83.6%).
+Coverage 1512 / 1802 ONNX files (83.9%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -471,17 +471,17 @@ Coverage 1506 / 1802 ONNX files (83.6%).
 | node/test_ceil_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_celu/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | node/test_celu_expanded/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_and_pad/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_center_crop_pad_crop_and_pad/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop_axes_chw/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop_axes_chw/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop_axes_hwc/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop_axes_hwc/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_pad/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_pad/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_pad_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_clip/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_default_inbounds/model.onnx | 13 | ✅ | OK (max ULP 0) |

@@ -335,6 +335,20 @@ class TileOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class CenterCropPadOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "shape_input")
+    __io_outputs__ = ("output",)
+    input0: str
+    shape_input: str
+    output: str
+    axes: (
+        tuple[int, ...] | None
+    )  # None means all axes; already normalized (non-negative)
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+
+
+@dataclass(frozen=True)
 class PadOp(RenderableOpBase):
     __io_inputs__ = ("input0", "pads_input", "axes_input", "value_input")
     __io_outputs__ = ("output",)
