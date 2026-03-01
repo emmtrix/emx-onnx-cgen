@@ -127,6 +127,7 @@ from ..ir.ops import (
     SplitToSequenceOp,
     TensorScatterOp,
     TfIdfVectorizerOp,
+    StringConcatOp,
     StringNormalizerOp,
     StringSplitOp,
     TreeEnsembleOp,
@@ -2079,6 +2080,12 @@ class CEmitter:
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
             )
+        if isinstance(op, StringConcatOp):
+            return StringConcatOp(
+                input0=name_map.get(op.input0, op.input0),
+                input1=name_map.get(op.input1, op.input1),
+                output=name_map.get(op.output, op.output),
+            )
         if isinstance(op, StringNormalizerOp):
             return StringNormalizerOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2446,6 +2453,7 @@ class CEmitter:
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
+                "string_concat": self._env.get_template("string_concat_op.c.j2"),
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
@@ -3371,7 +3379,7 @@ class CEmitter:
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
             includes.add("#include <stdbool.h>")
-        if any(isinstance(op, StringSplitOp) for op in resolved_ops):
+        if any(isinstance(op, (StringConcatOp, StringSplitOp)) for op in resolved_ops):
             includes.add("#include <string.h>")
         ordered_includes = (
             "#include <stdint.h>",
@@ -5454,6 +5462,12 @@ class CEmitter:
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
             )
+        if isinstance(op, StringConcatOp):
+            return StringConcatOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input1=temp_map.get(op.input1, op.input1),
+                output=temp_map.get(op.output, op.output),
+            )
         if isinstance(op, StringNormalizerOp):
             return StringNormalizerOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -6002,6 +6016,7 @@ class CEmitter:
             hann_window_template=templates["hann_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
+            string_concat_template=templates["string_concat"],
             string_normalizer_template=templates["string_normalizer"],
             string_split_template=templates["string_split"],
             tree_ensemble_template=templates["tree_ensemble"],
@@ -6536,6 +6551,7 @@ class CEmitter:
         hann_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
+        string_concat_template,
         string_normalizer_template,
         string_split_template,
         tree_ensemble_template,
@@ -12156,6 +12172,56 @@ class CEmitter:
                 input_c_type=input_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, StringConcatOp):
+            input0_shape = self._ctx_shape(op.input0)
+            input1_shape = self._ctx_shape(op.input1)
+            output_shape = self._ctx_shape(op.output)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input1", op.input1),
+                    ("output", op.output),
+                ]
+            )
+            input0_suffix = self._param_array_suffix(
+                input0_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+            )
+            input1_suffix = self._param_array_suffix(
+                input1_shape, _dim_names_for(op.input1), dtype=ScalarType.STRING
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.output), dtype=ScalarType.STRING
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], "char", input0_suffix, True),
+                    (params["input1"], "char", input1_suffix, True),
+                    (params["output"], "char", output_suffix, False),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            input0_expr = CEmitter._broadcast_index_expr(
+                params["input0"], input0_shape, output_shape, loop_vars
+            )
+            input1_expr = CEmitter._broadcast_index_expr(
+                params["input1"], input1_shape, output_shape, loop_vars
+            )
+            output_expr = CEmitter._broadcast_index_expr(
+                params["output"], output_shape, output_shape, loop_vars
+            )
+            rendered = string_concat_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                shape=shape,
+                loop_vars=loop_vars,
+                input0_expr=input0_expr,
+                input1_expr=input1_expr,
+                output_expr=output_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, StringNormalizerOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -15056,6 +15122,7 @@ class CEmitter:
             | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
+            | StringConcatOp
             | StringNormalizerOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -15230,6 +15297,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, StringConcatOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
         if isinstance(op, StringSplitOp):
@@ -15337,6 +15406,7 @@ class CEmitter:
             | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
+            | StringConcatOp
             | StringNormalizerOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -15360,6 +15430,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, StringConcatOp):
+            return ScalarType.STRING
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
         if isinstance(op, StringSplitOp):

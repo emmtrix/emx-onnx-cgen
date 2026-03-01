@@ -178,7 +178,7 @@ Supported operators: 187 / 205
 | SplitToSequence | ✅ |
 | Sqrt | ✅ |
 | Squeeze | ✅ |
-| StringConcat | ❌ |
+| StringConcat | ✅ |
 | StringNormalizer | ✅ |
 | StringSplit | ✅ |
 | Sub | ✅ |

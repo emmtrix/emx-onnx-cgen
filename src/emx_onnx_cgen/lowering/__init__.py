@@ -93,6 +93,7 @@ _LOWERING_MODULES = [
     "softmax_cross_entropy_loss",
     "split",
     "split_to_sequence",
+    "string_concat",
     "string_normalizer",
     "string_split",
     "squeeze",
