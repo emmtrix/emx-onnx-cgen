@@ -62,6 +62,7 @@ from ..ir.ops import (
     GatherOp,
     GemmOp,
     GruOp,
+    AffineGridOp,
     GridSampleOp,
     GroupNormalizationOp,
     HammingWindowOp,
@@ -688,6 +689,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -774,6 +776,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | GridSampleOp
+        | AffineGridOp
         | ReduceOp
         | ArgReduceOp
         | TopKOp
@@ -1841,6 +1844,14 @@ class CEmitter:
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
             )
+        if isinstance(op, AffineGridOp):
+            return AffineGridOp(
+                theta=name_map.get(op.theta, op.theta),
+                size=name_map.get(op.size, op.size),
+                grid=name_map.get(op.grid, op.grid),
+                align_corners=op.align_corners,
+                spatial_rank=op.spatial_rank,
+            )
         if isinstance(op, ReduceOp):
             return ReduceOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2338,6 +2349,7 @@ class CEmitter:
                 "slice_dynamic": self._env.get_template("slice_op_dynamic.c.j2"),
                 "resize": self._env.get_template("resize_op.c.j2"),
                 "grid_sample": self._env.get_template("grid_sample_op.c.j2"),
+                "affine_grid": self._env.get_template("affine_grid_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
                 "reduce_dynamic": self._env.get_template("reduce_op_dynamic.c.j2"),
                 "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
@@ -3081,6 +3093,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3441,6 +3454,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3541,6 +3555,7 @@ class CEmitter:
                     SoftmaxCrossEntropyLossOp,
                     ResizeOp,
                     GridSampleOp,
+                    AffineGridOp,
                 ),
             )
             for op in resolved_ops
@@ -3641,6 +3656,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3771,6 +3787,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -4075,6 +4092,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -4156,6 +4174,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | GridSampleOp
+        | AffineGridOp
         | ReduceOp
         | ArgReduceOp
         | TopKOp
@@ -5593,6 +5612,14 @@ class CEmitter:
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
             )
+        if isinstance(op, AffineGridOp):
+            return AffineGridOp(
+                theta=temp_map.get(op.theta, op.theta),
+                size=temp_map.get(op.size, op.size),
+                grid=temp_map.get(op.grid, op.grid),
+                align_corners=op.align_corners,
+                spatial_rank=op.spatial_rank,
+            )
         if isinstance(op, ReduceOp):
             return ReduceOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5807,6 +5834,7 @@ class CEmitter:
             slice_dynamic_template=templates["slice_dynamic"],
             resize_template=templates["resize"],
             grid_sample_template=templates["grid_sample"],
+            affine_grid_template=templates["affine_grid"],
             reduce_template=templates["reduce"],
             reduce_dynamic_template=templates["reduce_dynamic"],
             arg_reduce_template=templates["arg_reduce"],
@@ -6337,6 +6365,7 @@ class CEmitter:
         slice_dynamic_template,
         resize_template,
         grid_sample_template,
+        affine_grid_template,
         reduce_template,
         reduce_dynamic_template,
         arg_reduce_template,
@@ -10682,6 +10711,38 @@ class CEmitter:
                 cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, AffineGridOp):
+            grid_shape = self._ctx_shape(op.grid)
+            theta_shape = self._ctx_shape(op.theta)
+            spatial_rank = op.spatial_rank
+            n = theta_shape[0]
+            spatial_dims = grid_shape[1:-1]  # (H, W) for 2D, (D, H, W) for 3D
+            theta_suffix = self._param_array_suffix(theta_shape)
+            grid_suffix = self._param_array_suffix(grid_shape)
+            size_len = 2 + spatial_rank
+            params = [
+                f"const {c_type} {op.theta}{theta_suffix}",
+                f"const int64_t {op.size}[{size_len}]",
+                f"{c_type} {op.grid}{grid_suffix}",
+            ]
+            rendered = affine_grid_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                theta=op.theta,
+                size=op.size,
+                grid=op.grid,
+                c_type=c_type,
+                theta_shape=theta_shape,
+                grid_shape=grid_shape,
+                theta_suffix=theta_suffix,
+                grid_suffix=grid_suffix,
+                n=n,
+                spatial_dims=spatial_dims,
+                spatial_rank=spatial_rank,
+                align_corners=op.align_corners,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -13710,6 +13771,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -13792,6 +13854,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -13920,6 +13983,11 @@ class CEmitter:
             return (
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.grid, self._ctx_shape(op.grid)),
+            )
+        if isinstance(op, AffineGridOp):
+            return (
+                (op.theta, self._ctx_shape(op.theta)),
+                (op.size, self._ctx_shape(op.size)),
             )
         if isinstance(op, TileOp):
             return (
@@ -14050,6 +14118,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -14142,6 +14211,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -14536,6 +14606,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -14689,6 +14760,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, GridSampleOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, AffineGridOp):
+            return self._ctx_shape(op.grid)
         if isinstance(op, ReduceOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ArgReduceOp):
@@ -14809,6 +14882,7 @@ class CEmitter:
             | CenterCropPadOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | ConstantOfShapeOp
@@ -14929,6 +15003,7 @@ class CEmitter:
                 HammingWindowOp,
                 HannWindowOp,
                 GridSampleOp,
+                AffineGridOp,
                 ResizeOp,
                 PadOp,
                 SliceOp,
