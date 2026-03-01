@@ -14057,9 +14057,7 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.k_input, self._ctx_shape(op.k_input)),
             )
-        if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp)):
-            return ((op.input0, self._ctx_shape(op.input0)),)
-        if isinstance(op, StringSplitOp):
+        if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp, StringSplitOp)):
             return ((op.input0, self._ctx_shape(op.input0)),)
         return ()
 

@@ -48,7 +48,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 {% endif %}
 {% else %}
         const char *p = src;
-        while (*p != '\0' && ({{ max_count }} == 0 || n + 1 < {{ max_count }}) && ({{ maxsplit }} < 0 || n < {{ maxsplit }})) {
+        while (*p != '\0' && n + 1 < {{ max_count }} && ({{ maxsplit }} < 0 || n < {{ maxsplit }})) {
             const char *found = strstr(p, {{ delimiter_literal }});
             if (found == NULL) break;
             char *dst = y_flat[out_base + n];
