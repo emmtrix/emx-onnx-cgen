@@ -79,6 +79,7 @@ from ..ir.ops import (
     MatMulOp,
     MaxPoolOp,
     MeanVarianceNormalizationOp,
+    MomentumOp,
     MultiInputBinaryOp,
     NegativeLogLikelihoodLossOp,
     NonMaxSuppressionOp,
@@ -660,6 +661,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -746,6 +748,7 @@ class CEmitter:
         | GruOp
         | LstmOp
         | AdagradOp
+        | MomentumOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -1570,6 +1573,29 @@ class CEmitter:
                 epsilon=op.epsilon,
                 decay_factor=op.decay_factor,
             )
+        if isinstance(op, MomentumOp):
+            return MomentumOp(
+                rate=name_map.get(op.rate, op.rate),
+                timestep=name_map.get(op.timestep, op.timestep),
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
+                gradients=tuple(name_map.get(name, name) for name in op.gradients),
+                velocities=tuple(name_map.get(name, name) for name in op.velocities),
+                outputs=tuple(name_map.get(name, name) for name in op.outputs),
+                velocity_outputs=tuple(
+                    name_map.get(name, name) for name in op.velocity_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                alpha=op.alpha,
+                beta=op.beta,
+                mode=op.mode,
+            )
         if isinstance(op, SoftmaxOp):
             return SoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2310,6 +2336,7 @@ class CEmitter:
                 "gru": self._env.get_template("gru_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
+                "momentum": self._env.get_template("momentum_op.c.j2"),
                 "softmax": self._env.get_template("softmax_op.c.j2"),
                 "logsoftmax": self._env.get_template("logsoftmax_op.c.j2"),
                 "hardmax": self._env.get_template("hardmax_op.c.j2"),
@@ -3063,6 +3090,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -3427,6 +3455,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -3550,6 +3579,7 @@ class CEmitter:
                     GruOp,
                     LstmOp,
                     AdagradOp,
+                    MomentumOp,
                     SoftmaxOp,
                     LogSoftmaxOp,
                     SoftmaxCrossEntropyLossOp,
@@ -4062,6 +4092,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -4143,6 +4174,7 @@ class CEmitter:
         | GruOp
         | LstmOp
         | AdagradOp
+        | MomentumOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -4723,6 +4755,29 @@ class CEmitter:
                 norm_coefficient=op.norm_coefficient,
                 epsilon=op.epsilon,
                 decay_factor=op.decay_factor,
+            )
+        if isinstance(op, MomentumOp):
+            return MomentumOp(
+                rate=temp_map.get(op.rate, op.rate),
+                timestep=temp_map.get(op.timestep, op.timestep),
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
+                gradients=tuple(temp_map.get(name, name) for name in op.gradients),
+                velocities=tuple(temp_map.get(name, name) for name in op.velocities),
+                outputs=tuple(temp_map.get(name, name) for name in op.outputs),
+                velocity_outputs=tuple(
+                    temp_map.get(name, name) for name in op.velocity_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                alpha=op.alpha,
+                beta=op.beta,
+                mode=op.mode,
             )
         if isinstance(op, ConvOp):
             return ConvOp(
@@ -5798,6 +5853,7 @@ class CEmitter:
             gru_template=templates["gru"],
             lstm_template=templates["lstm"],
             adagrad_template=templates["adagrad"],
+            momentum_template=templates["momentum"],
             softmax_template=templates["softmax"],
             logsoftmax_template=templates["logsoftmax"],
             hardmax_template=templates["hardmax"],
@@ -6329,6 +6385,7 @@ class CEmitter:
         gru_template,
         lstm_template,
         adagrad_template,
+        momentum_template,
         softmax_template,
         logsoftmax_template,
         hardmax_template,
@@ -8927,6 +8984,101 @@ class CEmitter:
                 ),
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
                 sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                tensors=tensor_specs,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, MomentumOp):
+            params = self._shared_param_map(
+                [
+                    ("rate", op.rate),
+                    ("timestep", op.timestep),
+                    *((f"input{idx}", name) for idx, name in enumerate(op.inputs)),
+                    *((f"grad{idx}", name) for idx, name in enumerate(op.gradients)),
+                    *((f"vel{idx}", name) for idx, name in enumerate(op.velocities)),
+                    *((f"output{idx}", name) for idx, name in enumerate(op.outputs)),
+                    *(
+                        (f"vel_output{idx}", name)
+                        for idx, name in enumerate(op.velocity_outputs)
+                    ),
+                ]
+            )
+            rate_suffix = self._param_array_suffix(
+                op.rate_shape, _dim_names_for(op.rate)
+            )
+            timestep_suffix = self._param_array_suffix(
+                op.timestep_shape, _dim_names_for(op.timestep)
+            )
+            param_specs = [
+                (params["rate"], op.rate_dtype.c_type, rate_suffix, True),
+                (
+                    params["timestep"],
+                    op.timestep_dtype.c_type,
+                    timestep_suffix,
+                    True,
+                ),
+            ]
+            tensor_specs = []
+            for idx, shape in enumerate(op.output_shapes):
+                input_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.inputs[idx])
+                )
+                grad_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.gradients[idx])
+                )
+                vel_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.velocities[idx])
+                )
+                output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx], _dim_names_for(op.outputs[idx])
+                )
+                vel_output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx],
+                    _dim_names_for(op.velocity_outputs[idx]),
+                )
+                param_specs.extend(
+                    [
+                        (params[f"input{idx}"], c_type, input_suffix, True),
+                        (params[f"grad{idx}"], c_type, grad_suffix, True),
+                        (params[f"vel{idx}"], c_type, vel_suffix, True),
+                        (params[f"output{idx}"], c_type, output_suffix, False),
+                        (
+                            params[f"vel_output{idx}"],
+                            c_type,
+                            vel_output_suffix,
+                            False,
+                        ),
+                    ]
+                )
+                output_dim_names = _dim_names_for(op.outputs[idx])
+                shape_exprs = CEmitter._shape_dim_exprs(shape, output_dim_names)
+                loop_vars = CEmitter._loop_vars(shape)
+                index_suffix = "".join(f"[{var}]" for var in loop_vars)
+                tensor_specs.append(
+                    {
+                        "shape": shape_exprs,
+                        "loop_vars": loop_vars,
+                        "input_expr": f"{params[f'input{idx}']}{index_suffix}",
+                        "grad_expr": f"{params[f'grad{idx}']}{index_suffix}",
+                        "vel_expr": f"{params[f'vel{idx}']}{index_suffix}",
+                        "output_expr": f"{params[f'output{idx}']}{index_suffix}",
+                        "vel_output_expr": f"{params[f'vel_output{idx}']}{index_suffix}",
+                    }
+                )
+            param_decls = self._build_param_decls(param_specs)
+            rendered = momentum_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                rate=params["rate"],
+                timestep=params["timestep"],
+                params=param_decls,
+                c_type=c_type,
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+                norm_coefficient_literal=CEmitter._format_floating(
+                    op.norm_coefficient, op.dtype
+                ),
+                alpha_literal=CEmitter._format_floating(op.alpha, op.dtype),
+                beta_literal=CEmitter._format_floating(op.beta, op.dtype),
+                mode=op.mode,
                 tensors=tensor_specs,
             ).rstrip()
             return with_node_comment(rendered)
@@ -14370,6 +14522,16 @@ class CEmitter:
                 for name, shape in zip(op.accumulator_outputs, op.output_shapes)
             )
             return tuple(outputs)
+        if isinstance(op, MomentumOp):
+            outputs = [
+                (name, shape, op.dtype)
+                for name, shape in zip(op.outputs, op.output_shapes)
+            ]
+            outputs.extend(
+                (name, shape, op.dtype)
+                for name, shape in zip(op.velocity_outputs, op.output_shapes)
+            )
+            return tuple(outputs)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             outputs = [(op.output, op.output_shape, op.dtype)]
             if op.log_prob is not None and op.log_prob_shape is not None:
@@ -14876,6 +15038,7 @@ class CEmitter:
             | LogSoftmaxOp
             | HardmaxOp
             | AdagradOp
+            | MomentumOp
             | NegativeLogLikelihoodLossOp
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp

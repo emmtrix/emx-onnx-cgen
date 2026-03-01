@@ -4,6 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1515 / 1802, 84.1% | 1.20.1 |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1518 / 1802, 84.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
@@ -16,6 +17,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
+Coverage 1515 / 1802 ONNX files (84.1%).
 Coverage 1518 / 1802 ONNX files (84.2%).
 
 | File | Opset | Supported | Error |
@@ -992,8 +994,8 @@ Coverage 1518 / 1802 ONNX files (84.2%).
 | node/test_mod_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
-| node/test_momentum_multiple/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
+| node/test_momentum_multiple/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_mul/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1008,7 +1010,7 @@ Coverage 1518 / 1802 ONNX files (84.2%).
 | node/test_mvn_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | node/test_neg/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_neg_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_nesterov_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_nesterov_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1/model.onnx | 22 | ✅ | OK (max ULP 0) |

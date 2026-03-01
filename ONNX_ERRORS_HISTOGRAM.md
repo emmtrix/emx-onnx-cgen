@@ -27,7 +27,6 @@ This histogram is test-suite-overarching.
 | Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
-| Unsupported op Momentum | 3 |  |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
