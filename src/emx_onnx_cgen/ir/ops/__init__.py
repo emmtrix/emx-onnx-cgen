@@ -72,6 +72,7 @@ from .misc import (
 )
 from .nn import (
     AdagradOp,
+    MomentumOp,
     AttentionOp,
     AveragePoolOp,
     BatchNormOp,
@@ -155,6 +156,7 @@ __all__ = [
     "MatMulIntegerOp",
     "MatMulOp",
     "MaxPoolOp",
+    "MomentumOp",
     "MeanVarianceNormalizationOp",
     "MultiInputBinaryOp",
     "NegativeLogLikelihoodLossOp",
