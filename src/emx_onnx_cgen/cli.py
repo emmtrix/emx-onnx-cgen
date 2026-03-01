@@ -81,12 +81,60 @@ class _WorstAbsDiff:
     abs_diff: float | int
 
 
-@dataclass(frozen=True)
+@dataclass
 class _ComparisonMetrics:
     has_abs_diff: bool = False
     max_abs_diff: float | int = 0
     has_ulp: bool = False
     max_ulp: int = 0
+    worst_diff: _WorstDiff | None = None
+    worst_abs_diff: _WorstAbsDiff | None = None
+
+    def observe_ulp(
+        self,
+        *,
+        output_name: str,
+        node_name: str | None,
+        index: tuple[int, ...],
+        got: float,
+        reference: float,
+        ulp: int,
+    ) -> None:
+        self.has_ulp = True
+        if ulp <= self.max_ulp:
+            return
+        self.max_ulp = ulp
+        self.worst_diff = _WorstDiff(
+            output_name=output_name,
+            node_name=node_name,
+            index=index,
+            got=got,
+            reference=reference,
+            ulp=ulp,
+        )
+
+    def observe_abs(
+        self,
+        *,
+        output_name: str,
+        node_name: str | None,
+        index: tuple[int, ...],
+        got: object,
+        reference: object,
+        abs_diff: float | int,
+    ) -> None:
+        self.has_abs_diff = True
+        if abs_diff <= self.max_abs_diff:
+            return
+        self.max_abs_diff = abs_diff
+        self.worst_abs_diff = _WorstAbsDiff(
+            output_name=output_name,
+            node_name=node_name,
+            index=index,
+            got=got,
+            reference=reference,
+            abs_diff=abs_diff,
+        )
 
     def format_metrics(self) -> str:
         parts: list[str] = []
@@ -1617,12 +1665,7 @@ def _verify_model(
         output_nodes = {
             output_name: node for node in graph.nodes for output_name in node.outputs
         }
-        max_ulp = 0
-        saw_ulp = False
-        worst_diff: _WorstDiff | None = None
-        max_abs_diff: float | int = 0
-        saw_abs_diff = False
-        worst_abs_diff: _WorstAbsDiff | None = None
+        metrics = _ComparisonMetrics()
         for value in graph.outputs:
             if not isinstance(value.type, TensorType):
                 continue
@@ -1710,43 +1753,41 @@ def _verify_model(
                     slices = tuple(slice(0, dim) for dim in overlap_shape)
                     actual_trimmed = actual_item[slices]
                     expected_trimmed = expected_item[slices]
+                    node = output_nodes.get(value.name)
+                    node_name = node.name if node else None
                     if np.issubdtype(expected_item.dtype, np.floating):
-                        saw_ulp = True
                         output_max, output_worst = worst_ulp_diff(
                             actual_trimmed,
                             expected_trimmed,
                             atol_eps=args.atol_eps,
                         )
-                        if output_max > max_ulp:
-                            max_ulp = output_max
-                            if output_worst is not None:
-                                node = output_nodes.get(value.name)
-                                worst_diff = _WorstDiff(
-                                    output_name=value.name,
-                                    node_name=node.name if node else None,
-                                    index=(sequence_index, *output_worst[0]),
-                                    got=float(output_worst[1]),
-                                    reference=float(output_worst[2]),
-                                    ulp=output_max,
-                                )
+                        if output_worst is not None:
+                            metrics.observe_ulp(
+                                output_name=value.name,
+                                node_name=node_name,
+                                index=(sequence_index, *output_worst[0]),
+                                got=float(output_worst[1]),
+                                reference=float(output_worst[2]),
+                                ulp=output_max,
+                            )
+                        else:
+                            metrics.has_ulp = True
                     else:
-                        saw_abs_diff = True
                         output_max, output_worst = _worst_abs_diff(
                             actual_trimmed,
                             expected_trimmed,
                         )
-                        if output_max > max_abs_diff:
-                            max_abs_diff = output_max
-                            if output_worst is not None:
-                                node = output_nodes.get(value.name)
-                                worst_abs_diff = _WorstAbsDiff(
-                                    output_name=value.name,
-                                    node_name=node.name if node else None,
-                                    index=(sequence_index, *output_worst[0]),
-                                    got=output_worst[1],
-                                    reference=output_worst[2],
-                                    abs_diff=output_max,
-                                )
+                        if output_worst is not None:
+                            metrics.observe_abs(
+                                output_name=value.name,
+                                node_name=node_name,
+                                index=(sequence_index, *output_worst[0]),
+                                got=output_worst[1],
+                                reference=output_worst[2],
+                                abs_diff=output_max,
+                            )
+                        else:
+                            metrics.has_abs_diff = True
 
             for value in graph.outputs:
                 if value.name not in output_compare_names:
@@ -1758,64 +1799,58 @@ def _verify_model(
                     issue = _VerificationIssue.missing_output(value.name)
                     raise AssertionError(issue.format())
                 output_data, runtime_out = pair
+                node = output_nodes.get(value.name)
+                node_name = node.name if node else None
                 info = output_dtypes[value.name]
                 if np.issubdtype(info.np_dtype, np.floating):
-                    saw_ulp = True
                     output_max, output_worst = worst_ulp_diff(
                         output_data,
                         runtime_out,
                         atol_eps=args.atol_eps,
                     )
-                    if output_max > max_ulp:
-                        max_ulp = output_max
-                        if output_worst is not None:
-                            node = output_nodes.get(value.name)
-                            worst_diff = _WorstDiff(
-                                output_name=value.name,
-                                node_name=node.name if node else None,
-                                index=output_worst[0],
-                                got=float(output_worst[1]),
-                                reference=float(output_worst[2]),
-                                ulp=output_max,
-                            )
+                    if output_worst is not None:
+                        metrics.observe_ulp(
+                            output_name=value.name,
+                            node_name=node_name,
+                            index=output_worst[0],
+                            got=float(output_worst[1]),
+                            reference=float(output_worst[2]),
+                            ulp=output_max,
+                        )
+                    else:
+                        metrics.has_ulp = True
                 else:
-                    saw_abs_diff = True
                     output_max, output_worst = _worst_abs_diff(output_data, runtime_out)
-                    if output_max > max_abs_diff:
-                        max_abs_diff = output_max
-                        if output_worst is not None:
-                            node = output_nodes.get(value.name)
-                            worst_abs_diff = _WorstAbsDiff(
-                                output_name=value.name,
-                                node_name=node.name if node else None,
-                                index=output_worst[0],
-                                got=output_worst[1],
-                                reference=output_worst[2],
-                                abs_diff=output_max,
-                            )
+                    if output_worst is not None:
+                        metrics.observe_abs(
+                            output_name=value.name,
+                            node_name=node_name,
+                            index=output_worst[0],
+                            got=output_worst[1],
+                            reference=output_worst[2],
+                            abs_diff=output_max,
+                        )
+                    else:
+                        metrics.has_abs_diff = True
         except AssertionError as exc:
             active_reporter.step_fail(str(exc))
             return None, str(exc), operators, opset_version, generated_checksum
-        metrics = _ComparisonMetrics(
-            has_abs_diff=saw_abs_diff,
-            max_abs_diff=max_abs_diff,
-            has_ulp=saw_ulp,
-            max_ulp=max_ulp,
-        )
         failure_detail = metrics.failing_metric_detail(max_ulp_limit=args.max_ulp)
         if failure_detail is not None:
             active_reporter.step_fail(failure_detail)
         if metrics.has_abs_diff and metrics.max_abs_diff > 0:
-            if worst_abs_diff is not None:
-                node_label = worst_abs_diff.node_name or "(unknown)"
-                index_display = ", ".join(str(dim) for dim in worst_abs_diff.index)
+            if metrics.worst_abs_diff is not None:
+                node_label = metrics.worst_abs_diff.node_name or "(unknown)"
+                index_display = ", ".join(
+                    str(dim) for dim in metrics.worst_abs_diff.index
+                )
                 active_reporter.info(
                     "  Worst diff: output="
-                    f"{worst_abs_diff.output_name} node={node_label} "
+                    f"{metrics.worst_abs_diff.output_name} node={node_label} "
                     f"index=[{index_display}] "
-                    f"got={worst_abs_diff.got} "
-                    f"ref={worst_abs_diff.reference} "
-                    f"abs_diff={worst_abs_diff.abs_diff}"
+                    f"got={metrics.worst_abs_diff.got} "
+                    f"ref={metrics.worst_abs_diff.reference} "
+                    f"abs_diff={metrics.worst_abs_diff.abs_diff}"
                 )
             if args.per_node_accuracy:
                 active_reporter.defer(
@@ -1839,16 +1874,16 @@ def _verify_model(
                 generated_checksum,
             )
         if metrics.has_ulp and metrics.max_ulp > args.max_ulp:
-            if worst_diff is not None:
-                node_label = worst_diff.node_name or "(unknown)"
-                index_display = ", ".join(str(dim) for dim in worst_diff.index)
+            if metrics.worst_diff is not None:
+                node_label = metrics.worst_diff.node_name or "(unknown)"
+                index_display = ", ".join(str(dim) for dim in metrics.worst_diff.index)
                 active_reporter.info(
                     "  Worst diff: output="
-                    f"{worst_diff.output_name} node={node_label} "
+                    f"{metrics.worst_diff.output_name} node={node_label} "
                     f"index=[{index_display}] "
-                    f"got={worst_diff.got:.8g} "
-                    f"ref={worst_diff.reference:.8g} "
-                    f"ulp={worst_diff.ulp}"
+                    f"got={metrics.worst_diff.got:.8g} "
+                    f"ref={metrics.worst_diff.reference:.8g} "
+                    f"ulp={metrics.worst_diff.ulp}"
                 )
             if args.per_node_accuracy:
                 active_reporter.defer(
