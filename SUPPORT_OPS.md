@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 188 / 205
+Supported operators: 187 / 204
 
 | Operator | Supported |
 | --- | --- |
@@ -160,7 +160,6 @@ Supported operators: 188 / 205
 | SequenceErase | ✅ |
 | SequenceInsert | ✅ |
 | SequenceLength | ✅ |
-| SequenceMap | ✅ |
 | Shape | ✅ |
 | Shrink | ✅ |
 | Sigmoid | ✅ |

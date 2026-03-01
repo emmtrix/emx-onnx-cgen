@@ -8,15 +8,17 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | 25 |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | 25 |
 | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor '*'. | 18 | 25 |
+| '*' | 17 |  |
 | Unsupported elem_type 21 (UINT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 9 | 8, 9, 19, 20, 22 |
+| Out of tolerance | 13 | 8, 9, 19, 20, 21, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Unsupported op DFT | 6 | 19, 20 |
+| '*' object has no attribute '*' | 5 |  |
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
@@ -27,8 +29,6 @@ This histogram is test-suite-overarching.
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
-| '*' | 2 |  |
-| Arrays are not equal (max abs diff 148) | 2 | 21 |
 | Cast input and output shapes must match | 2 | 22 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
@@ -43,8 +43,6 @@ This histogram is test-suite-overarching.
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
-| Arrays are not equal (max abs diff 247) | 1 | 21 |
-| Arrays are not equal (max abs diff 248) | 1 | 21 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
@@ -83,9 +81,7 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 20 | 1 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
-| Arrays are not equal (max abs diff 148) | 21 | 2 |
-| Arrays are not equal (max abs diff 247) | 21 | 1 |
-| Arrays are not equal (max abs diff 248) | 21 | 1 |
+| Out of tolerance | 21 | 4 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
 | Out of tolerance | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |

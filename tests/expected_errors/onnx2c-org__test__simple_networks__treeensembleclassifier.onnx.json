@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max abs diff 0, max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks treeensembleclassifier.onnx",
   "operators": [
     "ai.onnx.ml::TreeEnsembleClassifier"
