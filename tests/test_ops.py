@@ -2730,7 +2730,10 @@ def _make_deform_conv_model(
         )
         weight_values = np.ones(weight_shape, dtype=np.float32)
         weight_tensor = helper.make_tensor(
-            "W", TensorProto.FLOAT, dims=weight_shape, vals=weight_values.flatten().tolist()
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
         )
         inputs = ["X", "W", "offset"]
         initializers = [weight_tensor]
@@ -2754,7 +2757,10 @@ def _make_deform_conv_model(
         )
         weight_values = np.ones(weight_shape, dtype=np.float32)
         weight_tensor = helper.make_tensor(
-            "W", TensorProto.FLOAT, dims=weight_shape, vals=weight_values.flatten().tolist()
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
         )
         bias_values = np.ones([1], dtype=np.float32)
         bias_tensor = helper.make_tensor(
@@ -2781,7 +2787,10 @@ def _make_deform_conv_model(
         )
         weight_values = np.ones(weight_shape, dtype=np.float32)
         weight_tensor = helper.make_tensor(
-            "W", TensorProto.FLOAT, dims=weight_shape, vals=weight_values.flatten().tolist()
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
         )
         inputs = ["X", "W", "offset"]
         initializers = [weight_tensor]
@@ -2814,7 +2823,6 @@ def _make_deform_conv_model(
     model.ir_version = 8
     onnx.checker.check_model(model)
     return model
-
 
 
 def _make_lp_pool_model() -> onnx.ModelProto:
@@ -3843,8 +3851,6 @@ def _run_reference_testbench_compare(model: onnx.ModelProto) -> None:
             )
         else:
             np.testing.assert_array_equal(output_data, ref_output)
-
-
 
     model = _make_string_normalizer_model(
         input_shape=[4],

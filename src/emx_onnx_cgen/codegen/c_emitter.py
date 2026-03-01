@@ -7968,7 +7968,12 @@ class CEmitter:
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
-            weight_shape = (op.out_channels, op.in_channels // op.group, op.kernel_h, op.kernel_w)
+            weight_shape = (
+                op.out_channels,
+                op.in_channels // op.group,
+                op.kernel_h,
+                op.kernel_w,
+            )
             offset_shape = (
                 op.batch,
                 op.offset_group * op.kernel_h * op.kernel_w * 2,

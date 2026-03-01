@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op DeformConv",
+  "error": "Failed to build testbench.",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_basic_deform_conv_without_padding model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "DeformConv"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "2bff7edc28b2717dbf4b09471801d4fb3008fee7e921c71cfdf7a89839ce5c70"
 }
