@@ -62,6 +62,7 @@ from .misc import (
     TensorScatterOp,
     TfIdfVectorizerOp,
     StringNormalizerOp,
+    StringSplitOp,
     TreeEnsembleOp,
     TreeEnsembleClassifierOp,
     TileOp,
@@ -72,6 +73,7 @@ from .misc import (
 )
 from .nn import (
     AdagradOp,
+    MomentumOp,
     AttentionOp,
     AveragePoolOp,
     BatchNormOp,
@@ -157,6 +159,7 @@ __all__ = [
     "MatMulIntegerOp",
     "MatMulOp",
     "MaxPoolOp",
+    "MomentumOp",
     "MeanVarianceNormalizationOp",
     "MultiInputBinaryOp",
     "NegativeLogLikelihoodLossOp",
@@ -203,6 +206,7 @@ __all__ = [
     "TensorScatterOp",
     "TfIdfVectorizerOp",
     "StringNormalizerOp",
+    "StringSplitOp",
     "TreeEnsembleOp",
     "TreeEnsembleClassifierOp",
     "TileOp",

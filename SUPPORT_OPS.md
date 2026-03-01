@@ -2,7 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 183 / 205
+Supported operators: 184 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -180,7 +180,7 @@ Supported operators: 183 / 205
 | Squeeze | ✅ |
 | StringConcat | ❌ |
 | StringNormalizer | ✅ |
-| StringSplit | ❌ |
+| StringSplit | ✅ |
 | Sub | ✅ |
 | Sum | ✅ |
 | Swish | ✅ |
@@ -206,7 +206,7 @@ Supported operators: 183 / 205
 | ai.onnx.preview.training::Adagrad | ✅ |
 | ai.onnx.preview.training::Adam | ❌ |
 | ai.onnx.preview.training::Gradient | ✅ |
-| ai.onnx.preview.training::Momentum | ❌ |
+| ai.onnx.preview.training::Momentum | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearMul | ✅ |

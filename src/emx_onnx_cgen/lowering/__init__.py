@@ -6,6 +6,7 @@ from .registry import get_lowering, register_lowering
 
 _LOWERING_MODULES = [
     "adagrad",
+    "momentum",
     "arg_reduce",
     "attention",
     "average_pool",
@@ -92,6 +93,7 @@ _LOWERING_MODULES = [
     "split",
     "split_to_sequence",
     "string_normalizer",
+    "string_split",
     "squeeze",
     "tensor_scatter",
     "tfidf_vectorizer",

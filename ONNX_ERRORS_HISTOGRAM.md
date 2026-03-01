@@ -19,6 +19,7 @@ This histogram is test-suite-overarching.
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op StringSplit | 6 | 20 |
 | Col2Im requires image_shape to be a static initializer | 5 | 18 |
+| Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
@@ -28,7 +29,6 @@ This histogram is test-suite-overarching.
 | Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
-| Unsupported op Momentum | 3 |  |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
@@ -80,7 +80,6 @@ This histogram is test-suite-overarching.
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
-| Unsupported op StringSplit | 20 | 6 |
 | Unsupported op StringConcat | 20 | 5 |
 | Unsupported op AffineGrid | 20 | 4 |
 | Unsupported op DFT | 20 | 3 |

@@ -3736,6 +3736,100 @@ def test_string_normalizer_codegen_emits_transform_logic() -> None:
     assert "monday" in generated
 
 
+def _make_string_split_model(
+    *,
+    input_shape: list[int],
+    output_y_shape: list[int],
+    output_z_shape: list[int],
+    delimiter: str | None = None,
+    maxsplit: int | None = None,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.STRING, input_shape)
+    output_y_info = helper.make_tensor_value_info(
+        "out_y", TensorProto.STRING, output_y_shape
+    )
+    output_z_info = helper.make_tensor_value_info(
+        "out_z", TensorProto.INT64, output_z_shape
+    )
+    attrs: dict[str, object] = {}
+    if delimiter is not None:
+        attrs["delimiter"] = delimiter
+    if maxsplit is not None:
+        attrs["maxsplit"] = maxsplit
+    node = helper.make_node(
+        "StringSplit",
+        inputs=["in0"],
+        outputs=["out_y", "out_z"],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "string_split_graph",
+        [input_info],
+        [output_y_info, output_z_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
+def test_string_split_lowering_with_delimiter() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 2],
+        output_z_shape=[2],
+        delimiter=".",
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringSplit")
+    op = lowering(graph, graph.nodes[0])
+    assert op.delimiter == "."
+    assert op.maxsplit == -1
+
+
+def test_string_split_lowering_with_maxsplit() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 3],
+        output_z_shape=[2],
+        maxsplit=2,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringSplit")
+    op = lowering(graph, graph.nodes[0])
+    assert op.delimiter == ""
+    assert op.maxsplit == 2
+
+
+def test_string_split_codegen_emits_split_logic() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 2],
+        output_z_shape=[2],
+        delimiter=".",
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strstr" in generated
+    assert '"."' in generated
+
+
+def test_string_split_codegen_emits_whitespace_logic() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 3],
+        output_z_shape=[2],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strstr" not in generated
+
+
 def test_tfidf_vectorizer_testbench_match() -> None:
     model = _make_tfidf_vectorizer_model(
         input_shape=[4],
