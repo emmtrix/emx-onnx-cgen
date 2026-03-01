@@ -1,0 +1,37 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            {% for dim in range(spatial_rank) %}
+            for (idx_t {{ zero_indices[dim] }} = 0; {{ zero_indices[dim] }} < {{ image_shape[dim] }}; ++{{ zero_indices[dim] }}) {
+            {% endfor %}
+            {{ output }}[n][c]{% for dim in range(spatial_rank) %}[{{ zero_indices[dim] }}]{% endfor %} = {{ zero_literal }};
+            {% for dim in range(spatial_rank) %}
+            }
+            {% endfor %}
+        }
+    }
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t c = 0; c < {{ channels }}; ++c) {
+            {% for dim in range(spatial_rank) %}
+            for (idx_t {{ kernel_indices[dim] }} = 0; {{ kernel_indices[dim] }} < {{ block_shape[dim] }}; ++{{ kernel_indices[dim] }}) {
+            {% endfor %}
+            const idx_t col_c = c * {{ prod_block_shape }}{% for dim in range(spatial_rank) %} + {{ kernel_indices[dim] }} * {{ prod_block_suffix[dim] }}{% endfor %};
+            {% for dim in range(spatial_rank) %}
+            for (idx_t {{ block_indices[dim] }} = 0; {{ block_indices[dim] }} < {{ out_blocks[dim] }}; ++{{ block_indices[dim] }}) {
+            {% endfor %}
+            {% for dim in range(spatial_rank) %}
+            const idx_t {{ img_indices[dim] }} = {{ block_indices[dim] }} * {{ strides[dim] }} - {{ pads_begin[dim] }} + {{ kernel_indices[dim] }} * {{ dilations[dim] }};
+            {% endfor %}
+            if ({% for dim in range(spatial_rank) %}{{ img_indices[dim] }} >= 0 && {{ img_indices[dim] }} < {{ image_shape[dim] }}{% if not loop.last %} && {% endif %}{% endfor %}) {
+                const idx_t col_l = 0{% for dim in range(spatial_rank) %} + {{ block_indices[dim] }} * {{ prod_out_blocks_suffix[dim] }}{% endfor %};
+                {{ output }}[n][c]{% for dim in range(spatial_rank) %}[{{ img_indices[dim] }}]{% endfor %} += {{ input0 }}[n][col_c][col_l];
+            }
+            {% for dim in range(spatial_rank) %}
+            }
+            {% endfor %}
+            {% for dim in range(spatial_rank) %}
+            }
+            {% endfor %}
+        }
+    }
+}
