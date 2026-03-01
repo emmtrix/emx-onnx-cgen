@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1517 / 1802, 84.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1529 / 1802, 84.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1517 / 1802 ONNX files (84.2%).
+Coverage 1529 / 1802 ONNX files (84.9%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -46,12 +46,12 @@ Coverage 1517 / 1802 ONNX files (84.2%).
 | node/test_add_uint32/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_add_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_add_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_affine_grid_2d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_2d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
+| node/test_affine_grid_2d/model.onnx | 20 | ✅ | OK (max ULP 1) |
+| node/test_affine_grid_2d_align_corners/model.onnx | 20 | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
 | node/test_affine_grid_2d_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
-| node/test_affine_grid_3d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_3d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
+| node/test_affine_grid_3d/model.onnx | 20 | ❌ | Out of tolerance (max ULP 151) |
+| node/test_affine_grid_3d_align_corners/model.onnx | 20 | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | ❌ | Unsupported op ArrayFeatureExtractor |
@@ -992,8 +992,8 @@ Coverage 1517 / 1802 ONNX files (84.2%).
 | node/test_mod_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
-| node/test_momentum_multiple/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
+| node/test_momentum_multiple/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_mul/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1008,7 +1008,7 @@ Coverage 1517 / 1802 ONNX files (84.2%).
 | node/test_mvn_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | node/test_neg/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_neg_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_nesterov_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_nesterov_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1571,12 +1571,12 @@ Coverage 1517 / 1802 ONNX files (84.2%).
 | node/test_string_concat_empty_string/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_string_concat_utf8/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_string_concat_zero_dimensional/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_split_basic/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_empty_tensor/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_no_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| node/test_string_split_basic/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_empty_tensor/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_maxsplit/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_no_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max ULP 0) |
