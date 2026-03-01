@@ -6264,3 +6264,78 @@ def test_softmax_uses_axis_dimension_from_opset13() -> None:
     assert op_ctx.require_derived(op, "outer") == 2
     assert op_ctx.require_derived(op, "axis_size") == 3
     assert op_ctx.require_derived(op, "inner") == 4
+
+
+def _make_col2im_model(
+    *,
+    input_shape: list[int],
+    image_shape: list[int],
+    block_shape: list[int],
+    output_shape: list[int],
+    strides: list[int] | None = None,
+    dilations: list[int] | None = None,
+    pads: list[int] | None = None,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
+    image_shape_tensor = helper.make_tensor(
+        "image_shape",
+        TensorProto.INT64,
+        dims=[len(image_shape)],
+        vals=image_shape,
+    )
+    block_shape_tensor = helper.make_tensor(
+        "block_shape",
+        TensorProto.INT64,
+        dims=[len(block_shape)],
+        vals=block_shape,
+    )
+    attrs: dict[str, object] = {}
+    if strides is not None:
+        attrs["strides"] = strides
+    if dilations is not None:
+        attrs["dilations"] = dilations
+    if pads is not None:
+        attrs["pads"] = pads
+    node = helper.make_node(
+        "Col2Im",
+        inputs=["input", "image_shape", "block_shape"],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "col2im_graph",
+        [input_info],
+        [output],
+        initializer=[image_shape_tensor, block_shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 18)],
+    )
+    model.ir_version = 8
+    onnx.checker.check_model(model)
+    return model
+
+
+def test_col2im_basic_matches_onnxruntime() -> None:
+    model = _make_col2im_model(
+        input_shape=[1, 5, 5],
+        image_shape=[5, 5],
+        block_shape=[1, 5],
+        output_shape=[1, 1, 5, 5],
+    )
+    _run_ort_compare(model)
+
+
+def test_col2im_strides_matches_onnxruntime() -> None:
+    model = _make_col2im_model(
+        input_shape=[1, 9, 4],
+        image_shape=[5, 5],
+        block_shape=[3, 3],
+        output_shape=[1, 1, 5, 5],
+        strides=[2, 2],
+    )
+    _run_ort_compare(model)

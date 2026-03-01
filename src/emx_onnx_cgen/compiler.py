@@ -22,7 +22,7 @@ from .codegen.c_emitter import (
 from .dtypes import dtype_info
 from .errors import CodegenError, UnsupportedOpError
 from .ir.context import GraphContext
-from .ir.model import Graph, TensorType, Value, ValueType
+from .ir.model import Graph, Initializer, TensorType, Value, ValueType
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
@@ -306,9 +306,52 @@ class Compiler:
                 )
         return None
 
+    def _inject_int64_inputs_as_initializers(self, graph: Graph) -> Graph:
+        """Promote integer model inputs that have known values from testbench data to
+        graph initializers.
+
+        This allows lowering passes to resolve their values statically, even when the
+        ONNX model declares them as runtime inputs rather than constant initializers.
+        The inputs themselves are kept in ``graph.inputs`` so that the model function
+        signature and the testbench binary remain unchanged.
+        """
+        if not self._options.testbench_inputs:
+            return graph
+        existing_initializer_names = {init.name for init in graph.initializers}
+        new_initializers: list[Initializer] = []
+        for value in graph.inputs:
+            name = value.name
+            if name in existing_initializer_names:
+                continue
+            if not isinstance(value.type, TensorType):
+                continue
+            if value.type.dtype not in {ScalarType.I64, ScalarType.I32}:
+                continue
+            data = self._options.testbench_inputs.get(name)
+            if data is None or not isinstance(data, np.ndarray):
+                continue
+            new_initializers.append(
+                Initializer(
+                    name=name,
+                    type=value.type,
+                    data=data.astype(value.type.dtype.np_dtype, copy=False),
+                )
+            )
+        if not new_initializers:
+            return graph
+        return Graph(
+            inputs=graph.inputs,
+            outputs=graph.outputs,
+            nodes=graph.nodes,
+            initializers=graph.initializers + tuple(new_initializers),
+            values=graph.values,
+            opset_imports=graph.opset_imports,
+        )
+
     def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
         if not self._options.testbench_inputs:
             return graph
+        graph = self._inject_int64_inputs_as_initializers(graph)
         if not any(
             isinstance(value.type, TensorType) and value.type.dim_params
             for value in graph.values + graph.inputs + graph.outputs
