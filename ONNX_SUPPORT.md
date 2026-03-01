@@ -507,11 +507,11 @@ Coverage 1512 / 1802 ONNX files (83.9%).
 | node/test_clip_outbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_splitbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_col2im/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_5d/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_dilations/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_pads/model.onnx | 18 | ❌ | Unsupported op Col2Im |
-| node/test_col2im_strides/model.onnx | 18 | ❌ | Unsupported op Col2Im |
+| node/test_col2im/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
+| node/test_col2im_5d/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
+| node/test_col2im_dilations/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
+| node/test_col2im_pads/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
+| node/test_col2im_strides/model.onnx | 18 | ❌ | Col2Im requires image_shape to be a static initializer |
 | node/test_compress_0/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_compress_1/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_compress_default_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |

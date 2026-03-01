@@ -7931,6 +7931,7 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, Col2ImOp):
             from math import prod
+
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -7941,8 +7942,12 @@ class CEmitter:
             L = prod(op.out_blocks)
             input_shape = (op.batch, op.channels * prod_block_shape, L)
             output_shape = (op.batch, op.channels, *op.image_shape)
-            block_shape_strides = [prod(op.block_shape[dim + 1 :]) for dim in range(op.spatial_rank)]
-            out_blocks_strides = [prod(op.out_blocks[dim + 1 :]) for dim in range(op.spatial_rank)]
+            block_shape_strides = [
+                prod(op.block_shape[dim + 1 :]) for dim in range(op.spatial_rank)
+            ]
+            out_blocks_strides = [
+                prod(op.out_blocks[dim + 1 :]) for dim in range(op.spatial_rank)
+            ]
             zero_indices = tuple(f"zi{dim}" for dim in range(op.spatial_rank))
             kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
             block_indices = tuple(f"bd{dim}" for dim in range(op.spatial_rank))
