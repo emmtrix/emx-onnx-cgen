@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -70,6 +71,10 @@ const EMX_UNUSED float weight1_w[1][1][2][2] = {
     }
 };
 
+static inline float ref_scalar_f32_floor(float a) {
+    return floorf(a);
+}
+
 /*
  * Node 0:
  * OpType: DeformConv
@@ -95,23 +100,23 @@ EMX_NODE_FN void node0_deformconv(const float input0[1][1][3][3], const float we
                                 for (idx_t kw = 0; kw < 2; ++kw) {
                                     const idx_t off_ch_h = (off_g * 2 * 2 + kh * 2 + kw) * 2;
                                     const idx_t off_ch_w = off_ch_h + 1;
-                                    const double dh = (double)offset[n][off_ch_h][oh][ow];
-                                    const double dw = (double)offset[n][off_ch_w][oh][ow];
-                                    const double h_coord = (double)(oh * 1 - 0 + kh * 1) + dh;
-                                    const double w_coord = (double)(ow * 1 - 0 + kw * 1) + dw;
-                                    const int base_h = (int)floor(h_coord);
-                                    const int base_w = (int)floor(w_coord);
-                                    const double frac_h = h_coord - (double)base_h;
-                                    const double frac_w = w_coord - (double)base_w;
-                                    double sample = 0.0;
+                                    const float dh = (float)offset[n][off_ch_h][oh][ow];
+                                    const float dw = (float)offset[n][off_ch_w][oh][ow];
+                                    const float h_coord = (float)(oh * 1 - 0 + kh * 1) + dh;
+                                    const float w_coord = (float)(ow * 1 - 0 + kw * 1) + dw;
+                                    const int base_h = (int)ref_scalar_f32_floor(h_coord);
+                                    const int base_w = (int)ref_scalar_f32_floor(w_coord);
+                                    const float frac_h = h_coord - (float)base_h;
+                                    const float frac_w = w_coord - (float)base_w;
+                                    float sample = 0.0f;
                                     int ih0 = base_h, ih1 = base_h + 1;
                                     int iw0 = base_w, iw1 = base_w + 1;
-                                    double v00 = (ih0 >= 0 && ih0 < 3 && iw0 >= 0 && iw0 < 3) ? (double)input0[n][ic_global][ih0][iw0] : 0.0;
-                                    double v01 = (ih0 >= 0 && ih0 < 3 && iw1 >= 0 && iw1 < 3) ? (double)input0[n][ic_global][ih0][iw1] : 0.0;
-                                    double v10 = (ih1 >= 0 && ih1 < 3 && iw0 >= 0 && iw0 < 3) ? (double)input0[n][ic_global][ih1][iw0] : 0.0;
-                                    double v11 = (ih1 >= 0 && ih1 < 3 && iw1 >= 0 && iw1 < 3) ? (double)input0[n][ic_global][ih1][iw1] : 0.0;
-                                    sample = (1.0 - frac_h) * (1.0 - frac_w) * v00 + (1.0 - frac_h) * frac_w * v01 + frac_h * (1.0 - frac_w) * v10 + frac_h * frac_w * v11;
-                                    acc += (float)(sample * (double)weights[oc_global][ic][kh][kw]);
+                                    float v00 = (ih0 >= 0 && ih0 < 3 && iw0 >= 0 && iw0 < 3) ? (float)input0[n][ic_global][ih0][iw0] : 0.0f;
+                                    float v01 = (ih0 >= 0 && ih0 < 3 && iw1 >= 0 && iw1 < 3) ? (float)input0[n][ic_global][ih0][iw1] : 0.0f;
+                                    float v10 = (ih1 >= 0 && ih1 < 3 && iw0 >= 0 && iw0 < 3) ? (float)input0[n][ic_global][ih1][iw0] : 0.0f;
+                                    float v11 = (ih1 >= 0 && ih1 < 3 && iw1 >= 0 && iw1 < 3) ? (float)input0[n][ic_global][ih1][iw1] : 0.0f;
+                                    sample = (1.0f - frac_h) * (1.0f - frac_w) * v00 + (1.0f - frac_h) * frac_w * v01 + frac_h * (1.0f - frac_w) * v10 + frac_h * frac_w * v11;
+                                    acc += (float)(sample * (float)weights[oc_global][ic][kh][kw]);
                                 }
                             }
                         }

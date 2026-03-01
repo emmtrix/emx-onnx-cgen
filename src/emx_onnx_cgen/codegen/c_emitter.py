@@ -8077,9 +8077,21 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for DeformConv codegen."
+                )
             acc_dtype = self._accumulation_dtype(op.dtype)
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
+            acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
+            floor_fn = self._scalar_function_name(
+                ScalarFunction.FLOOR, acc_dtype, scalar_registry
+            )
+            if floor_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar floor function for DeformConv."
+                )
             input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
             weight_shape = (
                 op.out_channels,
@@ -8141,6 +8153,9 @@ class CEmitter:
                 c_type=c_type,
                 acc_type=acc_type,
                 acc_zero_literal=acc_zero_literal,
+                zero_literal=acc_zero_literal,
+                one_literal=acc_one_literal,
+                floor_fn=floor_fn,
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
