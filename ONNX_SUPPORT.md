@@ -256,8 +256,8 @@ Coverage 1524 / 1802 ONNX files (84.6%).
 | node/test_averagepool_3d_dilations_small/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_with_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_without_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_basic_deform_conv_with_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
-| node/test_basic_deform_conv_without_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
+| node/test_basic_deform_conv_with_padding/model.onnx | 22 | ❌ | Failed to build testbench. |
+| node/test_basic_deform_conv_without_padding/model.onnx | 22 | ❌ | Failed to build testbench. |
 | node/test_batchnorm_epsilon/model.onnx | 15 | ✅ | OK (max ULP 2) |
 | node/test_batchnorm_epsilon_training_mode/model.onnx | 15 | ✅ | OK (max ULP 1) |
 | node/test_batchnorm_example/model.onnx | 15 | ✅ | OK (max ULP 2) |
@@ -565,8 +565,8 @@ Coverage 1524 / 1802 ONNX files (84.6%).
 | node/test_cumsum_2d_axis_1/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_int32/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_negative_axis/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_deform_conv_with_mask_bias/model.onnx | 22 | ❌ | Unsupported op DeformConv |
-| node/test_deform_conv_with_multiple_offset_groups/model.onnx | 22 | ❌ | Unsupported op DeformConv |
+| node/test_deform_conv_with_mask_bias/model.onnx | 22 | ❌ | Failed to build testbench. |
+| node/test_deform_conv_with_multiple_offset_groups/model.onnx | 22 | ❌ | Failed to build testbench. |
 | node/test_depthtospace_crd_mode_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_depthtospace_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear/model.onnx | 25 | ✅ | OK (max ULP 0) |

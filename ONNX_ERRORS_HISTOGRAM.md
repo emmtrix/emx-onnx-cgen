@@ -19,8 +19,10 @@ This histogram is test-suite-overarching.
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
+| Failed to build testbench. | 4 | 22 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
+| Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op OptionalGetElement | 4 | 18 |
@@ -90,8 +92,8 @@ This histogram is test-suite-overarching.
 | Arrays are not equal (max abs diff 247) | 21 | 1 |
 | Arrays are not equal (max abs diff 248) | 21 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
+| Failed to build testbench. | 22 | 4 |
 | Out of tolerance | 22 | 4 |
-| Unsupported op DeformConv | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
