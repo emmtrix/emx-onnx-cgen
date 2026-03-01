@@ -98,8 +98,6 @@ def lower_col2im(graph: Graph, node: Node) -> Col2ImOp:
         raise UnsupportedOpError("Col2Im pads must have length 2 * spatial_rank")
 
     block_flat_size = prod(block_shape)
-    if block_flat_size == 0:
-        raise UnsupportedOpError("Col2Im block_shape must have all positive dimensions")
     if cm % block_flat_size != 0:
         raise ShapeInferenceError(
             f"Col2Im input dim 1 ({cm}) must be divisible by product(block_shape) ({block_flat_size})"

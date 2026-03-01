@@ -348,30 +348,31 @@ class Compiler:
             isinstance(value.type, TensorType) and value.type.dim_params
             for value in graph.values + graph.inputs + graph.outputs
         )
+
+        def _graph_with_injected(
+            inputs: tuple[Value, ...] = graph.inputs,
+            outputs: tuple[Value, ...] = graph.outputs,
+            values: tuple[Value, ...] = graph.values,
+        ) -> Graph:
+            return Graph(
+                inputs=inputs,
+                outputs=outputs,
+                nodes=graph.nodes,
+                initializers=graph.initializers + injected_initializers,
+                values=values,
+                opset_imports=graph.opset_imports,
+            )
+
         if not needs_shape_concretization:
             if not injected_initializers:
                 return graph
-            return Graph(
-                inputs=graph.inputs,
-                outputs=graph.outputs,
-                nodes=graph.nodes,
-                initializers=graph.initializers + injected_initializers,
-                values=graph.values,
-                opset_imports=graph.opset_imports,
-            )
+            return _graph_with_injected()
         try:
             import onnxruntime as ort
         except Exception:
             if not injected_initializers:
                 return graph
-            return Graph(
-                inputs=graph.inputs,
-                outputs=graph.outputs,
-                nodes=graph.nodes,
-                initializers=graph.initializers + injected_initializers,
-                values=graph.values,
-                opset_imports=graph.opset_imports,
-            )
+            return _graph_with_injected()
         try:
             model_with_outputs = onnx.ModelProto()
             model_with_outputs.CopyFrom(model)
@@ -412,14 +413,7 @@ class Compiler:
         except Exception:
             if not injected_initializers:
                 return graph
-            return Graph(
-                inputs=graph.inputs,
-                outputs=graph.outputs,
-                nodes=graph.nodes,
-                initializers=graph.initializers + injected_initializers,
-                values=graph.values,
-                opset_imports=graph.opset_imports,
-            )
+            return _graph_with_injected()
 
         shapes_by_name: dict[str, tuple[int, ...]] = {}
         for name, array in zip(output_names, output_arrays):
@@ -445,13 +439,10 @@ class Compiler:
                 ),
             )
 
-        return Graph(
+        return _graph_with_injected(
             inputs=tuple(concretize_value(value) for value in graph.inputs),
             outputs=tuple(concretize_value(value) for value in graph.outputs),
-            nodes=graph.nodes,
-            initializers=graph.initializers + injected_initializers,
             values=tuple(concretize_value(value) for value in graph.values),
-            opset_imports=graph.opset_imports,
         )
 
     def _validate_graph(self, graph: Graph) -> None:
