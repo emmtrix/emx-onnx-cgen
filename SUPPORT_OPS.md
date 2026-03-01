@@ -34,7 +34,7 @@ Supported operators: 183 / 205
 | Celu | ✅ |
 | CenterCropPad | ✅ |
 | Clip | ✅ |
-| Col2Im | ❌ |
+| Col2Im | ✅ |
 | Compress | ✅ |
 | Concat | ✅ |
 | ConcatFromSequence | ✅ |
