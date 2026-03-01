@@ -125,6 +125,7 @@ from ..ir.ops import (
     TensorScatterOp,
     TfIdfVectorizerOp,
     StringNormalizerOp,
+    StringSplitOp,
     TreeEnsembleOp,
     TreeEnsembleClassifierOp,
     TileOp,
@@ -2019,6 +2020,14 @@ class CEmitter:
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
             )
+        if isinstance(op, StringSplitOp):
+            return StringSplitOp(
+                input0=name_map.get(op.input0, op.input0),
+                output_y=name_map.get(op.output_y, op.output_y),
+                output_z=name_map.get(op.output_z, op.output_z),
+                delimiter=op.delimiter,
+                maxsplit=op.maxsplit,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2370,6 +2379,7 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
+                "string_split": self._env.get_template("string_split_op.c.j2"),
                 "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),
                 "tree_ensemble_classifier": self._env.get_template(
                     "tree_ensemble_classifier_op.c.j2"
@@ -3176,6 +3186,8 @@ class CEmitter:
                 return op.elem_dtype
             if isinstance(op, LoopSequenceMapOp):
                 return op.output_elem_dtypes[0]
+            if isinstance(op, StringSplitOp):
+                return model.op_context.dtype(op.output_z)
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -3284,6 +3296,8 @@ class CEmitter:
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
             includes.add("#include <stdbool.h>")
+        if any(isinstance(op, StringSplitOp) for op in resolved_ops):
+            includes.add("#include <string.h>")
         ordered_includes = (
             "#include <stdint.h>",
             "#include <stdio.h>",
@@ -5307,6 +5321,14 @@ class CEmitter:
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
             )
+        if isinstance(op, StringSplitOp):
+            return StringSplitOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output_y=temp_map.get(op.output_y, op.output_y),
+                output_z=temp_map.get(op.output_z, op.output_z),
+                delimiter=op.delimiter,
+                maxsplit=op.maxsplit,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5829,6 +5851,7 @@ class CEmitter:
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
+            string_split_template=templates["string_split"],
             tree_ensemble_template=templates["tree_ensemble"],
             tree_ensemble_classifier_template=templates["tree_ensemble_classifier"],
             split_template=templates["split"],
@@ -6359,6 +6382,7 @@ class CEmitter:
         one_hot_template,
         tfidf_vectorizer_template,
         string_normalizer_template,
+        string_split_template,
         tree_ensemble_template,
         tree_ensemble_classifier_template,
         split_template,
@@ -11774,6 +11798,46 @@ class CEmitter:
                 case_mode=case_mode,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, StringSplitOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output_y", op.output_y), ("output_z", op.output_z)]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            output_y_shape = self._ctx_shape(op.output_y)
+            output_z_shape = self._ctx_shape(op.output_z)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+            )
+            output_y_suffix = self._param_array_suffix(
+                output_y_shape, _dim_names_for(op.output_y), dtype=ScalarType.STRING
+            )
+            output_z_suffix = self._param_array_suffix(
+                output_z_shape, _dim_names_for(op.output_z)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], "char", input_suffix, True),
+                    (params["output_y"], "char", output_y_suffix, False),
+                    (params["output_z"], "int64_t", output_z_suffix, False),
+                ]
+            )
+            is_whitespace = not op.delimiter
+            max_count = output_y_shape[-1] if output_y_shape else 0
+            rendered = string_split_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output_y=params["output_y"],
+                output_z=params["output_z"],
+                input_count=CEmitter._element_count_expr(input_shape),
+                max_count=max_count,
+                is_whitespace=is_whitespace,
+                maxsplit=op.maxsplit,
+                delimiter_literal=CEmitter._format_c_string_literal(op.delimiter),
+                delimiter_len=len(op.delimiter),
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, TreeEnsembleOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -13993,7 +14057,7 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.k_input, self._ctx_shape(op.k_input)),
             )
-        if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp)):
+        if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp, StringSplitOp)):
             return ((op.input0, self._ctx_shape(op.input0)),)
         return ()
 
@@ -14374,6 +14438,19 @@ class CEmitter:
                     self._ctx_dtype(op.zero_point),
                 ),
             )
+        if isinstance(op, StringSplitOp):
+            return (
+                (
+                    op.output_y,
+                    self._ctx_shape(op.output_y),
+                    ScalarType.STRING,
+                ),
+                (
+                    op.output_z,
+                    self._ctx_shape(op.output_z),
+                    self._ctx_dtype(op.output_z),
+                ),
+            )
         if isinstance(op, ConcatFromSequenceOp):
             return (
                 (
@@ -14725,6 +14802,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, StringSplitOp):
+            return self._ctx_shape(op.output_y)
         if isinstance(op, SplitOp):
             return self._ctx_shape(op.outputs[0])
         if isinstance(op, SplitToSequenceOp):
@@ -14849,6 +14928,8 @@ class CEmitter:
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, StringNormalizerOp):
+            return ScalarType.STRING
+        if isinstance(op, StringSplitOp):
             return ScalarType.STRING
         if isinstance(op, TreeEnsembleOp):
             return self._ctx_dtype(op.output)
