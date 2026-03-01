@@ -271,6 +271,28 @@ def _make_string_normalizer_model() -> onnx.ModelProto:
     return model
 
 
+def _make_string_concat_model() -> onnx.ModelProto:
+    input_x = helper.make_tensor_value_info("x", TensorProto.STRING, [3])
+    input_y = helper.make_tensor_value_info("y", TensorProto.STRING, [1])
+    output = helper.make_tensor_value_info("out", TensorProto.STRING, [3])
+    node = helper.make_node(
+        "StringConcat",
+        inputs=["x", "y"],
+        outputs=["out"],
+    )
+    graph = helper.make_graph(
+        [node], "string_concat_graph", [input_x, input_y], [output]
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_constant_string_model() -> onnx.ModelProto:
     output = helper.make_tensor_value_info("out", TensorProto.STRING, [2])
     constant = helper.make_node(
@@ -659,6 +681,14 @@ def test_codegen_golden_string_normalizer() -> None:
     compiler = Compiler(CompilerOptions(model_name="string_normalizer_model"))
     generated = compiler.compile(model)
     golden_path = Path(__file__).parent / "golden" / "string_normalizer_model.c"
+    assert_golden(generated, golden_path)
+
+
+def test_codegen_golden_string_concat() -> None:
+    model = _make_string_concat_model()
+    compiler = Compiler(CompilerOptions(model_name="string_concat_model"))
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "string_concat_model.c"
     assert_golden(generated, golden_path)
 
 

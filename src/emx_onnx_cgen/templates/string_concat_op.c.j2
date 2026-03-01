@@ -1,0 +1,14 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+{% for dim in shape %}
+    for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
+{% endfor %}
+        const char *src0 = {{ input0_expr }};
+        const char *src1 = {{ input1_expr }};
+        char *dst = {{ output_expr }};
+        strncpy(dst, src0, EMX_STRING_MAX_LEN - 1);
+        dst[EMX_STRING_MAX_LEN - 1] = '\0';
+        strncat(dst, src1, EMX_STRING_MAX_LEN - 1 - strlen(dst));
+{% for _ in shape %}
+    }
+{% endfor %}
+}
