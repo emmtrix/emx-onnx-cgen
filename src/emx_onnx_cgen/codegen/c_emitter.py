@@ -127,6 +127,7 @@ from ..ir.ops import (
     TreeEnsembleOp,
     TreeEnsembleClassifierOp,
     TileOp,
+    CenterCropPadOp,
     TopKOp,
     TransposeOp,
     TriluOp,
@@ -678,6 +679,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -762,6 +764,7 @@ class CEmitter:
         | EyeLikeOp
         | TriluOp
         | TileOp
+        | CenterCropPadOp
         | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
@@ -1752,6 +1755,15 @@ class CEmitter:
                 repeats_input=name_map.get(op.repeats_input, op.repeats_input),
                 output=name_map.get(op.output, op.output),
             )
+        if isinstance(op, CenterCropPadOp):
+            return CenterCropPadOp(
+                input0=name_map.get(op.input0, op.input0),
+                shape_input=name_map.get(op.shape_input, op.shape_input),
+                output=name_map.get(op.output, op.output),
+                axes=op.axes,
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+            )
         if isinstance(op, PadOp):
             return PadOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2305,6 +2317,7 @@ class CEmitter:
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
+                "center_crop_pad": self._env.get_template("center_crop_pad_op.c.j2"),
                 "pad": self._env.get_template("pad_op.c.j2"),
                 "depth_to_space": self._env.get_template("depth_to_space_op.c.j2"),
                 "space_to_depth": self._env.get_template("space_to_depth_op.c.j2"),
@@ -3048,6 +3061,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
@@ -3406,6 +3420,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
@@ -3605,6 +3620,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
@@ -3734,6 +3750,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
@@ -4036,6 +4053,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
@@ -4115,6 +4133,7 @@ class CEmitter:
         | EyeLikeOp
         | TriluOp
         | TileOp
+        | CenterCropPadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
@@ -5436,6 +5455,15 @@ class CEmitter:
                 repeats_input=temp_map.get(op.repeats_input, op.repeats_input),
                 output=temp_map.get(op.output, op.output),
             )
+        if isinstance(op, CenterCropPadOp):
+            return CenterCropPadOp(
+                input0=temp_map.get(op.input0, op.input0),
+                shape_input=temp_map.get(op.shape_input, op.shape_input),
+                output=temp_map.get(op.output, op.output),
+                axes=op.axes,
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+            )
         if isinstance(op, PadOp):
             return PadOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5744,6 +5772,7 @@ class CEmitter:
             eye_like_template=templates["eye_like"],
             trilu_template=templates["trilu"],
             tile_template=templates["tile"],
+            center_crop_pad_template=templates["center_crop_pad"],
             pad_template=templates["pad"],
             depth_to_space_template=templates["depth_to_space"],
             space_to_depth_template=templates["space_to_depth"],
@@ -6272,6 +6301,7 @@ class CEmitter:
         eye_like_template,
         trilu_template,
         tile_template,
+        center_crop_pad_template,
         pad_template,
         depth_to_space_template,
         space_to_depth_template,
@@ -10048,6 +10078,80 @@ class CEmitter:
                 input_index_expr=input_index_expr,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, CenterCropPadOp):
+            input_shape_raw = list(op.input_shape)
+            output_shape_raw = list(op.output_shape)
+            rank = len(output_shape_raw)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("shape_input", op.shape_input),
+                    ("output", op.output),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            output_shape = CEmitter._shape_dim_exprs(
+                tuple(output_shape_raw), output_dim_names
+            )
+            out_loop_vars = CEmitter._loop_vars(tuple(output_shape_raw))
+            input_suffix = self._param_array_suffix(
+                tuple(input_shape_raw), _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                tuple(output_shape_raw), output_dim_names
+            )
+            shape_input_dtype = self._ctx_dtype(op.shape_input)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (
+                        params["shape_input"],
+                        shape_input_dtype.c_type,
+                        self._param_array_suffix(
+                            self._ctx_shape(op.shape_input),
+                            _dim_names_for(op.shape_input),
+                        ),
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            # Compute per-axis crop_start and pad_start
+            axes = op.axes if op.axes is not None else tuple(range(rank))
+            crop_starts = [0] * rank
+            pad_starts = [0] * rank
+            for a in axes:
+                in_dim = input_shape_raw[a]
+                out_dim = output_shape_raw[a]
+                if in_dim > out_dim:
+                    crop_starts[a] = (in_dim - out_dim) // 2
+                elif out_dim > in_dim:
+                    pad_starts[a] = (out_dim - in_dim) // 2
+            # Compute row-major strides of input
+            input_strides: list[int] = []
+            stride = 1
+            for dim in reversed(input_shape_raw):
+                input_strides.append(stride)
+                stride *= dim
+            input_strides = list(reversed(input_strides))
+            rendered = center_crop_pad_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                shape_input=params["shape_input"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                input_shape=input_shape_raw,
+                out_loop_vars=out_loop_vars,
+                crop_starts=crop_starts,
+                pad_starts=pad_starts,
+                input_strides=input_strides,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, PadOp):
             input_shape_raw = self._ctx_shape(op.input0)
             output_shape_raw = self._ctx_shape(op.output)
@@ -13519,6 +13623,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -13599,6 +13704,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -13738,6 +13844,11 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.repeats_input, self._ctx_shape(op.repeats_input)),
             )
+        if isinstance(op, CenterCropPadOp):
+            return (
+                (op.input0, self._ctx_shape(op.input0)),
+                (op.shape_input, self._ctx_shape(op.shape_input)),
+            )
         if isinstance(op, PadOp):
             inputs = [(op.input0, self._ctx_shape(op.input0))]
             if op.pads_input is not None:
@@ -13845,6 +13956,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -13935,6 +14047,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -14330,6 +14443,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
@@ -14470,6 +14584,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, TileOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, CenterCropPadOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, PadOp):
             return self._ctx_shape(op.output)
         if isinstance(op, DepthToSpaceOp):
@@ -14599,6 +14715,7 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | ResizeOp
             | GridSampleOp
             | ReduceOp
@@ -14650,7 +14767,7 @@ class CEmitter:
             op, (QuantizeLinearOp, DequantizeLinearOp, DynamicQuantizeLinearOp)
         ):
             return self._ctx_dtype(op.output)
-        if isinstance(op, (TriluOp, TileOp, CumSumOp)):
+        if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])
