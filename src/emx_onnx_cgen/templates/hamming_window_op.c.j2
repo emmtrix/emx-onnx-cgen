@@ -1,12 +1,12 @@
 EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
-    const double size_value = (double){{ size }}[0];
-    const double denom = {{ periodic_literal }} ? size_value : (size_value - 1.0);
-    const double alpha = 25.0 / 46.0;
-    const double beta = 1.0 - alpha;
-    const double pi = 3.14159265358979323846;
+    const {{ compute_type }} size_value = ({{ compute_type }}){{ size }}[0];
+    const {{ compute_type }} denom = {{ periodic_literal }} ? size_value : (size_value - {{ one_literal }});
+    const {{ compute_type }} alpha = {{ alpha_literal }};
+    const {{ compute_type }} beta = {{ beta_literal }};
+    const {{ compute_type }} pi = {{ pi_literal }};
     for (idx_t idx = 0; idx < {{ length }}; ++idx) {
-        const double phase = (2.0 * pi * (double)idx) / denom;
-        const double value = alpha - beta * cos(phase);
+        const {{ compute_type }} phase = ({{ two_literal }} * pi * ({{ compute_type }})idx) / denom;
+        const {{ compute_type }} value = alpha - beta * {{ cos_fn }}(phase);
         {{ output }}[idx] = ({{ c_type }})value;
     }
 }

@@ -11101,6 +11101,10 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BlackmanWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -11121,6 +11125,18 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
             rendered = blackman_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11131,6 +11147,14 @@ class CEmitter:
                 output_suffix=output_suffix,
                 length=output_shape[0],
                 periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                c042_literal=self._format_literal(compute_dtype, 0.42),
+                c05_literal=self._format_literal(compute_dtype, 0.5),
+                c008_literal=self._format_literal(compute_dtype, 0.08),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LoopSequenceMapOp):
@@ -11275,6 +11299,10 @@ class CEmitter:
             lines.append("}")
             return with_node_comment("\n".join(lines))
         if isinstance(op, HammingWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -11295,6 +11323,18 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
             rendered = hamming_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11305,9 +11345,22 @@ class CEmitter:
                 output_suffix=output_suffix,
                 length=output_shape[0],
                 periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                alpha_literal=self._format_literal(compute_dtype, 25.0 / 46.0),
+                beta_literal=self._format_literal(
+                    compute_dtype, 1.0 - (25.0 / 46.0)
+                ),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HannWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -11328,6 +11381,18 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
             rendered = hann_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11338,6 +11403,13 @@ class CEmitter:
                 output_suffix=output_suffix,
                 length=output_shape[0],
                 periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                alpha_literal=self._format_literal(compute_dtype, 0.5),
+                beta_literal=self._format_literal(compute_dtype, 0.5),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
