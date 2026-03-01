@@ -11,6 +11,7 @@ from .elementwise import (
     WhereOp,
 )
 from .misc import (
+    AffineGridOp,
     BernoulliOp,
     BlackmanWindowOp,
     CastOp,
@@ -109,6 +110,7 @@ from .reduce import ArgReduceOp, ReduceOp, TopKOp
 
 __all__ = [
     "AdagradOp",
+    "AffineGridOp",
     "ArgReduceOp",
     "AttentionOp",
     "AveragePoolOp",

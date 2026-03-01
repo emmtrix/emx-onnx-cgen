@@ -6,6 +6,7 @@ from .registry import get_lowering, register_lowering
 
 _LOWERING_MODULES = [
     "adagrad",
+    "affine_grid",
     "arg_reduce",
     "attention",
     "average_pool",
