@@ -2625,6 +2625,42 @@ def _make_conv_transpose_model() -> onnx.ModelProto:
     return model
 
 
+def _make_col2im_model() -> onnx.ModelProto:
+    # input: [1, 5, 5] = [batch, channels * block_h * block_w, num_blocks]
+    # image_shape: [5, 5], block_shape: [1, 5]
+    # output: [1, 1, 5, 5]
+    input_shape = [1, 5, 5]
+    output_shape = [1, 1, 5, 5]
+    input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
+    output = helper.make_tensor_value_info("out", TensorProto.FLOAT, output_shape)
+    image_shape_tensor = numpy_helper.from_array(
+        np.array([5, 5], dtype=np.int64), name="image_shape"
+    )
+    block_shape_tensor = numpy_helper.from_array(
+        np.array([1, 5], dtype=np.int64), name="block_shape"
+    )
+    node = helper.make_node(
+        "Col2Im",
+        inputs=["in0", "image_shape", "block_shape"],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "col2im_graph",
+        [input_info],
+        [output],
+        initializer=[image_shape_tensor, block_shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 18)],
+    )
+    model.ir_version = 8
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_lp_pool_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     output_shape = [1, 1, 2, 2]
@@ -5727,6 +5763,11 @@ def test_qlinearconv_op_matches_onnxruntime() -> None:
 
 def test_conv_transpose_op_matches_onnxruntime() -> None:
     model = _make_conv_transpose_model()
+    _run_ort_compare(model)
+
+
+def test_col2im_op_matches_onnxruntime() -> None:
+    model = _make_col2im_model()
     _run_ort_compare(model)
 
 

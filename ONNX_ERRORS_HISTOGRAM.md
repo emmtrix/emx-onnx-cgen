@@ -20,7 +20,6 @@ This histogram is test-suite-overarching.
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op ScatterElements | 6 | 18 |
 | Unsupported op StringSplit | 6 | 20 |
-| Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
@@ -79,7 +78,6 @@ This histogram is test-suite-overarching.
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op CenterCropPad | 18 | 6 |
 | Unsupported op ScatterElements | 18 | 6 |
-| Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op OptionalGetElement | 18 | 4 |
 | Unsupported op BitwiseNot | 18 | 2 |

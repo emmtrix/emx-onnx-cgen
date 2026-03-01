@@ -22,7 +22,7 @@ from .codegen.c_emitter import (
 from .dtypes import dtype_info
 from .errors import CodegenError, UnsupportedOpError
 from .ir.context import GraphContext
-from .ir.model import Graph, TensorType, Value, ValueType
+from .ir.model import Graph, Initializer, TensorType, Value, ValueType
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
@@ -57,6 +57,38 @@ def _onnx_elem_type(dtype: np.dtype) -> int:
         if info.np_dtype == dtype:
             return elem_type
     raise UnsupportedOpError(f"Unsupported dtype {dtype} for ONNX output")
+
+
+_CONSTANT_INPUT_MAX_ELEMENTS = 64
+_INTEGER_DTYPES = {ScalarType.I32, ScalarType.I64}
+
+
+def _inject_constant_inputs(
+    graph: Graph,
+    testbench_inputs: "Mapping[str, np.ndarray] | None",
+) -> tuple["Initializer", ...]:
+    if not testbench_inputs:
+        return ()
+    existing_initializer_names = {init.name for init in graph.initializers}
+    input_by_name = {value.name: value for value in graph.inputs}
+    injected: list[Initializer] = []
+    for name, array in testbench_inputs.items():
+        if name in existing_initializer_names:
+            continue
+        if name not in input_by_name:
+            continue
+        if not isinstance(array, np.ndarray):
+            continue
+        if array.size > _CONSTANT_INPUT_MAX_ELEMENTS:
+            continue
+        value = input_by_name[name]
+        if not isinstance(value.type, TensorType):
+            continue
+        if value.type.dtype not in _INTEGER_DTYPES:
+            continue
+        data = array.astype(value.type.dtype.np_dtype, copy=False)
+        injected.append(Initializer(name=name, type=value.type, data=data))
+    return tuple(injected)
 
 
 def _optional_flag_name(name: str) -> str:
@@ -309,15 +341,37 @@ class Compiler:
     def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
         if not self._options.testbench_inputs:
             return graph
-        if not any(
+        injected_initializers = _inject_constant_inputs(
+            graph, self._options.testbench_inputs
+        )
+        needs_shape_concretization = any(
             isinstance(value.type, TensorType) and value.type.dim_params
             for value in graph.values + graph.inputs + graph.outputs
-        ):
-            return graph
+        )
+        if not needs_shape_concretization:
+            if not injected_initializers:
+                return graph
+            return Graph(
+                inputs=graph.inputs,
+                outputs=graph.outputs,
+                nodes=graph.nodes,
+                initializers=graph.initializers + injected_initializers,
+                values=graph.values,
+                opset_imports=graph.opset_imports,
+            )
         try:
             import onnxruntime as ort
         except Exception:
-            return graph
+            if not injected_initializers:
+                return graph
+            return Graph(
+                inputs=graph.inputs,
+                outputs=graph.outputs,
+                nodes=graph.nodes,
+                initializers=graph.initializers + injected_initializers,
+                values=graph.values,
+                opset_imports=graph.opset_imports,
+            )
         try:
             model_with_outputs = onnx.ModelProto()
             model_with_outputs.CopyFrom(model)
@@ -356,7 +410,16 @@ class Compiler:
             )
             output_arrays = sess.run(None, self._options.testbench_inputs)
         except Exception:
-            return graph
+            if not injected_initializers:
+                return graph
+            return Graph(
+                inputs=graph.inputs,
+                outputs=graph.outputs,
+                nodes=graph.nodes,
+                initializers=graph.initializers + injected_initializers,
+                values=graph.values,
+                opset_imports=graph.opset_imports,
+            )
 
         shapes_by_name: dict[str, tuple[int, ...]] = {}
         for name, array in zip(output_names, output_arrays):
@@ -386,7 +449,7 @@ class Compiler:
             inputs=tuple(concretize_value(value) for value in graph.inputs),
             outputs=tuple(concretize_value(value) for value in graph.outputs),
             nodes=graph.nodes,
-            initializers=graph.initializers,
+            initializers=graph.initializers + injected_initializers,
             values=tuple(concretize_value(value) for value in graph.values),
             opset_imports=graph.opset_imports,
         )

@@ -587,6 +587,24 @@ class ConvTransposeOp(ConvLikeOpBase):
 
 
 @dataclass(frozen=True)
+class Col2ImOp(ConvLikeOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    batch: int
+    channels: int
+    spatial_rank: int
+    image_shape: tuple[int, ...]
+    block_shape: tuple[int, ...]
+    num_blocks: tuple[int, ...]
+    strides: tuple[int, ...]
+    dilations: tuple[int, ...]
+    pads: tuple[int, ...]
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class AveragePoolOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)

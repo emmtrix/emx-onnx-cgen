@@ -12,6 +12,7 @@ _LOWERING_MODULES = [
     "batch_normalization",
     "bernoulli",
     "cast",
+    "col2im",
     "compress",
     "concat",
     "concat_from_sequence",
