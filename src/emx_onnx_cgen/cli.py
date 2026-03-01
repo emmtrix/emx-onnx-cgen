@@ -1578,16 +1578,35 @@ def _verify_model(
                 for name, values in testbench_inputs.items()
             }
         else:
-            inputs = {
-                name: decode_testbench_array(value["data"], input_dtypes[name].np_dtype)
-                for name, value in payload["inputs"].items()
-            }
+            payload_inputs = payload.get("inputs", {})
+            inputs = {}
+            for value in graph.inputs:
+                if not isinstance(value.type, TensorType):
+                    continue
+                input_payload = payload_inputs.get(value.name)
+                if input_payload is None:
+                    return (
+                        None,
+                        f"Missing input {value.name} in testbench data.",
+                        operators,
+                        opset_version,
+                        generated_checksum,
+                    )
+                inputs[value.name] = decode_testbench_array(
+                    input_payload["data"], input_dtypes[value.name].np_dtype
+                )
         runtime_outputs: dict[str, np.ndarray] | None = None
         if testbench_outputs is not None:
-            runtime_outputs = {
-                name: output.astype(output_dtypes[name].np_dtype, copy=False)
-                for name, output in testbench_outputs.items()
-            }
+            runtime_outputs = {}
+            for value in graph.outputs:
+                if not isinstance(value.type, TensorType):
+                    continue
+                output = testbench_outputs.get(value.name)
+                if output is None:
+                    continue
+                runtime_outputs[value.name] = output.astype(
+                    output_dtypes[value.name].np_dtype, copy=False
+                )
         else:
             runtime_name = args.runtime
             custom_domains = sorted(
