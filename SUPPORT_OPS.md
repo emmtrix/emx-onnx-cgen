@@ -2,6 +2,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
+Supported operators: 184 / 205
 Supported operators: 186 / 205
 
 | Operator | Supported |
@@ -115,7 +116,7 @@ Supported operators: 186 / 205
 | NonZero | ✅ |
 | Not | ✅ |
 | OneHot | ✅ |
-| OptionalGetElement | ❌ |
+| OptionalGetElement | ✅ |
 | OptionalHasElement | ✅ |
 | Or | ✅ |
 | PRelu | ✅ |

@@ -634,6 +634,43 @@ class OptionalHasElementOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class OptionalGetElementOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+
+    def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
+        return emitter.emit_generic_op(self, ctx)
+
+    def infer_types(self, ctx: OpContext) -> None:
+        input_dtype = ctx.dtype(self.input0)
+        try:
+            output_dtype = ctx.dtype(self.output)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.output, input_dtype)
+            return
+        if output_dtype != input_dtype:
+            raise UnsupportedOpError(
+                f"{self.kind} expects matching input/output dtypes, "
+                f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        input_shape = ctx.shape(self.input0)
+        try:
+            output_shape = ctx.shape(self.output)
+        except ShapeInferenceError:
+            ctx.set_shape(self.output, input_shape)
+            return
+        if output_shape != input_shape:
+            raise UnsupportedOpError(
+                f"{self.kind} expects matching input/output shapes, "
+                f"got {input_shape} and {output_shape}"
+            )
+
+
+@dataclass(frozen=True)
 class NonZeroOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
