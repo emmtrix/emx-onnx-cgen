@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op Loop",
+  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=35691269)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_2_sequences_expanded model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceLength",
@@ -7,5 +7,6 @@
     "SequenceEmpty",
     "Loop"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "f5c5e85a63e40f0cd7f6bd16c62baf83c75108b24fc1ae10261874f16702e7f4"
 }

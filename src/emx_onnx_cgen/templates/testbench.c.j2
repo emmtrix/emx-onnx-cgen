@@ -226,7 +226,7 @@ static int testbench_run(const char *input_path) {
 
 {% for input in inputs %}
 {% if input.optional_flag_name %}
-    _Bool {{ input.optional_flag_name }} = {{ "true" if input.optional_present else "false" }};
+    _Bool {{ input.optional_flag_name }} = {{ "1" if input.optional_present else "0" }};
 {% endif %}
 {% if input.is_sequence %}
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
@@ -252,6 +252,9 @@ static int testbench_run(const char *input_path) {
 {% else %}
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
 {% endif %}
+{% if output.optional_flag_name %}
+    _Bool {{ output.optional_flag_name }} = 0;
+{% endif %}
 {% endfor %}
 
     if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
@@ -259,7 +262,7 @@ static int testbench_run(const char *input_path) {
     }
 
     timer_start();
-    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.is_sequence %}, {{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, &{{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.is_sequence %}, {{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, &{{ output.count_name }}{% endif %}{% if output.optional_flag_name %}, &{{ output.optional_flag_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
     timer_stop();
 
     testbench_print_json({% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});

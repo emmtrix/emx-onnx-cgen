@@ -1,0 +1,102 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const int64_t tree_roots[{{ tree_roots | length if tree_roots else 1 }}] = {
+        {% if tree_roots %}{{ tree_roots | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_feature_ids[{{ node_feature_ids | length if node_feature_ids else 1 }}] = {
+        {% if node_feature_ids %}{{ node_feature_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int32_t node_modes[{{ node_modes | length if node_modes else 1 }}] = {
+        {% if node_modes %}{{ node_modes | join(', ') }}{% else %}0{% endif %}
+    };
+    const {{ input_c_type }} node_splits[{{ node_splits | length if node_splits else 1 }}] = {
+        {% if node_splits %}{{ node_splits | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_true_ids[{{ node_true_ids | length if node_true_ids else 1 }}] = {
+        {% if node_true_ids %}{{ node_true_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_true_leafs[{{ node_true_leafs | length if node_true_leafs else 1 }}] = {
+        {% if node_true_leafs %}{{ node_true_leafs | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_false_ids[{{ node_false_ids | length if node_false_ids else 1 }}] = {
+        {% if node_false_ids %}{{ node_false_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_false_leafs[{{ node_false_leafs | length if node_false_leafs else 1 }}] = {
+        {% if node_false_leafs %}{{ node_false_leafs | join(', ') }}{% else %}0{% endif %}
+    };
+    const {{ input_c_type }} membership_values[{{ membership_values | length if membership_values else 1 }}] = {
+        {% if membership_values %}{{ membership_values | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t member_range_starts[{{ member_range_starts | length if member_range_starts else 1 }}] = {
+        {% if member_range_starts %}{{ member_range_starts | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t member_range_ends[{{ member_range_ends | length if member_range_ends else 1 }}] = {
+        {% if member_range_ends %}{{ member_range_ends | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t leaf_target_ids[{{ leaf_target_ids | length if leaf_target_ids else 1 }}] = {
+        {% if leaf_target_ids %}{{ leaf_target_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const {{ output_c_type }} leaf_weights[{{ leaf_weights | length if leaf_weights else 1 }}] = {
+        {% if leaf_weights %}{{ leaf_weights | join(', ') }}{% else %}0{% endif %}
+    };
+
+    const idx_t batch = {{ batch_size }};
+    const idx_t tree_count = {{ tree_count }};
+    const idx_t target_count = {{ target_count }};
+    const idx_t node_count = {{ node_count }};
+
+    for (idx_t b = 0; b < batch; ++b) {
+        for (idx_t t = 0; t < target_count; ++t) {
+            {{ output }}[b][t] = {{ zero_literal }};
+        }
+
+        for (idx_t tree_idx = 0; tree_idx < tree_count; ++tree_idx) {
+            int64_t node_id = tree_roots[tree_idx];
+            int done = 0;
+            while (!done) {
+                if (node_id < 0 || node_id >= node_count) {
+                    break;
+                }
+                const int32_t mode = node_modes[node_id];
+                const {{ input_c_type }} feature_value = {{ input0 }}[b][node_feature_ids[node_id]];
+                const {{ input_c_type }} threshold = node_splits[node_id];
+                int take_true = 0;
+                if (mode == 0) {
+                    take_true = feature_value <= threshold;
+                } else if (mode == 1) {
+                    take_true = feature_value < threshold;
+                } else if (mode == 2) {
+                    take_true = feature_value >= threshold;
+                } else if (mode == 3) {
+                    take_true = feature_value > threshold;
+                } else if (mode == 4) {
+                    take_true = feature_value == threshold;
+                } else if (mode == 5) {
+                    take_true = feature_value != threshold;
+                } else if (mode == 6) {
+                    const int64_t start = member_range_starts[node_id];
+                    const int64_t end = member_range_ends[node_id];
+                    for (int64_t i = start; i < end; ++i) {
+                        if (feature_value == membership_values[i]) {
+                            take_true = 1;
+                            break;
+                        }
+                    }
+                }
+
+                const int64_t next_id = take_true ? node_true_ids[node_id] : node_false_ids[node_id];
+                const int64_t next_is_leaf = take_true ? node_true_leafs[node_id] : node_false_leafs[node_id];
+                if (next_is_leaf) {
+                    if (next_id >= 0 && next_id < {{ leaf_count }}) {
+                        const int64_t target_id = leaf_target_ids[next_id];
+                        if (target_id >= 0 && target_id < target_count) {
+                            {{ output }}[b][target_id] += leaf_weights[next_id];
+                        }
+                    }
+                    done = 1;
+                } else {
+                    node_id = next_id;
+                }
+            }
+        }
+    }
+}

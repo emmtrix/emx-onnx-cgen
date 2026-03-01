@@ -1058,6 +1058,199 @@ def _expand_if_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
     return model, expanded
 
 
+def _expand_sequence_map_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
+    graph = model.graph
+    new_nodes: list[onnx.NodeProto] = []
+    expanded = False
+
+    for node_index, node in enumerate(graph.node):
+        if node.op_type != "SequenceMap":
+            new_nodes.append(node)
+            continue
+
+        attrs = _node_attrs(node)
+        body = attrs.get("body")
+        if not isinstance(body, onnx.GraphProto):
+            raise UnsupportedOpError("SequenceMap requires a body graph")
+        if len(body.output) != len(node.output):
+            raise UnsupportedOpError("SequenceMap body output count mismatch")
+
+        prefix = node.name or f"SequenceMap_{node_index}"
+        trip_name = f"{prefix}_trip_count"
+        cond_name = f"{prefix}_cond"
+        state_names = [f"{prefix}_state_{idx}" for idx in range(len(node.output))]
+
+        new_nodes.append(
+            helper.make_node(
+                "SequenceLength",
+                inputs=[node.input[0]],
+                outputs=[trip_name],
+                name=f"{prefix}_length",
+            )
+        )
+        cond_init = numpy_helper.from_array(
+            np.array(True, dtype=np.bool_), name=f"{cond_name}_const"
+        )
+        new_nodes.append(
+            helper.make_node(
+                "Constant",
+                inputs=[],
+                outputs=[cond_name],
+                name=f"{prefix}_cond",
+                value=cond_init,
+            )
+        )
+
+        for state_name, out_name in zip(state_names, node.output):
+            out_info = _find_value_info(graph, out_name)
+            if out_info is None:
+                raise UnsupportedOpError(
+                    "SequenceMap output type information is required"
+                )
+            elem_type = out_info.type.sequence_type.elem_type.tensor_type.elem_type
+            new_nodes.append(
+                helper.make_node(
+                    "SequenceEmpty",
+                    inputs=[],
+                    outputs=[state_name],
+                    name=f"{state_name}_empty",
+                    dtype=elem_type,
+                )
+            )
+
+        body_graph = onnx.GraphProto()
+        body_graph.name = f"{prefix}_body"
+        body_graph.input.extend(
+            [
+                helper.make_tensor_value_info(
+                    f"{prefix}_iter", onnx.TensorProto.INT64, ()
+                ),
+                helper.make_tensor_value_info(
+                    f"{prefix}_cond_in", onnx.TensorProto.BOOL, ()
+                ),
+            ]
+        )
+        for state_name in state_names:
+            state_value_info = onnx.ValueInfoProto()
+            state_value_info.name = state_name
+            body_graph.input.extend([state_value_info])
+
+        body_nodes: list[onnx.NodeProto] = [
+            helper.make_node(
+                "Identity",
+                inputs=[f"{prefix}_cond_in"],
+                outputs=[f"{prefix}_cond_out"],
+                name=f"{prefix}_cond_identity",
+            )
+        ]
+
+        mapped_body_inputs: list[str] = []
+        for input_index, input_name in enumerate(node.input):
+            mapped_name = f"{prefix}_in_{input_index}"
+            input_value_info = _find_value_info(graph, input_name)
+            if input_value_info is None:
+                raise UnsupportedOpError(
+                    "SequenceMap input type information is required"
+                )
+            if input_value_info.type.WhichOneof("value") == "sequence_type":
+                body_nodes.append(
+                    helper.make_node(
+                        "SequenceAt",
+                        inputs=[input_name, f"{prefix}_iter"],
+                        outputs=[mapped_name],
+                        name=f"{prefix}_seq_at_{input_index}",
+                    )
+                )
+            else:
+                body_nodes.append(
+                    helper.make_node(
+                        "Identity",
+                        inputs=[input_name],
+                        outputs=[mapped_name],
+                        name=f"{prefix}_tensor_capture_{input_index}",
+                    )
+                )
+            mapped_body_inputs.append(mapped_name)
+
+        value_name_map = {
+            src: dst
+            for src, dst in zip(
+                (value.name for value in body.input), mapped_body_inputs
+            )
+        }
+        produced_outputs: list[str] = []
+        for body_node_index, body_node in enumerate(body.node):
+            cloned = onnx.NodeProto()
+            cloned.CopyFrom(body_node)
+            if cloned.name:
+                cloned.name = f"{prefix}_{cloned.name}"
+            else:
+                cloned.name = f"{prefix}_body_{body_node_index}"
+            del cloned.input[:]
+            cloned.input.extend(
+                value_name_map.get(name, name) for name in body_node.input
+            )
+            mapped_outputs = []
+            for out_idx, out_name in enumerate(body_node.output):
+                mapped_out = f"{prefix}_body_out_{body_node_index}_{out_idx}"
+                value_name_map[out_name] = mapped_out
+                mapped_outputs.append(mapped_out)
+            del cloned.output[:]
+            cloned.output.extend(mapped_outputs)
+            body_nodes.append(cloned)
+
+        for output_index, (state_name, state_out_name) in enumerate(
+            zip(
+                state_names,
+                [f"{prefix}_state_out_{idx}" for idx in range(len(node.output))],
+            )
+        ):
+            body_output_name = body.output[output_index].name
+            mapped_output_name = value_name_map.get(body_output_name)
+            if mapped_output_name is None:
+                raise UnsupportedOpError(
+                    "SequenceMap body output could not be resolved"
+                )
+            body_nodes.append(
+                helper.make_node(
+                    "SequenceInsert",
+                    inputs=[state_name, mapped_output_name],
+                    outputs=[state_out_name],
+                    name=f"{prefix}_insert_{output_index}",
+                )
+            )
+            produced_outputs.append(state_out_name)
+
+        body_graph.node.extend(body_nodes)
+        body_graph.output.extend(
+            [
+                helper.make_tensor_value_info(
+                    f"{prefix}_cond_out", onnx.TensorProto.BOOL, ()
+                )
+            ]
+        )
+        for output_name in produced_outputs:
+            value_info = onnx.ValueInfoProto()
+            value_info.name = output_name
+            body_graph.output.extend([value_info])
+
+        new_nodes.append(
+            helper.make_node(
+                "Loop",
+                inputs=[trip_name, cond_name, *state_names],
+                outputs=list(node.output),
+                name=f"{prefix}_loop",
+                body=body_graph,
+            )
+        )
+        expanded = True
+
+    if expanded:
+        del graph.node[:]
+        graph.node.extend(new_nodes)
+    return model, expanded
+
+
 def _expand_gradient_nodes(model: onnx.ModelProto) -> tuple[onnx.ModelProto, bool]:
     graph = model.graph
     new_nodes: list[onnx.NodeProto] = []
@@ -1304,6 +1497,7 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
 def import_onnx(model: onnx.ModelProto) -> Graph:
     model, _ = _expand_scan_nodes(model)
     model, _ = _expand_if_nodes(model)
+    model, _ = _expand_sequence_map_nodes(model)
     model, _ = _expand_gradient_nodes(model)
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)

@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported non-tensor value 'opt_in' in op Identity.",
+  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=30123182)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_opt model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "Identity"
   ],
-  "opset_version": 16
+  "opset_version": 16,
+  "generated_checksum": "6e5800abd1ae5e83a2e87d805843f8ad7b69d54c2dd42eb65c39c2c4a796db1f"
 }

@@ -31,6 +31,7 @@ from emx_onnx_cgen.ir.op_context import OpContext
 from emx_onnx_cgen.ir.ops import CompressOp, NonMaxSuppressionOp, NonZeroOp, ResizeOp
 from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
+from emx_onnx_cgen.lowering.affine_grid import lower_affine_grid
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.concat_from_sequence import lower_concat_from_sequence
@@ -41,6 +42,7 @@ from emx_onnx_cgen.lowering.depth_space import (
     lower_space_to_depth,
 )
 from emx_onnx_cgen.lowering.scatter import lower_scatter
+from emx_onnx_cgen.lowering.scatter_elements import lower_scatter_elements
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.sequence_at import lower_sequence_at
 from emx_onnx_cgen.lowering.sequence_construct import lower_sequence_construct
@@ -177,6 +179,36 @@ def _make_string_normalizer_model(
         opset_imports=[helper.make_operatorsetid("", 10)],
     )
     model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_string_concat_model(
+    *,
+    input0_shape: list[int],
+    input1_shape: list[int],
+    output_shape: list[int],
+) -> onnx.ModelProto:
+    input0_info = helper.make_tensor_value_info("in0", TensorProto.STRING, input0_shape)
+    input1_info = helper.make_tensor_value_info("in1", TensorProto.STRING, input1_shape)
+    output_info = helper.make_tensor_value_info("out", TensorProto.STRING, output_shape)
+    node = helper.make_node(
+        "StringConcat",
+        inputs=["in0", "in1"],
+        outputs=["out"],
+    )
+    graph = helper.make_graph(
+        [node],
+        "string_concat_graph",
+        [input0_info, input1_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
     onnx.checker.check_model(model)
     return model
 
@@ -389,6 +421,52 @@ def _make_scatternd_model(
     graph = helper.make_graph(
         [node],
         "scatternd_graph",
+        [data_info, updates_info],
+        [output],
+        initializer=[indices_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_scatter_elements_model(
+    *,
+    data_shape: list[int],
+    indices_shape: list[int],
+    axis: int,
+    dtype: int,
+    reduction: str = "none",
+    opset: int = 18,
+) -> onnx.ModelProto:
+    data_info = helper.make_tensor_value_info("data", dtype, data_shape)
+    updates_info = helper.make_tensor_value_info("updates", dtype, indices_shape)
+    output = helper.make_tensor_value_info("output", dtype, data_shape)
+    axis_dim = data_shape[axis]
+    index_values = np.arange(np.prod(indices_shape), dtype=np.int64) % axis_dim
+    indices_tensor = helper.make_tensor(
+        "indices",
+        TensorProto.INT64,
+        dims=indices_shape,
+        vals=index_values.tolist(),
+    )
+    attrs: dict[str, object] = {"axis": axis}
+    if reduction != "none":
+        attrs["reduction"] = reduction
+    node = helper.make_node(
+        "ScatterElements",
+        inputs=["data", "indices", "updates"],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "scatter_elements_graph",
         [data_info, updates_info],
         [output],
         initializer=[indices_tensor],
@@ -653,6 +731,48 @@ def _make_trilu_model(
         opset_imports=[helper.make_operatorsetid("", opset)],
     )
     model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_center_crop_pad_model(
+    *,
+    input_shape: list[int],
+    target_shape: list[int],
+    dtype: int,
+    axes: list[int] | None = None,
+    opset: int = 18,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("input", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("output", dtype, target_shape)
+    shape_tensor = helper.make_tensor(
+        "shape",
+        TensorProto.INT64,
+        dims=[len(target_shape)],
+        vals=target_shape,
+    )
+    node_attrs: dict = {}
+    if axes is not None:
+        node_attrs["axes"] = axes
+    node = helper.make_node(
+        "CenterCropPad",
+        inputs=["input", "shape"],
+        outputs=["output"],
+        **node_attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "center_crop_pad_graph",
+        [input_info],
+        [output_info],
+        initializer=[shape_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 8
     onnx.checker.check_model(model)
     return model
 
@@ -2055,6 +2175,39 @@ def _make_gridsample_model(
     return model
 
 
+def _make_affine_grid_model(
+    *,
+    theta_shape: list[int],
+    size: list[int],
+    grid_shape: list[int],
+    align_corners: int = 0,
+    opset: int = 20,
+) -> onnx.ModelProto:
+    theta_info = helper.make_tensor_value_info("theta", TensorProto.FLOAT, theta_shape)
+    size_info = helper.make_tensor_value_info("size", TensorProto.INT64, [len(size)])
+    grid_info = helper.make_tensor_value_info("grid", TensorProto.FLOAT, grid_shape)
+    node = helper.make_node(
+        "AffineGrid",
+        inputs=["theta", "size"],
+        outputs=["grid"],
+        align_corners=align_corners,
+    )
+    graph = helper.make_graph(
+        [node],
+        "affine_grid_graph",
+        [theta_info, size_info],
+        [grid_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_dropout_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -2621,6 +2774,117 @@ def _make_conv_transpose_model() -> onnx.ModelProto:
         opset_imports=[helper.make_operatorsetid("", 13)],
     )
     model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_deform_conv_model(
+    *,
+    with_mask_bias: bool = False,
+    with_multiple_offset_groups: bool = False,
+) -> onnx.ModelProto:
+    if with_multiple_offset_groups:
+        input_shape = [1, 2, 3, 3]
+        weight_shape = [1, 2, 2, 2]
+        offset_shape = [1, 16, 2, 2]
+        output_shape = [1, 1, 2, 2]
+        input_info = helper.make_tensor_value_info("X", TensorProto.FLOAT, input_shape)
+        offset_info = helper.make_tensor_value_info(
+            "offset", TensorProto.FLOAT, offset_shape
+        )
+        weight_values = np.ones(weight_shape, dtype=np.float32)
+        weight_tensor = helper.make_tensor(
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
+        )
+        inputs = ["X", "W", "offset"]
+        initializers = [weight_tensor]
+        node = helper.make_node(
+            "DeformConv",
+            inputs=inputs,
+            outputs=["Y"],
+            kernel_shape=[2, 2],
+            pads=[0, 0, 0, 0],
+            offset_group=2,
+        )
+    elif with_mask_bias:
+        input_shape = [1, 1, 3, 3]
+        weight_shape = [1, 1, 2, 2]
+        offset_shape = [1, 8, 2, 2]
+        mask_shape = [1, 4, 2, 2]
+        output_shape = [1, 1, 2, 2]
+        input_info = helper.make_tensor_value_info("X", TensorProto.FLOAT, input_shape)
+        offset_info = helper.make_tensor_value_info(
+            "offset", TensorProto.FLOAT, offset_shape
+        )
+        weight_values = np.ones(weight_shape, dtype=np.float32)
+        weight_tensor = helper.make_tensor(
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
+        )
+        bias_values = np.ones([1], dtype=np.float32)
+        bias_tensor = helper.make_tensor(
+            "B", TensorProto.FLOAT, dims=[1], vals=bias_values.tolist()
+        )
+        mask_info = helper.make_tensor_value_info("mask", TensorProto.FLOAT, mask_shape)
+        inputs = ["X", "W", "offset", "B", "mask"]
+        initializers = [weight_tensor, bias_tensor]
+        node = helper.make_node(
+            "DeformConv",
+            inputs=inputs,
+            outputs=["Y"],
+            kernel_shape=[2, 2],
+            pads=[0, 0, 0, 0],
+        )
+    else:
+        input_shape = [1, 1, 3, 3]
+        weight_shape = [1, 1, 2, 2]
+        offset_shape = [1, 8, 2, 2]
+        output_shape = [1, 1, 2, 2]
+        input_info = helper.make_tensor_value_info("X", TensorProto.FLOAT, input_shape)
+        offset_info = helper.make_tensor_value_info(
+            "offset", TensorProto.FLOAT, offset_shape
+        )
+        weight_values = np.ones(weight_shape, dtype=np.float32)
+        weight_tensor = helper.make_tensor(
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
+        )
+        inputs = ["X", "W", "offset"]
+        initializers = [weight_tensor]
+        node = helper.make_node(
+            "DeformConv",
+            inputs=inputs,
+            outputs=["Y"],
+            kernel_shape=[2, 2],
+            pads=[0, 0, 0, 0],
+        )
+    output = helper.make_tensor_value_info("Y", TensorProto.FLOAT, output_shape)
+    graph_inputs = [input_info]
+    if with_mask_bias:
+        graph_inputs.append(offset_info)
+        graph_inputs.append(mask_info)
+    else:
+        graph_inputs.append(offset_info)
+    graph = helper.make_graph(
+        [node],
+        "deform_conv_graph",
+        graph_inputs,
+        [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 19)],
+    )
+    model.ir_version = 8
     onnx.checker.check_model(model)
     return model
 
@@ -3616,7 +3880,42 @@ def _run_testbench_compare(model: onnx.ModelProto) -> None:
             np.testing.assert_array_equal(output_data, ort_output)
 
 
-def test_string_normalizer_lowering() -> None:
+def _run_reference_testbench_compare(model: onnx.ModelProto) -> None:
+    """Compare compiled C testbench output against the ONNX reference evaluator.
+
+    Use this for operators not supported by onnxruntime.
+    """
+    initializer_names = {init.name for init in model.graph.initializer}
+    rng = np.random.default_rng(0)
+    inputs: dict[str, np.ndarray] = {}
+    for value_info in model.graph.input:
+        if value_info.name in initializer_names:
+            continue
+        elem_type = value_info.type.tensor_type.elem_type
+        dtype = _tensorproto_to_dtype(elem_type)
+        shape = _value_info_shape(value_info)
+        inputs[value_info.name] = _make_random_array(rng, shape=shape, dtype=dtype)
+    reference_outputs = _run_reference(model, inputs)
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for output_info in model.graph.output:
+        output_name = output_info.name
+        ref_output = reference_outputs[output_name]
+        output_payload = outputs_payload.get(output_name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {output_name} in testbench data")
+        output_data = decode_testbench_array(output_payload["data"], ref_output.dtype)
+        output_data = output_data.reshape(ref_output.shape)
+        if np.issubdtype(ref_output.dtype, np.floating):
+            np.testing.assert_allclose(
+                output_data,
+                ref_output,
+                rtol=1e-4,
+                atol=1e-5,
+            )
+        else:
+            np.testing.assert_array_equal(output_data, ref_output)
+
     model = _make_string_normalizer_model(
         input_shape=[4],
         output_shape=[3],
@@ -3645,6 +3944,136 @@ def test_string_normalizer_codegen_emits_transform_logic() -> None:
     assert "toupper" in generated
     assert "strcmp" in generated
     assert "monday" in generated
+
+
+def test_string_concat_lowering() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[3],
+        output_shape=[3],
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringConcat")
+    op = lowering(graph, graph.nodes[0])
+    assert op.input0 == "in0"
+    assert op.input1 == "in1"
+    assert op.output == "out"
+
+
+def test_string_concat_codegen_emits_strncpy_strncat() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[3],
+        output_shape=[3],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strncpy" in generated
+    assert "strncat" in generated
+
+
+def test_string_concat_codegen_broadcasting() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[1],
+        output_shape=[3],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "input1[0]" in generated
+
+
+def _make_string_split_model(
+    *,
+    input_shape: list[int],
+    output_y_shape: list[int],
+    output_z_shape: list[int],
+    delimiter: str | None = None,
+    maxsplit: int | None = None,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.STRING, input_shape)
+    output_y_info = helper.make_tensor_value_info(
+        "out_y", TensorProto.STRING, output_y_shape
+    )
+    output_z_info = helper.make_tensor_value_info(
+        "out_z", TensorProto.INT64, output_z_shape
+    )
+    attrs: dict[str, object] = {}
+    if delimiter is not None:
+        attrs["delimiter"] = delimiter
+    if maxsplit is not None:
+        attrs["maxsplit"] = maxsplit
+    node = helper.make_node(
+        "StringSplit",
+        inputs=["in0"],
+        outputs=["out_y", "out_z"],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "string_split_graph",
+        [input_info],
+        [output_y_info, output_z_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
+def test_string_split_lowering_with_delimiter() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 2],
+        output_z_shape=[2],
+        delimiter=".",
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringSplit")
+    op = lowering(graph, graph.nodes[0])
+    assert op.delimiter == "."
+    assert op.maxsplit == -1
+
+
+def test_string_split_lowering_with_maxsplit() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 3],
+        output_z_shape=[2],
+        maxsplit=2,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringSplit")
+    op = lowering(graph, graph.nodes[0])
+    assert op.delimiter == ""
+    assert op.maxsplit == 2
+
+
+def test_string_split_codegen_emits_split_logic() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 2],
+        output_z_shape=[2],
+        delimiter=".",
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strstr" in generated
+    assert '"."' in generated
+
+
+def test_string_split_codegen_emits_whitespace_logic() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 3],
+        output_z_shape=[2],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strstr" not in generated
 
 
 def test_tfidf_vectorizer_testbench_match() -> None:
@@ -4350,6 +4779,30 @@ REARRANGE_ORT_CASES = [
         ),
     },
     {
+        "name": "CenterCropPadCrop",
+        "model": lambda: _make_center_crop_pad_model(
+            input_shape=[4, 6],
+            target_shape=[2, 4],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
+        "name": "CenterCropPadPad",
+        "model": lambda: _make_center_crop_pad_model(
+            input_shape=[2, 3],
+            target_shape=[4, 6],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
+        "name": "CenterCropPadMixed",
+        "model": lambda: _make_center_crop_pad_model(
+            input_shape=[6, 2],
+            target_shape=[4, 6],
+            dtype=TensorProto.FLOAT,
+        ),
+    },
+    {
         "name": "PadConstant",
         "model": lambda: _make_pad_model(
             input_shape=[2, 3],
@@ -4422,8 +4875,29 @@ REARRANGE_UNIT_CASES = [
         "expected": lambda value: np.tile(value, (2, 3)),
     },
     {
-        "name": "PadConstant",
+        "name": "CenterCropPadCrop",
         "model": REARRANGE_ORT_CASES[3]["model"],
+        "input_name": "input",
+        "input_shape": (4, 6),
+        "expected": lambda value: value[1:3, 1:5],
+    },
+    {
+        "name": "CenterCropPadPad",
+        "model": REARRANGE_ORT_CASES[4]["model"],
+        "input_name": "input",
+        "input_shape": (2, 3),
+        "expected": lambda value: np.pad(value, ((1, 1), (1, 2))),
+    },
+    {
+        "name": "CenterCropPadMixed",
+        "model": REARRANGE_ORT_CASES[5]["model"],
+        "input_name": "input",
+        "input_shape": (6, 2),
+        "expected": lambda value: np.pad(value[1:5, :], ((0, 0), (2, 2))),
+    },
+    {
+        "name": "PadConstant",
+        "model": REARRANGE_ORT_CASES[6]["model"],
         "input_name": "input",
         "input_shape": (2, 3),
         "expected": lambda value: np.pad(
@@ -4432,7 +4906,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "DepthToSpace",
-        "model": REARRANGE_ORT_CASES[4]["model"],
+        "model": REARRANGE_ORT_CASES[7]["model"],
         "input_name": "in0",
         "input_shape": (1, 8, 2, 2),
         "expected": lambda value: _depth_to_space_reference(
@@ -4441,7 +4915,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "SpaceToDepth",
-        "model": REARRANGE_ORT_CASES[5]["model"],
+        "model": REARRANGE_ORT_CASES[8]["model"],
         "input_name": "in0",
         "input_shape": (1, 2, 4, 4),
         "expected": lambda value: _space_to_depth_reference(value, blocksize=2),
@@ -4460,7 +4934,7 @@ REARRANGE_UNIT_CASES = [
     },
     {
         "name": "ReverseSequence",
-        "model": REARRANGE_ORT_CASES[7]["model"],
+        "model": REARRANGE_ORT_CASES[10]["model"],
         "input_name": "input",
         "input_shape": (4, 3, 2),
         "expected": lambda value: _reverse_sequence_reference(
@@ -4870,7 +5344,38 @@ def test_lower_gridsample_builds_spec() -> None:
     assert op.mode == "linear"
 
 
-def test_lower_upsample_scales_initializer() -> None:
+def test_lower_affine_grid_2d_builds_spec() -> None:
+    model = _make_affine_grid_model(
+        theta_shape=[2, 2, 3],
+        size=[2, 3, 5, 6],
+        grid_shape=[2, 5, 6, 2],
+    )
+    graph = import_onnx(model)
+    op = lower_affine_grid(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op.spatial_rank == 2
+    assert op.align_corners is False
+    assert op_ctx.shape(op.grid) == (2, 5, 6, 2)
+
+
+def test_lower_affine_grid_3d_builds_spec() -> None:
+    model = _make_affine_grid_model(
+        theta_shape=[2, 3, 4],
+        size=[2, 3, 4, 5, 6],
+        grid_shape=[2, 4, 5, 6, 3],
+        align_corners=1,
+    )
+    graph = import_onnx(model)
+    op = lower_affine_grid(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op.spatial_rank == 3
+    assert op.align_corners is True
+    assert op_ctx.shape(op.grid) == (2, 4, 5, 6, 3)
+
     model = _make_upsample_model()
     graph = import_onnx(model)
     op = lower_upsample(graph, graph.nodes[0])
@@ -5611,6 +6116,58 @@ def test_scatternd_matches_onnxruntime() -> None:
     _run_ort_compare(model)
 
 
+def test_lower_scatter_elements_shapes() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    graph = import_onnx(model)
+    op = lower_scatter_elements(graph, graph.nodes[0])
+    assert op.data == "data"
+    assert op.indices == "indices"
+    assert op.updates == "updates"
+    assert op.output == "output"
+    assert op.axis == 1
+    assert op.reduction == "none"
+
+
+def test_lower_scatter_elements_reduction() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 2],
+        axis=0,
+        dtype=TensorProto.FLOAT,
+        reduction="add",
+    )
+    graph = import_onnx(model)
+    op = lower_scatter_elements(graph, graph.nodes[0])
+    assert op.axis == 0
+    assert op.reduction == "add"
+
+
+def test_scatter_elements_matches_onnxruntime() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    _run_ort_compare(model)
+
+
+def test_scatter_elements_add_reduction_matches_onnxruntime() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 2],
+        axis=0,
+        dtype=TensorProto.FLOAT,
+        reduction="add",
+    )
+    _run_ort_compare(model)
+
+
 def test_reshape_op_matches_onnxruntime() -> None:
     model = _make_reshape_model()
     _run_ort_compare(model)
@@ -5728,6 +6285,21 @@ def test_qlinearconv_op_matches_onnxruntime() -> None:
 def test_conv_transpose_op_matches_onnxruntime() -> None:
     model = _make_conv_transpose_model()
     _run_ort_compare(model)
+
+
+def test_deform_conv_op_matches_onnxruntime() -> None:
+    model = _make_deform_conv_model()
+    _run_reference_testbench_compare(model)
+
+
+def test_deform_conv_with_mask_bias_matches_onnxruntime() -> None:
+    model = _make_deform_conv_model(with_mask_bias=True)
+    _run_reference_testbench_compare(model)
+
+
+def test_deform_conv_with_multiple_offset_groups_matches_onnxruntime() -> None:
+    model = _make_deform_conv_model(with_multiple_offset_groups=True)
+    _run_reference_testbench_compare(model)
 
 
 def test_lp_pool_matches_onnxruntime() -> None:

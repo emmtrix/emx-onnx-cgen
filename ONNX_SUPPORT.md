@@ -7,6 +7,9 @@ Overview:
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1486 / 1802, 82.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 118 / 125, 94.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 2 / 4, 50.0% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1533 / 1802, 85.1% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -17,6 +20,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1486 / 1802 ONNX files (82.5%).
+Coverage 1533 / 1802 ONNX files (85.1%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -46,12 +50,12 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_add_uint32/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_add_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_add_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_affine_grid_2d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_2d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
+| node/test_affine_grid_2d/model.onnx | 20 | ✅ | OK (max ULP 1) |
+| node/test_affine_grid_2d_align_corners/model.onnx | 20 | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
 | node/test_affine_grid_2d_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
-| node/test_affine_grid_3d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_3d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
+| node/test_affine_grid_3d/model.onnx | 20 | ❌ | Out of tolerance (max ULP 151) |
+| node/test_affine_grid_3d_align_corners/model.onnx | 20 | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | ❌ | Unsupported op ArrayFeatureExtractor |
@@ -60,8 +64,8 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_ai_onnx_ml_label_encoder_string_int_no_default/model.onnx |  | ❌ | Unsupported op LabelEncoder |
 | node/test_ai_onnx_ml_label_encoder_tensor_mapping/model.onnx |  | ❌ | Unsupported op LabelEncoder |
 | node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx |  | ❌ | Unsupported op LabelEncoder |
-| node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx |  | ❌ | Unsupported op TreeEnsemble |
-| node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx |  | ❌ | Unsupported op TreeEnsemble |
+| node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx |  | ✅ | OK (max ULP 0) |
+| node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_and2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
 | node/test_and3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
 | node/test_and4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
@@ -256,8 +260,8 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_averagepool_3d_dilations_small/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_with_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_without_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_basic_deform_conv_with_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
-| node/test_basic_deform_conv_without_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
+| node/test_basic_deform_conv_with_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| node/test_basic_deform_conv_without_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_batchnorm_epsilon/model.onnx | 15 | ✅ | OK (max ULP 2) |
 | node/test_batchnorm_epsilon_training_mode/model.onnx | 15 | ✅ | OK (max ULP 1) |
 | node/test_batchnorm_example/model.onnx | 15 | ✅ | OK (max ULP 2) |
@@ -291,9 +295,9 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_bitwise_xor_i32_2d/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_blackmanwindow/model.onnx | 17 | ❌ | Unsupported op BlackmanWindow |
+| node/test_blackmanwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_blackmanwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 4) |
-| node/test_blackmanwindow_symmetric/model.onnx | 17 | ❌ | Unsupported op BlackmanWindow |
+| node/test_blackmanwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_blackmanwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_cast_BFLOAT16_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_cast_DOUBLE_to_FLOAT/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -471,17 +475,17 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_ceil_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_celu/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | node/test_celu_expanded/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
-| node/test_center_crop_pad_crop_and_pad/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_center_crop_pad_crop_and_pad/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_and_pad_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop_axes_chw/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop_axes_chw/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_axes_chw_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop_axes_hwc/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop_axes_hwc/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_axes_hwc_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_crop_negative_axes_hwc/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_crop_negative_axes_hwc_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_center_crop_pad_pad/model.onnx | 18 | ❌ | Unsupported op CenterCropPad |
+| node/test_center_crop_pad_pad/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_center_crop_pad_pad_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_clip/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_default_inbounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -565,8 +569,8 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_cumsum_2d_axis_1/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_int32/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_negative_axis/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_deform_conv_with_mask_bias/model.onnx | 22 | ❌ | Unsupported op DeformConv |
-| node/test_deform_conv_with_multiple_offset_groups/model.onnx | 22 | ❌ | Unsupported op DeformConv |
+| node/test_deform_conv_with_mask_bias/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| node/test_deform_conv_with_multiple_offset_groups/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_depthtospace_crd_mode_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_depthtospace_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -739,11 +743,11 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_gru_with_initial_bias/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| node/test_hammingwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 5) |
+| node/test_hammingwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hammingwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
-| node/test_hannwindow/model.onnx | 17 | ❌ | Unsupported op HannWindow |
+| node/test_hannwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hannwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 3) |
-| node/test_hannwindow_symmetric/model.onnx | 17 | ❌ | Unsupported op HannWindow |
+| node/test_hannwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hannwindow_symmetric_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_hardmax_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_hardmax_axis_1/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -761,8 +765,8 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_hardswish/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | node/test_hardswish_expanded/model.onnx | 22 | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_identity_opt/model.onnx | 16 | ❌ | Unsupported non-tensor value 'opt_in' in op Identity. |
-| node/test_identity_sequence/model.onnx | 25 | ❌ | Unsupported non-tensor value 'x' in op Identity. |
+| node/test_identity_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=30123182) |
+| node/test_identity_sequence/model.onnx | 25 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_if_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
 | node/test_if_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
@@ -992,8 +996,8 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_mod_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
-| node/test_momentum_multiple/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
+| node/test_momentum_multiple/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_mul/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1008,7 +1012,7 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_mvn_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | node/test_neg/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_neg_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_nesterov_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_nesterov_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -1374,12 +1378,12 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_round/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_scan9_sum/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | node/test_scan_sum/model.onnx | 8 | ✅ | OK (max ULP 0) |
-| node/test_scatter_elements_with_axis/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_duplicate_indices/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_negative_indices/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_reduction_max/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_reduction_min/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_without_axis/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
+| node/test_scatter_elements_with_axis/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_duplicate_indices/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_negative_indices/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_reduction_max/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_reduction_min/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_without_axis/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_scatter_with_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_scatter_without_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_scatternd/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1463,18 +1467,18 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_selu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
 | node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8972011810649449542, max_ulp=0) |
 | node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8247628798212575849, max_ulp=0) |
-| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
-| node/test_sequence_map_add_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
-| node/test_sequence_map_extract_shapes/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| node/test_sequence_map_extract_shapes_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
-| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
-| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
-| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ❌ | Unsupported op SequenceMap |
-| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ❌ | Unsupported op Loop |
+| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=15143681) |
+| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=15143681) |
+| node/test_sequence_map_add_2_sequences/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=12512942) |
+| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=12512942) |
+| node/test_sequence_map_extract_shapes/model.onnx |  | ❌ | 'SequenceMap_0_in_0' |
+| node/test_sequence_map_extract_shapes_expanded/model.onnx |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
+| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=14100826) |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=29804413) |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=29804413) |
+| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=14100826) |
+| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=35691269) |
+| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=35691269) |
 | node/test_shape/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_shape_clip_end/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_shape_clip_start/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -1566,17 +1570,17 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 | node/test_squeeze_negative_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_stft/model.onnx | 17 | ❌ | Unsupported op STFT |
 | node/test_stft_with_window/model.onnx | 17 | ❌ | Unsupported op STFT |
-| node/test_string_concat/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_broadcasting/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_empty_string/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_utf8/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_zero_dimensional/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_split_basic/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_empty_tensor/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_no_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| node/test_string_concat/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_broadcasting/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_empty_string/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_utf8/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_zero_dimensional/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_basic/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_empty_tensor/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_maxsplit/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_no_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max ULP 0) |
@@ -1827,7 +1831,7 @@ Coverage 1486 / 1802 ONNX files (82.5%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 118 / 125 ONNX files (94.4%).
+Coverage 119 / 125 ONNX files (95.2%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1952,7 +1956,7 @@ Coverage 118 / 125 ONNX files (94.4%).
 | simple_networks/scalar_abs.onnx | 13 | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | ✅ | OK (max ULP 0) |
-| simple_networks/treeensembleclassifier.onnx | 12 | ❌ | Unsupported op TreeEnsembleClassifier |
+| simple_networks/treeensembleclassifier.onnx | 12 | ✅ | OK (max ULP 0) |
 | tfl_helloworld/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | velardo/lesson14.onnx | 11 | ✅ | OK (max ULP 0) |
 | velardo/lesson9.onnx | 9 | ✅ | OK (max ULP 0) |

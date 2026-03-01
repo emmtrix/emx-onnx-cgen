@@ -1,0 +1,129 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const int64_t class_labels[{{ class_labels | length if class_labels else 1 }}] = {
+        {% if class_labels %}{{ class_labels | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_tree_ids[{{ node_tree_ids | length if node_tree_ids else 1 }}] = {
+        {% if node_tree_ids %}{{ node_tree_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_node_ids[{{ node_node_ids | length if node_node_ids else 1 }}] = {
+        {% if node_node_ids %}{{ node_node_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_feature_ids[{{ node_feature_ids | length if node_feature_ids else 1 }}] = {
+        {% if node_feature_ids %}{{ node_feature_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int32_t node_modes[{{ node_modes | length if node_modes else 1 }}] = {
+        {% if node_modes %}{{ node_modes | join(', ') }}{% else %}0{% endif %}
+    };
+    const {{ input_c_type }} node_values[{{ node_values | length if node_values else 1 }}] = {
+        {% if node_values %}{{ node_values | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_true_ids[{{ node_true_ids | length if node_true_ids else 1 }}] = {
+        {% if node_true_ids %}{{ node_true_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t node_false_ids[{{ node_false_ids | length if node_false_ids else 1 }}] = {
+        {% if node_false_ids %}{{ node_false_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t class_tree_ids[{{ class_tree_ids | length if class_tree_ids else 1 }}] = {
+        {% if class_tree_ids %}{{ class_tree_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t class_node_ids[{{ class_node_ids | length if class_node_ids else 1 }}] = {
+        {% if class_node_ids %}{{ class_node_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const int64_t class_ids[{{ class_ids | length if class_ids else 1 }}] = {
+        {% if class_ids %}{{ class_ids | join(', ') }}{% else %}0{% endif %}
+    };
+    const float class_weights[{{ class_weights | length if class_weights else 1 }}] = {
+        {% if class_weights %}{{ class_weights | join(', ') }}{% else %}0.0f{% endif %}
+    };
+
+    const int64_t tree_ids[{{ tree_count if tree_count > 0 else 1 }}] = {
+        {% if tree_ids %}{{ tree_ids | join(', ') }}{% else %}0{% endif %}
+    };
+
+    const idx_t batch = {{ batch_size }};
+    const idx_t class_count = {{ class_count }};
+    const idx_t node_count = {{ node_count }};
+    const idx_t tree_count = {{ tree_count }};
+    const idx_t leaf_value_count = {{ leaf_value_count }};
+
+    for (idx_t b = 0; b < batch; ++b) {
+        for (idx_t c = 0; c < class_count; ++c) {
+            {{ probabilities }}[b][c] = 0.0f;
+        }
+
+        for (idx_t tree_index = 0; tree_index < tree_count; ++tree_index) {
+            const int64_t tree_id = tree_ids[tree_index];
+            int64_t current_node_id = 0;
+            int done = 0;
+            while (!done) {
+                idx_t node_index = node_count;
+                for (idx_t i = 0; i < node_count; ++i) {
+                    if (node_tree_ids[i] == tree_id && node_node_ids[i] == current_node_id) {
+                        node_index = i;
+                        break;
+                    }
+                }
+                if (node_index == node_count) {
+                    break;
+                }
+
+                const int32_t mode = node_modes[node_index];
+                if (mode == 7) {
+                    done = 1;
+                    continue;
+                }
+
+                const {{ input_c_type }} feature_value =
+                    {{ input0 }}[b][node_feature_ids[node_index]];
+                const {{ input_c_type }} threshold = node_values[node_index];
+                int take_true = 0;
+                if (mode == 0) {
+                    take_true = feature_value <= threshold;
+                } else if (mode == 1) {
+                    take_true = feature_value < threshold;
+                } else if (mode == 2) {
+                    take_true = feature_value >= threshold;
+                } else if (mode == 3) {
+                    take_true = feature_value > threshold;
+                } else if (mode == 4) {
+                    take_true = feature_value == threshold;
+                } else if (mode == 5) {
+                    take_true = feature_value != threshold;
+                }
+
+                current_node_id = take_true ? node_true_ids[node_index] : node_false_ids[node_index];
+
+                idx_t leaf_matches = 0;
+                for (idx_t lv = 0; lv < leaf_value_count; ++lv) {
+                    if (class_tree_ids[lv] == tree_id && class_node_ids[lv] == current_node_id) {
+                        const int64_t class_id = class_ids[lv];
+                        if (class_id >= 0 && class_id < class_count) {
+                            {{ probabilities }}[b][class_id] += class_weights[lv];
+                        }
+                        leaf_matches += 1;
+                    }
+                }
+                if (leaf_matches > 0) {
+                    done = 1;
+                }
+            }
+        }
+
+        for (idx_t c = 0; c < class_count; ++c) {
+{% if logistic %}
+            const float x = {{ probabilities }}[b][c];
+            {{ probabilities }}[b][c] = 1.0f / (1.0f + expf(-x));
+{% endif %}
+        }
+
+        int64_t best_index = 0;
+        float best_value = {{ probabilities }}[b][0];
+        for (idx_t c = 1; c < class_count; ++c) {
+            if ({{ probabilities }}[b][c] > best_value) {
+                best_value = {{ probabilities }}[b][c];
+                best_index = c;
+            }
+        }
+        {{ label }}[b] = class_labels[best_index];
+    }
+}

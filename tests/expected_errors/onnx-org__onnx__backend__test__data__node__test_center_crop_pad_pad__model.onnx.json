@@ -1,8 +1,9 @@
 {
-  "error": "Unsupported op CenterCropPad",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_center_crop_pad_pad model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "CenterCropPad"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "c9394cddc85cd55a65c0672c08cff8e7d9cb0e353c901e1b708084999478ec8a"
 }
