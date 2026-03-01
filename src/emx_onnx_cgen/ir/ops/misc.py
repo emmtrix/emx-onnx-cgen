@@ -329,7 +329,9 @@ class CenterCropPadOp(RenderableOpBase):
     input0: str
     shape_input: str
     output: str
-    axes: tuple[int, ...] | None  # None means all axes; already normalized (non-negative)
+    axes: (
+        tuple[int, ...] | None
+    )  # None means all axes; already normalized (non-negative)
     input_shape: tuple[int, ...]
     output_shape: tuple[int, ...]
 

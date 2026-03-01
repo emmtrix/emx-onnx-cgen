@@ -29,9 +29,7 @@ def lower_center_crop_pad(graph: Graph, node: Node) -> CenterCropPadOp:
         )
     axes_attr = node.attrs.get("axes")
     if axes_attr is not None:
-        axes = tuple(
-            normalize_axis(int(a), input_shape, node) for a in axes_attr
-        )
+        axes = tuple(normalize_axis(int(a), input_shape, node) for a in axes_attr)
     else:
         axes = None  # means all axes
     return CenterCropPadOp(
