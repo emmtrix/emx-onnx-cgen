@@ -1,0 +1,46 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    for (idx_t n = 0; n < {{ batch }}; ++n) {
+        for (idx_t g = 0; g < {{ group }}; ++g) {
+            for (idx_t oc = 0; oc < {{ group_out_channels }}; ++oc) {
+                const idx_t oc_global = g * {{ group_out_channels }} + oc;
+                for (idx_t oh = 0; oh < {{ out_h }}; ++oh) {
+                    for (idx_t ow = 0; ow < {{ out_w }}; ++ow) {
+                        {{ acc_type }} acc = {% if bias %}({{ acc_type }}){{ bias }}[oc_global]{% else %}{{ acc_zero_literal }}{% endif %};
+                        for (idx_t ic = 0; ic < {{ group_in_channels }}; ++ic) {
+                            const idx_t ic_global = g * {{ group_in_channels }} + ic;
+                            const idx_t off_g = ic_global / {{ ics_per_offset_group }};
+                            for (idx_t kh = 0; kh < {{ kernel_h }}; ++kh) {
+                                for (idx_t kw = 0; kw < {{ kernel_w }}; ++kw) {
+                                    const idx_t off_ch_h = (off_g * {{ kernel_h }} * {{ kernel_w }} + kh * {{ kernel_w }} + kw) * 2;
+                                    const idx_t off_ch_w = off_ch_h + 1;
+                                    const double dh = (double){{ offset }}[n][off_ch_h][oh][ow];
+                                    const double dw = (double){{ offset }}[n][off_ch_w][oh][ow];
+                                    const double h_coord = (double)(oh * {{ stride_h }} - {{ pad_top }} + kh * {{ dilation_h }}) + dh;
+                                    const double w_coord = (double)(ow * {{ stride_w }} - {{ pad_left }} + kw * {{ dilation_w }}) + dw;
+                                    const int base_h = (int)floor(h_coord);
+                                    const int base_w = (int)floor(w_coord);
+                                    const double frac_h = h_coord - (double)base_h;
+                                    const double frac_w = w_coord - (double)base_w;
+                                    double sample = 0.0;
+                                    int ih0 = base_h, ih1 = base_h + 1;
+                                    int iw0 = base_w, iw1 = base_w + 1;
+                                    double v00 = (ih0 >= 0 && ih0 < {{ in_h }} && iw0 >= 0 && iw0 < {{ in_w }}) ? (double){{ input0 }}[n][ic_global][ih0][iw0] : 0.0;
+                                    double v01 = (ih0 >= 0 && ih0 < {{ in_h }} && iw1 >= 0 && iw1 < {{ in_w }}) ? (double){{ input0 }}[n][ic_global][ih0][iw1] : 0.0;
+                                    double v10 = (ih1 >= 0 && ih1 < {{ in_h }} && iw0 >= 0 && iw0 < {{ in_w }}) ? (double){{ input0 }}[n][ic_global][ih1][iw0] : 0.0;
+                                    double v11 = (ih1 >= 0 && ih1 < {{ in_h }} && iw1 >= 0 && iw1 < {{ in_w }}) ? (double){{ input0 }}[n][ic_global][ih1][iw1] : 0.0;
+                                    sample = (1.0 - frac_h) * (1.0 - frac_w) * v00 + (1.0 - frac_h) * frac_w * v01 + frac_h * (1.0 - frac_w) * v10 + frac_h * frac_w * v11;
+                                    {% if mask %}
+                                    const idx_t mask_ch = off_g * {{ kernel_h }} * {{ kernel_w }} + kh * {{ kernel_w }} + kw;
+                                    sample *= (double){{ mask }}[n][mask_ch][oh][ow];
+                                    {% endif %}
+                                    acc += ({{ acc_type }})(sample * (double){{ weights }}[oc_global][ic][kh][kw]);
+                                }
+                            }
+                        }
+                        {{ output }}[n][oc_global][oh][ow] = ({{ c_type }})acc;
+                    }
+                }
+            }
+        }
+    }
+}

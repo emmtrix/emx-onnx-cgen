@@ -21,6 +21,7 @@ _LOWERING_MODULES = [
     "conv",
     "conv_integer",
     "conv_transpose",
+    "deform_conv",
     "cumsum",
     "depth_space",
     "dequantize_linear",
