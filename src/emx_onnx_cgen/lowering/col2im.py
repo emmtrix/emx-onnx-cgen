@@ -88,13 +88,12 @@ def lower_col2im(graph: Graph, node: Node) -> Col2ImOp:
     expected_output_shape = (batch, channels, *image_shape)
     try:
         output_shape = _value_shape(graph, node.outputs[0], node)
-        if output_shape != expected_output_shape:
-            raise ShapeInferenceError(
-                f"Col2Im output shape must be {expected_output_shape}, got {output_shape}"
-            )
-    except ShapeInferenceError as exc:
-        if "Missing shape" not in str(exc):
-            raise
+    except ShapeInferenceError:
+        output_shape = None
+    if output_shape is not None and output_shape != expected_output_shape:
+        raise ShapeInferenceError(
+            f"Col2Im output shape must be {expected_output_shape}, got {output_shape}"
+        )
     return Col2ImOp(
         input0=node.inputs[0],
         output=node.outputs[0],
