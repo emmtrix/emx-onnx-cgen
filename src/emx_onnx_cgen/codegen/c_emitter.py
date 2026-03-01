@@ -3189,6 +3189,8 @@ class CEmitter:
                 return op.elem_dtype
             if isinstance(op, LoopSequenceMapOp):
                 return op.output_elem_dtypes[0]
+            if isinstance(op, AffineGridOp):
+                return model.op_context.dtype(op.grid)
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -14546,6 +14548,10 @@ class CEmitter:
                     self._ctx_dtype(op.probabilities),
                 ),
             )
+        if isinstance(op, AffineGridOp):
+            return (
+                (op.grid, self._ctx_shape(op.grid), self._ctx_dtype(op.grid)),
+            )
         return (
             (
                 op.output,
@@ -15003,13 +15009,14 @@ class CEmitter:
                 HammingWindowOp,
                 HannWindowOp,
                 GridSampleOp,
-                AffineGridOp,
                 ResizeOp,
                 PadOp,
                 SliceOp,
             ),
         ):
             return self._ctx_dtype(op.output)
+        if isinstance(op, AffineGridOp):
+            return self._ctx_dtype(op.grid)
         return op.dtype
 
     @staticmethod
