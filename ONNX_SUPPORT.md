@@ -6,6 +6,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1503 / 1802, 83.4% | 1.20.1 |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1500 / 1802, 83.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1506 / 1802, 83.6% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -19,6 +20,7 @@ Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1503 / 1802 ONNX files (83.4%).
 Coverage 1500 / 1802 ONNX files (83.2%).
+Coverage 1506 / 1802 ONNX files (83.6%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1376,12 +1378,12 @@ Coverage 1500 / 1802 ONNX files (83.2%).
 | node/test_round/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_scan9_sum/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | node/test_scan_sum/model.onnx | 8 | ✅ | OK (max ULP 0) |
-| node/test_scatter_elements_with_axis/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_duplicate_indices/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_negative_indices/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_reduction_max/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_with_reduction_min/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
-| node/test_scatter_elements_without_axis/model.onnx | 18 | ❌ | Unsupported op ScatterElements |
+| node/test_scatter_elements_with_axis/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_duplicate_indices/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_negative_indices/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_reduction_max/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_with_reduction_min/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_scatter_elements_without_axis/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_scatter_with_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_scatter_without_axis/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_scatternd/model.onnx | 18 | ✅ | OK (max ULP 0) |

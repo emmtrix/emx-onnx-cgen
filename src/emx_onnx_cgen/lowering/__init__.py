@@ -81,6 +81,7 @@ _LOWERING_MODULES = [
     "rms_normalization",
     "rotary_embedding",
     "scatter",
+    "scatter_elements",
     "scatter_nd",
     "shape",
     "size",
