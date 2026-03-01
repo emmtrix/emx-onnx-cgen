@@ -1250,6 +1250,44 @@ class AdagradOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class MomentumOp(RenderableOpBase):
+    __io_inputs__ = ("rate", "timestep", "inputs", "gradients", "velocities")
+    __io_outputs__ = ("outputs", "velocity_outputs")
+    rate: str
+    timestep: str
+    inputs: tuple[str, ...]
+    gradients: tuple[str, ...]
+    velocities: tuple[str, ...]
+    outputs: tuple[str, ...]
+    velocity_outputs: tuple[str, ...]
+    rate_shape: tuple[int, ...]
+    timestep_shape: tuple[int, ...]
+    tensor_shapes: tuple[tuple[int, ...], ...]
+    output_shapes: tuple[tuple[int, ...], ...]
+    dtype: ScalarType
+    rate_dtype: ScalarType
+    timestep_dtype: ScalarType
+    norm_coefficient: float
+    alpha: float
+    beta: float
+    mode: str
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.rate, self.timestep]
+        for index in range(len(self.inputs)):
+            args.extend(
+                [
+                    self.inputs[index],
+                    self.gradients[index],
+                    self.velocities[index],
+                    self.outputs[index],
+                    self.velocity_outputs[index],
+                ]
+            )
+        return tuple(args)
+
+
+@dataclass(frozen=True)
 class MaxPoolOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output", "indices")

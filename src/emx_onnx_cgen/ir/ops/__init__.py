@@ -11,6 +11,7 @@ from .elementwise import (
     WhereOp,
 )
 from .misc import (
+    AffineGridOp,
     BernoulliOp,
     BlackmanWindowOp,
     CastOp,
@@ -62,6 +63,7 @@ from .misc import (
     TensorScatterOp,
     TfIdfVectorizerOp,
     StringNormalizerOp,
+    StringSplitOp,
     TreeEnsembleOp,
     TreeEnsembleClassifierOp,
     TileOp,
@@ -72,6 +74,7 @@ from .misc import (
 )
 from .nn import (
     AdagradOp,
+    MomentumOp,
     AttentionOp,
     AveragePoolOp,
     BatchNormOp,
@@ -110,6 +113,7 @@ from .reduce import ArgReduceOp, ReduceOp, TopKOp
 
 __all__ = [
     "AdagradOp",
+    "AffineGridOp",
     "ArgReduceOp",
     "AttentionOp",
     "AveragePoolOp",
@@ -157,6 +161,7 @@ __all__ = [
     "MatMulIntegerOp",
     "MatMulOp",
     "MaxPoolOp",
+    "MomentumOp",
     "MeanVarianceNormalizationOp",
     "MultiInputBinaryOp",
     "NegativeLogLikelihoodLossOp",
@@ -203,6 +208,7 @@ __all__ = [
     "TensorScatterOp",
     "TfIdfVectorizerOp",
     "StringNormalizerOp",
+    "StringSplitOp",
     "TreeEnsembleOp",
     "TreeEnsembleClassifierOp",
     "TileOp",
