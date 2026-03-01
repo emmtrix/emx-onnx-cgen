@@ -1,0 +1,75 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const char (*x_flat)[EMX_STRING_MAX_LEN] =
+        (const char (*)[EMX_STRING_MAX_LEN]){{ input0 }};
+    char (*y_flat)[EMX_STRING_MAX_LEN] =
+        (char (*)[EMX_STRING_MAX_LEN]){{ output_y }};
+    int64_t *z_flat = (int64_t *){{ output_z }};
+    for (idx_t i = 0; i < {{ input_count }}; ++i) {
+        const char *src = x_flat[i];
+        idx_t out_base = i * {{ max_count }};
+        for (idx_t j = 0; j < {{ max_count }}; ++j) {
+            y_flat[out_base + j][0] = '\0';
+        }
+        idx_t n = 0;
+{% if is_whitespace %}
+        const char *p = src;
+        while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *p == '\f' || *p == '\v') ++p;
+{% if maxsplit >= 0 %}
+        while (*p != '\0' && n < {{ maxsplit }}) {
+            char *dst = y_flat[out_base + n];
+            size_t pos = 0;
+            while (*p != '\0' && *p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' && *p != '\f' && *p != '\v' && pos + 1 < EMX_STRING_MAX_LEN) {
+                dst[pos++] = *p++;
+            }
+            dst[pos] = '\0';
+            ++n;
+            while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *p == '\f' || *p == '\v') ++p;
+        }
+        if (*p != '\0' && n < {{ max_count }}) {
+            char *dst = y_flat[out_base + n];
+            size_t pos = 0;
+            while (*p != '\0' && pos + 1 < EMX_STRING_MAX_LEN) {
+                dst[pos++] = *p++;
+            }
+            dst[pos] = '\0';
+            ++n;
+        }
+{% else %}
+        while (*p != '\0' && n < {{ max_count }}) {
+            char *dst = y_flat[out_base + n];
+            size_t pos = 0;
+            while (*p != '\0' && *p != ' ' && *p != '\t' && *p != '\n' && *p != '\r' && *p != '\f' && *p != '\v' && pos + 1 < EMX_STRING_MAX_LEN) {
+                dst[pos++] = *p++;
+            }
+            dst[pos] = '\0';
+            ++n;
+            while (*p == ' ' || *p == '\t' || *p == '\n' || *p == '\r' || *p == '\f' || *p == '\v') ++p;
+        }
+{% endif %}
+{% else %}
+        const char *p = src;
+        while (*p != '\0' && ({{ max_count }} == 0 || n + 1 < {{ max_count }}) && ({{ maxsplit }} < 0 || n < {{ maxsplit }})) {
+            const char *found = strstr(p, {{ delimiter_literal }});
+            if (found == NULL) break;
+            char *dst = y_flat[out_base + n];
+            size_t pos = 0;
+            while (p != found && pos + 1 < EMX_STRING_MAX_LEN) {
+                dst[pos++] = *p++;
+            }
+            dst[pos] = '\0';
+            ++n;
+            p = found + {{ delimiter_len }};
+        }
+        if ({{ max_count }} > 0) {
+            char *dst = y_flat[out_base + n];
+            size_t pos = 0;
+            while (*p != '\0' && pos + 1 < EMX_STRING_MAX_LEN) {
+                dst[pos++] = *p++;
+            }
+            dst[pos] = '\0';
+            ++n;
+        }
+{% endif %}
+        z_flat[i] = (int64_t)n;
+    }
+}

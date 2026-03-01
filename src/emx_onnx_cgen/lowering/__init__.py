@@ -91,6 +91,7 @@ _LOWERING_MODULES = [
     "split",
     "split_to_sequence",
     "string_normalizer",
+    "string_split",
     "squeeze",
     "tensor_scatter",
     "tfidf_vectorizer",
