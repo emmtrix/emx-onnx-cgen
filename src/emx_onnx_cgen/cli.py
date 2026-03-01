@@ -1727,7 +1727,11 @@ def _verify_model(
                     continue
                 if isinstance(value.type, TensorType):
                     continue
-                expected_sequence = None if testbench_outputs is None else testbench_outputs.get(value.name)
+                expected_sequence = (
+                    None
+                    if testbench_outputs is None
+                    else testbench_outputs.get(value.name)
+                )
                 if not isinstance(expected_sequence, list):
                     raise AssertionError(
                         f"Missing sequence reference output for {value.name}."
