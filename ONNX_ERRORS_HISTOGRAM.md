@@ -2,6 +2,8 @@
 
 This histogram is test-suite-overarching.
 
+Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
+
 | Error message | Count | Opset versions |
 | --- | --- | --- |
 | Out of tolerance | 28 | 8, 9, 11, 13, 16, 17, 19, 20, 21, 22, 24 |

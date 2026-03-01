@@ -210,8 +210,9 @@ How verification works:
 
 ## Official ONNX test coverage
 
-See [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md) for the generated support matrix.
-See [`SUPPORT_OPS.md`](SUPPORT_OPS.md) for operator-level support derived from the expectation JSON files.
+- [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md): overview of ONNX models and their current verification status.
+- [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md): summary of the most common verification outcomes and failure reasons.
+- [`SUPPORT_OPS.md`](SUPPORT_OPS.md): list of ONNX operators and whether they are currently supported.
 
 ## Related Projects
 
