@@ -10,7 +10,7 @@ Supported operators: 184 / 205
 | Acos | ✅ |
 | Acosh | ✅ |
 | Add | ✅ |
-| AffineGrid | ❌ |
+| AffineGrid | ✅ |
 | And | ✅ |
 | ArgMax | ✅ |
 | ArgMin | ✅ |

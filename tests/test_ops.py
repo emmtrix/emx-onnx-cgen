@@ -31,6 +31,7 @@ from emx_onnx_cgen.ir.op_context import OpContext
 from emx_onnx_cgen.ir.ops import CompressOp, NonMaxSuppressionOp, NonZeroOp, ResizeOp
 from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
+from emx_onnx_cgen.lowering.affine_grid import lower_affine_grid
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.concat_from_sequence import lower_concat_from_sequence
@@ -2140,6 +2141,39 @@ def _make_gridsample_model(
         opset_imports=[helper.make_operatorsetid("", opset)],
     )
     model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_affine_grid_model(
+    *,
+    theta_shape: list[int],
+    size: list[int],
+    grid_shape: list[int],
+    align_corners: int = 0,
+    opset: int = 20,
+) -> onnx.ModelProto:
+    theta_info = helper.make_tensor_value_info("theta", TensorProto.FLOAT, theta_shape)
+    size_info = helper.make_tensor_value_info("size", TensorProto.INT64, [len(size)])
+    grid_info = helper.make_tensor_value_info("grid", TensorProto.FLOAT, grid_shape)
+    node = helper.make_node(
+        "AffineGrid",
+        inputs=["theta", "size"],
+        outputs=["grid"],
+        align_corners=align_corners,
+    )
+    graph = helper.make_graph(
+        [node],
+        "affine_grid_graph",
+        [theta_info, size_info],
+        [grid_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
     onnx.checker.check_model(model)
     return model
 
@@ -5098,7 +5132,38 @@ def test_lower_gridsample_builds_spec() -> None:
     assert op.mode == "linear"
 
 
-def test_lower_upsample_scales_initializer() -> None:
+def test_lower_affine_grid_2d_builds_spec() -> None:
+    model = _make_affine_grid_model(
+        theta_shape=[2, 2, 3],
+        size=[2, 3, 5, 6],
+        grid_shape=[2, 5, 6, 2],
+    )
+    graph = import_onnx(model)
+    op = lower_affine_grid(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op.spatial_rank == 2
+    assert op.align_corners is False
+    assert op_ctx.shape(op.grid) == (2, 5, 6, 2)
+
+
+def test_lower_affine_grid_3d_builds_spec() -> None:
+    model = _make_affine_grid_model(
+        theta_shape=[2, 3, 4],
+        size=[2, 3, 4, 5, 6],
+        grid_shape=[2, 4, 5, 6, 3],
+        align_corners=1,
+    )
+    graph = import_onnx(model)
+    op = lower_affine_grid(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op.spatial_rank == 3
+    assert op.align_corners is True
+    assert op_ctx.shape(op.grid) == (2, 4, 5, 6, 3)
+
     model = _make_upsample_model()
     graph = import_onnx(model)
     op = lower_upsample(graph, graph.nodes[0])
