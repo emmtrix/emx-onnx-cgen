@@ -1,9 +1,9 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_deform_conv_with_mask_bias model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "DeformConv"
   ],
   "opset_version": 22,
-  "generated_checksum": "88fbf79210e3a3a5bd7322a154a637c741aa21c6a98e478d2e9c0fa70e754060"
+  "generated_checksum": "9db98292ac1e72557c4b14d6f586d49c4b7656c591395514e7d4d06f9e062245"
 }
