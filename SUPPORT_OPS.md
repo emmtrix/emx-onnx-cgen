@@ -47,7 +47,7 @@ Supported operators: 187 / 205
 | Cosh | ✅ |
 | CumSum | ✅ |
 | DFT | ❌ |
-| DeformConv | ❌ |
+| DeformConv | ✅ |
 | DepthToSpace | ✅ |
 | DequantizeLinear | ✅ |
 | Det | ❌ |

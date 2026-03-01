@@ -587,6 +587,35 @@ class ConvTransposeOp(ConvLikeOpBase):
 
 
 @dataclass(frozen=True)
+class DeformConvOp(ConvLikeOpBase):
+    __io_inputs__ = ("input0", "weights", "offset", "bias", "mask")
+    input0: str
+    weights: str
+    offset: str
+    bias: str | None
+    mask: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_h: int
+    kernel_w: int
+    stride_h: int
+    stride_w: int
+    pad_top: int
+    pad_left: int
+    dilation_h: int
+    dilation_w: int
+    group: int
+    offset_group: int
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class AveragePoolOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
