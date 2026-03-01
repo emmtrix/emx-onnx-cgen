@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1529 / 1802, 84.9% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1533 / 1802, 85.1% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1529 / 1802 ONNX files (84.9%).
+Coverage 1533 / 1802 ONNX files (85.1%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -256,8 +256,8 @@ Coverage 1529 / 1802 ONNX files (84.9%).
 | node/test_averagepool_3d_dilations_small/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_with_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_without_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_basic_deform_conv_with_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
-| node/test_basic_deform_conv_without_padding/model.onnx | 22 | ❌ | Unsupported op DeformConv |
+| node/test_basic_deform_conv_with_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| node/test_basic_deform_conv_without_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_batchnorm_epsilon/model.onnx | 15 | ✅ | OK (max ULP 2) |
 | node/test_batchnorm_epsilon_training_mode/model.onnx | 15 | ✅ | OK (max ULP 1) |
 | node/test_batchnorm_example/model.onnx | 15 | ✅ | OK (max ULP 2) |
@@ -565,8 +565,8 @@ Coverage 1529 / 1802 ONNX files (84.9%).
 | node/test_cumsum_2d_axis_1/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_int32/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_negative_axis/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_deform_conv_with_mask_bias/model.onnx | 22 | ❌ | Unsupported op DeformConv |
-| node/test_deform_conv_with_multiple_offset_groups/model.onnx | 22 | ❌ | Unsupported op DeformConv |
+| node/test_deform_conv_with_mask_bias/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| node/test_deform_conv_with_multiple_offset_groups/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_depthtospace_crd_mode_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_depthtospace_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_dequantizelinear/model.onnx | 25 | ✅ | OK (max ULP 0) |
