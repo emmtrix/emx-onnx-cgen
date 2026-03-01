@@ -1,5 +1,5 @@
 {
-  "error": "Arrays are not equal (max abs diff 148)",
+  "error": "Out of tolerance (max abs diff 148)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_qlinearmatmul_2D_int8_float32 model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "QLinearMatMul"
