@@ -1,7 +1,8 @@
 {
-  "error": "Unsupported op Momentum",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_momentum model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "ai.onnx.preview.training::Momentum"
-  ]
+  ],
+  "generated_checksum": "dc77b30737972acd7eb0729f2e4eeb6718a34912f0f55bf9b3eca648cadab9fc"
 }

@@ -994,8 +994,8 @@ Coverage 1518 / 1802 ONNX files (84.2%).
 | node/test_mod_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
-| node/test_momentum_multiple/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
+| node/test_momentum_multiple/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_mul/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1010,7 +1010,7 @@ Coverage 1518 / 1802 ONNX files (84.2%).
 | node/test_mvn_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | node/test_neg/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_neg_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_nesterov_momentum/model.onnx |  | ❌ | Unsupported op Momentum |
+| node/test_nesterov_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NC_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1/model.onnx | 22 | ✅ | OK (max ULP 0) |
