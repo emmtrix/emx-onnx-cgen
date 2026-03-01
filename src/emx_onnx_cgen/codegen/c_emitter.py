@@ -7941,8 +7941,8 @@ class CEmitter:
             L = prod(op.out_blocks)
             input_shape = (op.batch, op.channels * prod_block_shape, L)
             output_shape = (op.batch, op.channels, *op.image_shape)
-            prod_block_suffix = [prod(op.block_shape[dim + 1 :]) for dim in range(op.spatial_rank)]
-            prod_out_blocks_suffix = [prod(op.out_blocks[dim + 1 :]) for dim in range(op.spatial_rank)]
+            block_shape_strides = [prod(op.block_shape[dim + 1 :]) for dim in range(op.spatial_rank)]
+            out_blocks_strides = [prod(op.out_blocks[dim + 1 :]) for dim in range(op.spatial_rank)]
             zero_indices = tuple(f"zi{dim}" for dim in range(op.spatial_rank))
             kernel_indices = tuple(f"kd{dim}" for dim in range(op.spatial_rank))
             block_indices = tuple(f"bd{dim}" for dim in range(op.spatial_rank))
@@ -7974,8 +7974,8 @@ class CEmitter:
                 pads_begin=pad_begin,
                 out_blocks=op.out_blocks,
                 prod_block_shape=prod_block_shape,
-                prod_block_suffix=prod_block_suffix,
-                prod_out_blocks_suffix=prod_out_blocks_suffix,
+                block_shape_strides=block_shape_strides,
+                out_blocks_strides=out_blocks_strides,
                 zero_indices=zero_indices,
                 kernel_indices=kernel_indices,
                 block_indices=block_indices,
