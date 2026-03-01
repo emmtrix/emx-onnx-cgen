@@ -11349,9 +11349,7 @@ class CEmitter:
                 one_literal=self._format_literal(compute_dtype, 1.0),
                 two_literal=self._format_literal(compute_dtype, 2.0),
                 alpha_literal=self._format_literal(compute_dtype, 25.0 / 46.0),
-                beta_literal=self._format_literal(
-                    compute_dtype, 1.0 - (25.0 / 46.0)
-                ),
+                beta_literal=self._format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
                 cos_fn=cos_fn,
             ).rstrip()
