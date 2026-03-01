@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1524 / 1802, 84.6% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1529 / 1802, 84.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1524 / 1802 ONNX files (84.6%).
+Coverage 1529 / 1802 ONNX files (84.9%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1566,11 +1566,11 @@ Coverage 1524 / 1802 ONNX files (84.6%).
 | node/test_squeeze_negative_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_stft/model.onnx | 17 | ❌ | Unsupported op STFT |
 | node/test_stft_with_window/model.onnx | 17 | ❌ | Unsupported op STFT |
-| node/test_string_concat/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_broadcasting/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_empty_string/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_utf8/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_concat_zero_dimensional/model.onnx | 20 | ❌ | Unsupported op StringConcat |
+| node/test_string_concat/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_broadcasting/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_empty_string/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_utf8/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_concat_zero_dimensional/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_string_split_basic/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_string_split_consecutive_delimiters/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_string_split_empty_string_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |

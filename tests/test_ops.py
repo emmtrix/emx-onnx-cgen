@@ -183,6 +183,36 @@ def _make_string_normalizer_model(
     return model
 
 
+def _make_string_concat_model(
+    *,
+    input0_shape: list[int],
+    input1_shape: list[int],
+    output_shape: list[int],
+) -> onnx.ModelProto:
+    input0_info = helper.make_tensor_value_info("in0", TensorProto.STRING, input0_shape)
+    input1_info = helper.make_tensor_value_info("in1", TensorProto.STRING, input1_shape)
+    output_info = helper.make_tensor_value_info("out", TensorProto.STRING, output_shape)
+    node = helper.make_node(
+        "StringConcat",
+        inputs=["in0", "in1"],
+        outputs=["out"],
+    )
+    graph = helper.make_graph(
+        [node],
+        "string_concat_graph",
+        [input0_info, input1_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _flatten_output_shape(input_shape: list[int], axis: int) -> list[int]:
     rank = len(input_shape)
     if axis < 0:
@@ -3768,6 +3798,42 @@ def test_string_normalizer_codegen_emits_transform_logic() -> None:
     assert "toupper" in generated
     assert "strcmp" in generated
     assert "monday" in generated
+
+
+def test_string_concat_lowering() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[3],
+        output_shape=[3],
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringConcat")
+    op = lowering(graph, graph.nodes[0])
+    assert op.input0 == "in0"
+    assert op.input1 == "in1"
+    assert op.output == "out"
+
+
+def test_string_concat_codegen_emits_strncpy_strncat() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[3],
+        output_shape=[3],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strncpy" in generated
+    assert "strncat" in generated
+
+
+def test_string_concat_codegen_broadcasting() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[1],
+        output_shape=[3],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "input1[0]" in generated
 
 
 def _make_string_split_model(

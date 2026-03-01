@@ -18,7 +18,6 @@ This histogram is test-suite-overarching.
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
-| Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op DeformConv | 4 | 22 |
@@ -77,7 +76,6 @@ This histogram is test-suite-overarching.
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
-| Unsupported op StringConcat | 20 | 5 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |

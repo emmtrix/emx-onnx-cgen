@@ -1075,6 +1075,15 @@ class TfIdfVectorizerOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class StringConcatOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "input1")
+    __io_outputs__ = ("output",)
+    input0: str
+    input1: str
+    output: str
+
+
+@dataclass(frozen=True)
 class StringNormalizerOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
