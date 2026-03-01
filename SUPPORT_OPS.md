@@ -180,7 +180,7 @@ Supported operators: 184 / 205
 | Squeeze | ✅ |
 | StringConcat | ❌ |
 | StringNormalizer | ✅ |
-| StringSplit | ❌ |
+| StringSplit | ✅ |
 | Sub | ✅ |
 | Sum | ✅ |
 | Swish | ✅ |

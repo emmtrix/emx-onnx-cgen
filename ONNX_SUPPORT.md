@@ -5,6 +5,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1515 / 1802, 84.1% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1518 / 1802, 84.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -17,6 +18,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1515 / 1802 ONNX files (84.1%).
+Coverage 1518 / 1802 ONNX files (84.2%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1571,12 +1573,12 @@ Coverage 1515 / 1802 ONNX files (84.1%).
 | node/test_string_concat_empty_string/model.onnx | 20 | ❌ | Unsupported op StringConcat |
 | node/test_string_concat_utf8/model.onnx | 20 | ❌ | Unsupported op StringConcat |
 | node/test_string_concat_zero_dimensional/model.onnx | 20 | ❌ | Unsupported op StringConcat |
-| node/test_string_split_basic/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_empty_tensor/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Unsupported op StringSplit |
-| node/test_string_split_no_delimiter/model.onnx | 20 | ❌ | Unsupported op StringSplit |
+| node/test_string_split_basic/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_empty_tensor/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_maxsplit/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_string_split_no_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max ULP 0) |
