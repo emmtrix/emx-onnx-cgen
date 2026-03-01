@@ -41,6 +41,7 @@ from emx_onnx_cgen.lowering.depth_space import (
     lower_space_to_depth,
 )
 from emx_onnx_cgen.lowering.scatter import lower_scatter
+from emx_onnx_cgen.lowering.scatter_elements import lower_scatter_elements
 from emx_onnx_cgen.lowering.scatter_nd import lower_scatternd
 from emx_onnx_cgen.lowering.sequence_at import lower_sequence_at
 from emx_onnx_cgen.lowering.sequence_construct import lower_sequence_construct
@@ -389,6 +390,52 @@ def _make_scatternd_model(
     graph = helper.make_graph(
         [node],
         "scatternd_graph",
+        [data_info, updates_info],
+        [output],
+        initializer=[indices_tensor],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 7
+    onnx.checker.check_model(model)
+    return model
+
+
+def _make_scatter_elements_model(
+    *,
+    data_shape: list[int],
+    indices_shape: list[int],
+    axis: int,
+    dtype: int,
+    reduction: str = "none",
+    opset: int = 18,
+) -> onnx.ModelProto:
+    data_info = helper.make_tensor_value_info("data", dtype, data_shape)
+    updates_info = helper.make_tensor_value_info("updates", dtype, indices_shape)
+    output = helper.make_tensor_value_info("output", dtype, data_shape)
+    axis_dim = data_shape[axis]
+    index_values = np.arange(np.prod(indices_shape), dtype=np.int64) % axis_dim
+    indices_tensor = helper.make_tensor(
+        "indices",
+        TensorProto.INT64,
+        dims=indices_shape,
+        vals=index_values.tolist(),
+    )
+    attrs: dict[str, object] = {"axis": axis}
+    if reduction != "none":
+        attrs["reduction"] = reduction
+    node = helper.make_node(
+        "ScatterElements",
+        inputs=["data", "indices", "updates"],
+        outputs=[output.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "scatter_elements_graph",
         [data_info, updates_info],
         [output],
         initializer=[indices_tensor],
@@ -5692,6 +5739,58 @@ def test_scatternd_matches_onnxruntime() -> None:
         data_shape=[3, 3],
         indices=indices_values,
         updates_shape=[2],
+        dtype=TensorProto.FLOAT,
+        reduction="add",
+    )
+    _run_ort_compare(model)
+
+
+def test_lower_scatter_elements_shapes() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    graph = import_onnx(model)
+    op = lower_scatter_elements(graph, graph.nodes[0])
+    assert op.data == "data"
+    assert op.indices == "indices"
+    assert op.updates == "updates"
+    assert op.output == "output"
+    assert op.axis == 1
+    assert op.reduction == "none"
+
+
+def test_lower_scatter_elements_reduction() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 2],
+        axis=0,
+        dtype=TensorProto.FLOAT,
+        reduction="add",
+    )
+    graph = import_onnx(model)
+    op = lower_scatter_elements(graph, graph.nodes[0])
+    assert op.axis == 0
+    assert op.reduction == "add"
+
+
+def test_scatter_elements_matches_onnxruntime() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 3],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+    )
+    _run_ort_compare(model)
+
+
+def test_scatter_elements_add_reduction_matches_onnxruntime() -> None:
+    model = _make_scatter_elements_model(
+        data_shape=[2, 3],
+        indices_shape=[2, 2],
+        axis=0,
         dtype=TensorProto.FLOAT,
         reduction="add",
     )

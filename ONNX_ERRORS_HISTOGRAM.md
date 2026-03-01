@@ -17,7 +17,6 @@ This histogram is test-suite-overarching.
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Out of tolerance | 8 | 8, 9, 19, 22 |
 | Unsupported op DFT | 6 | 19, 20 |
-| Unsupported op ScatterElements | 6 | 18 |
 | Unsupported op StringSplit | 6 | 20 |
 | Unsupported op Col2Im | 5 | 18 |
 | Unsupported op StringConcat | 5 | 20 |
@@ -75,6 +74,7 @@ This histogram is test-suite-overarching.
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op ScatterElements | 18 | 6 |
+| Unsupported op CenterCropPad | 18 | 6 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op OptionalGetElement | 18 | 4 |

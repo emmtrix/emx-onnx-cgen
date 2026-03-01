@@ -151,7 +151,7 @@ Supported operators: 182 / 205
 | STFT | ❌ |
 | Scan | ✅ |
 | Scatter | ✅ |
-| ScatterElements | ❌ |
+| ScatterElements | ✅ |
 | ScatterND | ✅ |
 | Selu | ✅ |
 | SequenceAt | ✅ |
