@@ -16,7 +16,4 @@ def lower_optional_get_element(ctx: GraphContext, node: Node) -> OptionalGetElem
     if len(node.outputs) != 1 or not node.outputs[0]:
         raise UnsupportedOpError("OptionalGetElement expects exactly one output.")
     input_name = node.inputs[0]
-    value = ctx.find_value(input_name)
-    if not value.type.is_optional:
-        raise UnsupportedOpError("OptionalGetElement expects an optional input.")
     return OptionalGetElementOp(input0=input_name, output=node.outputs[0])

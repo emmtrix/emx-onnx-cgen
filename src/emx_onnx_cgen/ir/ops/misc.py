@@ -588,13 +588,6 @@ class OptionalGetElementOp(RenderableOpBase):
     def emit(self, emitter: Emitter, ctx: EmitContext) -> str:
         return emitter.emit_generic_op(self, ctx)
 
-    def validate(self, ctx: OpContext) -> None:
-        value = ctx.graph.find_value(self.input0)
-        if not value.type.is_optional:
-            raise UnsupportedOpError(
-                f"{self.kind} expects optional input, got non-optional tensor."
-            )
-
     def infer_types(self, ctx: OpContext) -> None:
         input_dtype = ctx.dtype(self.input0)
         try:

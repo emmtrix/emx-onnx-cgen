@@ -205,6 +205,30 @@ def _make_optional_get_element_model() -> onnx.ModelProto:
     return model
 
 
+def _make_optional_get_element_tensor_model() -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("tensor_input", TensorProto.FLOAT, [4])
+    output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [4])
+    node = helper.make_node(
+        "OptionalGetElement",
+        inputs=[input_info.name],
+        outputs=[output.name],
+    )
+    graph = helper.make_graph(
+        [node],
+        "optional_get_element_tensor_graph",
+        [input_info],
+        [output],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="emx-onnx-cgen",
+        opset_imports=[helper.make_operatorsetid("", 18)],
+    )
+    model.ir_version = 8
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_gemm_model() -> onnx.ModelProto:
     return _make_operator_model(
         op_type="Gemm",
@@ -504,6 +528,11 @@ OP_GOLDEN_CASES = [
     ("matmulinteger", "matmul_integer", _make_matmulinteger_model),
     ("optionalhaselement", "optional_has_element", _make_optional_has_element_model),
     ("optionalgetelement", "optional_get_element", _make_optional_get_element_model),
+    (
+        "optionalgetelement",
+        "optional_get_element_tensor",
+        _make_optional_get_element_tensor_model,
+    ),
     ("gemm", "gemm", _make_gemm_model),
     ("attention", "attention", _make_attention_model),
     ("conv", "conv", _make_conv_model),
