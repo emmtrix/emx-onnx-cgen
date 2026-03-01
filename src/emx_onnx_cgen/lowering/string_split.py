@@ -58,9 +58,7 @@ def lower_string_split(graph: Graph, node: Node) -> StringSplitOp:
             "StringSplit output Y shape must match input shape except for last dim"
         )
     if tuple(output_z_shape) != tuple(input_shape):
-        raise ShapeInferenceError(
-            "StringSplit output Z shape must match input shape"
-        )
+        raise ShapeInferenceError("StringSplit output Z shape must match input shape")
 
     delimiter = _decode_string_attr(node.attrs.get("delimiter"), attr_name="delimiter")
 

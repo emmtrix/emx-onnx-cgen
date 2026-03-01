@@ -11800,7 +11800,11 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, StringSplitOp):
             params = self._shared_param_map(
-                [("input0", op.input0), ("output_y", op.output_y), ("output_z", op.output_z)]
+                [
+                    ("input0", op.input0),
+                    ("output_y", op.output_y),
+                    ("output_z", op.output_z),
+                ]
             )
             input_shape = self._ctx_shape(op.input0)
             output_y_shape = self._ctx_shape(op.output_y)
@@ -14057,7 +14061,9 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.k_input, self._ctx_shape(op.k_input)),
             )
-        if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp, StringSplitOp)):
+        if isinstance(
+            op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp, StringSplitOp)
+        ):
             return ((op.input0, self._ctx_shape(op.input0)),)
         return ()
 
