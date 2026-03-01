@@ -10,6 +10,7 @@ from golden_utils import assert_golden
 from emx_onnx_cgen import Compiler
 from emx_onnx_cgen.compiler import CompilerOptions
 from test_ops import (
+    _make_affine_grid_model,
     _make_arg_reduce_model,
     _make_batchnorm_model,
     _make_cast_model,
@@ -650,6 +651,15 @@ OP_GOLDEN_CASES = [
             input_shape=[1, 1, 2, 2],
             grid_shape=[1, 2, 2, 2],
             output_shape=[1, 1, 2, 2],
+        ),
+    ),
+    (
+        "affinegrid",
+        "affine_grid",
+        lambda: _make_affine_grid_model(
+            theta_shape=[2, 2, 3],
+            size=[2, 3, 5, 6],
+            grid_shape=[2, 5, 6, 2],
         ),
     ),
     ("reduce", "reduce_mean", _make_reduce_mean_model),

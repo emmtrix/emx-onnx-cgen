@@ -62,6 +62,7 @@ from ..ir.ops import (
     GatherOp,
     GemmOp,
     GruOp,
+    AffineGridOp,
     GridSampleOp,
     GroupNormalizationOp,
     HammingWindowOp,
@@ -79,6 +80,7 @@ from ..ir.ops import (
     MatMulOp,
     MaxPoolOp,
     MeanVarianceNormalizationOp,
+    MomentumOp,
     MultiInputBinaryOp,
     NegativeLogLikelihoodLossOp,
     NonMaxSuppressionOp,
@@ -126,6 +128,7 @@ from ..ir.ops import (
     TensorScatterOp,
     TfIdfVectorizerOp,
     StringNormalizerOp,
+    StringSplitOp,
     TreeEnsembleOp,
     TreeEnsembleClassifierOp,
     TileOp,
@@ -660,6 +663,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -689,6 +693,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -747,6 +752,7 @@ class CEmitter:
         | GruOp
         | LstmOp
         | AdagradOp
+        | MomentumOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -776,6 +782,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | GridSampleOp
+        | AffineGridOp
         | ReduceOp
         | ArgReduceOp
         | TopKOp
@@ -1572,6 +1579,29 @@ class CEmitter:
                 epsilon=op.epsilon,
                 decay_factor=op.decay_factor,
             )
+        if isinstance(op, MomentumOp):
+            return MomentumOp(
+                rate=name_map.get(op.rate, op.rate),
+                timestep=name_map.get(op.timestep, op.timestep),
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
+                gradients=tuple(name_map.get(name, name) for name in op.gradients),
+                velocities=tuple(name_map.get(name, name) for name in op.velocities),
+                outputs=tuple(name_map.get(name, name) for name in op.outputs),
+                velocity_outputs=tuple(
+                    name_map.get(name, name) for name in op.velocity_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                alpha=op.alpha,
+                beta=op.beta,
+                mode=op.mode,
+            )
         if isinstance(op, SoftmaxOp):
             return SoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1844,6 +1874,14 @@ class CEmitter:
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
             )
+        if isinstance(op, AffineGridOp):
+            return AffineGridOp(
+                theta=name_map.get(op.theta, op.theta),
+                size=name_map.get(op.size, op.size),
+                grid=name_map.get(op.grid, op.grid),
+                align_corners=op.align_corners,
+                spatial_rank=op.spatial_rank,
+            )
         if isinstance(op, ReduceOp):
             return ReduceOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2026,6 +2064,14 @@ class CEmitter:
                 case_change_action=op.case_change_action,
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
+            )
+        if isinstance(op, StringSplitOp):
+            return StringSplitOp(
+                input0=name_map.get(op.input0, op.input0),
+                output_y=name_map.get(op.output_y, op.output_y),
+                output_z=name_map.get(op.output_z, op.output_z),
+                delimiter=op.delimiter,
+                maxsplit=op.maxsplit,
             )
         if isinstance(op, SplitOp):
             return SplitOp(
@@ -2309,6 +2355,7 @@ class CEmitter:
                 "gru": self._env.get_template("gru_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
+                "momentum": self._env.get_template("momentum_op.c.j2"),
                 "softmax": self._env.get_template("softmax_op.c.j2"),
                 "logsoftmax": self._env.get_template("logsoftmax_op.c.j2"),
                 "hardmax": self._env.get_template("hardmax_op.c.j2"),
@@ -2346,6 +2393,7 @@ class CEmitter:
                 "slice_dynamic": self._env.get_template("slice_op_dynamic.c.j2"),
                 "resize": self._env.get_template("resize_op.c.j2"),
                 "grid_sample": self._env.get_template("grid_sample_op.c.j2"),
+                "affine_grid": self._env.get_template("affine_grid_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
                 "reduce_dynamic": self._env.get_template("reduce_op_dynamic.c.j2"),
                 "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
@@ -2381,6 +2429,7 @@ class CEmitter:
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
+                "string_split": self._env.get_template("string_split_op.c.j2"),
                 "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),
                 "tree_ensemble_classifier": self._env.get_template(
                     "tree_ensemble_classifier_op.c.j2"
@@ -3064,6 +3113,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -3092,6 +3142,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3188,6 +3239,10 @@ class CEmitter:
                 return op.elem_dtype
             if isinstance(op, LoopSequenceMapOp):
                 return op.output_elem_dtypes[0]
+            if isinstance(op, AffineGridOp):
+                return model.op_context.dtype(op.grid)
+            if isinstance(op, StringSplitOp):
+                return model.op_context.dtype(op.output_z)
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -3296,6 +3351,8 @@ class CEmitter:
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
             includes.add("#include <stdbool.h>")
+        if any(isinstance(op, StringSplitOp) for op in resolved_ops):
+            includes.add("#include <string.h>")
         ordered_includes = (
             "#include <stdint.h>",
             "#include <stdio.h>",
@@ -3425,6 +3482,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -3453,6 +3511,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3549,11 +3608,13 @@ class CEmitter:
                     GruOp,
                     LstmOp,
                     AdagradOp,
+                    MomentumOp,
                     SoftmaxOp,
                     LogSoftmaxOp,
                     SoftmaxCrossEntropyLossOp,
                     ResizeOp,
                     GridSampleOp,
+                    AffineGridOp,
                 ),
             )
             for op in resolved_ops
@@ -3654,6 +3715,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3785,6 +3847,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -4062,6 +4125,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -4089,6 +4153,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -4143,6 +4208,7 @@ class CEmitter:
         | GruOp
         | LstmOp
         | AdagradOp
+        | MomentumOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -4170,6 +4236,7 @@ class CEmitter:
         | SliceOp
         | ResizeOp
         | GridSampleOp
+        | AffineGridOp
         | ReduceOp
         | ArgReduceOp
         | TopKOp
@@ -4723,6 +4790,29 @@ class CEmitter:
                 norm_coefficient=op.norm_coefficient,
                 epsilon=op.epsilon,
                 decay_factor=op.decay_factor,
+            )
+        if isinstance(op, MomentumOp):
+            return MomentumOp(
+                rate=temp_map.get(op.rate, op.rate),
+                timestep=temp_map.get(op.timestep, op.timestep),
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
+                gradients=tuple(temp_map.get(name, name) for name in op.gradients),
+                velocities=tuple(temp_map.get(name, name) for name in op.velocities),
+                outputs=tuple(temp_map.get(name, name) for name in op.outputs),
+                velocity_outputs=tuple(
+                    temp_map.get(name, name) for name in op.velocity_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                alpha=op.alpha,
+                beta=op.beta,
+                mode=op.mode,
             )
         if isinstance(op, ConvOp):
             return ConvOp(
@@ -5326,6 +5416,14 @@ class CEmitter:
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
             )
+        if isinstance(op, StringSplitOp):
+            return StringSplitOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output_y=temp_map.get(op.output_y, op.output_y),
+                output_z=temp_map.get(op.output_z, op.output_z),
+                delimiter=op.delimiter,
+                maxsplit=op.maxsplit,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5612,6 +5710,14 @@ class CEmitter:
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
             )
+        if isinstance(op, AffineGridOp):
+            return AffineGridOp(
+                theta=temp_map.get(op.theta, op.theta),
+                size=temp_map.get(op.size, op.size),
+                grid=temp_map.get(op.grid, op.grid),
+                align_corners=op.align_corners,
+                spatial_rank=op.spatial_rank,
+            )
         if isinstance(op, ReduceOp):
             return ReduceOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5795,6 +5901,7 @@ class CEmitter:
             gru_template=templates["gru"],
             lstm_template=templates["lstm"],
             adagrad_template=templates["adagrad"],
+            momentum_template=templates["momentum"],
             softmax_template=templates["softmax"],
             logsoftmax_template=templates["logsoftmax"],
             hardmax_template=templates["hardmax"],
@@ -5826,6 +5933,7 @@ class CEmitter:
             slice_dynamic_template=templates["slice_dynamic"],
             resize_template=templates["resize"],
             grid_sample_template=templates["grid_sample"],
+            affine_grid_template=templates["affine_grid"],
             reduce_template=templates["reduce"],
             reduce_dynamic_template=templates["reduce_dynamic"],
             arg_reduce_template=templates["arg_reduce"],
@@ -5849,6 +5957,7 @@ class CEmitter:
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_normalizer_template=templates["string_normalizer"],
+            string_split_template=templates["string_split"],
             tree_ensemble_template=templates["tree_ensemble"],
             tree_ensemble_classifier_template=templates["tree_ensemble_classifier"],
             split_template=templates["split"],
@@ -6326,6 +6435,7 @@ class CEmitter:
         gru_template,
         lstm_template,
         adagrad_template,
+        momentum_template,
         softmax_template,
         logsoftmax_template,
         hardmax_template,
@@ -6357,6 +6467,7 @@ class CEmitter:
         slice_dynamic_template,
         resize_template,
         grid_sample_template,
+        affine_grid_template,
         reduce_template,
         reduce_dynamic_template,
         arg_reduce_template,
@@ -6380,6 +6491,7 @@ class CEmitter:
         one_hot_template,
         tfidf_vectorizer_template,
         string_normalizer_template,
+        string_split_template,
         tree_ensemble_template,
         tree_ensemble_classifier_template,
         split_template,
@@ -8927,6 +9039,101 @@ class CEmitter:
                 tensors=tensor_specs,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, MomentumOp):
+            params = self._shared_param_map(
+                [
+                    ("rate", op.rate),
+                    ("timestep", op.timestep),
+                    *((f"input{idx}", name) for idx, name in enumerate(op.inputs)),
+                    *((f"grad{idx}", name) for idx, name in enumerate(op.gradients)),
+                    *((f"vel{idx}", name) for idx, name in enumerate(op.velocities)),
+                    *((f"output{idx}", name) for idx, name in enumerate(op.outputs)),
+                    *(
+                        (f"vel_output{idx}", name)
+                        for idx, name in enumerate(op.velocity_outputs)
+                    ),
+                ]
+            )
+            rate_suffix = self._param_array_suffix(
+                op.rate_shape, _dim_names_for(op.rate)
+            )
+            timestep_suffix = self._param_array_suffix(
+                op.timestep_shape, _dim_names_for(op.timestep)
+            )
+            param_specs = [
+                (params["rate"], op.rate_dtype.c_type, rate_suffix, True),
+                (
+                    params["timestep"],
+                    op.timestep_dtype.c_type,
+                    timestep_suffix,
+                    True,
+                ),
+            ]
+            tensor_specs = []
+            for idx, shape in enumerate(op.output_shapes):
+                input_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.inputs[idx])
+                )
+                grad_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.gradients[idx])
+                )
+                vel_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.velocities[idx])
+                )
+                output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx], _dim_names_for(op.outputs[idx])
+                )
+                vel_output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx],
+                    _dim_names_for(op.velocity_outputs[idx]),
+                )
+                param_specs.extend(
+                    [
+                        (params[f"input{idx}"], c_type, input_suffix, True),
+                        (params[f"grad{idx}"], c_type, grad_suffix, True),
+                        (params[f"vel{idx}"], c_type, vel_suffix, True),
+                        (params[f"output{idx}"], c_type, output_suffix, False),
+                        (
+                            params[f"vel_output{idx}"],
+                            c_type,
+                            vel_output_suffix,
+                            False,
+                        ),
+                    ]
+                )
+                output_dim_names = _dim_names_for(op.outputs[idx])
+                shape_exprs = CEmitter._shape_dim_exprs(shape, output_dim_names)
+                loop_vars = CEmitter._loop_vars(shape)
+                index_suffix = "".join(f"[{var}]" for var in loop_vars)
+                tensor_specs.append(
+                    {
+                        "shape": shape_exprs,
+                        "loop_vars": loop_vars,
+                        "input_expr": f"{params[f'input{idx}']}{index_suffix}",
+                        "grad_expr": f"{params[f'grad{idx}']}{index_suffix}",
+                        "vel_expr": f"{params[f'vel{idx}']}{index_suffix}",
+                        "output_expr": f"{params[f'output{idx}']}{index_suffix}",
+                        "vel_output_expr": f"{params[f'vel_output{idx}']}{index_suffix}",
+                    }
+                )
+            param_decls = self._build_param_decls(param_specs)
+            rendered = momentum_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                rate=params["rate"],
+                timestep=params["timestep"],
+                params=param_decls,
+                c_type=c_type,
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+                norm_coefficient_literal=CEmitter._format_floating(
+                    op.norm_coefficient, op.dtype
+                ),
+                alpha_literal=CEmitter._format_floating(op.alpha, op.dtype),
+                beta_literal=CEmitter._format_floating(op.beta, op.dtype),
+                mode=op.mode,
+                tensors=tensor_specs,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
             if scalar_registry is None:
                 raise CodegenError(
@@ -10703,6 +10910,38 @@ class CEmitter:
                 cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, AffineGridOp):
+            grid_shape = self._ctx_shape(op.grid)
+            theta_shape = self._ctx_shape(op.theta)
+            spatial_rank = op.spatial_rank
+            n = theta_shape[0]
+            spatial_dims = grid_shape[1:-1]  # (H, W) for 2D, (D, H, W) for 3D
+            theta_suffix = self._param_array_suffix(theta_shape)
+            grid_suffix = self._param_array_suffix(grid_shape)
+            size_len = 2 + spatial_rank
+            params = [
+                f"const {c_type} {op.theta}{theta_suffix}",
+                f"const int64_t {op.size}[{size_len}]",
+                f"{c_type} {op.grid}{grid_suffix}",
+            ]
+            rendered = affine_grid_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                theta=op.theta,
+                size=op.size,
+                grid=op.grid,
+                c_type=c_type,
+                theta_shape=theta_shape,
+                grid_shape=grid_shape,
+                theta_suffix=theta_suffix,
+                grid_suffix=grid_suffix,
+                n=n,
+                spatial_dims=spatial_dims,
+                spatial_rank=spatial_rank,
+                align_corners=op.align_corners,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -11827,6 +12066,50 @@ class CEmitter:
                 output_count=CEmitter._element_count_expr(output_shape),
                 stopword_checks=stopword_checks,
                 case_mode=case_mode,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, StringSplitOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output_y", op.output_y),
+                    ("output_z", op.output_z),
+                ]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            output_y_shape = self._ctx_shape(op.output_y)
+            output_z_shape = self._ctx_shape(op.output_z)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+            )
+            output_y_suffix = self._param_array_suffix(
+                output_y_shape, _dim_names_for(op.output_y), dtype=ScalarType.STRING
+            )
+            output_z_suffix = self._param_array_suffix(
+                output_z_shape, _dim_names_for(op.output_z)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], "char", input_suffix, True),
+                    (params["output_y"], "char", output_y_suffix, False),
+                    (params["output_z"], "int64_t", output_z_suffix, False),
+                ]
+            )
+            is_whitespace = not op.delimiter
+            max_count = output_y_shape[-1] if output_y_shape else 0
+            rendered = string_split_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output_y=params["output_y"],
+                output_z=params["output_z"],
+                input_count=CEmitter._element_count_expr(input_shape),
+                max_count=max_count,
+                is_whitespace=is_whitespace,
+                maxsplit=op.maxsplit,
+                delimiter_literal=CEmitter._format_c_string_literal(op.delimiter),
+                delimiter_len=len(op.delimiter),
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, TreeEnsembleOp):
@@ -13765,6 +14048,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -13848,6 +14132,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -13980,6 +14265,11 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.grid, self._ctx_shape(op.grid)),
             )
+        if isinstance(op, AffineGridOp):
+            return (
+                (op.theta, self._ctx_shape(op.theta)),
+                (op.size, self._ctx_shape(op.size)),
+            )
         if isinstance(op, TileOp):
             return (
                 (op.input0, self._ctx_shape(op.input0)),
@@ -14052,7 +14342,9 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.k_input, self._ctx_shape(op.k_input)),
             )
-        if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp)):
+        if isinstance(
+            op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp, StringSplitOp)
+        ):
             return ((op.input0, self._ctx_shape(op.input0)),)
         return ()
 
@@ -14109,6 +14401,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -14201,6 +14494,7 @@ class CEmitter:
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -14367,6 +14661,16 @@ class CEmitter:
                 for name, shape in zip(op.accumulator_outputs, op.output_shapes)
             )
             return tuple(outputs)
+        if isinstance(op, MomentumOp):
+            outputs = [
+                (name, shape, op.dtype)
+                for name, shape in zip(op.outputs, op.output_shapes)
+            ]
+            outputs.extend(
+                (name, shape, op.dtype)
+                for name, shape in zip(op.velocity_outputs, op.output_shapes)
+            )
+            return tuple(outputs)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             outputs = [(op.output, op.output_shape, op.dtype)]
             if op.log_prob is not None and op.log_prob_shape is not None:
@@ -14439,6 +14743,19 @@ class CEmitter:
                     op.zero_point,
                     self._ctx_shape(op.zero_point),
                     self._ctx_dtype(op.zero_point),
+                ),
+            )
+        if isinstance(op, StringSplitOp):
+            return (
+                (
+                    op.output_y,
+                    self._ctx_shape(op.output_y),
+                    ScalarType.STRING,
+                ),
+                (
+                    op.output_z,
+                    self._ctx_shape(op.output_z),
+                    self._ctx_dtype(op.output_z),
                 ),
             )
         if isinstance(op, ConcatFromSequenceOp):
@@ -14543,6 +14860,8 @@ class CEmitter:
                     self._ctx_dtype(op.probabilities),
                 ),
             )
+        if isinstance(op, AffineGridOp):
+            return ((op.grid, self._ctx_shape(op.grid), self._ctx_dtype(op.grid)),)
         return (
             (
                 op.output,
@@ -14603,6 +14922,7 @@ class CEmitter:
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -14756,6 +15076,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, GridSampleOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, AffineGridOp):
+            return self._ctx_shape(op.grid)
         if isinstance(op, ReduceOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ArgReduceOp):
@@ -14794,6 +15116,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, StringSplitOp):
+            return self._ctx_shape(op.output_y)
         if isinstance(op, SplitOp):
             return self._ctx_shape(op.outputs[0])
         if isinstance(op, SplitToSequenceOp):
@@ -14860,6 +15184,7 @@ class CEmitter:
             | LogSoftmaxOp
             | HardmaxOp
             | AdagradOp
+            | MomentumOp
             | NegativeLogLikelihoodLossOp
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
@@ -14878,6 +15203,7 @@ class CEmitter:
             | CenterCropPadOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | ConstantOfShapeOp
@@ -14920,6 +15246,8 @@ class CEmitter:
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, StringNormalizerOp):
+            return ScalarType.STRING
+        if isinstance(op, StringSplitOp):
             return ScalarType.STRING
         if isinstance(op, TreeEnsembleOp):
             return self._ctx_dtype(op.output)
@@ -15006,6 +15334,8 @@ class CEmitter:
             ),
         ):
             return self._ctx_dtype(op.output)
+        if isinstance(op, AffineGridOp):
+            return self._ctx_dtype(op.grid)
         return op.dtype
 
     @staticmethod

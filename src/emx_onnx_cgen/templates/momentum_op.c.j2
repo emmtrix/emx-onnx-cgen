@@ -1,0 +1,21 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} r = {{ rate }}[0];
+    const int64_t t = {{ timestep }}[0];
+    const {{ c_type }} beta_adjusted = (t > 0) ? {{ beta_literal }} : {{ one_literal }};
+{% for tensor in tensors %}
+{% for dim in tensor.shape %}
+    for (idx_t {{ tensor.loop_vars[loop.index0] }} = 0; {{ tensor.loop_vars[loop.index0] }} < {{ dim }}; ++{{ tensor.loop_vars[loop.index0] }}) {
+{% endfor %}
+        {{ c_type }} g_reg = {{ norm_coefficient_literal }} * {{ tensor.input_expr }} + {{ tensor.grad_expr }};
+        {{ c_type }} v_new = {{ alpha_literal }} * {{ tensor.vel_expr }} + beta_adjusted * g_reg;
+        {{ tensor.vel_output_expr }} = v_new;
+{% if mode == "standard" %}
+        {{ tensor.output_expr }} = {{ tensor.input_expr }} - r * v_new;
+{% else %}
+        {{ tensor.output_expr }} = {{ tensor.input_expr }} - r * (g_reg + {{ alpha_literal }} * v_new);
+{% endif %}
+{% for _ in tensor.shape %}
+    }
+{% endfor %}
+{% endfor %}
+}

@@ -31,6 +31,7 @@ from emx_onnx_cgen.ir.op_context import OpContext
 from emx_onnx_cgen.ir.ops import CompressOp, NonMaxSuppressionOp, NonZeroOp, ResizeOp
 from emx_onnx_cgen.ir.model import Graph, Node, TensorType, Value
 from emx_onnx_cgen.lowering.flatten import lower_flatten
+from emx_onnx_cgen.lowering.affine_grid import lower_affine_grid
 from emx_onnx_cgen.lowering.grid_sample import lower_grid_sample
 from emx_onnx_cgen.lowering.conv_integer import lower_conv_integer
 from emx_onnx_cgen.lowering.concat_from_sequence import lower_concat_from_sequence
@@ -2144,6 +2145,39 @@ def _make_gridsample_model(
     return model
 
 
+def _make_affine_grid_model(
+    *,
+    theta_shape: list[int],
+    size: list[int],
+    grid_shape: list[int],
+    align_corners: int = 0,
+    opset: int = 20,
+) -> onnx.ModelProto:
+    theta_info = helper.make_tensor_value_info("theta", TensorProto.FLOAT, theta_shape)
+    size_info = helper.make_tensor_value_info("size", TensorProto.INT64, [len(size)])
+    grid_info = helper.make_tensor_value_info("grid", TensorProto.FLOAT, grid_shape)
+    node = helper.make_node(
+        "AffineGrid",
+        inputs=["theta", "size"],
+        outputs=["grid"],
+        align_corners=align_corners,
+    )
+    graph = helper.make_graph(
+        [node],
+        "affine_grid_graph",
+        [theta_info, size_info],
+        [grid_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_dropout_model() -> onnx.ModelProto:
     input_shape = [2, 3, 4]
     input_info = helper.make_tensor_value_info("in0", TensorProto.FLOAT, input_shape)
@@ -3736,6 +3770,100 @@ def test_string_normalizer_codegen_emits_transform_logic() -> None:
     assert "monday" in generated
 
 
+def _make_string_split_model(
+    *,
+    input_shape: list[int],
+    output_y_shape: list[int],
+    output_z_shape: list[int],
+    delimiter: str | None = None,
+    maxsplit: int | None = None,
+) -> onnx.ModelProto:
+    input_info = helper.make_tensor_value_info("in0", TensorProto.STRING, input_shape)
+    output_y_info = helper.make_tensor_value_info(
+        "out_y", TensorProto.STRING, output_y_shape
+    )
+    output_z_info = helper.make_tensor_value_info(
+        "out_z", TensorProto.INT64, output_z_shape
+    )
+    attrs: dict[str, object] = {}
+    if delimiter is not None:
+        attrs["delimiter"] = delimiter
+    if maxsplit is not None:
+        attrs["maxsplit"] = maxsplit
+    node = helper.make_node(
+        "StringSplit",
+        inputs=["in0"],
+        outputs=["out_y", "out_z"],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "string_split_graph",
+        [input_info],
+        [output_y_info, output_z_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
+def test_string_split_lowering_with_delimiter() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 2],
+        output_z_shape=[2],
+        delimiter=".",
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringSplit")
+    op = lowering(graph, graph.nodes[0])
+    assert op.delimiter == "."
+    assert op.maxsplit == -1
+
+
+def test_string_split_lowering_with_maxsplit() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 3],
+        output_z_shape=[2],
+        maxsplit=2,
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringSplit")
+    op = lowering(graph, graph.nodes[0])
+    assert op.delimiter == ""
+    assert op.maxsplit == 2
+
+
+def test_string_split_codegen_emits_split_logic() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 2],
+        output_z_shape=[2],
+        delimiter=".",
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strstr" in generated
+    assert '"."' in generated
+
+
+def test_string_split_codegen_emits_whitespace_logic() -> None:
+    model = _make_string_split_model(
+        input_shape=[2],
+        output_y_shape=[2, 3],
+        output_z_shape=[2],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strstr" not in generated
+
+
 def test_tfidf_vectorizer_testbench_match() -> None:
     model = _make_tfidf_vectorizer_model(
         input_shape=[4],
@@ -5004,7 +5132,38 @@ def test_lower_gridsample_builds_spec() -> None:
     assert op.mode == "linear"
 
 
-def test_lower_upsample_scales_initializer() -> None:
+def test_lower_affine_grid_2d_builds_spec() -> None:
+    model = _make_affine_grid_model(
+        theta_shape=[2, 2, 3],
+        size=[2, 3, 5, 6],
+        grid_shape=[2, 5, 6, 2],
+    )
+    graph = import_onnx(model)
+    op = lower_affine_grid(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op.spatial_rank == 2
+    assert op.align_corners is False
+    assert op_ctx.shape(op.grid) == (2, 5, 6, 2)
+
+
+def test_lower_affine_grid_3d_builds_spec() -> None:
+    model = _make_affine_grid_model(
+        theta_shape=[2, 3, 4],
+        size=[2, 3, 4, 5, 6],
+        grid_shape=[2, 4, 5, 6, 3],
+        align_corners=1,
+    )
+    graph = import_onnx(model)
+    op = lower_affine_grid(graph, graph.nodes[0])
+    op_ctx = OpContext(GraphContext(graph))
+    op.infer_types(op_ctx)
+    op.infer_shapes(op_ctx)
+    assert op.spatial_rank == 3
+    assert op.align_corners is True
+    assert op_ctx.shape(op.grid) == (2, 4, 5, 6, 3)
+
     model = _make_upsample_model()
     graph = import_onnx(model)
     op = lower_upsample(graph, graph.nodes[0])

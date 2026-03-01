@@ -490,6 +490,61 @@ class GridSampleOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class AffineGridOp(RenderableOpBase):
+    __io_inputs__ = ("theta", "size")
+    __io_outputs__ = ("grid",)
+    theta: str
+    size: str
+    grid: str
+    align_corners: bool
+    spatial_rank: int  # 2 or 3
+
+    def infer_types(self, ctx: OpContext) -> None:
+        theta_dtype = ctx.dtype(self.theta)
+        if not theta_dtype.is_float:
+            raise UnsupportedOpError(
+                f"{self.kind} theta dtype must be float, got {theta_dtype.onnx_name}"
+            )
+        try:
+            grid_dtype = ctx.dtype(self.grid)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.grid, theta_dtype)
+            grid_dtype = theta_dtype
+        if grid_dtype != theta_dtype:
+            raise UnsupportedOpError(
+                f"{self.kind} grid dtype must match theta dtype {theta_dtype.onnx_name}, "
+                f"got {grid_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        theta_shape = ctx.shape(self.theta)
+        size_shape = ctx.shape(self.size)
+        if len(theta_shape) != 3:
+            raise ShapeInferenceError(
+                f"{self.kind} theta must have rank 3, got {len(theta_shape)}"
+            )
+        if len(size_shape) != 1:
+            raise ShapeInferenceError(
+                f"{self.kind} size must have rank 1, got {len(size_shape)}"
+            )
+        n = theta_shape[0]
+        spatial_rank = self.spatial_rank
+        grid_shape = ctx.shape(self.grid)
+        if len(grid_shape) != spatial_rank + 2:
+            raise ShapeInferenceError(
+                f"{self.kind} grid rank must be {spatial_rank + 2}, got {len(grid_shape)}"
+            )
+        if grid_shape[0] != n:
+            raise ShapeInferenceError(
+                f"{self.kind} grid batch dim must be {n}, got {grid_shape[0]}"
+            )
+        if grid_shape[-1] != spatial_rank:
+            raise ShapeInferenceError(
+                f"{self.kind} grid last dim must be {spatial_rank}, got {grid_shape[-1]}"
+            )
+
+
+@dataclass(frozen=True)
 class ConstantOfShapeOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
@@ -1065,6 +1120,17 @@ class StringNormalizerOp(RenderableOpBase):
     case_change_action: str
     is_case_sensitive: bool
     stopwords: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class StringSplitOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output_y", "output_z")
+    input0: str
+    output_y: str
+    output_z: str
+    delimiter: str
+    maxsplit: int
 
 
 @dataclass(frozen=True)
