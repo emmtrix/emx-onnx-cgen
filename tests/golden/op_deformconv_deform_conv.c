@@ -26,6 +26,7 @@
  */
 
 #include <stdint.h>
+#include <math.h>
 
 #ifndef idx_t
 #define idx_t int32_t

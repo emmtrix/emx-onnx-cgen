@@ -3574,6 +3574,7 @@ class CEmitter:
                     SoftmaxCrossEntropyLossOp,
                     ResizeOp,
                     GridSampleOp,
+                    DeformConvOp,
                 ),
             )
             for op in resolved_ops
