@@ -14549,9 +14549,7 @@ class CEmitter:
                 ),
             )
         if isinstance(op, AffineGridOp):
-            return (
-                (op.grid, self._ctx_shape(op.grid), self._ctx_dtype(op.grid)),
-            )
+            return ((op.grid, self._ctx_shape(op.grid), self._ctx_dtype(op.grid)),)
         return (
             (
                 op.output,

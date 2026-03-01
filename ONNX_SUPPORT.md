@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1512 / 1802, 83.9% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1515 / 1802, 84.1% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1512 / 1802 ONNX files (83.9%).
+Coverage 1515 / 1802 ONNX files (84.1%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -46,12 +46,12 @@ Coverage 1512 / 1802 ONNX files (83.9%).
 | node/test_add_uint32/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_add_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_add_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_affine_grid_2d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_2d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
+| node/test_affine_grid_2d/model.onnx | 20 | ✅ | OK (max ULP 1) |
+| node/test_affine_grid_2d_align_corners/model.onnx | 20 | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
 | node/test_affine_grid_2d_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
-| node/test_affine_grid_3d/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
-| node/test_affine_grid_3d_align_corners/model.onnx | 20 | ❌ | Unsupported op AffineGrid |
+| node/test_affine_grid_3d/model.onnx | 20 | ❌ | Out of tolerance (max ULP 151) |
+| node/test_affine_grid_3d_align_corners/model.onnx | 20 | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | ❌ | Split output shape must be (1,), got (2,) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | ❌ | Unsupported op ArrayFeatureExtractor |

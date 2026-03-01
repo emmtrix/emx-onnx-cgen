@@ -5070,8 +5070,6 @@ def test_lower_affine_grid_3d_builds_spec() -> None:
     assert op.align_corners is True
     assert op_ctx.shape(op.grid) == (2, 4, 5, 6, 3)
 
-
-
     model = _make_upsample_model()
     graph = import_onnx(model)
     op = lower_upsample(graph, graph.nodes[0])
