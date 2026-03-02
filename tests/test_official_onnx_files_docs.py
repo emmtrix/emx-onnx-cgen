@@ -29,9 +29,7 @@ OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
 )
 SUPPORT_OPS_PATH = Path(__file__).resolve().parents[1] / "SUPPORT_OPS.md"
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
-DOCS_REGEN_COMMAND = (
-    "UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc"
-)
+DOCS_REGEN_COMMAND = "UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc"
 
 
 def _generated_header() -> list[str]:

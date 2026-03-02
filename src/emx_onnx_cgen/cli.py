@@ -1387,9 +1387,7 @@ def _verify_model(
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
         testbench_inputs, testbench_optional_inputs, reshaped_tensor_inputs = (
-            _load_test_data_inputs(
-            model, args.test_data_dir
-            )
+            _load_test_data_inputs(model, args.test_data_dir)
         )
         if args.test_data_dir is not None and testbench_inputs is None:
             raise CodegenError(

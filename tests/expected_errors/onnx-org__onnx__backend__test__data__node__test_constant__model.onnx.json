@@ -1,6 +1,7 @@
 {
   "error": "Graph must contain at least one node",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_constant model.onnx",
+  "verification_mode": "Random+ORT",
   "operators": [
     "Constant"
   ],
