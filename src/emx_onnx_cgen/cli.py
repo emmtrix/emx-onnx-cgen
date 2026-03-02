@@ -36,6 +36,7 @@ from .verification import worst_ulp_diff
 LOGGER = logging.getLogger(__name__)
 _NONDETERMINISTIC_OPERATORS = {"Bernoulli"}
 _EMX_STRING_MAX_LEN = 256
+_DISABLE_SANITIZE_ENV = "EMX_DISABLE_SANITIZE"
 
 
 def _serialize_string_tensor(array: np.ndarray) -> bytes:
@@ -48,6 +49,13 @@ def _serialize_string_tensor(array: np.ndarray) -> bytes:
         encoded.extend(chunk)
         encoded.extend(b"\0" * (_EMX_STRING_MAX_LEN - len(chunk)))
     return bytes(encoded)
+
+
+def _env_flag(name: str) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return False
+    return value.strip().lower() not in {"", "0", "false", "no", "off"}
 
 
 @dataclass(frozen=True)
@@ -404,8 +412,6 @@ def _worst_abs_diff(
 
 def run_cli_command(
     argv: Sequence[str],
-    *,
-    testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
 ) -> CliResult:
     raw_argv = list(argv)
     parse_argv = raw_argv
@@ -435,9 +441,7 @@ def run_cli_command(
                 opset_version=opset_version,
                 generated_checksum=generated_checksum,
             )
-        generated, _testbench, data_source, _weight_data, error = _compile_model(
-            args, testbench_inputs=testbench_inputs
-        )
+        generated, _testbench, data_source, _weight_data, error = _compile_model(args)
         if error:
             return CliResult(
                 exit_code=1,
@@ -640,7 +644,8 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "Build the verification binary with sanitizers enabled "
-            "(-fsanitize=address,undefined)"
+            "(-fsanitize=address,undefined); set "
+            f"{_DISABLE_SANITIZE_ENV}=1 to force-disable sanitizers"
         ),
     )
     verify_parser.add_argument(
@@ -833,7 +838,6 @@ def _handle_compile(args: argparse.Namespace) -> int:
 def _compile_model(
     args: argparse.Namespace,
     *,
-    testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
     reporter: _VerifyReporter | None = None,
 ) -> tuple[str | None, str | None, str | None, bytes | None, str | None]:
     model_path: Path = args.model
@@ -876,7 +880,6 @@ def _compile_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
-            testbench_inputs=testbench_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
@@ -948,7 +951,6 @@ def _compile_testbench_declarations(
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
         large_weight_threshold=args.large_weight_threshold,
-        testbench_inputs=None,
         testbench_optional_inputs=None,
         timings=None,
     )
@@ -1360,11 +1362,8 @@ def _verify_model(
         value.name in output_compare_names and not isinstance(value.type, TensorType)
         for value in graph.outputs
     )
-    has_non_tensor_input = any(
-        not isinstance(value.type, TensorType) for value in graph.inputs
-    )
-
     timings: dict[str, float] = {}
+    lowered_sequence_input_shapes: dict[str, tuple[int, ...]] = {}
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
@@ -1378,9 +1377,6 @@ def _verify_model(
                 "and running runtime backend for all node outputs."
             )
             testbench_outputs = None
-        codegen_testbench_inputs = (
-            None if has_non_tensor_input else testbench_inputs
-        )
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
@@ -1392,12 +1388,23 @@ def _verify_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
-            testbench_inputs=codegen_testbench_inputs,
-            testbench_optional_inputs=testbench_optional_inputs,
+            testbench_optional_inputs=None,
+            shape_inference_inputs=testbench_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
         generated, weight_data = compiler.compile_with_weight_data(model)
+        if testbench_inputs:
+            compile_ctx = compiler._build_compile_context(model)
+            lowered_sequence_input_shapes = {
+                name: tuple(shape)
+                for name, shape, value_type in zip(
+                    compile_ctx.lowered.input_names,
+                    compile_ctx.lowered.input_shapes,
+                    compile_ctx.lowered.input_types,
+                )
+                if not isinstance(value_type, TensorType)
+            }
         active_reporter.step_ok(codegen_started)
         if args.verbose:
             _report_codegen_timings(active_reporter, timings=timings)
@@ -1502,17 +1509,36 @@ def _verify_model(
                             continue
                     seq_count = int(seq_data.shape[0])
                     handle.write(struct.pack("<i", seq_count))
-                    elem_shape = tuple(seq_type.elem.shape)
+                    elem_shape = lowered_sequence_input_shapes.get(
+                        name, tuple(seq_type.elem.shape)
+                    )
                     normalized = np.zeros((32, *elem_shape), dtype=seq_dtype)
                     limit = min(seq_count, 32)
                     if limit > 0:
                         for idx in range(limit):
                             item = np.asarray(seq_data[idx])
-                            slices = tuple(
-                                slice(0, min(cur, tgt))
-                                for cur, tgt in zip(item.shape, elem_shape)
-                            )
-                            normalized[(idx, *slices)] = item[slices]
+                            target = normalized[idx]
+                            if target.ndim == item.ndim:
+                                slices = tuple(
+                                    slice(0, min(cur, tgt))
+                                    for cur, tgt in zip(item.shape, target.shape)
+                                )
+                                if slices:
+                                    target[slices] = item[slices]
+                                elif item.ndim == 0:
+                                    target[...] = item
+                                else:
+                                    flat_src = item.reshape(-1)
+                                    flat_dst = target.reshape(-1)
+                                    copy_count = min(flat_src.size, flat_dst.size)
+                                    if copy_count:
+                                        flat_dst[:copy_count] = flat_src[:copy_count]
+                            else:
+                                flat_src = item.reshape(-1)
+                                flat_dst = target.reshape(-1)
+                                copy_count = min(flat_src.size, flat_dst.size)
+                                if copy_count:
+                                    flat_dst[:copy_count] = flat_src[:copy_count]
                     handle.write(np.ascontiguousarray(normalized).tobytes(order="C"))
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
@@ -1526,7 +1552,12 @@ def _verify_model(
                 "-std=c99",
                 "-O1",
             ]
-            if args.sanitize:
+            sanitize_enabled = args.sanitize and not _env_flag(_DISABLE_SANITIZE_ENV)
+            if args.sanitize and not sanitize_enabled:
+                active_reporter.note(
+                    f"--sanitize requested but disabled via {_DISABLE_SANITIZE_ENV}."
+                )
+            if sanitize_enabled:
                 compile_cmd.append("-fsanitize=address,undefined")
             compile_cmd.extend(
                 [
@@ -2101,7 +2132,7 @@ def _load_test_data_inputs(
                     target_shape.append(int(max_dim))
                 LOGGER.warning(
                     "Sequence test input %s has variable element shapes; "
-                    "normalizing to %s for generated testbench input.",
+                    "normalizing to %s for testbench binary input.",
                     value_info.name,
                     tuple(target_shape),
                 )
@@ -2306,7 +2337,6 @@ def _report_codegen_timings(
     order = [
         ("import_onnx", "import"),
         ("concretize_shapes", "concretize"),
-        ("resolve_testbench_inputs", "testbench"),
         ("collect_variable_dims", "var_dims"),
         ("lower_model", "lower"),
         ("emit_model", "emit"),
