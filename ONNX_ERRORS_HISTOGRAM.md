@@ -13,7 +13,7 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 11 | 8, 9, 15, 19, 20, 22 |
+| Out of tolerance | 12 | 8, 13, 15, 19, 20, 22, 24 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -60,8 +60,8 @@ This histogram is test-suite-overarching.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
-| Out of tolerance | 9 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| Out of tolerance | 13 | 1 |
 | Out of tolerance | 15 | 2 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
@@ -97,6 +97,7 @@ This histogram is test-suite-overarching.
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
+| Out of tolerance | 24 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |

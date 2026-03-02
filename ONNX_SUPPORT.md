@@ -4,8 +4,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1537 / 1802, 85.3% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1535 / 1802, 85.2% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 2 / 4, 50.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1537 / 1802 ONNX files (85.3%).
+Coverage 1535 / 1802 ONNX files (85.2%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -40,12 +40,12 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_adam_multiple/model.onnx |  | ❌ | Unsupported op Adam |
 | node/test_add/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_add_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_add_int16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_add_int8/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_add_uint16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_add_uint32/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_add_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_add_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
+| node/test_add_int16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_add_int8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_add_uint16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_add_uint32/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_add_uint64/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_add_uint8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
 | node/test_affine_grid_2d/model.onnx | 20 | ✅ | OK (max ULP 1) |
 | node/test_affine_grid_2d_align_corners/model.onnx | 20 | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
@@ -62,46 +62,46 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_ai_onnx_ml_label_encoder_tensor_value_only_mapping/model.onnx |  | ❌ | Unsupported op LabelEncoder |
 | node/test_ai_onnx_ml_tree_ensemble_set_membership/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_ai_onnx_ml_tree_ensemble_single_tree/model.onnx |  | ✅ | OK (max ULP 0) |
-| node/test_and2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_and3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_and4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_and_bcast3v1d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_and_bcast3v2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_and_bcast4v2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_and_bcast4v3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_and_bcast4v4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_argmax_default_axis_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_default_axis_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_default_axis_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_default_axis_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_negative_axis_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_negative_axis_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_negative_axis_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_negative_axis_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_no_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_no_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_no_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmax_no_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_default_axis_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_default_axis_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_default_axis_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_default_axis_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_negative_axis_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_negative_axis_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_negative_axis_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_no_keepdims_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_no_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_no_keepdims_random/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_argmin_no_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_and2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_and3d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_and4d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_and_bcast3v1d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_and_bcast3v2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_and_bcast4v2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_and_bcast4v3d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_and_bcast4v4d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_default_axis_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_default_axis_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_default_axis_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_default_axis_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_keepdims_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_keepdims_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_negative_axis_keepdims_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_negative_axis_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_negative_axis_keepdims_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_negative_axis_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_no_keepdims_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_no_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_no_keepdims_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmax_no_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_default_axis_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_default_axis_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_default_axis_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_default_axis_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_keepdims_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_keepdims_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_negative_axis_keepdims_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_negative_axis_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_negative_axis_keepdims_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_negative_axis_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_no_keepdims_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_no_keepdims_example_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_no_keepdims_random/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_argmin_no_keepdims_random_select_last_index/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_asin/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_asin_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_asinh/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -268,29 +268,29 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_bernoulli_expanded/model.onnx | 22 | ❌ | Unsupported op RandomUniformLike |
 | node/test_bernoulli_seed/model.onnx | 22 | ✅ | OK (non-deterministic output) |
 | node/test_bernoulli_seed_expanded/model.onnx | 22 | ❌ | Unsupported op RandomUniformLike |
-| node/test_bitshift_left_uint16/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitshift_left_uint32/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitshift_left_uint64/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitshift_left_uint8/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitshift_right_uint16/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitshift_right_uint32/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitshift_right_uint64/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitshift_right_uint8/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_and_i16_3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_and_i32_2d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_not_2d/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_bitshift_left_uint16/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_left_uint32/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_left_uint64/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_left_uint8/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_right_uint16/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_right_uint32/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_right_uint64/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitshift_right_uint8/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_and_i16_3d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_and_i32_2d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_not_2d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_not_3d/model.onnx | 18 | ❌ | Unsupported op BitwiseNot |
 | node/test_bitwise_not_4d/model.onnx | 18 | ❌ | Unsupported op BitwiseNot |
-| node/test_bitwise_or_i16_4d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_or_i32_2d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_xor_i16_3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_xor_i32_2d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max ULP 0) |
+| node/test_bitwise_or_i16_4d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_or_i32_2d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_or_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_xor_i16_3d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_xor_i32_2d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_xor_ui64_bcast_3v1d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_xor_ui8_bcast_4v3d/model.onnx | 18 | ✅ | OK (max abs diff 0) |
 | node/test_blackmanwindow/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_blackmanwindow_expanded/model.onnx | 17 | ✅ | OK (max ULP 4) |
 | node/test_blackmanwindow_symmetric/model.onnx | 17 | ✅ | OK (max ULP 0) |
@@ -319,7 +319,7 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_cast_FLOAT8E5M2FNUZ_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 20 (FLOAT8E5M2FNUZ) for tensor 'input'. |
 | node/test_cast_FLOAT8E5M2_to_FLOAT/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_cast_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| node/test_cast_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_cast_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_cast_FLOAT_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT_to_FLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_cast_FLOAT_to_FLOAT4E2M1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'output'. |
@@ -403,8 +403,8 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_castlike_FLOAT8E5M2_to_FLOAT16/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_castlike_FLOAT8E5M2_to_FLOAT16_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
 | node/test_castlike_FLOAT8E5M2_to_FLOAT_expanded/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'input'. |
-| node/test_castlike_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_castlike_FLOAT_to_BFLOAT16/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_castlike_FLOAT_to_BFLOAT16_expanded/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_castlike_FLOAT_to_DOUBLE/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT_to_DOUBLE_expanded/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_castlike_FLOAT_to_FLOAT16/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -486,12 +486,12 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_clip/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_default_inbounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_default_inbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_clip_default_int8_inbounds/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_clip_default_int8_inbounds_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_clip_default_int8_max/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_clip_default_int8_max_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_clip_default_int8_min/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_clip_default_int8_min_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_clip_default_int8_inbounds/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_clip_default_int8_inbounds_expanded/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_clip_default_int8_max/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_clip_default_int8_max_expanded/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_clip_default_int8_min/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_clip_default_int8_min_expanded/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_clip_default_max/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_default_max_expanded/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_clip_default_min/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -533,14 +533,14 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_constant_pad_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_constant_pad_negative_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_constantofshape_float_ones/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_constantofshape_int_shape_zero/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_constantofshape_int_zeros/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_constantofshape_int_shape_zero/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_constantofshape_int_zeros/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_conv_with_autopad_same/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_conv_with_strides_and_asymmetric_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_conv_with_strides_no_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_conv_with_strides_padding/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_convinteger_with_padding/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_convinteger_without_padding/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| node/test_convinteger_with_padding/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| node/test_convinteger_without_padding/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_convtranspose/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_convtranspose_1d/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_convtranspose_3d/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -558,12 +558,12 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_cosh_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d_exclusive/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_cumsum_1d_int32_exclusive/model.onnx | 14 | ✅ | OK (max ULP 0) |
+| node/test_cumsum_1d_int32_exclusive/model.onnx | 14 | ✅ | OK (max abs diff 0) |
 | node/test_cumsum_1d_reverse/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_1d_reverse_exclusive/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_axis_0/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_cumsum_2d_axis_1/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_cumsum_2d_int32/model.onnx | 14 | ✅ | OK (max ULP 0) |
+| node/test_cumsum_2d_int32/model.onnx | 14 | ✅ | OK (max abs diff 0) |
 | node/test_cumsum_2d_negative_axis/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_deform_conv_with_mask_bias/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_deform_conv_with_multiple_offset_groups/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -594,25 +594,25 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_div/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_div_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_div_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_div_int16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_div_int8/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_div_uint16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_div_uint32/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_div_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_div_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
+| node/test_div_int16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_div_int8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_div_uint16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_div_uint32/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_div_uint64/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_div_uint8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
 | node/test_dropout_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_dropout_default_mask/model.onnx | 22 | ❌ | Dropout mask output is not supported |
 | node/test_dropout_default_mask_ratio/model.onnx | 22 | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_default_old/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_dropout_default_ratio/model.onnx | 22 | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_dropout_random_old/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_dynamicquantizelinear/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_dynamicquantizelinear_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_dynamicquantizelinear_max_adjusted/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_dynamicquantizelinear_min_adjusted/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_edge_pad/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_dynamicquantizelinear/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_dynamicquantizelinear_expanded/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_dynamicquantizelinear_max_adjusted/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_dynamicquantizelinear_max_adjusted_expanded/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_dynamicquantizelinear_min_adjusted/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_dynamicquantizelinear_min_adjusted_expanded/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_edge_pad/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_einsum_batch_diagonal/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | node/test_einsum_batch_matmul/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | node/test_einsum_inner_prod/model.onnx | 12 | ✅ | OK (max ULP 0) |
@@ -625,16 +625,16 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_elu_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_elu_example_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_elu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_equal/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_bcast/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_int16/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_int8/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_string/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_string_broadcast/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_uint16/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_uint32/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_uint64/model.onnx | 19 | ✅ | OK (max ULP 0) |
-| node/test_equal_uint8/model.onnx | 19 | ✅ | OK (max ULP 0) |
+| node/test_equal/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_bcast/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_int16/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_int8/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_string/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_string_broadcast/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_uint16/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_uint32/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_uint64/model.onnx | 19 | ✅ | OK (max abs diff 0) |
+| node/test_equal_uint8/model.onnx | 19 | ✅ | OK (max abs diff 0) |
 | node/test_erf/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_exp/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | node/test_exp_example/model.onnx | 13 | ✅ | OK (max ULP 1) |
@@ -642,7 +642,7 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_expand_dim_unchanged/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_eyelike_populate_off_main_diagonal/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_eyelike_with_dtype/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_eyelike_without_dtype/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| node/test_eyelike_without_dtype/model.onnx | 22 | ✅ | OK (max abs diff 0) |
 | node/test_flatten_axis0/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_flatten_axis1/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_flatten_axis2/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -662,8 +662,8 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_gather_elements_negative_indices/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_gather_negative_indices/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_gathernd_example_float32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_gathernd_example_int32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_gathernd_example_int32_batch_dim1/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_gathernd_example_int32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_gathernd_example_int32_batch_dim1/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_gelu_default_1/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_gelu_default_1_expanded/model.onnx | 20 | ✅ | OK (max ULP 0) |
 | node/test_gelu_default_2/model.onnx | 20 | ✅ | OK (max ULP 0) |
@@ -687,30 +687,30 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_globalaveragepool_precomputed/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_globalmaxpool/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_globalmaxpool_precomputed/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_greater/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_greater_bcast/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_bcast/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_bcast_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_int16/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_int16_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_int8/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_int8_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint16/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint16_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint32/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint32_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint64/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint64_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint8/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_equal_uint8_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_greater_int16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_greater_int8/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_greater_uint16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_greater_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_greater_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_greater_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_greater/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_greater_bcast/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_bcast/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_bcast_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_int16/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_int16_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_int8/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_int8_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint16/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint16_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint32/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint32_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint64/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint64_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint8/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_equal_uint8_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_greater_int16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_greater_int8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_greater_uint16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_greater_uint32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_greater_uint64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_greater_uint8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_gridsample/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | node/test_gridsample_aligncorners_true/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_gridsample_bicubic/model.onnx | 22 | ❌ | Out of tolerance (max ULP 1678) |
@@ -761,11 +761,11 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_hardswish/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | node/test_hardswish_expanded/model.onnx | 22 | ❌ | HardSigmoid only supports alpha=0.2 |
 | node/test_identity/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_identity_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=30123182) |
-| node/test_identity_sequence/model.onnx | 25 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
+| node/test_identity_opt/model.onnx | 16 | ✅ | OK (max ULP 0) |
+| node/test_identity_sequence/model.onnx | 25 | ✅ | OK (no numeric comparisons) |
 | node/test_if/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_if_opt/model.onnx | 16 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
-| node/test_if_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
+| node/test_if_opt/model.onnx | 16 | ✅ | OK (max ULP 0) |
+| node/test_if_seq/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
@@ -777,12 +777,12 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_image_decoder_decode_webp_rgb/model.onnx | 20 | ❌ | Unsupported op ImageDecoder |
 | node/test_instancenorm_epsilon/model.onnx | 22 | ✅ | OK (max ULP 2) |
 | node/test_instancenorm_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_isinf/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_isinf_float16/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_isinf_negative/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_isinf_positive/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_isnan/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_isnan_float16/model.onnx | 20 | ✅ | OK (max ULP 0) |
+| node/test_isinf/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_isinf_float16/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_isinf_negative/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_isinf_positive/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_isnan/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_isnan_float16/model.onnx | 20 | ✅ | OK (max abs diff 0) |
 | node/test_l1normalization_axis_0/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_l1normalization_axis_1/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_l1normalization_axis_last/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -851,30 +851,30 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_leakyrelu_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | node/test_leakyrelu_example_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | node/test_leakyrelu_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_less_bcast/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_less_equal/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_bcast/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_bcast_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_int16/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_int16_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_int8/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_int8_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint16/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint16_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint32/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint32_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint64/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint64_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint8/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_equal_uint8_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_less_int16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_less_int8/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_less_uint16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_less_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_less_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_less_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_less/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_less_bcast/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_bcast/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_bcast_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_int16/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_int16_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_int8/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_int8_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint16/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint16_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint32/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint32_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint64/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint64_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint8/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_equal_uint8_expanded/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_less_int16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_less_int8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_less_uint16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_less_uint32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_less_uint64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_less_uint8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_log/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_log_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_logsoftmax_axis_0/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -899,7 +899,7 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 1) |
 | node/test_loop11/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_loop13_seq/model.onnx | 13 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=58382658) |
+| node/test_loop13_seq/model.onnx | 13 | ❌ | Out of tolerance (max ULP 18874368) |
 | node/test_loop16_seq_none/model.onnx | 16 | ❌ | Unsupported op Loop |
 | node/test_lpnormalization_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_lppool_1d_default/model.onnx | 22 | ❌ | LpPool expects 2D kernel_shape |
@@ -923,21 +923,21 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_matmul_4d/model.onnx | 13 | ✅ | OK (max ULP 1) |
 | node/test_matmul_4d_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_matmul_bcast/model.onnx | 13 | ✅ | OK (max ULP 2) |
-| node/test_matmulinteger/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| node/test_matmulinteger/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_max_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_max_float16/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_max_float32/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_max_float64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_int16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_int32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_int64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_int8/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_max_int16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_max_int32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_max_int64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_max_int8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_max_one_input/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_max_two_inputs/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_uint16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_max_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_max_uint16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_max_uint32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_max_uint64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_max_uint8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_maxpool_1d_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_maxpool_2d_ceil/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_maxpool_2d_ceil_output_size_reduce_by_one/model.onnx | 22 | ✅ | OK (max ULP 0) |
@@ -950,13 +950,13 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_maxpool_2d_same_lower/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_maxpool_2d_same_upper/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_maxpool_2d_strides/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_maxpool_2d_uint8/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| node/test_maxpool_2d_uint8/model.onnx | 22 | ✅ | OK (max abs diff 0) |
 | node/test_maxpool_3d_default/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_maxpool_3d_dilations/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_maxpool_3d_dilations_use_ref_impl/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_maxpool_3d_dilations_use_ref_impl_large/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | 22 | ✅ | OK (max ULP 0) |
+| node/test_maxpool_with_argmax_2d_precomputed_pads/model.onnx | 22 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_maxpool_with_argmax_2d_precomputed_strides/model.onnx | 22 | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_maxunpool_export_with_output_shape/model.onnx | 22 | ❌ | Unsupported op MaxUnpool |
 | node/test_maxunpool_export_without_output_shape/model.onnx | 22 | ❌ | Unsupported op MaxUnpool |
 | node/test_mean_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -967,42 +967,42 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_min_float16/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_min_float32/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_min_float64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_int16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_int32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_int64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_int8/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_min_int16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_min_int32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_min_int64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_min_int8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_min_one_input/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_min_two_inputs/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_uint16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_min_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_min_uint16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_min_uint32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_min_uint64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_min_uint8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_mish/model.onnx | 22 | ✅ | OK (max ULP 1) |
 | node/test_mish_expanded/model.onnx | 22 | ✅ | OK (max ULP 1) |
-| node/test_mod_broadcast/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_int64_fmod/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_mod_broadcast/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_int64_fmod/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_mod_mixed_sign_float16/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_mixed_sign_float32/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_mod_mixed_sign_float64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_mixed_sign_int16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_mixed_sign_int32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_mixed_sign_int64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_mixed_sign_int8/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_uint16/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_uint32/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_uint64/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_mod_uint8/model.onnx | 13 | ✅ | OK (max ULP 0) |
+| node/test_mod_mixed_sign_int16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_mixed_sign_int32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_mixed_sign_int64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_mixed_sign_int8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_uint16/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_uint32/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_uint64/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_mod_uint8/model.onnx | 13 | ✅ | OK (max abs diff 0) |
 | node/test_momentum/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_momentum_multiple/model.onnx |  | ✅ | OK (max ULP 0) |
 | node/test_mul/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_mul_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_mul_int16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_mul_int8/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_mul_uint16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_mul_uint32/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_mul_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_mul_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
+| node/test_mul_int16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_mul_int8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_mul_uint16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_mul_uint32/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_mul_uint64/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_mul_uint8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
 | node/test_mvn/model.onnx | 13 | ✅ | OK (max ULP 3) |
 | node/test_mvn_expanded/model.onnx | 13 | ✅ | OK (max ULP 2) |
 | node/test_mvn_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
@@ -1045,23 +1045,23 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_nllloss_NCd1d2d3d4d5_mean_weight_expanded/model.onnx | 22 | ❌ | Out of tolerance (max ULP 357) |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_nllloss_NCd1d2d3d4d5_none_no_weight_expanded/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_center_point_box_format/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_flipped_coordinates/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_identical_boxes/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_limit_output_size/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_single_box/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_suppress_by_IOU/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_two_batches/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonmaxsuppression_two_classes/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_nonzero_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_not_2d/model.onnx | 1 | ✅ | OK (max ULP 0) |
-| node/test_not_3d/model.onnx | 1 | ✅ | OK (max ULP 0) |
-| node/test_not_4d/model.onnx | 1 | ✅ | OK (max ULP 0) |
+| node/test_nonmaxsuppression_center_point_box_format/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_flipped_coordinates/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_identical_boxes/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_limit_output_size/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_single_box/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_suppress_by_IOU/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_suppress_by_IOU_and_scores/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_two_batches/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonmaxsuppression_two_classes/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_nonzero_example/model.onnx | 13 | ✅ | OK (max abs diff 0) |
+| node/test_not_2d/model.onnx | 1 | ✅ | OK (max abs diff 0) |
+| node/test_not_3d/model.onnx | 1 | ✅ | OK (max abs diff 0) |
+| node/test_not_4d/model.onnx | 1 | ✅ | OK (max abs diff 0) |
 | node/test_onehot_negative_indices/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_onehot_with_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_onehot_with_negative_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_onehot_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| node/test_onehot_without_axis/model.onnx | 11 | ✅ | OK (max abs diff 0) |
 | node/test_optional_get_element_optional_sequence/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
 | node/test_optional_get_element_optional_tensor/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
 | node/test_optional_get_element_sequence/model.onnx | 18 | ❌ | Unsupported op OptionalGetElement |
@@ -1070,17 +1070,17 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 18 | ❌ | OptionalHasElement expects exactly one non-empty input. |
 | node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 18 | ❌ | OptionalHasElement expects exactly one non-empty input. |
 | node/test_optional_has_element_empty_no_input_tensor_input/model.onnx | 18 | ❌ | OptionalHasElement expects exactly one non-empty input. |
-| node/test_optional_has_element_empty_optional_input/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_optional_has_element_optional_input/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_optional_has_element_tensor_input/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_or2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_or3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_or4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_or_bcast3v1d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_or_bcast3v2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_or_bcast4v2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_or_bcast4v3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_or_bcast4v4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
+| node/test_optional_has_element_empty_optional_input/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_optional_input/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_optional_has_element_tensor_input/model.onnx | 18 | ✅ | OK (max abs diff 0) |
+| node/test_or2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_or3d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_or4d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_or_bcast3v1d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_or_bcast3v2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_or_bcast4v2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_or_bcast4v3d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_or_bcast4v4d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
 | node/test_pow/model.onnx | 15 | ✅ | OK (max ULP 0) |
 | node/test_pow_bcast_array/model.onnx | 15 | ✅ | OK (max ULP 0) |
 | node/test_pow_bcast_scalar/model.onnx | 15 | ✅ | OK (max ULP 0) |
@@ -1089,40 +1089,40 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_pow_types_float32_int64/model.onnx | 15 | ✅ | OK (max ULP 0) |
 | node/test_pow_types_float32_uint32/model.onnx | 15 | ✅ | OK (max ULP 0) |
 | node/test_pow_types_float32_uint64/model.onnx | 15 | ✅ | OK (max ULP 0) |
-| node/test_pow_types_int32_float32/model.onnx | 15 | ✅ | OK (max ULP 0) |
-| node/test_pow_types_int32_int32/model.onnx | 15 | ✅ | OK (max ULP 0) |
-| node/test_pow_types_int64_float32/model.onnx | 15 | ✅ | OK (max ULP 0) |
-| node/test_pow_types_int64_int64/model.onnx | 15 | ✅ | OK (max ULP 0) |
+| node/test_pow_types_int32_float32/model.onnx | 15 | ✅ | OK (max abs diff 0) |
+| node/test_pow_types_int32_int32/model.onnx | 15 | ✅ | OK (max abs diff 0) |
+| node/test_pow_types_int64_float32/model.onnx | 15 | ✅ | OK (max abs diff 0) |
+| node/test_pow_types_int64_int64/model.onnx | 15 | ✅ | OK (max abs diff 0) |
 | node/test_prelu_broadcast/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | node/test_prelu_broadcast_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | node/test_prelu_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
 | node/test_prelu_example_expanded/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_qlinearconv/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_2D_int8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_2D_int8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_2D_uint8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_2D_uint8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_3D_int8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_3D_int8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_3D_uint8_float16/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_qlinearmatmul_3D_uint8_float32/model.onnx | 21 | ✅ | OK (max ULP 0) |
-| node/test_quantizelinear/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_quantizelinear_axis/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_qlinearconv/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_2D_int8_float16/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_2D_int8_float32/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_2D_uint8_float16/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_2D_uint8_float32/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_3D_int8_float16/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_3D_int8_float32/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_3D_uint8_float16/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_3D_uint8_float32/model.onnx | 21 | ✅ | OK (max abs diff 0) |
+| node/test_quantizelinear/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_quantizelinear_axis/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_blocked_asymmetric/model.onnx | 25 | ❌ | QuantizeLinear block_size is not supported |
 | node/test_quantizelinear_blocked_symmetric/model.onnx | 25 | ❌ | QuantizeLinear block_size is not supported |
 | node/test_quantizelinear_e4m3fn/model.onnx | 25 | ❌ | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_e5m2/model.onnx | 25 | ❌ | Unsupported elem_type 19 (FLOAT8E5M2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_float4e2m1/model.onnx | 25 | ❌ | Unsupported elem_type 23 (FLOAT4E2M1) for tensor 'y_zero_point'. |
-| node/test_quantizelinear_int16/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_quantizelinear_int16/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_int2/model.onnx | 25 | ❌ | Unsupported elem_type 26 (INT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_int4/model.onnx | 25 | ❌ | Unsupported elem_type 22 (INT4) for tensor 'y_zero_point'. |
-| node/test_quantizelinear_uint16/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_quantizelinear_uint16/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear_uint2/model.onnx | 25 | ❌ | Unsupported elem_type 25 (UINT2) for tensor 'y_zero_point'. |
 | node/test_quantizelinear_uint4/model.onnx | 25 | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'y_zero_point'. |
 | node/test_range_float_type_positive_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | node/test_range_float_type_positive_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_range_int32_type_negative_delta/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| node/test_range_int32_type_negative_delta/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_range_int32_type_negative_delta_expanded/model.onnx | 11 | ✅ | OK (max abs diff 0) |
 | node/test_reciprocal/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_reciprocal_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_reduce_l1_default_axes_keepdims_example/model.onnx | 18 | ✅ | OK (max ULP 0) |
@@ -1256,7 +1256,7 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_reduce_sum_square_negative_axes_keepdims_example_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_reduce_sum_square_negative_axes_keepdims_random/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_reduce_sum_square_negative_axes_keepdims_random_expanded/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_reflect_pad/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_reflect_pad/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_regex_full_match_basic/model.onnx | 20 | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_email_domain/model.onnx | 20 | ❌ | Unsupported op RegexFullMatch |
 | node/test_regex_full_match_empty/model.onnx | 20 | ❌ | Unsupported op RegexFullMatch |
@@ -1461,31 +1461,31 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_selu_example/model.onnx | 22 | ❌ | Selu only supports alpha=1.6732632423543772 |
 | node/test_selu_example_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 2) |
 | node/test_selu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 24) |
-| node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8972011810649449542, max_ulp=0) |
-| node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (non-tensor outputs matched; max_abs_diff=8247628798212575849, max_ulp=0) |
-| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=15143681) |
-| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=15143681) |
-| node/test_sequence_map_add_2_sequences/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=12512942) |
-| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=12512942) |
+| node/test_sequence_insert_at_back/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_sequence_insert_at_front/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_2_sequences/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_extract_shapes/model.onnx |  | ❌ | 'SequenceMap_0_in_0' |
 | node/test_sequence_map_extract_shapes_expanded/model.onnx |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
-| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=14100826) |
-| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=29804413) |
-| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=29804413) |
-| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=14100826) |
-| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=35691269) |
-| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=35691269) |
-| node/test_shape/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_clip_end/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_clip_start/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_end_1/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_end_negative_1/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_example/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_start_1/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_start_1_end_2/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_start_1_end_negative_1/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_start_greater_than_end/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_shape_start_negative_1/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_1_sequence_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_2_sequences/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_sequence_map_identity_2_sequences_expanded/model.onnx | 17 | ✅ | OK (max ULP 0) |
+| node/test_shape/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_clip_end/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_clip_start/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_end_1/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_end_negative_1/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_example/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_start_1/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_start_1_end_2/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_start_1_end_negative_1/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_start_greater_than_end/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_shape_start_negative_1/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_shrink_hard/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | node/test_shrink_hard_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_shrink_soft/model.onnx | 9 | ✅ | OK (max ULP 0) |
@@ -1500,8 +1500,8 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_sin_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_sinh/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | node/test_sinh_example/model.onnx | 22 | ✅ | OK (max ULP 0) |
-| node/test_size/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_size_example/model.onnx | 25 | ✅ | OK (max ULP 0) |
+| node/test_size/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_size_example/model.onnx | 25 | ✅ | OK (max abs diff 0) |
 | node/test_slice/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_slice_default_axes/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_slice_default_steps/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1549,9 +1549,9 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_split_equal_parts_2d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_1/model.onnx | 24 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=20971520) |
-| node/test_split_to_sequence_2/model.onnx | 24 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
-| node/test_split_to_sequence_nokeepdims/model.onnx | 24 | ✅ | OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0) |
+| node/test_split_to_sequence_1/model.onnx | 24 | ❌ | Out of tolerance (max ULP 20971520) |
+| node/test_split_to_sequence_2/model.onnx | 24 | ✅ | OK (max ULP 0) |
+| node/test_split_to_sequence_nokeepdims/model.onnx | 24 | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_2d_opset13/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1566,32 +1566,32 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_squeeze_negative_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_stft/model.onnx | 17 | ❌ | Unsupported op STFT |
 | node/test_stft_with_window/model.onnx | 17 | ❌ | Unsupported op STFT |
-| node/test_string_concat/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_concat_broadcasting/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_concat_empty_string/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_concat_utf8/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_concat_zero_dimensional/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_split_basic/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_split_empty_tensor/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_split_maxsplit/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_string_split_no_delimiter/model.onnx | 20 | ✅ | OK (max ULP 0) |
-| node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| node/test_string_concat/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_concat_broadcasting/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_concat_empty_string/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_concat_utf8/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_concat_zero_dimensional/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_split_basic/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_split_consecutive_delimiters/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_split_empty_string_delimiter/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_split_empty_tensor/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_split_maxsplit/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_string_split_no_delimiter/model.onnx | 20 | ✅ | OK (max abs diff 0) |
+| node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_sub/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_sub_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_sub_example/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_sub_int16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_sub_int8/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_sub_uint16/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_sub_uint32/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_sub_uint64/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_sub_uint8/model.onnx | 14 | ✅ | OK (max ULP 0) |
+| node/test_sub_int16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_sub_int8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_sub_uint16/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_sub_uint32/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_sub_uint64/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_sub_uint8/model.onnx | 14 | ✅ | OK (max abs diff 0) |
 | node/test_sum_example/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_sum_one_input/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_sum_two_inputs/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1619,13 +1619,13 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_thresholdedrelu_expanded_ver18/model.onnx | 18 | ✅ | OK (max ULP 0) |
 | node/test_tile/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | node/test_tile_precomputed/model.onnx | 13 | ✅ | OK (max ULP 0) |
-| node/test_top_k/model.onnx | 24 | ✅ | OK (max ULP 0) |
-| node/test_top_k_negative_axis/model.onnx | 24 | ✅ | OK (max ULP 0) |
-| node/test_top_k_same_values/model.onnx | 24 | ✅ | OK (max ULP 0) |
-| node/test_top_k_same_values_2d/model.onnx | 24 | ✅ | OK (max ULP 0) |
-| node/test_top_k_same_values_largest/model.onnx | 24 | ✅ | OK (max ULP 0) |
-| node/test_top_k_smallest/model.onnx | 24 | ✅ | OK (max ULP 0) |
-| node/test_top_k_uint64/model.onnx | 24 | ✅ | OK (max ULP 0) |
+| node/test_top_k/model.onnx | 24 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_top_k_negative_axis/model.onnx | 24 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_top_k_same_values/model.onnx | 24 | ✅ | OK (max abs diff 0) |
+| node/test_top_k_same_values_2d/model.onnx | 24 | ✅ | OK (max abs diff 0) |
+| node/test_top_k_same_values_largest/model.onnx | 24 | ✅ | OK (max abs diff 0) |
+| node/test_top_k_smallest/model.onnx | 24 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_top_k_uint64/model.onnx | 24 | ✅ | OK (max abs diff 0) |
 | node/test_training_dropout/model.onnx | 22 | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_training_dropout_default/model.onnx | 22 | ❌ | Dropout supports only the data input and 1 or 2 outputs |
 | node/test_training_dropout_default_mask/model.onnx | 22 | ❌ | Dropout supports only the data input and 1 or 2 outputs |
@@ -1639,30 +1639,30 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_transpose_all_permutations_4/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_transpose_all_permutations_5/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_transpose_default/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_tril/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_neg/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_one_row_neg/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_out_neg/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_out_pos/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_pos/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_square/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_square_neg/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_tril_zero/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_neg/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_one_row/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_out_neg_out/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_out_pos/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_pos/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_square/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_square_neg/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_triu_zero/model.onnx | 14 | ✅ | OK (max ULP 0) |
-| node/test_unique_length_1/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_unique_not_sorted_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_unique_sorted_with_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_unique_sorted_with_axis_3d/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_unique_sorted_with_negative_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| node/test_unique_sorted_without_axis/model.onnx | 11 | ✅ | OK (max ULP 0) |
+| node/test_tril/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_neg/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_one_row_neg/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_out_neg/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_out_pos/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_pos/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_square/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_square_neg/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_tril_zero/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_neg/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_one_row/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_out_neg_out/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_out_pos/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_pos/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_square/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_square_neg/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_triu_zero/model.onnx | 14 | ✅ | OK (max abs diff 0) |
+| node/test_unique_length_1/model.onnx | 11 | ✅ | OK (max abs diff 0) |
+| node/test_unique_not_sorted_without_axis/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_with_axis/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_with_axis_3d/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_with_negative_axis/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
+| node/test_unique_sorted_without_axis/model.onnx | 11 | ✅ | OK (max abs diff 0, max ULP 0) |
 | node/test_unsqueeze_axis_0/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_unsqueeze_axis_1/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_unsqueeze_axis_2/model.onnx | 25 | ✅ | OK (max ULP 0) |
@@ -1672,16 +1672,16 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | node/test_unsqueeze_unsorted_axes/model.onnx | 25 | ✅ | OK (max ULP 0) |
 | node/test_upsample_nearest/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | node/test_where_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_where_long_example/model.onnx | 16 | ✅ | OK (max ULP 0) |
-| node/test_wrap_pad/model.onnx | 25 | ✅ | OK (max ULP 0) |
-| node/test_xor2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_xor3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_xor4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_xor_bcast3v1d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_xor_bcast3v2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_xor_bcast4v2d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_xor_bcast4v3d/model.onnx | 7 | ✅ | OK (max ULP 0) |
-| node/test_xor_bcast4v4d/model.onnx | 7 | ✅ | OK (max ULP 0) |
+| node/test_where_long_example/model.onnx | 16 | ✅ | OK (max abs diff 0) |
+| node/test_wrap_pad/model.onnx | 25 | ✅ | OK (max abs diff 0) |
+| node/test_xor2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_xor3d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_xor4d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_xor_bcast3v1d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_xor_bcast3v2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_xor_bcast4v2d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_xor_bcast4v3d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
+| node/test_xor_bcast4v4d/model.onnx | 7 | ✅ | OK (max abs diff 0) |
 | pytorch-converted/test_AvgPool1d/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | pytorch-converted/test_AvgPool1d_stride/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | pytorch-converted/test_AvgPool2d/model.onnx | 6 | ✅ | OK (max ULP 0) |
@@ -1783,7 +1783,7 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | pytorch-operator/test_operator_maxpool/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | pytorch-operator/test_operator_min/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | pytorch-operator/test_operator_mm/model.onnx | 6 | ✅ | OK (max ULP 0) |
-| pytorch-operator/test_operator_non_float_params/model.onnx | 6 | ✅ | OK (max ULP 0) |
+| pytorch-operator/test_operator_non_float_params/model.onnx | 6 | ✅ | OK (max abs diff 0) |
 | pytorch-operator/test_operator_pad/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | pytorch-operator/test_operator_params/model.onnx | 6 | ✅ | OK (max ULP 0) |
 | pytorch-operator/test_operator_permute2/model.onnx | 6 | ✅ | OK (max ULP 0) |
@@ -1810,24 +1810,24 @@ Coverage 1537 / 1802 ONNX files (85.3%).
 | simple/test_sequence_model3/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model4/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | simple/test_sequence_model5/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model6/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| simple/test_sequence_model6/model.onnx | 12 | ✅ | OK (max abs diff 0) |
 | simple/test_sequence_model7/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| simple/test_sequence_model8/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| simple/test_sequence_model8/model.onnx | 12 | ✅ | OK (max abs diff 0) |
 | simple/test_shrink/model.onnx | 10 | ✅ | OK (max ULP 0) |
 | simple/test_sign_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | simple/test_single_relu_model/model.onnx | 9 | ✅ | OK (max ULP 0) |
-| simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max ULP 0) |
-| simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max ULP 0) |
+| simple/test_strnorm_model_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max abs diff 0) |
+| simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 
 ## ONNX2C test coverage
 
 Test directory: `onnx2c-org/test`
 
-Coverage 119 / 125 ONNX files (95.2%).
+Coverage 120 / 125 ONNX files (96.0%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1887,8 +1887,8 @@ Coverage 119 / 125 ONNX files (95.2%).
 | local_ops/test_matmul_4x5x2x3_4x5x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | local_ops/test_matmul_5x2x3_5x3x4/model.onnx | 22 | ✅ | OK (max ULP 0) |
 | local_ops/test_matmul_precision/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| local_ops/test_maxpool_stride_1/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| local_ops/test_maxpool_stride_2/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| local_ops/test_maxpool_stride_1/model.onnx | 12 | ✅ | OK (max abs diff 0, max ULP 0) |
+| local_ops/test_maxpool_stride_2/model.onnx | 12 | ✅ | OK (max abs diff 0, max ULP 0) |
 | local_ops/test_nodes_out_of_order/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_pad_constant_default/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_pad_constant_input/model.onnx | 12 | ✅ | OK (max ULP 0) |
@@ -1896,10 +1896,10 @@ Coverage 119 / 125 ONNX files (95.2%).
 | local_ops/test_pad_edge_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_pad_reflect_allaxes/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_pad_reflect_nopadding/model.onnx | 12 | ✅ | OK (max ULP 0) |
-| local_ops/test_qlinearadd_int8/model.onnx |  | ✅ | OK (max ULP 0) |
-| local_ops/test_qlinearadd_uint8/model.onnx |  | ✅ | OK (max ULP 0) |
-| local_ops/test_qlinearmul_int8/model.onnx |  | ✅ | OK (max ULP 0) |
-| local_ops/test_qlinearmul_uint8/model.onnx |  | ✅ | OK (max ULP 0) |
+| local_ops/test_qlinearadd_int8/model.onnx |  | ✅ | OK (max abs diff 0) |
+| local_ops/test_qlinearadd_uint8/model.onnx |  | ✅ | OK (max abs diff 0) |
+| local_ops/test_qlinearmul_int8/model.onnx |  | ✅ | OK (max abs diff 0) |
+| local_ops/test_qlinearmul_uint8/model.onnx |  | ✅ | OK (max abs diff 0) |
 | local_ops/test_resize_downsample_sizes_linear_1D/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_resize_downsample_sizes_linear_1D_align/model.onnx | 12 | ✅ | OK (max ULP 1) |
 | local_ops/test_scalar_input_to_node/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1910,7 +1910,7 @@ Coverage 119 / 125 ONNX files (95.2%).
 | local_ops/test_shape_const_out/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | mnist/model.onnx | 8 | ❌ | Out of tolerance (max ULP 160) |
-| mnist/pytorch.onnx | 9 | ❌ | Out of tolerance (max ULP 2295973698) |
+| mnist/pytorch.onnx | 9 | ✅ | OK (max ULP 7) |
 | old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_default_axis/model.onnx | 9 | ✅ | OK (max ULP 0) |
@@ -1924,7 +1924,7 @@ Coverage 119 / 125 ONNX files (95.2%).
 | old_onnx_backend/11/test_unsqueeze_three_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_unsqueeze_two_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_unsqueeze_unsorted_axes/model.onnx | 11 | ✅ | OK (max ULP 0) |
-| old_onnx_backend/12/test_pow_types_float/model.onnx | 12 | ✅ | OK (max ULP 0) |
+| old_onnx_backend/12/test_pow_types_float/model.onnx | 12 | ✅ | OK (max abs diff 0) |
 | old_onnx_backend/12/test_pow_types_int/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/5/test_resize_downsample_sizes_nearest_tf_half_pixel_for_nn/model.onnx | 13 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/7/test_split_variable_parts_1d/model.onnx | 13 | ✅ | OK (max ULP 0) |
@@ -1952,7 +1952,7 @@ Coverage 119 / 125 ONNX files (95.2%).
 | simple_networks/scalar_abs.onnx | 13 | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_add.onnx | 13 | ✅ | OK (max ULP 0) |
 | simple_networks/scalar_identity.onnx | 13 | ✅ | OK (max ULP 0) |
-| simple_networks/treeensembleclassifier.onnx | 12 | ✅ | OK (max ULP 0) |
+| simple_networks/treeensembleclassifier.onnx | 12 | ✅ | OK (max abs diff 0, max ULP 0) |
 | tfl_helloworld/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | velardo/lesson14.onnx | 11 | ✅ | OK (max ULP 0) |
 | velardo/lesson9.onnx | 9 | ✅ | OK (max ULP 0) |
