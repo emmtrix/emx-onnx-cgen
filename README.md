@@ -154,6 +154,7 @@ These options are accepted by both `compile` and `verify`:
 - `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
+- `--replicate-ort-bugs`: Compatibility switch for verification/debugging. Enables emulation of known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 
 ### `compile`
 
@@ -183,6 +184,7 @@ Options:
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--atol-eps`: Absolute tolerance as a multiple of machine epsilon for floating outputs (default: `1.0`).
 - `--runtime`: Runtime backend for verification (`onnxruntime` or `onnx-reference`, default: `onnxruntime`).
+- `--replicate-ort-bugs`: Verification-only compatibility mode to reproduce known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
 - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.
