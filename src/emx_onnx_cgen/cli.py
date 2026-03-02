@@ -8,6 +8,7 @@ import os
 import shlex
 import shutil
 import signal
+import struct
 import subprocess
 import sys
 import tempfile
@@ -30,11 +31,12 @@ from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
 from .testbench import decode_testbench_array
-from .verification import format_success_message, worst_ulp_diff
+from .verification import worst_ulp_diff
 
 LOGGER = logging.getLogger(__name__)
 _NONDETERMINISTIC_OPERATORS = {"Bernoulli"}
 _EMX_STRING_MAX_LEN = 256
+_DISABLE_SANITIZE_ENV = "EMX_DISABLE_SANITIZE"
 
 
 def _serialize_string_tensor(array: np.ndarray) -> bytes:
@@ -47,6 +49,13 @@ def _serialize_string_tensor(array: np.ndarray) -> bytes:
         encoded.extend(chunk)
         encoded.extend(b"\0" * (_EMX_STRING_MAX_LEN - len(chunk)))
     return bytes(encoded)
+
+
+def _env_flag(name: str) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return False
+    return value.strip().lower() not in {"", "0", "false", "no", "off"}
 
 
 @dataclass(frozen=True)
@@ -79,6 +88,143 @@ class _WorstAbsDiff:
     got: object
     reference: object
     abs_diff: float | int
+
+
+@dataclass
+class _ComparisonMetrics:
+    has_abs_diff: bool = False
+    max_abs_diff: float | int = 0
+    has_ulp: bool = False
+    max_ulp: int = 0
+    worst_diff: _WorstDiff | None = None
+    worst_abs_diff: _WorstAbsDiff | None = None
+
+    def observe_ulp(
+        self,
+        *,
+        output_name: str,
+        node_name: str | None,
+        index: tuple[int, ...],
+        got: float,
+        reference: float,
+        ulp: int,
+    ) -> None:
+        self.has_ulp = True
+        if ulp <= self.max_ulp:
+            return
+        self.max_ulp = ulp
+        self.worst_diff = _WorstDiff(
+            output_name=output_name,
+            node_name=node_name,
+            index=index,
+            got=got,
+            reference=reference,
+            ulp=ulp,
+        )
+
+    def observe_abs(
+        self,
+        *,
+        output_name: str,
+        node_name: str | None,
+        index: tuple[int, ...],
+        got: object,
+        reference: object,
+        abs_diff: float | int,
+    ) -> None:
+        self.has_abs_diff = True
+        if abs_diff <= self.max_abs_diff:
+            return
+        self.max_abs_diff = abs_diff
+        self.worst_abs_diff = _WorstAbsDiff(
+            output_name=output_name,
+            node_name=node_name,
+            index=index,
+            got=got,
+            reference=reference,
+            abs_diff=abs_diff,
+        )
+
+    def format_metrics(self) -> str:
+        parts: list[str] = []
+        if self.has_abs_diff:
+            parts.append(f"max abs diff {self.max_abs_diff}")
+        if self.has_ulp:
+            parts.append(f"max ULP {self.max_ulp}")
+        if not parts:
+            return "no numeric comparisons"
+        return ", ".join(parts)
+
+    def failing_metric_detail(self, *, max_ulp_limit: int) -> str | None:
+        if self.has_abs_diff and self.max_abs_diff > 0:
+            return f"max abs diff {self.max_abs_diff}"
+        if self.has_ulp and self.max_ulp > max_ulp_limit:
+            return f"max ULP {self.max_ulp}"
+        return None
+
+    def format_ok_with_metrics(self) -> str:
+        return f"OK ({self.format_metrics()})"
+
+
+@dataclass(frozen=True)
+class _VerificationIssue:
+    code: str
+    message: str
+    metrics: _ComparisonMetrics | None = None
+    details: Mapping[str, object] | None = None
+
+    def format(self) -> str:
+        parts: list[str] = []
+        if self.metrics is not None:
+            parts.append(self.metrics.format_metrics())
+        if self.details:
+            parts.extend(
+                f"{key}={value}" for key, value in sorted(self.details.items())
+            )
+        if not parts:
+            return self.message
+        return f"{self.message} ({', '.join(parts)})"
+
+    @classmethod
+    def missing_output(cls, output_name: str) -> "_VerificationIssue":
+        return cls(
+            code="missing_output",
+            message=f"Missing output {output_name} in testbench data",
+            details={"output": output_name},
+        )
+
+    @classmethod
+    def shape_mismatch(
+        cls,
+        *,
+        output_name: str,
+        actual_shape: tuple[int, ...],
+        expected_shape: tuple[int, ...],
+        actual_size: int,
+        expected_size: int,
+    ) -> "_VerificationIssue":
+        return cls(
+            code="shape_mismatch",
+            message=f"Output shape mismatch for {output_name}",
+            details={
+                "output": output_name,
+                "actual_shape": actual_shape,
+                "expected_shape": expected_shape,
+                "actual_size": actual_size,
+                "expected_size": expected_size,
+            },
+        )
+
+    @classmethod
+    def out_of_tolerance(
+        cls, metrics: _ComparisonMetrics, *, max_ulp_limit: int
+    ) -> "_VerificationIssue":
+        assert metrics.failing_metric_detail(max_ulp_limit=max_ulp_limit) is not None
+        return cls(
+            code="out_of_tolerance",
+            message="Out of tolerance",
+            metrics=metrics,
+        )
 
 
 class _VerifyReporter:
@@ -266,8 +412,6 @@ def _worst_abs_diff(
 
 def run_cli_command(
     argv: Sequence[str],
-    *,
-    testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
 ) -> CliResult:
     raw_argv = list(argv)
     parse_argv = raw_argv
@@ -297,9 +441,7 @@ def run_cli_command(
                 opset_version=opset_version,
                 generated_checksum=generated_checksum,
             )
-        generated, _testbench, data_source, _weight_data, error = _compile_model(
-            args, testbench_inputs=testbench_inputs
-        )
+        generated, _testbench, data_source, _weight_data, error = _compile_model(args)
         if error:
             return CliResult(
                 exit_code=1,
@@ -517,7 +659,8 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "Build the verification binary with sanitizers enabled "
-            "(-fsanitize=address,undefined)"
+            "(-fsanitize=address,undefined); set "
+            f"{_DISABLE_SANITIZE_ENV}=1 to force-disable sanitizers"
         ),
     )
     verify_parser.add_argument(
@@ -711,7 +854,6 @@ def _handle_compile(args: argparse.Namespace) -> int:
 def _compile_model(
     args: argparse.Namespace,
     *,
-    testbench_inputs: Mapping[str, "np.ndarray"] | None = None,
     reporter: _VerifyReporter | None = None,
 ) -> tuple[str | None, str | None, str | None, bytes | None, str | None]:
     model_path: Path = args.model
@@ -755,7 +897,6 @@ def _compile_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
-            testbench_inputs=testbench_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
@@ -828,7 +969,6 @@ def _compile_testbench_declarations(
         truncate_weights_after=args.truncate_weights_after,
         large_temp_threshold_bytes=args.large_temp_threshold_bytes,
         large_weight_threshold=args.large_weight_threshold,
-        testbench_inputs=None,
         testbench_optional_inputs=None,
         timings=None,
     )
@@ -1236,31 +1376,32 @@ def _verify_model(
                 None,
             )
     output_compare_names = set(original_output_names)
-    has_non_tensor_output = any(
+    requires_non_tensor_reference = any(
         value.name in output_compare_names and not isinstance(value.type, TensorType)
         for value in graph.outputs
     )
-    has_non_tensor_input = any(
-        not isinstance(value.type, TensorType) for value in graph.inputs
-    )
-
     timings: dict[str, float] = {}
+    lowered_sequence_input_shapes: dict[str, tuple[int, ...]] = {}
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
-        testbench_inputs, testbench_optional_inputs = _load_test_data_inputs(
-            model, args.test_data_dir
+        testbench_inputs, testbench_optional_inputs, reshaped_tensor_inputs = (
+            _load_test_data_inputs(model, args.test_data_dir)
         )
-        testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
-        if args.per_node_accuracy and testbench_outputs is not None:
+        testbench_outputs = None
+        if not args.per_node_accuracy:
+            testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
+            if reshaped_tensor_inputs and testbench_outputs is not None:
+                active_reporter.note(
+                    "Ignoring test-data outputs because input tensors were reshaped "
+                    "to match model input signatures; using runtime reference instead."
+                )
+                testbench_outputs = None
+        if args.per_node_accuracy:
             active_reporter.note(
                 "Per-node accuracy: ignoring --test-data-dir reference outputs "
                 "and running runtime backend for all node outputs."
             )
-            testbench_outputs = None
-        if has_non_tensor_input:
-            testbench_inputs = None
-            testbench_optional_inputs = None
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
@@ -1273,12 +1414,23 @@ def _verify_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
-            testbench_inputs=testbench_inputs,
-            testbench_optional_inputs=testbench_optional_inputs,
+            testbench_optional_inputs=None,
+            shape_inference_inputs=testbench_inputs,
             timings=timings,
         )
         compiler = Compiler(options)
         generated, weight_data = compiler.compile_with_weight_data(model)
+        if testbench_inputs:
+            compile_ctx = compiler._build_compile_context(model)
+            lowered_sequence_input_shapes = {
+                name: tuple(shape)
+                for name, shape, value_type in zip(
+                    compile_ctx.lowered.input_names,
+                    compile_ctx.lowered.input_shapes,
+                    compile_ctx.lowered.input_types,
+                )
+                if not isinstance(value_type, TensorType)
+            }
         active_reporter.step_ok(codegen_started)
         if args.verbose:
             _report_codegen_timings(active_reporter, timings=timings)
@@ -1327,16 +1479,12 @@ def _verify_model(
         payload: dict[str, Any] | None = None
         testbench_input_path: Path | None = None
         if testbench_inputs:
-            input_order = [
-                value.name
-                for value in graph.inputs
-                if isinstance(value.type, TensorType)
-            ]
             testbench_input_path = temp_path / "testbench_inputs.bin"
             with testbench_input_path.open("wb") as handle:
-                for name in input_order:
-                    array = testbench_inputs.get(name)
-                    if array is None:
+                for value in graph.inputs:
+                    name = value.name
+                    input_data = testbench_inputs.get(name)
+                    if input_data is None:
                         return (
                             None,
                             f"Missing testbench input data for {name}.",
@@ -1344,14 +1492,78 @@ def _verify_model(
                             opset_version,
                             generated_checksum,
                         )
-                    dtype = input_dtypes[name].np_dtype
-                    if input_dtypes[name] == ScalarType.STRING:
-                        blob = _serialize_string_tensor(array)
-                    else:
-                        blob = np.ascontiguousarray(
-                            array.astype(dtype, copy=False)
-                        ).tobytes(order="C")
-                    handle.write(blob)
+                    if isinstance(value.type, TensorType):
+                        dtype = input_dtypes[name].np_dtype
+                        if input_dtypes[name] == ScalarType.STRING:
+                            blob = _serialize_string_tensor(input_data)
+                        else:
+                            blob = np.ascontiguousarray(
+                                input_data.astype(dtype, copy=False)
+                            ).tobytes(order="C")
+                        if value.type.is_optional:
+                            present = bool(
+                                (testbench_optional_inputs or {}).get(name, True)
+                            )
+                            handle.write(struct.pack("<B", 1 if present else 0))
+                            if not present:
+                                continue
+                        handle.write(blob)
+                        continue
+                    seq_type = value.type
+                    seq_dtype = seq_type.elem.dtype.np_dtype
+                    seq_data = np.asarray(input_data).astype(seq_dtype, copy=False)
+                    if seq_data.ndim < 1:
+                        return (
+                            None,
+                            f"Sequence input {name} must be at least 1D.",
+                            operators,
+                            opset_version,
+                            generated_checksum,
+                        )
+                    present = bool((testbench_optional_inputs or {}).get(name, True))
+                    if seq_type.is_optional:
+                        handle.write(struct.pack("<B", 1 if present else 0))
+                        if not present:
+                            handle.write(struct.pack("<i", 0))
+                            elem_shape = tuple(seq_type.elem.shape)
+                            zero_payload = np.zeros((32, *elem_shape), dtype=seq_dtype)
+                            handle.write(
+                                np.ascontiguousarray(zero_payload).tobytes(order="C")
+                            )
+                            continue
+                    seq_count = int(seq_data.shape[0])
+                    handle.write(struct.pack("<i", seq_count))
+                    elem_shape = lowered_sequence_input_shapes.get(
+                        name, tuple(seq_type.elem.shape)
+                    )
+                    normalized = np.zeros((32, *elem_shape), dtype=seq_dtype)
+                    limit = min(seq_count, 32)
+                    if limit > 0:
+                        for idx in range(limit):
+                            item = np.asarray(seq_data[idx])
+                            target = normalized[idx]
+                            if target.ndim == item.ndim:
+                                slices = tuple(
+                                    slice(0, min(cur, tgt))
+                                    for cur, tgt in zip(item.shape, target.shape)
+                                )
+                                if slices:
+                                    target[slices] = item[slices]
+                                elif item.ndim == 0:
+                                    target[...] = item
+                                else:
+                                    flat_src = item.reshape(-1)
+                                    flat_dst = target.reshape(-1)
+                                    copy_count = min(flat_src.size, flat_dst.size)
+                                    if copy_count:
+                                        flat_dst[:copy_count] = flat_src[:copy_count]
+                            else:
+                                flat_src = item.reshape(-1)
+                                flat_dst = target.reshape(-1)
+                                copy_count = min(flat_src.size, flat_dst.size)
+                                if copy_count:
+                                    flat_dst[:copy_count] = flat_src[:copy_count]
+                    handle.write(np.ascontiguousarray(normalized).tobytes(order="C"))
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
         exe_path = temp_path / "model"
@@ -1364,7 +1576,12 @@ def _verify_model(
                 "-std=c99",
                 "-O1",
             ]
-            if args.sanitize:
+            sanitize_enabled = args.sanitize and not _env_flag(_DISABLE_SANITIZE_ENV)
+            if args.sanitize and not sanitize_enabled:
+                active_reporter.note(
+                    f"--sanitize requested but disabled via {_DISABLE_SANITIZE_ENV}."
+                )
+            if sanitize_enabled:
                 compile_cmd.append("-fsanitize=address,undefined")
             compile_cmd.extend(
                 [
@@ -1445,120 +1662,62 @@ def _verify_model(
                 generated_checksum,
             )
 
-        if has_non_tensor_output:
-            if testbench_outputs is None:
-                return (
-                    None,
-                    "Verification for non-tensor outputs requires --test-data-dir.",
-                    operators,
-                    opset_version,
-                    generated_checksum,
-                )
-            payload_outputs = payload.get("outputs", {})
-            max_non_tensor_ulp = 0
-            max_non_tensor_abs: float | int = 0
-            for value in graph.outputs:
-                if value.name not in output_compare_names:
-                    continue
-                if isinstance(value.type, TensorType):
-                    continue
-                expected_sequence = testbench_outputs.get(value.name)
-                if not isinstance(expected_sequence, list):
-                    return (
-                        None,
-                        f"Missing sequence reference output for {value.name}.",
-                        operators,
-                        opset_version,
-                        generated_checksum,
-                    )
-                output_payload = payload_outputs.get(value.name)
-                if output_payload is None:
-                    return (
-                        None,
-                        f"Missing output {value.name} in testbench data.",
-                        operators,
-                        opset_version,
-                        generated_checksum,
-                    )
-                actual_data = decode_testbench_array(
-                    output_payload["data"], value.type.elem.dtype.np_dtype
-                )
-                sequence_count = int(output_payload.get("sequence_count", 0))
-                expected_count = len(expected_sequence)
-                if sequence_count != expected_count:
-                    active_reporter.note(
-                        f"Sequence length differs for {value.name}: "
-                        f"{sequence_count} vs {expected_count}."
-                    )
-                compare_count = min(sequence_count, expected_count)
-                actual_sequence = [actual_data[index] for index in range(compare_count)]
-                expected_sequence = expected_sequence[:compare_count]
-                for index, (actual_item, expected_item) in enumerate(
-                    zip(actual_sequence, expected_sequence)
-                ):
-                    if actual_item.ndim != expected_item.ndim:
-                        active_reporter.note(
-                            f"Skipping rank-mismatched sequence item {value.name}[{index}]: "
-                            f"{actual_item.ndim} vs {expected_item.ndim}."
-                        )
-                        continue
-                    overlap_shape = tuple(
-                        min(actual_dim, expected_dim)
-                        for actual_dim, expected_dim in zip(
-                            actual_item.shape, expected_item.shape
-                        )
-                    )
-                    if overlap_shape != expected_item.shape:
-                        active_reporter.note(
-                            f"Comparing overlapping region for {value.name}[{index}] "
-                            f"with shapes {actual_item.shape} vs {expected_item.shape}."
-                        )
-                    slices = tuple(slice(0, dim) for dim in overlap_shape)
-                    actual_trimmed = actual_item[slices]
-                    expected_trimmed = expected_item[slices]
-                    if np.issubdtype(expected_item.dtype, np.floating):
-                        output_max, _ = worst_ulp_diff(
-                            actual_trimmed,
-                            expected_trimmed,
-                            atol_eps=args.atol_eps,
-                        )
-                        if output_max > max_non_tensor_ulp:
-                            max_non_tensor_ulp = output_max
-                    else:
-                        output_max, _ = _worst_abs_diff(
-                            actual_trimmed,
-                            expected_trimmed,
-                        )
-                        if output_max > max_non_tensor_abs:
-                            max_non_tensor_abs = output_max
-            active_reporter.note(
-                f"Non-tensor accuracy: max_abs_diff={max_non_tensor_abs}, max_ulp={max_non_tensor_ulp}."
-            )
+        if requires_non_tensor_reference and testbench_outputs is None:
             return (
-                "OK (non-tensor outputs matched; "
-                f"max_abs_diff={max_non_tensor_abs}, max_ulp={max_non_tensor_ulp})",
                 None,
+                "Verification for non-tensor outputs requires --test-data-dir.",
                 operators,
                 opset_version,
                 generated_checksum,
             )
 
         if testbench_inputs:
-            inputs = {
-                name: values.astype(input_dtypes[name].np_dtype, copy=False)
-                for name, values in testbench_inputs.items()
-            }
+            inputs = {}
+            for value in graph.inputs:
+                if not isinstance(value.type, TensorType):
+                    continue
+                values = testbench_inputs.get(value.name)
+                if values is None:
+                    return (
+                        None,
+                        f"Missing input {value.name} in testbench data.",
+                        operators,
+                        opset_version,
+                        generated_checksum,
+                    )
+                inputs[value.name] = values.astype(
+                    input_dtypes[value.name].np_dtype, copy=False
+                )
         else:
-            inputs = {
-                name: decode_testbench_array(value["data"], input_dtypes[name].np_dtype)
-                for name, value in payload["inputs"].items()
-            }
+            payload_inputs = payload.get("inputs", {})
+            inputs = {}
+            for value in graph.inputs:
+                if not isinstance(value.type, TensorType):
+                    continue
+                input_payload = payload_inputs.get(value.name)
+                if input_payload is None:
+                    return (
+                        None,
+                        f"Missing input {value.name} in testbench data.",
+                        operators,
+                        opset_version,
+                        generated_checksum,
+                    )
+                inputs[value.name] = decode_testbench_array(
+                    input_payload["data"], input_dtypes[value.name].np_dtype
+                )
         runtime_outputs: dict[str, np.ndarray] | None = None
         if testbench_outputs is not None:
-            runtime_outputs = {
-                name: output.astype(output_dtypes[name].np_dtype, copy=False)
-                for name, output in testbench_outputs.items()
-            }
+            runtime_outputs = {}
+            for value in graph.outputs:
+                if not isinstance(value.type, TensorType):
+                    continue
+                output = testbench_outputs.get(value.name)
+                if output is None:
+                    continue
+                runtime_outputs[value.name] = output.astype(
+                    output_dtypes[value.name].np_dtype, copy=False
+                )
         else:
             runtime_name = args.runtime
             custom_domains = sorted(
@@ -1633,6 +1792,10 @@ def _verify_model(
             )
         payload_outputs = payload.get("outputs", {})
         decoded_outputs: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+        output_nodes = {
+            output_name: node for node in graph.nodes for output_name in node.outputs
+        }
+        metrics = _ComparisonMetrics()
         for value in graph.outputs:
             if not isinstance(value.type, TensorType):
                 continue
@@ -1648,27 +1811,130 @@ def _verify_model(
                 output_payload["data"], info.np_dtype
             ).astype(info.np_dtype, copy=False)
             runtime_cast = runtime_out.astype(info.np_dtype, copy=False)
-            output_data = output_data.reshape(runtime_cast.shape)
+            try:
+                output_data = output_data.reshape(runtime_cast.shape)
+            except ValueError:
+                issue = _VerificationIssue.shape_mismatch(
+                    output_name=output_name,
+                    actual_shape=tuple(output_data.shape),
+                    expected_shape=tuple(runtime_cast.shape),
+                    actual_size=int(output_data.size),
+                    expected_size=int(runtime_cast.size),
+                )
+                active_reporter.step_fail(issue.message)
+                return (
+                    None,
+                    issue.format(),
+                    operators,
+                    opset_version,
+                    generated_checksum,
+                )
             decoded_outputs[output_name] = (output_data, runtime_cast)
 
-        max_ulp = 0
-        worst_diff: _WorstDiff | None = None
-        max_abs_diff: float | int = 0
-        worst_abs_diff: _WorstAbsDiff | None = None
-        output_nodes = {
-            output_name: node for node in graph.nodes for output_name in node.outputs
-        }
         active_reporter.start_step(f"  Comparing outputs [--max-ulp={args.max_ulp}]")
         try:
             for value in graph.outputs:
                 if value.name not in output_compare_names:
                     continue
+                if isinstance(value.type, TensorType):
+                    continue
+                expected_sequence = (
+                    None
+                    if testbench_outputs is None
+                    else testbench_outputs.get(value.name)
+                )
+                if not isinstance(expected_sequence, list):
+                    raise AssertionError(
+                        f"Missing sequence reference output for {value.name}."
+                    )
+                output_payload = payload_outputs.get(value.name)
+                if output_payload is None:
+                    issue = _VerificationIssue.missing_output(value.name)
+                    raise AssertionError(issue.format())
+                actual_data = decode_testbench_array(
+                    output_payload["data"], value.type.elem.dtype.np_dtype
+                )
+                sequence_count = int(output_payload.get("sequence_count", 0))
+                expected_count = len(expected_sequence)
+                if sequence_count != expected_count:
+                    active_reporter.note(
+                        f"Sequence length differs for {value.name}: "
+                        f"{sequence_count} vs {expected_count}."
+                    )
+                compare_count = min(sequence_count, expected_count)
+                actual_sequence = [actual_data[index] for index in range(compare_count)]
+                expected_trimmed_sequence = expected_sequence[:compare_count]
+                for sequence_index, (actual_item, expected_item) in enumerate(
+                    zip(actual_sequence, expected_trimmed_sequence)
+                ):
+                    if actual_item.ndim != expected_item.ndim:
+                        active_reporter.note(
+                            f"Skipping rank-mismatched sequence item {value.name}[{sequence_index}]: "
+                            f"{actual_item.ndim} vs {expected_item.ndim}."
+                        )
+                        continue
+                    overlap_shape = tuple(
+                        min(actual_dim, expected_dim)
+                        for actual_dim, expected_dim in zip(
+                            actual_item.shape, expected_item.shape
+                        )
+                    )
+                    if overlap_shape != expected_item.shape:
+                        active_reporter.note(
+                            f"Comparing overlapping region for {value.name}[{sequence_index}] "
+                            f"with shapes {actual_item.shape} vs {expected_item.shape}."
+                        )
+                    slices = tuple(slice(0, dim) for dim in overlap_shape)
+                    actual_trimmed = actual_item[slices]
+                    expected_trimmed = expected_item[slices]
+                    node = output_nodes.get(value.name)
+                    node_name = node.name if node else None
+                    if np.issubdtype(expected_item.dtype, np.floating):
+                        output_max, output_worst = worst_ulp_diff(
+                            actual_trimmed,
+                            expected_trimmed,
+                            atol_eps=args.atol_eps,
+                        )
+                        if output_worst is not None:
+                            metrics.observe_ulp(
+                                output_name=value.name,
+                                node_name=node_name,
+                                index=(sequence_index, *output_worst[0]),
+                                got=float(output_worst[1]),
+                                reference=float(output_worst[2]),
+                                ulp=output_max,
+                            )
+                        else:
+                            metrics.has_ulp = True
+                    else:
+                        output_max, output_worst = _worst_abs_diff(
+                            actual_trimmed,
+                            expected_trimmed,
+                        )
+                        if output_worst is not None:
+                            metrics.observe_abs(
+                                output_name=value.name,
+                                node_name=node_name,
+                                index=(sequence_index, *output_worst[0]),
+                                got=output_worst[1],
+                                reference=output_worst[2],
+                                abs_diff=output_max,
+                            )
+                        else:
+                            metrics.has_abs_diff = True
+
+            for value in graph.outputs:
+                if value.name not in output_compare_names:
+                    continue
+                if not isinstance(value.type, TensorType):
+                    continue
                 pair = decoded_outputs.get(value.name)
                 if pair is None:
-                    raise AssertionError(
-                        f"Missing output {value.name} in testbench data"
-                    )
+                    issue = _VerificationIssue.missing_output(value.name)
+                    raise AssertionError(issue.format())
                 output_data, runtime_out = pair
+                node = output_nodes.get(value.name)
+                node_name = node.name if node else None
                 info = output_dtypes[value.name]
                 if np.issubdtype(info.np_dtype, np.floating):
                     output_max, output_worst = worst_ulp_diff(
@@ -1676,47 +1942,49 @@ def _verify_model(
                         runtime_out,
                         atol_eps=args.atol_eps,
                     )
-                    if output_max > max_ulp:
-                        max_ulp = output_max
-                        if output_worst is not None:
-                            node = output_nodes.get(value.name)
-                            worst_diff = _WorstDiff(
-                                output_name=value.name,
-                                node_name=node.name if node else None,
-                                index=output_worst[0],
-                                got=float(output_worst[1]),
-                                reference=float(output_worst[2]),
-                                ulp=output_max,
-                            )
+                    if output_worst is not None:
+                        metrics.observe_ulp(
+                            output_name=value.name,
+                            node_name=node_name,
+                            index=output_worst[0],
+                            got=float(output_worst[1]),
+                            reference=float(output_worst[2]),
+                            ulp=output_max,
+                        )
+                    else:
+                        metrics.has_ulp = True
                 else:
                     output_max, output_worst = _worst_abs_diff(output_data, runtime_out)
-                    if output_max > max_abs_diff:
-                        max_abs_diff = output_max
-                        if output_worst is not None:
-                            node = output_nodes.get(value.name)
-                            worst_abs_diff = _WorstAbsDiff(
-                                output_name=value.name,
-                                node_name=node.name if node else None,
-                                index=output_worst[0],
-                                got=output_worst[1],
-                                reference=output_worst[2],
-                                abs_diff=output_max,
-                            )
+                    if output_worst is not None:
+                        metrics.observe_abs(
+                            output_name=value.name,
+                            node_name=node_name,
+                            index=output_worst[0],
+                            got=output_worst[1],
+                            reference=output_worst[2],
+                            abs_diff=output_max,
+                        )
+                    else:
+                        metrics.has_abs_diff = True
         except AssertionError as exc:
             active_reporter.step_fail(str(exc))
             return None, str(exc), operators, opset_version, generated_checksum
-        if max_abs_diff > 0:
-            active_reporter.step_fail(f"max abs diff {max_abs_diff}")
-            if worst_abs_diff is not None:
-                node_label = worst_abs_diff.node_name or "(unknown)"
-                index_display = ", ".join(str(dim) for dim in worst_abs_diff.index)
+        failure_detail = metrics.failing_metric_detail(max_ulp_limit=args.max_ulp)
+        if failure_detail is not None:
+            active_reporter.step_fail(failure_detail)
+        if metrics.has_abs_diff and metrics.max_abs_diff > 0:
+            if metrics.worst_abs_diff is not None:
+                node_label = metrics.worst_abs_diff.node_name or "(unknown)"
+                index_display = ", ".join(
+                    str(dim) for dim in metrics.worst_abs_diff.index
+                )
                 active_reporter.info(
                     "  Worst diff: output="
-                    f"{worst_abs_diff.output_name} node={node_label} "
+                    f"{metrics.worst_abs_diff.output_name} node={node_label} "
                     f"index=[{index_display}] "
-                    f"got={worst_abs_diff.got} "
-                    f"ref={worst_abs_diff.reference} "
-                    f"abs_diff={worst_abs_diff.abs_diff}"
+                    f"got={metrics.worst_abs_diff.got} "
+                    f"ref={metrics.worst_abs_diff.reference} "
+                    f"abs_diff={metrics.worst_abs_diff.abs_diff}"
                 )
             if args.per_node_accuracy:
                 active_reporter.defer(
@@ -1729,25 +1997,27 @@ def _verify_model(
                         max_ulp_limit=args.max_ulp,
                     )
                 )
+            issue = _VerificationIssue.out_of_tolerance(
+                metrics, max_ulp_limit=args.max_ulp
+            )
             return (
                 None,
-                f"Arrays are not equal (max abs diff {max_abs_diff})",
+                issue.format(),
                 operators,
                 opset_version,
                 generated_checksum,
             )
-        if max_ulp > args.max_ulp:
-            active_reporter.step_fail(f"max ULP {max_ulp}")
-            if worst_diff is not None:
-                node_label = worst_diff.node_name or "(unknown)"
-                index_display = ", ".join(str(dim) for dim in worst_diff.index)
+        if metrics.has_ulp and metrics.max_ulp > args.max_ulp:
+            if metrics.worst_diff is not None:
+                node_label = metrics.worst_diff.node_name or "(unknown)"
+                index_display = ", ".join(str(dim) for dim in metrics.worst_diff.index)
                 active_reporter.info(
                     "  Worst diff: output="
-                    f"{worst_diff.output_name} node={node_label} "
+                    f"{metrics.worst_diff.output_name} node={node_label} "
                     f"index=[{index_display}] "
-                    f"got={worst_diff.got:.8g} "
-                    f"ref={worst_diff.reference:.8g} "
-                    f"ulp={worst_diff.ulp}"
+                    f"got={metrics.worst_diff.got:.8g} "
+                    f"ref={metrics.worst_diff.reference:.8g} "
+                    f"ulp={metrics.worst_diff.ulp}"
                 )
             if args.per_node_accuracy:
                 active_reporter.defer(
@@ -1760,15 +2030,18 @@ def _verify_model(
                         max_ulp_limit=args.max_ulp,
                     )
                 )
+            issue = _VerificationIssue.out_of_tolerance(
+                metrics, max_ulp_limit=args.max_ulp
+            )
             return (
                 None,
-                f"Out of tolerance (max ULP {max_ulp})",
+                issue.format(),
                 operators,
                 opset_version,
                 generated_checksum,
             )
         active_reporter.step_ok_simple()
-        active_reporter.info(f"    Maximum ULP: {max_ulp}")
+        active_reporter.info(f"    Output metrics: {metrics.format_metrics()}")
         if args.per_node_accuracy:
             active_reporter.defer(
                 lambda: _report_per_node_accuracy(
@@ -1781,7 +2054,7 @@ def _verify_model(
                 )
             )
         return (
-            format_success_message(max_ulp),
+            metrics.format_ok_with_metrics(),
             None,
             operators,
             opset_version,
@@ -1794,9 +2067,9 @@ def _verify_model(
 
 def _load_test_data_inputs(
     model: onnx.ModelProto, data_dir: Path | None
-) -> tuple[dict[str, "np.ndarray"] | None, dict[str, bool] | None]:
+) -> tuple[dict[str, "np.ndarray"] | None, dict[str, bool] | None, bool]:
     if data_dir is None:
-        return None, None
+        return None, None, False
     if not data_dir.exists():
         raise CodegenError(f"Test data directory not found: {data_dir}")
     input_files = sorted(
@@ -1827,97 +2100,176 @@ def _load_test_data_inputs(
                 value_info.name,
                 value_kind or "unknown",
             )
-            return None, None
+            return None, None, False
     inputs: dict[str, np.ndarray] = {}
     optional_flags: dict[str, bool] = {}
+    reshaped_tensor_inputs = False
+
+    def _sequence_tensor_values_to_array(
+        *,
+        name: str,
+        tensors: list[np.ndarray],
+        tensor_type: onnx.TypeProto.Tensor,
+    ) -> np.ndarray:
+        if not tensors:
+            dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+            if dtype_info is None:
+                raise CodegenError(f"Sequence input {name} has unsupported elem_type.")
+            shape = [
+                dim.dim_value if dim.HasField("dim_value") else 1
+                for dim in tensor_type.shape.dim
+            ]
+            return np.zeros((0, *shape), dtype=dtype_info.np_dtype)
+        first_shape = tensors[0].shape
+        if any(tensor.shape != first_shape for tensor in tensors[1:]):
+            if any(tensor.ndim != tensors[0].ndim for tensor in tensors[1:]):
+                LOGGER.warning(
+                    "Skipping sequence input %s with mixed tensor ranks in test data.",
+                    name,
+                )
+                raise CodegenError(f"Sequence input {name} has mixed tensor ranks.")
+            max_shape = tuple(
+                max(tensor.shape[axis] for tensor in tensors)
+                for axis in range(tensors[0].ndim)
+            )
+            target_shape: list[int] = []
+            for axis, max_dim in enumerate(max_shape):
+                if axis < len(tensor_type.shape.dim):
+                    dim = tensor_type.shape.dim[axis]
+                    if dim.HasField("dim_value") and dim.dim_value > 0:
+                        target_shape.append(int(dim.dim_value))
+                        continue
+                target_shape.append(int(max_dim))
+            LOGGER.warning(
+                "Sequence test input %s has variable element shapes; "
+                "normalizing to %s for testbench binary input.",
+                name,
+                tuple(target_shape),
+            )
+            normalized: list[np.ndarray] = []
+            for tensor in tensors:
+                item = np.zeros(tuple(target_shape), dtype=tensor.dtype)
+                slices = tuple(
+                    slice(0, min(cur_dim, tgt_dim))
+                    for cur_dim, tgt_dim in zip(tensor.shape, target_shape)
+                )
+                item[slices] = tensor[slices]
+                normalized.append(item)
+            return np.stack(normalized, axis=0)
+        return np.stack(tensors, axis=0)
+
     for index, path in enumerate(input_files):
         value_info = model_inputs[index]
         value_kind = value_info.type.WhichOneof("value")
         if value_kind == "tensor_type":
             tensor = onnx.TensorProto()
             tensor.ParseFromString(path.read_bytes())
-            inputs[value_info.name] = numpy_helper.to_array(tensor)
+            array = numpy_helper.to_array(tensor)
+            tensor_type = value_info.type.tensor_type
+            if tensor_type.HasField("shape"):
+                target_shape: list[int] = []
+                shape_known = True
+                for dim in tensor_type.shape.dim:
+                    if dim.HasField("dim_value"):
+                        target_shape.append(int(dim.dim_value))
+                    elif dim.HasField("dim_param"):
+                        target_shape.append(1)
+                    else:
+                        shape_known = False
+                        break
+                if shape_known and target_shape:
+                    expected = tuple(target_shape)
+                    if array.shape != expected and array.size == int(
+                        np.prod(target_shape, dtype=np.int64)
+                    ):
+                        LOGGER.warning(
+                            "Reshaping test input %s from %s to %s to match model input.",
+                            value_info.name,
+                            array.shape,
+                            expected,
+                        )
+                        array = array.reshape(expected)
+                        reshaped_tensor_inputs = True
+            inputs[value_info.name] = array
             continue
         if value_kind == "sequence_type":
             elem_type = value_info.type.sequence_type.elem_type
             if elem_type.WhichOneof("value") != "tensor_type":
-                return None, None
+                return None, None, False
             seq = onnx.SequenceProto()
             seq.ParseFromString(path.read_bytes())
             tensors = [numpy_helper.to_array(tensor) for tensor in seq.tensor_values]
-            if not tensors:
-                tensor_type = elem_type.tensor_type
-                dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
-                if dtype_info is None:
-                    raise CodegenError(
-                        f"Sequence input {value_info.name} has unsupported elem_type."
-                    )
-                shape = [
-                    dim.dim_value if dim.HasField("dim_value") else 1
-                    for dim in tensor_type.shape.dim
-                ]
-                inputs[value_info.name] = np.zeros(
-                    (0, *shape), dtype=dtype_info.np_dtype
-                )
-                continue
-            first_shape = tensors[0].shape
-            if any(tensor.shape != first_shape for tensor in tensors[1:]):
-                LOGGER.warning(
-                    "Sequence test input %s has variable element shapes; "
-                    "padding to max shape for generated testbench input.",
-                    value_info.name,
-                )
-                max_shape = tuple(
-                    max(tensor.shape[axis] for tensor in tensors)
-                    for axis in range(tensors[0].ndim)
-                )
-                padded: list[np.ndarray] = []
-                for tensor in tensors:
-                    pad_width = [
-                        (0, max_dim - cur_dim)
-                        for cur_dim, max_dim in zip(tensor.shape, max_shape)
-                    ]
-                    padded.append(np.pad(tensor, pad_width, mode="constant"))
-                inputs[value_info.name] = np.stack(padded, axis=0)
-                continue
-            inputs[value_info.name] = np.stack(tensors, axis=0)
+            inputs[value_info.name] = _sequence_tensor_values_to_array(
+                name=value_info.name,
+                tensors=tensors,
+                tensor_type=elem_type.tensor_type,
+            )
             continue
         optional = onnx.OptionalProto()
         optional.ParseFromString(path.read_bytes())
         elem_type = value_info.type.optional_type.elem_type
-        if elem_type.WhichOneof("value") != "tensor_type":
-            LOGGER.warning(
-                "Skipping test data load for non-tensor optional input %s.",
-                value_info.name,
-            )
-            return None, None
-        tensor_type = elem_type.tensor_type
-        if optional.HasField("tensor_value"):
-            inputs[value_info.name] = numpy_helper.to_array(optional.tensor_value)
-            optional_flags[value_info.name] = True
-            continue
-        if not tensor_type.HasField("elem_type"):
-            raise CodegenError(
-                f"Optional input {value_info.name} is missing elem_type."
-            )
-        dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
-        if dtype_info is None:
-            raise CodegenError(
-                f"Optional input {value_info.name} has unsupported elem_type."
-            )
-        shape: list[int] = []
-        for dim in tensor_type.shape.dim:
-            if dim.HasField("dim_value"):
-                shape.append(dim.dim_value)
-            elif dim.HasField("dim_param"):
-                shape.append(1)
-            else:
+        elem_kind = elem_type.WhichOneof("value")
+        if elem_kind == "tensor_type":
+            tensor_type = elem_type.tensor_type
+            if optional.HasField("tensor_value"):
+                inputs[value_info.name] = numpy_helper.to_array(optional.tensor_value)
+                optional_flags[value_info.name] = True
+                continue
+            if not tensor_type.HasField("elem_type"):
                 raise CodegenError(
-                    f"Optional input {value_info.name} has unknown shape."
+                    f"Optional input {value_info.name} is missing elem_type."
                 )
-        inputs[value_info.name] = np.zeros(tuple(shape), dtype=dtype_info.np_dtype)
-        optional_flags[value_info.name] = False
-    return inputs, optional_flags
+            dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+            if dtype_info is None:
+                raise CodegenError(
+                    f"Optional input {value_info.name} has unsupported elem_type."
+                )
+            shape: list[int] = []
+            for dim in tensor_type.shape.dim:
+                if dim.HasField("dim_value"):
+                    shape.append(dim.dim_value)
+                elif dim.HasField("dim_param"):
+                    shape.append(1)
+                else:
+                    raise CodegenError(
+                        f"Optional input {value_info.name} has unknown shape."
+                    )
+            inputs[value_info.name] = np.zeros(tuple(shape), dtype=dtype_info.np_dtype)
+            optional_flags[value_info.name] = False
+            continue
+        if elem_kind == "sequence_type":
+            seq_elem = elem_type.sequence_type.elem_type
+            if seq_elem.WhichOneof("value") != "tensor_type":
+                LOGGER.warning(
+                    "Skipping test data load for non-tensor optional sequence input %s.",
+                    value_info.name,
+                )
+                return None, None, False
+            if optional.HasField("sequence_value"):
+                tensors = [
+                    numpy_helper.to_array(tensor)
+                    for tensor in optional.sequence_value.tensor_values
+                ]
+                inputs[value_info.name] = _sequence_tensor_values_to_array(
+                    name=value_info.name,
+                    tensors=tensors,
+                    tensor_type=seq_elem.tensor_type,
+                )
+                optional_flags[value_info.name] = True
+            else:
+                inputs[value_info.name] = _sequence_tensor_values_to_array(
+                    name=value_info.name,
+                    tensors=[],
+                    tensor_type=seq_elem.tensor_type,
+                )
+                optional_flags[value_info.name] = False
+            continue
+        LOGGER.warning(
+            "Skipping test data load for unsupported optional input %s.",
+            value_info.name,
+        )
+        return None, None, False
+    return inputs, optional_flags, reshaped_tensor_inputs
 
 
 def _load_test_data_outputs(
@@ -2011,7 +2363,7 @@ def _format_command_line(argv: Sequence[str] | None) -> str:
             continue
         if arg.startswith("--expected-checksum="):
             continue
-        filtered.append(arg)
+        filtered.append(arg.replace("\\", "/"))
     if not filtered:
         return ""
     return shlex.join(filtered)
@@ -2070,7 +2422,6 @@ def _report_codegen_timings(
     order = [
         ("import_onnx", "import"),
         ("concretize_shapes", "concretize"),
-        ("resolve_testbench_inputs", "testbench"),
         ("collect_variable_dims", "var_dims"),
         ("lower_model", "lower"),
         ("emit_model", "emit"),
