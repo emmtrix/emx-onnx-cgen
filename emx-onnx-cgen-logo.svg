@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">emx-onnx-cgen logo</title>
+  <desc id="desc">Wordmark for emx-onnx-cgen with a geometric mark.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1220" />
+      <stop offset="100%" stop-color="#1F2A44" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12B8FF" />
+      <stop offset="100%" stop-color="#2BE38D" />
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="1184" height="344" rx="28" fill="url(#bg)" />
+
+  <g transform="translate(72 72)">
+    <rect x="0" y="0" width="216" height="216" rx="24" fill="#0F172A" stroke="#304066" stroke-width="4" />
+    <rect x="28" y="28" width="160" height="160" rx="16" fill="none" stroke="url(#accent)" stroke-width="10" />
+    <path d="M56 124 L96 84 L124 112 L164 72" fill="none" stroke="#E7EEF9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="56" cy="124" r="8" fill="#2BE38D" />
+    <circle cx="96" cy="84" r="8" fill="#12B8FF" />
+    <circle cx="124" cy="112" r="8" fill="#2BE38D" />
+    <circle cx="164" cy="72" r="8" fill="#12B8FF" />
+  </g>
+
+  <g font-family="Segoe UI, Ubuntu, Arial, sans-serif" fill="#F5F8FF">
+    <text x="340" y="168" font-size="76" font-weight="700" letter-spacing="0.5">emx-onnx-cgen</text>
+    <text x="344" y="218" font-size="28" font-weight="400" fill="#C9D6EE">ONNX to deterministic C code generation</text>
+  </g>
+</svg>
