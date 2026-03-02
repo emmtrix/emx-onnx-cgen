@@ -8,7 +8,7 @@ Overview:
 | Test suite | Coverage | Version |
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1540 / 1802, 85.5% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -1832,7 +1832,7 @@ Coverage 1540 / 1802 ONNX files (85.5%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 120 / 125 ONNX files (96.0%).
+Coverage 121 / 125 ONNX files (96.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1914,7 +1914,7 @@ Coverage 120 / 125 ONNX files (96.0%).
 | local_ops/test_scatternd_indices_3x2/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_shape_const_out/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
-| mnist/model.onnx | 8 | Data | ❌ | Out of tolerance (max ULP 160) |
+| mnist/model.onnx | 8 | Data | ✅ | OK (max ULP 160) |
 | mnist/pytorch.onnx | 9 | Data | ✅ | OK (max ULP 7) |
 | old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
