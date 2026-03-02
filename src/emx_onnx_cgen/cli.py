@@ -1377,9 +1377,6 @@ def _verify_model(
                 "and running runtime backend for all node outputs."
             )
             testbench_outputs = None
-        if has_non_tensor_input:
-            testbench_inputs = None
-            testbench_optional_inputs = None
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
@@ -1444,7 +1441,7 @@ def _verify_model(
     try:
         payload: dict[str, Any] | None = None
         testbench_input_path: Path | None = None
-        if testbench_inputs:
+        if testbench_inputs and not has_non_tensor_input:
             input_order = [
                 value.name
                 for value in graph.inputs
@@ -1573,10 +1570,22 @@ def _verify_model(
             )
 
         if testbench_inputs:
-            inputs = {
-                name: values.astype(input_dtypes[name].np_dtype, copy=False)
-                for name, values in testbench_inputs.items()
-            }
+            inputs = {}
+            for value in graph.inputs:
+                if not isinstance(value.type, TensorType):
+                    continue
+                values = testbench_inputs.get(value.name)
+                if values is None:
+                    return (
+                        None,
+                        f"Missing input {value.name} in testbench data.",
+                        operators,
+                        opset_version,
+                        generated_checksum,
+                    )
+                inputs[value.name] = values.astype(
+                    input_dtypes[value.name].np_dtype, copy=False
+                )
         else:
             payload_inputs = payload.get("inputs", {})
             inputs = {}
@@ -2024,23 +2033,41 @@ def _load_test_data_inputs(
                 continue
             first_shape = tensors[0].shape
             if any(tensor.shape != first_shape for tensor in tensors[1:]):
-                LOGGER.warning(
-                    "Sequence test input %s has variable element shapes; "
-                    "padding to max shape for generated testbench input.",
-                    value_info.name,
-                )
+                if any(tensor.ndim != tensors[0].ndim for tensor in tensors[1:]):
+                    LOGGER.warning(
+                        "Skipping sequence input %s with mixed tensor ranks in test data.",
+                        value_info.name,
+                    )
+                    return None, None
+                tensor_type = elem_type.tensor_type
                 max_shape = tuple(
                     max(tensor.shape[axis] for tensor in tensors)
                     for axis in range(tensors[0].ndim)
                 )
-                padded: list[np.ndarray] = []
+                target_shape: list[int] = []
+                for axis, max_dim in enumerate(max_shape):
+                    if axis < len(tensor_type.shape.dim):
+                        dim = tensor_type.shape.dim[axis]
+                        if dim.HasField("dim_value") and dim.dim_value > 0:
+                            target_shape.append(int(dim.dim_value))
+                            continue
+                    target_shape.append(int(max_dim))
+                LOGGER.warning(
+                    "Sequence test input %s has variable element shapes; "
+                    "normalizing to %s for generated testbench input.",
+                    value_info.name,
+                    tuple(target_shape),
+                )
+                normalized: list[np.ndarray] = []
                 for tensor in tensors:
-                    pad_width = [
-                        (0, max_dim - cur_dim)
-                        for cur_dim, max_dim in zip(tensor.shape, max_shape)
-                    ]
-                    padded.append(np.pad(tensor, pad_width, mode="constant"))
-                inputs[value_info.name] = np.stack(padded, axis=0)
+                    item = np.zeros(tuple(target_shape), dtype=tensor.dtype)
+                    slices = tuple(
+                        slice(0, min(cur_dim, tgt_dim))
+                        for cur_dim, tgt_dim in zip(tensor.shape, target_shape)
+                    )
+                    item[slices] = tensor[slices]
+                    normalized.append(item)
+                inputs[value_info.name] = np.stack(normalized, axis=0)
                 continue
             inputs[value_info.name] = np.stack(tensors, axis=0)
             continue

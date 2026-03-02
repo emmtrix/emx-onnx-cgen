@@ -22,7 +22,7 @@ from .codegen.c_emitter import (
 from .dtypes import dtype_info
 from .errors import CodegenError, UnsupportedOpError
 from .ir.context import GraphContext
-from .ir.model import Graph, TensorType, Value, ValueType
+from .ir.model import Graph, SequenceType, TensorType, Value, ValueType
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
@@ -292,19 +292,28 @@ class Compiler:
             if not isinstance(values, np.ndarray):
                 raise CodegenError(f"Testbench input {name} must be a numpy array")
             input_value = input_specs[name]
-            if not isinstance(input_value.type, TensorType):
-                raise CodegenError(f"Testbench input {name} must be a tensor value")
-            dtype = value_dtype(graph, name)
-            info = dtype_info(dtype)
-            expected_shape = input_value.type.shape
-            expected_count = shape_product(expected_shape)
-            array = values.astype(info.np_dtype, copy=False)
-            if array.size != expected_count:
-                raise CodegenError(
-                    "Testbench input "
-                    f"{name} has {array.size} elements, expected {expected_count}"
-                )
-        return None
+            if isinstance(input_value.type, TensorType):
+                dtype = value_dtype(graph, name)
+                info = dtype_info(dtype)
+                expected_shape = input_value.type.shape
+                expected_count = shape_product(expected_shape)
+                array = values.astype(info.np_dtype, copy=False)
+                if array.size != expected_count:
+                    raise CodegenError(
+                        "Testbench input "
+                        f"{name} has {array.size} elements, expected {expected_count}"
+                    )
+                continue
+            if isinstance(input_value.type, SequenceType):
+                if values.ndim < 1:
+                    raise CodegenError(
+                        f"Testbench sequence input {name} must be at least 1D"
+                    )
+                continue
+            raise CodegenError(
+                f"Testbench input {name} must be a tensor or sequence value"
+            )
+        return self._options.testbench_inputs
 
     def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
         if not self._options.testbench_inputs:

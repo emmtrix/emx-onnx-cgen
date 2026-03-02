@@ -15841,6 +15841,19 @@ class CEmitter:
             codegen_shape = self._codegen_shape(shape)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
+            if is_sequence_input and isinstance(constant_values, np.ndarray):
+                target_shape = (int(constant_values.shape[0]), *codegen_shape)
+                if constant_values.shape != target_shape:
+                    normalized = np.zeros(target_shape, dtype=constant_values.dtype)
+                    if constant_values.ndim == len(target_shape):
+                        overlap = (slice(0, target_shape[0]),) + tuple(
+                            slice(0, min(cur_dim, tgt_dim))
+                            for cur_dim, tgt_dim in zip(
+                                constant_values.shape[1:], codegen_shape
+                            )
+                        )
+                        normalized[overlap] = constant_values[overlap]
+                    constant_values = normalized
             loop_shape = (1,) if not shape else shape
             if is_sequence_input:
                 if (
