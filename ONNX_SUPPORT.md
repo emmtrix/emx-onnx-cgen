@@ -7,8 +7,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1539 / 1802, 85.4% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1540 / 1802, 85.5% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1539 / 1802 ONNX files (85.4%).
+Coverage 1540 / 1802 ONNX files (85.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -257,7 +257,7 @@ Coverage 1539 / 1802 ONNX files (85.4%).
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 8165636) |
+| node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_small/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_with_padding/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_without_padding/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1832,7 @@ Coverage 1539 / 1802 ONNX files (85.4%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 120 / 125 ONNX files (96.0%).
+Coverage 121 / 125 ONNX files (96.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1914,7 +1914,7 @@ Coverage 120 / 125 ONNX files (96.0%).
 | local_ops/test_scatternd_indices_3x2/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_shape_const_out/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
-| mnist/model.onnx | 8 | Data | ❌ | Out of tolerance (max ULP 160) |
+| mnist/model.onnx | 8 | Data | ✅ | OK (max ULP 160) |
 | mnist/pytorch.onnx | 9 | Data | ✅ | OK (max ULP 7) |
 | old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |

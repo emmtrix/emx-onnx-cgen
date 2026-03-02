@@ -70,14 +70,16 @@ EMX_NODE_FN void node0_averagepool(const float input0[1][1][4][4], float output[
                             const idx_t iw = ow * 2 + kw * 1 - 0;
                             if (ih >= 0 && ih < 4 && iw >= 0 && iw < 4) {
                                 values[count++] = input0[n][c][ih][iw];
-                            } else if (0) {
+                            } else if (
+                            0
+                            && ih >= -0 && ih < 4 + 0
+                            && iw >= -0 && iw < 4 + 0
+                            ) {
                                 values[count++] = 0.0f;
                             }
                         }
                     }
-                    const idx_t denom = 0
-                    ? 4
-                    : count;
+                    const idx_t denom = count;
                     float acc = 0.0f;
                     if (count > 0) {
                         idx_t reduce_count = count;
