@@ -12,7 +12,7 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
-| Out of tolerance | 15 | 8, 13, 16, 19, 20, 21, 22, 24 |
+| Out of tolerance | 16 | 8, 9, 13, 16, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
@@ -23,7 +23,6 @@ This histogram is test-suite-overarching.
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
-| Failed to build testbench. | 3 | 10, 20 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
@@ -49,7 +48,6 @@ This histogram is test-suite-overarching.
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
-| Testbench input network_input has rank 4, expected 2 | 1 | 9 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
@@ -62,8 +60,7 @@ This histogram is test-suite-overarching.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
-| Testbench input network_input has rank 4, expected 2 | 9 | 1 |
-| Failed to build testbench. | 10 | 2 |
+| Out of tolerance | 9 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 13 | 1 |
 | Out of tolerance | 16 | 1 |
@@ -82,7 +79,6 @@ This histogram is test-suite-overarching.
 | Gelu only supports approximate=none | 20 | 2 |
 | Split output shape must be (1,), got (2,) | 20 | 2 |
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 20 | 2 |
-| Failed to build testbench. | 20 | 1 |
 | Out of tolerance | 20 | 1 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |

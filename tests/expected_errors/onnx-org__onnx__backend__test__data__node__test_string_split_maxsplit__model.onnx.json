@@ -1,9 +1,9 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_split_maxsplit model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "StringSplit"
   ],
   "opset_version": 20,
-  "generated_checksum": "990f0e3dafe6d6ff8561e51cbf35786e4912b056c36a3f3b30ea25504244a96b"
+  "generated_checksum": "8f2e0d39167dd627858573cea911bf54d256cc2f1196fefeba72ae83e16ea8c6"
 }

@@ -4,7 +4,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1527 / 1802, 84.7% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1530 / 1802, 84.9% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 119 / 125, 95.2% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -16,7 +16,7 @@ Floating-point verification first ignores very small differences up to **1.0 × 
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1527 / 1802 ONNX files (84.7%).
+Coverage 1530 / 1802 ONNX files (84.9%).
 
 | File | Opset | Supported | Error |
 | --- | --- | --- | --- |
@@ -1575,13 +1575,13 @@ Coverage 1527 / 1802 ONNX files (84.7%).
 | node/test_string_split_consecutive_delimiters/model.onnx | 20 | ✅ | OK (max abs diff 0) |
 | node/test_string_split_empty_string_delimiter/model.onnx | 20 | ✅ | OK (max abs diff 0) |
 | node/test_string_split_empty_tensor/model.onnx | 20 | ✅ | OK (max abs diff 0) |
-| node/test_string_split_maxsplit/model.onnx | 20 | ❌ | Failed to build testbench. |
+| node/test_string_split_maxsplit/model.onnx | 20 | ✅ | OK (max abs diff 0) |
 | node/test_string_split_no_delimiter/model.onnx | 20 | ✅ | OK (max abs diff 0) |
 | node/test_strnormalizer_export_monday_casesensintive_lower/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_strnormalizer_export_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_strnormalizer_export_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_strnormalizer_export_monday_empty_output/model.onnx | 10 | ✅ | OK (max abs diff 0) |
-| node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Failed to build testbench. |
+| node/test_strnormalizer_export_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_strnormalizer_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | node/test_sub/model.onnx | 14 | ✅ | OK (max ULP 0) |
 | node/test_sub_bcast/model.onnx | 14 | ✅ | OK (max ULP 0) |
@@ -1820,7 +1820,7 @@ Coverage 1527 / 1802 ONNX files (84.7%).
 | simple/test_strnorm_model_monday_casesensintive_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | simple/test_strnorm_model_monday_casesensintive_upper/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | simple/test_strnorm_model_monday_empty_output/model.onnx | 10 | ✅ | OK (max abs diff 0) |
-| simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ❌ | Failed to build testbench. |
+| simple/test_strnorm_model_monday_insensintive_upper_twodim/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 | simple/test_strnorm_model_nostopwords_nochangecase/model.onnx | 10 | ✅ | OK (max abs diff 0) |
 
 ## ONNX2C test coverage
@@ -1910,7 +1910,7 @@ Coverage 119 / 125 ONNX files (95.2%).
 | local_ops/test_shape_const_out/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | ✅ | OK (max ULP 0) |
 | mnist/model.onnx | 8 | ❌ | Out of tolerance (max ULP 160) |
-| mnist/pytorch.onnx | 9 | ❌ | Testbench input network_input has rank 4, expected 2 |
+| mnist/pytorch.onnx | 9 | ❌ | Out of tolerance (max ULP 2295973698) |
 | old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_default_axis/model.onnx | 9 | ✅ | OK (max ULP 0) |

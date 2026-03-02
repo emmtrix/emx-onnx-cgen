@@ -1500,9 +1500,7 @@ def _verify_model(
                         if not present:
                             handle.write(struct.pack("<i", 0))
                             elem_shape = tuple(seq_type.elem.shape)
-                            zero_payload = np.zeros(
-                                (32, *elem_shape), dtype=seq_dtype
-                            )
+                            zero_payload = np.zeros((32, *elem_shape), dtype=seq_dtype)
                             handle.write(
                                 np.ascontiguousarray(zero_payload).tobytes(order="C")
                             )
