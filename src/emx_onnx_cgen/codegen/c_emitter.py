@@ -12921,9 +12921,7 @@ class CEmitter:
                 output_shape = tuple(output_shape_list)
             else:
                 output_shape = tuple(
-                    dim
-                    for index, dim in enumerate(input_shape)
-                    if index != op.axis
+                    dim for index, dim in enumerate(input_shape) if index != op.axis
                 )
             params = self._shared_param_map(
                 [
@@ -12994,9 +12992,7 @@ class CEmitter:
                 outer=outer,
                 inner=inner,
                 keepdims=op.keepdims,
-                output_axis_capacity=(
-                    output_shape[op.axis] if op.keepdims else 1
-                ),
+                output_axis_capacity=(output_shape[op.axis] if op.keepdims else 1),
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)

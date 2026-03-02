@@ -394,17 +394,11 @@ class Compiler:
             if elem.shape and all(dim_param is None for dim_param in elem.dim_params):
                 return elem
 
-            def _split_chunk_size(
-                split_name: str | None, axis_size: int
-            ) -> int:
+            def _split_chunk_size(split_name: str | None, axis_size: int) -> int:
                 if split_name is None:
                     return 1
                 initializer = next(
-                    (
-                        item
-                        for item in graph.initializers
-                        if item.name == split_name
-                    ),
+                    (item for item in graph.initializers if item.name == split_name),
                     None,
                 )
                 if initializer is None:
