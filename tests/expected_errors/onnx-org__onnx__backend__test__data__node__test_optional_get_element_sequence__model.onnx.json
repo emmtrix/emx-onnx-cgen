@@ -1,6 +1,7 @@
 {
   "error": "OK (non-tensor outputs matched; max_abs_diff=2109386646, max_ulp=0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "OptionalGetElement"
   ],

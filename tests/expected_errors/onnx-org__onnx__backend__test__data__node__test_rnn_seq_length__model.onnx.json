@@ -1,6 +1,7 @@
 {
   "error": "Unsupported op RNN",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_rnn_seq_length model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "RNN"
   ],

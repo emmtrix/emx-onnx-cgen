@@ -1,6 +1,9 @@
+<!-- AUTO-GENERATED FILE. DO NOT EDIT. -->
+<!-- Regenerate with: UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc -->
+
 # Error frequency
 
-This histogram is test-suite-overarching.
+Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |

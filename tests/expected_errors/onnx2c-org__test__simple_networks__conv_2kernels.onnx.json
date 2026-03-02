@@ -1,6 +1,7 @@
 {
   "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_2kernels.onnx",
+  "verification_mode": "Random+ORT",
   "operators": [
     "Transpose",
     "Conv",

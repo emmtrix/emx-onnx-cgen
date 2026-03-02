@@ -1,6 +1,7 @@
 {
   "error": "OK (max ULP 23)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "AffineGrid"
   ],
