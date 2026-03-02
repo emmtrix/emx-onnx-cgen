@@ -1472,8 +1472,8 @@ Coverage 1539 / 1802 ONNX files (85.4%).
 | node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_add_2_sequences/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_add_2_sequences_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
-| node/test_sequence_map_extract_shapes/model.onnx |  | Data | ❌ | 'SequenceMap_0_in_0' |
-| node/test_sequence_map_extract_shapes_expanded/model.onnx |  | Data | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
+| node/test_sequence_map_extract_shapes/model.onnx |  |  | ❌ | 'SequenceMap_0_in_0' |
+| node/test_sequence_map_extract_shapes_expanded/model.onnx |  |  | ❌ | 'SequenceMap_test_sequence_map_extract_shapes_expanded_function_x' |
 | node/test_sequence_map_identity_1_sequence/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_identity_1_sequence_1_tensor/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_identity_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
