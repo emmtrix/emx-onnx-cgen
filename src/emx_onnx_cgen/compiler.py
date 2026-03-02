@@ -19,14 +19,13 @@ from .codegen.c_emitter import (
     ModelHeader,
     NodeInfo,
 )
-from .dtypes import dtype_info
-from .errors import CodegenError, UnsupportedOpError
+from .errors import UnsupportedOpError
 from .ir.context import GraphContext
 from .ir.model import Graph, TensorType, Value, ValueType
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
-from .lowering.common import ensure_supported_dtype, shape_product, value_dtype
+from .lowering.common import ensure_supported_dtype, shape_product
 from .lowering.registry import get_lowering_registry
 from .onnx_import import import_onnx
 
@@ -41,8 +40,8 @@ class CompilerOptions:
     restrict_arrays: bool = True
     fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
-    testbench_inputs: Mapping[str, np.ndarray] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
+    shape_inference_inputs: Mapping[str, np.ndarray] | None = None
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
     large_weight_threshold: int = 100 * 1024
@@ -82,7 +81,6 @@ class Compiler:
     @dataclass(frozen=True)
     class _CompileContext:
         lowered: LoweredModel
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None
         variable_dim_inputs: dict[int, dict[int, str]]
         variable_dim_outputs: dict[int, dict[int, str]]
 
@@ -101,9 +99,6 @@ class Compiler:
             "concretize_shapes",
             lambda: self._concretize_graph_shapes(model, graph),
         )
-        testbench_inputs = self._time_step(
-            "resolve_testbench_inputs", lambda: self._resolve_testbench_inputs(graph)
-        )
         variable_dim_inputs, variable_dim_outputs = self._time_step(
             "collect_variable_dims", lambda: self._collect_variable_dims(graph)
         )
@@ -112,7 +107,6 @@ class Compiler:
         )
         return Compiler._CompileContext(
             lowered=lowered,
-            testbench_inputs=testbench_inputs,
             variable_dim_inputs=variable_dim_inputs,
             variable_dim_outputs=variable_dim_outputs,
         )
@@ -124,7 +118,6 @@ class Compiler:
             lambda: self._emitter.emit_model(
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -137,7 +130,6 @@ class Compiler:
             "emit_testbench",
             lambda: self._emitter.emit_testbench(
                 ctx.lowered,
-                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -162,7 +154,6 @@ class Compiler:
             lambda: self._emitter.emit_model_with_data_file(
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -178,7 +169,6 @@ class Compiler:
             lambda: self._emitter.emit_model(
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -199,7 +189,6 @@ class Compiler:
             lambda: self._emitter.emit_model_with_data_file(
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
-                testbench_inputs=ctx.testbench_inputs,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
@@ -275,39 +264,9 @@ class Compiler:
             op_context=op_ctx,
         )
 
-    def _resolve_testbench_inputs(
-        self, graph: Graph
-    ) -> Mapping[str, tuple[float | int | bool, ...]] | None:
-        if not self._options.testbench_inputs:
-            return None
-        input_specs = {value.name: value for value in graph.inputs}
-        unknown_inputs = sorted(
-            name for name in self._options.testbench_inputs if name not in input_specs
-        )
-        if unknown_inputs:
-            raise CodegenError(
-                "Testbench inputs include unknown inputs: " + ", ".join(unknown_inputs)
-            )
-        for name, values in self._options.testbench_inputs.items():
-            if not isinstance(values, np.ndarray):
-                raise CodegenError(f"Testbench input {name} must be a numpy array")
-            input_value = input_specs[name]
-            if not isinstance(input_value.type, TensorType):
-                raise CodegenError(f"Testbench input {name} must be a tensor value")
-            dtype = value_dtype(graph, name)
-            info = dtype_info(dtype)
-            expected_shape = input_value.type.shape
-            expected_count = shape_product(expected_shape)
-            array = values.astype(info.np_dtype, copy=False)
-            if array.size != expected_count:
-                raise CodegenError(
-                    "Testbench input "
-                    f"{name} has {array.size} elements, expected {expected_count}"
-                )
-        return None
-
     def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
-        if not self._options.testbench_inputs:
+        shape_inputs = self._options.shape_inference_inputs
+        if not shape_inputs:
             return graph
         if not any(
             isinstance(value.type, TensorType) and value.type.dim_params
@@ -354,7 +313,19 @@ class Compiler:
                 sess_options=sess_options,
                 providers=["CPUExecutionProvider"],
             )
-            output_arrays = sess.run(None, self._options.testbench_inputs)
+            graph_tensor_inputs = {
+                value.name
+                for value in graph.inputs
+                if isinstance(value.type, TensorType)
+            }
+            ort_inputs = {
+                name: array
+                for name, array in shape_inputs.items()
+                if name in graph_tensor_inputs and isinstance(array, np.ndarray)
+            }
+            if not ort_inputs:
+                return graph
+            output_arrays = sess.run(None, ort_inputs)
         except Exception:
             return graph
 
@@ -362,7 +333,7 @@ class Compiler:
         for name, array in zip(output_names, output_arrays):
             if isinstance(array, np.ndarray):
                 shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
-        for name, array in self._options.testbench_inputs.items():
+        for name, array in ort_inputs.items():
             if isinstance(array, np.ndarray):
                 shapes_by_name[name] = tuple(int(dim) for dim in array.shape)
 

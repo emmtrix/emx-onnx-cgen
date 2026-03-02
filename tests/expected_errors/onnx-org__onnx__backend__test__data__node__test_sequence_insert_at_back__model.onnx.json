@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max abs diff 8972011810649449542)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceInsert"
   ],
   "opset_version": 11,
-  "generated_checksum": "7fa5048e7896b62ac11ba2c684554b653376cbb351d6301cfdfbcd5021a8dfeb"
+  "generated_checksum": "d95c7146d6b12fdc4da6d2ed487f8c04c3220fc82a72eb326435794ec523b34b"
 }

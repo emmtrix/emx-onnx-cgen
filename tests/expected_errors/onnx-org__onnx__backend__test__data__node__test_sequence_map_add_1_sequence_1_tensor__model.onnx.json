@@ -1,9 +1,9 @@
 {
-  "error": "Out of tolerance (max ULP 15143681)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceMap"
   ],
   "opset_version": 17,
-  "generated_checksum": "08c23279967a3204b6d3a25b6ca5e84c1da8931fff3e01e9b48df4d892a425b6"
+  "generated_checksum": "5c7497897aefc950d9c54f7363bf9f74f2df292f82e6b6d1490a229317617edb"
 }

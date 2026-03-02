@@ -3816,7 +3816,6 @@ def _compile_and_run_testbench(
         exe_path = temp_path / "model"
         options = CompilerOptions(
             emit_testbench=True,
-            testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
         generated = compiler.compile(model)
