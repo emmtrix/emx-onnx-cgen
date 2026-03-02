@@ -51,6 +51,38 @@ def _serialize_string_tensor(array: np.ndarray) -> bytes:
     return bytes(encoded)
 
 
+
+def _random_tensor_input(shape: tuple[int, ...], dtype: ScalarType, rng: np.random.Generator) -> np.ndarray:
+    np_dtype = dtype.np_dtype
+    if dtype == ScalarType.STRING:
+        return np.full(shape, "", dtype=np_dtype)
+    if np.issubdtype(np_dtype, np.floating):
+        return rng.uniform(-1.0, 1.0, size=shape).astype(np_dtype)
+    if np.issubdtype(np_dtype, np.bool_):
+        return rng.integers(0, 2, size=shape, dtype=np.int8).astype(np_dtype)
+    if np.issubdtype(np_dtype, np.unsignedinteger):
+        return rng.integers(0, 8, size=shape, dtype=np.uint64).astype(np_dtype)
+    if np.issubdtype(np_dtype, np.integer):
+        return rng.integers(-4, 4, size=shape, dtype=np.int64).astype(np_dtype)
+    return np.zeros(shape, dtype=np_dtype)
+
+
+def _generate_random_testbench_inputs(
+    graph_inputs: Sequence[Any],
+) -> tuple[dict[str, np.ndarray], dict[str, bool]]:
+    rng = np.random.default_rng(0)
+    generated_inputs: dict[str, np.ndarray] = {}
+    optional_inputs: dict[str, bool] = {}
+    for value in graph_inputs:
+        if not isinstance(value.type, TensorType):
+            continue
+        optional_inputs[value.name] = True
+        generated_inputs[value.name] = _random_tensor_input(
+            tuple(value.type.shape),
+            value.type.dtype,
+            rng,
+        )
+    return generated_inputs, optional_inputs
 def _env_flag(name: str) -> bool:
     value = os.environ.get(name)
     if value is None:
@@ -1422,6 +1454,9 @@ def _verify_model(
                 )
                 testbench_outputs = None
         if testbench_inputs is None:
+            testbench_inputs, testbench_optional_inputs = _generate_random_testbench_inputs(
+                graph.inputs
+            )
             input_source = "Random"
         if testbench_outputs is not None:
             reference_source = "Data"
@@ -1448,7 +1483,7 @@ def _verify_model(
         )
         compiler = Compiler(options)
         generated, weight_data = compiler.compile_with_weight_data(model)
-        if testbench_inputs:
+        if testbench_inputs is not None:
             compile_ctx = compiler._build_compile_context(model)
             lowered_sequence_input_shapes = {
                 name: tuple(shape)
@@ -1506,7 +1541,7 @@ def _verify_model(
     try:
         payload: dict[str, Any] | None = None
         testbench_input_path: Path | None = None
-        if testbench_inputs:
+        if testbench_inputs is not None:
             testbench_input_path = temp_path / "testbench_inputs.bin"
             with testbench_input_path.open("wb") as handle:
                 for value in graph.inputs:
@@ -1699,7 +1734,7 @@ def _verify_model(
                 generated_checksum,
             )
 
-        if testbench_inputs:
+        if testbench_inputs is not None:
             inputs = {}
             for value in graph.inputs:
                 if not isinstance(value.type, TensorType):
