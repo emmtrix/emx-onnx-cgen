@@ -1,8 +1,11 @@
+<!-- AUTO-GENERATED FILE. DO NOT EDIT. -->
+<!-- Regenerate with: UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc -->
+
 # Supported operators
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 187 / 205
+Supported operators: 189 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -115,7 +118,7 @@ Supported operators: 187 / 205
 | NonZero | ✅ |
 | Not | ✅ |
 | OneHot | ✅ |
-| OptionalGetElement | ❌ |
+| OptionalGetElement | ✅ |
 | OptionalHasElement | ✅ |
 | Or | ✅ |
 | PRelu | ✅ |
@@ -208,6 +211,6 @@ Supported operators: 187 / 205
 | ai.onnx.preview.training::Gradient | ✅ |
 | ai.onnx.preview.training::Momentum | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
-| com.microsoft::QLinearAveragePool | ❌ |
+| com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearMul | ✅ |
 | com.microsoft::QLinearSoftmax | ✅ |
