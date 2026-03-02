@@ -15,8 +15,8 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
-| Out of tolerance | 14 | 8, 13, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
+| Out of tolerance | 10 | 8, 13, 19, 20, 22, 24 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Unsupported op DFT | 6 | 19, 20 |
@@ -81,7 +81,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 20 | 1 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
-| Out of tolerance | 21 | 4 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
 | Out of tolerance | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |

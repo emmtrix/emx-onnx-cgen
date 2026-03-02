@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1535 / 1802, 85.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1539 / 1802, 85.4% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1535 / 1802 ONNX files (85.2%).
+Coverage 1539 / 1802 ONNX files (85.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1103,12 +1103,12 @@ Coverage 1535 / 1802 ONNX files (85.2%).
 | node/test_prelu_example/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
 | node/test_prelu_example_expanded/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
 | node/test_qlinearconv/model.onnx | 10 | Data | ✅ | OK (max abs diff 0) |
-| node/test_qlinearmatmul_2D_int8_float16/model.onnx | 21 | Data | ❌ | Out of tolerance (max abs diff 148) |
-| node/test_qlinearmatmul_2D_int8_float32/model.onnx | 21 | Data | ❌ | Out of tolerance (max abs diff 148) |
+| node/test_qlinearmatmul_2D_int8_float16/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_2D_int8_float32/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
 | node/test_qlinearmatmul_2D_uint8_float16/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
 | node/test_qlinearmatmul_2D_uint8_float32/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
-| node/test_qlinearmatmul_3D_int8_float16/model.onnx | 21 | Data | ❌ | Out of tolerance (max abs diff 247) |
-| node/test_qlinearmatmul_3D_int8_float32/model.onnx | 21 | Data | ❌ | Out of tolerance (max abs diff 248) |
+| node/test_qlinearmatmul_3D_int8_float16/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
+| node/test_qlinearmatmul_3D_int8_float32/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
 | node/test_qlinearmatmul_3D_uint8_float16/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
 | node/test_qlinearmatmul_3D_uint8_float32/model.onnx | 21 | Data | ✅ | OK (max abs diff 0) |
 | node/test_quantizelinear/model.onnx | 25 | Data | ✅ | OK (max abs diff 0) |
