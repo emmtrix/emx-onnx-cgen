@@ -321,7 +321,12 @@ class Compiler:
             raise CodegenError(
                 f"Testbench input {name} must be a tensor or sequence value"
             )
-        return self._options.testbench_inputs
+        needs_embedded_testbench_inputs = any(
+            not isinstance(value.type, TensorType) for value in graph.inputs
+        )
+        if needs_embedded_testbench_inputs:
+            return self._options.testbench_inputs
+        return None
 
     def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
         if not self._options.testbench_inputs:

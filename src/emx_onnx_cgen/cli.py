@@ -8,6 +8,7 @@ import os
 import shlex
 import shutil
 import signal
+import struct
 import subprocess
 import sys
 import tempfile
@@ -1377,6 +1378,9 @@ def _verify_model(
                 "and running runtime backend for all node outputs."
             )
             testbench_outputs = None
+        codegen_testbench_inputs = (
+            None if has_non_tensor_input else testbench_inputs
+        )
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
@@ -1388,7 +1392,7 @@ def _verify_model(
             truncate_weights_after=args.truncate_weights_after,
             large_temp_threshold_bytes=args.large_temp_threshold_bytes,
             large_weight_threshold=args.large_weight_threshold,
-            testbench_inputs=testbench_inputs,
+            testbench_inputs=codegen_testbench_inputs,
             testbench_optional_inputs=testbench_optional_inputs,
             timings=timings,
         )
@@ -1441,17 +1445,13 @@ def _verify_model(
     try:
         payload: dict[str, Any] | None = None
         testbench_input_path: Path | None = None
-        if testbench_inputs and not has_non_tensor_input:
-            input_order = [
-                value.name
-                for value in graph.inputs
-                if isinstance(value.type, TensorType)
-            ]
+        if testbench_inputs:
             testbench_input_path = temp_path / "testbench_inputs.bin"
             with testbench_input_path.open("wb") as handle:
-                for name in input_order:
-                    array = testbench_inputs.get(name)
-                    if array is None:
+                for value in graph.inputs:
+                    name = value.name
+                    input_data = testbench_inputs.get(name)
+                    if input_data is None:
                         return (
                             None,
                             f"Missing testbench input data for {name}.",
@@ -1459,14 +1459,61 @@ def _verify_model(
                             opset_version,
                             generated_checksum,
                         )
-                    dtype = input_dtypes[name].np_dtype
-                    if input_dtypes[name] == ScalarType.STRING:
-                        blob = _serialize_string_tensor(array)
-                    else:
-                        blob = np.ascontiguousarray(
-                            array.astype(dtype, copy=False)
-                        ).tobytes(order="C")
-                    handle.write(blob)
+                    if isinstance(value.type, TensorType):
+                        dtype = input_dtypes[name].np_dtype
+                        if input_dtypes[name] == ScalarType.STRING:
+                            blob = _serialize_string_tensor(input_data)
+                        else:
+                            blob = np.ascontiguousarray(
+                                input_data.astype(dtype, copy=False)
+                            ).tobytes(order="C")
+                        if value.type.is_optional:
+                            present = bool(
+                                (testbench_optional_inputs or {}).get(name, True)
+                            )
+                            handle.write(struct.pack("<B", 1 if present else 0))
+                            if not present:
+                                continue
+                        handle.write(blob)
+                        continue
+                    seq_type = value.type
+                    seq_dtype = seq_type.elem.dtype.np_dtype
+                    seq_data = np.asarray(input_data).astype(seq_dtype, copy=False)
+                    if seq_data.ndim < 1:
+                        return (
+                            None,
+                            f"Sequence input {name} must be at least 1D.",
+                            operators,
+                            opset_version,
+                            generated_checksum,
+                        )
+                    present = bool((testbench_optional_inputs or {}).get(name, True))
+                    if seq_type.is_optional:
+                        handle.write(struct.pack("<B", 1 if present else 0))
+                        if not present:
+                            handle.write(struct.pack("<i", 0))
+                            elem_shape = tuple(seq_type.elem.shape)
+                            zero_payload = np.zeros(
+                                (32, *elem_shape), dtype=seq_dtype
+                            )
+                            handle.write(
+                                np.ascontiguousarray(zero_payload).tobytes(order="C")
+                            )
+                            continue
+                    seq_count = int(seq_data.shape[0])
+                    handle.write(struct.pack("<i", seq_count))
+                    elem_shape = tuple(seq_type.elem.shape)
+                    normalized = np.zeros((32, *elem_shape), dtype=seq_dtype)
+                    limit = min(seq_count, 32)
+                    if limit > 0:
+                        for idx in range(limit):
+                            item = np.asarray(seq_data[idx])
+                            slices = tuple(
+                                slice(0, min(cur, tgt))
+                                for cur, tgt in zip(item.shape, elem_shape)
+                            )
+                            normalized[(idx, *slices)] = item[slices]
+                    handle.write(np.ascontiguousarray(normalized).tobytes(order="C"))
         c_path = temp_path / "model.c"
         weights_path = temp_path / f"{model_name}.bin"
         exe_path = temp_path / "model"
