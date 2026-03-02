@@ -68,6 +68,7 @@ class CliResult:
     operators: list[str] | None = None
     opset_version: int | None = None
     generated_checksum: str | None = None
+    verification_mode: str | None = None
 
 
 @dataclass(frozen=True)
@@ -424,6 +425,15 @@ def run_cli_command(
 
     try:
         if args.command != "compile":
+            verification_mode = (
+                "Data"
+                if args.test_data_dir is not None
+                else (
+                    "Random+ONNXRef"
+                    if args.runtime == "onnx-reference"
+                    else "Random+ORT"
+                )
+            )
             (
                 success_message,
                 error,
@@ -440,6 +450,7 @@ def run_cli_command(
                 operators=operators,
                 opset_version=opset_version,
                 generated_checksum=generated_checksum,
+                verification_mode=verification_mode,
             )
         generated, _testbench, data_source, _weight_data, error = _compile_model(args)
         if error:
@@ -1244,11 +1255,19 @@ def _verify_model(
     *,
     include_build_details: bool,
     reporter: _VerifyReporter | None = None,
+    result_meta: dict[str, str] | None = None,
 ) -> tuple[str | None, str | None, list[str], int | None, str | None]:
     active_reporter = reporter or _NullVerifyReporter()
     operators: list[str] = []
     opset_version: int | None = None
     generated_checksum: str | None = None
+    input_source = "Data" if args.test_data_dir is not None else "Random"
+    reference_source = "ONNXRef" if args.runtime == "onnx-reference" else "ORT"
+
+    def _set_verification_mode() -> None:
+        if result_meta is None:
+            return
+        result_meta["verification_mode"] = f"{input_source}/{reference_source}"
 
     def describe_exit_code(returncode: int) -> str:
         if returncode >= 0:
@@ -1388,6 +1407,11 @@ def _verify_model(
         testbench_inputs, testbench_optional_inputs, reshaped_tensor_inputs = (
             _load_test_data_inputs(model, args.test_data_dir)
         )
+        if args.test_data_dir is not None and testbench_inputs is None:
+            raise CodegenError(
+                "Failed to load test inputs from --test-data-dir; "
+                "strict mode is enabled for explicit test data."
+            )
         testbench_outputs = None
         if not args.per_node_accuracy:
             testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
@@ -1397,6 +1421,10 @@ def _verify_model(
                     "to match model input signatures; using runtime reference instead."
                 )
                 testbench_outputs = None
+        if testbench_inputs is None:
+            input_source = "Random"
+        if testbench_outputs is not None:
+            reference_source = "Data"
         if args.per_node_accuracy:
             active_reporter.note(
                 "Per-node accuracy: ignoring --test-data-dir reference outputs "
@@ -1733,6 +1761,7 @@ def _verify_model(
                     f"{', '.join(custom_domains)}"
                 )
                 runtime_name = "onnxruntime"
+            reference_source = "ONNXRef" if runtime_name == "onnx-reference" else "ORT"
             runtime_started = active_reporter.start_step(
                 f"  Running {runtime_name} [--runtime={args.runtime}]"
             )
@@ -1775,6 +1804,7 @@ def _verify_model(
                 value.name: output
                 for value, output in zip(graph.outputs, runtime_outputs_list)
             }
+        _set_verification_mode()
         nondeterministic_ops = sorted(
             set(operators).intersection(_NONDETERMINISTIC_OPERATORS)
         )

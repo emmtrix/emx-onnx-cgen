@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported op OptionalGetElement",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "OptionalGetElement"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "33e2611ddd7e0dd78d026016e4479bca208d58d7b03ee8c9e47aa0766f1971d3"
 }

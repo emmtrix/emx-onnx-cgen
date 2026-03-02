@@ -1,6 +1,9 @@
+<!-- AUTO-GENERATED FILE. DO NOT EDIT. -->
+<!-- Regenerate with: UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc -->
+
 # Error frequency
 
-This histogram is test-suite-overarching.
+Aggregates non-success verification outcomes.
 
 | Error message | Count | Opset versions |
 | --- | --- | --- |
@@ -21,7 +24,6 @@ This histogram is test-suite-overarching.
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
-| Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
@@ -68,7 +70,6 @@ This histogram is test-suite-overarching.
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
-| Unsupported op OptionalGetElement | 18 | 4 |
 | Unsupported op BitwiseNot | 18 | 2 |
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |

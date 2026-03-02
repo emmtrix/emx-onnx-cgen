@@ -87,6 +87,7 @@ from ..ir.ops import (
     NonMaxSuppressionOp,
     NonZeroOp,
     OneHotOp,
+    OptionalGetElementOp,
     OptionalHasElementOp,
     PadOp,
     QuantizeLinearOp,
@@ -705,6 +706,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | OptionalHasElementOp
+            | OptionalGetElementOp
             | NonZeroOp
             | UniqueOp
             | NonMaxSuppressionOp
@@ -794,6 +796,7 @@ class CEmitter:
         | ShapeOp
         | SizeOp
         | OptionalHasElementOp
+        | OptionalGetElementOp
         | NonZeroOp
         | UniqueOp
         | NonMaxSuppressionOp
@@ -1966,6 +1969,11 @@ class CEmitter:
                 input0=name_map.get(op.input0, op.input0),
                 output=name_map.get(op.output, op.output),
             )
+        if isinstance(op, OptionalGetElementOp):
+            return OptionalGetElementOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+            )
         if isinstance(op, NonZeroOp):
             return NonZeroOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2437,6 +2445,9 @@ class CEmitter:
                 "size": self._env.get_template("size_op.c.j2"),
                 "optional_has_element": self._env.get_template(
                     "optional_has_element_op.c.j2"
+                ),
+                "optional_get_element": self._env.get_template(
+                    "optional_get_element_op.c.j2"
                 ),
                 "nonzero": self._env.get_template("nonzero_op.c.j2"),
                 "unique": self._env.get_template("unique_op.c.j2"),
@@ -3181,6 +3192,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | OptionalHasElementOp
+            | OptionalGetElementOp
             | NonZeroOp
             | UniqueOp
             | NonMaxSuppressionOp
@@ -3550,6 +3562,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | OptionalHasElementOp
+            | OptionalGetElementOp
             | NonZeroOp
             | UniqueOp
             | NonMaxSuppressionOp
@@ -3755,6 +3768,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | OptionalHasElementOp
+            | OptionalGetElementOp
             | NonZeroOp
             | UniqueOp
             | NonMaxSuppressionOp
@@ -5362,6 +5376,11 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 output=temp_map.get(op.output, op.output),
             )
+        if isinstance(op, OptionalGetElementOp):
+            return OptionalGetElementOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+            )
         if isinstance(op, NonZeroOp):
             return NonZeroOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -6005,6 +6024,7 @@ class CEmitter:
             shape_template=templates["shape"],
             size_template=templates["size"],
             optional_has_element_template=templates["optional_has_element"],
+            optional_get_element_template=templates["optional_get_element"],
             nonzero_template=templates["nonzero"],
             unique_template=templates["unique"],
             nonmax_suppression_template=templates["nonmax_suppression"],
@@ -6540,6 +6560,7 @@ class CEmitter:
         shape_template,
         size_template,
         optional_has_element_template,
+        optional_get_element_template,
         nonzero_template,
         unique_template,
         nonmax_suppression_template,
@@ -11259,6 +11280,40 @@ class CEmitter:
                 output_suffix=output_suffix,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, OptionalGetElementOp):
+            output_shape_raw = self._ctx_shape(op.output)
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_dtype = self._ctx_dtype(op.output)
+            output_suffix = self._param_array_suffix(
+                output_shape_raw, output_dim_names, dtype=output_dtype
+            )
+            input_suffix = self._param_array_suffix(
+                output_shape_raw, _dim_names_for(op.input0), dtype=output_dtype
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = optional_get_element_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                shape=shape,
+                loop_vars=loop_vars,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, NonZeroOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -14250,6 +14305,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | OptionalHasElementOp
+            | OptionalGetElementOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -14334,6 +14390,7 @@ class CEmitter:
             | ShapeOp
             | SizeOp
             | OptionalHasElementOp
+            | OptionalGetElementOp
             | ExpandOp
             | CumSumOp
             | RangeOp
@@ -14400,6 +14457,8 @@ class CEmitter:
         if isinstance(op, UniqueOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, OptionalHasElementOp):
+            return ((op.input0, self._ctx_shape(op.input0)),)
+        if isinstance(op, OptionalGetElementOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, NonMaxSuppressionOp):
             inputs = [
@@ -14707,6 +14766,14 @@ class CEmitter:
         ),
     ) -> tuple[tuple[str, tuple[int, ...], ScalarType], ...]:
         if isinstance(op, OptionalHasElementOp):
+            return (
+                (
+                    op.output,
+                    self._op_output_shape(op),
+                    self._op_output_dtype(op),
+                ),
+            )
+        if isinstance(op, OptionalGetElementOp):
             return (
                 (
                     op.output,
@@ -15276,6 +15343,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, OptionalHasElementOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, OptionalGetElementOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, NonZeroOp):
             return self._ctx_shape(op.output)
         if isinstance(op, UniqueOp):
@@ -15424,6 +15493,8 @@ class CEmitter:
         if isinstance(op, LoopRangeOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, OptionalHasElementOp):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, OptionalGetElementOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, NonZeroOp):
             return self._ctx_dtype(op.output)
