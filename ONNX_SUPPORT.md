@@ -1,3 +1,6 @@
+<!-- AUTO-GENERATED FILE. DO NOT EDIT. -->
+<!-- Regenerate with: UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc -->
+
 # ONNX test coverage
 
 Overview:
@@ -11,6 +14,8 @@ Overview:
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
 Floating-point verification first ignores very small differences up to **1.0 × [machine epsilon](https://en.wikipedia.org/wiki/Machine_epsilon) of the evaluated floating-point type**, treating such values as equal. For values with a larger absolute difference, the ULP distance is computed, and the maximum ULP distance is reported.
+
+The `Verification` column uses `Input/Reference` notation (for example `Random/ORT`, `Random/ONNXRef`, `Data/Data`): `Input` can be `Random` (generated from model input metadata) or `Data` (loaded from ONNX test data files), and `Reference` can be `ORT` (computed with ONNX Runtime), `ONNXRef` (computed with the ONNX reference evaluator), or `Data` (expected outputs loaded from ONNX test data files).
 
 ## Official ONNX test coverage
 

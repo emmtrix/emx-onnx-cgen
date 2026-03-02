@@ -29,6 +29,17 @@ OFFICIAL_ONNX_FILE_SUPPORT_HISTOGRAM_PATH = (
 )
 SUPPORT_OPS_PATH = Path(__file__).resolve().parents[1] / "SUPPORT_OPS.md"
 ONNX_VERSION_PATH = Path(__file__).resolve().parents[1] / "onnx-org" / "VERSION_NUMBER"
+DOCS_REGEN_COMMAND = (
+    "UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc"
+)
+
+
+def _generated_header() -> list[str]:
+    return [
+        "<!-- AUTO-GENERATED FILE. DO NOT EDIT. -->",
+        f"<!-- Regenerate with: {DOCS_REGEN_COMMAND} -->",
+        "",
+    ]
 
 
 def _is_success_message(message: str) -> bool:
@@ -39,6 +50,8 @@ def _render_onnx_file_support_table(
     expectations: list[OnnxFileExpectation],
 ) -> list[str]:
     def _verification_mode(expectation: OnnxFileExpectation) -> str:
+        if expectation.verification_mode:
+            return expectation.verification_mode
         command_line = (expectation.command_line or "").strip()
         if not command_line:
             return "Random+ORT"
@@ -151,6 +164,7 @@ def _render_onnx_file_support_markdown(
         else 0.0
     )
     lines = [
+        *_generated_header(),
         "# ONNX test coverage",
         "",
         "Overview:",
@@ -181,6 +195,16 @@ def _render_onnx_file_support_markdown(
             "of the evaluated floating-point type**, treating such values as equal. "
             "For values with a larger absolute difference, the ULP distance is "
             "computed, and the maximum ULP distance is reported."
+        ),
+        "",
+        (
+            "The `Verification` column uses `Input/Reference` notation "
+            "(for example `Random/ORT`, `Random/ONNXRef`, `Data/Data`): "
+            "`Input` can be `Random` (generated from model input metadata) or "
+            "`Data` (loaded from ONNX test data files), and `Reference` can be "
+            "`ORT` (computed with ONNX Runtime), `ONNXRef` (computed with the "
+            "ONNX reference evaluator), or `Data` (expected outputs loaded from "
+            "ONNX test data files)."
         ),
         "",
         *_render_onnx_file_support_section(
@@ -238,7 +262,10 @@ def _render_error_histogram_markdown(
     if not counts:
         return ""
     lines = [
+        *_generated_header(),
         title,
+        "",
+        "Aggregates non-success verification outcomes.",
         "",
         "| Error message | Count | Opset versions |",
         "| --- | --- | --- |",
@@ -311,6 +338,7 @@ def _render_supported_ops_markdown(
             supported_ops.update(expectation.operators)
     sorted_ops = sorted(all_ops)
     lines = [
+        *_generated_header(),
         "# Supported operators",
         "",
         (
@@ -354,6 +382,7 @@ def test_official_onnx_file_support_doc() -> None:
                 path=relative_path,
                 error=expectation.error,
                 command_line=expectation.command_line,
+                verification_mode=expectation.verification_mode,
                 operators=expectation.operators,
                 opset_version=expectation.opset_version,
             )
@@ -370,6 +399,7 @@ def test_official_onnx_file_support_doc() -> None:
                 path=local_path,
                 error=expectation.error,
                 command_line=expectation.command_line,
+                verification_mode=expectation.verification_mode,
                 operators=expectation.operators,
                 opset_version=expectation.opset_version,
             )
@@ -385,6 +415,7 @@ def test_official_onnx_file_support_doc() -> None:
                 path=local_path,
                 error=expectation.error,
                 command_line=expectation.command_line,
+                verification_mode=expectation.verification_mode,
                 operators=expectation.operators,
                 opset_version=expectation.opset_version,
             )
