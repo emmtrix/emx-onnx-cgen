@@ -19,9 +19,9 @@ from .codegen.c_emitter import (
     ModelHeader,
     NodeInfo,
 )
-from .errors import CodegenError, UnsupportedOpError
+from .errors import UnsupportedOpError
 from .ir.context import GraphContext
-from .ir.model import Graph, SequenceType, TensorType, Value, ValueType
+from .ir.model import Graph, TensorType, Value, ValueType
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
