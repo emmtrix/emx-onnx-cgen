@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import re
-import shlex
 from collections import Counter
 from pathlib import Path
 
@@ -48,34 +47,7 @@ def _render_onnx_file_support_table(
     expectations: list[OnnxFileExpectation],
 ) -> list[str]:
     def _verification_mode(expectation: OnnxFileExpectation) -> str:
-        if expectation.verification_mode:
-            return expectation.verification_mode
-        command_line = (expectation.command_line or "").strip()
-        if not command_line:
-            return "Random+ORT"
-        try:
-            tokens = shlex.split(command_line)
-        except ValueError:
-            tokens = command_line.split()
-        has_test_data = any(
-            token == "--test-data-dir" or token.startswith("--test-data-dir=")
-            for token in tokens
-        )
-        if has_test_data:
-            return "Data"
-        runtime = "onnxruntime"
-        for index, token in enumerate(tokens):
-            if token == "--runtime" and index + 1 < len(tokens):
-                runtime = tokens[index + 1]
-                break
-            if token.startswith("--runtime="):
-                runtime = token.split("=", 1)[1]
-                break
-        if runtime == "onnx-reference":
-            return "Random+ONNXRef"
-        if runtime == "onnxruntime":
-            return "Random+ORT"
-        return f"Random+{runtime}"
+        return expectation.verification_mode or ""
 
     lines = [
         "| File | Opset | Verification | Supported | Error |",

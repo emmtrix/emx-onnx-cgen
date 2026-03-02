@@ -1,12 +1,14 @@
-# emmtrix ONNX-to-C Code Generator (emx-onnx-cgen)
+<p align="center"><img width="50%" src="docs/assets/emx-onnx-cgen-logo.svg" /></p>
 
-<p align="center"><img width="50%" src="https://raw.githubusercontent.com/emmtrix/emx-onnx-cgen/main/logo.png" /></p>
-
+<div align="center">
+  
 [![PyPI - Version](https://img.shields.io/pypi/v/emx-onnx-cgen.svg)](https://pypi.org/project/emx-onnx-cgen)
 [![CI](https://github.com/emmtrix/emx-onnx-cgen/actions/workflows/tests.yml/badge.svg)](https://github.com/emmtrix/emx-onnx-cgen/actions/workflows/tests.yml)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-`emx-onnx-cgen` compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating-system services, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
+</div>
+
+**emmtrix ONNX-to-C Code Generator (emx-onnx-cgen)** compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating-system services, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
 
 Key characteristics:
 
@@ -154,6 +156,7 @@ These options are accepted by both `compile` and `verify`:
 - `--large-temp-threshold`: Mark temporary buffers larger than this threshold as static (default: `1024`).
 - `--fp32-accumulation-strategy`: Accumulation strategy for float32 inputs (`simple` uses float32, `fp64` uses double; default: `fp64`).
 - `--fp16-accumulation-strategy`: Accumulation strategy for float16 inputs (`simple` uses float16, `fp32` uses float; default: `fp32`).
+- `--replicate-ort-bugs`: Compatibility switch for verification/debugging. Enables emulation of known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 
 ### `compile`
 
@@ -183,6 +186,7 @@ Options:
 - `--max-ulp`: Maximum allowed ULP distance for floating outputs (default: `100`).
 - `--atol-eps`: Absolute tolerance as a multiple of machine epsilon for floating outputs (default: `1.0`).
 - `--runtime`: Runtime backend for verification (`auto`, `onnxruntime`, or `onnx-reference`, default: `auto`). In `auto` mode, `onnx-reference` is preferred and `onnxruntime` is selected when custom domains require it.
+- `--replicate-ort-bugs`: Verification-only compatibility mode to reproduce known behavior differences of the ONNX Runtime version pinned in `requirements-ci.txt`.
 - `--temp-dir-root`: Root directory in which to create a temporary verification directory (default: system temp dir).
 - `--temp-dir`: Exact directory to use for temporary verification files (default: create a temporary directory).
 - `--keep-temp-dir`: Keep the temporary verification directory instead of deleting it.

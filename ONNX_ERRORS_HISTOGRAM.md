@@ -14,6 +14,7 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Out of tolerance | 15 | 8, 9, 11, 19, 22 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
+| Out of tolerance | 10 | 8, 13, 19, 20, 22, 24 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Unsupported op Loop | 7 | 16, 17 |
@@ -29,7 +30,6 @@ This histogram is test-suite-overarching.
 | Unsupported op AffineGrid | 4 | 20 |
 | Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
-| Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op Momentum | 3 |  |
@@ -95,7 +95,6 @@ This histogram is test-suite-overarching.
 | Unsupported op ScatterElements | 18 | 6 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
-| Unsupported op OptionalGetElement | 18 | 4 |
 | Unsupported op BitwiseNot | 18 | 2 |
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |

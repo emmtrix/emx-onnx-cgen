@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op OptionalGetElement",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_tensor model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "OptionalGetElement"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "494636b6a128314bbf30970261cd9e334c3451a8580659c50d8639062d1348c5"
 }
