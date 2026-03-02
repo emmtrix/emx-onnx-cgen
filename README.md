@@ -4,7 +4,7 @@
 [![CI](https://github.com/emmtrix/emx-onnx-cgen/actions/workflows/tests.yml/badge.svg)](https://github.com/emmtrix/emx-onnx-cgen/actions/workflows/tests.yml)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-`emx-onnx-cgen` compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating-system services, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
+*emmtrix ONNX-to-C Code Generator (emx-onnx-cgen)* compiles ONNX models to portable, deterministic C code for deeply embedded systems. The generated code is designed to run without dynamic memory allocation, operating-system services, or external runtimes, making it suitable for safety-critical and resource-constrained targets.
 
 Key characteristics:
 
