@@ -2761,6 +2761,7 @@ class CEmitter:
             *includes,
             "",
             self._emit_index_type_define(),
+            self._emit_unused_define(),
             self._emit_node_function_define(),
             self._emit_string_max_len_define(),
             self._emit_sequence_max_len_define(),
@@ -2816,6 +2817,7 @@ class CEmitter:
             data_sections.extend((*data_includes, ""))
         else:
             data_sections.append("")
+        data_sections.extend((self._emit_unused_define(), ""))
         data_constants = self._emit_constant_definitions(
             inline_constants, storage_prefix="const"
         )

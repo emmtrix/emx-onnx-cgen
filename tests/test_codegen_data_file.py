@@ -32,4 +32,6 @@ def test_compile_with_data_file_emits_externs() -> None:
 
     assert "extern const float weight1_weights[2][2];" in main_source
     assert "static const float" not in main_source
+    assert "#define EMX_UNUSED __attribute__((unused))" in main_source
     assert "const EMX_UNUSED float weight1_weights[2][2]" in data_source
+    assert "#define EMX_UNUSED __attribute__((unused))" in data_source
