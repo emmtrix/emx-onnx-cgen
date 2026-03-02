@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1539 / 1802, 85.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1540 / 1802, 85.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1539 / 1802 ONNX files (85.4%).
+Coverage 1540 / 1802 ONNX files (85.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -257,7 +257,7 @@ Coverage 1539 / 1802 ONNX files (85.4%).
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 8165636) |
+| node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_small/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_with_padding/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_without_padding/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
