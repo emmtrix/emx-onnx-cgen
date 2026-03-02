@@ -1,6 +1,7 @@
 void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
     const idx_t axis_total = {{ axis_total }};
+    const idx_t output_outer_stride = {{ inner }}{% if keepdims %} * {{ output_axis_capacity }}{% endif %};
     idx_t produced = 0;
 
     {% if axis_sizes %}
@@ -50,7 +51,7 @@ void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             copy_elems *= chunk;
             {% endif %}
             {{ c_type }} *output_ptr =
-                (({{ c_type }} *){{ output_sequence }}[sequence_idx]) + outer_idx * copy_elems;
+                (({{ c_type }} *){{ output_sequence }}[sequence_idx]) + outer_idx * output_outer_stride;
             memcpy(
                 output_ptr,
                 input_data + input_base + axis_offset,

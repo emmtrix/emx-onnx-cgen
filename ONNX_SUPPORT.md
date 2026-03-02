@@ -9,6 +9,8 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1540 / 1802, 85.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1544 / 1802, 85.7% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -22,6 +24,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 Test directory: `onnx-org/onnx/backend/test/data`
 
 Coverage 1540 / 1802 ONNX files (85.5%).
+Coverage 1544 / 1802 ONNX files (85.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -257,7 +260,7 @@ Coverage 1540 / 1802 ONNX files (85.5%).
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_False/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_0_ceil_mode_is_True/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_False/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
-| node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data | ❌ | Out of tolerance (max ULP 8165636) |
+| node/test_averagepool_3d_dilations_large_count_include_pad_is_1_ceil_mode_is_True/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_averagepool_3d_dilations_small/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_with_padding/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_basic_conv_without_padding/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
@@ -904,7 +907,7 @@ Coverage 1540 / 1802 ONNX files (85.5%).
 | node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | Data | ✅ | OK (max ULP 1) |
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 1) |
 | node/test_loop11/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
-| node/test_loop13_seq/model.onnx | 13 | Data | ❌ | Out of tolerance (max ULP 18874368) |
+| node/test_loop13_seq/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_loop16_seq_none/model.onnx | 16 | Data | ❌ | Unsupported op Loop |
 | node/test_lpnormalization_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_1d_default/model.onnx | 22 | Data | ❌ | LpPool expects 2D kernel_shape |
@@ -1279,10 +1282,10 @@ Coverage 1540 / 1802 ONNX files (85.5%).
 | node/test_reshape_zero_dim/model.onnx | 25 | Data | ✅ | OK (max ULP 0) |
 | node/test_resize_downsample_scales_cubic/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
 | node/test_resize_downsample_scales_cubic_A_n0p5_exclude_outside/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
-| node/test_resize_downsample_scales_cubic_align_corners/model.onnx | 19 | Data | ❌ | Out of tolerance (max ULP 1098996) |
+| node/test_resize_downsample_scales_cubic_align_corners/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
 | node/test_resize_downsample_scales_cubic_antialias/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
 | node/test_resize_downsample_scales_linear/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
-| node/test_resize_downsample_scales_linear_align_corners/model.onnx | 19 | Data | ❌ | Out of tolerance (max ULP 3595118) |
+| node/test_resize_downsample_scales_linear_align_corners/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
 | node/test_resize_downsample_scales_linear_antialias/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
 | node/test_resize_downsample_scales_linear_half_pixel_symmetric/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
 | node/test_resize_downsample_scales_nearest/model.onnx | 19 | Data | ✅ | OK (max ULP 0) |
@@ -1554,7 +1557,7 @@ Coverage 1540 / 1802 ONNX files (85.5%).
 | node/test_split_equal_parts_2d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_1/model.onnx | 24 | Data | ❌ | Out of tolerance (max ULP 20971520) |
+| node/test_split_to_sequence_1/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_to_sequence_2/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_to_sequence_nokeepdims/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1835,7 @@ Coverage 1540 / 1802 ONNX files (85.5%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 120 / 125 ONNX files (96.0%).
+Coverage 121 / 125 ONNX files (96.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1914,7 +1917,7 @@ Coverage 120 / 125 ONNX files (96.0%).
 | local_ops/test_scatternd_indices_3x2/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_shape_const_out/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
 | local_ops/test_slice_end_INT64_MAX/model.onnx | 12 | Data | ✅ | OK (max ULP 0) |
-| mnist/model.onnx | 8 | Data | ❌ | Out of tolerance (max ULP 160) |
+| mnist/model.onnx | 8 | Data | ✅ | OK (max ULP 160) |
 | mnist/pytorch.onnx | 9 | Data | ✅ | OK (max ULP 7) |
 | old_onnx_backend/11/test_softmax_axis_0/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/11/test_softmax_axis_1/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |

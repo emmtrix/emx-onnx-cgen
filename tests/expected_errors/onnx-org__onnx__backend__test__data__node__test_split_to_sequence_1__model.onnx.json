@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 20971520)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "SplitToSequence"
   ],
   "opset_version": 24,
-  "generated_checksum": "bb9a63b0e044cdbea74446c8f57058477599c0bbfa1ad4171c4cd90d7a74c9f4"
+  "generated_checksum": "b3c7d3265f48e143cb91f6a6aab0ef808bfba664e6a37fb40a3301a35bfc3314"
 }

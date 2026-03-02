@@ -12910,7 +12910,19 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, SplitToSequenceOp):
             input_shape = self._ctx_shape(op.input0)
-            output_shape = self._ctx_sequence_elem_type(op.output_sequence).shape
+            if op.keepdims:
+                output_shape_list = list(input_shape)
+                if op.split_sizes:
+                    output_shape_list[op.axis] = max(op.split_sizes)
+                elif op.split is None:
+                    output_shape_list[op.axis] = 1
+                else:
+                    output_shape_list[op.axis] = input_shape[op.axis]
+                output_shape = tuple(output_shape_list)
+            else:
+                output_shape = tuple(
+                    dim for index, dim in enumerate(input_shape) if index != op.axis
+                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -12980,6 +12992,7 @@ class CEmitter:
                 outer=outer,
                 inner=inner,
                 keepdims=op.keepdims,
+                output_axis_capacity=(output_shape[op.axis] if op.keepdims else 1),
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
