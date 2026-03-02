@@ -1,10 +1,10 @@
 {
-  "error": "OK (non-tensor outputs matched; max_abs_diff=2109386646, max_ulp=0)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_get_element_sequence model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "OptionalGetElement"
   ],
   "opset_version": 18,
-  "generated_checksum": "641c9a4f4cb893f768a532c3e46abf1d72ff0ec0ef5c7912a6c568d5ae058f1e"
+  "generated_checksum": "33e2611ddd7e0dd78d026016e4479bca208d58d7b03ee8c9e47aa0766f1971d3"
 }

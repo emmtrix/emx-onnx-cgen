@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 187 / 205
+Supported operators: 189 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -50,7 +50,7 @@ Supported operators: 187 / 205
 | Cosh | ✅ |
 | CumSum | ✅ |
 | DFT | ❌ |
-| DeformConv | ❌ |
+| DeformConv | ✅ |
 | DepthToSpace | ✅ |
 | DequantizeLinear | ✅ |
 | Det | ❌ |
@@ -181,7 +181,7 @@ Supported operators: 187 / 205
 | SplitToSequence | ✅ |
 | Sqrt | ✅ |
 | Squeeze | ✅ |
-| StringConcat | ❌ |
+| StringConcat | ✅ |
 | StringNormalizer | ✅ |
 | StringSplit | ✅ |
 | Sub | ✅ |
