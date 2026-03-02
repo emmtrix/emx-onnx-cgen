@@ -94,6 +94,18 @@ Verification compares the generated code against a runtime backend (ONNX referen
 emx-onnx-cgen verify path/to/model.onnx
 ```
 
+If a test/expectation passes `--sanitize` but your local compiler setup cannot
+link sanitizers, you can force-disable sanitizer flags:
+
+```bash
+# Linux/macOS
+EMX_DISABLE_SANITIZE=1 emx-onnx-cgen verify --sanitize path/to/model.onnx
+
+# Windows PowerShell
+$env:EMX_DISABLE_SANITIZE = "1"
+emx-onnx-cgen verify --sanitize path/to/model.onnx
+```
+
 Verification conceptually:
 
 1. Compile with an emitted testbench (JSON I/O)
