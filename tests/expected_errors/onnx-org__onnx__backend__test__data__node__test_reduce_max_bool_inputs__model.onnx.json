@@ -1,6 +1,7 @@
 {
   "error": "ReduceMax does not support dtype bool",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_max_bool_inputs model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "ReduceMax"
   ],

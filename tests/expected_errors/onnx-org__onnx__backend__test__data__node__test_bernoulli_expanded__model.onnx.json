@@ -1,6 +1,7 @@
 {
   "error": "Unsupported op RandomUniformLike",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_bernoulli_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "RandomUniformLike",
     "Greater",

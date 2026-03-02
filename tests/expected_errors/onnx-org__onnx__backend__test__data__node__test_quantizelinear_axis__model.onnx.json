@@ -1,6 +1,7 @@
 {
   "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_quantizelinear_axis model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "QuantizeLinear"
   ],

@@ -1,6 +1,7 @@
 {
   "error": "Unsupported op Col2Im",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_col2im model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "Col2Im"
   ],
