@@ -2077,6 +2077,60 @@ def _load_test_data_inputs(
             return None, None
     inputs: dict[str, np.ndarray] = {}
     optional_flags: dict[str, bool] = {}
+
+    def _sequence_tensor_values_to_array(
+        *,
+        name: str,
+        tensors: list[np.ndarray],
+        tensor_type: onnx.TypeProto.Tensor,
+    ) -> np.ndarray:
+        if not tensors:
+            dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+            if dtype_info is None:
+                raise CodegenError(f"Sequence input {name} has unsupported elem_type.")
+            shape = [
+                dim.dim_value if dim.HasField("dim_value") else 1
+                for dim in tensor_type.shape.dim
+            ]
+            return np.zeros((0, *shape), dtype=dtype_info.np_dtype)
+        first_shape = tensors[0].shape
+        if any(tensor.shape != first_shape for tensor in tensors[1:]):
+            if any(tensor.ndim != tensors[0].ndim for tensor in tensors[1:]):
+                LOGGER.warning(
+                    "Skipping sequence input %s with mixed tensor ranks in test data.",
+                    name,
+                )
+                raise CodegenError(f"Sequence input {name} has mixed tensor ranks.")
+            max_shape = tuple(
+                max(tensor.shape[axis] for tensor in tensors)
+                for axis in range(tensors[0].ndim)
+            )
+            target_shape: list[int] = []
+            for axis, max_dim in enumerate(max_shape):
+                if axis < len(tensor_type.shape.dim):
+                    dim = tensor_type.shape.dim[axis]
+                    if dim.HasField("dim_value") and dim.dim_value > 0:
+                        target_shape.append(int(dim.dim_value))
+                        continue
+                target_shape.append(int(max_dim))
+            LOGGER.warning(
+                "Sequence test input %s has variable element shapes; "
+                "normalizing to %s for testbench binary input.",
+                name,
+                tuple(target_shape),
+            )
+            normalized: list[np.ndarray] = []
+            for tensor in tensors:
+                item = np.zeros(tuple(target_shape), dtype=tensor.dtype)
+                slices = tuple(
+                    slice(0, min(cur_dim, tgt_dim))
+                    for cur_dim, tgt_dim in zip(tensor.shape, target_shape)
+                )
+                item[slices] = tensor[slices]
+                normalized.append(item)
+            return np.stack(normalized, axis=0)
+        return np.stack(tensors, axis=0)
+
     for index, path in enumerate(input_files):
         value_info = model_inputs[index]
         value_kind = value_info.type.WhichOneof("value")
@@ -2092,96 +2146,76 @@ def _load_test_data_inputs(
             seq = onnx.SequenceProto()
             seq.ParseFromString(path.read_bytes())
             tensors = [numpy_helper.to_array(tensor) for tensor in seq.tensor_values]
-            if not tensors:
-                tensor_type = elem_type.tensor_type
-                dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
-                if dtype_info is None:
-                    raise CodegenError(
-                        f"Sequence input {value_info.name} has unsupported elem_type."
-                    )
-                shape = [
-                    dim.dim_value if dim.HasField("dim_value") else 1
-                    for dim in tensor_type.shape.dim
-                ]
-                inputs[value_info.name] = np.zeros(
-                    (0, *shape), dtype=dtype_info.np_dtype
-                )
-                continue
-            first_shape = tensors[0].shape
-            if any(tensor.shape != first_shape for tensor in tensors[1:]):
-                if any(tensor.ndim != tensors[0].ndim for tensor in tensors[1:]):
-                    LOGGER.warning(
-                        "Skipping sequence input %s with mixed tensor ranks in test data.",
-                        value_info.name,
-                    )
-                    return None, None
-                tensor_type = elem_type.tensor_type
-                max_shape = tuple(
-                    max(tensor.shape[axis] for tensor in tensors)
-                    for axis in range(tensors[0].ndim)
-                )
-                target_shape: list[int] = []
-                for axis, max_dim in enumerate(max_shape):
-                    if axis < len(tensor_type.shape.dim):
-                        dim = tensor_type.shape.dim[axis]
-                        if dim.HasField("dim_value") and dim.dim_value > 0:
-                            target_shape.append(int(dim.dim_value))
-                            continue
-                    target_shape.append(int(max_dim))
-                LOGGER.warning(
-                    "Sequence test input %s has variable element shapes; "
-                    "normalizing to %s for testbench binary input.",
-                    value_info.name,
-                    tuple(target_shape),
-                )
-                normalized: list[np.ndarray] = []
-                for tensor in tensors:
-                    item = np.zeros(tuple(target_shape), dtype=tensor.dtype)
-                    slices = tuple(
-                        slice(0, min(cur_dim, tgt_dim))
-                        for cur_dim, tgt_dim in zip(tensor.shape, target_shape)
-                    )
-                    item[slices] = tensor[slices]
-                    normalized.append(item)
-                inputs[value_info.name] = np.stack(normalized, axis=0)
-                continue
-            inputs[value_info.name] = np.stack(tensors, axis=0)
+            inputs[value_info.name] = _sequence_tensor_values_to_array(
+                name=value_info.name,
+                tensors=tensors,
+                tensor_type=elem_type.tensor_type,
+            )
             continue
         optional = onnx.OptionalProto()
         optional.ParseFromString(path.read_bytes())
         elem_type = value_info.type.optional_type.elem_type
-        if elem_type.WhichOneof("value") != "tensor_type":
-            LOGGER.warning(
-                "Skipping test data load for non-tensor optional input %s.",
-                value_info.name,
-            )
-            return None, None
-        tensor_type = elem_type.tensor_type
-        if optional.HasField("tensor_value"):
-            inputs[value_info.name] = numpy_helper.to_array(optional.tensor_value)
-            optional_flags[value_info.name] = True
-            continue
-        if not tensor_type.HasField("elem_type"):
-            raise CodegenError(
-                f"Optional input {value_info.name} is missing elem_type."
-            )
-        dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
-        if dtype_info is None:
-            raise CodegenError(
-                f"Optional input {value_info.name} has unsupported elem_type."
-            )
-        shape: list[int] = []
-        for dim in tensor_type.shape.dim:
-            if dim.HasField("dim_value"):
-                shape.append(dim.dim_value)
-            elif dim.HasField("dim_param"):
-                shape.append(1)
-            else:
+        elem_kind = elem_type.WhichOneof("value")
+        if elem_kind == "tensor_type":
+            tensor_type = elem_type.tensor_type
+            if optional.HasField("tensor_value"):
+                inputs[value_info.name] = numpy_helper.to_array(optional.tensor_value)
+                optional_flags[value_info.name] = True
+                continue
+            if not tensor_type.HasField("elem_type"):
                 raise CodegenError(
-                    f"Optional input {value_info.name} has unknown shape."
+                    f"Optional input {value_info.name} is missing elem_type."
                 )
-        inputs[value_info.name] = np.zeros(tuple(shape), dtype=dtype_info.np_dtype)
-        optional_flags[value_info.name] = False
+            dtype_info = onnx._mapping.TENSOR_TYPE_MAP.get(tensor_type.elem_type)
+            if dtype_info is None:
+                raise CodegenError(
+                    f"Optional input {value_info.name} has unsupported elem_type."
+                )
+            shape: list[int] = []
+            for dim in tensor_type.shape.dim:
+                if dim.HasField("dim_value"):
+                    shape.append(dim.dim_value)
+                elif dim.HasField("dim_param"):
+                    shape.append(1)
+                else:
+                    raise CodegenError(
+                        f"Optional input {value_info.name} has unknown shape."
+                    )
+            inputs[value_info.name] = np.zeros(tuple(shape), dtype=dtype_info.np_dtype)
+            optional_flags[value_info.name] = False
+            continue
+        if elem_kind == "sequence_type":
+            seq_elem = elem_type.sequence_type.elem_type
+            if seq_elem.WhichOneof("value") != "tensor_type":
+                LOGGER.warning(
+                    "Skipping test data load for non-tensor optional sequence input %s.",
+                    value_info.name,
+                )
+                return None, None
+            if optional.HasField("sequence_value"):
+                tensors = [
+                    numpy_helper.to_array(tensor)
+                    for tensor in optional.sequence_value.tensor_values
+                ]
+                inputs[value_info.name] = _sequence_tensor_values_to_array(
+                    name=value_info.name,
+                    tensors=tensors,
+                    tensor_type=seq_elem.tensor_type,
+                )
+                optional_flags[value_info.name] = True
+            else:
+                inputs[value_info.name] = _sequence_tensor_values_to_array(
+                    name=value_info.name,
+                    tensors=[],
+                    tensor_type=seq_elem.tensor_type,
+                )
+                optional_flags[value_info.name] = False
+            continue
+        LOGGER.warning(
+            "Skipping test data load for unsupported optional input %s.",
+            value_info.name,
+        )
+        return None, None
     return inputs, optional_flags
 
 
