@@ -1,6 +1,7 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max abs diff 0, max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_dynamicquantizelinear_max_adjusted_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "Constant",
     "ReduceMin",

@@ -79,7 +79,7 @@ static void testbench_init_constant_input({% if not constant_inputs %}void{% els
 }
 
 static int testbench_read_input_file(
-    const char *input_path{% for input in variable_inputs %}, {{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% endfor %}
+    const char *input_path{% for input in variable_inputs %}, {{ input.c_type }} {{ input.name }}{{ input.array_suffix }}{% if input.is_sequence %}, idx_t *{{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, _Bool *{{ input.optional_flag_name }}{% endif %}{% endfor %}
 ) {
 {% if not variable_inputs %}
     (void)input_path;
@@ -92,6 +92,36 @@ static int testbench_read_input_file(
     }
 {% for input in inputs %}
 {% if not input.constant_name %}
+{% if input.optional_flag_name %}
+    {
+        uint8_t present = 1u;
+        if (fread(&present, sizeof(uint8_t), 1, input_file) != 1) {
+            fprintf(stderr, "Failed to read optional presence for input {{ input.json_name }}\n");
+            fclose(input_file);
+            return 1;
+        }
+        *{{ input.optional_flag_name }} = (present != 0u);
+    }
+{% endif %}
+{% if input.is_sequence %}
+    {
+        int32_t sequence_count = 0;
+        if (fread(&sequence_count, sizeof(int32_t), 1, input_file) != 1) {
+            fprintf(stderr, "Failed to read sequence count for input {{ input.json_name }}\n");
+            fclose(input_file);
+            return 1;
+        }
+        if (sequence_count < 0 || sequence_count > EMX_SEQUENCE_MAX_LEN) {
+            fprintf(stderr, "Invalid sequence count for input {{ input.json_name }}: %d\n", (int)sequence_count);
+            fclose(input_file);
+            return 1;
+        }
+        *{{ input.count_name }} = (idx_t)sequence_count;
+    }
+{% endif %}
+{% if input.optional_flag_name and not input.is_sequence %}
+    if (*{{ input.optional_flag_name }}) {
+{% endif %}
 {% for depth in range(input.rank) %}
     for (idx_t {{ input.loop_vars[depth] }} = 0; {{ input.loop_vars[depth] }} < {{ input.shape[depth] }}; ++{{ input.loop_vars[depth] }}) {
 {% endfor %}
@@ -107,6 +137,9 @@ static int testbench_read_input_file(
 {% for depth in range(input.rank - 1, -1, -1) %}
     }
 {% endfor %}
+{% if input.optional_flag_name and not input.is_sequence %}
+    }
+{% endif %}
 {% endif %}
 {% endfor %}
 
@@ -226,7 +259,7 @@ static int testbench_run(const char *input_path) {
 
 {% for input in inputs %}
 {% if input.optional_flag_name %}
-    _Bool {{ input.optional_flag_name }} = {{ "true" if input.optional_present else "false" }};
+    _Bool {{ input.optional_flag_name }} = {{ "1" if input.optional_present else "0" }};
 {% endif %}
 {% if input.is_sequence %}
     {{ input.c_type }} {{ input.name }}{{ input.array_suffix }};
@@ -238,7 +271,7 @@ static int testbench_run(const char *input_path) {
 
     testbench_init_constant_input({% for input in constant_inputs %}{{ input.name }}{% if not loop.last %}, {% endif %}{% endfor %});
     if (input_path) {
-        if (testbench_read_input_file(input_path{% for input in variable_inputs %}, {{ input.name }}{% endfor %}) != 0) {
+        if (testbench_read_input_file(input_path{% for input in variable_inputs %}, {{ input.name }}{% if input.is_sequence %}, &{{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, &{{ input.optional_flag_name }}{% endif %}{% endfor %}) != 0) {
             return 1;
         }
     } else {
@@ -252,6 +285,9 @@ static int testbench_run(const char *input_path) {
 {% else %}
     {{ output.c_type }} {{ output.name }}{{ output.array_suffix }};
 {% endif %}
+{% if output.optional_flag_name %}
+    _Bool {{ output.optional_flag_name }} = 0;
+{% endif %}
 {% endfor %}
 
     if (!{{ model_name }}_load("{{ weight_data_filename }}")) {
@@ -259,7 +295,7 @@ static int testbench_run(const char *input_path) {
     }
 
     timer_start();
-    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.is_sequence %}, {{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, &{{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+    {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.is_sequence %}, {{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, &{{ output.count_name }}{% endif %}{% if output.optional_flag_name %}, &{{ output.optional_flag_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
     timer_stop();
 
     testbench_print_json({% for input in inputs %}{{ input.name }}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});

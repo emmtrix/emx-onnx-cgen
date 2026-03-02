@@ -127,9 +127,29 @@ def _temporary_pypi_readme() -> None:
             README_PATH.write_text(original, encoding="utf-8")
 
 
-def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
+@contextmanager
+def _temporary_build_info() -> None:
+    original: str | None
+    if BUILD_INFO_MODULE.exists():
+        original = BUILD_INFO_MODULE.read_text(encoding="utf-8")
+    else:
+        original = None
+
     _write_build_info()
-    with _temporary_pypi_readme():
+    try:
+        yield
+    finally:
+        if original is None:
+            if BUILD_INFO_MODULE.exists():
+                BUILD_INFO_MODULE.unlink()
+            return
+        current = BUILD_INFO_MODULE.read_text(encoding="utf-8")
+        if current != original:
+            BUILD_INFO_MODULE.write_text(original, encoding="utf-8")
+
+
+def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
+    with _temporary_build_info(), _temporary_pypi_readme():
         return _build_meta.build_wheel(
             wheel_directory,
             config_settings=config_settings,
@@ -138,7 +158,6 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
 
 
 def build_editable(wheel_directory, config_settings=None, metadata_directory=None):
-    _write_build_info()
     return _build_meta.build_editable(
         wheel_directory,
         config_settings=config_settings,

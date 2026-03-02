@@ -1,4 +1,4 @@
-void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     (void){{ output_sequence }};
     *{{ output_sequence }}__count = 0;
 }

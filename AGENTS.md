@@ -92,6 +92,8 @@ source of truth for CLI arguments:
 PYTHONPATH=src python -m emx_onnx_cgen.cli <command_line from JSON>
 ```
 
+If needed, disable sanitizers despite `--sanitize` via `EMX_DISABLE_SANITIZE=1`.
+
 ### Golden reference updates
 
 Golden tests compare generated code against reference files. To refresh references

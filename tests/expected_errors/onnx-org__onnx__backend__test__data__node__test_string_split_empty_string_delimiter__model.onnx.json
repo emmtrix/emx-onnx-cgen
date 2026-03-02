@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported op StringSplit",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_split_empty_string_delimiter model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "StringSplit"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "b0d7a86a042db65f64b242a5172832590c2fc7e7b04e93f990e0e5ecef3bcd20"
 }

@@ -156,6 +156,18 @@ class ScatterNDOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class ScatterElementsOp(RenderableOpBase):
+    __io_inputs__ = ("data", "indices", "updates")
+    __io_outputs__ = ("output",)
+    data: str
+    indices: str
+    updates: str
+    output: str
+    axis: int
+    reduction: str
+
+
+@dataclass(frozen=True)
 class ScatterOp(RenderableOpBase):
     __io_inputs__ = ("data", "indices", "updates")
     __io_outputs__ = ("output",)
@@ -323,6 +335,20 @@ class TileOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class CenterCropPadOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "shape_input")
+    __io_outputs__ = ("output",)
+    input0: str
+    shape_input: str
+    output: str
+    axes: (
+        tuple[int, ...] | None
+    )  # None means all axes; already normalized (non-negative)
+    input_shape: tuple[int, ...]
+    output_shape: tuple[int, ...]
+
+
+@dataclass(frozen=True)
 class PadOp(RenderableOpBase):
     __io_inputs__ = ("input0", "pads_input", "axes_input", "value_input")
     __io_outputs__ = ("output",)
@@ -460,6 +486,61 @@ class GridSampleOp(RenderableOpBase):
         if grid_shape[-1] != spatial_rank:
             raise ShapeInferenceError(
                 f"{self.kind} grid last dim must equal spatial rank {spatial_rank}, got {grid_shape[-1]}"
+            )
+
+
+@dataclass(frozen=True)
+class AffineGridOp(RenderableOpBase):
+    __io_inputs__ = ("theta", "size")
+    __io_outputs__ = ("grid",)
+    theta: str
+    size: str
+    grid: str
+    align_corners: bool
+    spatial_rank: int  # 2 or 3
+
+    def infer_types(self, ctx: OpContext) -> None:
+        theta_dtype = ctx.dtype(self.theta)
+        if not theta_dtype.is_float:
+            raise UnsupportedOpError(
+                f"{self.kind} theta dtype must be float, got {theta_dtype.onnx_name}"
+            )
+        try:
+            grid_dtype = ctx.dtype(self.grid)
+        except ShapeInferenceError:
+            ctx.set_dtype(self.grid, theta_dtype)
+            grid_dtype = theta_dtype
+        if grid_dtype != theta_dtype:
+            raise UnsupportedOpError(
+                f"{self.kind} grid dtype must match theta dtype {theta_dtype.onnx_name}, "
+                f"got {grid_dtype.onnx_name}"
+            )
+
+    def infer_shapes(self, ctx: OpContext) -> None:
+        theta_shape = ctx.shape(self.theta)
+        size_shape = ctx.shape(self.size)
+        if len(theta_shape) != 3:
+            raise ShapeInferenceError(
+                f"{self.kind} theta must have rank 3, got {len(theta_shape)}"
+            )
+        if len(size_shape) != 1:
+            raise ShapeInferenceError(
+                f"{self.kind} size must have rank 1, got {len(size_shape)}"
+            )
+        n = theta_shape[0]
+        spatial_rank = self.spatial_rank
+        grid_shape = ctx.shape(self.grid)
+        if len(grid_shape) != spatial_rank + 2:
+            raise ShapeInferenceError(
+                f"{self.kind} grid rank must be {spatial_rank + 2}, got {len(grid_shape)}"
+            )
+        if grid_shape[0] != n:
+            raise ShapeInferenceError(
+                f"{self.kind} grid batch dim must be {n}, got {grid_shape[0]}"
+            )
+        if grid_shape[-1] != spatial_rank:
+            raise ShapeInferenceError(
+                f"{self.kind} grid last dim must be {spatial_rank}, got {grid_shape[-1]}"
             )
 
 
@@ -902,6 +983,34 @@ class LoopSequenceInsertOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class LoopSequenceMapOp(RenderableOpBase):
+    __io_inputs__ = ("trip_count", "cond")
+    __io_outputs__ = ("output_sequences",)
+    trip_count: str
+    cond: str
+    input_sequences: tuple[str, ...]
+    input_tensors: tuple[str, ...]
+    output_sequences: tuple[str, ...]
+    output_kinds: tuple[str, ...]
+    output_input0: tuple[str, ...]
+    output_input1: tuple[str | None, ...]
+    output_input0_is_sequence: tuple[bool, ...]
+    output_input1_is_sequence: tuple[bool, ...]
+    output_elem_shapes: tuple[tuple[int, ...], ...]
+    output_elem_dtypes: tuple[ScalarType, ...]
+
+    def call_args(self) -> tuple[str, ...]:
+        args: list[str] = [self.trip_count, self.cond]
+        for name in self.input_sequences:
+            args.extend((name, f"{name}__count"))
+        for name in self.input_tensors:
+            args.append(name)
+        for name in self.output_sequences:
+            args.extend((name, f"{name}__count"))
+        return tuple(args)
+
+
+@dataclass(frozen=True)
 class RangeOp(RenderableOpBase):
     __io_inputs__ = ("start", "limit", "delta")
     __io_outputs__ = ("output",)
@@ -913,6 +1022,24 @@ class RangeOp(RenderableOpBase):
 
 @dataclass(frozen=True)
 class HammingWindowOp(RenderableOpBase):
+    __io_inputs__ = ("size",)
+    __io_outputs__ = ("output",)
+    size: str
+    output: str
+    periodic: bool
+
+
+@dataclass(frozen=True)
+class BlackmanWindowOp(RenderableOpBase):
+    __io_inputs__ = ("size",)
+    __io_outputs__ = ("output",)
+    size: str
+    output: str
+    periodic: bool
+
+
+@dataclass(frozen=True)
+class HannWindowOp(RenderableOpBase):
     __io_inputs__ = ("size",)
     __io_outputs__ = ("output",)
     size: str
@@ -948,6 +1075,15 @@ class TfIdfVectorizerOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class StringConcatOp(RenderableOpBase):
+    __io_inputs__ = ("input0", "input1")
+    __io_outputs__ = ("output",)
+    input0: str
+    input1: str
+    output: str
+
+
+@dataclass(frozen=True)
 class StringNormalizerOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
@@ -956,6 +1092,66 @@ class StringNormalizerOp(RenderableOpBase):
     case_change_action: str
     is_case_sensitive: bool
     stopwords: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class StringSplitOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output_y", "output_z")
+    input0: str
+    output_y: str
+    output_z: str
+    delimiter: str
+    maxsplit: int
+
+
+@dataclass(frozen=True)
+class TreeEnsembleClassifierOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("label", "probabilities")
+    input0: str
+    label: str
+    probabilities: str
+    output: str
+    post_transform: str
+    class_labels: tuple[int, ...]
+    node_tree_ids: tuple[int, ...]
+    node_node_ids: tuple[int, ...]
+    node_feature_ids: tuple[int, ...]
+    node_modes: tuple[int, ...]
+    node_values: tuple[float, ...]
+    node_true_ids: tuple[int, ...]
+    node_false_ids: tuple[int, ...]
+    class_tree_ids: tuple[int, ...]
+    class_node_ids: tuple[int, ...]
+    class_ids: tuple[int, ...]
+    class_weights: tuple[float, ...]
+    dtype: ScalarType = ScalarType.F32
+    output_shape: tuple[int, ...] = ()
+
+
+@dataclass(frozen=True)
+class TreeEnsembleOp(RenderableOpBase):
+    __io_inputs__ = ("input0",)
+    __io_outputs__ = ("output",)
+    input0: str
+    output: str
+    aggregate_function: int
+    post_transform: int
+    tree_roots: tuple[int, ...]
+    node_feature_ids: tuple[int, ...]
+    node_modes: tuple[int, ...]
+    node_splits: tuple[float, ...]
+    node_true_ids: tuple[int, ...]
+    node_true_leafs: tuple[int, ...]
+    node_false_ids: tuple[int, ...]
+    node_false_leafs: tuple[int, ...]
+    membership_values: tuple[float, ...] | None
+    member_range_starts: tuple[int, ...]
+    member_range_ends: tuple[int, ...]
+    leaf_target_ids: tuple[int, ...]
+    leaf_weights: tuple[float, ...]
+    n_targets: int
 
 
 @dataclass(frozen=True)
@@ -1047,6 +1243,27 @@ class SequenceLengthOp(RenderableOpBase):
             f"{self.input_sequence}__count",
             self.output,
         )
+
+
+@dataclass(frozen=True)
+class SequenceIdentityOp(RenderableOpBase):
+    __io_inputs__ = ("input_sequence",)
+    __io_outputs__ = ("output_sequence",)
+    input_sequence: str
+    output_sequence: str
+    input_present: str | None = None
+    output_present: str | None = None
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [
+            self.input_sequence,
+            f"{self.input_sequence}__count",
+            self.output_sequence,
+            f"{self.output_sequence}__count",
+        ]
+        if self.input_present is not None and self.output_present is not None:
+            args.extend([self.input_present, self.output_present])
+        return tuple(args)
 
 
 @dataclass(frozen=True)

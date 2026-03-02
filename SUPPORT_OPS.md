@@ -1,8 +1,11 @@
+<!-- AUTO-GENERATED FILE. DO NOT EDIT. -->
+<!-- Regenerate with: UPDATE_REFS=1 pytest -q tests/test_official_onnx_files_docs.py::test_official_onnx_file_support_doc -->
+
 # Supported operators
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 176 / 205
+Supported operators: 188 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -10,7 +13,7 @@ Supported operators: 176 / 205
 | Acos | ✅ |
 | Acosh | ✅ |
 | Add | ✅ |
-| AffineGrid | ❌ |
+| AffineGrid | ✅ |
 | And | ✅ |
 | ArgMax | ✅ |
 | ArgMin | ✅ |
@@ -27,12 +30,12 @@ Supported operators: 176 / 205
 | BitwiseNot | ✅ |
 | BitwiseOr | ✅ |
 | BitwiseXor | ✅ |
-| BlackmanWindow | ❌ |
+| BlackmanWindow | ✅ |
 | Cast | ✅ |
 | CastLike | ✅ |
 | Ceil | ✅ |
 | Celu | ✅ |
-| CenterCropPad | ❌ |
+| CenterCropPad | ✅ |
 | Clip | ✅ |
 | Col2Im | ❌ |
 | Compress | ✅ |
@@ -47,7 +50,7 @@ Supported operators: 176 / 205
 | Cosh | ✅ |
 | CumSum | ✅ |
 | DFT | ❌ |
-| DeformConv | ❌ |
+| DeformConv | ✅ |
 | DepthToSpace | ✅ |
 | DequantizeLinear | ✅ |
 | Det | ❌ |
@@ -76,7 +79,7 @@ Supported operators: 176 / 205
 | GridSample | ✅ |
 | GroupNormalization | ✅ |
 | HammingWindow | ✅ |
-| HannWindow | ❌ |
+| HannWindow | ✅ |
 | HardSigmoid | ✅ |
 | HardSwish | ✅ |
 | Hardmax | ✅ |
@@ -151,7 +154,7 @@ Supported operators: 176 / 205
 | STFT | ❌ |
 | Scan | ✅ |
 | Scatter | ✅ |
-| ScatterElements | ❌ |
+| ScatterElements | ✅ |
 | ScatterND | ✅ |
 | Selu | ✅ |
 | SequenceAt | ✅ |
@@ -160,7 +163,7 @@ Supported operators: 176 / 205
 | SequenceErase | ✅ |
 | SequenceInsert | ✅ |
 | SequenceLength | ✅ |
-| SequenceMap | ❌ |
+| SequenceMap | ✅ |
 | Shape | ✅ |
 | Shrink | ✅ |
 | Sigmoid | ✅ |
@@ -178,9 +181,9 @@ Supported operators: 176 / 205
 | SplitToSequence | ✅ |
 | Sqrt | ✅ |
 | Squeeze | ✅ |
-| StringConcat | ❌ |
+| StringConcat | ✅ |
 | StringNormalizer | ✅ |
-| StringSplit | ❌ |
+| StringSplit | ✅ |
 | Sub | ✅ |
 | Sum | ✅ |
 | Swish | ✅ |
@@ -201,12 +204,12 @@ Supported operators: 176 / 205
 | ai.onnx.ml::ArrayFeatureExtractor | ❌ |
 | ai.onnx.ml::Binarizer | ❌ |
 | ai.onnx.ml::LabelEncoder | ❌ |
-| ai.onnx.ml::TreeEnsemble | ❌ |
-| ai.onnx.ml::TreeEnsembleClassifier | ❌ |
+| ai.onnx.ml::TreeEnsemble | ✅ |
+| ai.onnx.ml::TreeEnsembleClassifier | ✅ |
 | ai.onnx.preview.training::Adagrad | ✅ |
 | ai.onnx.preview.training::Adam | ❌ |
 | ai.onnx.preview.training::Gradient | ✅ |
-| ai.onnx.preview.training::Momentum | ❌ |
+| ai.onnx.preview.training::Momentum | ✅ |
 | com.microsoft::QLinearAdd | ✅ |
 | com.microsoft::QLinearAveragePool | ✅ |
 | com.microsoft::QLinearMul | ✅ |

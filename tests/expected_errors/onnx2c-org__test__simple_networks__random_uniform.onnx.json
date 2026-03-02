@@ -1,6 +1,7 @@
 {
   "error": "Unsupported op RandomUniform",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks random_uniform.onnx",
+  "verification_mode": "Random+ORT",
   "operators": [
     "RandomUniform"
   ],

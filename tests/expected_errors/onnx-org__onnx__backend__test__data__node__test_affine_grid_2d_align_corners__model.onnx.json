@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported op AffineGrid",
+  "error": "OK (max ULP 4)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "AffineGrid"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "1ef3ed63dffd0fc56c2e3297a739d955dffe2660fc6bc89ccff77bb5f5562da2"
 }

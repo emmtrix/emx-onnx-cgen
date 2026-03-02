@@ -1,9 +1,10 @@
 {
-  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=0)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_opt model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "If"
   ],
   "opset_version": 16,
-  "generated_checksum": "dbf96edca9dbf0007062ea4d8b38363fc5c7080997de2cef8352a98025f7c789"
+  "generated_checksum": "6ace9081e137e908fe5a697d0203636d3c720a7c8ddfb2b7e90b0ca90ed310eb"
 }

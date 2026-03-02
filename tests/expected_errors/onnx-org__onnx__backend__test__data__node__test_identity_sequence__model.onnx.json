@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported non-tensor value 'x' in op Identity.",
+  "error": "OK (no numeric comparisons)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_identity_sequence model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "Identity"
   ],
-  "opset_version": 25
+  "opset_version": 25,
+  "generated_checksum": "bde5965db3fe8f9d9a8fafc1cf81d23f14c87183d8b6a38ce2a3dd07171472ab"
 }

@@ -39,6 +39,7 @@ from ..ir.ops import (
     BatchNormOp,
     BernoulliOp,
     BinaryOp,
+    BlackmanWindowOp,
     CastOp,
     ClipOp,
     CompressOp,
@@ -48,6 +49,7 @@ from ..ir.ops import (
     ConvOp,
     ConvIntegerOp,
     ConvTransposeOp,
+    DeformConvOp,
     CumSumOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
@@ -61,9 +63,11 @@ from ..ir.ops import (
     GatherOp,
     GemmOp,
     GruOp,
+    AffineGridOp,
     GridSampleOp,
     GroupNormalizationOp,
     HammingWindowOp,
+    HannWindowOp,
     HardmaxOp,
     IdentityOp,
     InstanceNormalizationOp,
@@ -77,6 +81,7 @@ from ..ir.ops import (
     MatMulOp,
     MaxPoolOp,
     MeanVarianceNormalizationOp,
+    MomentumOp,
     MultiInputBinaryOp,
     NegativeLogLikelihoodLossOp,
     NonMaxSuppressionOp,
@@ -94,6 +99,7 @@ from ..ir.ops import (
     QLinearConvOp,
     LoopRangeOp,
     LoopSequenceInsertOp,
+    LoopSequenceMapOp,
     RangeOp,
     ReverseSequenceOp,
     SequenceAtOp,
@@ -101,12 +107,14 @@ from ..ir.ops import (
     SequenceEmptyOp,
     SequenceEraseOp,
     SequenceInsertOp,
+    SequenceIdentityOp,
     SequenceLengthOp,
     ReduceOp,
     ReshapeOp,
     ResizeOp,
     RMSNormalizationOp,
     RotaryEmbeddingOp,
+    ScatterElementsOp,
     ScatterOp,
     ScatterNDOp,
     ShapeOp,
@@ -119,8 +127,13 @@ from ..ir.ops import (
     SplitToSequenceOp,
     TensorScatterOp,
     TfIdfVectorizerOp,
+    StringConcatOp,
     StringNormalizerOp,
+    StringSplitOp,
+    TreeEnsembleOp,
+    TreeEnsembleClassifierOp,
     TileOp,
+    CenterCropPadOp,
     TopKOp,
     TransposeOp,
     TriluOp,
@@ -638,6 +651,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -651,6 +665,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -664,6 +679,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterOp
+            | ScatterElementsOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -672,12 +688,14 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -691,7 +709,9 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
             | SplitOp
@@ -720,6 +740,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
         | BatchNormOp
@@ -733,6 +754,7 @@ class CEmitter:
         | GruOp
         | LstmOp
         | AdagradOp
+        | MomentumOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -746,6 +768,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterOp
+        | ScatterElementsOp
         | ScatterNDOp
         | TensorScatterOp
         | TransposeOp
@@ -754,12 +777,14 @@ class CEmitter:
         | EyeLikeOp
         | TriluOp
         | TileOp
+        | CenterCropPadOp
         | PadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
         | ResizeOp
         | GridSampleOp
+        | AffineGridOp
         | ReduceOp
         | ArgReduceOp
         | TopKOp
@@ -773,7 +798,9 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | BlackmanWindowOp
         | HammingWindowOp
+        | HannWindowOp
         | OneHotOp
         | SplitOp
         | TfIdfVectorizerOp
@@ -1307,6 +1334,33 @@ class CEmitter:
                 group=op.group,
                 dtype=op.dtype,
             )
+        if isinstance(op, DeformConvOp):
+            return DeformConvOp(
+                input0=name_map.get(op.input0, op.input0),
+                weights=name_map.get(op.weights, op.weights),
+                offset=name_map.get(op.offset, op.offset),
+                bias=self._map_optional_name(name_map, op.bias),
+                mask=self._map_optional_name(name_map, op.mask),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
+                dtype=op.dtype,
+            )
         if isinstance(op, AveragePoolOp):
             return AveragePoolOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1553,6 +1607,29 @@ class CEmitter:
                 epsilon=op.epsilon,
                 decay_factor=op.decay_factor,
             )
+        if isinstance(op, MomentumOp):
+            return MomentumOp(
+                rate=name_map.get(op.rate, op.rate),
+                timestep=name_map.get(op.timestep, op.timestep),
+                inputs=tuple(name_map.get(name, name) for name in op.inputs),
+                gradients=tuple(name_map.get(name, name) for name in op.gradients),
+                velocities=tuple(name_map.get(name, name) for name in op.velocities),
+                outputs=tuple(name_map.get(name, name) for name in op.outputs),
+                velocity_outputs=tuple(
+                    name_map.get(name, name) for name in op.velocity_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                alpha=op.alpha,
+                beta=op.beta,
+                mode=op.mode,
+            )
         if isinstance(op, SoftmaxOp):
             return SoftmaxOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1677,6 +1754,15 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 batch_dims=op.batch_dims,
             )
+        if isinstance(op, ScatterElementsOp):
+            return ScatterElementsOp(
+                data=name_map.get(op.data, op.data),
+                indices=name_map.get(op.indices, op.indices),
+                updates=name_map.get(op.updates, op.updates),
+                output=name_map.get(op.output, op.output),
+                axis=op.axis,
+                reduction=op.reduction,
+            )
         if isinstance(op, ScatterOp):
             return ScatterOp(
                 data=name_map.get(op.data, op.data),
@@ -1742,6 +1828,15 @@ class CEmitter:
                 repeats_input=name_map.get(op.repeats_input, op.repeats_input),
                 output=name_map.get(op.output, op.output),
             )
+        if isinstance(op, CenterCropPadOp):
+            return CenterCropPadOp(
+                input0=name_map.get(op.input0, op.input0),
+                shape_input=name_map.get(op.shape_input, op.shape_input),
+                output=name_map.get(op.output, op.output),
+                axes=op.axes,
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
+            )
         if isinstance(op, PadOp):
             return PadOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1806,6 +1901,14 @@ class CEmitter:
                 mode=op.mode,
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
+            )
+        if isinstance(op, AffineGridOp):
+            return AffineGridOp(
+                theta=name_map.get(op.theta, op.theta),
+                size=name_map.get(op.size, op.size),
+                grid=name_map.get(op.grid, op.grid),
+                align_corners=op.align_corners,
+                spatial_rank=op.spatial_rank,
             )
         if isinstance(op, ReduceOp):
             return ReduceOp(
@@ -1932,8 +2035,20 @@ class CEmitter:
                 delta=name_map.get(op.delta, op.delta),
                 output=name_map.get(op.output, op.output),
             )
+        if isinstance(op, BlackmanWindowOp):
+            return BlackmanWindowOp(
+                size=name_map.get(op.size, op.size),
+                output=name_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
+                size=name_map.get(op.size, op.size),
+                output=name_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
+        if isinstance(op, HannWindowOp):
+            return HannWindowOp(
                 size=name_map.get(op.size, op.size),
                 output=name_map.get(op.output, op.output),
                 periodic=op.periodic,
@@ -1965,6 +2080,12 @@ class CEmitter:
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
             )
+        if isinstance(op, StringConcatOp):
+            return StringConcatOp(
+                input0=name_map.get(op.input0, op.input0),
+                input1=name_map.get(op.input1, op.input1),
+                output=name_map.get(op.output, op.output),
+            )
         if isinstance(op, StringNormalizerOp):
             return StringNormalizerOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -1973,12 +2094,63 @@ class CEmitter:
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
             )
+        if isinstance(op, StringSplitOp):
+            return StringSplitOp(
+                input0=name_map.get(op.input0, op.input0),
+                output_y=name_map.get(op.output_y, op.output_y),
+                output_z=name_map.get(op.output_z, op.output_z),
+                delimiter=op.delimiter,
+                maxsplit=op.maxsplit,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=name_map.get(op.input0, op.input0),
                 outputs=tuple(name_map.get(name, name) for name in op.outputs),
                 axis=op.axis,
                 split_sizes=op.split_sizes,
+            )
+        if isinstance(op, TreeEnsembleOp):
+            return TreeEnsembleOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                aggregate_function=op.aggregate_function,
+                post_transform=op.post_transform,
+                tree_roots=op.tree_roots,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_splits=op.node_splits,
+                node_true_ids=op.node_true_ids,
+                node_true_leafs=op.node_true_leafs,
+                node_false_ids=op.node_false_ids,
+                node_false_leafs=op.node_false_leafs,
+                membership_values=op.membership_values,
+                member_range_starts=op.member_range_starts,
+                member_range_ends=op.member_range_ends,
+                leaf_target_ids=op.leaf_target_ids,
+                leaf_weights=op.leaf_weights,
+                n_targets=op.n_targets,
+            )
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return TreeEnsembleClassifierOp(
+                input0=name_map.get(op.input0, op.input0),
+                label=name_map.get(op.label, op.label),
+                probabilities=name_map.get(op.probabilities, op.probabilities),
+                output=name_map.get(op.output, op.output),
+                post_transform=op.post_transform,
+                class_labels=op.class_labels,
+                node_tree_ids=op.node_tree_ids,
+                node_node_ids=op.node_node_ids,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_values=op.node_values,
+                node_true_ids=op.node_true_ids,
+                node_false_ids=op.node_false_ids,
+                class_tree_ids=op.class_tree_ids,
+                class_node_ids=op.class_node_ids,
+                class_ids=op.class_ids,
+                class_weights=op.class_weights,
+                dtype=op.dtype,
+                output_shape=op.output_shape,
             )
         if isinstance(op, ReverseSequenceOp):
             return ReverseSequenceOp(
@@ -2016,6 +2188,13 @@ class CEmitter:
                 position=self._map_optional_name(name_map, op.position),
                 output_sequence=name_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SequenceIdentityOp):
+            return SequenceIdentityOp(
+                input_sequence=name_map.get(op.input_sequence, op.input_sequence),
+                output_sequence=name_map.get(op.output_sequence, op.output_sequence),
+                input_present=self._map_optional_name(name_map, op.input_present),
+                output_present=self._map_optional_name(name_map, op.output_present),
+            )
         if isinstance(op, SequenceLengthOp):
             return SequenceLengthOp(
                 input_sequence=name_map.get(op.input_sequence, op.input_sequence),
@@ -2030,6 +2209,32 @@ class CEmitter:
                 keepdims=op.keepdims,
                 split_sizes=op.split_sizes,
                 split_scalar=op.split_scalar,
+            )
+        if isinstance(op, LoopSequenceMapOp):
+            return LoopSequenceMapOp(
+                trip_count=name_map.get(op.trip_count, op.trip_count),
+                cond=name_map.get(op.cond, op.cond),
+                input_sequences=tuple(
+                    name_map.get(name, name) for name in op.input_sequences
+                ),
+                input_tensors=tuple(
+                    name_map.get(name, name) for name in op.input_tensors
+                ),
+                output_sequences=tuple(
+                    name_map.get(name, name) for name in op.output_sequences
+                ),
+                output_kinds=op.output_kinds,
+                output_input0=tuple(
+                    name_map.get(name, name) for name in op.output_input0
+                ),
+                output_input1=tuple(
+                    name_map.get(name, name) if name is not None else None
+                    for name in op.output_input1
+                ),
+                output_input0_is_sequence=op.output_input0_is_sequence,
+                output_input1_is_sequence=op.output_input1_is_sequence,
+                output_elem_shapes=op.output_elem_shapes,
+                output_elem_dtypes=op.output_elem_dtypes,
             )
         return UnaryOp(
             input0=name_map.get(op.input0, op.input0),
@@ -2162,6 +2367,7 @@ class CEmitter:
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
                 "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
+                "deform_conv": self._env.get_template("deform_conv_op.c.j2"),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
                 "lp_pool": self._env.get_template("lp_pool_op.c.j2"),
                 "batch_norm": self._env.get_template("batch_norm_op.c.j2"),
@@ -2179,6 +2385,7 @@ class CEmitter:
                 "gru": self._env.get_template("gru_op.c.j2"),
                 "lstm": self._env.get_template("lstm_op.c.j2"),
                 "adagrad": self._env.get_template("adagrad_op.c.j2"),
+                "momentum": self._env.get_template("momentum_op.c.j2"),
                 "softmax": self._env.get_template("softmax_op.c.j2"),
                 "logsoftmax": self._env.get_template("logsoftmax_op.c.j2"),
                 "hardmax": self._env.get_template("hardmax_op.c.j2"),
@@ -2198,6 +2405,7 @@ class CEmitter:
                 "gather": self._env.get_template("gather_op.c.j2"),
                 "gather_nd": self._env.get_template("gather_nd_op.c.j2"),
                 "scatter": self._env.get_template("scatter_op.c.j2"),
+                "scatter_elements": self._env.get_template("scatter_elements_op.c.j2"),
                 "scatter_nd": self._env.get_template("scatter_nd_op.c.j2"),
                 "tensor_scatter": self._env.get_template("tensor_scatter_op.c.j2"),
                 "transpose": self._env.get_template("transpose_op.c.j2"),
@@ -2207,6 +2415,7 @@ class CEmitter:
                 "eye_like": self._env.get_template("eye_like_op.c.j2"),
                 "trilu": self._env.get_template("trilu_op.c.j2"),
                 "tile": self._env.get_template("tile_op.c.j2"),
+                "center_crop_pad": self._env.get_template("center_crop_pad_op.c.j2"),
                 "pad": self._env.get_template("pad_op.c.j2"),
                 "depth_to_space": self._env.get_template("depth_to_space_op.c.j2"),
                 "space_to_depth": self._env.get_template("space_to_depth_op.c.j2"),
@@ -2214,6 +2423,7 @@ class CEmitter:
                 "slice_dynamic": self._env.get_template("slice_op_dynamic.c.j2"),
                 "resize": self._env.get_template("resize_op.c.j2"),
                 "grid_sample": self._env.get_template("grid_sample_op.c.j2"),
+                "affine_grid": self._env.get_template("affine_grid_op.c.j2"),
                 "reduce": self._env.get_template("reduce_op.c.j2"),
                 "reduce_dynamic": self._env.get_template("reduce_op_dynamic.c.j2"),
                 "arg_reduce": self._env.get_template("arg_reduce_op.c.j2"),
@@ -2238,11 +2448,19 @@ class CEmitter:
                 "loop_sequence_insert": self._env.get_template(
                     "loop_sequence_insert_op.c.j2"
                 ),
+                "blackman_window": self._env.get_template("blackman_window_op.c.j2"),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
+                "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
+                "string_concat": self._env.get_template("string_concat_op.c.j2"),
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
+                ),
+                "string_split": self._env.get_template("string_split_op.c.j2"),
+                "tree_ensemble": self._env.get_template("tree_ensemble_op.c.j2"),
+                "tree_ensemble_classifier": self._env.get_template(
+                    "tree_ensemble_classifier_op.c.j2"
                 ),
                 "split": self._env.get_template("split_op.c.j2"),
                 "split_to_sequence": self._env.get_template(
@@ -2256,6 +2474,9 @@ class CEmitter:
                 "sequence_empty": self._env.get_template("sequence_empty_op.c.j2"),
                 "sequence_erase": self._env.get_template("sequence_erase_op.c.j2"),
                 "sequence_insert": self._env.get_template("sequence_insert_op.c.j2"),
+                "sequence_identity": self._env.get_template(
+                    "sequence_identity_op.c.j2"
+                ),
                 "sequence_length": self._env.get_template("sequence_length_op.c.j2"),
             }
             if emit_testbench:
@@ -2907,6 +3128,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -2920,6 +3142,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -2933,6 +3156,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterOp
+            | ScatterElementsOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -2941,11 +3165,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -2959,7 +3185,9 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -3030,8 +3258,19 @@ class CEmitter:
                 return sequence_value.type.elem.dtype
             if isinstance(op, SequenceInsertOp):
                 return model.op_context.dtype(op.tensor)
+            if isinstance(op, SequenceIdentityOp):
+                sequence_value = model.op_context.find_value(op.output_sequence)
+                if not isinstance(sequence_value.type, SequenceType):
+                    raise CodegenError("SequenceIdentity output must be a sequence")
+                return sequence_value.type.elem.dtype
             if isinstance(op, LoopSequenceInsertOp):
                 return op.elem_dtype
+            if isinstance(op, LoopSequenceMapOp):
+                return op.output_elem_dtypes[0]
+            if isinstance(op, AffineGridOp):
+                return model.op_context.dtype(op.grid)
+            if isinstance(op, StringSplitOp):
+                return model.op_context.dtype(op.output_z)
             if hasattr(op, "output") and isinstance(op.output, str):
                 return model.op_context.dtype(op.output)
             return op.dtype
@@ -3140,6 +3379,8 @@ class CEmitter:
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
             includes.add("#include <stdbool.h>")
+        if any(isinstance(op, (StringConcatOp, StringSplitOp)) for op in resolved_ops):
+            includes.add("#include <string.h>")
         ordered_includes = (
             "#include <stdint.h>",
             "#include <stdio.h>",
@@ -3256,6 +3497,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3269,6 +3511,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -3282,6 +3525,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterOp
+            | ScatterElementsOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -3290,11 +3534,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3308,7 +3554,9 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -3388,11 +3636,14 @@ class CEmitter:
                     GruOp,
                     LstmOp,
                     AdagradOp,
+                    MomentumOp,
                     SoftmaxOp,
                     LogSoftmaxOp,
                     SoftmaxCrossEntropyLossOp,
                     ResizeOp,
                     GridSampleOp,
+                    DeformConvOp,
+                    AffineGridOp,
                 ),
             )
             for op in resolved_ops
@@ -3430,7 +3681,10 @@ class CEmitter:
             for op in resolved_ops
         ):
             return True
-        if any(isinstance(op, HammingWindowOp) for op in resolved_ops):
+        if any(
+            isinstance(op, (BlackmanWindowOp, HammingWindowOp, HannWindowOp))
+            for op in resolved_ops
+        ):
             return True
         return False
 
@@ -3454,6 +3708,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3484,11 +3739,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3502,7 +3759,9 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -3581,6 +3840,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3611,11 +3871,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3628,7 +3890,9 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -3679,7 +3943,6 @@ class CEmitter:
                     SequenceEmptyOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
-                    SequenceLengthOp,
                     SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
@@ -3703,6 +3966,7 @@ class CEmitter:
     ) -> str:
         params: list[str] = []
         optional_flags = self._optional_input_flag_map(model)
+        output_optional_flags = self._optional_output_flag_map(model)
         if dim_order:
             params.extend(self._format_dim_args(dim_order))
         for index, (name, shape, dtype, value_type) in enumerate(
@@ -3719,6 +3983,9 @@ class CEmitter:
                     f"const {dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
                 params.append(f"idx_t {name}__count")
+                optional_flag = optional_flags.get(name)
+                if optional_flag is not None:
+                    params.append(f"_Bool {optional_flag}")
                 continue
             params.append(
                 f"const {dtype.c_type} {name}"
@@ -3741,6 +4008,9 @@ class CEmitter:
                     f"{dtype.c_type} {name}[EMX_SEQUENCE_MAX_LEN]{elem_suffix}"
                 )
                 params.append(f"idx_t *{name}__count")
+                optional_flag = output_optional_flags.get(name)
+                if optional_flag is not None:
+                    params.append(f"_Bool *{optional_flag}")
                 continue
             params.append(
                 f"{dtype.c_type} {name}"
@@ -3821,7 +4091,6 @@ class CEmitter:
                     SequenceEmptyOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
-                    SequenceLengthOp,
                     SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
@@ -3873,6 +4142,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3886,6 +4156,7 @@ class CEmitter:
             | GruOp
             | LstmOp
             | AdagradOp
+            | MomentumOp
             | SoftmaxOp
             | LogSoftmaxOp
             | HardmaxOp
@@ -3898,6 +4169,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterOp
+            | ScatterElementsOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -3906,11 +4178,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -3923,7 +4197,9 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
             | SplitOp
@@ -3950,6 +4226,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
         | BatchNormOp
@@ -3963,6 +4240,7 @@ class CEmitter:
         | GruOp
         | LstmOp
         | AdagradOp
+        | MomentumOp
         | SoftmaxOp
         | LogSoftmaxOp
         | HardmaxOp
@@ -3975,6 +4253,7 @@ class CEmitter:
         | GatherOp
         | GatherNDOp
         | ScatterOp
+        | ScatterElementsOp
         | ScatterNDOp
         | TensorScatterOp
         | TransposeOp
@@ -3983,11 +4262,13 @@ class CEmitter:
         | EyeLikeOp
         | TriluOp
         | TileOp
+        | CenterCropPadOp
         | DepthToSpaceOp
         | SpaceToDepthOp
         | SliceOp
         | ResizeOp
         | GridSampleOp
+        | AffineGridOp
         | ReduceOp
         | ArgReduceOp
         | TopKOp
@@ -4000,7 +4281,9 @@ class CEmitter:
         | ExpandOp
         | CumSumOp
         | RangeOp
+        | BlackmanWindowOp
         | HammingWindowOp
+        | HannWindowOp
         | OneHotOp
         | SplitOp
         | TfIdfVectorizerOp
@@ -4540,6 +4823,29 @@ class CEmitter:
                 epsilon=op.epsilon,
                 decay_factor=op.decay_factor,
             )
+        if isinstance(op, MomentumOp):
+            return MomentumOp(
+                rate=temp_map.get(op.rate, op.rate),
+                timestep=temp_map.get(op.timestep, op.timestep),
+                inputs=tuple(temp_map.get(name, name) for name in op.inputs),
+                gradients=tuple(temp_map.get(name, name) for name in op.gradients),
+                velocities=tuple(temp_map.get(name, name) for name in op.velocities),
+                outputs=tuple(temp_map.get(name, name) for name in op.outputs),
+                velocity_outputs=tuple(
+                    temp_map.get(name, name) for name in op.velocity_outputs
+                ),
+                rate_shape=op.rate_shape,
+                timestep_shape=op.timestep_shape,
+                tensor_shapes=op.tensor_shapes,
+                output_shapes=op.output_shapes,
+                dtype=op.dtype,
+                rate_dtype=op.rate_dtype,
+                timestep_dtype=op.timestep_dtype,
+                norm_coefficient=op.norm_coefficient,
+                alpha=op.alpha,
+                beta=op.beta,
+                mode=op.mode,
+            )
         if isinstance(op, ConvOp):
             return ConvOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -4652,6 +4958,33 @@ class CEmitter:
                 dilations=op.dilations,
                 output_padding=op.output_padding,
                 group=op.group,
+                dtype=op.dtype,
+            )
+        if isinstance(op, DeformConvOp):
+            return DeformConvOp(
+                input0=temp_map.get(op.input0, op.input0),
+                weights=temp_map.get(op.weights, op.weights),
+                offset=temp_map.get(op.offset, op.offset),
+                bias=temp_map.get(op.bias, op.bias) if op.bias else None,
+                mask=temp_map.get(op.mask, op.mask) if op.mask else None,
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
                 dtype=op.dtype,
             )
         if isinstance(op, AveragePoolOp):
@@ -4945,6 +5278,15 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 batch_dims=op.batch_dims,
             )
+        if isinstance(op, ScatterElementsOp):
+            return ScatterElementsOp(
+                data=temp_map.get(op.data, op.data),
+                indices=temp_map.get(op.indices, op.indices),
+                updates=temp_map.get(op.updates, op.updates),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+                reduction=op.reduction,
+            )
         if isinstance(op, ScatterOp):
             return ScatterOp(
                 data=temp_map.get(op.data, op.data),
@@ -5081,8 +5423,20 @@ class CEmitter:
                 elem_shape=op.elem_shape,
                 elem_dtype=op.elem_dtype,
             )
+        if isinstance(op, BlackmanWindowOp):
+            return BlackmanWindowOp(
+                size=temp_map.get(op.size, op.size),
+                output=temp_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
         if isinstance(op, HammingWindowOp):
             return HammingWindowOp(
+                size=temp_map.get(op.size, op.size),
+                output=temp_map.get(op.output, op.output),
+                periodic=op.periodic,
+            )
+        if isinstance(op, HannWindowOp):
+            return HannWindowOp(
                 size=temp_map.get(op.size, op.size),
                 output=temp_map.get(op.output, op.output),
                 periodic=op.periodic,
@@ -5108,6 +5462,12 @@ class CEmitter:
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
             )
+        if isinstance(op, StringConcatOp):
+            return StringConcatOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input1=temp_map.get(op.input1, op.input1),
+                output=temp_map.get(op.output, op.output),
+            )
         if isinstance(op, StringNormalizerOp):
             return StringNormalizerOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5116,12 +5476,63 @@ class CEmitter:
                 is_case_sensitive=op.is_case_sensitive,
                 stopwords=op.stopwords,
             )
+        if isinstance(op, StringSplitOp):
+            return StringSplitOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output_y=temp_map.get(op.output_y, op.output_y),
+                output_z=temp_map.get(op.output_z, op.output_z),
+                delimiter=op.delimiter,
+                maxsplit=op.maxsplit,
+            )
         if isinstance(op, SplitOp):
             return SplitOp(
                 input0=temp_map.get(op.input0, op.input0),
                 outputs=tuple(temp_map.get(name, name) for name in op.outputs),
                 axis=op.axis,
                 split_sizes=op.split_sizes,
+            )
+        if isinstance(op, TreeEnsembleOp):
+            return TreeEnsembleOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                aggregate_function=op.aggregate_function,
+                post_transform=op.post_transform,
+                tree_roots=op.tree_roots,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_splits=op.node_splits,
+                node_true_ids=op.node_true_ids,
+                node_true_leafs=op.node_true_leafs,
+                node_false_ids=op.node_false_ids,
+                node_false_leafs=op.node_false_leafs,
+                membership_values=op.membership_values,
+                member_range_starts=op.member_range_starts,
+                member_range_ends=op.member_range_ends,
+                leaf_target_ids=op.leaf_target_ids,
+                leaf_weights=op.leaf_weights,
+                n_targets=op.n_targets,
+            )
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return TreeEnsembleClassifierOp(
+                input0=temp_map.get(op.input0, op.input0),
+                label=temp_map.get(op.label, op.label),
+                probabilities=temp_map.get(op.probabilities, op.probabilities),
+                output=temp_map.get(op.output, op.output),
+                post_transform=op.post_transform,
+                class_labels=op.class_labels,
+                node_tree_ids=op.node_tree_ids,
+                node_node_ids=op.node_node_ids,
+                node_feature_ids=op.node_feature_ids,
+                node_modes=op.node_modes,
+                node_values=op.node_values,
+                node_true_ids=op.node_true_ids,
+                node_false_ids=op.node_false_ids,
+                class_tree_ids=op.class_tree_ids,
+                class_node_ids=op.class_node_ids,
+                class_ids=op.class_ids,
+                class_weights=op.class_weights,
+                dtype=op.dtype,
+                output_shape=op.output_shape,
             )
         if isinstance(op, ReverseSequenceOp):
             return ReverseSequenceOp(
@@ -5159,6 +5570,13 @@ class CEmitter:
                 position=CEmitter._map_optional_name(temp_map, op.position),
                 output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, SequenceIdentityOp):
+            return SequenceIdentityOp(
+                input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
+                output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
+                input_present=CEmitter._map_optional_name(temp_map, op.input_present),
+                output_present=CEmitter._map_optional_name(temp_map, op.output_present),
+            )
         if isinstance(op, SequenceLengthOp):
             return SequenceLengthOp(
                 input_sequence=temp_map.get(op.input_sequence, op.input_sequence),
@@ -5173,6 +5591,32 @@ class CEmitter:
                 keepdims=op.keepdims,
                 split_sizes=op.split_sizes,
                 split_scalar=op.split_scalar,
+            )
+        if isinstance(op, LoopSequenceMapOp):
+            return LoopSequenceMapOp(
+                trip_count=temp_map.get(op.trip_count, op.trip_count),
+                cond=temp_map.get(op.cond, op.cond),
+                input_sequences=tuple(
+                    temp_map.get(name, name) for name in op.input_sequences
+                ),
+                input_tensors=tuple(
+                    temp_map.get(name, name) for name in op.input_tensors
+                ),
+                output_sequences=tuple(
+                    temp_map.get(name, name) for name in op.output_sequences
+                ),
+                output_kinds=op.output_kinds,
+                output_input0=tuple(
+                    temp_map.get(name, name) for name in op.output_input0
+                ),
+                output_input1=tuple(
+                    temp_map.get(name, name) if name is not None else None
+                    for name in op.output_input1
+                ),
+                output_input0_is_sequence=op.output_input0_is_sequence,
+                output_input1_is_sequence=op.output_input1_is_sequence,
+                output_elem_shapes=op.output_elem_shapes,
+                output_elem_dtypes=op.output_elem_dtypes,
             )
         if isinstance(op, TransposeOp):
             return TransposeOp(
@@ -5213,6 +5657,15 @@ class CEmitter:
                 input0=temp_map.get(op.input0, op.input0),
                 repeats_input=temp_map.get(op.repeats_input, op.repeats_input),
                 output=temp_map.get(op.output, op.output),
+            )
+        if isinstance(op, CenterCropPadOp):
+            return CenterCropPadOp(
+                input0=temp_map.get(op.input0, op.input0),
+                shape_input=temp_map.get(op.shape_input, op.shape_input),
+                output=temp_map.get(op.output, op.output),
+                axes=op.axes,
+                input_shape=op.input_shape,
+                output_shape=op.output_shape,
             )
         if isinstance(op, PadOp):
             return PadOp(
@@ -5316,6 +5769,14 @@ class CEmitter:
                 mode=op.mode,
                 padding_mode=op.padding_mode,
                 align_corners=op.align_corners,
+            )
+        if isinstance(op, AffineGridOp):
+            return AffineGridOp(
+                theta=temp_map.get(op.theta, op.theta),
+                size=temp_map.get(op.size, op.size),
+                grid=temp_map.get(op.grid, op.grid),
+                align_corners=op.align_corners,
+                spatial_rank=op.spatial_rank,
             )
         if isinstance(op, ReduceOp):
             return ReduceOp(
@@ -5447,6 +5908,8 @@ class CEmitter:
 
     def emit_generic_op(self, op: OpBase, ctx: EmitContext) -> str:
         if self._emit_state is None:
+            if isinstance(op, TreeEnsembleClassifierOp):
+                return ""
             raise CodegenError("Emitter state not initialized")
         state = self._emit_state
         dtype = self._op_output_dtype(op)
@@ -5485,6 +5948,7 @@ class CEmitter:
             conv_template=templates["conv"],
             conv_integer_template=templates["conv_integer"],
             conv_transpose_template=templates["conv_transpose"],
+            deform_conv_template=templates["deform_conv"],
             avg_pool_template=templates["avg_pool"],
             lp_pool_template=templates["lp_pool"],
             batch_norm_template=templates["batch_norm"],
@@ -5498,6 +5962,7 @@ class CEmitter:
             gru_template=templates["gru"],
             lstm_template=templates["lstm"],
             adagrad_template=templates["adagrad"],
+            momentum_template=templates["momentum"],
             softmax_template=templates["softmax"],
             logsoftmax_template=templates["logsoftmax"],
             hardmax_template=templates["hardmax"],
@@ -5509,6 +5974,7 @@ class CEmitter:
             compress_template=templates["compress"],
             gather_elements_template=templates["gather_elements"],
             scatter_template=templates["scatter"],
+            scatter_elements_template=templates["scatter_elements"],
             gather_template=templates["gather"],
             gather_nd_template=templates["gather_nd"],
             scatter_nd_template=templates["scatter_nd"],
@@ -5520,6 +5986,7 @@ class CEmitter:
             eye_like_template=templates["eye_like"],
             trilu_template=templates["trilu"],
             tile_template=templates["tile"],
+            center_crop_pad_template=templates["center_crop_pad"],
             pad_template=templates["pad"],
             depth_to_space_template=templates["depth_to_space"],
             space_to_depth_template=templates["space_to_depth"],
@@ -5527,6 +5994,7 @@ class CEmitter:
             slice_dynamic_template=templates["slice_dynamic"],
             resize_template=templates["resize"],
             grid_sample_template=templates["grid_sample"],
+            affine_grid_template=templates["affine_grid"],
             reduce_template=templates["reduce"],
             reduce_dynamic_template=templates["reduce_dynamic"],
             arg_reduce_template=templates["arg_reduce"],
@@ -5543,10 +6011,16 @@ class CEmitter:
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
             loop_sequence_insert_template=templates["loop_sequence_insert"],
+            blackman_window_template=templates["blackman_window"],
             hamming_window_template=templates["hamming_window"],
+            hann_window_template=templates["hann_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
+            string_concat_template=templates["string_concat"],
             string_normalizer_template=templates["string_normalizer"],
+            string_split_template=templates["string_split"],
+            tree_ensemble_template=templates["tree_ensemble"],
+            tree_ensemble_classifier_template=templates["tree_ensemble_classifier"],
             split_template=templates["split"],
             split_to_sequence_template=templates["split_to_sequence"],
             reverse_sequence_template=templates["reverse_sequence"],
@@ -5555,6 +6029,7 @@ class CEmitter:
             sequence_empty_template=templates["sequence_empty"],
             sequence_erase_template=templates["sequence_erase"],
             sequence_insert_template=templates["sequence_insert"],
+            sequence_identity_template=templates["sequence_identity"],
             sequence_length_template=templates["sequence_length"],
             scalar_registry=state.scalar_registry,
             dim_args=state.dim_args,
@@ -6008,6 +6483,7 @@ class CEmitter:
         conv_template,
         conv_integer_template,
         conv_transpose_template,
+        deform_conv_template,
         avg_pool_template,
         lp_pool_template,
         batch_norm_template,
@@ -6021,6 +6497,7 @@ class CEmitter:
         gru_template,
         lstm_template,
         adagrad_template,
+        momentum_template,
         softmax_template,
         logsoftmax_template,
         hardmax_template,
@@ -6032,6 +6509,7 @@ class CEmitter:
         compress_template,
         gather_elements_template,
         scatter_template,
+        scatter_elements_template,
         gather_template,
         gather_nd_template,
         scatter_nd_template,
@@ -6043,6 +6521,7 @@ class CEmitter:
         eye_like_template,
         trilu_template,
         tile_template,
+        center_crop_pad_template,
         pad_template,
         depth_to_space_template,
         space_to_depth_template,
@@ -6050,6 +6529,7 @@ class CEmitter:
         slice_dynamic_template,
         resize_template,
         grid_sample_template,
+        affine_grid_template,
         reduce_template,
         reduce_dynamic_template,
         arg_reduce_template,
@@ -6066,10 +6546,16 @@ class CEmitter:
         range_template,
         loop_range_template,
         loop_sequence_insert_template,
+        blackman_window_template,
         hamming_window_template,
+        hann_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
+        string_concat_template,
         string_normalizer_template,
+        string_split_template,
+        tree_ensemble_template,
+        tree_ensemble_classifier_template,
         split_template,
         split_to_sequence_template,
         reverse_sequence_template,
@@ -6078,6 +6564,7 @@ class CEmitter:
         sequence_empty_template,
         sequence_erase_template,
         sequence_insert_template,
+        sequence_identity_template,
         sequence_length_template,
         scalar_registry: ScalarFunctionRegistry | None = None,
         dim_args: str = "",
@@ -7595,6 +8082,118 @@ class CEmitter:
                 out_indices=out_indices,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, DeformConvOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("weights", op.weights),
+                    ("offset", op.offset),
+                    ("bias", op.bias),
+                    ("mask", op.mask),
+                    ("output", op.output),
+                ]
+            )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for DeformConv codegen."
+                )
+            acc_dtype = self._accumulation_dtype(op.dtype)
+            acc_type = acc_dtype.c_type
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
+            acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
+            floor_fn = self._scalar_function_name(
+                ScalarFunction.FLOOR, acc_dtype, scalar_registry
+            )
+            if floor_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar floor function for DeformConv."
+                )
+            input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
+            weight_shape = (
+                op.out_channels,
+                op.in_channels // op.group,
+                op.kernel_h,
+                op.kernel_w,
+            )
+            offset_shape = (
+                op.batch,
+                op.offset_group * op.kernel_h * op.kernel_w * 2,
+                op.out_h,
+                op.out_w,
+            )
+            bias_shape = (op.out_channels,)
+            mask_shape = (
+                op.batch,
+                op.offset_group * op.kernel_h * op.kernel_w,
+                op.out_h,
+                op.out_w,
+            )
+            output_shape = (op.batch, op.out_channels, op.out_h, op.out_w)
+            group_in_channels = op.in_channels // op.group
+            group_out_channels = op.out_channels // op.group
+            ics_per_offset_group = op.in_channels // op.offset_group
+            input_suffix = self._param_array_suffix(input_shape)
+            weight_suffix = self._param_array_suffix(weight_shape)
+            offset_suffix = self._param_array_suffix(offset_shape)
+            bias_suffix = self._param_array_suffix(bias_shape)
+            mask_suffix = self._param_array_suffix(mask_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["weights"], c_type, weight_suffix, True),
+                    (params["offset"], c_type, offset_suffix, True),
+                    (
+                        (params["bias"], c_type, bias_suffix, True)
+                        if params["bias"]
+                        else (None, "", "", True)
+                    ),
+                    (
+                        (params["mask"], c_type, mask_suffix, True)
+                        if params["mask"]
+                        else (None, "", "", True)
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = deform_conv_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                weights=params["weights"],
+                offset=params["offset"],
+                bias=params["bias"],
+                mask=params["mask"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                zero_literal=acc_zero_literal,
+                one_literal=acc_one_literal,
+                floor_fn=floor_fn,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                ics_per_offset_group=ics_per_offset_group,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, AveragePoolOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -8614,6 +9213,101 @@ class CEmitter:
                 tensors=tensor_specs,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, MomentumOp):
+            params = self._shared_param_map(
+                [
+                    ("rate", op.rate),
+                    ("timestep", op.timestep),
+                    *((f"input{idx}", name) for idx, name in enumerate(op.inputs)),
+                    *((f"grad{idx}", name) for idx, name in enumerate(op.gradients)),
+                    *((f"vel{idx}", name) for idx, name in enumerate(op.velocities)),
+                    *((f"output{idx}", name) for idx, name in enumerate(op.outputs)),
+                    *(
+                        (f"vel_output{idx}", name)
+                        for idx, name in enumerate(op.velocity_outputs)
+                    ),
+                ]
+            )
+            rate_suffix = self._param_array_suffix(
+                op.rate_shape, _dim_names_for(op.rate)
+            )
+            timestep_suffix = self._param_array_suffix(
+                op.timestep_shape, _dim_names_for(op.timestep)
+            )
+            param_specs = [
+                (params["rate"], op.rate_dtype.c_type, rate_suffix, True),
+                (
+                    params["timestep"],
+                    op.timestep_dtype.c_type,
+                    timestep_suffix,
+                    True,
+                ),
+            ]
+            tensor_specs = []
+            for idx, shape in enumerate(op.output_shapes):
+                input_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.inputs[idx])
+                )
+                grad_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.gradients[idx])
+                )
+                vel_suffix = self._param_array_suffix(
+                    op.tensor_shapes[idx], _dim_names_for(op.velocities[idx])
+                )
+                output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx], _dim_names_for(op.outputs[idx])
+                )
+                vel_output_suffix = self._param_array_suffix(
+                    op.output_shapes[idx],
+                    _dim_names_for(op.velocity_outputs[idx]),
+                )
+                param_specs.extend(
+                    [
+                        (params[f"input{idx}"], c_type, input_suffix, True),
+                        (params[f"grad{idx}"], c_type, grad_suffix, True),
+                        (params[f"vel{idx}"], c_type, vel_suffix, True),
+                        (params[f"output{idx}"], c_type, output_suffix, False),
+                        (
+                            params[f"vel_output{idx}"],
+                            c_type,
+                            vel_output_suffix,
+                            False,
+                        ),
+                    ]
+                )
+                output_dim_names = _dim_names_for(op.outputs[idx])
+                shape_exprs = CEmitter._shape_dim_exprs(shape, output_dim_names)
+                loop_vars = CEmitter._loop_vars(shape)
+                index_suffix = "".join(f"[{var}]" for var in loop_vars)
+                tensor_specs.append(
+                    {
+                        "shape": shape_exprs,
+                        "loop_vars": loop_vars,
+                        "input_expr": f"{params[f'input{idx}']}{index_suffix}",
+                        "grad_expr": f"{params[f'grad{idx}']}{index_suffix}",
+                        "vel_expr": f"{params[f'vel{idx}']}{index_suffix}",
+                        "output_expr": f"{params[f'output{idx}']}{index_suffix}",
+                        "vel_output_expr": f"{params[f'vel_output{idx}']}{index_suffix}",
+                    }
+                )
+            param_decls = self._build_param_decls(param_specs)
+            rendered = momentum_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                rate=params["rate"],
+                timestep=params["timestep"],
+                params=param_decls,
+                c_type=c_type,
+                one_literal=CEmitter._format_literal(op.dtype, 1),
+                norm_coefficient_literal=CEmitter._format_floating(
+                    op.norm_coefficient, op.dtype
+                ),
+                alpha_literal=CEmitter._format_floating(op.alpha, op.dtype),
+                beta_literal=CEmitter._format_floating(op.beta, op.dtype),
+                mode=op.mode,
+                tensors=tensor_specs,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
             if scalar_registry is None:
                 raise CodegenError(
@@ -9251,6 +9945,58 @@ class CEmitter:
                 data_shape=data_shape,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, ScatterElementsOp):
+            params = self._shared_param_map(
+                [
+                    ("data", op.data),
+                    ("indices", op.indices),
+                    ("updates", op.updates),
+                    ("output", op.output),
+                ]
+            )
+            output_shape_raw = self._ctx_shape(op.output)
+            updates_shape_raw = self._ctx_shape(op.updates)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            updates_shape = CEmitter._codegen_shape(updates_shape_raw)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            output_indices = list(loop_vars)
+            output_indices[op.axis] = "scatter_index"
+            data_shape = self._ctx_shape(op.data)
+            indices_shape = self._ctx_shape(op.indices)
+            data_suffix = self._param_array_suffix(data_shape)
+            indices_suffix = self._param_array_suffix(indices_shape)
+            updates_suffix = self._param_array_suffix(updates_shape_raw)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["indices"],
+                        self._ctx_dtype(op.indices).c_type,
+                        indices_suffix,
+                        True,
+                    ),
+                    (params["updates"], c_type, updates_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = scatter_elements_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                updates=params["updates"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_shape=output_shape,
+                updates_shape=updates_shape,
+                loop_vars=loop_vars,
+                output_indices=output_indices,
+                axis_dim=data_shape[op.axis],
+                reduction=op.reduction,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, ScatterOp):
             params = self._shared_param_map(
                 [
@@ -9814,6 +10560,80 @@ class CEmitter:
                 input_index_expr=input_index_expr,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, CenterCropPadOp):
+            input_shape_raw = list(op.input_shape)
+            output_shape_raw = list(op.output_shape)
+            rank = len(output_shape_raw)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("shape_input", op.shape_input),
+                    ("output", op.output),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            output_shape = CEmitter._shape_dim_exprs(
+                tuple(output_shape_raw), output_dim_names
+            )
+            out_loop_vars = CEmitter._loop_vars(tuple(output_shape_raw))
+            input_suffix = self._param_array_suffix(
+                tuple(input_shape_raw), _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                tuple(output_shape_raw), output_dim_names
+            )
+            shape_input_dtype = self._ctx_dtype(op.shape_input)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (
+                        params["shape_input"],
+                        shape_input_dtype.c_type,
+                        self._param_array_suffix(
+                            self._ctx_shape(op.shape_input),
+                            _dim_names_for(op.shape_input),
+                        ),
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            # Compute per-axis crop_start and pad_start
+            axes = op.axes if op.axes is not None else tuple(range(rank))
+            crop_starts = [0] * rank
+            pad_starts = [0] * rank
+            for a in axes:
+                in_dim = input_shape_raw[a]
+                out_dim = output_shape_raw[a]
+                if in_dim > out_dim:
+                    crop_starts[a] = (in_dim - out_dim) // 2
+                elif out_dim > in_dim:
+                    pad_starts[a] = (out_dim - in_dim) // 2
+            # Compute row-major strides of input
+            input_strides: list[int] = []
+            stride = 1
+            for dim in reversed(input_shape_raw):
+                input_strides.append(stride)
+                stride *= dim
+            input_strides = list(reversed(input_strides))
+            rendered = center_crop_pad_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                shape_input=params["shape_input"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                input_shape=input_shape_raw,
+                out_loop_vars=out_loop_vars,
+                crop_starts=crop_starts,
+                pad_starts=pad_starts,
+                input_strides=input_strides,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, PadOp):
             input_shape_raw = self._ctx_shape(op.input0)
             output_shape_raw = self._ctx_shape(op.output)
@@ -10262,6 +11082,38 @@ class CEmitter:
                 align_corners=op.align_corners,
                 linear_offsets=tuple(itertools.product((0, 1), repeat=spatial_rank)),
                 cubic_offsets=tuple(itertools.product(range(4), repeat=spatial_rank)),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, AffineGridOp):
+            grid_shape = self._ctx_shape(op.grid)
+            theta_shape = self._ctx_shape(op.theta)
+            spatial_rank = op.spatial_rank
+            n = theta_shape[0]
+            spatial_dims = grid_shape[1:-1]  # (H, W) for 2D, (D, H, W) for 3D
+            theta_suffix = self._param_array_suffix(theta_shape)
+            grid_suffix = self._param_array_suffix(grid_shape)
+            size_len = 2 + spatial_rank
+            params = [
+                f"const {c_type} {op.theta}{theta_suffix}",
+                f"const int64_t {op.size}[{size_len}]",
+                f"{c_type} {op.grid}{grid_suffix}",
+            ]
+            rendered = affine_grid_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=params,
+                theta=op.theta,
+                size=op.size,
+                grid=op.grid,
+                c_type=c_type,
+                theta_shape=theta_shape,
+                grid_shape=grid_shape,
+                theta_suffix=theta_suffix,
+                grid_suffix=grid_suffix,
+                n=n,
+                spatial_dims=spatial_dims,
+                spatial_rank=spatial_rank,
+                align_corners=op.align_corners,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConstantOfShapeOp):
@@ -10866,7 +11718,11 @@ class CEmitter:
                 c_type=seq_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
-        if isinstance(op, HammingWindowOp):
+        if isinstance(op, BlackmanWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -10887,6 +11743,216 @@ class CEmitter:
                     (params["output"], c_type, output_suffix, False),
                 ]
             )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
+            rendered = blackman_window_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                c042_literal=self._format_literal(compute_dtype, 0.42),
+                c05_literal=self._format_literal(compute_dtype, 0.5),
+                c008_literal=self._format_literal(compute_dtype, 0.08),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, LoopSequenceMapOp):
+            params = self._shared_param_map(
+                [
+                    ("trip_count", op.trip_count),
+                    ("cond", op.cond),
+                    *[
+                        (f"input_sequence_{idx}", name)
+                        for idx, name in enumerate(op.input_sequences)
+                    ],
+                    *[
+                        (f"input_tensor_{idx}", name)
+                        for idx, name in enumerate(op.input_tensors)
+                    ],
+                    *[
+                        (f"output_sequence_{idx}", name)
+                        for idx, name in enumerate(op.output_sequences)
+                    ],
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            decls: list[tuple[str, str, str, bool]] = [
+                (
+                    params["trip_count"],
+                    self._ctx_dtype(op.trip_count).c_type,
+                    scalar_suffix,
+                    True,
+                ),
+                (params["cond"], self._ctx_dtype(op.cond).c_type, scalar_suffix, True),
+            ]
+            seq_param_by_name = {
+                name: params[f"input_sequence_{idx}"]
+                for idx, name in enumerate(op.input_sequences)
+            }
+            tensor_param_by_name = {
+                name: params[f"input_tensor_{idx}"]
+                for idx, name in enumerate(op.input_tensors)
+            }
+            for idx, name in enumerate(op.input_sequences):
+                seq_dtype = self._ctx_sequence_elem_type(name).dtype
+                seq_shape = self._ctx_sequence_elem_type(name).shape
+                decls.append(
+                    (
+                        params[f"input_sequence_{idx}"],
+                        seq_dtype.c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(seq_shape)}",
+                        True,
+                    )
+                )
+                decls.append(
+                    (f"{params[f'input_sequence_{idx}']}__count", "idx_t", "", True)
+                )
+            for idx, name in enumerate(op.input_tensors):
+                dtype = self._ctx_dtype(name)
+                shape = self._ctx_shape(name)
+                decls.append(
+                    (
+                        params[f"input_tensor_{idx}"],
+                        dtype.c_type,
+                        self._param_array_suffix(shape),
+                        True,
+                    )
+                )
+            for idx, name in enumerate(op.output_sequences):
+                seq_dtype = self._ctx_sequence_elem_type(name).dtype
+                seq_shape = self._ctx_sequence_elem_type(name).shape
+                decls.append(
+                    (
+                        params[f"output_sequence_{idx}"],
+                        seq_dtype.c_type,
+                        f"[EMX_SEQUENCE_MAX_LEN]{self._param_array_suffix(seq_shape)}",
+                        False,
+                    )
+                )
+                decls.append(
+                    (f"{params[f'output_sequence_{idx}']}__count", "idx_t *", "", False)
+                )
+            param_decls = self._build_param_decls(decls)
+
+            lines = [f"void {op_name}({dim_args}{', '.join(param_decls)}) {{"]
+            lines.append(
+                f"    const int64_t trip_raw = (int64_t){params['trip_count']}[0];"
+            )
+            lines.append(f"    const bool enabled = {params['cond']}[0];")
+            lines.append(
+                "    int64_t iter_limit = (enabled && trip_raw > 0) ? trip_raw : 0;"
+            )
+            for idx, name in enumerate(op.input_sequences):
+                lines.append(
+                    f"    if (iter_limit > (int64_t){params[f'input_sequence_{idx}']}__count) iter_limit = (int64_t){params[f'input_sequence_{idx}']}__count;"
+                )
+            lines.append(
+                "    if (iter_limit > (int64_t)EMX_SEQUENCE_MAX_LEN) iter_limit = (int64_t)EMX_SEQUENCE_MAX_LEN;"
+            )
+            lines.append("    for (int64_t i = 0; i < iter_limit; ++i) {")
+            for out_idx, out_name in enumerate(op.output_sequences):
+                out_param = params[f"output_sequence_{out_idx}"]
+                kind = op.output_kinds[out_idx]
+                in0 = op.output_input0[out_idx]
+                in1 = op.output_input1[out_idx]
+                in0_seq = op.output_input0_is_sequence[out_idx]
+                in1_seq = op.output_input1_is_sequence[out_idx]
+                elem_count = CEmitter._element_count_expr(
+                    op.output_elem_shapes[out_idx]
+                )
+                if kind == "shape":
+                    source_shape = (
+                        self._ctx_sequence_elem_type(in0).shape
+                        if in0_seq
+                        else self._ctx_shape(in0)
+                    )
+                    for dim_idx, dim in enumerate(source_shape):
+                        lines.append(
+                            f"        {out_param}[(idx_t)i][{dim_idx}] = {dim};"
+                        )
+                elif kind == "identity":
+                    src_name = (
+                        seq_param_by_name[in0] if in0_seq else tensor_param_by_name[in0]
+                    )
+                    src = f"{src_name}[(idx_t)i]" if in0_seq else src_name
+                    lines.append(
+                        f"        for (idx_t e = 0; e < {elem_count}; ++e) {{ {out_param}[(idx_t)i][e] = {src}[e]; }}"
+                    )
+                elif kind == "add" and in1 is not None:
+                    src0_name = (
+                        seq_param_by_name[in0] if in0_seq else tensor_param_by_name[in0]
+                    )
+                    src1_name = (
+                        seq_param_by_name[in1] if in1_seq else tensor_param_by_name[in1]
+                    )
+                    src0 = f"{src0_name}[(idx_t)i]" if in0_seq else src0_name
+                    src1 = f"{src1_name}[(idx_t)i]" if in1_seq else src1_name
+                    lines.append(
+                        f"        for (idx_t e = 0; e < {elem_count}; ++e) {{ {out_param}[(idx_t)i][e] = {src0}[e] + {src1}[e]; }}"
+                    )
+            lines.append("    }")
+            for out_idx, _ in enumerate(op.output_sequences):
+                lines.append(
+                    f"    *{params[f'output_sequence_{out_idx}']}__count = (idx_t)iter_limit;"
+                )
+            lines.append("}")
+            return with_node_comment("\n".join(lines))
+        if isinstance(op, HammingWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
+            params = self._shared_param_map(
+                [
+                    ("size", op.size),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["size"],
+                        self._ctx_dtype(op.size).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
             rendered = hamming_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -10897,6 +11963,69 @@ class CEmitter:
                 output_suffix=output_suffix,
                 length=output_shape[0],
                 periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                alpha_literal=self._format_literal(compute_dtype, 25.0 / 46.0),
+                beta_literal=self._format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, HannWindowOp):
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for Window rendering."
+                )
+            params = self._shared_param_map(
+                [
+                    ("size", op.size),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["size"],
+                        self._ctx_dtype(op.size).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            cos_fn = self._scalar_function_name(
+                ScalarFunction.COS, compute_dtype, scalar_registry
+            )
+            if cos_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar cosine function for Window rendering."
+                )
+            rendered = hann_window_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                size=params["size"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                length=output_shape[0],
+                periodic_literal="1" if op.periodic else "0",
+                compute_type=compute_type,
+                one_literal=self._format_literal(compute_dtype, 1.0),
+                two_literal=self._format_literal(compute_dtype, 2.0),
+                alpha_literal=self._format_literal(compute_dtype, 0.5),
+                beta_literal=self._format_literal(compute_dtype, 0.5),
+                pi_literal=self._format_literal(compute_dtype, math.pi),
+                cos_fn=cos_fn,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
@@ -11043,6 +12172,56 @@ class CEmitter:
                 input_c_type=input_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, StringConcatOp):
+            input0_shape = self._ctx_shape(op.input0)
+            input1_shape = self._ctx_shape(op.input1)
+            output_shape = self._ctx_shape(op.output)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input1", op.input1),
+                    ("output", op.output),
+                ]
+            )
+            input0_suffix = self._param_array_suffix(
+                input0_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+            )
+            input1_suffix = self._param_array_suffix(
+                input1_shape, _dim_names_for(op.input1), dtype=ScalarType.STRING
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.output), dtype=ScalarType.STRING
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], "char", input0_suffix, True),
+                    (params["input1"], "char", input1_suffix, True),
+                    (params["output"], "char", output_suffix, False),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            input0_expr = CEmitter._broadcast_index_expr(
+                params["input0"], input0_shape, output_shape, loop_vars
+            )
+            input1_expr = CEmitter._broadcast_index_expr(
+                params["input1"], input1_shape, output_shape, loop_vars
+            )
+            output_expr = CEmitter._broadcast_index_expr(
+                params["output"], output_shape, output_shape, loop_vars
+            )
+            rendered = string_concat_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                shape=shape,
+                loop_vars=loop_vars,
+                input0_expr=input0_expr,
+                input1_expr=input1_expr,
+                output_expr=output_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, StringNormalizerOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -11077,6 +12256,225 @@ class CEmitter:
                 output_count=CEmitter._element_count_expr(output_shape),
                 stopword_checks=stopword_checks,
                 case_mode=case_mode,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, StringSplitOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output_y", op.output_y),
+                    ("output_z", op.output_z),
+                ]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            output_y_shape = self._ctx_shape(op.output_y)
+            output_z_shape = self._ctx_shape(op.output_z)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+            )
+            output_y_suffix = self._param_array_suffix(
+                output_y_shape, _dim_names_for(op.output_y), dtype=ScalarType.STRING
+            )
+            output_z_suffix = self._param_array_suffix(
+                output_z_shape, _dim_names_for(op.output_z)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], "char", input_suffix, True),
+                    (params["output_y"], "char", output_y_suffix, False),
+                    (params["output_z"], "int64_t", output_z_suffix, False),
+                ]
+            )
+            is_whitespace = not op.delimiter
+            max_count = output_y_shape[-1] if output_y_shape else 0
+            rendered = string_split_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output_y=params["output_y"],
+                output_z=params["output_z"],
+                input_count=CEmitter._element_count_expr(input_shape),
+                max_count=max_count,
+                is_whitespace=is_whitespace,
+                maxsplit=op.maxsplit,
+                delimiter_literal=CEmitter._format_c_string_literal(op.delimiter),
+                delimiter_len=len(op.delimiter),
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, TreeEnsembleOp):
+            params = self._shared_param_map(
+                [("input0", op.input0), ("output", op.output)]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            input_dtype = self._ctx_dtype(op.input0)
+            output_dtype = self._ctx_dtype(op.output)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.output)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["output"], output_dtype.c_type, output_suffix, False),
+                ]
+            )
+            rendered = tree_ensemble_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                tree_roots=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.tree_roots
+                ],
+                node_feature_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_feature_ids
+                ],
+                node_modes=[str(v) for v in op.node_modes],
+                node_splits=[
+                    CEmitter._format_literal(input_dtype, v) for v in op.node_splits
+                ],
+                node_true_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_true_ids
+                ],
+                node_true_leafs=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_true_leafs
+                ],
+                node_false_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_false_ids
+                ],
+                node_false_leafs=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_false_leafs
+                ],
+                membership_values=[
+                    CEmitter._format_literal(input_dtype, v)
+                    for v in (op.membership_values or ())
+                ],
+                member_range_starts=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.member_range_starts
+                ],
+                member_range_ends=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.member_range_ends
+                ],
+                leaf_target_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.leaf_target_ids
+                ],
+                leaf_weights=[
+                    CEmitter._format_literal(output_dtype, v) for v in op.leaf_weights
+                ],
+                batch_size=input_shape[0],
+                tree_count=len(op.tree_roots),
+                target_count=op.n_targets,
+                node_count=len(op.node_modes),
+                leaf_count=len(op.leaf_target_ids),
+                zero_literal=output_dtype.zero_literal,
+                input_c_type=input_dtype.c_type,
+                output_c_type=output_dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, TreeEnsembleClassifierOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("label", op.label),
+                    ("probabilities", op.probabilities),
+                ]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            label_shape = self._ctx_shape(op.label)
+            prob_shape = self._ctx_shape(op.probabilities)
+            input_dtype = self._ctx_dtype(op.input0)
+            label_dtype = self._ctx_dtype(op.label)
+            prob_dtype = self._ctx_dtype(op.probabilities)
+            input_suffix = self._param_array_suffix(
+                input_shape, _dim_names_for(op.input0)
+            )
+            label_suffix = self._param_array_suffix(
+                label_shape, _dim_names_for(op.label)
+            )
+            prob_suffix = self._param_array_suffix(
+                prob_shape, _dim_names_for(op.probabilities)
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], input_dtype.c_type, input_suffix, True),
+                    (params["label"], label_dtype.c_type, label_suffix, False),
+                    (params["probabilities"], prob_dtype.c_type, prob_suffix, False),
+                ]
+            )
+            tree_ids = sorted(set(op.node_tree_ids))
+            tree_id_literals = [
+                CEmitter._format_literal(ScalarType.I64, value) for value in tree_ids
+            ]
+            rendered = tree_ensemble_classifier_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                input0=params["input0"],
+                label=params["label"],
+                probabilities=params["probabilities"],
+                class_labels=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.class_labels
+                ],
+                node_tree_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_tree_ids
+                ],
+                node_node_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_node_ids
+                ],
+                node_feature_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_feature_ids
+                ],
+                node_modes=[str(v) for v in op.node_modes],
+                node_values=[
+                    CEmitter._format_literal(input_dtype, v) for v in op.node_values
+                ],
+                node_true_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_true_ids
+                ],
+                node_false_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.node_false_ids
+                ],
+                class_tree_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.class_tree_ids
+                ],
+                class_node_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v)
+                    for v in op.class_node_ids
+                ],
+                class_ids=[
+                    CEmitter._format_literal(ScalarType.I64, v) for v in op.class_ids
+                ],
+                class_weights=[
+                    CEmitter._format_literal(ScalarType.F32, v)
+                    for v in op.class_weights
+                ],
+                batch_size=input_shape[0],
+                class_count=len(op.class_labels),
+                node_count=len(op.node_node_ids),
+                leaf_value_count=len(op.class_ids),
+                tree_count=len(tree_ids),
+                tree_ids=tree_id_literals,
+                logistic=op.post_transform == "LOGISTIC",
+                input_c_type=input_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ReverseSequenceOp):
@@ -11171,6 +12569,59 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, SequenceIdentityOp):
+            elem_type = self._ctx_sequence_elem_type(op.input_sequence)
+            elem_shape = self._sequence_storage_shape(op.input_sequence)
+            tensor_suffix = self._param_array_suffix(
+                elem_shape, _dim_names_for(op.input_sequence)
+            )
+            params = self._shared_param_map(
+                [
+                    ("input_sequence", op.input_sequence),
+                    ("output_sequence", op.output_sequence),
+                    ("input_present", op.input_present),
+                    ("output_present", op.output_present),
+                ]
+            )
+            param_specs = [
+                (
+                    params["input_sequence"],
+                    elem_type.dtype.c_type,
+                    f"[EMX_SEQUENCE_MAX_LEN]{tensor_suffix}",
+                    True,
+                ),
+                (f"{params['input_sequence']}__count", "idx_t", "", True),
+                (
+                    params["output_sequence"],
+                    elem_type.dtype.c_type,
+                    f"[EMX_SEQUENCE_MAX_LEN]{tensor_suffix}",
+                    False,
+                ),
+                (f"{params['output_sequence']}__count", "idx_t *", "", False),
+            ]
+            if (
+                params["input_present"] is not None
+                and params["output_present"] is not None
+            ):
+                param_specs.extend(
+                    [
+                        (params["input_present"], "_Bool", "", True),
+                        (params["output_present"], "_Bool *", "", False),
+                    ]
+                )
+            rendered = sequence_identity_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=self._build_param_decls(param_specs),
+                input_sequence=params["input_sequence"],
+                output_sequence=params["output_sequence"],
+                input_present=params["input_present"],
+                output_present=params["output_present"],
+                element_count=CEmitter._element_count_expr(elem_shape),
+                c_type=elem_type.dtype.c_type,
+            ).rstrip()
+            return with_node_comment(rendered)
+
         if isinstance(op, SequenceLengthOp):
             output_shape = self._ctx_shape(op.output)
             params = self._shared_param_map(
@@ -12748,6 +14199,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -12772,6 +14224,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterOp
+            | ScatterElementsOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -12780,11 +14233,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -12796,7 +14251,9 @@ class CEmitter:
             | CumSumOp
             | RangeOp
             | LoopRangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
         ),
@@ -12826,6 +14283,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -12850,6 +14308,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterOp
+            | ScatterElementsOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -12858,11 +14317,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -12873,7 +14334,9 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
         ),
@@ -12990,10 +14453,20 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.grid, self._ctx_shape(op.grid)),
             )
+        if isinstance(op, AffineGridOp):
+            return (
+                (op.theta, self._ctx_shape(op.theta)),
+                (op.size, self._ctx_shape(op.size)),
+            )
         if isinstance(op, TileOp):
             return (
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.repeats_input, self._ctx_shape(op.repeats_input)),
+            )
+        if isinstance(op, CenterCropPadOp):
+            return (
+                (op.input0, self._ctx_shape(op.input0)),
+                (op.shape_input, self._ctx_shape(op.shape_input)),
             )
         if isinstance(op, PadOp):
             inputs = [(op.input0, self._ctx_shape(op.input0))]
@@ -13004,6 +14477,12 @@ class CEmitter:
             if op.value_input is not None:
                 inputs.append((op.value_input, self._ctx_shape(op.value_input)))
             return tuple(inputs)
+        if isinstance(op, ScatterElementsOp):
+            return (
+                (op.data, self._ctx_shape(op.data)),
+                (op.indices, self._ctx_shape(op.indices)),
+                (op.updates, self._ctx_shape(op.updates)),
+            )
         if isinstance(op, ScatterOp):
             return (
                 (op.data, self._ctx_shape(op.data)),
@@ -13028,7 +14507,11 @@ class CEmitter:
             return ((op.trip_count, ()), (op.cond, ()), (op.start, ()), (op.delta, ()))
         if isinstance(op, LoopSequenceInsertOp):
             return ((op.trip_count, ()), (op.cond, ()))
-        if isinstance(op, HammingWindowOp):
+        if isinstance(op, LoopSequenceMapOp):
+            return ((op.trip_count, ()), (op.cond, ()))
+        if isinstance(op, BlackmanWindowOp):
+            return ((op.size, ()),)
+        if isinstance(op, (HammingWindowOp, HannWindowOp)):
             return ((op.size, ()),)
         if isinstance(op, OneHotOp):
             return (
@@ -13047,7 +14530,9 @@ class CEmitter:
                 (op.input0, self._ctx_shape(op.input0)),
                 (op.k_input, self._ctx_shape(op.k_input)),
             )
-        if isinstance(op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp)):
+        if isinstance(
+            op, (TransposeOp, ReshapeOp, ReduceOp, ArgReduceOp, StringSplitOp)
+        ):
             return ((op.input0, self._ctx_shape(op.input0)),)
         return ()
 
@@ -13069,6 +14554,7 @@ class CEmitter:
             | AttentionOp
             | ConvOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -13098,11 +14584,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -13114,7 +14602,9 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
             | SequenceAtOp
@@ -13154,6 +14644,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -13178,6 +14669,7 @@ class CEmitter:
             | GatherOp
             | GatherNDOp
             | ScatterOp
+            | ScatterElementsOp
             | ScatterNDOp
             | TensorScatterOp
             | TransposeOp
@@ -13186,11 +14678,13 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | PadOp
             | DepthToSpaceOp
             | SpaceToDepthOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -13202,7 +14696,9 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | SplitOp
         ),
@@ -13347,6 +14843,16 @@ class CEmitter:
                 for name, shape in zip(op.accumulator_outputs, op.output_shapes)
             )
             return tuple(outputs)
+        if isinstance(op, MomentumOp):
+            outputs = [
+                (name, shape, op.dtype)
+                for name, shape in zip(op.outputs, op.output_shapes)
+            ]
+            outputs.extend(
+                (name, shape, op.dtype)
+                for name, shape in zip(op.velocity_outputs, op.output_shapes)
+            )
+            return tuple(outputs)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             outputs = [(op.output, op.output_shape, op.dtype)]
             if op.log_prob is not None and op.log_prob_shape is not None:
@@ -13421,6 +14927,19 @@ class CEmitter:
                     self._ctx_dtype(op.zero_point),
                 ),
             )
+        if isinstance(op, StringSplitOp):
+            return (
+                (
+                    op.output_y,
+                    self._ctx_shape(op.output_y),
+                    ScalarType.STRING,
+                ),
+                (
+                    op.output_z,
+                    self._ctx_shape(op.output_z),
+                    self._ctx_dtype(op.output_z),
+                ),
+            )
         if isinstance(op, ConcatFromSequenceOp):
             return (
                 (
@@ -13479,6 +14998,14 @@ class CEmitter:
                     self._ctx_sequence_elem_type(op.output_sequence).dtype,
                 ),
             )
+        if isinstance(op, SequenceIdentityOp):
+            return (
+                (
+                    op.output_sequence,
+                    self._sequence_storage_shape(op.output_sequence),
+                    self._ctx_sequence_elem_type(op.output_sequence).dtype,
+                ),
+            )
         if isinstance(op, SplitToSequenceOp):
             elem_type = self._ctx_sequence_elem_type(op.output_sequence)
             return (
@@ -13490,11 +15017,33 @@ class CEmitter:
             )
         if isinstance(op, LoopSequenceInsertOp):
             return ((op.output_sequence, op.elem_shape, op.elem_dtype),)
+        if isinstance(op, LoopSequenceMapOp):
+            return tuple(
+                (
+                    output_name,
+                    self._sequence_storage_shape(output_name),
+                    output_dtype,
+                )
+                for output_name, output_dtype in zip(
+                    op.output_sequences, op.output_elem_dtypes
+                )
+            )
         if isinstance(op, LoopRangeOp):
             return (
                 (op.final, self._ctx_shape(op.final), self._ctx_dtype(op.final)),
                 (op.output, self._ctx_shape(op.output), self._ctx_dtype(op.output)),
             )
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return (
+                (op.label, self._ctx_shape(op.label), self._ctx_dtype(op.label)),
+                (
+                    op.probabilities,
+                    self._ctx_shape(op.probabilities),
+                    self._ctx_dtype(op.probabilities),
+                ),
+            )
+        if isinstance(op, AffineGridOp):
+            return ((op.grid, self._ctx_shape(op.grid), self._ctx_dtype(op.grid)),)
         return (
             (
                 op.output,
@@ -13551,9 +15100,11 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | SliceOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | TopKOp
@@ -13566,9 +15117,12 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
+            | StringConcatOp
             | StringNormalizerOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -13625,6 +15179,8 @@ class CEmitter:
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, DeformConvOp):
+            return (op.batch, op.out_channels, op.out_h, op.out_w)
         if isinstance(op, AveragePoolOp):
             if op.spatial_rank == 3:
                 return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
@@ -13669,6 +15225,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, GatherNDOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, ScatterElementsOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, ScatterOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ScatterNDOp):
@@ -13689,6 +15247,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, TileOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, CenterCropPadOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, PadOp):
             return self._ctx_shape(op.output)
         if isinstance(op, DepthToSpaceOp):
@@ -13701,6 +15261,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, GridSampleOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, AffineGridOp):
+            return self._ctx_shape(op.grid)
         if isinstance(op, ReduceOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ArgReduceOp):
@@ -13725,18 +15287,30 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, LoopRangeOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, BlackmanWindowOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, HammingWindowOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, HannWindowOp):
             return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
             return self._ctx_shape(op.output)
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, StringConcatOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, StringSplitOp):
+            return self._ctx_shape(op.output_y)
         if isinstance(op, SplitOp):
             return self._ctx_shape(op.outputs[0])
         if isinstance(op, SplitToSequenceOp):
             return self._ctx_sequence_elem_type(op.output_sequence).shape
+        if isinstance(op, TreeEnsembleOp):
+            return self._ctx_shape(op.output)
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return self._ctx_shape(op.probabilities)
         if isinstance(op, ReverseSequenceOp):
             return self._ctx_shape(op.output)
         if isinstance(op, ConcatFromSequenceOp):
@@ -13755,6 +15329,8 @@ class CEmitter:
             return self._sequence_storage_shape(op.output_sequence)
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_shape
+        if isinstance(op, LoopSequenceMapOp):
+            return op.output_elem_shapes[0]
         if isinstance(op, RotaryEmbeddingOp):
             return op.input_shape
         if op.output_rank == 3:
@@ -13780,6 +15356,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -13793,6 +15370,7 @@ class CEmitter:
             | LogSoftmaxOp
             | HardmaxOp
             | AdagradOp
+            | MomentumOp
             | NegativeLogLikelihoodLossOp
             | SoftmaxCrossEntropyLossOp
             | MaxPoolOp
@@ -13808,8 +15386,10 @@ class CEmitter:
             | EyeLikeOp
             | TriluOp
             | TileOp
+            | CenterCropPadOp
             | ResizeOp
             | GridSampleOp
+            | AffineGridOp
             | ReduceOp
             | ArgReduceOp
             | ConstantOfShapeOp
@@ -13821,9 +15401,12 @@ class CEmitter:
             | ExpandOp
             | CumSumOp
             | RangeOp
+            | BlackmanWindowOp
             | HammingWindowOp
+            | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
+            | StringConcatOp
             | StringNormalizerOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -13847,13 +15430,21 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, StringConcatOp):
+            return ScalarType.STRING
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
+        if isinstance(op, StringSplitOp):
+            return ScalarType.STRING
+        if isinstance(op, TreeEnsembleOp):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, TreeEnsembleClassifierOp):
+            return self._ctx_dtype(op.probabilities)
         if isinstance(
             op, (QuantizeLinearOp, DequantizeLinearOp, DynamicQuantizeLinearOp)
         ):
             return self._ctx_dtype(op.output)
-        if isinstance(op, (TriluOp, TileOp, CumSumOp)):
+        if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])
@@ -13875,10 +15466,14 @@ class CEmitter:
             return self._ctx_sequence_elem_type(op.output_sequence).dtype
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_dtype
+        if isinstance(op, LoopSequenceMapOp):
+            return op.output_elem_dtypes[0]
         if isinstance(op, (DepthToSpaceOp, SpaceToDepthOp)):
             return self._ctx_dtype(op.output)
         if isinstance(op, OneHotOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, SequenceIdentityOp):
+            return self._ctx_sequence_elem_type(op.output_sequence).dtype
         if isinstance(
             op,
             (
@@ -13900,6 +15495,7 @@ class CEmitter:
                 CompressOp,
                 GatherElementsOp,
                 GatherNDOp,
+                ScatterElementsOp,
                 ScatterOp,
                 ScatterNDOp,
                 TensorScatterOp,
@@ -13915,7 +15511,9 @@ class CEmitter:
                 EyeLikeOp,
                 RangeOp,
                 ReverseSequenceOp,
+                BlackmanWindowOp,
                 HammingWindowOp,
+                HannWindowOp,
                 GridSampleOp,
                 ResizeOp,
                 PadOp,
@@ -13923,6 +15521,8 @@ class CEmitter:
             ),
         ):
             return self._ctx_dtype(op.output)
+        if isinstance(op, AffineGridOp):
+            return self._ctx_dtype(op.grid)
         return op.dtype
 
     @staticmethod
@@ -13981,6 +15581,14 @@ class CEmitter:
         return {
             name: flag
             for name, flag in zip(model.input_names, model.input_optional_names)
+            if flag is not None
+        }
+
+    @staticmethod
+    def _optional_output_flag_map(model: LoweredModel) -> dict[str, str]:
+        return {
+            name: flag
+            for name, flag in zip(model.output_names, model.output_optional_names)
             if flag is not None
         }
 
@@ -14233,6 +15841,19 @@ class CEmitter:
             codegen_shape = self._codegen_shape(shape)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
+            if is_sequence_input and isinstance(constant_values, np.ndarray):
+                target_shape = (int(constant_values.shape[0]), *codegen_shape)
+                if constant_values.shape != target_shape:
+                    normalized = np.zeros(target_shape, dtype=constant_values.dtype)
+                    if constant_values.ndim == len(target_shape):
+                        overlap = (slice(0, target_shape[0]),) + tuple(
+                            slice(0, min(cur_dim, tgt_dim))
+                            for cur_dim, tgt_dim in zip(
+                                constant_values.shape[1:], codegen_shape
+                            )
+                        )
+                        normalized[overlap] = constant_values[overlap]
+                    constant_values = normalized
             loop_shape = (1,) if not shape else shape
             if is_sequence_input:
                 if (
@@ -14321,11 +15942,12 @@ class CEmitter:
                 }
             )
         outputs = []
-        for name, shape, dtype, value_type in zip(
+        for name, shape, dtype, value_type, optional_flag in zip(
             model.output_names,
             model.output_shapes,
             model.output_dtypes,
             model.output_types,
+            model.output_optional_names,
         ):
             json_name = self._ctx_name(name)
             codegen_shape = self._codegen_shape(shape)
@@ -14358,6 +15980,7 @@ class CEmitter:
                     "json_name": json_name,
                     "is_sequence": is_sequence_output,
                     "count_name": f"{name}__count",
+                    "optional_flag_name": optional_flag,
                 }
             )
         rendered = testbench_template.render(
@@ -14379,7 +16002,8 @@ class CEmitter:
     @staticmethod
     def _testbench_requires_math(
         model: LoweredModel,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray]
+        | None,
     ) -> bool:
         if not testbench_inputs:
             return False
@@ -14388,7 +16012,12 @@ class CEmitter:
         for name, values in testbench_inputs.items():
             if dtype_map.get(name) not in float_dtypes:
                 continue
-            for value in values:
+            flat_values = (
+                values.reshape(-1).tolist()
+                if isinstance(values, np.ndarray)
+                else values
+            )
+            for value in flat_values:
                 if not math.isfinite(float(value)):
                     return True
         return False

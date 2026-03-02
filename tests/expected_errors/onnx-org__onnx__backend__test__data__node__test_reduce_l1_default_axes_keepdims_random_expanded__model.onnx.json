@@ -1,6 +1,7 @@
 {
   "error": "OK (max ULP 1)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_l1_default_axes_keepdims_random_expanded model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "Abs",
     "ReduceSum"

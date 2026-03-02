@@ -1,9 +1,10 @@
 {
-  "error": "OK (non-tensor outputs matched; max_abs_diff=8972011810649449542, max_ulp=0)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "SequenceInsert"
   ],
   "opset_version": 11,
-  "generated_checksum": "7fa5048e7896b62ac11ba2c684554b653376cbb351d6301cfdfbcd5021a8dfeb"
+  "generated_checksum": "afbec96d8337e92c22238a1ccbaf0fab2e7babab1ce375808226ffc33f718540"
 }

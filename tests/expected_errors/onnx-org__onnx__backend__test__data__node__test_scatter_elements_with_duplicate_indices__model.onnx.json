@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported op ScatterElements",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_scatter_elements_with_duplicate_indices model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "ScatterElements"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "3cac3a34b97c72067a31214b93fcd1ae729bdc0422cca4e7a2427761bb2b5a2f"
 }

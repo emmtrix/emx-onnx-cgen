@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported op BlackmanWindow",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_blackmanwindow_symmetric model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "BlackmanWindow"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "17acf9793593b12389c50c415eed0c67afc669ebc56fc1b88d653c6cc63921a6"
 }

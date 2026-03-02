@@ -1,4 +1,4 @@
-void {{ op_name }}({{ dim_args }}{% if dim_args and params %}, {% endif %}{{ params | join(', ') }}) {
+void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ c_type }} *input_data = (const {{ c_type }} *){{ input0 }};
     const idx_t axis_total = {{ axis_total }};
     idx_t produced = 0;

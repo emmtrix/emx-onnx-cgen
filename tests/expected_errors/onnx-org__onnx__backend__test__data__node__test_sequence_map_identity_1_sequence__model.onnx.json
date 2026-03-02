@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported op SequenceMap",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_identity_1_sequence model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "SequenceMap"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "61afdfc8f58959a4c81c5599333c61f94ad22e1ab2c5254bd9fc4b6e65884a25"
 }

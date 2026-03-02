@@ -587,6 +587,35 @@ class ConvTransposeOp(ConvLikeOpBase):
 
 
 @dataclass(frozen=True)
+class DeformConvOp(ConvLikeOpBase):
+    __io_inputs__ = ("input0", "weights", "offset", "bias", "mask")
+    input0: str
+    weights: str
+    offset: str
+    bias: str | None
+    mask: str | None
+    output: str
+    batch: int
+    in_channels: int
+    out_channels: int
+    in_h: int
+    in_w: int
+    out_h: int
+    out_w: int
+    kernel_h: int
+    kernel_w: int
+    stride_h: int
+    stride_w: int
+    pad_top: int
+    pad_left: int
+    dilation_h: int
+    dilation_w: int
+    group: int
+    offset_group: int
+    dtype: ScalarType
+
+
+@dataclass(frozen=True)
 class AveragePoolOp(RenderableOpBase):
     __io_inputs__ = ("input0",)
     __io_outputs__ = ("output",)
@@ -1215,6 +1244,44 @@ class AdagradOp(RenderableOpBase):
                     self.accumulators[index],
                     self.outputs[index],
                     self.accumulator_outputs[index],
+                ]
+            )
+        return tuple(args)
+
+
+@dataclass(frozen=True)
+class MomentumOp(RenderableOpBase):
+    __io_inputs__ = ("rate", "timestep", "inputs", "gradients", "velocities")
+    __io_outputs__ = ("outputs", "velocity_outputs")
+    rate: str
+    timestep: str
+    inputs: tuple[str, ...]
+    gradients: tuple[str, ...]
+    velocities: tuple[str, ...]
+    outputs: tuple[str, ...]
+    velocity_outputs: tuple[str, ...]
+    rate_shape: tuple[int, ...]
+    timestep_shape: tuple[int, ...]
+    tensor_shapes: tuple[tuple[int, ...], ...]
+    output_shapes: tuple[tuple[int, ...], ...]
+    dtype: ScalarType
+    rate_dtype: ScalarType
+    timestep_dtype: ScalarType
+    norm_coefficient: float
+    alpha: float
+    beta: float
+    mode: str
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.rate, self.timestep]
+        for index in range(len(self.inputs)):
+            args.extend(
+                [
+                    self.inputs[index],
+                    self.gradients[index],
+                    self.velocities[index],
+                    self.outputs[index],
+                    self.velocity_outputs[index],
                 ]
             )
         return tuple(args)

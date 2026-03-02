@@ -1,8 +1,10 @@
 {
-  "error": "Unsupported op StringConcat",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_string_concat_zero_dimensional model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "StringConcat"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "2de6a76ebe12e20fd0886d4b7394185ba4f4bc5a5d88e4d562ab991e36b295c0"
 }

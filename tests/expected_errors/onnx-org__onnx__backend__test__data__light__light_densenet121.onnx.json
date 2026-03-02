@@ -1,6 +1,7 @@
 {
   "error": "Out of tolerance (max ULP 50389)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/light light_densenet121.onnx",
+  "verification_mode": "Random+ORT",
   "operators": [
     "ConstantOfShape",
     "Conv",

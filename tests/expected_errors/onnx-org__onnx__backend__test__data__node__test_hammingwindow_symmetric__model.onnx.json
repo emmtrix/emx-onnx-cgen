@@ -1,9 +1,10 @@
 {
-  "error": "OK (max ULP 5)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_hammingwindow_symmetric model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "HammingWindow"
   ],
   "opset_version": 17,
-  "generated_checksum": "7e57128a8ddb8ca1c5385c8257045d8ecf1cf003e4e4ccc1a274b130409f53e5"
+  "generated_checksum": "ce5fe6be6c55d94e33c073b3cdd095f327f9adf5c668b325be3be163b2364845"
 }

@@ -1,6 +1,7 @@
 {
   "error": "Out of tolerance (max ULP 18616322)",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks lstm_k1_b1_r1_relu.onnx",
+  "verification_mode": "Random+ORT",
   "operators": [
     "Transpose",
     "LSTM",

@@ -1,9 +1,10 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_optional_has_element_optional_input model.onnx --test-data-dir test_data_set_0",
+  "verification_mode": "Data",
   "operators": [
     "OptionalHasElement"
   ],
   "opset_version": 18,
-  "generated_checksum": "43954fbed6f3ba8f42b5555b8f677d6c0457c82d9c6d2ab8376b5c97a1b5c753"
+  "generated_checksum": "7e202b698610963c591f7d93905ecbfa26ce1a6e4f09ad0ccc9392ccbbb29938"
 }
