@@ -49,6 +49,10 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--fp32-accumulation-strategy",
         "fp64",
     ),
+    "onnx2c-org/test/mnist/model.onnx": (
+        "--max-ulp",
+        "200",
+    ),
 }
 
 

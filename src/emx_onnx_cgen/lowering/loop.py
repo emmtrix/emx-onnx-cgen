@@ -383,6 +383,20 @@ def _lower_loop_sequence_insert(
     table = constants.get("x")
     if table is None or len(table.shape) != 1:
         raise UnsupportedOpError("Unsupported op Loop")
+    table_values = table.reshape(-1).tolist()
+    if not table_values:
+        raise UnsupportedOpError("Unsupported op Loop")
+    slice_start = constants.get("slice_start")
+    if slice_start is not None:
+        start_values = slice_start.reshape(-1).tolist()
+        if len(start_values) != 1:
+            raise UnsupportedOpError("Unsupported op Loop")
+        start_index = int(start_values[0])
+        if start_index < 0:
+            start_index += len(table_values)
+        if start_index < 0 or start_index >= len(table_values):
+            raise UnsupportedOpError("Unsupported op Loop")
+        table_values = [table_values[start_index]] * len(table_values)
 
     trip_count_shape = value_shape(graph, node.inputs[0], node)
     cond_shape = value_shape(graph, node.inputs[1], node)
@@ -409,7 +423,7 @@ def _lower_loop_sequence_insert(
         cond=node.inputs[1],
         input_sequence=node.inputs[2],
         output_sequence=node.outputs[0],
-        table_data=tuple(table.reshape(-1).tolist()),
+        table_data=tuple(table_values),
         table_shape=(int(table.shape[0]),),
         elem_shape=input_value.type.elem.shape,
         elem_dtype=input_value.type.elem.dtype,
