@@ -9,7 +9,7 @@ Overview:
 | --- | --- | --- |
 | [Official ONNX test coverage](#official-onnx-test-coverage) | 1539 / 1802, 85.4% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -1940,10 +1940,10 @@ Coverage 120 / 125 ONNX files (96.0%).
 | old_onnx_backend/9/test_slice_default_axes/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_end_out_of_bounds/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
 | old_onnx_backend/9/test_slice_neg/model.onnx | 9 | Data | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 2) |
+| simple_networks/conv_2ch_3kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 1) |
 | simple_networks/conv_2kernels.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 2) |
-| simple_networks/conv_3ch.onnx | 11 | Random+ORT | ✅ | OK (max ULP 1) |
+| simple_networks/conv_2kernels_randombias.onnx | 11 | Random+ORT | ✅ | OK (max ULP 3) |
+| simple_networks/conv_3ch.onnx | 11 | Random+ORT | ✅ | OK (max ULP 3) |
 | simple_networks/conv_k2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
@@ -1966,11 +1966,11 @@ Coverage 120 / 125 ONNX files (96.0%).
 
 Test directory: `tests/onnx`
 
-Coverage 4 / 4 ONNX files (100.0%).
+Coverage 3 / 4 ONNX files (75.0%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
 | micro_kws_m_qdq.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_add_shape.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
 | micro_kws_m_qoperator_avg_pool.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
-| micro_kws_m_qoperator_softmax.onnx | 15 | Random+ORT | ✅ | OK (max ULP 0) |
+| micro_kws_m_qoperator_softmax.onnx | 15 | Random+ORT | ❌ | Out of tolerance (max ULP 1065287680) |

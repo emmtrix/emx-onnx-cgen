@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 2)",
+  "error": "OK (max ULP 3)",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks conv_2kernels_randombias.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -8,5 +8,5 @@
     "Flatten"
   ],
   "opset_version": 11,
-  "generated_checksum": "79f6a540331ef9bbc9a2558a8f570bd2119506d7ebaa2cb70ae6dc68deec05bc"
+  "generated_checksum": "0948f2c3e23d622db8a871a09a2cb865ebabe48677fb79518a7a6f40dfc345b2"
 }

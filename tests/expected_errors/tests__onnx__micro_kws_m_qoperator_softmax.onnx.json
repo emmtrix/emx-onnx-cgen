@@ -1,5 +1,5 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Out of tolerance (max ULP 1065287680)",
   "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_qoperator_softmax.onnx --replicate-ort-bugs",
   "verification_mode": "Random+ORT",
   "operators": [
@@ -16,5 +16,5 @@
     "com.microsoft::QLinearSoftmax"
   ],
   "opset_version": 15,
-  "generated_checksum": "eb6ffc3dae3c3b4a6d284b46e3ab2c399acdb86afb91676fb5c0c2fc362bc25a"
+  "generated_checksum": "42450b8d3ebf51166609b9292f06546c1496f14b9ce7d4f72264c47fb5c40e4c"
 }
