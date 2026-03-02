@@ -40,6 +40,7 @@ class CompilerOptions:
     restrict_arrays: bool = True
     fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
+    testbench_inputs: Mapping[str, np.ndarray] | None = None
     testbench_optional_inputs: Mapping[str, bool] | None = None
     shape_inference_inputs: Mapping[str, np.ndarray] | None = None
     truncate_weights_after: int | None = None
@@ -266,6 +267,9 @@ class Compiler:
 
     def _concretize_graph_shapes(self, model: onnx.ModelProto, graph: Graph) -> Graph:
         shape_inputs = self._options.shape_inference_inputs
+        if shape_inputs is None:
+            # Backward/forward compatibility: CLI may pass testbench_inputs.
+            shape_inputs = self._options.testbench_inputs
         if not shape_inputs:
             return graph
         if not any(
