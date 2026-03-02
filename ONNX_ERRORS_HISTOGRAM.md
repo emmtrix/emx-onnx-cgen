@@ -2,11 +2,8 @@
 
 This histogram is test-suite-overarching.
 
-Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
-
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 28 | 8, 9, 11, 13, 16, 17, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | 25 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | 25 |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | 25 |
@@ -15,6 +12,7 @@ Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
+| Out of tolerance | 16 | 8, 9, 13, 16, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
@@ -63,12 +61,10 @@ Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
 | Out of tolerance | 9 | 1 |
-| Out of tolerance | 11 | 2 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 13 | 1 |
 | Out of tolerance | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
-| Out of tolerance | 17 | 10 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op Col2Im | 18 | 5 |
