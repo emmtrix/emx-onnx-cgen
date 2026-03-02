@@ -1372,6 +1372,11 @@ def _verify_model(
             model, args.test_data_dir
             )
         )
+        if args.test_data_dir is not None and testbench_inputs is None:
+            raise CodegenError(
+                "Failed to load test inputs from --test-data-dir; "
+                "strict mode is enabled for explicit test data."
+            )
         testbench_outputs = None
         if not args.per_node_accuracy:
             testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)

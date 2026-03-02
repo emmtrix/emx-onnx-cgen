@@ -12,7 +12,7 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
-| Out of tolerance | 15 | 8, 9, 13, 19, 20, 21, 22, 24 |
+| Out of tolerance | 14 | 8, 13, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
@@ -60,7 +60,6 @@ This histogram is test-suite-overarching.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
-| Out of tolerance | 9 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 13 | 1 |
 | Unsupported op Loop | 16 | 1 |

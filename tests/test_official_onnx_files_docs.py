@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import re
+import shlex
 from collections import Counter
 from pathlib import Path
 
@@ -37,9 +38,37 @@ def _is_success_message(message: str) -> bool:
 def _render_onnx_file_support_table(
     expectations: list[OnnxFileExpectation],
 ) -> list[str]:
+    def _verification_mode(expectation: OnnxFileExpectation) -> str:
+        command_line = (expectation.command_line or "").strip()
+        if not command_line:
+            return "Random+ORT"
+        try:
+            tokens = shlex.split(command_line)
+        except ValueError:
+            tokens = command_line.split()
+        has_test_data = any(
+            token == "--test-data-dir" or token.startswith("--test-data-dir=")
+            for token in tokens
+        )
+        if has_test_data:
+            return "Data"
+        runtime = "onnxruntime"
+        for index, token in enumerate(tokens):
+            if token == "--runtime" and index + 1 < len(tokens):
+                runtime = tokens[index + 1]
+                break
+            if token.startswith("--runtime="):
+                runtime = token.split("=", 1)[1]
+                break
+        if runtime == "onnx-reference":
+            return "Random+ONNXRef"
+        if runtime == "onnxruntime":
+            return "Random+ORT"
+        return f"Random+{runtime}"
+
     lines = [
-        "| File | Opset | Supported | Error |",
-        "| --- | --- | --- | --- |",
+        "| File | Opset | Verification | Supported | Error |",
+        "| --- | --- | --- | --- | --- |",
     ]
     for expectation in sorted(expectations, key=lambda item: item.path):
         supported = "✅" if _is_success_message(expectation.error) else "❌"
@@ -48,12 +77,15 @@ def _render_onnx_file_support_table(
             if expectation.opset_version is not None
             else ""
         )
+        verification = _verification_mode(expectation)
         message = expectation.error.replace("\n", " ").strip()
         extra_args = MODEL_EXTRA_VERIFY_ARGS.get(expectation.path)
         if extra_args:
             flag_text = " ".join(extra_args)
             message = f"{message} (flags: {flag_text})".strip()
-        lines.append(f"| {expectation.path} | {opset} | {supported} | {message} |")
+        lines.append(
+            f"| {expectation.path} | {opset} | {verification} | {supported} | {message} |"
+        )
     return lines
 
 
