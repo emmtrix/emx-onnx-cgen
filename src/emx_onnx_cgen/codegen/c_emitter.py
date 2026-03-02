@@ -16013,7 +16013,9 @@ class CEmitter:
             if dtype_map.get(name) not in float_dtypes:
                 continue
             flat_values = (
-                values.reshape(-1).tolist() if isinstance(values, np.ndarray) else values
+                values.reshape(-1).tolist()
+                if isinstance(values, np.ndarray)
+                else values
             )
             for value in flat_values:
                 if not math.isfinite(float(value)):

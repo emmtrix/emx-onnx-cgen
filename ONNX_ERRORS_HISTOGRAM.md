@@ -2,11 +2,8 @@
 
 This histogram is test-suite-overarching.
 
-Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
-
 | Error message | Count | Opset versions |
 | --- | --- | --- |
-| Out of tolerance | 28 | 8, 9, 11, 13, 16, 17, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 22 | 25 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 20 | 25 |
 | Unsupported elem_type 18 (FLOAT8E4M3FNUZ) for tensor '*'. | 18 | 25 |
@@ -15,6 +12,7 @@ Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
+| Out of tolerance | 15 | 8, 13, 16, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
@@ -25,6 +23,7 @@ Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
+| Failed to build testbench. | 3 | 10, 20 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
@@ -50,6 +49,7 @@ Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
+| Testbench input network_input has rank 4, expected 2 | 1 | 9 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
@@ -62,13 +62,12 @@ Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
-| Out of tolerance | 9 | 1 |
-| Out of tolerance | 11 | 2 |
+| Testbench input network_input has rank 4, expected 2 | 9 | 1 |
+| Failed to build testbench. | 10 | 2 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Out of tolerance | 13 | 1 |
 | Out of tolerance | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
-| Out of tolerance | 17 | 10 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op Col2Im | 18 | 5 |
@@ -83,6 +82,7 @@ Model coverage: [`ONNX_SUPPORT.md`](ONNX_SUPPORT.md)
 | Gelu only supports approximate=none | 20 | 2 |
 | Split output shape must be (1,), got (2,) | 20 | 2 |
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 20 | 2 |
+| Failed to build testbench. | 20 | 1 |
 | Out of tolerance | 20 | 1 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
