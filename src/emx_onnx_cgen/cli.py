@@ -51,8 +51,9 @@ def _serialize_string_tensor(array: np.ndarray) -> bytes:
     return bytes(encoded)
 
 
-
-def _random_tensor_input(shape: tuple[int, ...], dtype: ScalarType, rng: np.random.Generator) -> np.ndarray:
+def _random_tensor_input(
+    shape: tuple[int, ...], dtype: ScalarType, rng: np.random.Generator
+) -> np.ndarray:
     np_dtype = dtype.np_dtype
     if dtype == ScalarType.STRING:
         return np.full(shape, "", dtype=np_dtype)
@@ -83,6 +84,8 @@ def _generate_random_testbench_inputs(
             rng,
         )
     return generated_inputs, optional_inputs
+
+
 def _env_flag(name: str) -> bool:
     value = os.environ.get(name)
     if value is None:
@@ -1454,8 +1457,8 @@ def _verify_model(
                 )
                 testbench_outputs = None
         if testbench_inputs is None:
-            testbench_inputs, testbench_optional_inputs = _generate_random_testbench_inputs(
-                graph.inputs
+            testbench_inputs, testbench_optional_inputs = (
+                _generate_random_testbench_inputs(graph.inputs)
             )
             input_source = "Random"
         if testbench_outputs is not None:

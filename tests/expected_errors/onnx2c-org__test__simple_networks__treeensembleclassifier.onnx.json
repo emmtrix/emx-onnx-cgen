@@ -6,5 +6,5 @@
     "ai.onnx.ml::TreeEnsembleClassifier"
   ],
   "opset_version": 12,
-  "generated_checksum": "958efe7ab68050eca5d48078dc9d67011475f8ba076e0a721fc44b2ddc3bd4be"
+  "generated_checksum": "db85a8922c4c3d68e8b58d63a13bd8be6320de1f422f2a297bcabff4713bb73e"
 }
