@@ -16002,7 +16002,8 @@ class CEmitter:
     @staticmethod
     def _testbench_requires_math(
         model: LoweredModel,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray]
+        | None,
     ) -> bool:
         if not testbench_inputs:
             return False
@@ -16011,7 +16012,10 @@ class CEmitter:
         for name, values in testbench_inputs.items():
             if dtype_map.get(name) not in float_dtypes:
                 continue
-            for value in values:
+            flat_values = (
+                values.reshape(-1).tolist() if isinstance(values, np.ndarray) else values
+            )
+            for value in flat_values:
                 if not math.isfinite(float(value)):
                     return True
         return False

@@ -296,8 +296,16 @@ class Compiler:
                 dtype = value_dtype(graph, name)
                 info = dtype_info(dtype)
                 expected_shape = input_value.type.shape
-                expected_count = shape_product(expected_shape)
                 array = values.astype(info.np_dtype, copy=False)
+                if input_value.type.dim_params:
+                    expected_rank = len(expected_shape)
+                    if array.ndim != expected_rank:
+                        raise CodegenError(
+                            "Testbench input "
+                            f"{name} has rank {array.ndim}, expected {expected_rank}"
+                        )
+                    continue
+                expected_count = shape_product(expected_shape)
                 if array.size != expected_count:
                     raise CodegenError(
                         "Testbench input "
