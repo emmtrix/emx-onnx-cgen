@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1540 / 1802, 85.5% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1541 / 1802, 85.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1540 / 1802 ONNX files (85.5%).
+Coverage 1541 / 1802 ONNX files (85.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -904,7 +904,7 @@ Coverage 1540 / 1802 ONNX files (85.5%).
 | node/test_logsoftmax_negative_axis_expanded/model.onnx | 13 | Data | ✅ | OK (max ULP 1) |
 | node/test_logsoftmax_negative_axis_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 1) |
 | node/test_loop11/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
-| node/test_loop13_seq/model.onnx | 13 | Data | ❌ | Out of tolerance (max ULP 18874368) |
+| node/test_loop13_seq/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_loop16_seq_none/model.onnx | 16 | Data | ❌ | Unsupported op Loop |
 | node/test_lpnormalization_default/model.onnx | 22 | Data | ✅ | OK (max ULP 0) |
 | node/test_lppool_1d_default/model.onnx | 22 | Data | ❌ | LpPool expects 2D kernel_shape |
