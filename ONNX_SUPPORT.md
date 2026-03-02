@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1531 / 1802, 85.0% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1535 / 1802, 85.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 4 / 4, 100.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1531 / 1802 ONNX files (85.0%).
+Coverage 1535 / 1802 ONNX files (85.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1067,10 +1067,10 @@ Coverage 1531 / 1802 ONNX files (85.0%).
 | node/test_onehot_with_axis/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_onehot_with_negative_axis/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_onehot_without_axis/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
-| node/test_optional_get_element_optional_sequence/model.onnx | 18 | Data | ❌ | Unsupported op OptionalGetElement |
-| node/test_optional_get_element_optional_tensor/model.onnx | 18 | Data | ❌ | Unsupported op OptionalGetElement |
-| node/test_optional_get_element_sequence/model.onnx | 18 | Data | ❌ | Unsupported op OptionalGetElement |
-| node/test_optional_get_element_tensor/model.onnx | 18 | Data | ❌ | Unsupported op OptionalGetElement |
+| node/test_optional_get_element_optional_sequence/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
+| node/test_optional_get_element_optional_tensor/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
+| node/test_optional_get_element_sequence/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
+| node/test_optional_get_element_tensor/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_optional_has_element_empty_no_input_name_optional_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
 | node/test_optional_has_element_empty_no_input_name_tensor_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
 | node/test_optional_has_element_empty_no_input_optional_input/model.onnx | 18 | Random+ORT | ❌ | OptionalHasElement expects exactly one non-empty input. |
