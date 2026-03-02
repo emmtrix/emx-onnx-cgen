@@ -1367,16 +1367,25 @@ def _verify_model(
     try:
         active_reporter.info("")
         codegen_started = active_reporter.start_step("Generating C code")
-        testbench_inputs, testbench_optional_inputs = _load_test_data_inputs(
+        testbench_inputs, testbench_optional_inputs, reshaped_tensor_inputs = (
+            _load_test_data_inputs(
             model, args.test_data_dir
+            )
         )
-        testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
-        if args.per_node_accuracy and testbench_outputs is not None:
+        testbench_outputs = None
+        if not args.per_node_accuracy:
+            testbench_outputs = _load_test_data_outputs(model, args.test_data_dir)
+            if reshaped_tensor_inputs and testbench_outputs is not None:
+                active_reporter.note(
+                    "Ignoring test-data outputs because input tensors were reshaped "
+                    "to match model input signatures; using runtime reference instead."
+                )
+                testbench_outputs = None
+        if args.per_node_accuracy:
             active_reporter.note(
                 "Per-node accuracy: ignoring --test-data-dir reference outputs "
                 "and running runtime backend for all node outputs."
             )
-            testbench_outputs = None
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=True,
@@ -2041,9 +2050,9 @@ def _verify_model(
 
 def _load_test_data_inputs(
     model: onnx.ModelProto, data_dir: Path | None
-) -> tuple[dict[str, "np.ndarray"] | None, dict[str, bool] | None]:
+) -> tuple[dict[str, "np.ndarray"] | None, dict[str, bool] | None, bool]:
     if data_dir is None:
-        return None, None
+        return None, None, False
     if not data_dir.exists():
         raise CodegenError(f"Test data directory not found: {data_dir}")
     input_files = sorted(
@@ -2074,9 +2083,10 @@ def _load_test_data_inputs(
                 value_info.name,
                 value_kind or "unknown",
             )
-            return None, None
+            return None, None, False
     inputs: dict[str, np.ndarray] = {}
     optional_flags: dict[str, bool] = {}
+    reshaped_tensor_inputs = False
 
     def _sequence_tensor_values_to_array(
         *,
@@ -2137,12 +2147,38 @@ def _load_test_data_inputs(
         if value_kind == "tensor_type":
             tensor = onnx.TensorProto()
             tensor.ParseFromString(path.read_bytes())
-            inputs[value_info.name] = numpy_helper.to_array(tensor)
+            array = numpy_helper.to_array(tensor)
+            tensor_type = value_info.type.tensor_type
+            if tensor_type.HasField("shape"):
+                target_shape: list[int] = []
+                shape_known = True
+                for dim in tensor_type.shape.dim:
+                    if dim.HasField("dim_value"):
+                        target_shape.append(int(dim.dim_value))
+                    elif dim.HasField("dim_param"):
+                        target_shape.append(1)
+                    else:
+                        shape_known = False
+                        break
+                if shape_known and target_shape:
+                    expected = tuple(target_shape)
+                    if array.shape != expected and array.size == int(
+                        np.prod(target_shape, dtype=np.int64)
+                    ):
+                        LOGGER.warning(
+                            "Reshaping test input %s from %s to %s to match model input.",
+                            value_info.name,
+                            array.shape,
+                            expected,
+                        )
+                        array = array.reshape(expected)
+                        reshaped_tensor_inputs = True
+            inputs[value_info.name] = array
             continue
         if value_kind == "sequence_type":
             elem_type = value_info.type.sequence_type.elem_type
             if elem_type.WhichOneof("value") != "tensor_type":
-                return None, None
+                    return None, None, False
             seq = onnx.SequenceProto()
             seq.ParseFromString(path.read_bytes())
             tensors = [numpy_helper.to_array(tensor) for tensor in seq.tensor_values]
@@ -2191,7 +2227,7 @@ def _load_test_data_inputs(
                     "Skipping test data load for non-tensor optional sequence input %s.",
                     value_info.name,
                 )
-                return None, None
+                return None, None, False
             if optional.HasField("sequence_value"):
                 tensors = [
                     numpy_helper.to_array(tensor)
@@ -2215,8 +2251,8 @@ def _load_test_data_inputs(
             "Skipping test data load for unsupported optional input %s.",
             value_info.name,
         )
-        return None, None
-    return inputs, optional_flags
+        return None, None, False
+    return inputs, optional_flags, reshaped_tensor_inputs
 
 
 def _load_test_data_outputs(
