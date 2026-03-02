@@ -24,7 +24,6 @@ Aggregates non-success verification outcomes.
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
-| Unsupported op OptionalGetElement | 4 | 18 |
 | Unsupported op RNN | 4 | 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
@@ -39,6 +38,7 @@ Aggregates non-success verification outcomes.
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
 | Split output shape must be (1,), got (2,) | 2 | 20 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
+| Unsupported non-tensor value '*' in op unknown. | 2 | 18 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op Det | 2 | 22 |
@@ -70,7 +70,7 @@ Aggregates non-success verification outcomes.
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
-| Unsupported op OptionalGetElement | 18 | 4 |
+| Unsupported non-tensor value '*' in op unknown. | 18 | 2 |
 | Unsupported op BitwiseNot | 18 | 2 |
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
