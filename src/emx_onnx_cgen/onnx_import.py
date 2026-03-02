@@ -831,6 +831,7 @@ def _inline_if_branch(
     *,
     prefix: str,
     new_initializers: list[onnx.TensorProto],
+    rename_outputs: bool = True,
 ) -> tuple[list[onnx.NodeProto], dict[str, str]]:
     name_map: dict[str, str] = {}
     for initializer in branch.initializer:
@@ -886,13 +887,98 @@ def _inline_if_branch(
             if not output_name:
                 mapped_outputs.append(output_name)
                 continue
-            mapped = f"{prefix}_value_{node_index}_{output_index}"
+            mapped = (
+                f"{prefix}_value_{node_index}_{output_index}"
+                if rename_outputs
+                else output_name
+            )
             name_map[output_name] = mapped
             mapped_outputs.append(mapped)
         del inlined.output[:]
         inlined.output.extend(mapped_outputs)
         inlined_nodes.append(inlined)
     return inlined_nodes, name_map
+
+
+def _find_producer(
+    graph: onnx.GraphProto, output_name: str
+) -> onnx.NodeProto | None:
+    for candidate in graph.node:
+        if output_name in candidate.output:
+            return candidate
+    return None
+
+
+def _constant_scalar_value(
+    graph: onnx.GraphProto,
+    output_name: str,
+    *,
+    seen: set[str] | None = None,
+) -> int | float | bool | None:
+    if not output_name:
+        return None
+    if seen is None:
+        seen = set()
+    if output_name in seen:
+        return None
+    seen.add(output_name)
+
+    for initializer in graph.initializer:
+        if initializer.name != output_name:
+            continue
+        array = numpy_helper.to_array(initializer).reshape(-1)
+        if array.size != 1:
+            return None
+        return array[0].item()
+
+    producer = _find_producer(graph, output_name)
+    if producer is None:
+        return None
+    if producer.op_type == "Constant":
+        for attr in producer.attribute:
+            if attr.name == "value_int":
+                return int(attr.i)
+            if attr.name == "value_float":
+                return float(attr.f)
+            if attr.name == "value":
+                array = numpy_helper.to_array(attr.t).reshape(-1)
+                if array.size == 1:
+                    return array[0].item()
+        return None
+    if producer.op_type in {"Identity", "Cast", "CastLike"} and producer.input:
+        return _constant_scalar_value(graph, producer.input[0], seen=seen)
+    if producer.op_type == "Size" and len(producer.input) == 1:
+        source_name = producer.input[0]
+        value_info = _find_value_info(graph, source_name)
+        if value_info is None:
+            return None
+        source_kind = value_info.type.WhichOneof("value")
+        if source_kind != "tensor_type":
+            return None
+        shape = []
+        for dim in value_info.type.tensor_type.shape.dim:
+            if not dim.HasField("dim_value"):
+                return None
+            shape.append(int(dim.dim_value))
+        if any(dim < 0 for dim in shape):
+            return None
+        return int(np.prod(shape, dtype=np.int64))
+    if producer.op_type == "Equal" and len(producer.input) == 2:
+        lhs = _constant_scalar_value(graph, producer.input[0], seen=seen)
+        rhs = _constant_scalar_value(graph, producer.input[1], seen=seen)
+        if lhs is None or rhs is None:
+            return None
+        return bool(lhs == rhs)
+    return None
+
+
+def _constant_bool_value(graph: onnx.GraphProto, output_name: str) -> bool | None:
+    value = _constant_scalar_value(graph, output_name)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, np.integer)):
+        return bool(int(value))
+    return None
 
 
 def _expand_if_node(
@@ -914,6 +1000,35 @@ def _expand_if_node(
         else_branch.output
     ):
         return None
+
+    prefix_base = node.name or f"if_{node_index}"
+    cond_name = node.input[0]
+    cond_constant = _constant_bool_value(graph, cond_name)
+    if cond_constant is not None:
+        chosen_branch = then_branch if cond_constant else else_branch
+        chosen_prefix = f"{prefix_base}_{'then' if cond_constant else 'else'}"
+        chosen_nodes, chosen_map = _inline_if_branch(
+            chosen_branch,
+            prefix=chosen_prefix,
+            new_initializers=new_initializers,
+            rename_outputs=False,
+        )
+        selected_nodes: list[onnx.NodeProto] = []
+        for output_index, output_name in enumerate(node.output):
+            branch_output_name = chosen_branch.output[output_index].name
+            chosen_name = chosen_map.get(branch_output_name)
+            if chosen_name is None:
+                return None
+            selected_nodes.append(
+                helper.make_node(
+                    "Identity",
+                    inputs=[chosen_name],
+                    outputs=[output_name],
+                    name=f"{prefix_base}_select_{output_index}",
+                )
+            )
+        return [*chosen_nodes, *selected_nodes]
+
     output_kinds = tuple(
         _if_output_kind(
             graph,
@@ -925,15 +1040,11 @@ def _expand_if_node(
         )
         for output_index, output_name in enumerate(node.output)
     )
-    if any(
-        kind not in {"tensor", "sequence", "optional_tensor", "optional_sequence"}
-        for kind in output_kinds
-    ):
+    if any(kind not in {"tensor", "optional_tensor"} for kind in output_kinds):
         return None
     if any(kind != output_kinds[0] for kind in output_kinds):
         return None
 
-    prefix_base = node.name or f"if_{node_index}"
     then_nodes, then_map = _inline_if_branch(
         then_branch,
         prefix=f"{prefix_base}_then",
@@ -944,82 +1055,20 @@ def _expand_if_node(
         prefix=f"{prefix_base}_else",
         new_initializers=new_initializers,
     )
-
     select_nodes: list[onnx.NodeProto] = []
-    cond_name = node.input[0]
-    if output_kinds[0] in {"tensor", "optional_tensor"}:
-        for output_index, output_name in enumerate(node.output):
-            then_name = then_map.get(then_branch.output[output_index].name)
-            else_name = else_map.get(else_branch.output[output_index].name)
-            if then_name is None or else_name is None:
-                return None
-            select_nodes.append(
-                helper.make_node(
-                    "Where",
-                    inputs=[cond_name, then_name, else_name],
-                    outputs=[output_name],
-                    name=f"{prefix_base}_select_{output_index}",
-                )
-            )
-        return [*then_nodes, *else_nodes, *select_nodes]
-
     for output_index, output_name in enumerate(node.output):
-        then_output_name = then_branch.output[output_index].name
-        else_output_name = else_branch.output[output_index].name
-        then_inputs = _sequence_construct_inputs(then_branch, then_output_name)
-        else_inputs = _sequence_construct_inputs(else_branch, else_output_name)
-        if then_inputs is None or else_inputs is None:
+        then_name = then_map.get(then_branch.output[output_index].name)
+        else_name = else_map.get(else_branch.output[output_index].name)
+        if then_name is None or else_name is None:
             return None
-        if len(then_inputs) != len(else_inputs):
-            if output_kinds[0] != "optional_sequence":
-                return None
-            selected_inputs = then_inputs if then_inputs else else_inputs
-            selected_map = then_map if then_inputs else else_map
-            selected_elements = [
-                selected_map.get(elem)
-                for elem in selected_inputs
-                if selected_map.get(elem)
-            ]
-            if len(selected_elements) != len(selected_inputs):
-                return None
-            select_nodes.append(
-                helper.make_node(
-                    "SequenceConstruct",
-                    inputs=selected_elements,
-                    outputs=[output_name],
-                    name=f"{prefix_base}_sequence_construct_{output_index}",
-                )
-            )
-            continue
-
-        selected_elements: list[str] = []
-        for elem_index, (then_elem, else_elem) in enumerate(
-            zip(then_inputs, else_inputs)
-        ):
-            then_name = then_map.get(then_elem)
-            else_name = else_map.get(else_elem)
-            if then_name is None or else_name is None:
-                return None
-            selected_name = f"{prefix_base}_sequence_{output_index}_{elem_index}"
-            select_nodes.append(
-                helper.make_node(
-                    "Where",
-                    inputs=[cond_name, then_name, else_name],
-                    outputs=[selected_name],
-                    name=f"{prefix_base}_select_{output_index}_{elem_index}",
-                )
-            )
-            selected_elements.append(selected_name)
-
         select_nodes.append(
             helper.make_node(
-                "SequenceConstruct",
-                inputs=selected_elements,
+                "Where",
+                inputs=[cond_name, then_name, else_name],
                 outputs=[output_name],
-                name=f"{prefix_base}_sequence_construct_{output_index}",
+                name=f"{prefix_base}_select_{output_index}",
             )
         )
-
     return [*then_nodes, *else_nodes, *select_nodes]
 
 

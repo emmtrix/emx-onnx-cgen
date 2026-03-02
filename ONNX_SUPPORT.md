@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1539 / 1802, 85.4% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1540 / 1802, 85.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 120 / 125, 96.0% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1539 / 1802 ONNX files (85.4%).
+Coverage 1540 / 1802 ONNX files (85.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -53,11 +53,11 @@ Coverage 1539 / 1802 ONNX files (85.4%).
 | node/test_add_uint8/model.onnx | 14 | Data | ✅ | OK (max abs diff 0) |
 | node/test_affine_grid_2d/model.onnx | 20 | Data | ✅ | OK (max ULP 1) |
 | node/test_affine_grid_2d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
-| node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
+| node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ❌ | GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) |
 | node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ❌ | Where inputs must be broadcastable, got ((), (1,), (0,)) |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
-| node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ❌ | Split output shape must be (1,), got (2,) |
+| node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Split output shape must be (1,), got (2,) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ❌ | Unsupported op ArrayFeatureExtractor |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ❌ | Unsupported op Binarizer |

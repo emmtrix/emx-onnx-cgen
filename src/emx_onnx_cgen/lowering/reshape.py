@@ -113,6 +113,9 @@ def _shape_values_from_input(
             return _shape_values_from_shape_node(graph, source_node, node)
         if source_node.op_type == "Concat":
             axis = int(source_node.attrs.get("axis", 0))
+            rank = len(_value_shape(graph, source_node.outputs[0], node))
+            if axis < 0:
+                axis += rank
             if axis != 0:
                 raise UnsupportedOpError("Reshape shape concat must use axis 0")
             values: list[int] = []

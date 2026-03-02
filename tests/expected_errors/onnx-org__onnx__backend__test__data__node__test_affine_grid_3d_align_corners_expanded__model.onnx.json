@@ -1,5 +1,5 @@
 {
-  "error": "Split output shape must be (1,), got (2,)",
+  "error": "OK (max ULP 23)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_align_corners_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -19,5 +19,6 @@
     "Reshape",
     "MatMul"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "9b21e184c72c9df1a1bc10fbcc92c8497ddb6f2bb8207476c250b5e27b03af1a"
 }

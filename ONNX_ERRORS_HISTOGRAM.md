@@ -36,25 +36,26 @@ Aggregates non-success verification outcomes.
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
 | QuantizeLinear block_size is not supported | 2 | 25 |
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
-| Split output shape must be (1,), got (2,) | 2 | 20 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
-| Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
+| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 1 | 20 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
+| Split output shape must be (1,), got (2,) | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op RandomUniform | 1 | 22 |
+| Where inputs must be broadcastable, got ((), (1,), (0,)) | 1 | 20 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
@@ -77,11 +78,12 @@ Aggregates non-success verification outcomes.
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
-| Split output shape must be (1,), got (2,) | 20 | 2 |
-| Where inputs must be broadcastable, got ((), (1,), (0,)) | 20 | 2 |
+| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 20 | 1 |
 | Out of tolerance | 20 | 1 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
+| Split output shape must be (1,), got (2,) | 20 | 1 |
+| Where inputs must be broadcastable, got ((), (1,), (0,)) | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
 | Out of tolerance | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |
