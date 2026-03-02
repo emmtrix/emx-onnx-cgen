@@ -54,6 +54,7 @@ class OnnxFileExpectation:
     path: str
     error: str
     command_line: str = ""
+    verification_mode: str | None = None
     operators: list[str] | None = None
     opset_version: int | None = None
     generated_checksum: str | None = None
@@ -185,12 +186,14 @@ def _read_expectation_file(
     data = json.loads(path.read_text(encoding="utf-8"))
     error = ""
     command_line = ""
+    verification_mode: str | None = None
     operators: list[str] | None = None
     opset_version: int | None = None
     generated_checksum: str | None = None
     if isinstance(data, dict):
         error = data.get("error", "")
         command_line = data.get("command_line", "")
+        verification_mode = data.get("verification_mode")
         operators = data.get("operators")
         opset_version = data.get("opset_version")
         generated_checksum = data.get("generated_checksum")
@@ -211,6 +214,7 @@ def _read_expectation_file(
         path=fallback_path,
         error=error,
         command_line=command_line,
+        verification_mode=verification_mode,
         operators=operators,
         opset_version=opset_version,
         generated_checksum=generated_checksum,
@@ -246,6 +250,8 @@ def _write_expectation_file(
         "error": expectation.error,
         "command_line": expectation.command_line,
     }
+    if expectation.verification_mode is not None:
+        payload["verification_mode"] = expectation.verification_mode
     if expectation.operators is not None:
         payload["operators"] = expectation.operators
     if expectation.opset_version is not None:
@@ -467,6 +473,7 @@ def _run_expected_error_test(
             path=expectation_path,
             error=actual_error,
             command_line=cli_result.command_line,
+            verification_mode=cli_result.verification_mode,
             operators=cli_result.operators,
             opset_version=cli_result.opset_version,
             generated_checksum=cli_result.generated_checksum,
