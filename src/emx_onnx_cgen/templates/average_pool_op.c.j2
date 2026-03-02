@@ -17,15 +17,18 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                         && ih >= 0 && ih < {{ in_h }}
                                         && iw >= 0 && iw < {{ in_w }}) {
                                         values[count++] = {{ input0 }}[n][c][id][ih][iw];
-                                    } else if ({{ count_include_pad }}) {
+                                    } else if (
+                                        {{ count_include_pad }}
+                                        && id >= -{{ pad_front }} && id < {{ in_d }} + {{ pad_back }}
+                                        && ih >= -{{ pad_top }} && ih < {{ in_h }} + {{ pad_bottom }}
+                                        && iw >= -{{ pad_left }} && iw < {{ in_w }} + {{ pad_right }}
+                                    ) {
                                         values[count++] = {{ zero_literal }};
                                     }
                                 }
                             }
                         }
-                        const idx_t denom = {{ count_include_pad }}
-                            ? {{ kernel_d * kernel_h * kernel_w }}
-                            : count;
+                        const idx_t denom = count;
                         {{ c_type }} acc = {{ zero_literal }};
                         if (count > 0) {
                             idx_t reduce_count = count;
@@ -57,11 +60,14 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     const idx_t iw = ow * {{ stride_w }} + kw * {{ dilation_w }} - {{ pad_left }};
                     if (iw >= 0 && iw < {{ in_w }}) {
                         values[count++] = {{ input0 }}[n][c][iw];
-                    } else if ({{ count_include_pad }}) {
+                    } else if (
+                        {{ count_include_pad }}
+                        && iw >= -{{ pad_left }} && iw < {{ in_w }} + {{ pad_right }}
+                    ) {
                         values[count++] = {{ zero_literal }};
                     }
                 }
-                const idx_t denom = {{ count_include_pad }} ? {{ kernel_w }} : count;
+                const idx_t denom = count;
                 {{ c_type }} acc = {{ zero_literal }};
                 if (count > 0) {
                     idx_t reduce_count = count;
@@ -94,14 +100,16 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             const idx_t iw = ow * {{ stride_w }} + kw * {{ dilation_w }} - {{ pad_left }};
                             if (ih >= 0 && ih < {{ in_h }} && iw >= 0 && iw < {{ in_w }}) {
                                 values[count++] = {{ input0 }}[n][c][ih][iw];
-                            } else if ({{ count_include_pad }}) {
+                            } else if (
+                                {{ count_include_pad }}
+                                && ih >= -{{ pad_top }} && ih < {{ in_h }} + {{ pad_bottom }}
+                                && iw >= -{{ pad_left }} && iw < {{ in_w }} + {{ pad_right }}
+                            ) {
                                 values[count++] = {{ zero_literal }};
                             }
                         }
                     }
-                    const idx_t denom = {{ count_include_pad }}
-                        ? {{ kernel_h * kernel_w }}
-                        : count;
+                    const idx_t denom = count;
                     {{ c_type }} acc = {{ zero_literal }};
                     if (count > 0) {
                         idx_t reduce_count = count;
