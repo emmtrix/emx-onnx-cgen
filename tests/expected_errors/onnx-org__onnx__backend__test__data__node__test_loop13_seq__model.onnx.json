@@ -1,10 +1,10 @@
 {
-  "error": "Out of tolerance (max ULP 18874368)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_loop13_seq model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "Loop"
   ],
   "opset_version": 13,
-  "generated_checksum": "adb09b9a3e50fa21ab91b9e86e925100c2c3f4bf15e64e818c34424a4a271fbd"
+  "generated_checksum": "b1bab32169dfa0ad2bf6be301d4a11bbd5215058fce9ef9b552020eaba250c10"
 }
