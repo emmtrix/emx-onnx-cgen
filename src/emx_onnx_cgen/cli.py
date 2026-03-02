@@ -2178,7 +2178,7 @@ def _load_test_data_inputs(
         if value_kind == "sequence_type":
             elem_type = value_info.type.sequence_type.elem_type
             if elem_type.WhichOneof("value") != "tensor_type":
-                    return None, None, False
+                return None, None, False
             seq = onnx.SequenceProto()
             seq.ParseFromString(path.read_bytes())
             tensors = [numpy_helper.to_array(tensor) for tensor in seq.tensor_values]
