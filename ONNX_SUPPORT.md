@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1543 / 1802, 85.6% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1544 / 1802, 85.7% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1543 / 1802 ONNX files (85.6%).
+Coverage 1544 / 1802 ONNX files (85.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1554,7 +1554,7 @@ Coverage 1543 / 1802 ONNX files (85.6%).
 | node/test_split_equal_parts_2d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_1/model.onnx | 24 | Data | ❌ | Out of tolerance (max ULP 20971520) |
+| node/test_split_to_sequence_1/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_to_sequence_2/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_to_sequence_nokeepdims/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |

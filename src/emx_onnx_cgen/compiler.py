@@ -21,7 +21,7 @@ from .codegen.c_emitter import (
 )
 from .errors import UnsupportedOpError
 from .ir.context import GraphContext
-from .ir.model import Graph, TensorType, Value, ValueType
+from .ir.model import Graph, SequenceType, TensorType, Value, ValueType
 from .ir.op_base import OpBase
 from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
@@ -391,8 +391,79 @@ class Compiler:
             if isinstance(value_type, TensorType):
                 return value_type
             elem = value_type.elem
-            if elem.shape:
+            if elem.shape and all(dim_param is None for dim_param in elem.dim_params):
                 return elem
+
+            def _split_chunk_size(
+                split_name: str | None, axis_size: int
+            ) -> int:
+                if split_name is None:
+                    return 1
+                initializer = next(
+                    (
+                        item
+                        for item in graph.initializers
+                        if item.name == split_name
+                    ),
+                    None,
+                )
+                if initializer is None:
+                    # Runtime-provided split can span up to the full axis extent.
+                    return axis_size
+                values = initializer.data.reshape(-1).tolist()
+                if not values:
+                    return axis_size
+                if initializer.data.ndim == 0:
+                    scalar_split = int(values[0])
+                    if scalar_split <= 0:
+                        return axis_size
+                    return min(axis_size, scalar_split)
+                chunk_sizes = [int(size) for size in values if int(size) > 0]
+                if not chunk_sizes:
+                    return axis_size
+                return min(axis_size, max(chunk_sizes))
+
+            if isinstance(value_type, SequenceType):
+                for node in graph.nodes:
+                    if node.op_type != "SplitToSequence":
+                        continue
+                    if value_name != node.outputs[0]:
+                        continue
+                    input_name = node.inputs[0]
+                    try:
+                        input_value = graph.find_value(input_name)
+                    except KeyError:
+                        continue
+                    if not isinstance(input_value.type, TensorType):
+                        continue
+                    input_shape = input_value.type.shape
+                    if not input_shape:
+                        continue
+                    axis = int(node.attrs.get("axis", 0))
+                    if axis < 0:
+                        axis += len(input_shape)
+                    if axis < 0 or axis >= len(input_shape):
+                        continue
+                    keepdims = bool(int(node.attrs.get("keepdims", 1)))
+                    split_name = None
+                    if len(node.inputs) > 1 and node.inputs[1]:
+                        split_name = node.inputs[1]
+                        keepdims = True
+                    if keepdims:
+                        output_shape = list(input_shape)
+                        output_shape[axis] = _split_chunk_size(
+                            split_name, input_shape[axis]
+                        )
+                    else:
+                        output_shape = list(input_shape)
+                        del output_shape[axis]
+                    return TensorType(
+                        dtype=elem.dtype,
+                        shape=tuple(output_shape),
+                        dim_params=(None,) * len(output_shape),
+                        is_optional=elem.is_optional,
+                    )
+
             for node in graph.nodes:
                 if node.op_type != "SequenceInsert":
                     continue

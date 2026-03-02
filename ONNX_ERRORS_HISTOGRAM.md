@@ -18,8 +18,8 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 6 | 15, 20, 22, 24 |
 | Unsupported op DFT | 6 | 19, 20 |
+| Out of tolerance | 5 | 15, 20, 22 |
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
@@ -95,7 +95,6 @@ Aggregates non-success verification outcomes.
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
-| Out of tolerance | 24 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
