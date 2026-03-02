@@ -1,9 +1,9 @@
 {
-  "error": "OK (non-tensor outputs matched; max_abs_diff=0, max_ulp=15143681)",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_map_add_1_sequence_1_tensor model.onnx --test-data-dir test_data_set_0",
   "operators": [
     "SequenceMap"
   ],
   "opset_version": 17,
-  "generated_checksum": "08c23279967a3204b6d3a25b6ca5e84c1da8931fff3e01e9b48df4d892a425b6"
+  "generated_checksum": "145de3f8bea97c106334089b0c2ff8f94f502bd0afb4794764ec46b8c409718b"
 }

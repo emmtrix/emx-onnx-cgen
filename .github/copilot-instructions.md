@@ -1,0 +1,1 @@
+Before starting any task in this repository, read the `AGENTS.md` file in the repository root. It contains project conventions, coding standards, architecture guidelines, and agent-specific instructions that apply to all contributions.

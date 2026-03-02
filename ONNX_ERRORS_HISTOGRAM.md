@@ -12,16 +12,14 @@ This histogram is test-suite-overarching.
 | Unsupported elem_type 22 (INT4) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
+| Out of tolerance | 14 | 8, 13, 19, 20, 21, 22, 24 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 9 | 8, 9, 19, 20, 22 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
-| Unsupported op StringConcat | 5 | 20 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
-| Unsupported op DeformConv | 4 | 22 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
@@ -29,7 +27,6 @@ This histogram is test-suite-overarching.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
-| Arrays are not equal (max abs diff 148) | 2 | 21 |
 | Cast input and output shapes must match | 2 | 22 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
@@ -45,8 +42,6 @@ This histogram is test-suite-overarching.
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | Where inputs must be broadcastable, got ((), (1,), (0,)) | 2 | 20 |
-| Arrays are not equal (max abs diff 247) | 1 | 21 |
-| Arrays are not equal (max abs diff 248) | 1 | 21 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
@@ -65,8 +60,8 @@ This histogram is test-suite-overarching.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | Out of tolerance | 8 | 1 |
-| Out of tolerance | 9 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| Out of tolerance | 13 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
@@ -77,7 +72,6 @@ This histogram is test-suite-overarching.
 | Unsupported op DFT | 19 | 3 |
 | Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
-| Unsupported op StringConcat | 20 | 5 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
@@ -86,12 +80,9 @@ This histogram is test-suite-overarching.
 | Out of tolerance | 20 | 1 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
-| Arrays are not equal (max abs diff 148) | 21 | 2 |
-| Arrays are not equal (max abs diff 247) | 21 | 1 |
-| Arrays are not equal (max abs diff 248) | 21 | 1 |
+| Out of tolerance | 21 | 4 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
 | Out of tolerance | 22 | 4 |
-| Unsupported op DeformConv | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
@@ -106,6 +97,7 @@ This histogram is test-suite-overarching.
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
+| Out of tolerance | 24 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |

@@ -183,6 +183,36 @@ def _make_string_normalizer_model(
     return model
 
 
+def _make_string_concat_model(
+    *,
+    input0_shape: list[int],
+    input1_shape: list[int],
+    output_shape: list[int],
+) -> onnx.ModelProto:
+    input0_info = helper.make_tensor_value_info("in0", TensorProto.STRING, input0_shape)
+    input1_info = helper.make_tensor_value_info("in1", TensorProto.STRING, input1_shape)
+    output_info = helper.make_tensor_value_info("out", TensorProto.STRING, output_shape)
+    node = helper.make_node(
+        "StringConcat",
+        inputs=["in0", "in1"],
+        outputs=["out"],
+    )
+    graph = helper.make_graph(
+        [node],
+        "string_concat_graph",
+        [input0_info, input1_info],
+        [output_info],
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 20)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _flatten_output_shape(input_shape: list[int], axis: int) -> list[int]:
     rank = len(input_shape)
     if axis < 0:
@@ -2748,6 +2778,117 @@ def _make_conv_transpose_model() -> onnx.ModelProto:
     return model
 
 
+def _make_deform_conv_model(
+    *,
+    with_mask_bias: bool = False,
+    with_multiple_offset_groups: bool = False,
+) -> onnx.ModelProto:
+    if with_multiple_offset_groups:
+        input_shape = [1, 2, 3, 3]
+        weight_shape = [1, 2, 2, 2]
+        offset_shape = [1, 16, 2, 2]
+        output_shape = [1, 1, 2, 2]
+        input_info = helper.make_tensor_value_info("X", TensorProto.FLOAT, input_shape)
+        offset_info = helper.make_tensor_value_info(
+            "offset", TensorProto.FLOAT, offset_shape
+        )
+        weight_values = np.ones(weight_shape, dtype=np.float32)
+        weight_tensor = helper.make_tensor(
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
+        )
+        inputs = ["X", "W", "offset"]
+        initializers = [weight_tensor]
+        node = helper.make_node(
+            "DeformConv",
+            inputs=inputs,
+            outputs=["Y"],
+            kernel_shape=[2, 2],
+            pads=[0, 0, 0, 0],
+            offset_group=2,
+        )
+    elif with_mask_bias:
+        input_shape = [1, 1, 3, 3]
+        weight_shape = [1, 1, 2, 2]
+        offset_shape = [1, 8, 2, 2]
+        mask_shape = [1, 4, 2, 2]
+        output_shape = [1, 1, 2, 2]
+        input_info = helper.make_tensor_value_info("X", TensorProto.FLOAT, input_shape)
+        offset_info = helper.make_tensor_value_info(
+            "offset", TensorProto.FLOAT, offset_shape
+        )
+        weight_values = np.ones(weight_shape, dtype=np.float32)
+        weight_tensor = helper.make_tensor(
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
+        )
+        bias_values = np.ones([1], dtype=np.float32)
+        bias_tensor = helper.make_tensor(
+            "B", TensorProto.FLOAT, dims=[1], vals=bias_values.tolist()
+        )
+        mask_info = helper.make_tensor_value_info("mask", TensorProto.FLOAT, mask_shape)
+        inputs = ["X", "W", "offset", "B", "mask"]
+        initializers = [weight_tensor, bias_tensor]
+        node = helper.make_node(
+            "DeformConv",
+            inputs=inputs,
+            outputs=["Y"],
+            kernel_shape=[2, 2],
+            pads=[0, 0, 0, 0],
+        )
+    else:
+        input_shape = [1, 1, 3, 3]
+        weight_shape = [1, 1, 2, 2]
+        offset_shape = [1, 8, 2, 2]
+        output_shape = [1, 1, 2, 2]
+        input_info = helper.make_tensor_value_info("X", TensorProto.FLOAT, input_shape)
+        offset_info = helper.make_tensor_value_info(
+            "offset", TensorProto.FLOAT, offset_shape
+        )
+        weight_values = np.ones(weight_shape, dtype=np.float32)
+        weight_tensor = helper.make_tensor(
+            "W",
+            TensorProto.FLOAT,
+            dims=weight_shape,
+            vals=weight_values.flatten().tolist(),
+        )
+        inputs = ["X", "W", "offset"]
+        initializers = [weight_tensor]
+        node = helper.make_node(
+            "DeformConv",
+            inputs=inputs,
+            outputs=["Y"],
+            kernel_shape=[2, 2],
+            pads=[0, 0, 0, 0],
+        )
+    output = helper.make_tensor_value_info("Y", TensorProto.FLOAT, output_shape)
+    graph_inputs = [input_info]
+    if with_mask_bias:
+        graph_inputs.append(offset_info)
+        graph_inputs.append(mask_info)
+    else:
+        graph_inputs.append(offset_info)
+    graph = helper.make_graph(
+        [node],
+        "deform_conv_graph",
+        graph_inputs,
+        [output],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", 19)],
+    )
+    model.ir_version = 8
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_lp_pool_model() -> onnx.ModelProto:
     input_shape = [1, 1, 4, 4]
     output_shape = [1, 1, 2, 2]
@@ -3675,7 +3816,6 @@ def _compile_and_run_testbench(
         exe_path = temp_path / "model"
         options = CompilerOptions(
             emit_testbench=True,
-            testbench_inputs=testbench_inputs,
         )
         compiler = Compiler(options)
         generated = compiler.compile(model)
@@ -3739,7 +3879,42 @@ def _run_testbench_compare(model: onnx.ModelProto) -> None:
             np.testing.assert_array_equal(output_data, ort_output)
 
 
-def test_string_normalizer_lowering() -> None:
+def _run_reference_testbench_compare(model: onnx.ModelProto) -> None:
+    """Compare compiled C testbench output against the ONNX reference evaluator.
+
+    Use this for operators not supported by onnxruntime.
+    """
+    initializer_names = {init.name for init in model.graph.initializer}
+    rng = np.random.default_rng(0)
+    inputs: dict[str, np.ndarray] = {}
+    for value_info in model.graph.input:
+        if value_info.name in initializer_names:
+            continue
+        elem_type = value_info.type.tensor_type.elem_type
+        dtype = _tensorproto_to_dtype(elem_type)
+        shape = _value_info_shape(value_info)
+        inputs[value_info.name] = _make_random_array(rng, shape=shape, dtype=dtype)
+    reference_outputs = _run_reference(model, inputs)
+    payload = _compile_and_run_testbench(model, testbench_inputs=inputs)
+    outputs_payload = payload.get("outputs", {})
+    for output_info in model.graph.output:
+        output_name = output_info.name
+        ref_output = reference_outputs[output_name]
+        output_payload = outputs_payload.get(output_name)
+        if output_payload is None:
+            raise AssertionError(f"Missing output {output_name} in testbench data")
+        output_data = decode_testbench_array(output_payload["data"], ref_output.dtype)
+        output_data = output_data.reshape(ref_output.shape)
+        if np.issubdtype(ref_output.dtype, np.floating):
+            np.testing.assert_allclose(
+                output_data,
+                ref_output,
+                rtol=1e-4,
+                atol=1e-5,
+            )
+        else:
+            np.testing.assert_array_equal(output_data, ref_output)
+
     model = _make_string_normalizer_model(
         input_shape=[4],
         output_shape=[3],
@@ -3768,6 +3943,42 @@ def test_string_normalizer_codegen_emits_transform_logic() -> None:
     assert "toupper" in generated
     assert "strcmp" in generated
     assert "monday" in generated
+
+
+def test_string_concat_lowering() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[3],
+        output_shape=[3],
+    )
+    graph = import_onnx(model)
+    load_lowering_registry()
+    lowering = get_lowering("StringConcat")
+    op = lowering(graph, graph.nodes[0])
+    assert op.input0 == "in0"
+    assert op.input1 == "in1"
+    assert op.output == "out"
+
+
+def test_string_concat_codegen_emits_strncpy_strncat() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[3],
+        output_shape=[3],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "strncpy" in generated
+    assert "strncat" in generated
+
+
+def test_string_concat_codegen_broadcasting() -> None:
+    model = _make_string_concat_model(
+        input0_shape=[3],
+        input1_shape=[1],
+        output_shape=[3],
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "input1[0]" in generated
 
 
 def _make_string_split_model(
@@ -6073,6 +6284,21 @@ def test_qlinearconv_op_matches_onnxruntime() -> None:
 def test_conv_transpose_op_matches_onnxruntime() -> None:
     model = _make_conv_transpose_model()
     _run_ort_compare(model)
+
+
+def test_deform_conv_op_matches_onnxruntime() -> None:
+    model = _make_deform_conv_model()
+    _run_reference_testbench_compare(model)
+
+
+def test_deform_conv_with_mask_bias_matches_onnxruntime() -> None:
+    model = _make_deform_conv_model(with_mask_bias=True)
+    _run_reference_testbench_compare(model)
+
+
+def test_deform_conv_with_multiple_offset_groups_matches_onnxruntime() -> None:
+    model = _make_deform_conv_model(with_multiple_offset_groups=True)
+    _run_reference_testbench_compare(model)
 
 
 def test_lp_pool_matches_onnxruntime() -> None:

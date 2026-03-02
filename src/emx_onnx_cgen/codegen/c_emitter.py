@@ -49,6 +49,7 @@ from ..ir.ops import (
     ConvOp,
     ConvIntegerOp,
     ConvTransposeOp,
+    DeformConvOp,
     CumSumOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
@@ -127,6 +128,7 @@ from ..ir.ops import (
     SplitToSequenceOp,
     TensorScatterOp,
     TfIdfVectorizerOp,
+    StringConcatOp,
     StringNormalizerOp,
     StringSplitOp,
     TreeEnsembleOp,
@@ -650,6 +652,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -739,6 +742,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
         | BatchNormOp
@@ -1331,6 +1335,33 @@ class CEmitter:
                 dilations=op.dilations,
                 output_padding=op.output_padding,
                 group=op.group,
+                dtype=op.dtype,
+            )
+        if isinstance(op, DeformConvOp):
+            return DeformConvOp(
+                input0=name_map.get(op.input0, op.input0),
+                weights=name_map.get(op.weights, op.weights),
+                offset=name_map.get(op.offset, op.offset),
+                bias=self._map_optional_name(name_map, op.bias),
+                mask=self._map_optional_name(name_map, op.mask),
+                output=name_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
                 dtype=op.dtype,
             )
         if isinstance(op, AveragePoolOp):
@@ -2057,6 +2088,12 @@ class CEmitter:
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
             )
+        if isinstance(op, StringConcatOp):
+            return StringConcatOp(
+                input0=name_map.get(op.input0, op.input0),
+                input1=name_map.get(op.input1, op.input1),
+                output=name_map.get(op.output, op.output),
+            )
         if isinstance(op, StringNormalizerOp):
             return StringNormalizerOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2338,6 +2375,7 @@ class CEmitter:
                 "conv": self._env.get_template("conv_op.c.j2"),
                 "conv_integer": self._env.get_template("conv_integer_op.c.j2"),
                 "conv_transpose": self._env.get_template("conv_transpose_op.c.j2"),
+                "deform_conv": self._env.get_template("deform_conv_op.c.j2"),
                 "avg_pool": self._env.get_template("average_pool_op.c.j2"),
                 "lp_pool": self._env.get_template("lp_pool_op.c.j2"),
                 "batch_norm": self._env.get_template("batch_norm_op.c.j2"),
@@ -2426,6 +2464,7 @@ class CEmitter:
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
+                "string_concat": self._env.get_template("string_concat_op.c.j2"),
                 "string_normalizer": self._env.get_template(
                     "string_normalizer_op.c.j2"
                 ),
@@ -3100,6 +3139,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3351,7 +3391,7 @@ class CEmitter:
             includes.add("#include <strings.h>")
             includes.add("#include <ctype.h>")
             includes.add("#include <stdbool.h>")
-        if any(isinstance(op, StringSplitOp) for op in resolved_ops):
+        if any(isinstance(op, (StringConcatOp, StringSplitOp)) for op in resolved_ops):
             includes.add("#include <string.h>")
         ordered_includes = (
             "#include <stdint.h>",
@@ -3469,6 +3509,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3614,6 +3655,7 @@ class CEmitter:
                     SoftmaxCrossEntropyLossOp,
                     ResizeOp,
                     GridSampleOp,
+                    DeformConvOp,
                     AffineGridOp,
                 ),
             )
@@ -3679,6 +3721,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -3811,6 +3854,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -4112,6 +4156,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -4195,6 +4240,7 @@ class CEmitter:
         | ConvOp
         | ConvIntegerOp
         | ConvTransposeOp
+        | DeformConvOp
         | AveragePoolOp
         | LpPoolOp
         | BatchNormOp
@@ -4928,6 +4974,33 @@ class CEmitter:
                 group=op.group,
                 dtype=op.dtype,
             )
+        if isinstance(op, DeformConvOp):
+            return DeformConvOp(
+                input0=temp_map.get(op.input0, op.input0),
+                weights=temp_map.get(op.weights, op.weights),
+                offset=temp_map.get(op.offset, op.offset),
+                bias=temp_map.get(op.bias, op.bias) if op.bias else None,
+                mask=temp_map.get(op.mask, op.mask) if op.mask else None,
+                output=temp_map.get(op.output, op.output),
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
+                dtype=op.dtype,
+            )
         if isinstance(op, AveragePoolOp):
             return AveragePoolOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -5407,6 +5480,12 @@ class CEmitter:
                 ngram_indexes=op.ngram_indexes,
                 pool_int64s=op.pool_int64s,
                 weights=op.weights,
+            )
+        if isinstance(op, StringConcatOp):
+            return StringConcatOp(
+                input0=temp_map.get(op.input0, op.input0),
+                input1=temp_map.get(op.input1, op.input1),
+                output=temp_map.get(op.output, op.output),
             )
         if isinstance(op, StringNormalizerOp):
             return StringNormalizerOp(
@@ -5888,6 +5967,7 @@ class CEmitter:
             conv_template=templates["conv"],
             conv_integer_template=templates["conv_integer"],
             conv_transpose_template=templates["conv_transpose"],
+            deform_conv_template=templates["deform_conv"],
             avg_pool_template=templates["avg_pool"],
             lp_pool_template=templates["lp_pool"],
             batch_norm_template=templates["batch_norm"],
@@ -5956,6 +6036,7 @@ class CEmitter:
             hann_window_template=templates["hann_window"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
+            string_concat_template=templates["string_concat"],
             string_normalizer_template=templates["string_normalizer"],
             string_split_template=templates["string_split"],
             tree_ensemble_template=templates["tree_ensemble"],
@@ -6422,6 +6503,7 @@ class CEmitter:
         conv_template,
         conv_integer_template,
         conv_transpose_template,
+        deform_conv_template,
         avg_pool_template,
         lp_pool_template,
         batch_norm_template,
@@ -6490,6 +6572,7 @@ class CEmitter:
         hann_window_template,
         one_hot_template,
         tfidf_vectorizer_template,
+        string_concat_template,
         string_normalizer_template,
         string_split_template,
         tree_ensemble_template,
@@ -8018,6 +8101,118 @@ class CEmitter:
                 in_indices=in_indices,
                 kernel_indices=kernel_indices,
                 out_indices=out_indices,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, DeformConvOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("weights", op.weights),
+                    ("offset", op.offset),
+                    ("bias", op.bias),
+                    ("mask", op.mask),
+                    ("output", op.output),
+                ]
+            )
+            if scalar_registry is None:
+                raise CodegenError(
+                    "Scalar function registry is required for DeformConv codegen."
+                )
+            acc_dtype = self._accumulation_dtype(op.dtype)
+            acc_type = acc_dtype.c_type
+            acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
+            acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
+            floor_fn = self._scalar_function_name(
+                ScalarFunction.FLOOR, acc_dtype, scalar_registry
+            )
+            if floor_fn is None:
+                raise CodegenError(
+                    "Failed to resolve scalar floor function for DeformConv."
+                )
+            input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
+            weight_shape = (
+                op.out_channels,
+                op.in_channels // op.group,
+                op.kernel_h,
+                op.kernel_w,
+            )
+            offset_shape = (
+                op.batch,
+                op.offset_group * op.kernel_h * op.kernel_w * 2,
+                op.out_h,
+                op.out_w,
+            )
+            bias_shape = (op.out_channels,)
+            mask_shape = (
+                op.batch,
+                op.offset_group * op.kernel_h * op.kernel_w,
+                op.out_h,
+                op.out_w,
+            )
+            output_shape = (op.batch, op.out_channels, op.out_h, op.out_w)
+            group_in_channels = op.in_channels // op.group
+            group_out_channels = op.out_channels // op.group
+            ics_per_offset_group = op.in_channels // op.offset_group
+            input_suffix = self._param_array_suffix(input_shape)
+            weight_suffix = self._param_array_suffix(weight_shape)
+            offset_suffix = self._param_array_suffix(offset_shape)
+            bias_suffix = self._param_array_suffix(bias_shape)
+            mask_suffix = self._param_array_suffix(mask_shape)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["weights"], c_type, weight_suffix, True),
+                    (params["offset"], c_type, offset_suffix, True),
+                    (
+                        (params["bias"], c_type, bias_suffix, True)
+                        if params["bias"]
+                        else (None, "", "", True)
+                    ),
+                    (
+                        (params["mask"], c_type, mask_suffix, True)
+                        if params["mask"]
+                        else (None, "", "", True)
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = deform_conv_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                weights=params["weights"],
+                offset=params["offset"],
+                bias=params["bias"],
+                mask=params["mask"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                acc_type=acc_type,
+                acc_zero_literal=acc_zero_literal,
+                zero_literal=acc_zero_literal,
+                one_literal=acc_one_literal,
+                floor_fn=floor_fn,
+                batch=op.batch,
+                in_channels=op.in_channels,
+                out_channels=op.out_channels,
+                in_h=op.in_h,
+                in_w=op.in_w,
+                out_h=op.out_h,
+                out_w=op.out_w,
+                kernel_h=op.kernel_h,
+                kernel_w=op.kernel_w,
+                stride_h=op.stride_h,
+                stride_w=op.stride_w,
+                pad_top=op.pad_top,
+                pad_left=op.pad_left,
+                dilation_h=op.dilation_h,
+                dilation_w=op.dilation_w,
+                group=op.group,
+                offset_group=op.offset_group,
+                group_in_channels=group_in_channels,
+                group_out_channels=group_out_channels,
+                ics_per_offset_group=ics_per_offset_group,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AveragePoolOp):
@@ -12032,6 +12227,56 @@ class CEmitter:
                 input_c_type=input_dtype.c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, StringConcatOp):
+            input0_shape = self._ctx_shape(op.input0)
+            input1_shape = self._ctx_shape(op.input1)
+            output_shape = self._ctx_shape(op.output)
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("input1", op.input1),
+                    ("output", op.output),
+                ]
+            )
+            input0_suffix = self._param_array_suffix(
+                input0_shape, _dim_names_for(op.input0), dtype=ScalarType.STRING
+            )
+            input1_suffix = self._param_array_suffix(
+                input1_shape, _dim_names_for(op.input1), dtype=ScalarType.STRING
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape, _dim_names_for(op.output), dtype=ScalarType.STRING
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], "char", input0_suffix, True),
+                    (params["input1"], "char", input1_suffix, True),
+                    (params["output"], "char", output_suffix, False),
+                ]
+            )
+            output_dim_names = _dim_names_for(op.output)
+            shape = CEmitter._shape_dim_exprs(output_shape, output_dim_names)
+            loop_vars = CEmitter._loop_vars(output_shape)
+            input0_expr = CEmitter._broadcast_index_expr(
+                params["input0"], input0_shape, output_shape, loop_vars
+            )
+            input1_expr = CEmitter._broadcast_index_expr(
+                params["input1"], input1_shape, output_shape, loop_vars
+            )
+            output_expr = CEmitter._broadcast_index_expr(
+                params["output"], output_shape, output_shape, loop_vars
+            )
+            rendered = string_concat_template.render(
+                op_name=op_name,
+                dim_args=dim_args,
+                params=param_decls,
+                shape=shape,
+                loop_vars=loop_vars,
+                input0_expr=input0_expr,
+                input1_expr=input1_expr,
+                output_expr=output_expr,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, StringNormalizerOp):
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
@@ -14009,6 +14254,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14093,6 +14339,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14366,6 +14613,7 @@ class CEmitter:
             | AttentionOp
             | ConvOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14455,6 +14703,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -14940,6 +15189,7 @@ class CEmitter:
             | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
+            | StringConcatOp
             | StringNormalizerOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -14996,6 +15246,8 @@ class CEmitter:
             return (op.batch, op.out_channels, *op.out_spatial)
         if isinstance(op, ConvTransposeOp):
             return (op.batch, op.out_channels, *op.out_spatial)
+        if isinstance(op, DeformConvOp):
+            return (op.batch, op.out_channels, op.out_h, op.out_w)
         if isinstance(op, AveragePoolOp):
             if op.spatial_rank == 3:
                 return (op.batch, op.channels, op.out_d, op.out_h, op.out_w)
@@ -15114,6 +15366,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, StringConcatOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, StringNormalizerOp):
             return self._ctx_shape(op.output)
         if isinstance(op, StringSplitOp):
@@ -15171,6 +15425,7 @@ class CEmitter:
             | ConvOp
             | ConvIntegerOp
             | ConvTransposeOp
+            | DeformConvOp
             | AveragePoolOp
             | LpPoolOp
             | BatchNormOp
@@ -15220,6 +15475,7 @@ class CEmitter:
             | HannWindowOp
             | OneHotOp
             | TfIdfVectorizerOp
+            | StringConcatOp
             | StringNormalizerOp
             | DepthToSpaceOp
             | SpaceToDepthOp
@@ -15245,6 +15501,8 @@ class CEmitter:
             return self._ctx_dtype(op.output)
         if isinstance(op, TfIdfVectorizerOp):
             return self._ctx_dtype(op.output)
+        if isinstance(op, StringConcatOp):
+            return ScalarType.STRING
         if isinstance(op, StringNormalizerOp):
             return ScalarType.STRING
         if isinstance(op, StringSplitOp):
@@ -15654,6 +15912,19 @@ class CEmitter:
             codegen_shape = self._codegen_shape(shape)
             is_sequence_input = isinstance(value_type, SequenceType)
             constant_values = testbench_inputs.get(name)
+            if is_sequence_input and isinstance(constant_values, np.ndarray):
+                target_shape = (int(constant_values.shape[0]), *codegen_shape)
+                if constant_values.shape != target_shape:
+                    normalized = np.zeros(target_shape, dtype=constant_values.dtype)
+                    if constant_values.ndim == len(target_shape):
+                        overlap = (slice(0, target_shape[0]),) + tuple(
+                            slice(0, min(cur_dim, tgt_dim))
+                            for cur_dim, tgt_dim in zip(
+                                constant_values.shape[1:], codegen_shape
+                            )
+                        )
+                        normalized[overlap] = constant_values[overlap]
+                    constant_values = normalized
             loop_shape = (1,) if not shape else shape
             if is_sequence_input:
                 if (
@@ -15802,7 +16073,8 @@ class CEmitter:
     @staticmethod
     def _testbench_requires_math(
         model: LoweredModel,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None,
+        testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray]
+        | None,
     ) -> bool:
         if not testbench_inputs:
             return False
@@ -15811,7 +16083,12 @@ class CEmitter:
         for name, values in testbench_inputs.items():
             if dtype_map.get(name) not in float_dtypes:
                 continue
-            for value in values:
+            flat_values = (
+                values.reshape(-1).tolist()
+                if isinstance(values, np.ndarray)
+                else values
+            )
+            for value in flat_values:
                 if not math.isfinite(float(value)):
                     return True
         return False
