@@ -1,5 +1,5 @@
 {
-  "error": "Out of tolerance (max ULP 169)",
+  "error": "Failed to build testbench.",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_3d_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -20,5 +20,5 @@
     "MatMul"
   ],
   "opset_version": 20,
-  "generated_checksum": "3d23e53f8dba25d518130dcfcc0a3f204fde9eab6cece68f42b3cbdfa823f011"
+  "generated_checksum": "5e30a93ae644c674daa738a9e5ec5c7f7380c3496132f3d8d10566506288e7e1"
 }

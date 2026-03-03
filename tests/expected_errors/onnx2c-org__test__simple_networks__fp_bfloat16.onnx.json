@@ -1,9 +1,10 @@
 {
-  "error": "Cast input and output shapes must match",
+  "error": "Failed to build testbench.",
   "command_line": "verify --sanitize --model-base-dir onnx2c-org/test/simple_networks fp_bfloat16.onnx",
   "verification_mode": "Random+ORT",
   "operators": [
     "Cast"
   ],
-  "opset_version": 22
+  "opset_version": 22,
+  "generated_checksum": "7af7d4baae2f4d209a6985e3966557c21d55c481ba3c8f8f2f381135d03e4536"
 }
