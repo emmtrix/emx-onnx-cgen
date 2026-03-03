@@ -16081,7 +16081,9 @@ class CEmitter:
                 }
             )
         try:
-            parsed_output_format = parse_testbench_output_format(testbench_output_format)
+            parsed_output_format = parse_testbench_output_format(
+                testbench_output_format
+            )
         except ValueError as exc:
             raise CodegenError(str(exc)) from exc
         rendered = testbench_template.render(
