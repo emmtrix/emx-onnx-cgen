@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1541 / 1802, 85.5% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1543 / 1802, 85.6% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1541 / 1802 ONNX files (85.5%).
+Coverage 1543 / 1802 ONNX files (85.6%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -769,7 +769,7 @@ Coverage 1541 / 1802 ONNX files (85.5%).
 | node/test_identity_opt/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
 | node/test_identity_sequence/model.onnx | 25 | Data | ✅ | OK (no numeric comparisons) |
 | node/test_if/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
-| node/test_if_opt/model.onnx | 16 | Data | ❌ | Unsupported op If |
+| node/test_if_opt/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
 | node/test_if_seq/model.onnx | 13 | Data | ❌ | Unsupported op If |
 | node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |
@@ -1466,7 +1466,7 @@ Coverage 1541 / 1802 ONNX files (85.5%).
 | node/test_selu_example/model.onnx | 22 | Data | ❌ | Selu only supports alpha=1.6732632423543772 |
 | node/test_selu_example_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 2) |
 | node/test_selu_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 24) |
-| node/test_sequence_insert_at_back/model.onnx | 11 | Data | ❌ | Failed to build testbench. |
+| node/test_sequence_insert_at_back/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
 | node/test_sequence_insert_at_front/model.onnx | 11 | Data | ❌ | Failed to build testbench. |
 | node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |

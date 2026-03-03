@@ -1325,6 +1325,26 @@ class SequenceInsertOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class IfOptionalSequenceConstOp(RenderableOpBase):
+    __io_inputs__ = ("cond",)
+    __io_outputs__ = ("output_sequence",)
+    cond: str
+    output_sequence: str
+    output_present: str | None
+    true_present: bool
+    false_present: bool
+    true_values: tuple[float | int | bool, ...]
+    false_values: tuple[float | int | bool, ...]
+
+    def call_args(self) -> tuple[str, ...]:
+        args = [self.cond, self.output_sequence]
+        if self.output_present is not None:
+            args.append(self.output_present)
+        args.append(f"{self.output_sequence}__count")
+        return tuple(args)
+
+
+@dataclass(frozen=True)
 class SequenceEraseOp(RenderableOpBase):
     __io_inputs__ = ("input_sequence", "position")
     __io_outputs__ = ("output_sequence",)

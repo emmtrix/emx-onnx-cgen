@@ -21,11 +21,11 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
-| Failed to build testbench. | 4 | 11, 24 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
+| Failed to build testbench. | 3 | 11, 24 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
@@ -40,7 +40,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op Det | 2 | 22 |
-| Unsupported op If | 2 | 13, 16 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
@@ -51,6 +50,7 @@ Aggregates non-success verification outcomes.
 | ReduceMin does not support dtype bool | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
+| Unsupported op If | 1 | 13 |
 | Unsupported op Loop | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op RandomUniform | 1 | 22 |
@@ -60,11 +60,10 @@ Aggregates non-success verification outcomes.
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Failed to build testbench. | 11 | 2 |
+| Failed to build testbench. | 11 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Unsupported op If | 13 | 1 |
 | Out of tolerance | 15 | 1 |
-| Unsupported op If | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
