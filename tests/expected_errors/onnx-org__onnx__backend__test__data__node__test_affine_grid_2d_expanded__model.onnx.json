@@ -1,5 +1,5 @@
 {
-  "error": "GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3)",
+  "error": "Failed to build testbench.",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -19,5 +19,6 @@
     "Reshape",
     "MatMul"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "35f46eacdf3e629532e3990b4a639f0bf79485ed4720046f5d71f09b3f3a2614"
 }

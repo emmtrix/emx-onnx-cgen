@@ -4,7 +4,13 @@ from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
 from ..ir.model import Graph, Node, SequenceType
 from ..ir.ops import IdentityOp, SequenceIdentityOp
-from .common import value_dtype, value_has_dim_params, value_shape
+from .common import (
+    reconcile_shape_with_dim_params,
+    value_dim_params,
+    value_dtype,
+    value_has_dim_params,
+    value_shape,
+)
 from .registry import register_lowering
 
 
@@ -37,8 +43,29 @@ def lower_identity(graph: Graph, node: Node) -> IdentityOp:
     output_shape = value_shape(graph, node.outputs[0], node)
     if value_has_dim_params(graph, node.outputs[0]) or not output_shape:
         output_shape = ()
-    input_dim_params = graph.find_value(node.inputs[0]).type.dim_params
-    output_dim_params = graph.find_value(node.outputs[0]).type.dim_params
+    input_dim_params = value_dim_params(graph, node.inputs[0])
+    output_dim_params = value_dim_params(graph, node.outputs[0])
+    if (
+        input_shape
+        and output_shape
+        and len(input_shape) == len(output_shape)
+        and input_shape != output_shape
+    ):
+        reconciled_input = reconcile_shape_with_dim_params(
+            input_shape, output_shape, input_dim_params
+        )
+        reconciled_output = reconcile_shape_with_dim_params(
+            output_shape, input_shape, output_dim_params
+        )
+        if reconciled_input is not None and reconciled_output is None:
+            input_shape = reconciled_input
+        elif reconciled_output is not None and reconciled_input is None:
+            output_shape = reconciled_output
+        elif reconciled_input is not None and reconciled_output is not None:
+            if any(input_dim_params) and not any(output_dim_params):
+                input_shape = reconciled_input
+            elif any(output_dim_params) and not any(input_dim_params):
+                output_shape = reconciled_output
     if input_shape and output_shape:
         if len(input_shape) != len(output_shape):
             raise ShapeInferenceError("Identity input and output shapes must match")
@@ -55,7 +82,8 @@ def lower_identity(graph: Graph, node: Node) -> IdentityOp:
             f"got {input_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
     if isinstance(graph, GraphContext):
-        graph.set_shape(node.outputs[0], input_shape)
+        graph.set_shape(node.inputs[0], input_shape)
+        graph.set_shape(node.outputs[0], output_shape or input_shape)
     return IdentityOp(
         input0=node.inputs[0],
         output=node.outputs[0],

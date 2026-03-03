@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1545 / 1802, 85.7% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1544 / 1802, 85.7% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1545 / 1802 ONNX files (85.7%).
+Coverage 1544 / 1802 ONNX files (85.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -53,12 +53,12 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 | node/test_add_uint8/model.onnx | 14 | Data | ✅ | OK (max abs diff 0) |
 | node/test_affine_grid_2d/model.onnx | 20 | Data | ✅ | OK (max ULP 1) |
 | node/test_affine_grid_2d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
-| node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ❌ | GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) |
-| node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ❌ | GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) |
+| node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
+| node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ❌ | Failed to build testbench. |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
-| node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
+| node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Failed to build testbench. |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ❌ | Unsupported op ArrayFeatureExtractor |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ❌ | Unsupported op Binarizer |
 | node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | Data | ❌ | Unsupported op LabelEncoder |
@@ -769,8 +769,8 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 | node/test_identity_opt/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
 | node/test_identity_sequence/model.onnx | 25 | Data | ✅ | OK (no numeric comparisons) |
 | node/test_if/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
-| node/test_if_opt/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
-| node/test_if_seq/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
+| node/test_if_opt/model.onnx | 16 | Data | ❌ | Unsupported op If |
+| node/test_if_seq/model.onnx | 13 | Data | ❌ | Unsupported op If |
 | node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |
@@ -1947,8 +1947,8 @@ Coverage 121 / 125 ONNX files (96.8%).
 | simple_networks/conv_k2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ❌ | Cast input and output shapes must match |
-| simple_networks/fp_float16.onnx | 22 | Random+ORT | ❌ | Cast input and output shapes must match |
+| simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ❌ | Failed to build testbench. |
+| simple_networks/fp_float16.onnx | 22 | Random+ORT | ❌ | Failed to build testbench. |
 | simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
