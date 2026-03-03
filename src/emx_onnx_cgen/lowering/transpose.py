@@ -22,13 +22,28 @@ def lower_transpose(graph: Graph, node: Node) -> TransposeOp:
         perm = tuple(reversed(range(len(input_shape))))
     else:
         perm = tuple(int(axis) for axis in perm)
+    if set(perm) != set(range(len(perm))):
+        raise UnsupportedOpError(f"Transpose perm must be a permutation, got {perm}")
+    input_rank_unknown = input_shape == () and len(perm) > 0
+    if input_rank_unknown:
+        if output_shape and len(output_shape) == len(perm):
+            inverse_perm = [0] * len(perm)
+            for out_axis, in_axis in enumerate(perm):
+                inverse_perm[in_axis] = out_axis
+            inferred_input_shape = tuple(output_shape[idx] for idx in inverse_perm)
+            if isinstance(graph, GraphContext):
+                graph.set_shape(node.inputs[0], inferred_input_shape)
+                graph.set_shape(node.outputs[0], output_shape)
+        return TransposeOp(
+            input0=node.inputs[0],
+            output=node.outputs[0],
+            perm=perm,
+        )
     if len(perm) != len(input_shape):
         raise ShapeInferenceError(
             "Transpose perm must match input rank, "
             f"got perm {perm} for shape {input_shape}"
         )
-    if set(perm) != set(range(len(input_shape))):
-        raise UnsupportedOpError(f"Transpose perm must be a permutation, got {perm}")
     expected_shape = tuple(input_shape[axis] for axis in perm)
     if output_shape and output_shape != expected_shape:
         raise ShapeInferenceError(

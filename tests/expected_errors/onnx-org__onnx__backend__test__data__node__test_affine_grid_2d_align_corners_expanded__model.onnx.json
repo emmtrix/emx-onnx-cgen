@@ -1,5 +1,5 @@
 {
-  "error": "GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3)",
+  "error": "OK (max ULP 4)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_align_corners_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
@@ -19,5 +19,6 @@
     "Reshape",
     "MatMul"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "5eab4d14efaee4890267fc02192785e71e74a94b1b0d98655a656638cfd3d585"
 }

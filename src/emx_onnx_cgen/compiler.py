@@ -27,7 +27,7 @@ from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product
 from .lowering.registry import get_lowering_registry
-from .onnx_import import import_onnx
+from .onnx_import import import_onnx, prepare_onnx_model
 
 
 @dataclass(frozen=True)
@@ -96,16 +96,22 @@ class Compiler:
         return result
 
     def _build_compile_context(self, model: onnx.ModelProto) -> _CompileContext:
-        graph = self._time_step("import_onnx", lambda: import_onnx(model))
+        prepared_model = self._time_step(
+            "prepare_onnx_model", lambda: prepare_onnx_model(model)
+        )
+        graph = self._time_step(
+            "import_onnx",
+            lambda: import_onnx(prepared_model, _prepared=True),
+        )
         graph = self._time_step(
             "concretize_shapes",
-            lambda: self._concretize_graph_shapes(model, graph),
+            lambda: self._concretize_graph_shapes(prepared_model, graph),
         )
         variable_dim_inputs, variable_dim_outputs = self._time_step(
             "collect_variable_dims", lambda: self._collect_variable_dims(graph)
         )
         lowered = self._time_step(
-            "lower_model", lambda: self._lower_model(model, graph)
+            "lower_model", lambda: self._lower_model(prepared_model, graph)
         )
         return Compiler._CompileContext(
             lowered=lowered,

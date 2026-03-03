@@ -1,10 +1,9 @@
 {
-  "error": "OK (max ULP 0)",
+  "error": "Unsupported op If",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_seq model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "If"
   ],
-  "opset_version": 13,
-  "generated_checksum": "b9561f790168ca8d06e80078e14ff881565c981d643c2d67b4fdb11e94c21534"
+  "opset_version": 13
 }

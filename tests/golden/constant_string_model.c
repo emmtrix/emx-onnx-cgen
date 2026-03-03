@@ -8,7 +8,7 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 5d73cdad94836170408163ed1f9be074b094f943b4430d6ce7bc82c707004a6d
+ * Model checksum (sha256): ff66980a95363c3885a79e92e56ad7cacfc91ed45d4789623ead973f023556e0
  * Model name: constant_string_model
  * Graph name: constant_string_graph
  * Inputs: 0 Outputs: 1 Nodes: 1 Initializers: 1
