@@ -256,6 +256,15 @@ UPDATE_REFS=1 pytest -n auto -q --maxfail=10
   * hand-constructed graphs
   * ONNX Model Zoo models only for integration tests (optional)
 
+### ORT vs ONNX Reference divergences
+
+* Keep known ONNX Runtime vs ONNX `ReferenceEvaluator` semantic mismatches in
+  `tests/test_ort_onnx_divergence.py`.
+* Use dedicated `pytest.mark.xfail(..., strict=True)` tests there as living
+  documentation.
+* Do not hide these divergences inside generic comparison helpers in unrelated
+  test modules.
+
 ## Performance Guidelines
 
 * Avoid Python-level tensor computations in hot paths except for:

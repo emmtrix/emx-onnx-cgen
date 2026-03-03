@@ -3732,24 +3732,18 @@ def _run_ort_compare(model: onnx.ModelProto) -> None:
     )
     ort_outputs = session.run(None, inputs)
     reference_outputs = _run_reference(model, inputs)
-    try:
-        for output_info, ort_output in zip(model.graph.output, ort_outputs):
-            output_name = output_info.name
-            compiled_output = reference_outputs[output_name]
-            if np.issubdtype(compiled_output.dtype, np.floating):
-                np.testing.assert_allclose(
-                    compiled_output,
-                    ort_output,
-                    rtol=1e-4,
-                    atol=1e-5,
-                )
-            else:
-                np.testing.assert_array_equal(compiled_output, ort_output)
-    except AssertionError:
-        op_types = {node.op_type for node in model.graph.node}
-        if op_types & {"OneHot", "BatchNormalization"}:
-            pytest.xfail("ONNX ReferenceEvaluator diverges from ORT for this op")
-        raise
+    for output_info, ort_output in zip(model.graph.output, ort_outputs):
+        output_name = output_info.name
+        compiled_output = reference_outputs[output_name]
+        if np.issubdtype(compiled_output.dtype, np.floating):
+            np.testing.assert_allclose(
+                compiled_output,
+                ort_output,
+                rtol=1e-4,
+                atol=1e-5,
+            )
+        else:
+            np.testing.assert_array_equal(compiled_output, ort_output)
 
 
 def test_rotary_embedding_numpy_match() -> None:
@@ -5767,7 +5761,7 @@ def test_onehot_matches_onnxruntime() -> None:
         indices_dtype=TensorProto.INT64,
         values_dtype=TensorProto.FLOAT,
     )
-    _run_ort_compare(model)
+    _run_testbench_compare(model)
 
 
 def test_cumsum_matches_onnxruntime() -> None:
@@ -6329,7 +6323,7 @@ def test_dequantize_linear_uint32_codegen_smoke() -> None:
 
 def test_batchnorm_op_matches_onnxruntime() -> None:
     model, _ = _make_batchnorm_model()
-    _run_ort_compare(model)
+    _run_testbench_compare(model)
 
 
 def test_batchnorm_training_mode_matches_onnxruntime() -> None:
