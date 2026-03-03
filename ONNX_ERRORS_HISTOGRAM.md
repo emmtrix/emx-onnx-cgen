@@ -25,7 +25,6 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
-| Failed to build testbench. | 3 | 20, 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
