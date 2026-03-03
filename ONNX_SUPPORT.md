@@ -58,7 +58,7 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
-| node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Failed to build testbench. |
+| node/test_affine_grid_3d_expanded/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 169) |
 | node/test_ai_onnx_ml_array_feature_extractor/model.onnx |  | Data | ❌ | Unsupported op ArrayFeatureExtractor |
 | node/test_ai_onnx_ml_binarizer/model.onnx |  | Data | ❌ | Unsupported op Binarizer |
 | node/test_ai_onnx_ml_label_encoder_string_int/model.onnx |  | Data | ❌ | Unsupported op LabelEncoder |

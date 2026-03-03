@@ -904,9 +904,7 @@ def _inline_if_branch(
     return inlined_nodes, name_map
 
 
-def _find_producer(
-    graph: onnx.GraphProto, output_name: str
-) -> onnx.NodeProto | None:
+def _find_producer(graph: onnx.GraphProto, output_name: str) -> onnx.NodeProto | None:
     for candidate in graph.node:
         if output_name in candidate.output:
             return candidate

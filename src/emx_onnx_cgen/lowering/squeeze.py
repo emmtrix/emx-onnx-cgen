@@ -141,9 +141,13 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
                     if not (input_shape[axis] == 1 and not dim_param)
                 ),
             )
-            if output_shape != expected_shape and not (
-                output_shape == () and expected_shape and has_symbolic_input_dims
-            ) and reconciled is None:
+            if (
+                output_shape != expected_shape
+                and not (
+                    output_shape == () and expected_shape and has_symbolic_input_dims
+                )
+                and reconciled is None
+            ):
                 raise ShapeInferenceError(
                     f"Squeeze output shape must be {expected_shape}, got {output_shape}"
                 )
@@ -167,9 +171,11 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
             output_shape,
             reduced_dim_params,
         )
-        if output_shape != expected_shape and not (
-            output_shape == () and expected_shape and has_symbolic_input_dims
-        ) and reconciled is None:
+        if (
+            output_shape != expected_shape
+            and not (output_shape == () and expected_shape and has_symbolic_input_dims)
+            and reconciled is None
+        ):
             raise ShapeInferenceError(
                 f"Squeeze output shape must be {expected_shape}, got {output_shape}"
             )
