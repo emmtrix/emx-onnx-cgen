@@ -7,8 +7,8 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1545 / 1802, 85.7% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1541 / 1802, 85.5% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1545 / 1802 ONNX files (85.7%).
+Coverage 1541 / 1802 ONNX files (85.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1466,8 +1466,8 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 | node/test_selu_example/model.onnx | 22 | Data | ❌ | Selu only supports alpha=1.6732632423543772 |
 | node/test_selu_example_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 2) |
 | node/test_selu_expanded_ver18/model.onnx | 18 | Data | ✅ | OK (max ULP 24) |
-| node/test_sequence_insert_at_back/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
-| node/test_sequence_insert_at_front/model.onnx | 11 | Data | ✅ | OK (max abs diff 0) |
+| node/test_sequence_insert_at_back/model.onnx | 11 | Data | ❌ | Failed to build testbench. |
+| node/test_sequence_insert_at_front/model.onnx | 11 | Data | ❌ | Failed to build testbench. |
 | node/test_sequence_map_add_1_sequence_1_tensor/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_add_1_sequence_1_tensor_expanded/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_sequence_map_add_2_sequences/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
@@ -1554,8 +1554,8 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 | node/test_split_equal_parts_2d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_equal_parts_default_axis_opset18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_1/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
-| node/test_split_to_sequence_2/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
+| node/test_split_to_sequence_1/model.onnx | 24 | Data | ❌ | Failed to build testbench. |
+| node/test_split_to_sequence_2/model.onnx | 24 | Data | ❌ | Failed to build testbench. |
 | node/test_split_to_sequence_nokeepdims/model.onnx | 24 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset13/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_split_variable_parts_1d_opset18/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
@@ -1832,7 +1832,7 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 121 / 125 ONNX files (96.8%).
+Coverage 123 / 125 ONNX files (98.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1947,8 +1947,8 @@ Coverage 121 / 125 ONNX files (96.8%).
 | simple_networks/conv_k2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ❌ | Failed to build testbench. |
-| simple_networks/fp_float16.onnx | 22 | Random+ORT | ❌ | Failed to build testbench. |
+| simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
