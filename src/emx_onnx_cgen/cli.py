@@ -629,7 +629,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     compile_parser.add_argument(
         "--testbench-output-format",
-        choices=("json", "txt"),
+        choices=("json", "txt", "txt-emmtrix"),
         default="json",
         help=("Output format used by the generated testbench (default: json)"),
     )
