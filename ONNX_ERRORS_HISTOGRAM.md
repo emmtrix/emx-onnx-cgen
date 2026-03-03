@@ -30,8 +30,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
-| Cast input and output shapes must match | 2 | 22 |
-| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 2 | 20 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -51,6 +49,7 @@ Aggregates non-success verification outcomes.
 | ReduceMin does not support dtype bool | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
+| Unsupported op If | 1 | 13 |
 | Unsupported op Loop | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op RandomUniform | 1 | 22 |
@@ -61,6 +60,7 @@ Aggregates non-success verification outcomes.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| Unsupported op If | 13 | 1 |
 | Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
@@ -72,7 +72,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
-| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 20 | 2 |
 | Gelu only supports approximate=none | 20 | 2 |
 | Out of tolerance | 20 | 2 |
 | ReduceMax does not support dtype bool | 20 | 1 |
@@ -83,7 +82,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
-| Cast input and output shapes must match | 22 | 2 |
 | LpPool expects 2D kernel_shape | 22 | 2 |
 | LpPool supports auto_pad=NOTSET only | 22 | 2 |
 | Selu only supports alpha=1.6732632423543772 | 22 | 2 |

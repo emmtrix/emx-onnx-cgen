@@ -68,6 +68,7 @@ from ..ir.ops import (
     GroupNormalizationOp,
     HammingWindowOp,
     HannWindowOp,
+    IfOptionalSequenceConstOp,
     HardmaxOp,
     IdentityOp,
     InstanceNormalizationOp,
@@ -2198,6 +2199,16 @@ class CEmitter:
                 position=self._map_optional_name(name_map, op.position),
                 output_sequence=name_map.get(op.output_sequence, op.output_sequence),
             )
+        if isinstance(op, IfOptionalSequenceConstOp):
+            return IfOptionalSequenceConstOp(
+                cond=name_map.get(op.cond, op.cond),
+                output_sequence=name_map.get(op.output_sequence, op.output_sequence),
+                output_present=self._map_optional_name(name_map, op.output_present),
+                true_present=op.true_present,
+                false_present=op.false_present,
+                true_values=op.true_values,
+                false_values=op.false_values,
+            )
         if isinstance(op, SequenceIdentityOp):
             return SequenceIdentityOp(
                 input_sequence=name_map.get(op.input_sequence, op.input_sequence),
@@ -3011,7 +3022,25 @@ class CEmitter:
             includes.append("#include <stdint.h>")
         if ScalarType.BOOL in dtypes:
             includes.append("#include <stdbool.h>")
+        if CEmitter._constants_need_math(constants):
+            includes.append("#include <math.h>")
         return includes
+
+    @staticmethod
+    def _constants_need_math(constants: tuple[ConstTensor, ...]) -> bool:
+        float_dtypes = {
+            ScalarType.F16,
+            ScalarType.BF16,
+            ScalarType.F32,
+            ScalarType.F64,
+        }
+        for const in constants:
+            if const.dtype not in float_dtypes:
+                continue
+            for value in const.data:
+                if not math.isfinite(float(value)):
+                    return True
+        return False
 
     @staticmethod
     def _scalar_function_name(
@@ -3280,6 +3309,13 @@ class CEmitter:
                 return sequence_value.type.elem.dtype
             if isinstance(op, SequenceInsertOp):
                 return model.op_context.dtype(op.tensor)
+            if isinstance(op, IfOptionalSequenceConstOp):
+                sequence_value = model.op_context.find_value(op.output_sequence)
+                if not isinstance(sequence_value.type, SequenceType):
+                    raise CodegenError(
+                        "IfOptionalSequenceConst output must be a sequence"
+                    )
+                return sequence_value.type.elem.dtype
             if isinstance(op, SequenceIdentityOp):
                 sequence_value = model.op_context.find_value(op.output_sequence)
                 if not isinstance(sequence_value.type, SequenceType):
@@ -3380,6 +3416,8 @@ class CEmitter:
         if any(isinstance(op, PadOp) for op in resolved_ops):
             includes.add("#include <stddef.h>")
         if CEmitter._needs_math(resolved_ops, model.op_context):
+            includes.add("#include <math.h>")
+        if CEmitter._constants_need_math(model.constants):
             includes.add("#include <math.h>")
         if CEmitter._needs_limits(resolved_ops, model.op_context):
             includes.add("#include <limits.h>")
@@ -3967,6 +4005,7 @@ class CEmitter:
                     SequenceEmptyOp,
                     SequenceEraseOp,
                     SequenceInsertOp,
+                    IfOptionalSequenceConstOp,
                     SplitToSequenceOp,
                     LoopSequenceInsertOp,
                 ),
@@ -5598,6 +5637,16 @@ class CEmitter:
                 tensor=temp_map.get(op.tensor, op.tensor),
                 position=CEmitter._map_optional_name(temp_map, op.position),
                 output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
+            )
+        if isinstance(op, IfOptionalSequenceConstOp):
+            return IfOptionalSequenceConstOp(
+                cond=temp_map.get(op.cond, op.cond),
+                output_sequence=temp_map.get(op.output_sequence, op.output_sequence),
+                output_present=CEmitter._map_optional_name(temp_map, op.output_present),
+                true_present=op.true_present,
+                false_present=op.false_present,
+                true_values=op.true_values,
+                false_values=op.false_values,
             )
         if isinstance(op, SequenceIdentityOp):
             return SequenceIdentityOp(
@@ -12914,6 +12963,116 @@ class CEmitter:
                 c_type=c_type,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, IfOptionalSequenceConstOp):
+            elem_type = self._ctx_sequence_elem_type(op.output_sequence)
+            elem_shape = self._codegen_shape(elem_type.shape)
+            true_has_values = len(op.true_values) > 0
+            false_has_values = len(op.false_values) > 0
+            sequence_suffix = self._param_array_suffix(
+                self._sequence_storage_shape(op.output_sequence),
+                _dim_names_for(op.output_sequence),
+            )
+            cond_shape = self._codegen_shape(self._ctx_shape(op.cond))
+            params = self._shared_param_map(
+                [
+                    ("cond", op.cond),
+                    ("output_sequence", op.output_sequence),
+                    ("output_present", op.output_present),
+                ]
+            )
+            param_specs = [
+                (
+                    params["cond"],
+                    ScalarType.BOOL.c_type,
+                    self._param_array_suffix(cond_shape),
+                    True,
+                ),
+                (
+                    params["output_sequence"],
+                    elem_type.dtype.c_type,
+                    f"[EMX_SEQUENCE_MAX_LEN]{sequence_suffix}",
+                    False,
+                ),
+            ]
+            if params["output_present"] is not None:
+                param_specs.append((params["output_present"], "_Bool *", "", False))
+            param_specs.append((f"{params['output_sequence']}__count", "idx_t *", "", False))
+            param_decls = self._build_param_decls(param_specs)
+            true_values_name = f"{op_name}_true_values"
+            false_values_name = f"{op_name}_false_values"
+            elem_count = CEmitter._element_count(elem_shape)
+            lines = [f"void {op_name}({dim_args}{', '.join(param_decls)}) {{"]
+            if true_has_values:
+                true_literals = [
+                    CEmitter._format_literal(elem_type.dtype, value)
+                    for value in op.true_values
+                ]
+                lines.append(
+                    f"const {elem_type.dtype.c_type} {true_values_name}[{elem_count}] = {{"
+                )
+                lines.extend(CEmitter._emit_initializer_lines(true_literals, (elem_count,)))
+                lines.append("};")
+            if false_has_values:
+                false_literals = [
+                    CEmitter._format_literal(elem_type.dtype, value)
+                    for value in op.false_values
+                ]
+                lines.append(
+                    f"const {elem_type.dtype.c_type} {false_values_name}[{elem_count}] = {{"
+                )
+                lines.extend(CEmitter._emit_initializer_lines(false_literals, (elem_count,)))
+                lines.append("};")
+            lines.append(f"if ({params['cond']}[0]) {{")
+            if op.true_present:
+                lines.append(
+                    f"    *{params['output_sequence']}__count = {1 if true_has_values else 0};"
+                )
+                if true_has_values:
+                    loop_vars = self._loop_vars(elem_shape)
+                    for depth, var in enumerate(loop_vars):
+                        lines.append(
+                            f"    for (idx_t {var} = 0; {var} < {elem_shape[depth]}; ++{var}) {{"
+                        )
+                    index_expr = self._index_expr(elem_shape, loop_vars)
+                    output_index = "".join(f"[{var}]" for var in loop_vars)
+                    lines.append(
+                        f"        {params['output_sequence']}[0]{output_index} = {true_values_name}[{index_expr}];"
+                    )
+                    for _ in loop_vars:
+                        lines.append("    }")
+            else:
+                lines.append(f"    *{params['output_sequence']}__count = 0;")
+            if params["output_present"] is not None:
+                lines.append(
+                    f"    *{params['output_present']} = {'1' if op.true_present else '0'};"
+                )
+            lines.append("} else {")
+            if op.false_present:
+                lines.append(
+                    f"    *{params['output_sequence']}__count = {1 if false_has_values else 0};"
+                )
+                if false_has_values:
+                    loop_vars = self._loop_vars(elem_shape)
+                    for depth, var in enumerate(loop_vars):
+                        lines.append(
+                            f"    for (idx_t {var} = 0; {var} < {elem_shape[depth]}; ++{var}) {{"
+                        )
+                    index_expr = self._index_expr(elem_shape, loop_vars)
+                    output_index = "".join(f"[{var}]" for var in loop_vars)
+                    lines.append(
+                        f"        {params['output_sequence']}[0]{output_index} = {false_values_name}[{index_expr}];"
+                    )
+                    for _ in loop_vars:
+                        lines.append("    }")
+            else:
+                lines.append(f"    *{params['output_sequence']}__count = 0;")
+            if params["output_present"] is not None:
+                lines.append(
+                    f"    *{params['output_present']} = {'1' if op.false_present else '0'};"
+                )
+            lines.append("}")
+            lines.append("}")
+            return with_node_comment(_format_c_indentation("\n".join(lines)))
         if isinstance(op, SplitToSequenceOp):
             input_shape = self._ctx_shape(op.input0)
             if op.keepdims:
@@ -15089,6 +15248,14 @@ class CEmitter:
                     self._ctx_sequence_elem_type(op.output_sequence).dtype,
                 ),
             )
+        if isinstance(op, IfOptionalSequenceConstOp):
+            return (
+                (
+                    op.output_sequence,
+                    self._sequence_storage_shape(op.output_sequence),
+                    self._ctx_sequence_elem_type(op.output_sequence).dtype,
+                ),
+            )
         if isinstance(op, SequenceIdentityOp):
             return (
                 (
@@ -15420,6 +15587,8 @@ class CEmitter:
             return self._sequence_storage_shape(op.input_sequence)
         if isinstance(op, SequenceInsertOp):
             return self._sequence_storage_shape(op.output_sequence)
+        if isinstance(op, IfOptionalSequenceConstOp):
+            return self._sequence_storage_shape(op.output_sequence)
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_shape
         if isinstance(op, LoopSequenceMapOp):
@@ -15558,6 +15727,8 @@ class CEmitter:
         if isinstance(op, SequenceEraseOp):
             return self._ctx_sequence_elem_type(op.input_sequence).dtype
         if isinstance(op, SequenceInsertOp):
+            return self._ctx_sequence_elem_type(op.output_sequence).dtype
+        if isinstance(op, IfOptionalSequenceConstOp):
             return self._ctx_sequence_elem_type(op.output_sequence).dtype
         if isinstance(op, LoopSequenceInsertOp):
             return op.elem_dtype

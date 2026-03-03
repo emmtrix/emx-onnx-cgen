@@ -11,7 +11,9 @@ from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
 from ..ir.ops import SliceOp
 from ..lowering.common import (
+    reconcile_shape_with_dim_params,
     resolve_int_list_from_value,
+    value_dim_params,
     value_has_dim_params,
     value_dtype,
     value_shape,
@@ -322,12 +324,25 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         normalized_starts, normalized_steps, computed_output_shape = _normalize_slices(
             input_shape, inputs.starts, inputs.ends, inputs.axes, inputs.steps, node
         )
+        adjusted_input_shape = list(input_shape)
         if output_shape and computed_output_shape != output_shape:
-            raise ShapeInferenceError(
-                f"{node.op_type} output shape must be "
-                f"{computed_output_shape}, got {output_shape}"
+            input_dim_params = value_dim_params(graph, node.inputs[0])
+            reconciled_output = reconcile_shape_with_dim_params(
+                computed_output_shape, output_shape, input_dim_params
             )
+            if reconciled_output is None:
+                raise ShapeInferenceError(
+                    f"{node.op_type} output shape must be "
+                    f"{computed_output_shape}, got {output_shape}"
+                )
+            for axis, (computed_dim, output_dim) in enumerate(
+                zip(computed_output_shape, reconciled_output)
+            ):
+                if computed_dim != output_dim:
+                    adjusted_input_shape[axis] = output_dim
+            computed_output_shape = reconciled_output
         if isinstance(graph, GraphContext):
+            graph.set_shape(node.inputs[0], tuple(adjusted_input_shape))
             graph.set_shape(node.outputs[0], computed_output_shape)
         return SliceOp(
             input0=node.inputs[0],
