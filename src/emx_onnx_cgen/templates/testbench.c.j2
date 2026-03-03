@@ -260,6 +260,29 @@ printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ o
 }
 
 {% endif %}
+{% if testbench_output_format == "txt-emmtrix" %}
+static void testbench_print_txt_emmtrix(
+{% for output in outputs %}
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% endif %}{% if not loop.last %},
+{% endif %}
+{% endfor %}
+) {
+{% for output in outputs %}
+{% for depth in range(output.rank) %}
+for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+{% endfor %}
+{% if output.is_string %}
+    printf("#ULP1000 %s[%zu] = %s\\n", "{{ output.json_name }}", (size_t){{ output.index_expr }}, {{ output.name }}{{ output.array_index_expr }});
+{% else %}
+    printf("#ULP1000 %s[%zu] = %a\\n", "{{ output.json_name }}", (size_t){{ output.index_expr }}, (double){{ output.name }}{{ output.array_index_expr }});
+{% endif %}
+{% for depth in range(output.rank - 1, -1, -1) %}
+}
+{% endfor %}
+{% endfor %}
+}
+
+{% endif %}
 static int testbench_run(const char *input_path) {
 {% for dim in dim_args %}
     int {{ dim.name }} = {{ dim.value }};
@@ -308,6 +331,8 @@ static int testbench_run(const char *input_path) {
 
 {% if testbench_output_format == "txt" %}
     testbench_print_txt({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+{% elif testbench_output_format == "txt-emmtrix" %}
+    testbench_print_txt_emmtrix({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
 {% else %}
     testbench_print_json({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
 {% endif %}
