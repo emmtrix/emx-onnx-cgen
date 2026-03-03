@@ -19,6 +19,7 @@ from jinja2 import (
 import numpy as np
 
 from ..errors import CodegenError
+from ..testbench_output_format import parse_testbench_output_format
 from ..ops import (
     COMPARE_FUNCTIONS,
     OperatorKind,
@@ -16079,14 +16080,18 @@ class CEmitter:
                     "optional_flag_name": optional_flag,
                 }
             )
-        if testbench_output_format not in {"json", "txt", "txt-emmtrix"}:
-            raise CodegenError(
-                "Unsupported testbench output format "
-                f"{testbench_output_format!r}; expected 'json', 'txt', or 'txt-emmtrix'"
-            )
+        try:
+            parsed_output_format = parse_testbench_output_format(testbench_output_format)
+        except ValueError as exc:
+            raise CodegenError(str(exc)) from exc
         rendered = testbench_template.render(
             model_name=model.name,
-            testbench_output_format=testbench_output_format,
+            testbench_output_format=parsed_output_format.kind,
+            testbench_emmtrix_ulp_tag=(
+                parsed_output_format.emmtrix_ulp_tag
+                if parsed_output_format.kind == "txt-emmtrix"
+                else None
+            ),
             rng_requires_u64=rng_requires_u64,
             rng_requires_float=rng_requires_float,
             rng_requires_double=rng_requires_double,
