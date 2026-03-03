@@ -772,9 +772,7 @@ def test_codegen_testbench_output_format_txt_emmtrix() -> None:
     )
     compiler = Compiler(options)
     generated = compiler.compile(model)
-    golden_path = (
-        Path(__file__).parent / "golden" / "add_model_testbench_txt_emmtrix.c"
-    )
+    golden_path = Path(__file__).parent / "golden" / "add_model_testbench_txt_emmtrix.c"
     assert_golden(generated, golden_path)
 
 
