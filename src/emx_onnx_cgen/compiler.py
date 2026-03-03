@@ -41,6 +41,7 @@ class CompilerOptions:
     fp32_accumulation_strategy: str = "simple"
     fp16_accumulation_strategy: str = "fp32"
     testbench_optional_inputs: Mapping[str, bool] | None = None
+    testbench_output_format: str = "json"
     shape_inference_inputs: Mapping[str, np.ndarray] | None = None
     truncate_weights_after: int | None = None
     large_temp_threshold_bytes: int = 1024
@@ -121,6 +122,7 @@ class Compiler:
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
+                testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -133,6 +135,7 @@ class Compiler:
             lambda: self._emitter.emit_testbench(
                 ctx.lowered,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
+                testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -157,6 +160,7 @@ class Compiler:
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
+                testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -172,6 +176,7 @@ class Compiler:
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
+                testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
@@ -192,6 +197,7 @@ class Compiler:
                 ctx.lowered,
                 emit_testbench=self._options.emit_testbench,
                 testbench_optional_inputs=self._options.testbench_optional_inputs,
+                testbench_output_format=self._options.testbench_output_format,
                 variable_dim_inputs=ctx.variable_dim_inputs,
                 variable_dim_outputs=ctx.variable_dim_outputs,
             ),
