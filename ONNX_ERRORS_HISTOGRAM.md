@@ -18,10 +18,9 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
+| Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op DFT | 6 | 19, 20 |
-| Out of tolerance | 5 | 15, 20, 22 |
 | Unsupported op Col2Im | 5 | 18 |
-| Failed to build testbench. | 4 | 20, 22 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
@@ -31,6 +30,7 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
+| Failed to build testbench. | 2 | 22 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -74,9 +74,8 @@ Aggregates non-success verification outcomes.
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
-| Failed to build testbench. | 20 | 2 |
 | Gelu only supports approximate=none | 20 | 2 |
-| Out of tolerance | 20 | 1 |
+| Out of tolerance | 20 | 2 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
