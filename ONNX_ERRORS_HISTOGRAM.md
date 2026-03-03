@@ -16,9 +16,9 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 25 (UINT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 26 (INT2) for tensor '*'. | 17 | 25 |
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
-| Out of tolerance | 11 | 8, 13, 15, 19, 20, 22, 24 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
+| Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
@@ -31,6 +31,7 @@ Aggregates non-success verification outcomes.
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
 | Cast input and output shapes must match | 2 | 22 |
+| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 2 | 20 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -44,27 +45,22 @@ Aggregates non-success verification outcomes.
 | Unsupported op STFT | 2 | 17 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
-| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 1 | 20 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
-| Split output shape must be (1,), got (2,) | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op RandomUniform | 1 | 22 |
-| Where inputs must be broadcastable, got ((), (1,), (0,)) | 1 | 20 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 1 | 12 |
 
 ## Error frequency by opset
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Out of tolerance | 8 | 1 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Out of tolerance | 13 | 1 |
 | Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
@@ -73,21 +69,18 @@ Aggregates non-success verification outcomes.
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op BitwiseNot | 18 | 2 |
 | Unsupported op DFT | 19 | 3 |
-| Out of tolerance | 19 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
+| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 20 | 2 |
 | Gelu only supports approximate=none | 20 | 2 |
-| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 20 | 1 |
-| Out of tolerance | 20 | 1 |
+| Out of tolerance | 20 | 2 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
-| Split output shape must be (1,), got (2,) | 20 | 1 |
-| Where inputs must be broadcastable, got ((), (1,), (0,)) | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
-| Out of tolerance | 22 | 4 |
 | Unsupported op RNN | 22 | 4 |
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |
+| Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
 | Cast input and output shapes must match | 22 | 2 |
@@ -100,7 +93,6 @@ Aggregates non-success verification outcomes.
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
-| Out of tolerance | 24 | 1 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |

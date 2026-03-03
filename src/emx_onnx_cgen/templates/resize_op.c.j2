@@ -87,10 +87,13 @@ int use_extrapolation = 0;
 {% for dim in range(rank) %}
 double x_orig{{ dim }};
 {% if coordinate_transformation_mode == "align_corners" %}
-if (output_shape[{{ dim }}] == 1) {
+{
+const double output_width{{ dim }} = scales[{{ dim }}] * (double)input_shape[{{ dim }}];
+if (output_width{{ dim }} == 1.0) {
     x_orig{{ dim }} = 0.0;
 } else {
-    x_orig{{ dim }} = (double){{ loop_vars[dim] }} * (input_shape[{{ dim }}] - 1) / (double)(output_shape[{{ dim }}] - 1);
+    x_orig{{ dim }} = (double){{ loop_vars[dim] }} * (input_shape[{{ dim }}] - 1) / (output_width{{ dim }} - 1.0);
+}
 }
 {% elif coordinate_transformation_mode == "asymmetric" %}
 x_orig{{ dim }} = (double){{ loop_vars[dim] }} / scales[{{ dim }}];
