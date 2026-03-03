@@ -1040,7 +1040,10 @@ def _expand_if_node(
         )
         for output_index, output_name in enumerate(node.output)
     )
-    if any(kind not in {"tensor", "optional_tensor"} for kind in output_kinds):
+    if any(
+        kind not in {"tensor", "sequence", "optional_tensor", "optional_sequence"}
+        for kind in output_kinds
+    ):
         return None
     if any(kind != output_kinds[0] for kind in output_kinds):
         return None
@@ -1056,19 +1059,79 @@ def _expand_if_node(
         new_initializers=new_initializers,
     )
     select_nodes: list[onnx.NodeProto] = []
+    if output_kinds[0] in {"tensor", "optional_tensor"}:
+        for output_index, output_name in enumerate(node.output):
+            then_name = then_map.get(then_branch.output[output_index].name)
+            else_name = else_map.get(else_branch.output[output_index].name)
+            if then_name is None or else_name is None:
+                return None
+            select_nodes.append(
+                helper.make_node(
+                    "Where",
+                    inputs=[cond_name, then_name, else_name],
+                    outputs=[output_name],
+                    name=f"{prefix_base}_select_{output_index}",
+                )
+            )
+        return [*then_nodes, *else_nodes, *select_nodes]
+
     for output_index, output_name in enumerate(node.output):
-        then_name = then_map.get(then_branch.output[output_index].name)
-        else_name = else_map.get(else_branch.output[output_index].name)
-        if then_name is None or else_name is None:
+        then_output_name = then_branch.output[output_index].name
+        else_output_name = else_branch.output[output_index].name
+        then_inputs = _sequence_construct_inputs(then_branch, then_output_name)
+        else_inputs = _sequence_construct_inputs(else_branch, else_output_name)
+        if then_inputs is None or else_inputs is None:
             return None
+        if len(then_inputs) != len(else_inputs):
+            if output_kinds[0] != "optional_sequence":
+                return None
+            selected_inputs = then_inputs if then_inputs else else_inputs
+            selected_map = then_map if then_inputs else else_map
+            selected_elements = [
+                selected_map.get(elem)
+                for elem in selected_inputs
+                if selected_map.get(elem)
+            ]
+            if len(selected_elements) != len(selected_inputs):
+                return None
+            select_nodes.append(
+                helper.make_node(
+                    "SequenceConstruct",
+                    inputs=selected_elements,
+                    outputs=[output_name],
+                    name=f"{prefix_base}_sequence_construct_{output_index}",
+                )
+            )
+            continue
+
+        selected_elements: list[str] = []
+        for elem_index, (then_elem, else_elem) in enumerate(
+            zip(then_inputs, else_inputs)
+        ):
+            then_name = then_map.get(then_elem)
+            else_name = else_map.get(else_elem)
+            if then_name is None or else_name is None:
+                return None
+            selected_name = f"{prefix_base}_sequence_{output_index}_{elem_index}"
+            select_nodes.append(
+                helper.make_node(
+                    "Where",
+                    inputs=[cond_name, then_name, else_name],
+                    outputs=[selected_name],
+                    name=f"{prefix_base}_select_{output_index}_{elem_index}",
+                )
+            )
+            selected_elements.append(selected_name)
+
         select_nodes.append(
             helper.make_node(
-                "Where",
-                inputs=[cond_name, then_name, else_name],
+                "SequenceConstruct",
+                inputs=selected_elements,
                 outputs=[output_name],
-                name=f"{prefix_base}_select_{output_index}",
+                name=f"{prefix_base}_sequence_construct_{output_index}",
             )
         )
+
     return [*then_nodes, *else_nodes, *select_nodes]
 
 

@@ -1,5 +1,5 @@
 {
-  "error": "Where inputs must be broadcastable, got ((), (1,), (0,))",
+  "error": "GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_affine_grid_2d_expanded model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
