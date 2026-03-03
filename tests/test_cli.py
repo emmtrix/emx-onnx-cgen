@@ -191,3 +191,17 @@ def test_cli_verify_per_node_accuracy_flag_can_be_enabled() -> None:
     parser = cli._build_parser()
     args = parser.parse_args(["verify", "model.onnx", "--per-node-accuracy"])
     assert args.per_node_accuracy is True
+
+
+def test_cli_compile_accepts_testbench_output_format_txt_emmtrix() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        [
+            "compile",
+            "model.onnx",
+            "out.c",
+            "--testbench-output-format",
+            "txt-emmtrix",
+        ]
+    )
+    assert args.testbench_output_format == "txt-emmtrix"
