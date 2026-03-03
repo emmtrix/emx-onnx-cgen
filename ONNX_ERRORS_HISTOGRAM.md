@@ -21,7 +21,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
-| Failed to build testbench. | 4 | 11, 24 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
@@ -60,7 +59,6 @@ Aggregates non-success verification outcomes.
 
 | Error message | Opset | Count |
 | --- | --- | --- |
-| Failed to build testbench. | 11 | 2 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
 | Unsupported op If | 13 | 1 |
 | Out of tolerance | 15 | 1 |
@@ -94,7 +92,6 @@ Aggregates non-success verification outcomes.
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
-| Failed to build testbench. | 24 | 2 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |
