@@ -252,6 +252,29 @@ class Compiler:
             op.infer_types(op_ctx)
         for op in ops:
             op.infer_shapes(op_ctx)
+        refreshed_output_types: list[ValueType] = []
+        refreshed_output_shapes: list[tuple[int, ...]] = []
+        refreshed_output_dtypes: list[ScalarType] = []
+        for value in graph.outputs:
+            value_type = value.type
+            if isinstance(value_type, TensorType):
+                inferred_shape = op_ctx.shape(value.name)
+                inferred_dtype = op_ctx.dtype(value.name)
+                value_type = TensorType(
+                    dtype=inferred_dtype,
+                    shape=inferred_shape,
+                    dim_params=(None,) * len(inferred_shape),
+                    is_optional=value_type.is_optional,
+                )
+            refreshed_output_types.append(value_type)
+            tensor_out = (
+                value_type if isinstance(value_type, TensorType) else value_type.elem
+            )
+            refreshed_output_shapes.append(tensor_out.shape)
+            refreshed_output_dtypes.append(tensor_out.dtype)
+        output_types = tuple(refreshed_output_types)
+        output_shapes = tuple(refreshed_output_shapes)
+        output_dtypes = tuple(refreshed_output_dtypes)
         header = self._build_header(model, graph)
         return LoweredModel(
             name=self._options.model_name,
