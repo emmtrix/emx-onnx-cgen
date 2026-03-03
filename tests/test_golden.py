@@ -747,6 +747,24 @@ def test_codegen_includes_testbench() -> None:
     assert_golden(generated, golden_path)
 
 
+def test_codegen_testbench_output_format_defaults_to_json() -> None:
+    model = _make_add_model()
+    compiler = Compiler(CompilerOptions(emit_testbench=True))
+    generated = compiler.compile(model)
+
+    assert 'printf("{\\n  \\"outputs\\": {\\n");' in generated
+    assert "testbench_print_json(out);" in generated
+
+
+def test_codegen_testbench_output_format_txt() -> None:
+    model = _make_add_model()
+    options = CompilerOptions(emit_testbench=True, testbench_output_format="txt")
+    compiler = Compiler(options)
+    generated = compiler.compile(model)
+    golden_path = Path(__file__).parent / "golden" / "add_model_testbench_txt.c"
+    assert_golden(generated, golden_path)
+
+
 def test_codegen_separate_testbench_source() -> None:
     model = _make_add_model()
     compiler = Compiler(CompilerOptions(emit_testbench=False))

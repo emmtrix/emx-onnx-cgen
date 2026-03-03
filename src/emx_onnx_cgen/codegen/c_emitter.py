@@ -2503,6 +2503,7 @@ class CEmitter:
         model: LoweredModel,
         *,
         emit_testbench: bool = False,
+        testbench_output_format: str = "json",
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -2644,6 +2645,7 @@ class CEmitter:
                     self._emit_testbench(
                         model,
                         testbench_template,
+                        testbench_output_format=testbench_output_format,
                         testbench_inputs=testbench_inputs,
                         testbench_optional_inputs=testbench_optional_inputs,
                         dim_order=dim_order,
@@ -2663,6 +2665,7 @@ class CEmitter:
         model: LoweredModel,
         *,
         emit_testbench: bool = False,
+        testbench_output_format: str = "json",
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -2799,6 +2802,7 @@ class CEmitter:
                     self._emit_testbench(
                         model,
                         testbench_template,
+                        testbench_output_format=testbench_output_format,
                         testbench_inputs=testbench_inputs,
                         testbench_optional_inputs=testbench_optional_inputs,
                         dim_order=dim_order,
@@ -2833,6 +2837,7 @@ class CEmitter:
         self,
         model: LoweredModel,
         *,
+        testbench_output_format: str = "json",
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         variable_dim_inputs: Mapping[int, Mapping[int, str]] | None = None,
@@ -2871,6 +2876,7 @@ class CEmitter:
         rendered = self._emit_testbench(
             model,
             testbench_template,
+            testbench_output_format=testbench_output_format,
             testbench_inputs=testbench_inputs,
             testbench_optional_inputs=testbench_optional_inputs,
             dim_order=dim_order,
@@ -15904,6 +15910,7 @@ class CEmitter:
         model: LoweredModel,
         testbench_template,
         *,
+        testbench_output_format: str,
         testbench_inputs: Mapping[str, tuple[float | int | bool, ...]] | None = None,
         testbench_optional_inputs: Mapping[str, bool] | None = None,
         dim_order: Sequence[str],
@@ -16072,8 +16079,14 @@ class CEmitter:
                     "optional_flag_name": optional_flag,
                 }
             )
+        if testbench_output_format not in {"json", "txt"}:
+            raise CodegenError(
+                "Unsupported testbench output format "
+                f"{testbench_output_format!r}; expected 'json' or 'txt'"
+            )
         rendered = testbench_template.render(
             model_name=model.name,
+            testbench_output_format=testbench_output_format,
             rng_requires_u64=rng_requires_u64,
             rng_requires_float=rng_requires_float,
             rng_requires_double=rng_requires_double,

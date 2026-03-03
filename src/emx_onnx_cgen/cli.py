@@ -625,7 +625,13 @@ def _build_parser() -> argparse.ArgumentParser:
     compile_parser.add_argument(
         "--emit-testbench",
         action="store_true",
-        help="Emit a JSON-producing testbench main() for validation",
+        help="Emit a testbench main() for validation",
+    )
+    compile_parser.add_argument(
+        "--testbench-output-format",
+        choices=("json", "txt"),
+        default="json",
+        help=("Output format used by the generated testbench " "(default: json)"),
     )
     compile_parser.add_argument(
         "--testbench-file",
@@ -934,6 +940,7 @@ def _compile_model(
         options = CompilerOptions(
             model_name=model_name,
             emit_testbench=args.emit_testbench and not separate_testbench,
+            testbench_output_format=args.testbench_output_format,
             command_line=args.command_line,
             model_checksum=model_checksum,
             restrict_arrays=args.restrict_arrays,

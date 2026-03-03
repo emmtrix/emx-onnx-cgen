@@ -215,6 +215,51 @@ printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ o
     printf("\n  }\n}\n");
 }
 
+{% if testbench_output_format == "txt" %}
+static void testbench_print_txt(
+{% for output in outputs %}
+    {{ output.c_type }} {{ output.name }}{{ output.array_suffix }}{% if output.is_sequence %}, idx_t {{ output.count_name }}{% endif %}{% if not loop.last %},
+{% endif %}
+{% endfor %}
+) {
+{% for output in outputs %}
+{% if output.is_sequence %}
+    printf("{{ output.json_name }} (sequence_count=%d):\n", (int){{ output.count_name }});
+{% else %}
+    printf("{{ output.json_name }}:\n");
+{% endif %}
+{% for depth in range(output.rank) %}
+for (idx_t {{ output.loop_vars[depth] }} = 0; {{ output.loop_vars[depth] }} < {{ output.shape[depth] }}; ++{{ output.loop_vars[depth] }}) {
+    if ({{ output.loop_vars[depth] }}) {
+{% if depth == 0 %}
+        printf("\n");
+{% else %}
+        printf(" ");
+{% endif %}
+    }
+{% if depth < output.rank - 1 %}
+    printf("[");
+{% endif %}
+{% endfor %}
+{% if output.is_string %}
+printf("%s", {{ output.name }}{{ output.array_index_expr }});
+{% else %}
+printf("{{ output.print_format }}", {{ output.print_cast }}{{ output.name }}{{ output.array_index_expr }});
+{% endif %}
+{% for depth in range(output.rank - 1, -1, -1) %}
+{% if depth < output.rank - 1 %}
+    printf("]");
+{% endif %}
+}
+{% endfor %}
+    printf("\n");
+{% if not loop.last %}
+    printf("\n");
+{% endif %}
+{% endfor %}
+}
+
+{% endif %}
 static int testbench_run(const char *input_path) {
 {% for dim in dim_args %}
     int {{ dim.name }} = {{ dim.value }};
@@ -261,7 +306,11 @@ static int testbench_run(const char *input_path) {
     {{ model_name }}({% for dim in dim_args %}{{ dim.name }}, {% endfor %}{% for input in inputs %}{{ input.name }}{% if input.is_sequence %}, {{ input.count_name }}{% endif %}{% if input.optional_flag_name %}, {{ input.optional_flag_name }}{% endif %}, {% endfor %}{% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, &{{ output.count_name }}{% endif %}{% if output.optional_flag_name %}, &{{ output.optional_flag_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
     timer_stop();
 
+{% if testbench_output_format == "txt" %}
+    testbench_print_txt({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+{% else %}
     testbench_print_json({% for output in outputs %}{{ output.name }}{% if output.is_sequence %}, {{ output.count_name }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %});
+{% endif %}
     return 0;
 }
 
