@@ -832,8 +832,10 @@ def _inline_if_branch(
     prefix: str,
     new_initializers: list[onnx.TensorProto],
     rename_outputs: bool = True,
+    output_renames: Mapping[str, str] | None = None,
 ) -> tuple[list[onnx.NodeProto], dict[str, str]]:
     name_map: dict[str, str] = {}
+    output_renames = output_renames or {}
     for initializer in branch.initializer:
         new_name = f"{prefix}_init_{initializer.name}"
         name_map[initializer.name] = new_name
@@ -887,11 +889,13 @@ def _inline_if_branch(
             if not output_name:
                 mapped_outputs.append(output_name)
                 continue
-            mapped = (
-                f"{prefix}_value_{node_index}_{output_index}"
-                if rename_outputs
-                else output_name
-            )
+            mapped = output_renames.get(output_name)
+            if mapped is None:
+                mapped = (
+                    f"{prefix}_value_{node_index}_{output_index}"
+                    if rename_outputs
+                    else output_name
+                )
             name_map[output_name] = mapped
             mapped_outputs.append(mapped)
         del inlined.output[:]
@@ -1007,27 +1011,22 @@ def _expand_if_node(
     if cond_constant is not None:
         chosen_branch = then_branch if cond_constant else else_branch
         chosen_prefix = f"{prefix_base}_{'then' if cond_constant else 'else'}"
+        chosen_output_renames = {
+            chosen_branch.output[output_index].name: output_name
+            for output_index, output_name in enumerate(node.output)
+        }
         chosen_nodes, chosen_map = _inline_if_branch(
             chosen_branch,
             prefix=chosen_prefix,
             new_initializers=new_initializers,
             rename_outputs=False,
+            output_renames=chosen_output_renames,
         )
-        selected_nodes: list[onnx.NodeProto] = []
         for output_index, output_name in enumerate(node.output):
             branch_output_name = chosen_branch.output[output_index].name
-            chosen_name = chosen_map.get(branch_output_name)
-            if chosen_name is None:
+            if chosen_map.get(branch_output_name) != output_name:
                 return None
-            selected_nodes.append(
-                helper.make_node(
-                    "Identity",
-                    inputs=[chosen_name],
-                    outputs=[output_name],
-                    name=f"{prefix_base}_select_{output_index}",
-                )
-            )
-        return [*chosen_nodes, *selected_nodes]
+        return chosen_nodes
 
     output_kinds = tuple(
         _if_output_kind(
@@ -1543,20 +1542,28 @@ def _constant_initializer(node: onnx.NodeProto) -> Initializer:
     raise UnsupportedOpError(f"Constant '{output_name}' requires a value attribute")
 
 
-def import_onnx(model: onnx.ModelProto) -> Graph:
-    model, _ = _expand_scan_nodes(model)
-    model, _ = _expand_if_nodes(model)
-    model, _ = _expand_sequence_map_nodes(model)
-    model, _ = _expand_gradient_nodes(model)
+def prepare_onnx_model(model: onnx.ModelProto) -> onnx.ModelProto:
+    prepared = onnx.ModelProto()
+    prepared.CopyFrom(model)
+    prepared, _ = _expand_scan_nodes(prepared)
+    prepared, _ = _expand_if_nodes(prepared)
+    prepared, _ = _expand_sequence_map_nodes(prepared)
+    prepared, _ = _expand_gradient_nodes(prepared)
+    if _needs_shape_inference(prepared):
+        try:
+            prepared = shape_inference.infer_shapes(prepared, data_prop=True)
+        except Exception as exc:  # pragma: no cover - onnx inference errors
+            raise ShapeInferenceError("ONNX shape inference failed") from exc
+    return prepared
+
+
+def import_onnx(model: onnx.ModelProto, *, _prepared: bool = False) -> Graph:
+    if not _prepared:
+        model = prepare_onnx_model(model)
     dim_param_by_name = _collect_dim_params(
         tuple(model.graph.input) + tuple(model.graph.output)
     )
     opset_imports = tuple((opset.domain, opset.version) for opset in model.opset_import)
-    if _needs_shape_inference(model):
-        try:
-            model = shape_inference.infer_shapes(model, data_prop=True)
-        except Exception as exc:  # pragma: no cover - onnx inference errors
-            raise ShapeInferenceError("ONNX shape inference failed") from exc
     graph = model.graph
     base_initializers = [_initializer(value) for value in graph.initializer]
     constant_initializers: list[Initializer] = []

@@ -322,12 +322,28 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         normalized_starts, normalized_steps, computed_output_shape = _normalize_slices(
             input_shape, inputs.starts, inputs.ends, inputs.axes, inputs.steps, node
         )
+        adjusted_input_shape = list(input_shape)
         if output_shape and computed_output_shape != output_shape:
-            raise ShapeInferenceError(
-                f"{node.op_type} output shape must be "
-                f"{computed_output_shape}, got {output_shape}"
-            )
+            input_dim_params = graph.find_value(node.inputs[0]).type.dim_params
+            if len(output_shape) != len(computed_output_shape):
+                raise ShapeInferenceError(
+                    f"{node.op_type} output shape must be "
+                    f"{computed_output_shape}, got {output_shape}"
+                )
+            for axis, (computed_dim, output_dim) in enumerate(
+                zip(computed_output_shape, output_shape)
+            ):
+                dim_param = input_dim_params[axis] if axis < len(input_dim_params) else None
+                if computed_dim != output_dim and not dim_param:
+                    raise ShapeInferenceError(
+                        f"{node.op_type} output shape must be "
+                        f"{computed_output_shape}, got {output_shape}"
+                    )
+                if computed_dim != output_dim and dim_param:
+                    adjusted_input_shape[axis] = output_dim
+            computed_output_shape = output_shape
         if isinstance(graph, GraphContext):
+            graph.set_shape(node.inputs[0], tuple(adjusted_input_shape))
             graph.set_shape(node.outputs[0], computed_output_shape)
         return SliceOp(
             input0=node.inputs[0],

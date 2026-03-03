@@ -284,6 +284,10 @@ class ReshapeOp(RenderableOpBase):
         input_shape = ctx.shape(self.input0)
         output_shape = ctx.shape(self.output)
         if _shape_product(input_shape) != _shape_product(output_shape):
+            input_dim_params = ctx.graph.find_value(self.input0).type.dim_params
+            output_dim_params = ctx.graph.find_value(self.output).type.dim_params
+            if any(input_dim_params) or any(output_dim_params):
+                return
             raise ShapeInferenceError(
                 f"{self.kind} input/output element counts must match, "
                 f"got {input_shape} and {output_shape}"
