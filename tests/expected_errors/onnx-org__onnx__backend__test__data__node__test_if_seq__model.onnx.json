@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op If",
+  "error": "If currently supports optional sequence outputs only",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_seq model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [

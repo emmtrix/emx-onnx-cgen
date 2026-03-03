@@ -44,12 +44,12 @@ Aggregates non-success verification outcomes.
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
+| If currently supports optional sequence outputs only | 1 | 13 |
 | Pad value input must be a scalar | 1 | 24 |
 | ReduceMax does not support dtype bool | 1 | 20 |
 | ReduceMin does not support dtype bool | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
-| Unsupported op If | 1 | 13 |
 | Unsupported op Loop | 1 | 16 |
 | Unsupported op MelWeightMatrix | 1 | 17 |
 | Unsupported op RandomUniform | 1 | 22 |
@@ -60,7 +60,7 @@ Aggregates non-success verification outcomes.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Unsupported op If | 13 | 1 |
+| If currently supports optional sequence outputs only | 13 | 1 |
 | Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |

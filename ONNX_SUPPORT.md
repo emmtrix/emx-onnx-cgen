@@ -770,7 +770,7 @@ Coverage 1546 / 1802 ONNX files (85.8%).
 | node/test_identity_sequence/model.onnx | 25 | Data | ✅ | OK (no numeric comparisons) |
 | node/test_if/model.onnx | 11 | Data | ✅ | OK (max ULP 0) |
 | node/test_if_opt/model.onnx | 16 | Data | ✅ | OK (max ULP 0) |
-| node/test_if_seq/model.onnx | 13 | Data | ❌ | Unsupported op If |
+| node/test_if_seq/model.onnx | 13 | Data | ❌ | If currently supports optional sequence outputs only |
 | node/test_image_decoder_decode_bmp_rgb/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg2k_rgb/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |
 | node/test_image_decoder_decode_jpeg_bgr/model.onnx | 20 | Data | ❌ | Unsupported op ImageDecoder |

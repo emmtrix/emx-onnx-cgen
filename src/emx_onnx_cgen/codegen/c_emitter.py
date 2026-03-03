@@ -12996,7 +12996,9 @@ class CEmitter:
             ]
             if params["output_present"] is not None:
                 param_specs.append((params["output_present"], "_Bool *", "", False))
-            param_specs.append((f"{params['output_sequence']}__count", "idx_t *", "", False))
+            param_specs.append(
+                (f"{params['output_sequence']}__count", "idx_t *", "", False)
+            )
             param_decls = self._build_param_decls(param_specs)
             true_values_name = f"{op_name}_true_values"
             false_values_name = f"{op_name}_false_values"
@@ -13010,7 +13012,9 @@ class CEmitter:
                 lines.append(
                     f"const {elem_type.dtype.c_type} {true_values_name}[{elem_count}] = {{"
                 )
-                lines.extend(CEmitter._emit_initializer_lines(true_literals, (elem_count,)))
+                lines.extend(
+                    CEmitter._emit_initializer_lines(true_literals, (elem_count,))
+                )
                 lines.append("};")
             if false_has_values:
                 false_literals = [
@@ -13020,7 +13024,9 @@ class CEmitter:
                 lines.append(
                     f"const {elem_type.dtype.c_type} {false_values_name}[{elem_count}] = {{"
                 )
-                lines.extend(CEmitter._emit_initializer_lines(false_literals, (elem_count,)))
+                lines.extend(
+                    CEmitter._emit_initializer_lines(false_literals, (elem_count,))
+                )
                 lines.append("};")
             lines.append(f"if ({params['cond']}[0]) {{")
             if op.true_present:

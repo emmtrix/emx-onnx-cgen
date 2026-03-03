@@ -20,7 +20,9 @@ def _branch_graph(node: Node, name: str) -> onnx.GraphProto:
     return value
 
 
-def _find_branch_node(branch: onnx.GraphProto, output_name: str) -> onnx.NodeProto | None:
+def _find_branch_node(
+    branch: onnx.GraphProto, output_name: str
+) -> onnx.NodeProto | None:
     for candidate in branch.node:
         if output_name in candidate.output:
             return candidate
@@ -70,7 +72,9 @@ def lower_if_optional_sequence(
     graph: GraphContext, node: Node
 ) -> IfOptionalSequenceConstOp:
     if len(node.inputs) != 1 or len(node.outputs) != 1:
-        raise UnsupportedOpError("If currently supports exactly one input and one output")
+        raise UnsupportedOpError(
+            "If currently supports exactly one input and one output"
+        )
     cond = node.inputs[0]
     if value_dtype(graph, cond, node) != ScalarType.BOOL:
         raise UnsupportedOpError("If condition must be bool")
@@ -80,7 +84,10 @@ def lower_if_optional_sequence(
 
     output_name = node.outputs[0]
     output_value = graph.find_value(output_name)
-    if not isinstance(output_value.type, SequenceType) or not output_value.type.is_optional:
+    if (
+        not isinstance(output_value.type, SequenceType)
+        or not output_value.type.is_optional
+    ):
         raise UnsupportedOpError("If currently supports optional sequence outputs only")
     elem_type = output_value.type.elem
     if not isinstance(elem_type, TensorType):
@@ -113,9 +120,13 @@ def lower_if_optional_sequence(
     false_values = _normalize(false_array)
     elem_count = int(np.prod(elem_type.shape)) if elem_type.shape else 1
     if true_present and len(true_values) not in {0, elem_count}:
-        raise ShapeInferenceError("If true branch optional sequence tensor has invalid size")
+        raise ShapeInferenceError(
+            "If true branch optional sequence tensor has invalid size"
+        )
     if false_present and len(false_values) not in {0, elem_count}:
-        raise ShapeInferenceError("If false branch optional sequence tensor has invalid size")
+        raise ShapeInferenceError(
+            "If false branch optional sequence tensor has invalid size"
+        )
 
     output_present = f"{output_name}_present"
     graph.set_shape(output_name, elem_type.shape)
