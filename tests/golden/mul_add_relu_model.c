@@ -8,7 +8,7 @@
  *   fp16_accumulation_strategy: fp32
  *   large_temp_threshold: 1024
  *   large_weight_threshold: 102400
- * Model checksum (sha256): 66a53faa4385eceb4eb2172a98dcdaee5d7632797b8544defc1048d92d984cae
+ * Model checksum (sha256): d19ee9aea204ee35f6b5ca51faed3d29c6389e076582f4b055db789490daa385
  * Model name: model
  * Graph name: mul_add_relu_graph
  * Inputs: 3 Outputs: 1 Nodes: 3 Initializers: 0

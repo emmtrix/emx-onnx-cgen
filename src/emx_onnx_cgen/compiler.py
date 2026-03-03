@@ -27,7 +27,7 @@ from .ir.op_context import OpContext
 from .lowering import load_lowering_registry
 from .lowering.common import ensure_supported_dtype, shape_product
 from .lowering.registry import get_lowering_registry
-from .onnx_import import import_onnx
+from .onnx_import import import_onnx, prepare_onnx_model
 
 
 @dataclass(frozen=True)
@@ -97,16 +97,22 @@ class Compiler:
         return result
 
     def _build_compile_context(self, model: onnx.ModelProto) -> _CompileContext:
-        graph = self._time_step("import_onnx", lambda: import_onnx(model))
+        prepared_model = self._time_step(
+            "prepare_onnx_model", lambda: prepare_onnx_model(model)
+        )
+        graph = self._time_step(
+            "import_onnx",
+            lambda: import_onnx(prepared_model, _prepared=True),
+        )
         graph = self._time_step(
             "concretize_shapes",
-            lambda: self._concretize_graph_shapes(model, graph),
+            lambda: self._concretize_graph_shapes(prepared_model, graph),
         )
         variable_dim_inputs, variable_dim_outputs = self._time_step(
             "collect_variable_dims", lambda: self._collect_variable_dims(graph)
         )
         lowered = self._time_step(
-            "lower_model", lambda: self._lower_model(model, graph)
+            "lower_model", lambda: self._lower_model(prepared_model, graph)
         )
         return Compiler._CompileContext(
             lowered=lowered,
@@ -252,6 +258,29 @@ class Compiler:
             op.infer_types(op_ctx)
         for op in ops:
             op.infer_shapes(op_ctx)
+        refreshed_output_types: list[ValueType] = []
+        refreshed_output_shapes: list[tuple[int, ...]] = []
+        refreshed_output_dtypes: list[ScalarType] = []
+        for value in graph.outputs:
+            value_type = value.type
+            if isinstance(value_type, TensorType):
+                inferred_shape = op_ctx.shape(value.name)
+                inferred_dtype = op_ctx.dtype(value.name)
+                value_type = TensorType(
+                    dtype=inferred_dtype,
+                    shape=inferred_shape,
+                    dim_params=(None,) * len(inferred_shape),
+                    is_optional=value_type.is_optional,
+                )
+            refreshed_output_types.append(value_type)
+            tensor_out = (
+                value_type if isinstance(value_type, TensorType) else value_type.elem
+            )
+            refreshed_output_shapes.append(tensor_out.shape)
+            refreshed_output_dtypes.append(tensor_out.dtype)
+        output_types = tuple(refreshed_output_types)
+        output_shapes = tuple(refreshed_output_shapes)
+        output_dtypes = tuple(refreshed_output_dtypes)
         header = self._build_header(model, graph)
         return LoweredModel(
             name=self._options.model_name,

@@ -144,9 +144,7 @@ def test_import_if_with_tensor_branches_expands_to_where() -> None:
     assert len(imported.initializers) == 2
 
 
-def test_import_if_with_sequence_construct_branches_expands_to_where_and_sequence_construct() -> (
-    None
-):
+def test_import_if_with_sequence_construct_branches_keeps_if_node() -> None:
     cond = helper.make_tensor_value_info("cond", TensorProto.BOOL, [])
     output = helper.make_tensor_sequence_value_info("out", TensorProto.FLOAT, [2])
 
@@ -198,16 +196,16 @@ def test_import_if_with_sequence_construct_branches_expands_to_where_and_sequenc
     imported = import_onnx(model)
 
     op_types = [node.op_type for node in imported.nodes]
-    assert op_types[-2:] == ["Where", "SequenceConstruct"]
-    assert len(imported.initializers) == 2
+    assert op_types == ["If"]
+    assert len(imported.initializers) == 0
 
 
-def test_import_if_with_optional_sequence_branches_expands_to_supported_ops() -> None:
+def test_import_if_with_optional_sequence_branches_keeps_if_node() -> None:
     model = onnx.load("onnx-org/onnx/backend/test/data/node/test_if_opt/model.onnx")
 
     imported = import_onnx(model)
 
-    assert all(node.op_type != "If" for node in imported.nodes)
+    assert any(node.op_type == "If" for node in imported.nodes)
     assert all(node.op_type != "Optional" for node in imported.nodes)
 
 
