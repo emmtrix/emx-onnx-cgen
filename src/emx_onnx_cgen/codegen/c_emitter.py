@@ -16250,10 +16250,10 @@ class CEmitter:
                     "optional_flag_name": optional_flag,
                 }
             )
-        if testbench_output_format not in {"json", "txt"}:
+        if testbench_output_format not in {"json", "txt", "txt-emmtrix"}:
             raise CodegenError(
                 "Unsupported testbench output format "
-                f"{testbench_output_format!r}; expected 'json' or 'txt'"
+                f"{testbench_output_format!r}; expected 'json', 'txt', or 'txt-emmtrix'"
             )
         rendered = testbench_template.render(
             model_name=model.name,

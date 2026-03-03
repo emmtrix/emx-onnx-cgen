@@ -1,10 +1,10 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_split_to_sequence_1 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "SplitToSequence"
   ],
   "opset_version": 24,
-  "generated_checksum": "dbd3f57b9a76549d1a0c362dc96d8192a38bb2f40bd78a5864bcc6f6c3e60294"
+  "generated_checksum": "b3c7d3265f48e143cb91f6a6aab0ef808bfba664e6a37fb40a3301a35bfc3314"
 }
