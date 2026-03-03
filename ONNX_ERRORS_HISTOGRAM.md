@@ -21,6 +21,7 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
+| Failed to build testbench. | 4 | 11, 24 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
@@ -30,8 +31,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 3 | 20 |
 | Unsupported op RoiAlign | 3 | 22 |
 | '*' | 2 |  |
-| Cast input and output shapes must match | 2 | 22 |
-| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 2 | 20 |
 | Gelu only supports approximate=none | 2 | 20 |
 | LpPool expects 2D kernel_shape | 2 | 22 |
 | LpPool supports auto_pad=NOTSET only | 2 | 22 |
@@ -41,6 +40,7 @@ Aggregates non-success verification outcomes.
 | Unsupported op Adam | 2 |  |
 | Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op Det | 2 | 22 |
+| Unsupported op If | 2 | 13, 16 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
 | ConvTranspose output shape must be fully defined and non-negative | 1 | 22 |
@@ -60,8 +60,11 @@ Aggregates non-success verification outcomes.
 
 | Error message | Opset | Count |
 | --- | --- | --- |
+| Failed to build testbench. | 11 | 2 |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
+| Unsupported op If | 13 | 1 |
 | Out of tolerance | 15 | 1 |
+| Unsupported op If | 16 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
@@ -72,7 +75,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
-| GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) | 20 | 2 |
 | Gelu only supports approximate=none | 20 | 2 |
 | Out of tolerance | 20 | 2 |
 | ReduceMax does not support dtype bool | 20 | 1 |
@@ -83,7 +85,6 @@ Aggregates non-success verification outcomes.
 | Out of tolerance | 22 | 3 |
 | Unsupported op RandomUniformLike | 22 | 3 |
 | Unsupported op RoiAlign | 22 | 3 |
-| Cast input and output shapes must match | 22 | 2 |
 | LpPool expects 2D kernel_shape | 22 | 2 |
 | LpPool supports auto_pad=NOTSET only | 22 | 2 |
 | Selu only supports alpha=1.6732632423543772 | 22 | 2 |
@@ -93,6 +94,7 @@ Aggregates non-success verification outcomes.
 | ConvTranspose output shape must be fully defined and non-negative | 22 | 1 |
 | Dropout mask output is not supported | 22 | 1 |
 | Unsupported op RandomUniform | 22 | 1 |
+| Failed to build testbench. | 24 | 2 |
 | Pad value input must be a scalar | 24 | 1 |
 | Unsupported elem_type 17 (FLOAT8E4M3FN) for tensor '*'. | 25 | 22 |
 | Unsupported elem_type 19 (FLOAT8E5M2) for tensor '*'. | 25 | 20 |

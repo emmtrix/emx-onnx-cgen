@@ -3011,7 +3011,25 @@ class CEmitter:
             includes.append("#include <stdint.h>")
         if ScalarType.BOOL in dtypes:
             includes.append("#include <stdbool.h>")
+        if CEmitter._constants_need_math(constants):
+            includes.append("#include <math.h>")
         return includes
+
+    @staticmethod
+    def _constants_need_math(constants: tuple[ConstTensor, ...]) -> bool:
+        float_dtypes = {
+            ScalarType.F16,
+            ScalarType.BF16,
+            ScalarType.F32,
+            ScalarType.F64,
+        }
+        for const in constants:
+            if const.dtype not in float_dtypes:
+                continue
+            for value in const.data:
+                if not math.isfinite(float(value)):
+                    return True
+        return False
 
     @staticmethod
     def _scalar_function_name(
@@ -3380,6 +3398,8 @@ class CEmitter:
         if any(isinstance(op, PadOp) for op in resolved_ops):
             includes.add("#include <stddef.h>")
         if CEmitter._needs_math(resolved_ops, model.op_context):
+            includes.add("#include <math.h>")
+        if CEmitter._constants_need_math(model.constants):
             includes.add("#include <math.h>")
         if CEmitter._needs_limits(resolved_ops, model.op_context):
             includes.add("#include <limits.h>")

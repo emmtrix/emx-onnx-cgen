@@ -7,28 +7,14 @@ from shared.scalar_types import ScalarType
 from ..ir.ops import ConstantOfShapeOp
 from ..dtypes import scalar_type_from_onnx
 from ..errors import ShapeInferenceError, UnsupportedOpError
+from ..ir.context import GraphContext
 from ..ir.model import Graph, Node
+from ..lowering.common import (
+    resolve_int_list_from_value,
+    value_dtype as _value_dtype,
+    value_shape as _value_shape,
+)
 from .registry import register_lowering
-
-
-def _value_shape(graph: Graph, name: str, node: Node) -> tuple[int, ...]:
-    try:
-        return graph.find_value(name).type.shape
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
-
-
-def _value_dtype(graph: Graph, name: str, node: Node) -> ScalarType:
-    try:
-        return graph.find_value(name).type.dtype
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing dtype for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
 
 
 def _parse_value_attr(node: Node) -> tuple[ScalarType, float | int | bool]:
@@ -54,8 +40,17 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
     if len(input_shape) != 1:
         raise UnsupportedOpError("ConstantOfShape expects a 1D shape input")
     output_shape = _value_shape(graph, node.outputs[0], node)
-    if input_shape[0] != len(output_shape):
+    rank_unknown = output_shape == () and input_shape[0] > 0
+    if not rank_unknown and input_shape[0] != len(output_shape):
         raise ShapeInferenceError("ConstantOfShape input length must match output rank")
+    if rank_unknown:
+        shape_values = resolve_int_list_from_value(graph, node.inputs[0], node)
+        if (
+            shape_values is not None
+            and len(shape_values) == input_shape[0]
+            and all(dim >= 0 for dim in shape_values)
+        ):
+            output_shape = tuple(shape_values)
     for dim in output_shape:
         if dim < 0:
             raise ShapeInferenceError("Dynamic dims are not supported")
@@ -71,6 +66,8 @@ def lower_constant_of_shape(graph: Graph, node: Node) -> ConstantOfShapeOp:
             "ConstantOfShape output dtype must match value dtype, "
             f"got {output_dtype.onnx_name} and {value_dtype.onnx_name}"
         )
+    if isinstance(graph, GraphContext):
+        graph.set_shape(node.outputs[0], output_shape)
     return ConstantOfShapeOp(
         input0=node.inputs[0],
         output=node.outputs[0],
