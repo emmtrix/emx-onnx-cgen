@@ -547,3 +547,31 @@ def value_has_dim_params(
     name: str,
 ) -> bool:
     return any(graph.find_value(name).type.dim_params)
+
+
+def value_dim_params(
+    graph: Graph | GraphContext,
+    name: str,
+) -> tuple[str | None, ...]:
+    value = graph.find_value(name)
+    if not isinstance(value.type, TensorType):
+        raise UnsupportedOpError(f"Unsupported non-tensor value '{name}'.")
+    return value.type.dim_params
+
+
+def reconcile_shape_with_dim_params(
+    expected_shape: tuple[int, ...],
+    actual_shape: tuple[int, ...],
+    dim_params: tuple[str | None, ...],
+) -> tuple[int, ...] | None:
+    if not expected_shape or not actual_shape:
+        return None
+    if len(expected_shape) != len(actual_shape):
+        return None
+    for axis, (expected_dim, actual_dim) in enumerate(
+        zip(expected_shape, actual_shape)
+    ):
+        dim_param = dim_params[axis] if axis < len(dim_params) else None
+        if expected_dim != actual_dim and not dim_param:
+            return None
+    return actual_shape

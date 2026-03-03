@@ -11,7 +11,9 @@ from ..ir.context import GraphContext
 from ..ir.model import Graph, Initializer, Node
 from ..ir.ops import SliceOp
 from ..lowering.common import (
+    reconcile_shape_with_dim_params,
     resolve_int_list_from_value,
+    value_dim_params,
     value_has_dim_params,
     value_dtype,
     value_shape,
@@ -324,24 +326,21 @@ def lower_slice(graph: Graph, node: Node) -> SliceOp:
         )
         adjusted_input_shape = list(input_shape)
         if output_shape and computed_output_shape != output_shape:
-            input_dim_params = graph.find_value(node.inputs[0]).type.dim_params
-            if len(output_shape) != len(computed_output_shape):
+            input_dim_params = value_dim_params(graph, node.inputs[0])
+            reconciled_output = reconcile_shape_with_dim_params(
+                computed_output_shape, output_shape, input_dim_params
+            )
+            if reconciled_output is None:
                 raise ShapeInferenceError(
                     f"{node.op_type} output shape must be "
                     f"{computed_output_shape}, got {output_shape}"
                 )
             for axis, (computed_dim, output_dim) in enumerate(
-                zip(computed_output_shape, output_shape)
+                zip(computed_output_shape, reconciled_output)
             ):
-                dim_param = input_dim_params[axis] if axis < len(input_dim_params) else None
-                if computed_dim != output_dim and not dim_param:
-                    raise ShapeInferenceError(
-                        f"{node.op_type} output shape must be "
-                        f"{computed_output_shape}, got {output_shape}"
-                    )
-                if computed_dim != output_dim and dim_param:
+                if computed_dim != output_dim:
                     adjusted_input_shape[axis] = output_dim
-            computed_output_shape = output_shape
+            computed_output_shape = reconciled_output
         if isinstance(graph, GraphContext):
             graph.set_shape(node.inputs[0], tuple(adjusted_input_shape))
             graph.set_shape(node.outputs[0], computed_output_shape)

@@ -5,7 +5,9 @@ from shared.scalar_types import ScalarType
 from ..ir.ops import ReshapeOp
 from ..errors import ShapeInferenceError, UnsupportedOpError
 from ..ir.context import GraphContext
-from ..ir.model import Graph, Initializer, Node, TensorType
+from ..ir.model import Graph, Initializer, Node
+from .common import reconcile_shape_with_dim_params
+from .common import value_dim_params
 from .common import value_dtype as _value_dtype
 from .common import value_shape as _value_shape
 from .registry import register_lowering
@@ -67,21 +69,6 @@ def _expected_output_shape(
     return tuple(dim for index, dim in enumerate(input_shape) if index not in axis_set)
 
 
-def _value_dim_params(graph: Graph, name: str, node: Node) -> tuple[str | None, ...]:
-    try:
-        value = graph.find_value(name)
-    except KeyError as exc:
-        raise ShapeInferenceError(
-            f"Missing shape for value '{name}' in op {node.op_type}. "
-            "Hint: run ONNX shape inference or export with static shapes."
-        ) from exc
-    if not isinstance(value.type, TensorType):
-        raise UnsupportedOpError(
-            f"Unsupported non-tensor value '{name}' in op {node.op_type}."
-        )
-    return value.type.dim_params
-
-
 def _expected_output_shape_without_axes(
     input_shape: tuple[int, ...], input_dim_params: tuple[str | None, ...]
 ) -> tuple[int, ...]:
@@ -120,7 +107,7 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
         raise UnsupportedOpError("Squeeze must have 1 or 2 inputs and 1 output")
     input_shape = _value_shape(graph, node.inputs[0], node)
     output_shape = _value_shape(graph, node.outputs[0], node)
-    input_dim_params = _value_dim_params(graph, node.inputs[0], node)
+    input_dim_params = value_dim_params(graph, node.inputs[0])
     has_symbolic_input_dims = any(input_dim_params)
     _validate_shape(input_shape, node, "input")
     _validate_shape(output_shape, node, "output")
@@ -145,9 +132,18 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
             expected_shape = _expected_output_shape_without_axes(
                 input_shape, input_dim_params
             )
+            reconciled = reconcile_shape_with_dim_params(
+                expected_shape,
+                output_shape,
+                tuple(
+                    dim_param
+                    for axis, dim_param in enumerate(input_dim_params)
+                    if not (input_shape[axis] == 1 and not dim_param)
+                ),
+            )
             if output_shape != expected_shape and not (
                 output_shape == () and expected_shape and has_symbolic_input_dims
-            ):
+            ) and reconciled is None:
                 raise ShapeInferenceError(
                     f"Squeeze output shape must be {expected_shape}, got {output_shape}"
                 )
@@ -161,9 +157,19 @@ def lower_squeeze(graph: Graph, node: Node) -> ReshapeOp:
                     "Squeeze axes must target dimensions of size 1"
                 )
         expected_shape = _expected_output_shape(input_shape, normalized_axes)
+        reduced_dim_params = tuple(
+            dim_param
+            for axis, dim_param in enumerate(input_dim_params)
+            if axis not in set(normalized_axes)
+        )
+        reconciled = reconcile_shape_with_dim_params(
+            expected_shape,
+            output_shape,
+            reduced_dim_params,
+        )
         if output_shape != expected_shape and not (
             output_shape == () and expected_shape and has_symbolic_input_dims
-        ):
+        ) and reconciled is None:
             raise ShapeInferenceError(
                 f"Squeeze output shape must be {expected_shape}, got {output_shape}"
             )
