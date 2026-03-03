@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1544 / 1802, 85.7% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1545 / 1802, 85.7% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 3 / 4, 75.0% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1544 / 1802 ONNX files (85.7%).
+Coverage 1545 / 1802 ONNX files (85.7%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -54,7 +54,7 @@ Coverage 1544 / 1802 ONNX files (85.7%).
 | node/test_affine_grid_2d/model.onnx | 20 | Data | ✅ | OK (max ULP 1) |
 | node/test_affine_grid_2d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
 | node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
-| node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ❌ | Failed to build testbench. |
+| node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 5) |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |

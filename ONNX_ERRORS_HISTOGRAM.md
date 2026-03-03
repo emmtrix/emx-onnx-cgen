@@ -21,11 +21,11 @@ Aggregates non-success verification outcomes.
 | Unsupported op DFT | 6 | 19, 20 |
 | Out of tolerance | 5 | 15, 20, 22 |
 | Unsupported op Col2Im | 5 | 18 |
-| Failed to build testbench. | 4 | 20, 22 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
 | Unsupported op LabelEncoder | 4 |  |
 | Unsupported op RNN | 4 | 22 |
+| Failed to build testbench. | 3 | 20, 22 |
 | HardSigmoid only supports alpha=0.2 | 3 | 22 |
 | Unsupported op RandomUniformLike | 3 | 22 |
 | Unsupported op RegexFullMatch | 3 | 20 |
@@ -74,8 +74,8 @@ Aggregates non-success verification outcomes.
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op DFT | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
-| Failed to build testbench. | 20 | 2 |
 | Gelu only supports approximate=none | 20 | 2 |
+| Failed to build testbench. | 20 | 1 |
 | Out of tolerance | 20 | 1 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
