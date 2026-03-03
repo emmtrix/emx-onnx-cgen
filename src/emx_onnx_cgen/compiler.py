@@ -261,23 +261,29 @@ class Compiler:
         refreshed_output_types: list[ValueType] = []
         refreshed_output_shapes: list[tuple[int, ...]] = []
         refreshed_output_dtypes: list[ScalarType] = []
-        for value in graph.outputs:
-            value_type = value.type
-            if isinstance(value_type, TensorType):
+        for value, original_type, original_shape, original_dtype in zip(
+            graph.outputs,
+            output_types,
+            output_shapes,
+            output_dtypes,
+        ):
+            if isinstance(original_type, TensorType):
                 inferred_shape = op_ctx.shape(value.name)
                 inferred_dtype = op_ctx.dtype(value.name)
-                value_type = TensorType(
-                    dtype=inferred_dtype,
-                    shape=inferred_shape,
-                    dim_params=(None,) * len(inferred_shape),
-                    is_optional=value_type.is_optional,
+                refreshed_output_types.append(
+                    TensorType(
+                        dtype=inferred_dtype,
+                        shape=inferred_shape,
+                        dim_params=(None,) * len(inferred_shape),
+                        is_optional=original_type.is_optional,
+                    )
                 )
-            refreshed_output_types.append(value_type)
-            tensor_out = (
-                value_type if isinstance(value_type, TensorType) else value_type.elem
-            )
-            refreshed_output_shapes.append(tensor_out.shape)
-            refreshed_output_dtypes.append(tensor_out.dtype)
+                refreshed_output_shapes.append(inferred_shape)
+                refreshed_output_dtypes.append(inferred_dtype)
+                continue
+            refreshed_output_types.append(original_type)
+            refreshed_output_shapes.append(original_shape)
+            refreshed_output_dtypes.append(original_dtype)
         output_types = tuple(refreshed_output_types)
         output_shapes = tuple(refreshed_output_shapes)
         output_dtypes = tuple(refreshed_output_dtypes)

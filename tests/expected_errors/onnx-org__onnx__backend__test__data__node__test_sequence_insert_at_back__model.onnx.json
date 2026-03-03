@@ -1,10 +1,10 @@
 {
-  "error": "Failed to build testbench.",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_sequence_insert_at_back model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "SequenceInsert"
   ],
   "opset_version": 11,
-  "generated_checksum": "666c9d6d19686649e9d7efeac9fac2fe3bdf152d6452c349b0762bc1ea61a52b"
+  "generated_checksum": "901d28bd95963eac4e41fec83a058970cb7b45093080d12ca5e1eec821148199"
 }
