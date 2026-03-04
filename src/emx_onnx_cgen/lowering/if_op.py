@@ -125,9 +125,7 @@ def lower_if_optional_sequence(
             "If false branch optional sequence tensor has invalid size"
         )
 
-    output_present = (
-        f"{output_name}_present" if output_value.type.is_optional else None
-    )
+    output_present = f"{output_name}_present" if output_value.type.is_optional else None
     graph.set_shape(output_name, elem_type.shape)
     graph.set_dtype(output_name, elem_type.dtype)
     return IfOptionalSequenceConstOp(
