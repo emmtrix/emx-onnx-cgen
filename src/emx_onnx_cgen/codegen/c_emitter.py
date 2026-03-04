@@ -6200,10 +6200,18 @@ class CEmitter:
             update_expr = None
             init_literal = None
             final_expr = "acc"
-            fabs_fn = self._scalar_function_name(ScalarFunction.ABS, output_dtype, self._emit_state.scalar_registry)
-            exp_fn = self._scalar_function_name(ScalarFunction.EXP, output_dtype, self._emit_state.scalar_registry)
-            log_fn = self._scalar_function_name(ScalarFunction.LOG, output_dtype, self._emit_state.scalar_registry)
-            sqrt_fn = self._scalar_function_name(ScalarFunction.SQRT, output_dtype, self._emit_state.scalar_registry)
+            fabs_fn = self._scalar_function_name(
+                ScalarFunction.ABS, output_dtype, self._emit_state.scalar_registry
+            )
+            exp_fn = self._scalar_function_name(
+                ScalarFunction.EXP, output_dtype, self._emit_state.scalar_registry
+            )
+            log_fn = self._scalar_function_name(
+                ScalarFunction.LOG, output_dtype, self._emit_state.scalar_registry
+            )
+            sqrt_fn = self._scalar_function_name(
+                ScalarFunction.SQRT, output_dtype, self._emit_state.scalar_registry
+            )
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr};"
@@ -6462,10 +6470,18 @@ class CEmitter:
             init_literal = None
             post_expr = None
             reduce_dtype = self._ctx_dtype(op.output)
-            fabs_fn = self._scalar_function_name(ScalarFunction.ABS, reduce_dtype, self._emit_state.scalar_registry)
-            exp_fn = self._scalar_function_name(ScalarFunction.EXP, reduce_dtype, self._emit_state.scalar_registry)
-            log_fn = self._scalar_function_name(ScalarFunction.LOG, reduce_dtype, self._emit_state.scalar_registry)
-            sqrt_fn = self._scalar_function_name(ScalarFunction.SQRT, reduce_dtype, self._emit_state.scalar_registry)
+            fabs_fn = self._scalar_function_name(
+                ScalarFunction.ABS, reduce_dtype, self._emit_state.scalar_registry
+            )
+            exp_fn = self._scalar_function_name(
+                ScalarFunction.EXP, reduce_dtype, self._emit_state.scalar_registry
+            )
+            log_fn = self._scalar_function_name(
+                ScalarFunction.LOG, reduce_dtype, self._emit_state.scalar_registry
+            )
+            sqrt_fn = self._scalar_function_name(
+                ScalarFunction.SQRT, reduce_dtype, self._emit_state.scalar_registry
+            )
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"*out_ptr += {value_expr};"
@@ -11840,7 +11856,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BlackmanWindowOp):
-
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -12029,7 +12044,6 @@ class CEmitter:
             lines.append("}")
             return with_node_comment("\n".join(lines))
         if isinstance(op, HammingWindowOp):
-
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -12076,7 +12090,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HannWindowOp):
-
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -13467,7 +13480,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearAddOp):
-
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -13556,7 +13568,6 @@ class CEmitter:
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
 
-
             scale_index = "0"
             rendered = qlinear_add_template.render(
                 model_name=model.name,
@@ -13591,7 +13602,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearMulOp):
-
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -13735,7 +13745,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearAveragePoolOp):
-
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -14029,7 +14038,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearSoftmaxOp):
-
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
