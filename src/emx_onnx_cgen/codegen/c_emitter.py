@@ -18,6 +18,7 @@ from jinja2 import (
 )
 import numpy as np
 
+from shared.fft_codegen import build_fft_codegen_plan, fft_twiddle_coefficients
 from ..errors import CodegenError
 from ..testbench_output_format import parse_testbench_output_format
 from ..ops import (
@@ -604,86 +605,6 @@ class CEmitter:
             const_prefix = "const " if info["is_const"] else ""
             decls.append(f"{const_prefix}{info['c_type']} {name}{info['suffix']}")
         return decls
-
-    @staticmethod
-    def _fft_stockham_stage_plan(
-        fft_length: int,
-    ) -> tuple[tuple[str, int, int], ...]:
-        if fft_length <= 1:
-            return ()
-        if fft_length & (fft_length - 1):
-            return ()
-        stages: list[tuple[str, int, int]] = []
-        base4_value = fft_length
-        while base4_value % 4 == 0:
-            base4_value //= 4
-        if base4_value == 1:
-            m = 1
-            while m < fft_length:
-                stage_span = fft_length // (4 * m)
-                stages.append(("radix4", m, stage_span))
-                m *= 4
-            return tuple(stages)
-        m = 1
-        while m < fft_length:
-            stage_span = fft_length // (2 * m)
-            stages.append(("radix2", m, stage_span))
-            m *= 2
-        return tuple(stages)
-
-    @staticmethod
-    def _fft_twiddle_table(
-        fft_length: int,
-        *,
-        dtype: ScalarType,
-    ) -> tuple[tuple[str, str], ...]:
-        twiddles: list[tuple[str, str]] = []
-        for index in range(fft_length):
-            angle = -2.0 * math.pi * (index / fft_length)
-            real = math.cos(angle)
-            imag = math.sin(angle)
-            twiddles.append(
-                (
-                    CEmitter._format_literal(dtype, real),
-                    CEmitter._format_literal(dtype, imag),
-                )
-            )
-        return tuple(twiddles)
-
-    @staticmethod
-    def _fft_input_permutation(
-        fft_length: int,
-        *,
-        stage_plan: tuple[tuple[str, int, int], ...],
-    ) -> tuple[int, ...]:
-        if not stage_plan:
-            return tuple(range(fft_length))
-        kinds = {kind for kind, _, _ in stage_plan}
-        if kinds == {"radix2"}:
-            bits = fft_length.bit_length() - 1
-
-            def _bit_reverse(index: int) -> int:
-                reversed_index = 0
-                value = index
-                for _ in range(bits):
-                    reversed_index = (reversed_index << 1) | (value & 1)
-                    value >>= 1
-                return reversed_index
-
-            return tuple(_bit_reverse(index) for index in range(fft_length))
-        if kinds == {"radix4"}:
-            digits = len(stage_plan)
-
-            def _base4_reverse(index: int) -> int:
-                reversed_index = 0
-                value = index
-                for _ in range(digits):
-                    reversed_index = (reversed_index << 2) | (value & 0x3)
-                    value >>= 2
-                return reversed_index
-
-            return tuple(_base4_reverse(index) for index in range(fft_length))
-        raise CodegenError("mixed FFT stage plans are not supported")
 
     @staticmethod
     def _op_names(op: OpBase) -> tuple[str, ...]:
@@ -11905,26 +11826,22 @@ class CEmitter:
                 ]
             )
 
-            stage_plan = self._fft_stockham_stage_plan(op.fft_length)
-            use_fft = bool(stage_plan) and op.fft_length > 1
-            fft_variant = "dft"
-            fft_input_permutation = tuple(range(op.fft_length))
-            if use_fft:
-                stage_kinds = {kind for kind, _, _ in stage_plan}
-                if stage_kinds == {"radix4"}:
-                    fft_variant = "radix4"
-                elif stage_kinds == {"radix2"}:
-                    fft_variant = "radix2"
-                else:
-                    raise CodegenError("mixed FFT stage plans are not supported")
-                fft_input_permutation = self._fft_input_permutation(
-                    op.fft_length,
-                    stage_plan=stage_plan,
+            try:
+                fft_plan = build_fft_codegen_plan(op.fft_length)
+                twiddle_factors = fft_twiddle_coefficients(op.fft_length)
+            except ValueError as exc:
+                raise CodegenError(f"STFT FFT configuration is invalid: {exc}") from exc
+            use_fft = fft_plan.variant != "dft"
+            twiddles = tuple(
+                (
+                    CEmitter._format_literal(stft_dtype, real),
+                    CEmitter._format_literal(stft_dtype, imag),
                 )
-            twiddles = self._fft_twiddle_table(op.fft_length, dtype=stft_dtype)
+                for real, imag in twiddle_factors
+            )
             stage_data = [
-                {"kind": kind, "m": m, "l": stage_span}
-                for kind, m, stage_span in stage_plan
+                {"kind": stage.kind, "m": stage.m, "l": stage.stage_span}
+                for stage in fft_plan.stages
             ]
             rendered = stft_template.render(
                 model_name=model.name,
@@ -11954,12 +11871,12 @@ class CEmitter:
                 use_runtime_frame_length=op.use_runtime_frame_length,
                 use_window=op.window is not None,
                 use_fft=use_fft,
-                fft_variant=fft_variant,
+                fft_variant=fft_plan.variant,
                 stage_data=stage_data,
                 twiddle_re_values=[real for real, _ in twiddles],
                 twiddle_im_values=[imag for _, imag in twiddles],
                 twiddle_len=op.fft_length,
-                fft_input_permutation=fft_input_permutation,
+                fft_input_permutation=fft_plan.input_permutation,
                 zero_literal=stft_dtype.zero_literal,
                 dim_args=dim_args,
             ).rstrip()
