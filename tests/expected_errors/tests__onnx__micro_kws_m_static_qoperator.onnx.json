@@ -1,0 +1,19 @@
+{
+  "error": "Out of tolerance (max ULP 998244352)",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_static_qoperator.onnx",
+  "verification_mode": "Random+ORT",
+  "operators": [
+    "Reshape",
+    "QuantizeLinear",
+    "QLinearConv",
+    "MaxPool",
+    "com.microsoft::QLinearAveragePool",
+    "DequantizeLinear",
+    "Transpose",
+    "QLinearMatMul",
+    "com.microsoft::QLinearAdd",
+    "com.microsoft::QLinearSoftmax"
+  ],
+  "opset_version": 15,
+  "generated_checksum": "ba5f6483500296e22d2566d0b7e1a3e9f571fb39391223851c5642c675ab4def"
+}
