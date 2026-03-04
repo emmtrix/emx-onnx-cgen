@@ -13456,7 +13456,7 @@ class CEmitter:
                 raise CodegenError(
                     "Failed to resolve scalar min/max functions for QLinearAdd."
                 )
-            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
+            round_fn = CEmitter._math_fn(compute_dtype, "llrintf", "llrint")
             scale_index = "0"
             rendered = qlinear_add_template.render(
                 model_name=model.name,
@@ -14023,6 +14023,7 @@ class CEmitter:
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
             exp_fn = CEmitter._math_fn(compute_dtype, "expf", "exp")
             round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
+            round_to_int_fn = CEmitter._math_fn(compute_dtype, "llrintf", "llrint")
             min_fn = self._scalar_function_name(
                 ScalarFunction.MINIMUM, compute_dtype, scalar_registry
             )
@@ -14053,8 +14054,11 @@ class CEmitter:
                 max_literal=op.dtype.max_literal,
                 exp_fn=exp_fn,
                 round_fn=round_fn,
+                round_to_int_fn=round_to_int_fn,
                 min_fn=min_fn,
                 max_fn=max_fn,
+                output_wrap=self._replicate_ort_bugs,
+                output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
