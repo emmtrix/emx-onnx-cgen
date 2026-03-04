@@ -3,9 +3,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
     {{ compute_type }} scaled = (({{ compute_type }}){{ input_expr }} / ({{ compute_type }}){{ scale_expr }});
-    {{ compute_type }} rounded = {{ round_fn }}(scaled) + ({{ compute_type }}){{ zero_expr }};
-    rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
-    rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+    {{ compute_type }} rounded = {{ math_fn("nearbyint", compute_dtype) }}(scaled) + ({{ compute_type }}){{ zero_expr }};
+    rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ min_literal }});
+    rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ max_literal }});
     {{ output_expr }} = ({{ output_c_type }})rounded;
 {% for _ in shape %}
 }

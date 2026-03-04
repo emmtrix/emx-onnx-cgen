@@ -30,9 +30,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         const idx_t denom = {{ 1 if count_include_pad else 0 }} ? {{ kernel_d * kernel_h * kernel_w }} : count;
                         {{ compute_type }} mean = (denom > 0) ? ((({{ compute_type }})acc) / ({{ compute_type }})denom) : ({{ compute_type }})0;
                         {{ compute_type }} scaled = mean * scale + output_zero;
-                        {{ compute_type }} rounded = {{ round_fn }}(scaled);
-                        rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
-                        rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+                        {{ compute_type }} rounded = {{ math_fn("nearbyint", compute_dtype) }}(scaled);
+                        rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ min_literal }});
+                        rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ max_literal }});
                         {{ output }}[n][c][od][oh][ow] = ({{ output_c_type }})rounded;
                     }
                 }
@@ -57,9 +57,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 const idx_t denom = {{ 1 if count_include_pad else 0 }} ? {{ kernel_w }} : count;
                 {{ compute_type }} mean = (denom > 0) ? ((({{ compute_type }})acc) / ({{ compute_type }})denom) : ({{ compute_type }})0;
                 {{ compute_type }} scaled = mean * scale + output_zero;
-                {{ compute_type }} rounded = {{ round_fn }}(scaled);
-                rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
-                rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+                {{ compute_type }} rounded = {{ math_fn("nearbyint", compute_dtype) }}(scaled);
+                rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ min_literal }});
+                rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ max_literal }});
                 {{ output }}[n][c][ow] = ({{ output_c_type }})rounded;
             }
         }
@@ -86,9 +86,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     const idx_t denom = {{ 1 if count_include_pad else 0 }} ? {{ kernel_h * kernel_w }} : count;
                     {{ compute_type }} mean = (denom > 0) ? ((({{ compute_type }})acc) / ({{ compute_type }})denom) : ({{ compute_type }})0;
                     {{ compute_type }} scaled = mean * scale + output_zero;
-                    {{ compute_type }} rounded = {{ round_fn }}(scaled);
-                    rounded = {{ max_fn }}(rounded, ({{ compute_type }}){{ min_literal }});
-                    rounded = {{ min_fn }}(rounded, ({{ compute_type }}){{ max_literal }});
+                    {{ compute_type }} rounded = {{ math_fn("nearbyint", compute_dtype) }}(scaled);
+                    rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ min_literal }});
+                    rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ max_literal }});
                     {{ output }}[n][c][oh][ow] = ({{ output_c_type }})rounded;
                 }
             }
