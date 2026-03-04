@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1556 / 1802, 86.3% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1558 / 1802, 86.5% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1556 / 1802 ONNX files (86.3%).
+Coverage 1558 / 1802 ONNX files (86.5%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1194,7 +1194,7 @@ Coverage 1556 / 1802 ONNX files (86.3%).
 | node/test_reduce_log_sum_exp_negative_axes_keepdims_random_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_negative_axes/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_log_sum_negative_axes_expanded/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_max_bool_inputs/model.onnx | 20 | Data | ❌ | ReduceMax does not support dtype bool |
+| node/test_reduce_max_bool_inputs/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_reduce_max_default_axes_keepdim_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_max_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_max_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
@@ -1212,7 +1212,7 @@ Coverage 1556 / 1802 ONNX files (86.3%).
 | node/test_reduce_mean_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_mean_negative_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_mean_negative_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
-| node/test_reduce_min_bool_inputs/model.onnx | 20 | Data | ❌ | ReduceMin does not support dtype bool |
+| node/test_reduce_min_bool_inputs/model.onnx | 20 | Data | ✅ | OK (max abs diff 0) |
 | node/test_reduce_min_default_axes_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_min_default_axes_keepdims_random/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |
 | node/test_reduce_min_do_not_keepdims_example/model.onnx | 18 | Data | ✅ | OK (max ULP 0) |

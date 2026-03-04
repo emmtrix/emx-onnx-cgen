@@ -1,9 +1,10 @@
 {
-  "error": "ReduceMax does not support dtype bool",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_max_bool_inputs model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ReduceMax"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "29902d16a63c3e5e7f3d85e15f86aac9080eaa84ac7450268c76632101a974b0"
 }

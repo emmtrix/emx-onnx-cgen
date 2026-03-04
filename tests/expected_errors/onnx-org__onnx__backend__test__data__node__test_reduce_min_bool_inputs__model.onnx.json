@@ -1,9 +1,10 @@
 {
-  "error": "ReduceMin does not support dtype bool",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_reduce_min_bool_inputs model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "ReduceMin"
   ],
-  "opset_version": 20
+  "opset_version": 20,
+  "generated_checksum": "ec2bf9590ca8737b2c279c851bf11d87d733a45b7810c4c9270cd091151f654f"
 }
