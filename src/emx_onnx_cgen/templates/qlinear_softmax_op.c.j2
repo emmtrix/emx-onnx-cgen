@@ -28,23 +28,17 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 idx_t axis_offset = base + axis_idx * {{ inner }};
                 {{ compute_type }} value = ((({{ compute_type }})((int32_t)input_flat[axis_offset] - input_zero)) * input_scale_value);
                 {{ compute_type }} scaled = ({{ exp_fn }}(value - max_value) / sum) / output_scale_value + output_zero;
-                {{ compute_type }} rounded = {{ round_fn }}(scaled);
 {% if output_wrap and output_is_signed %}
-                int64_t quantized = (int64_t)rounded;
-                int64_t wrapped = (quantized + (int64_t)128) % (int64_t)256;
-                if (wrapped < 0) {
-                    wrapped += (int64_t)256;
-                }
-                wrapped -= (int64_t)128;
-                output_flat[axis_offset] = ({{ output_c_type }})wrapped;
+                int32_t quantized = (int32_t){{ round_to_int_fn }}(scaled);
+                uint8_t wrapped_u8 = (uint8_t)(quantized + 128);
+                int8_t wrapped_i8 = (int8_t)((int32_t)wrapped_u8 - 128);
+                output_flat[axis_offset] = ({{ output_c_type }})wrapped_i8;
 {% elif output_wrap %}
-                int64_t quantized = (int64_t)rounded;
-                int64_t wrapped = quantized % (int64_t)256;
-                if (wrapped < 0) {
-                    wrapped += (int64_t)256;
-                }
-                output_flat[axis_offset] = ({{ output_c_type }})wrapped;
+                int32_t quantized = (int32_t){{ round_to_int_fn }}(scaled);
+                uint8_t wrapped_u8 = (uint8_t)quantized;
+                output_flat[axis_offset] = ({{ output_c_type }})wrapped_u8;
 {% else %}
+                {{ compute_type }} rounded = {{ round_fn }}(scaled);
                 rounded = {{ max_fn }}(rounded, output_min);
                 rounded = {{ min_fn }}(rounded, output_max);
                 output_flat[axis_offset] = ({{ output_c_type }})rounded;
