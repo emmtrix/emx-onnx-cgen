@@ -18,7 +18,7 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 7 | 15, 20, 22 |
+| Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op DFT | 6 | 19, 20 |
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
@@ -61,7 +61,7 @@ Aggregates non-success verification outcomes.
 | Error message | Opset | Count |
 | --- | --- | --- |
 | onnxruntime failed to run onnx2c-org/test/local_ops/test_gemm_CM_transA/model.onnx: [ONNXRuntimeError] : 2 : INVALID_ARGUMENT : Non-zero status code returned while running Gemm node. Name:'*' Status Message: Gemm: Invalid bias shape for broadcast | 12 | 1 |
-| Out of tolerance | 15 | 2 |
+| Out of tolerance | 15 | 1 |
 | Unsupported op Loop | 16 | 1 |
 | Unsupported op STFT | 17 | 2 |
 | Unsupported op MelWeightMatrix | 17 | 1 |
