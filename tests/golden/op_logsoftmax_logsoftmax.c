@@ -53,6 +53,14 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
+static inline float ref_scalar_f32_exp(float a) {
+    return expf(a);
+}
+
+static inline float ref_scalar_f32_log(float a) {
+    return logf(a);
+}
+
 /*
  * Node 0:
  * OpType: LogSoftmax
@@ -78,10 +86,10 @@ EMX_NODE_FN void node0_logsoftmax(const float input0[2][3], float output[2][3]) 
             }
             float sum = 0;
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                float value = expf(input_flat[base + axis_idx * inner] - max_value);
+                float value = ref_scalar_f32_exp(input_flat[base + axis_idx * inner] - max_value);
                 sum += value;
             }
-            float logsum = logf(sum);
+            float logsum = ref_scalar_f32_log(sum);
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 float value = input_flat[base + axis_idx * inner] - max_value;
                 output_flat[base + axis_idx * inner] = value - logsum;

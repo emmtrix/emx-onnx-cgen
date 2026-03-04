@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -97,6 +98,10 @@ const EMX_UNUSED float weight4_var[3] = {
     0x1.000000p-2f, 0x1.000000p-1f, 0x1.800000p+0f
 };
 
+static inline float ref_scalar_f32_sqrt(float a) {
+    return sqrtf(a);
+}
+
 /*
  * Node 0:
  * OpType: BatchNormalization
@@ -112,7 +117,7 @@ EMX_NODE_FN void node0_batchnormalization(const float input0[2][3][2][2], const 
             for (idx_t i2 = 0; i2 < 2; ++i2) {
                 for (idx_t i3 = 0; i3 < 2; ++i3) {
                     idx_t c = i1;
-                    float denom = sqrtf(variance[c] + 9.99999975e-06f);
+                    float denom = ref_scalar_f32_sqrt(variance[c] + 9.99999975e-06f);
                     output[i0][i1][i2][i3] = (input0[i0][i1][i2][i3] - mean[c]) / denom * scale[c] + bias[c];
                 }
             }

@@ -53,6 +53,10 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
+static inline float ref_scalar_f32_exp(float a) {
+    return expf(a);
+}
+
 /*
  * Node 0:
  * OpType: Softmax
@@ -78,7 +82,7 @@ EMX_NODE_FN void node0_softmax(const float input0[2][3], float output[2][3]) {
             }
             float sum = 0;
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
-                float value = expf(input_flat[base + axis_idx * inner] - max_value);
+                float value = ref_scalar_f32_exp(input_flat[base + axis_idx * inner] - max_value);
                 output_flat[base + axis_idx * inner] = value;
                 sum += value;
             }

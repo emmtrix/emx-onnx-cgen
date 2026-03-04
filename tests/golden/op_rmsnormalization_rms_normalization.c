@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -48,6 +49,10 @@
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
 
+static inline float ref_scalar_f32_sqrt(float a) {
+    return sqrtf(a);
+}
+
 /*
  * Node 0:
  * OpType: RMSNormalization
@@ -67,7 +72,7 @@ EMX_NODE_FN void node0_rmsnormalization(const float input0[2][3][4], const float
                 sum += value * value;
             }
             float mean_square = sum / 4;
-            float denom = sqrtf(mean_square + 9.99999975e-06f);
+            float denom = ref_scalar_f32_sqrt(mean_square + 9.99999975e-06f);
             for (idx_t i2 = 0; i2 < 4; ++i2) {
                 float value = input0[i0][i1][i2] / denom;
                 value = value * scale[i2];
