@@ -84,11 +84,8 @@ def lower_if_optional_sequence(
 
     output_name = node.outputs[0]
     output_value = graph.find_value(output_name)
-    if (
-        not isinstance(output_value.type, SequenceType)
-        or not output_value.type.is_optional
-    ):
-        raise UnsupportedOpError("If currently supports optional sequence outputs only")
+    if not isinstance(output_value.type, SequenceType):
+        raise UnsupportedOpError("If currently supports sequence outputs only")
     elem_type = output_value.type.elem
     if not isinstance(elem_type, TensorType):
         raise UnsupportedOpError("If optional sequence output element must be tensor")
@@ -96,7 +93,7 @@ def lower_if_optional_sequence(
     then_branch = _branch_graph(node, "then_branch")
     else_branch = _branch_graph(node, "else_branch")
     if len(then_branch.output) != 1 or len(else_branch.output) != 1:
-        raise UnsupportedOpError("If optional sequence branches must have one output")
+        raise UnsupportedOpError("If sequence branches must have one output")
 
     true_present, true_array = _branch_tensor(then_branch, then_branch.output[0].name)
     false_present, false_array = _branch_tensor(else_branch, else_branch.output[0].name)
@@ -128,7 +125,9 @@ def lower_if_optional_sequence(
             "If false branch optional sequence tensor has invalid size"
         )
 
-    output_present = f"{output_name}_present"
+    output_present = (
+        f"{output_name}_present" if output_value.type.is_optional else None
+    )
     graph.set_shape(output_name, elem_type.shape)
     graph.set_dtype(output_name, elem_type.dtype)
     return IfOptionalSequenceConstOp(

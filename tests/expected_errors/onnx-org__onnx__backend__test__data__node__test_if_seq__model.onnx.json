@@ -1,9 +1,10 @@
 {
-  "error": "If currently supports optional sequence outputs only",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_if_seq model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "If"
   ],
-  "opset_version": 13
+  "opset_version": 13,
+  "generated_checksum": "2de3a3fcbb3f1c1276a1785f8d82cfae6600ee54f9f7a60daa9742c44544944a"
 }
