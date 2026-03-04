@@ -52,6 +52,7 @@ from ..ir.ops import (
     ConvTransposeOp,
     DeformConvOp,
     CumSumOp,
+    DFTOp,
     DepthToSpaceOp,
     DequantizeLinearOp,
     DynamicQuantizeLinearOp,
@@ -605,6 +606,52 @@ class CEmitter:
         return decls
 
     @staticmethod
+    def _dft_stockham_stage_plan(
+        fft_length: int,
+    ) -> tuple[tuple[str, int, int], ...]:
+        stages: list[tuple[str, int, int]] = []
+        m = 1
+        while m < fft_length:
+            remainder = fft_length // m
+            if remainder % 4 == 0:
+                stage_span = fft_length // (4 * m)
+                stages.append(("radix4", m, stage_span))
+                m *= 4
+                continue
+            if remainder % 2 == 0:
+                stage_span = fft_length // (2 * m)
+                stages.append(("radix2", m, stage_span))
+                m *= 2
+                continue
+            return ()
+        return tuple(stages)
+
+    @staticmethod
+    def _dft_twiddle_table(
+        fft_length: int,
+        *,
+        inverse: bool,
+        dtype: ScalarType,
+    ) -> tuple[tuple[str, str], ...]:
+        sign = 1.0 if inverse else -1.0
+        twiddles: list[tuple[str, str]] = []
+        for index in range(fft_length):
+            angle = sign * 2.0 * math.pi * (index / fft_length)
+            real = math.cos(angle)
+            imag = math.sin(angle)
+            if abs(real) < 1e-15:
+                real = 0.0
+            if abs(imag) < 1e-15:
+                imag = 0.0
+            twiddles.append(
+                (
+                    CEmitter._format_literal(dtype, real),
+                    CEmitter._format_literal(dtype, imag),
+                )
+            )
+        return tuple(twiddles)
+
+    @staticmethod
     def _op_names(op: OpBase) -> tuple[str, ...]:
         names = (*op.input_names, *op.output_names)
         if any(not isinstance(name, str) for name in names):
@@ -730,6 +777,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -820,6 +868,7 @@ class CEmitter:
         | NonMaxSuppressionOp
         | ExpandOp
         | CumSumOp
+        | DFTOp
         | RangeOp
         | BlackmanWindowOp
         | HammingWindowOp
@@ -2034,6 +2083,17 @@ class CEmitter:
                 exclusive=op.exclusive,
                 reverse=op.reverse,
             )
+        if isinstance(op, DFTOp):
+            return DFTOp(
+                input0=name_map.get(op.input0, op.input0),
+                output=name_map.get(op.output, op.output),
+                axis=op.axis,
+                dft_length=op.dft_length,
+                inverse=op.inverse,
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_mode=op.fft_mode,
+            )
         if isinstance(op, LoopRangeOp):
             return LoopRangeOp(
                 trip_count=name_map.get(op.trip_count, op.trip_count),
@@ -2484,6 +2544,7 @@ class CEmitter:
                 ),
                 "expand": self._env.get_template("expand_op.c.j2"),
                 "cumsum": self._env.get_template("cumsum_op.c.j2"),
+                "dft": self._env.get_template("dft_op.c.j2"),
                 "range": self._env.get_template("range_op.c.j2"),
                 "loop_range": self._env.get_template("loop_range_op.c.j2"),
                 "loop_sequence_insert": self._env.get_template(
@@ -3259,6 +3320,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -3638,6 +3700,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -3844,6 +3907,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -3975,6 +4039,7 @@ class CEmitter:
             | NonMaxSuppressionOp
             | ExpandOp
             | CumSumOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -4367,6 +4432,7 @@ class CEmitter:
         | NonMaxSuppressionOp
         | ExpandOp
         | CumSumOp
+        | DFTOp
         | RangeOp
         | BlackmanWindowOp
         | HammingWindowOp
@@ -5915,6 +5981,17 @@ class CEmitter:
                 largest=op.largest,
                 sorted=op.sorted,
             )
+        if isinstance(op, DFTOp):
+            return DFTOp(
+                input0=temp_map.get(op.input0, op.input0),
+                output=temp_map.get(op.output, op.output),
+                axis=op.axis,
+                dft_length=op.dft_length,
+                inverse=op.inverse,
+                onesided=op.onesided,
+                input_is_complex=op.input_is_complex,
+                fft_mode=op.fft_mode,
+            )
         if isinstance(op, BernoulliOp):
             return BernoulliOp(
                 input0=temp_map.get(op.input0, op.input0),
@@ -6111,6 +6188,7 @@ class CEmitter:
             nonmax_suppression_template=templates["nonmax_suppression"],
             expand_template=templates["expand"],
             cumsum_template=templates["cumsum"],
+            dft_template=templates["dft"],
             range_template=templates["range"],
             loop_range_template=templates["loop_range"],
             loop_sequence_insert_template=templates["loop_sequence_insert"],
@@ -6663,6 +6741,7 @@ class CEmitter:
         nonmax_suppression_template,
         expand_template,
         cumsum_template,
+        dft_template,
         range_template,
         loop_range_template,
         loop_sequence_insert_template,
@@ -11704,6 +11783,88 @@ class CEmitter:
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, DFTOp):
+            input_shape = self._ctx_shape(op.input0)
+            output_shape = self._ctx_shape(op.output)
+            dft_dtype = self._ctx_dtype(op.output)
+            if dft_dtype != self._ctx_dtype(op.input0):
+                raise CodegenError("DFT input and output dtypes must match")
+            if op.dft_length <= 0:
+                raise CodegenError("DFT length must be > 0")
+            if op.axis < 0 or op.axis >= len(input_shape) - 1:
+                raise CodegenError("DFT axis must target a signal dimension")
+
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output", op.output),
+                ]
+            )
+            input_dim_names = _dim_names_for(op.input0)
+            output_dim_names = _dim_names_for(op.output)
+            input_shape_expr = CEmitter._shape_dim_exprs(input_shape, input_dim_names)
+            output_shape_expr = CEmitter._shape_dim_exprs(
+                output_shape, output_dim_names
+            )
+            signal_rank = len(input_shape) - 1
+            outer_expr = CEmitter._element_count_expr(input_shape_expr[: op.axis])
+            inner_expr = CEmitter._element_count_expr(
+                input_shape_expr[op.axis + 1 : signal_rank]
+            )
+            stage_plan = self._dft_stockham_stage_plan(op.dft_length)
+            use_fft = bool(stage_plan) and op.dft_length > 1
+            twiddles = self._dft_twiddle_table(
+                op.dft_length, inverse=op.inverse, dtype=dft_dtype
+            )
+            stage_data = [
+                {"kind": kind, "m": m, "l": stage_span}
+                for kind, m, stage_span in stage_plan
+            ]
+            input_suffix = self._param_array_suffix(
+                input_shape,
+                input_dim_names,
+                dtype=dft_dtype,
+            )
+            output_suffix = self._param_array_suffix(
+                output_shape,
+                output_dim_names,
+                dtype=dft_dtype,
+            )
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], dft_dtype.c_type, input_suffix, True),
+                    (params["output"], dft_dtype.c_type, output_suffix, False),
+                ]
+            )
+            rendered = dft_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                params=param_decls,
+                input0=params["input0"],
+                output=params["output"],
+                c_type=dft_dtype.c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                outer_expr=outer_expr,
+                inner_expr=inner_expr,
+                input_axis_expr=str(input_shape_expr[op.axis]),
+                output_axis_expr=str(output_shape_expr[op.axis]),
+                input_components=2 if op.input_is_complex else 1,
+                fft_length=op.dft_length,
+                inverse=op.inverse,
+                onesided=op.onesided,
+                use_fft=use_fft,
+                stage_data=stage_data,
+                twiddle_re_values=[real for real, _ in twiddles],
+                twiddle_im_values=[imag for _, imag in twiddles],
+                twiddle_len=op.dft_length,
+                zero_literal=dft_dtype.zero_literal,
+                inverse_scale=CEmitter._format_literal(
+                    dft_dtype, 1.0 / float(op.dft_length)
+                ),
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, RangeOp):
             params = self._shared_param_map(
                 [
@@ -14626,6 +14787,8 @@ class CEmitter:
             return tuple(inputs)
         if isinstance(op, CumSumOp):
             return ((op.input0, self._ctx_shape(op.input0)),)
+        if isinstance(op, DFTOp):
+            return ((op.input0, self._ctx_shape(op.input0)),)
         if isinstance(op, RangeOp):
             return ((op.start, ()), (op.limit, ()), (op.delta, ()))
         if isinstance(op, LoopRangeOp):
@@ -14726,6 +14889,7 @@ class CEmitter:
             | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -14820,6 +14984,7 @@ class CEmitter:
             | UniqueOp
             | NonMaxSuppressionOp
             | ExpandOp
+            | DFTOp
             | RangeOp
             | BlackmanWindowOp
             | HammingWindowOp
@@ -14860,6 +15025,7 @@ class CEmitter:
                 LogSoftmaxOp,
                 HardmaxOp,
                 ReduceOp,
+                DFTOp,
             ),
         ):
             return (
@@ -15426,6 +15592,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, CumSumOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, DFTOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, RangeOp):
             return self._ctx_shape(op.output)
         if isinstance(op, LoopRangeOp):
@@ -15592,6 +15760,8 @@ class CEmitter:
         ):
             return self._ctx_dtype(op.output)
         if isinstance(op, (TriluOp, TileOp, CenterCropPadOp, CumSumOp)):
+            return self._ctx_dtype(op.output)
+        if isinstance(op, DFTOp):
             return self._ctx_dtype(op.output)
         if isinstance(op, SplitOp):
             return self._ctx_dtype(op.outputs[0])

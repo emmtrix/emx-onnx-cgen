@@ -1,0 +1,179 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const {{ c_type }} *input_flat = (const {{ c_type }} *){{ input0 }};
+    {{ c_type }} *output_flat = ({{ c_type }} *){{ output }};
+    const idx_t outer = {{ outer_expr }};
+    const idx_t inner = {{ inner_expr }};
+    const idx_t input_axis_dim = {{ input_axis_expr }};
+    const idx_t output_axis_dim = {{ output_axis_expr }};
+    static const {{ c_type }} twiddle_re[{{ twiddle_len }}] = { {% for value in twiddle_re_values %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    static const {{ c_type }} twiddle_im[{{ twiddle_len }}] = { {% for value in twiddle_im_values %}{{ value }}{% if not loop.last %}, {% endif %}{% endfor %} };
+    {{ c_type }} buf0_re[{{ fft_length }}];
+    {{ c_type }} buf0_im[{{ fft_length }}];
+    {{ c_type }} buf1_re[{{ fft_length }}];
+    {{ c_type }} buf1_im[{{ fft_length }}];
+
+    for (idx_t outer_idx = 0; outer_idx < outer; ++outer_idx) {
+        for (idx_t inner_idx = 0; inner_idx < inner; ++inner_idx) {
+            for (idx_t n = 0; n < {{ fft_length }}; ++n) {
+                if (n < input_axis_dim) {
+                    const idx_t input_offset = ((((outer_idx * input_axis_dim) + n) * inner) + inner_idx) * {{ input_components }};
+                    buf0_re[n] = input_flat[input_offset];
+{% if input_components == 2 %}
+                    buf0_im[n] = input_flat[input_offset + 1];
+{% else %}
+                    buf0_im[n] = {{ zero_literal }};
+{% endif %}
+                } else {
+                    buf0_re[n] = {{ zero_literal }};
+                    buf0_im[n] = {{ zero_literal }};
+                }
+            }
+
+{% if use_fft %}
+            {{ c_type }} *src_re = buf0_re;
+            {{ c_type }} *src_im = buf0_im;
+            {{ c_type }} *dst_re = buf1_re;
+            {{ c_type }} *dst_im = buf1_im;
+{% for stage in stage_data %}
+{% if stage.kind == "radix2" %}
+            /* stockham radix-2 stage {{ loop.index0 }} */
+            for (idx_t j = 0; j < {{ stage.m }}; ++j) {
+                const idx_t tw_idx = j * {{ stage.l }};
+                const {{ c_type }} w_re = twiddle_re[tw_idx];
+                const {{ c_type }} w_im = twiddle_im[tw_idx];
+                for (idx_t k = 0; k < {{ stage.l }}; ++k) {
+                    const idx_t idx0 = k + {{ stage.l }} * (2 * j);
+                    const idx_t idx1 = idx0 + {{ stage.l }};
+                    const {{ c_type }} a_re = src_re[idx0];
+                    const {{ c_type }} a_im = src_im[idx0];
+                    const {{ c_type }} b_re = src_re[idx1];
+                    const {{ c_type }} b_im = src_im[idx1];
+                    const {{ c_type }} t_re = (w_re * b_re) - (w_im * b_im);
+                    const {{ c_type }} t_im = (w_re * b_im) + (w_im * b_re);
+                    dst_re[k + {{ stage.l }} * j] = a_re + t_re;
+                    dst_im[k + {{ stage.l }} * j] = a_im + t_im;
+                    dst_re[k + {{ stage.l }} * (j + {{ stage.m }})] = a_re - t_re;
+                    dst_im[k + {{ stage.l }} * (j + {{ stage.m }})] = a_im - t_im;
+                }
+            }
+{% else %}
+            /* stockham radix-4 stage {{ loop.index0 }} */
+            for (idx_t j = 0; j < {{ stage.m }}; ++j) {
+                const idx_t tw_idx1 = j * {{ stage.l }};
+                const idx_t tw_idx2 = (2 * tw_idx1) % {{ fft_length }};
+                const idx_t tw_idx3 = (3 * tw_idx1) % {{ fft_length }};
+                const {{ c_type }} w1_re = twiddle_re[tw_idx1];
+                const {{ c_type }} w1_im = twiddle_im[tw_idx1];
+                const {{ c_type }} w2_re = twiddle_re[tw_idx2];
+                const {{ c_type }} w2_im = twiddle_im[tw_idx2];
+                const {{ c_type }} w3_re = twiddle_re[tw_idx3];
+                const {{ c_type }} w3_im = twiddle_im[tw_idx3];
+                for (idx_t k = 0; k < {{ stage.l }}; ++k) {
+                    const idx_t idx0 = k + {{ stage.l }} * (4 * j);
+                    const idx_t idx1 = idx0 + {{ stage.l }};
+                    const idx_t idx2 = idx1 + {{ stage.l }};
+                    const idx_t idx3 = idx2 + {{ stage.l }};
+
+                    const {{ c_type }} a0_re = src_re[idx0];
+                    const {{ c_type }} a0_im = src_im[idx0];
+                    const {{ c_type }} a1_re = src_re[idx1];
+                    const {{ c_type }} a1_im = src_im[idx1];
+                    const {{ c_type }} a2_re = src_re[idx2];
+                    const {{ c_type }} a2_im = src_im[idx2];
+                    const {{ c_type }} a3_re = src_re[idx3];
+                    const {{ c_type }} a3_im = src_im[idx3];
+
+                    const {{ c_type }} b1_re = (w1_re * a1_re) - (w1_im * a1_im);
+                    const {{ c_type }} b1_im = (w1_re * a1_im) + (w1_im * a1_re);
+                    const {{ c_type }} b2_re = (w2_re * a2_re) - (w2_im * a2_im);
+                    const {{ c_type }} b2_im = (w2_re * a2_im) + (w2_im * a2_re);
+                    const {{ c_type }} b3_re = (w3_re * a3_re) - (w3_im * a3_im);
+                    const {{ c_type }} b3_im = (w3_re * a3_im) + (w3_im * a3_re);
+
+                    const {{ c_type }} t0_re = a0_re + b2_re;
+                    const {{ c_type }} t0_im = a0_im + b2_im;
+                    const {{ c_type }} t1_re = a0_re - b2_re;
+                    const {{ c_type }} t1_im = a0_im - b2_im;
+                    const {{ c_type }} t2_re = b1_re + b3_re;
+                    const {{ c_type }} t2_im = b1_im + b3_im;
+                    const {{ c_type }} t3_re = b1_re - b3_re;
+                    const {{ c_type }} t3_im = b1_im - b3_im;
+
+                    const {{ c_type }} y0_re = t0_re + t2_re;
+                    const {{ c_type }} y0_im = t0_im + t2_im;
+{% if inverse %}
+                    const {{ c_type }} y1_re = t1_re - t3_im;
+                    const {{ c_type }} y1_im = t1_im + t3_re;
+{% else %}
+                    const {{ c_type }} y1_re = t1_re + t3_im;
+                    const {{ c_type }} y1_im = t1_im - t3_re;
+{% endif %}
+                    const {{ c_type }} y2_re = t0_re - t2_re;
+                    const {{ c_type }} y2_im = t0_im - t2_im;
+{% if inverse %}
+                    const {{ c_type }} y3_re = t1_re + t3_im;
+                    const {{ c_type }} y3_im = t1_im - t3_re;
+{% else %}
+                    const {{ c_type }} y3_re = t1_re - t3_im;
+                    const {{ c_type }} y3_im = t1_im + t3_re;
+{% endif %}
+
+                    dst_re[k + {{ stage.l }} * (j + {{ stage.m }} * 0)] = y0_re;
+                    dst_im[k + {{ stage.l }} * (j + {{ stage.m }} * 0)] = y0_im;
+                    dst_re[k + {{ stage.l }} * (j + {{ stage.m }} * 1)] = y1_re;
+                    dst_im[k + {{ stage.l }} * (j + {{ stage.m }} * 1)] = y1_im;
+                    dst_re[k + {{ stage.l }} * (j + {{ stage.m }} * 2)] = y2_re;
+                    dst_im[k + {{ stage.l }} * (j + {{ stage.m }} * 2)] = y2_im;
+                    dst_re[k + {{ stage.l }} * (j + {{ stage.m }} * 3)] = y3_re;
+                    dst_im[k + {{ stage.l }} * (j + {{ stage.m }} * 3)] = y3_im;
+                }
+            }
+{% endif %}
+            {
+                {{ c_type }} *tmp_re = src_re;
+                {{ c_type }} *tmp_im = src_im;
+                src_re = dst_re;
+                src_im = dst_im;
+                dst_re = tmp_re;
+                dst_im = tmp_im;
+            }
+{% endfor %}
+{% if inverse %}
+            for (idx_t k = 0; k < {{ fft_length }}; ++k) {
+                src_re[k] *= {{ inverse_scale }};
+                src_im[k] *= {{ inverse_scale }};
+            }
+{% endif %}
+{% else %}
+            for (idx_t k = 0; k < {{ fft_length }}; ++k) {
+                {{ c_type }} acc_re = {{ zero_literal }};
+                {{ c_type }} acc_im = {{ zero_literal }};
+                for (idx_t n = 0; n < {{ fft_length }}; ++n) {
+                    const idx_t tw_idx = (k * n) % {{ fft_length }};
+                    const {{ c_type }} w_re = twiddle_re[tw_idx];
+                    const {{ c_type }} w_im = twiddle_im[tw_idx];
+                    const {{ c_type }} x_re = buf0_re[n];
+                    const {{ c_type }} x_im = buf0_im[n];
+                    acc_re += (x_re * w_re) - (x_im * w_im);
+                    acc_im += (x_re * w_im) + (x_im * w_re);
+                }
+{% if inverse %}
+                buf1_re[k] = acc_re * {{ inverse_scale }};
+                buf1_im[k] = acc_im * {{ inverse_scale }};
+{% else %}
+                buf1_re[k] = acc_re;
+                buf1_im[k] = acc_im;
+{% endif %}
+            }
+            {{ c_type }} *src_re = buf1_re;
+            {{ c_type }} *src_im = buf1_im;
+{% endif %}
+
+            for (idx_t k = 0; k < output_axis_dim; ++k) {
+                const idx_t output_offset = ((((outer_idx * output_axis_dim) + k) * inner) + inner_idx) * 2;
+                output_flat[output_offset] = src_re[k];
+                output_flat[output_offset + 1] = src_im[k];
+            }
+        }
+    }
+}
