@@ -7,9 +7,9 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1545 / 1802, 85.7% | 1.20.1 |
-| [ONNX2C test coverage](#onnx2c-test-coverage) | 121 / 125, 96.8% | n/a |
-| [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1547 / 1802, 85.8% | 1.20.1 |
+| [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
+| [Local ONNX test coverage](#local-onnx-test-coverage) | 5 / 7, 71.4% | n/a |
 
 See [`ONNX_ERRORS_HISTOGRAM.md`](ONNX_ERRORS_HISTOGRAM.md) for the error histogram.
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1545 / 1802 ONNX files (85.7%).
+Coverage 1547 / 1802 ONNX files (85.8%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -53,8 +53,8 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 | node/test_add_uint8/model.onnx | 14 | Data | ✅ | OK (max abs diff 0) |
 | node/test_affine_grid_2d/model.onnx | 20 | Data | ✅ | OK (max ULP 1) |
 | node/test_affine_grid_2d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
-| node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ❌ | GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) |
-| node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ❌ | GatherElements inputs must match on non-axis dimensions, got (2, 2, 3) and (1, 2, 3) |
+| node/test_affine_grid_2d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
+| node/test_affine_grid_2d_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 5) |
 | node/test_affine_grid_3d/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 151) |
 | node/test_affine_grid_3d_align_corners/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
 | node/test_affine_grid_3d_align_corners_expanded/model.onnx | 20 | Data | ✅ | OK (max ULP 23) |
@@ -1832,7 +1832,7 @@ Coverage 1545 / 1802 ONNX files (85.7%).
 
 Test directory: `onnx2c-org/test`
 
-Coverage 121 / 125 ONNX files (96.8%).
+Coverage 123 / 125 ONNX files (98.4%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -1947,8 +1947,8 @@ Coverage 121 / 125 ONNX files (96.8%).
 | simple_networks/conv_k2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/conv_k2_s2.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
-| simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ❌ | Cast input and output shapes must match |
-| simple_networks/fp_float16.onnx | 22 | Random+ORT | ❌ | Cast input and output shapes must match |
+| simple_networks/fp_bfloat16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
+| simple_networks/fp_float16.onnx | 22 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/lstm_k1_b1_r1_relu.onnx | 11 | Random+ORT | ✅ | OK (max ULP 0) |
 | simple_networks/maxpool_k2.onnx | 12 | Random+ORT | ✅ | OK (max ULP 0) |
