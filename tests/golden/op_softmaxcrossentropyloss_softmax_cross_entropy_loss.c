@@ -53,6 +53,14 @@ static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
 }
 
+static inline float ref_scalar_f32_exp(float a) {
+    return expf(a);
+}
+
+static inline float ref_scalar_f32_log(float a) {
+    return logf(a);
+}
+
 /*
  * Node 0:
  * OpType: SoftmaxCrossEntropyLoss
@@ -85,9 +93,9 @@ EMX_NODE_FN void node0_softmaxcrossentropyloss(const float input0[2][3], const i
             float sum = 0.0f;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
                 float value = (float)input_flat[base + c_idx * d] - max_value;
-                sum += expf(value);
+                sum += ref_scalar_f32_exp(value);
             }
-            float logsum = logf(sum);
+            float logsum = ref_scalar_f32_log(sum);
             float loss_value = 0.0f;
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
                 float log_prob_value = (float)input_flat[base + c_idx * d] - max_value - logsum;

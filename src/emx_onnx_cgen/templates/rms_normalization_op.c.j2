@@ -12,7 +12,7 @@ for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.ind
     }
 {% endfor %}
     {{ c_type }} mean_square = sum / {{ inner }};
-    {{ c_type }} denom = {{ sqrt_fn }}(mean_square + {{ epsilon_literal }});
+    {{ c_type }} denom = {{ scalar_fn(SF.SQRT, dtype) }}(mean_square + {{ epsilon_literal }});
 {% for dim in norm_shape %}
     for (idx_t {{ norm_loop_vars[loop.index0] }} = 0; {{ norm_loop_vars[loop.index0] }} < {{ dim }}; ++{{ norm_loop_vars[loop.index0] }}) {
 {% endfor %}

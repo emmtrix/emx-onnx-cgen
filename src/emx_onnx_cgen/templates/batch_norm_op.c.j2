@@ -36,7 +36,7 @@ for (idx_t c = 0; c < {{ channels }}; ++c) {
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
 idx_t c = {{ loop_vars[1] }};
-{{ c_type }} denom = {{ sqrt_fn }}(channel_var[c] + {{ epsilon_literal }});
+{{ c_type }} denom = {{ scalar_fn(SF.SQRT, dtype) }}(channel_var[c] + {{ epsilon_literal }});
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - channel_mean[c]) / denom * {{ scale }}[c] + {{ bias }}[c];
 {% for _ in shape %}
 }
@@ -46,7 +46,7 @@ idx_t c = {{ loop_vars[1] }};
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
 idx_t c = {{ loop_vars[1] }};
-{{ c_type }} denom = {{ sqrt_fn }}({{ variance }}[c] + {{ epsilon_literal }});
+{{ c_type }} denom = {{ scalar_fn(SF.SQRT, dtype) }}({{ variance }}[c] + {{ epsilon_literal }});
 {{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = ({{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} - {{ mean }}[c]) / denom * {{ scale }}[c] + {{ bias }}[c];
 {% for _ in shape %}
 }

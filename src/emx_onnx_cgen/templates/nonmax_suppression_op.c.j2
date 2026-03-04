@@ -23,15 +23,15 @@ static inline int {{ op_name }}_suppress_by_iou(
     {{ compute_type }} y2_max;
 
     if (center_point_box == 0) {
-        x1_min = {{ min_fn }}(box1_1, box1_3);
-        x1_max = {{ max_fn }}(box1_1, box1_3);
-        x2_min = {{ min_fn }}(box2_1, box2_3);
-        x2_max = {{ max_fn }}(box2_1, box2_3);
+        x1_min = {{ scalar_fn(SF.MINIMUM, compute_scalar_dtype) }}(box1_1, box1_3);
+        x1_max = {{ scalar_fn(SF.MAXIMUM, compute_scalar_dtype) }}(box1_1, box1_3);
+        x2_min = {{ scalar_fn(SF.MINIMUM, compute_scalar_dtype) }}(box2_1, box2_3);
+        x2_max = {{ scalar_fn(SF.MAXIMUM, compute_scalar_dtype) }}(box2_1, box2_3);
 
-        y1_min = {{ min_fn }}(box1_0, box1_2);
-        y1_max = {{ max_fn }}(box1_0, box1_2);
-        y2_min = {{ min_fn }}(box2_0, box2_2);
-        y2_max = {{ max_fn }}(box2_0, box2_2);
+        y1_min = {{ scalar_fn(SF.MINIMUM, compute_scalar_dtype) }}(box1_0, box1_2);
+        y1_max = {{ scalar_fn(SF.MAXIMUM, compute_scalar_dtype) }}(box1_0, box1_2);
+        y2_min = {{ scalar_fn(SF.MINIMUM, compute_scalar_dtype) }}(box2_0, box2_2);
+        y2_max = {{ scalar_fn(SF.MAXIMUM, compute_scalar_dtype) }}(box2_0, box2_2);
     } else {
         {{ compute_type }} box1_width_half = box1_2 / ({{ compute_type }})2;
         {{ compute_type }} box1_height_half = box1_3 / ({{ compute_type }})2;
@@ -49,14 +49,14 @@ static inline int {{ op_name }}_suppress_by_iou(
         y2_max = box2_1 + box2_height_half;
     }
 
-    {{ compute_type }} intersection_x_min = {{ max_fn }}(x1_min, x2_min);
-    {{ compute_type }} intersection_x_max = {{ min_fn }}(x1_max, x2_max);
+    {{ compute_type }} intersection_x_min = {{ scalar_fn(SF.MAXIMUM, compute_scalar_dtype) }}(x1_min, x2_min);
+    {{ compute_type }} intersection_x_max = {{ scalar_fn(SF.MINIMUM, compute_scalar_dtype) }}(x1_max, x2_max);
     if (intersection_x_max <= intersection_x_min) {
         return 0;
     }
 
-    {{ compute_type }} intersection_y_min = {{ max_fn }}(y1_min, y2_min);
-    {{ compute_type }} intersection_y_max = {{ min_fn }}(y1_max, y2_max);
+    {{ compute_type }} intersection_y_min = {{ scalar_fn(SF.MAXIMUM, compute_scalar_dtype) }}(y1_min, y2_min);
+    {{ compute_type }} intersection_y_max = {{ scalar_fn(SF.MINIMUM, compute_scalar_dtype) }}(y1_max, y2_max);
     if (intersection_y_max <= intersection_y_min) {
         return 0;
     }

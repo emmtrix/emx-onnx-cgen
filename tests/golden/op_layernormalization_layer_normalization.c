@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -47,6 +48,10 @@
 #ifndef EMX_SEQUENCE_MAX_LEN
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
+
+static inline float ref_scalar_f32_sqrt(float a) {
+    return sqrtf(a);
+}
 
 /*
  * Node 0:
@@ -75,7 +80,7 @@ EMX_NODE_FN void node0_layernormalization(const float input0[2][3][4], const flo
             }
         }
         var = var / 12;
-        float inv_std = 1.0f / sqrtf(var + 9.99999975e-06f);
+        float inv_std = 1.0f / ref_scalar_f32_sqrt(var + 9.99999975e-06f);
         for (idx_t i1 = 0; i1 < 3; ++i1) {
             for (idx_t i2 = 0; i2 < 4; ++i2) {
                 float value = ((float)input0[i0][i1][i2] - mean) * inv_std;

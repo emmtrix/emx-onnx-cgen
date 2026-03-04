@@ -5,8 +5,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
     {{ compute_type }} value = ({{ compute_type }}){{ input_expr }};
-    input_min = {{ min_fn }}(input_min, value);
-    input_max = {{ max_fn }}(input_max, value);
+    input_min = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(input_min, value);
+    input_max = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(input_max, value);
 {% for _ in shape %}
 }
 {% endfor %}
@@ -15,18 +15,18 @@ for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ d
     {{ scale_expr }} = ({{ scale_c_type }})scale_value;
 
     {{ compute_type }} intermediate_zero_point = ({{ compute_type }})0 - (input_min / scale_value);
-    {{ compute_type }} zero_point_value = {{ round_fn }}(intermediate_zero_point);
-    zero_point_value = {{ max_fn }}(zero_point_value, ({{ compute_type }})0);
-    zero_point_value = {{ min_fn }}(zero_point_value, ({{ compute_type }})255);
+    {{ compute_type }} zero_point_value = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(intermediate_zero_point);
+    zero_point_value = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(zero_point_value, ({{ compute_type }})0);
+    zero_point_value = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(zero_point_value, ({{ compute_type }})255);
     {{ zero_point_expr }} = ({{ zero_point_c_type }})zero_point_value;
 
 {% for dim in shape %}
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
     {{ compute_type }} scaled = ({{ compute_type }}){{ input_expr }} / scale_value;
-    {{ compute_type }} rounded = {{ round_fn }}(scaled) + zero_point_value;
-    rounded = {{ max_fn }}(rounded, ({{ compute_type }})0);
-    rounded = {{ min_fn }}(rounded, ({{ compute_type }})255);
+    {{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled) + zero_point_value;
+    rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }})0);
+    rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }})255);
     {{ output_expr }} = ({{ output_c_type }})rounded;
 {% for _ in shape %}
 }

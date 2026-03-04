@@ -17,8 +17,8 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                     const {{ acc_type }} dw = ({{ acc_type }}){{ offset }}[n][off_ch_w][oh][ow];
                                     const {{ acc_type }} h_coord = ({{ acc_type }})(oh * {{ stride_h }} - {{ pad_top }} + kh * {{ dilation_h }}) + dh;
                                     const {{ acc_type }} w_coord = ({{ acc_type }})(ow * {{ stride_w }} - {{ pad_left }} + kw * {{ dilation_w }}) + dw;
-                                    const int base_h = (int){{ floor_fn }}(h_coord);
-                                    const int base_w = (int){{ floor_fn }}(w_coord);
+                                    const int base_h = (int){{ scalar_fn(SF.FLOOR, acc_scalar_dtype) }}(h_coord);
+                                    const int base_w = (int){{ scalar_fn(SF.FLOOR, acc_scalar_dtype) }}(w_coord);
                                     const {{ acc_type }} frac_h = h_coord - ({{ acc_type }})base_h;
                                     const {{ acc_type }} frac_w = w_coord - ({{ acc_type }})base_w;
                                     {{ acc_type }} sample = {{ zero_literal }};
