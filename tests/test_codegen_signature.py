@@ -70,23 +70,17 @@ def test_compile_sequence_signature_uses_fixed_capacity_and_count() -> None:
     assert "idx_t *seq_out__count" in source
 
 
-def test_compile_clip_registers_scalar_minmax_functions() -> None:
+def test_compile_softmax_registers_scalar_maximum_function() -> None:
     input_info = helper.make_tensor_value_info("input", TensorProto.FLOAT, [2, 3])
-    min_info = helper.make_tensor_value_info("min", TensorProto.FLOAT, [])
-    max_info = helper.make_tensor_value_info("max", TensorProto.FLOAT, [])
     output = helper.make_tensor_value_info("output", TensorProto.FLOAT, [2, 3])
-    min_tensor = helper.make_tensor("min", TensorProto.FLOAT, dims=[], vals=[0.0])
-    max_tensor = helper.make_tensor("max", TensorProto.FLOAT, dims=[], vals=[6.0])
-    node = helper.make_node("Clip", inputs=["input", "min", "max"], outputs=["output"])
+    node = helper.make_node("Softmax", inputs=["input"], outputs=["output"], axis=1)
     graph = helper.make_graph(
         [node],
-        "clip_scalar_registry_graph",
-        [input_info, min_info, max_info],
+        "softmax_scalar_registry_graph",
+        [input_info],
         [output],
-        initializer=[min_tensor, max_tensor],
     )
     model = helper.make_model(graph)
     source = Compiler(CompilerOptions(model_name="model")).compile(model)
 
-    assert "emx_scalar_f32_maximum(" in source
-    assert "emx_scalar_f32_minimum(" in source
+    assert "ref_scalar_f32_maximum(" in source

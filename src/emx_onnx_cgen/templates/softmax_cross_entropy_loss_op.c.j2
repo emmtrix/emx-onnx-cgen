@@ -26,7 +26,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {{ acc_type }} max_value = ({{ acc_type }})input_flat[base];
             for (idx_t c_idx = 1; c_idx < c; ++c_idx) {
                 {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d];
-                max_value = {{ scalar_fn(ScalarFunction.MAXIMUM, c_type) }}(max_value, value);
+                max_value = {{ scalar_fn(ScalarFunction.MAXIMUM, acc_type) }}(max_value, value);
             }
             {{ acc_type }} sum = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {

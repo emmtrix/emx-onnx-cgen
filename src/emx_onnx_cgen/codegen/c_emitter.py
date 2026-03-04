@@ -204,6 +204,8 @@ def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
     return "\n".join(formatted_lines)
 
 
+# Templates pass both ScalarType.c_type (e.g., int8_t) and canonical names
+# (e.g., int8) depending on context, so both forms are normalized here.
 _SCALAR_TYPE_BY_DTYPE: dict[str, ScalarType] = {
     "float": ScalarType.F32,
     "double": ScalarType.F64,
@@ -402,11 +404,12 @@ class CEmitter:
         self._large_weight_threshold = large_weight_threshold
         self._replicate_ort_bugs = replicate_ort_bugs
         self._emit_state: _EmitState | None = None
+        # The resolver reads from self._emit_state, which is set before rendering.
         self._env.globals["ScalarFunction"] = ScalarFunction
         self._env.globals["scalar_fn"] = self._template_scalar_function_name
 
     @staticmethod
-    def _template_scalar_function_type(dtype: ScalarType | str) -> ScalarType:
+    def _normalize_template_scalar_type(dtype: ScalarType | str) -> ScalarType:
         if isinstance(dtype, ScalarType):
             return dtype
         try:
@@ -417,7 +420,9 @@ class CEmitter:
             ) from exc
 
     @staticmethod
-    def _template_scalar_function_kind(function: ScalarFunction | str) -> ScalarFunction:
+    def _normalize_template_scalar_function(
+        function: ScalarFunction | str,
+    ) -> ScalarFunction:
         if isinstance(function, ScalarFunction):
             return function
         try:
@@ -434,8 +439,8 @@ class CEmitter:
         if self._emit_state is None:
             raise CodegenError("Scalar function resolver requires active emit state.")
         scalar_name = self._scalar_function_name(
-            self._template_scalar_function_kind(function),
-            self._template_scalar_function_type(dtype),
+            self._normalize_template_scalar_function(function),
+            self._normalize_template_scalar_type(dtype),
             self._emit_state.scalar_registry,
             params=tuple(params or ()),
         )
@@ -6744,9 +6749,9 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            scalar_operator = False
+            has_scalar_operator = False
             if scalar_registry is not None and op.function not in COMPARE_FUNCTIONS:
-                scalar_operator = (
+                has_scalar_operator = (
                     self._scalar_function_name(op.function, input_dtype, scalar_registry)
                     is not None
                 )
@@ -6815,7 +6820,7 @@ class CEmitter:
             operator_expr = None
             operator = op_spec.operator
             operator_kind = op.operator_kind
-            if scalar_operator:
+            if has_scalar_operator:
                 operator = op.function
                 operator_kind = OperatorKind.FUNC
             if input_dtype == ScalarType.STRING:
@@ -6854,13 +6859,13 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            scalar_operator = False
+            has_scalar_operator = False
             if (
                 scalar_registry is not None
                 and op.function not in COMPARE_FUNCTIONS
                 and op.function != ScalarFunction.MEAN
             ):
-                scalar_operator = (
+                has_scalar_operator = (
                     self._scalar_function_name(op.function, input_dtype, scalar_registry)
                     is not None
                 )
@@ -6931,7 +6936,7 @@ class CEmitter:
                 operator = "+"
                 operator_kind = OperatorKind.INFIX
                 mean_scale = len(op.inputs)
-            if scalar_operator:
+            if has_scalar_operator:
                 operator = op.function
                 operator_kind = OperatorKind.FUNC
             if operator_kind == OperatorKind.EXPR:
@@ -14390,9 +14395,9 @@ class CEmitter:
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
-            scalar_operator = False
+            has_scalar_operator = False
             if scalar_registry is not None:
-                scalar_operator = (
+                has_scalar_operator = (
                     self._scalar_function_name(
                         op.function, input_dtype, scalar_registry, params=op.params
                     )
@@ -14425,7 +14430,7 @@ class CEmitter:
                 operator_symbol = (
                     "isinf" if op.function == ScalarFunction.ISINF else "isnan"
                 )
-            if operator_symbol is None and not scalar_operator:
+            if operator_symbol is None and not has_scalar_operator:
                 raise CodegenError(
                     f"Unsupported unary operator for rendering: {op.function.value}"
                 )
@@ -14446,8 +14451,8 @@ class CEmitter:
                 **common,
                 input0=params["input0"],
                 output=params["output"],
-                operator=op.function if scalar_operator else operator_symbol,
-                operator_kind="func" if scalar_operator else "builtin",
+                operator=op.function if has_scalar_operator else operator_symbol,
+                operator_kind="func" if has_scalar_operator else "builtin",
                 operator_params=op.params,
             ).rstrip()
             return with_node_comment(rendered)
