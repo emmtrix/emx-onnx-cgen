@@ -659,6 +659,83 @@ def _make_cumsum_model(
     return model
 
 
+def _make_dft_model(
+    *,
+    input_shape: list[int],
+    axis: int,
+    dtype: int,
+    dft_length: int | None = None,
+    inverse: bool = False,
+    onesided: bool = False,
+    include_axis_input: bool = True,
+    opset: int = 20,
+) -> onnx.ModelProto:
+    if len(input_shape) < 2:
+        raise ValueError("DFT input shape must have rank >= 2")
+    axis_norm = axis if axis >= 0 else axis + len(input_shape)
+    if axis_norm < 0 or axis_norm >= len(input_shape) - 1:
+        raise ValueError("DFT axis must target a signal dimension")
+    fft_length = dft_length if dft_length is not None else input_shape[axis_norm]
+    output_axis_dim = fft_length // 2 + 1 if onesided else fft_length
+    output_shape = list(input_shape)
+    output_shape[axis_norm] = output_axis_dim
+    output_shape[-1] = 2
+
+    input_info = helper.make_tensor_value_info("x", dtype, input_shape)
+    output_info = helper.make_tensor_value_info("y", dtype, output_shape)
+
+    initializers: list[onnx.TensorProto] = []
+    node_inputs = ["x"]
+    if dft_length is not None:
+        dft_length_tensor = helper.make_tensor(
+            "dft_length",
+            TensorProto.INT64,
+            dims=[],
+            vals=[int(dft_length)],
+        )
+        initializers.append(dft_length_tensor)
+        node_inputs.append("dft_length")
+    elif include_axis_input:
+        node_inputs.append("")
+    attrs: dict[str, int] = {
+        "inverse": int(inverse),
+        "onesided": int(onesided),
+    }
+    if include_axis_input:
+        axis_tensor = helper.make_tensor(
+            "axis",
+            TensorProto.INT64,
+            dims=[],
+            vals=[int(axis)],
+        )
+        initializers.append(axis_tensor)
+        node_inputs.append("axis")
+    else:
+        attrs["axis"] = int(axis)
+
+    node = helper.make_node(
+        "DFT",
+        inputs=node_inputs,
+        outputs=[output_info.name],
+        **attrs,
+    )
+    graph = helper.make_graph(
+        [node],
+        "dft_graph",
+        [input_info],
+        [output_info],
+        initializer=initializers,
+    )
+    model = helper.make_model(
+        graph,
+        producer_name="onnx2c",
+        opset_imports=[helper.make_operatorsetid("", opset)],
+    )
+    model.ir_version = 9
+    onnx.checker.check_model(model)
+    return model
+
+
 def _make_eye_like_model(
     *,
     input_shape: list[int],
@@ -5779,6 +5856,66 @@ def test_cumsum_matches_onnxruntime() -> None:
         reverse=True,
     )
     _run_ort_compare(model)
+
+
+def test_dft_stockham_forward_matches_reference() -> None:
+    model = _make_dft_model(
+        input_shape=[2, 8, 3, 2],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        dft_length=8,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "stockham radix-4 stage" in generated
+    assert "stockham radix-2 stage" in generated
+    assert "twiddle_re" in generated
+    _run_reference_testbench_compare(model)
+
+
+def test_dft_stockham_inverse_matches_reference() -> None:
+    model = _make_dft_model(
+        input_shape=[2, 8, 3, 2],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        dft_length=8,
+        inverse=True,
+    )
+    _run_reference_testbench_compare(model)
+
+
+def test_dft_onesided_real_matches_reference() -> None:
+    model = _make_dft_model(
+        input_shape=[2, 8, 3, 1],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        dft_length=8,
+        onesided=True,
+    )
+    _run_reference_testbench_compare(model)
+
+
+def test_dft_fallback_non_power_of_two_matches_reference() -> None:
+    model = _make_dft_model(
+        input_shape=[2, 10, 3, 2],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        dft_length=10,
+    )
+    generated = Compiler(CompilerOptions()).compile(model)
+    assert "stockham radix-4 stage" not in generated
+    assert "stockham radix-2 stage" not in generated
+    _run_reference_testbench_compare(model)
+
+
+def test_dft_opset19_axis_attribute_matches_reference() -> None:
+    model = _make_dft_model(
+        input_shape=[2, 8, 2],
+        axis=1,
+        dtype=TensorProto.FLOAT,
+        include_axis_input=False,
+        opset=19,
+    )
+    _run_reference_testbench_compare(model)
 
 
 def test_split_matches_onnxruntime() -> None:
