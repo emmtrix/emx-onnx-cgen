@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -47,6 +48,10 @@
 #ifndef EMX_SEQUENCE_MAX_LEN
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
+
+static inline float ref_scalar_f32_sqrt(float a) {
+    return sqrtf(a);
+}
 
 /*
  * Node 0:
@@ -74,7 +79,7 @@ EMX_NODE_FN void node0_instancenormalization(const float input0[1][3][2][2], con
                     var += diff * diff;
                 }
             }
-            float denom = sqrtf(var / 4 + 9.99999975e-06f);
+            float denom = ref_scalar_f32_sqrt(var / 4 + 9.99999975e-06f);
             for (idx_t i2 = 0; i2 < 2; ++i2) {
                 for (idx_t i3 = 0; i3 < 2; ++i3) {
                     output[i0][i1][i2][i3] =

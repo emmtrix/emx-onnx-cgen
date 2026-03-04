@@ -49,8 +49,16 @@
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
 
+static inline float ref_scalar_f32_tanh(float a) {
+    return tanhf(a);
+}
+
 static inline float ref_scalar_f32_maximum(float a, float b) {
     return fmaxf(a, b);
+}
+
+static inline float ref_scalar_f32_exp(float a) {
+    return expf(a);
 }
 
 /*
@@ -88,7 +96,7 @@ EMX_NODE_FN void node0_attention(const float input_q[1][2][3][4], const float in
                     float score_bias = score + bias;
                     float score_softcap = score_bias;
                     if (softcap != 0.0f) {
-                        score_softcap = softcap * tanhf(score_bias / softcap);
+                        score_softcap = softcap * ref_scalar_f32_tanh(score_bias / softcap);
                     }
                     scores[ki] = score_softcap;
                     max_score = ref_scalar_f32_maximum(max_score, score_softcap);
@@ -98,7 +106,7 @@ EMX_NODE_FN void node0_attention(const float input_q[1][2][3][4], const float in
                 for (int ki = 0; ki < 5; ++ki) {
                     float weight = 0.0f;
                     if (max_score != -INFINITY) {
-                        weight = expf(scores[ki] - max_score);
+                        weight = ref_scalar_f32_exp(scores[ki] - max_score);
                     }
                     weights[ki] = weight;
                     sum += weight;

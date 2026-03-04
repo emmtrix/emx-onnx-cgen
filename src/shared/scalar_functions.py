@@ -198,6 +198,12 @@ class ScalarFunction(str, Enum):
     LDEXP = _common_binary_from_f32_spec("ldexp")
     LE = _scalar_function_spec("le")
     LEAKY_RELU = _common_unary_from_f32_spec("leaky_relu")
+    LLRINT = _scalar_function_spec(
+        "llrint",
+        supports_signed_int=False,
+        supports_unsigned_int=False,
+        supports_bool=False,
+    )
     LGAMMA = _common_unary_from_f32_spec("lgamma")
     LOG = _common_unary_from_f32_spec("log")
     LOG10 = _common_unary_from_f32_spec("log10")
@@ -224,6 +230,12 @@ class ScalarFunction(str, Enum):
     MUL = _bool_binary_from_f32_spec("mul")
     NAN_TO_NUM = _common_unary_from_f32_spec("nan_to_num")
     NE = _scalar_function_spec("ne")
+    NEARBYINT = _scalar_function_spec(
+        "nearbyint",
+        supports_signed_int=False,
+        supports_unsigned_int=False,
+        supports_bool=False,
+    )
     NEG = _bool_unary_from_f32_spec("neg")
     NEXTAFTER = _common_binary_from_f32_spec("nextafter")
     POSITIVE = _bool_unary_from_f32_spec("positive", supports_unsigned_int=False)
@@ -1372,6 +1384,16 @@ def _float_binary_math_handler(
     return handler
 
 
+def _float_llrint(dtype_info: _ScalarTypeInfo) -> _GeneratedScalar:
+    math_name = _math_fn("llrint", dtype_info)
+    lines = [
+        f"static inline long long int {dtype_info.prefix}llrint({dtype_info.c_type} a) {{",
+        f"    return {math_name}(a);",
+        "}",
+    ]
+    return _GeneratedScalar(lines=lines, deps=set(), includes=set())
+
+
 def _float_comparison_handler(
     name: str, op: str
 ) -> Callable[[_ScalarTypeInfo], _GeneratedScalar]:
@@ -1466,6 +1488,8 @@ _FLOAT_OP_DISPATCH: Mapping[str, Callable[[_ScalarTypeInfo], _GeneratedScalar]] 
     "log10": _float_unary_math_handler("log10"),
     "exp2": _float_unary_math_handler("exp2"),
     "lgamma": _float_unary_math_handler("lgamma"),
+    "nearbyint": _float_unary_math_handler("nearbyint"),
+    "llrint": _float_llrint,
     "isfinite": _float_isfinite,
     "rsqrt": _float_rsqrt,
     "sigmoid": _float_sigmoid,

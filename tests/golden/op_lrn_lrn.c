@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -47,6 +48,10 @@
 #ifndef EMX_SEQUENCE_MAX_LEN
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
+
+static inline float ref_scalar_f32_pow(float a, float b) {
+    return powf(a, b);
+}
 
 /*
  * Node 0:
@@ -76,7 +81,7 @@ EMX_NODE_FN void node0_lrn(const float input0[1][3][4][4], float output[1][3][4]
                         sum += val * val;
                     }
                     float scale = 1.0f + 3.33333325e-05f * sum;
-                    output[i0][i1][i2][i3] = input0[i0][i1][i2][i3] / powf(scale, 0.75f);
+                    output[i0][i1][i2][i3] = input0[i0][i1][i2][i3] / ref_scalar_f32_pow(scale, 0.75f);
                 }
             }
         }

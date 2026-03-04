@@ -396,6 +396,22 @@ class CEmitter:
         self._replicate_ort_bugs = replicate_ort_bugs
         self._emit_state: _EmitState | None = None
 
+    def _setup_template_resolvers(
+        self, scalar_registry: ScalarFunctionRegistry
+    ) -> None:
+        def scalar_fn(
+            function: ScalarFunction,
+            dtype: ScalarType,
+            params: tuple[float, ...] = (),
+        ) -> str | None:
+            return CEmitter._scalar_function_name(
+                function, dtype, scalar_registry, params=params
+            )
+
+        self._env.globals["scalar_fn"] = scalar_fn
+        self._env.globals["SF"] = ScalarFunction
+        self._env.globals["ST"] = ScalarType
+
     @staticmethod
     def _sanitize_identifier(name: str) -> str:
         sanitized = _C_IDENTIFIER_RE.sub("_", name)
@@ -2548,6 +2564,7 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
+        self._setup_template_resolvers(scalar_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
@@ -2710,6 +2727,7 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
+        self._setup_template_resolvers(scalar_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
@@ -2874,6 +2892,7 @@ class CEmitter:
         if testbench_template is None:
             raise CodegenError("Failed to load testbench template")
         scalar_registry = ScalarFunctionRegistry()
+        self._setup_template_resolvers(scalar_registry)
         tensor_dim_names = self._build_tensor_dim_names(model, {}, {})
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
@@ -3075,15 +3094,19 @@ class CEmitter:
             ScalarFunction.ERF,
             ScalarFunction.EXP,
             ScalarFunction.FLOOR,
+            ScalarFunction.FMAX,
+            ScalarFunction.FMIN,
             ScalarFunction.GELU,
             ScalarFunction.HARDSIGMOID,
             ScalarFunction.HARDSWISH,
+            ScalarFunction.LLRINT,
             ScalarFunction.LOG,
             ScalarFunction.FMOD,
             ScalarFunction.REMAINDER,
             ScalarFunction.LEAKY_RELU,
             ScalarFunction.MISH,
             ScalarFunction.MUL,
+            ScalarFunction.NEARBYINT,
             ScalarFunction.NEG,
             ScalarFunction.LOGICAL_NOT,
             ScalarFunction.LOGICAL_OR,
@@ -6177,10 +6200,10 @@ class CEmitter:
             update_expr = None
             init_literal = None
             final_expr = "acc"
-            fabs_fn = CEmitter._math_fn(output_dtype, "fabsf", "fabs")
-            exp_fn = CEmitter._math_fn(output_dtype, "expf", "exp")
-            log_fn = CEmitter._math_fn(output_dtype, "logf", "log")
-            sqrt_fn = CEmitter._math_fn(output_dtype, "sqrtf", "sqrt")
+            fabs_fn = self._scalar_function_name(ScalarFunction.ABS, output_dtype, self._emit_state.scalar_registry)
+            exp_fn = self._scalar_function_name(ScalarFunction.EXP, output_dtype, self._emit_state.scalar_registry)
+            log_fn = self._scalar_function_name(ScalarFunction.LOG, output_dtype, self._emit_state.scalar_registry)
+            sqrt_fn = self._scalar_function_name(ScalarFunction.SQRT, output_dtype, self._emit_state.scalar_registry)
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr};"
@@ -6439,10 +6462,10 @@ class CEmitter:
             init_literal = None
             post_expr = None
             reduce_dtype = self._ctx_dtype(op.output)
-            fabs_fn = CEmitter._math_fn(reduce_dtype, "fabsf", "fabs")
-            exp_fn = CEmitter._math_fn(reduce_dtype, "expf", "exp")
-            log_fn = CEmitter._math_fn(reduce_dtype, "logf", "log")
-            sqrt_fn = CEmitter._math_fn(reduce_dtype, "sqrtf", "sqrt")
+            fabs_fn = self._scalar_function_name(ScalarFunction.ABS, reduce_dtype, self._emit_state.scalar_registry)
+            exp_fn = self._scalar_function_name(ScalarFunction.EXP, reduce_dtype, self._emit_state.scalar_registry)
+            log_fn = self._scalar_function_name(ScalarFunction.LOG, reduce_dtype, self._emit_state.scalar_registry)
+            sqrt_fn = self._scalar_function_name(ScalarFunction.SQRT, reduce_dtype, self._emit_state.scalar_registry)
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"*out_ptr += {value_expr};"
@@ -6696,9 +6719,9 @@ class CEmitter:
                 ]
             )
             scalar_operator = None
-            if scalar_registry is not None and op.function not in COMPARE_FUNCTIONS:
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry
+            if op.function not in COMPARE_FUNCTIONS:
+                scalar_operator = self._env.globals["scalar_fn"](
+                    op.function, input_dtype
                 )
             op_spec = binary_op_symbol(
                 op.function,
@@ -6806,12 +6829,11 @@ class CEmitter:
             )
             scalar_operator = None
             if (
-                scalar_registry is not None
-                and op.function not in COMPARE_FUNCTIONS
+                op.function not in COMPARE_FUNCTIONS
                 and op.function != ScalarFunction.MEAN
             ):
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry
+                scalar_operator = self._env.globals["scalar_fn"](
+                    op.function, input_dtype
                 )
             op_spec = binary_op_symbol(
                 op.function,
@@ -7389,17 +7411,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, AttentionOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Attention codegen."
-                )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for Attention."
-                )
             params = self._shared_param_map(
                 [
                     ("input_q", op.input_q),
@@ -7594,9 +7605,7 @@ class CEmitter:
                 scale_literal=CEmitter._format_floating(op.scale, op.dtype),
                 softcap_literal=CEmitter._format_floating(op.softcap, op.dtype),
                 one_literal=CEmitter._format_literal(op.dtype, 1),
-                max_fn=max_fn,
-                exp_fn=CEmitter._math_fn(op.dtype, "expf", "exp"),
-                tanh_fn=CEmitter._math_fn(op.dtype, "tanhf", "tanh"),
+                dtype=op.dtype,
                 is_causal=int(op.is_causal),
                 qk_matmul_output_mode=op.qk_matmul_output_mode,
                 batch=op.batch,
@@ -7993,10 +8002,7 @@ class CEmitter:
                     (params["output"], op.dtype.c_type, output_suffix, False),
                 ]
             )
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QLinearConv."
-                )
+
             compute_dtype = (
                 ScalarType.F64
                 if ScalarType.F64
@@ -8008,21 +8014,7 @@ class CEmitter:
                 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM,
-                compute_dtype,
-                scalar_registry,
-            )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM,
-                compute_dtype,
-                scalar_registry,
-            )
-            if min_fn is None or max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearConv."
-                )
-            round_fn = CEmitter._math_fn(ScalarType.F64, "nearbyintf", "nearbyint")
+
             weight_scale_expr = (
                 f"{params['weight_scale']}[oc_global]"
                 if op.weight_scale_per_channel
@@ -8083,9 +8075,8 @@ class CEmitter:
                 output_zero_expr=f"{params['output_zero_point']}[0]",
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
-                round_fn=round_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                round_dtype=ScalarType.F64,
+                compute_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ConvTransposeOp):
@@ -8174,21 +8165,10 @@ class CEmitter:
                     ("output", op.output),
                 ]
             )
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for DeformConv codegen."
-                )
             acc_dtype = self._accumulation_dtype(op.dtype)
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
-            floor_fn = self._scalar_function_name(
-                ScalarFunction.FLOOR, acc_dtype, scalar_registry
-            )
-            if floor_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar floor function for DeformConv."
-                )
             input_shape = (op.batch, op.in_channels, op.in_h, op.in_w)
             weight_shape = (
                 op.out_channels,
@@ -8252,7 +8232,7 @@ class CEmitter:
                 acc_zero_literal=acc_zero_literal,
                 zero_literal=acc_zero_literal,
                 one_literal=acc_one_literal,
-                floor_fn=floor_fn,
+                acc_scalar_dtype=acc_dtype,
                 batch=op.batch,
                 in_channels=op.in_channels,
                 out_channels=op.out_channels,
@@ -8386,8 +8366,7 @@ class CEmitter:
                 pad_right=op.pad_right,
                 p=op.p,
                 zero_literal=zero_literal,
-                abs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
-                pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BatchNormOp):
@@ -8455,7 +8434,7 @@ class CEmitter:
                     1.0 - op.momentum, op.dtype
                 ),
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LpNormalizationOp):
@@ -8483,8 +8462,7 @@ class CEmitter:
                 inner=op.inner,
                 p=op.p,
                 zero_literal=zero_literal,
-                abs_fn=CEmitter._math_fn(op.dtype, "fabsf", "fabs"),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, InstanceNormalizationOp):
@@ -8528,7 +8506,7 @@ class CEmitter:
                 loop_vars=loop_vars,
                 spatial_size=op.spatial_size,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GroupNormalizationOp):
@@ -8574,7 +8552,7 @@ class CEmitter:
                 group_size=op.group_size,
                 spatial_size=op.spatial_size,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LayerNormalizationOp):
@@ -8583,7 +8561,6 @@ class CEmitter:
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
             acc_epsilon_literal = CEmitter._format_floating(op.epsilon, acc_dtype)
-            acc_sqrt_fn = CEmitter._math_fn(acc_dtype, "sqrtf", "sqrt")
             use_kahan = False
             params = self._shared_param_map(
                 [
@@ -8702,7 +8679,7 @@ class CEmitter:
                 acc_zero_literal=acc_zero_literal,
                 acc_one_literal=acc_one_literal,
                 acc_epsilon_literal=acc_epsilon_literal,
-                acc_sqrt_fn=acc_sqrt_fn,
+                acc_dtype=acc_dtype,
                 use_kahan=use_kahan,
             ).rstrip()
             return with_node_comment(rendered)
@@ -8736,7 +8713,7 @@ class CEmitter:
                 non_axes=op.non_axes,
                 reduce_count=op.reduce_count,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, RMSNormalizationOp):
@@ -8784,7 +8761,7 @@ class CEmitter:
                 scale_index_vars=scale_index_vars,
                 inner=op.inner,
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LrnOp):
@@ -8820,7 +8797,7 @@ class CEmitter:
                 ),
                 beta_literal=CEmitter._format_floating(op.beta, op.dtype),
                 bias_literal=CEmitter._format_floating(op.bias, op.dtype),
-                pow_fn=CEmitter._math_fn(op.dtype, "powf", "pow"),
+                dtype=op.dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, GruOp):
@@ -9290,7 +9267,7 @@ class CEmitter:
                     op.norm_coefficient, op.dtype
                 ),
                 epsilon_literal=CEmitter._format_floating(op.epsilon, op.dtype),
-                sqrt_fn=CEmitter._math_fn(op.dtype, "sqrtf", "sqrt"),
+                dtype=op.dtype,
                 tensors=tensor_specs,
             ).rstrip()
             return with_node_comment(rendered)
@@ -9390,22 +9367,11 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Softmax rendering."
-                )
             output_shape = self._ctx_shape(op.output)
             output_dtype = self._ctx_dtype(op.output)
             outer = self._derived(op, "outer")
             axis_size = self._derived(op, "axis_size")
             inner = self._derived(op, "inner")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, output_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for Softmax."
-                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -9427,27 +9393,15 @@ class CEmitter:
                 outer=outer,
                 axis_size=axis_size,
                 inner=inner,
-                max_fn=max_fn,
-                exp_fn=CEmitter._math_fn(output_dtype, "expf", "exp"),
+                dtype=output_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LogSoftmaxOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for LogSoftmax rendering."
-                )
             output_shape = self._ctx_shape(op.output)
             output_dtype = self._ctx_dtype(op.output)
             outer = self._derived(op, "outer")
             axis_size = self._derived(op, "axis_size")
             inner = self._derived(op, "inner")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, output_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for LogSoftmax."
-                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -9469,28 +9423,15 @@ class CEmitter:
                 outer=outer,
                 axis_size=axis_size,
                 inner=inner,
-                max_fn=max_fn,
-                exp_fn=CEmitter._math_fn(output_dtype, "expf", "exp"),
-                log_fn=CEmitter._math_fn(output_dtype, "logf", "log"),
+                dtype=output_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HardmaxOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Hardmax rendering."
-                )
             output_shape = self._ctx_shape(op.output)
             output_dtype = self._ctx_dtype(op.output)
             outer = self._derived(op, "outer")
             axis_size = self._derived(op, "axis_size")
             inner = self._derived(op, "inner")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, output_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for Hardmax."
-                )
             params = self._shared_param_map(
                 [("input0", op.input0), ("output", op.output)]
             )
@@ -9514,7 +9455,7 @@ class CEmitter:
                 inner=inner,
                 zero_literal=zero_literal,
                 one_literal=CEmitter._format_literal(output_dtype, 1),
-                max_fn=max_fn,
+                dtype=output_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NegativeLogLikelihoodLossOp):
@@ -9578,22 +9519,9 @@ class CEmitter:
             return with_node_comment(rendered)
         if isinstance(op, SoftmaxCrossEntropyLossOp):
             acc_dtype = self._accumulation_dtype(op.dtype)
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for SoftmaxCrossEntropyLoss."
-                )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, acc_dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for SoftmaxCrossEntropyLoss."
-                )
             acc_type = acc_dtype.c_type
             acc_zero_literal = CEmitter._format_literal(acc_dtype, 0)
             acc_one_literal = CEmitter._format_literal(acc_dtype, 1)
-            acc_exp_fn = CEmitter._math_fn(acc_dtype, "expf", "exp")
-            acc_log_fn = CEmitter._math_fn(acc_dtype, "logf", "log")
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9669,23 +9597,10 @@ class CEmitter:
                 acc_type=acc_type,
                 acc_zero_literal=acc_zero_literal,
                 acc_one_literal=acc_one_literal,
-                acc_exp_fn=acc_exp_fn,
-                acc_log_fn=acc_log_fn,
-                max_fn=max_fn,
+                acc_dtype=acc_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, MaxPoolOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for MaxPool rendering."
-                )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, op.dtype, scalar_registry
-            )
-            if max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar maximum function for MaxPool."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -9732,7 +9647,7 @@ class CEmitter:
                 output_suffix=output_suffix,
                 indices_suffix=indices_suffix,
                 indices_c_type=indices_c_type,
-                max_fn=max_fn,
+                dtype=op.dtype,
                 batch=op.batch,
                 channels=op.channels,
                 spatial_rank=op.spatial_rank,
@@ -11548,10 +11463,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, NonMaxSuppressionOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for NonMaxSuppression."
-                )
             boxes_shape = self._ctx_shape(op.boxes)
             scores_shape = self._ctx_shape(op.scores)
             output_shape = self._ctx_shape(op.output)
@@ -11587,16 +11498,7 @@ class CEmitter:
                 if op.score_threshold is not None
                 else None
             )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, boxes_dtype, scalar_registry
-            )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, boxes_dtype, scalar_registry
-            )
-            if min_fn is None or max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for NonMaxSuppression."
-                )
+
             params = self._shared_param_map(
                 [
                     ("boxes", op.boxes),
@@ -11699,8 +11601,7 @@ class CEmitter:
                 num_boxes=boxes_shape[1],
                 num_classes=scores_shape[1],
                 center_point_box=op.center_point_box,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                compute_scalar_dtype=boxes_dtype,
                 iou_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_enabled=op.score_threshold is not None,
@@ -11939,10 +11840,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, BlackmanWindowOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Window rendering."
-                )
+
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -11968,13 +11866,7 @@ class CEmitter:
                 ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            cos_fn = self._scalar_function_name(
-                ScalarFunction.COS, compute_dtype, scalar_registry
-            )
-            if cos_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar cosine function for Window rendering."
-                )
+
             rendered = blackman_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -11992,7 +11884,7 @@ class CEmitter:
                 c05_literal=self._format_literal(compute_dtype, 0.5),
                 c008_literal=self._format_literal(compute_dtype, 0.08),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
+                compute_scalar_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, LoopSequenceMapOp):
@@ -12137,10 +12029,7 @@ class CEmitter:
             lines.append("}")
             return with_node_comment("\n".join(lines))
         if isinstance(op, HammingWindowOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Window rendering."
-                )
+
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -12166,13 +12055,7 @@ class CEmitter:
                 ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            cos_fn = self._scalar_function_name(
-                ScalarFunction.COS, compute_dtype, scalar_registry
-            )
-            if cos_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar cosine function for Window rendering."
-                )
+
             rendered = hamming_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -12189,14 +12072,11 @@ class CEmitter:
                 alpha_literal=self._format_literal(compute_dtype, 25.0 / 46.0),
                 beta_literal=self._format_literal(compute_dtype, 1.0 - (25.0 / 46.0)),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
+                compute_scalar_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, HannWindowOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Window rendering."
-                )
+
             params = self._shared_param_map(
                 [
                     ("size", op.size),
@@ -12222,13 +12102,7 @@ class CEmitter:
                 ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            cos_fn = self._scalar_function_name(
-                ScalarFunction.COS, compute_dtype, scalar_registry
-            )
-            if cos_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar cosine function for Window rendering."
-                )
+
             rendered = hann_window_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -12245,7 +12119,7 @@ class CEmitter:
                 alpha_literal=self._format_literal(compute_dtype, 0.5),
                 beta_literal=self._format_literal(compute_dtype, 0.5),
                 pi_literal=self._format_literal(compute_dtype, math.pi),
-                cos_fn=cos_fn,
+                compute_scalar_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
@@ -13353,10 +13227,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QuantizeLinearOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QuantizeLinear."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -13403,17 +13273,6 @@ class CEmitter:
             compute_dtype = (
                 ScalarType.F64 if compute_type == "double" else ScalarType.F32
             )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QuantizeLinear."
-                )
-            round_fn = CEmitter._math_fn(input_dtype, "nearbyintf", "nearbyint")
             scale_index = "0" if op.axis is None else loop_vars[op.axis]
             input_expr = f"{params['input0']}" + "".join(
                 f"[{var}]" for var in loop_vars
@@ -13443,11 +13302,9 @@ class CEmitter:
                 scale_expr=scale_expr,
                 zero_expr=zero_expr,
                 output_expr=output_expr,
-                round_fn=round_fn,
+                compute_dtype=input_dtype,
                 min_literal=output_dtype.min_literal,
                 max_literal=output_dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -13553,10 +13410,6 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, DynamicQuantizeLinearOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for DynamicQuantizeLinear."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -13588,17 +13441,7 @@ class CEmitter:
             compute_dtype = (
                 ScalarType.F64 if compute_type == "double" else ScalarType.F32
             )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for DynamicQuantizeLinear."
-                )
-            round_fn = CEmitter._math_fn(input_dtype, "nearbyintf", "nearbyint")
+
             input_expr = f"{params['input0']}" + "".join(
                 f"[{var}]" for var in loop_vars
             )
@@ -13619,17 +13462,12 @@ class CEmitter:
                 output_expr=output_expr,
                 scale_expr=f"{params['scale']}[0]",
                 zero_point_expr=f"{params['zero_point']}[0]",
-                min_fn=min_fn,
-                max_fn=max_fn,
-                round_fn=round_fn,
+                compute_dtype=input_dtype,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearAddOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QLinearAdd."
-                )
+
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -13717,17 +13555,8 @@ class CEmitter:
                 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearAdd."
-                )
-            round_fn = CEmitter._math_fn(compute_dtype, "llrintf", "llrint")
+
+
             scale_index = "0"
             rendered = qlinear_add_template.render(
                 model_name=model.name,
@@ -13755,19 +13584,14 @@ class CEmitter:
                 output_loop_vars=output_loop_vars,
                 output_loop_bounds=output_shape,
                 output_index_expr=output_index_expr,
-                round_fn=round_fn,
+                compute_dtype=compute_dtype,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearMulOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QLinearMul."
-                )
+
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -13876,17 +13700,7 @@ class CEmitter:
                 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearMul."
-                )
-            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
+
             scale_index = "0"
             rendered = qlinear_mul_template.render(
                 model_name=model.name,
@@ -13914,19 +13728,14 @@ class CEmitter:
                 output_loop_vars=output_loop_vars,
                 output_loop_bounds=output_shape,
                 output_index_expr=output_index_expr,
-                round_fn=round_fn,
+                compute_dtype=compute_dtype,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
-                min_fn=min_fn,
-                max_fn=max_fn,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearAveragePoolOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QLinearAveragePool."
-                )
+
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -13997,17 +13806,7 @@ class CEmitter:
                 else ScalarType.F32
             )
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            if max_fn is None or min_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearAveragePool."
-                )
+
             rendered = qlinear_avg_pool_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -14019,9 +13818,8 @@ class CEmitter:
                 output=params["output"],
                 params=param_decls,
                 compute_type=compute_type,
-                round_fn=round_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                compute_dtype=compute_dtype,
+                dtype=op.dtype,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
                 input_scale_expr=f"{params['input_scale']}[0]",
@@ -14184,9 +13982,6 @@ class CEmitter:
                 scale_dtype = ScalarType.F16
             compute_dtype = ScalarType.F64
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            max_fn = CEmitter._math_fn(compute_dtype, "fmaxf", "fmax")
-            min_fn = CEmitter._math_fn(compute_dtype, "fminf", "fmin")
             scale_index = "0"
             if op.dtype.is_signed:
                 min_literal = "-128.0"
@@ -14223,9 +14018,8 @@ class CEmitter:
                 output_loop_bounds=output_shape,
                 output_index_expr=output_index_expr,
                 k=op.k,
-                round_fn=round_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                compute_dtype=compute_dtype,
+                dtype=op.dtype,
                 min_literal=min_literal,
                 max_literal=max_literal,
                 enable_integer_requant=scale_dtype != ScalarType.F16,
@@ -14235,10 +14029,7 @@ class CEmitter:
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, QLinearSoftmaxOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for QLinearSoftmax."
-                )
+
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -14292,19 +14083,7 @@ class CEmitter:
             ):
                 compute_dtype = ScalarType.F64
             compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
-            exp_fn = CEmitter._math_fn(compute_dtype, "expf", "exp")
-            round_fn = CEmitter._math_fn(compute_dtype, "nearbyintf", "nearbyint")
-            round_to_int_fn = CEmitter._math_fn(compute_dtype, "llrintf", "llrint")
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, compute_dtype, scalar_registry
-            )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, compute_dtype, scalar_registry
-            )
-            if min_fn is None or max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for QLinearSoftmax."
-                )
+
             rendered = qlinear_softmax_template.render(
                 model_name=model.name,
                 op_name=op_name,
@@ -14323,21 +14102,13 @@ class CEmitter:
                 inner=op.inner,
                 min_literal=op.dtype.min_literal,
                 max_literal=op.dtype.max_literal,
-                exp_fn=exp_fn,
-                round_fn=round_fn,
-                round_to_int_fn=round_to_int_fn,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                compute_dtype=compute_dtype,
                 output_wrap=self._replicate_ort_bugs,
                 output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
         if isinstance(op, ClipOp):
-            if scalar_registry is None:
-                raise CodegenError(
-                    "Scalar function registry is required for Clip rendering."
-                )
             input_shape = self._ctx_shape(op.input0)
             output_shape_raw = self._ctx_shape(op.output)
             input_dtype = self._ctx_dtype(op.input0)
@@ -14348,16 +14119,6 @@ class CEmitter:
             max_shape = (
                 self._ctx_shape(op.input_max) if op.input_max is not None else None
             )
-            min_fn = self._scalar_function_name(
-                ScalarFunction.MINIMUM, input_dtype, scalar_registry
-            )
-            max_fn = self._scalar_function_name(
-                ScalarFunction.MAXIMUM, input_dtype, scalar_registry
-            )
-            if min_fn is None or max_fn is None:
-                raise CodegenError(
-                    "Failed to resolve scalar min/max functions for Clip."
-                )
             params = self._shared_param_map(
                 [
                     ("input0", op.input0),
@@ -14462,8 +14223,7 @@ class CEmitter:
                 input_expr=input_expr,
                 min_expr=min_expr,
                 max_expr=max_expr,
-                min_fn=min_fn,
-                max_fn=max_fn,
+                dtype=input_dtype,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -14475,10 +14235,9 @@ class CEmitter:
                 [("input0", op.input0), ("output", op.output)]
             )
             scalar_operator = None
-            if scalar_registry is not None:
-                scalar_operator = self._scalar_function_name(
-                    op.function, input_dtype, scalar_registry, params=op.params
-                )
+            scalar_operator = self._env.globals["scalar_fn"](
+                op.function, input_dtype, params=op.params
+            )
             output_dim_names = _dim_names_for(op.output)
             shape = CEmitter._shape_dim_exprs(output_shape_raw, output_dim_names)
             loop_vars = CEmitter._loop_vars(output_shape_raw)
@@ -16688,12 +16447,6 @@ class CEmitter:
         if dtype == ScalarType.BF16:
             return CEmitter._format_bfloat16(value)
         return CEmitter._format_float(value)
-
-    @staticmethod
-    def _math_fn(dtype: ScalarType, float_name: str, double_name: str) -> str:
-        if dtype == ScalarType.F64:
-            return double_name
-        return float_name
 
     @staticmethod
     def _format_int64(value: int) -> str:

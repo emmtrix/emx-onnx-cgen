@@ -13,12 +13,12 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                         {{ c_type }} val = {{ input0 }}[n][c][ix];
 {% if indices %}
                         const {{ c_type }} prev_max = max_value;
-                        max_value = {{ max_fn }}(max_value, val);
+                        max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, val);
                         max_index = (val > prev_max)
                             ? ({{ indices_c_type }})(((({{ indices_c_type }})n * {{ channels }} + ({{ indices_c_type }})c) * {{ in_spatial[0] }}) + ({{ indices_c_type }})ix)
                             : max_index;
 {% else %}
-                        max_value = {{ max_fn }}(max_value, val);
+                        max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, val);
 {% endif %}
                     }
                 }
@@ -43,7 +43,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                     {{ c_type }} val = {{ input0 }}[n][c][ih][iw];
 {% if indices %}
                                     const {{ c_type }} prev_max = max_value;
-                                    max_value = {{ max_fn }}(max_value, val);
+                                    max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, val);
                                     max_index = (val > prev_max)
                                         ? (
 {% if storage_order == 0 %}
@@ -54,7 +54,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                         )
                                         : max_index;
 {% else %}
-                                    max_value = {{ max_fn }}(max_value, val);
+                                    max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, val);
 {% endif %}
                                 }
                             }
@@ -86,7 +86,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                                 {{ c_type }} val = {{ input0 }}[n][c][id][ih][iw];
 {% if indices %}
                                                 const {{ c_type }} prev_max = max_value;
-                                                max_value = {{ max_fn }}(max_value, val);
+                                                max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, val);
                                                 max_index = (val > prev_max)
                                                     ? (
 {% if storage_order == 0 %}
@@ -97,7 +97,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                                                     )
                                                     : max_index;
 {% else %}
-                                                max_value = {{ max_fn }}(max_value, val);
+                                                max_value = {{ scalar_fn(SF.MAXIMUM, dtype) }}(max_value, val);
 {% endif %}
                                             }
                                         }

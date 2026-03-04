@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -47,6 +48,22 @@
 #ifndef EMX_SEQUENCE_MAX_LEN
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
+
+static inline float ref_scalar_f32_abs(float a) {
+    return fabsf(a);
+}
+
+static inline float ref_scalar_f32_exp(float a) {
+    return expf(a);
+}
+
+static inline float ref_scalar_f32_log(float a) {
+    return logf(a);
+}
+
+static inline float ref_scalar_f32_sqrt(float a) {
+    return sqrtf(a);
+}
 
 /*
  * Node 0:

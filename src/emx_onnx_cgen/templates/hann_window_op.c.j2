@@ -6,7 +6,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
     const {{ compute_type }} pi = {{ pi_literal }};
     for (idx_t idx = 0; idx < {{ length }}; ++idx) {
         const {{ compute_type }} phase = ({{ two_literal }} * pi * ({{ compute_type }})idx) / denom;
-        const {{ compute_type }} value = alpha - beta * {{ cos_fn }}(phase);
+        const {{ compute_type }} value = alpha - beta * {{ scalar_fn(SF.COS, compute_scalar_dtype) }}(phase);
         {{ output }}[idx] = ({{ c_type }})value;
     }
 }

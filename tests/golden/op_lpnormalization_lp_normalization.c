@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #ifndef idx_t
 #define idx_t int32_t
@@ -47,6 +48,10 @@
 #ifndef EMX_SEQUENCE_MAX_LEN
 #define EMX_SEQUENCE_MAX_LEN 32
 #endif
+
+static inline float ref_scalar_f32_abs(float a) {
+    return fabsf(a);
+}
 
 /*
  * Node 0:
@@ -70,7 +75,7 @@ EMX_NODE_FN void node0_lpnormalization(const float input0[2][3], float output[2]
             float acc = 0.0f;
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 float value = input_flat[base + axis_idx * inner];
-                acc += fabsf(value);
+                acc += ref_scalar_f32_abs(value);
             }
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 output_flat[base + axis_idx * inner] = input_flat[base + axis_idx * inner] / acc;
