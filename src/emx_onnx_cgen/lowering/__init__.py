@@ -29,6 +29,7 @@ _LOWERING_MODULES = [
     "dequantize_linear",
     "dynamic_quantize_linear",
     "dropout",
+    "dft",
     "einsum",
     "elementwise",
     "expand",
