@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1549 / 1802, 86.0% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1551 / 1802, 86.1% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1549 / 1802 ONNX files (86.0%).
+Coverage 1551 / 1802 ONNX files (86.1%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -590,10 +590,10 @@ Coverage 1549 / 1802 ONNX files (86.0%).
 | node/test_dequantizelinear_uint4/model.onnx | 25 | Data | ❌ | Unsupported elem_type 21 (UINT4) for tensor 'x'. |
 | node/test_det_2d/model.onnx | 22 | Data | ❌ | Unsupported op Det |
 | node/test_det_nd/model.onnx | 22 | Data | ❌ | Unsupported op Det |
-| node/test_dft/model.onnx | 20 | Data | ❌ | DFT axis input must be a constant scalar for code generation |
-| node/test_dft_axis/model.onnx | 20 | Data | ❌ | DFT axis input must be a constant scalar for code generation |
+| node/test_dft/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
+| node/test_dft_axis/model.onnx | 20 | Data | ✅ | OK (max ULP 72) |
 | node/test_dft_axis_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 72) |
-| node/test_dft_inverse/model.onnx | 20 | Data | ❌ | DFT axis input must be a constant scalar for code generation |
+| node/test_dft_inverse/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 877448397) |
 | node/test_dft_inverse_opset19/model.onnx | 19 | Data | ❌ | Out of tolerance (max ULP 877448397) |
 | node/test_dft_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 4) |
 | node/test_div/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
