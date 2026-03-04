@@ -151,6 +151,35 @@ from shared.scalar_functions import (
 from shared.scalar_types import ScalarFunctionError, ScalarType
 
 
+_MATH_FN_MAP: dict[str, tuple[str, str]] = {
+    "exp": ("expf", "exp"),
+    "log": ("logf", "log"),
+    "sqrt": ("sqrtf", "sqrt"),
+    "cos": ("cosf", "cos"),
+    "sin": ("sinf", "sin"),
+    "tan": ("tanf", "tan"),
+    "tanh": ("tanhf", "tanh"),
+    "fabs": ("fabsf", "fabs"),
+    "pow": ("powf", "pow"),
+    "floor": ("floorf", "floor"),
+    "ceil": ("ceilf", "ceil"),
+    "nearbyint": ("nearbyintf", "nearbyint"),
+    "llrint": ("llrintf", "llrint"),
+    "fmax": ("fmaxf", "fmax"),
+    "fmin": ("fminf", "fmin"),
+}
+
+
+def _resolve_math_fn(name: str, dtype: ScalarType) -> str:
+    pair = _MATH_FN_MAP.get(name)
+    if pair is None:
+        raise CodegenError(f"Unknown math function: {name}")
+    float_name, double_name = pair
+    if dtype == ScalarType.F64:
+        return double_name
+    return float_name
+
+
 def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
     def strip_string_literals(line: str) -> str:
         sanitized: list[str] = []
@@ -394,6 +423,26 @@ class CEmitter:
         self._large_weight_threshold = large_weight_threshold
         self._replicate_ort_bugs = replicate_ort_bugs
         self._emit_state: _EmitState | None = None
+
+    def _setup_template_resolvers(
+        self, scalar_registry: ScalarFunctionRegistry
+    ) -> None:
+        def scalar_fn(
+            function: ScalarFunction,
+            dtype: ScalarType,
+            params: tuple[float, ...] = (),
+        ) -> str | None:
+            return CEmitter._scalar_function_name(
+                function, dtype, scalar_registry, params=params
+            )
+
+        def math_fn(name: str, dtype: ScalarType) -> str:
+            return _resolve_math_fn(name, dtype)
+
+        self._env.globals["scalar_fn"] = scalar_fn
+        self._env.globals["math_fn"] = math_fn
+        self._env.globals["SF"] = ScalarFunction
+        self._env.globals["ST"] = ScalarType
 
     @staticmethod
     def _sanitize_identifier(name: str) -> str:
@@ -2547,6 +2596,7 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
+        self._setup_template_resolvers(scalar_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
@@ -2709,6 +2759,7 @@ class CEmitter:
         self._env.globals["dim_args"] = dim_args
         templates = self._load_templates(emit_testbench)
         scalar_registry = ScalarFunctionRegistry()
+        self._setup_template_resolvers(scalar_registry)
         testbench_template = templates.get("testbench")
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
@@ -2873,6 +2924,7 @@ class CEmitter:
         if testbench_template is None:
             raise CodegenError("Failed to load testbench template")
         scalar_registry = ScalarFunctionRegistry()
+        self._setup_template_resolvers(scalar_registry)
         tensor_dim_names = self._build_tensor_dim_names(model, {}, {})
         initial_name_map = self._build_value_name_map(name_map, {})
         self._emit_state = _EmitState(
