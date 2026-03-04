@@ -16366,12 +16366,6 @@ class CEmitter:
         return CEmitter._format_float(value)
 
     @staticmethod
-    def _math_fn(dtype: ScalarType, float_name: str, double_name: str) -> str:
-        if dtype == ScalarType.F64:
-            return double_name
-        return float_name
-
-    @staticmethod
     def _format_int64(value: int) -> str:
         min_value = -(2**63)
         if value == min_value:
