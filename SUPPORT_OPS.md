@@ -5,7 +5,7 @@
 
 Operators are marked supported when they appear in an ONNX file with a successful verify result.
 
-Supported operators: 190 / 205
+Supported operators: 191 / 205
 
 | Operator | Supported |
 | --- | --- |
@@ -107,7 +107,7 @@ Supported operators: 190 / 205
 | MaxUnpool | ❌ |
 | Mean | ✅ |
 | MeanVarianceNormalization | ✅ |
-| MelWeightMatrix | ❌ |
+| MelWeightMatrix | ✅ |
 | Min | ✅ |
 | Mish | ✅ |
 | Mod | ✅ |

@@ -1106,6 +1106,25 @@ class HannWindowOp(RenderableOpBase):
 
 
 @dataclass(frozen=True)
+class MelWeightMatrixOp(RenderableOpBase):
+    __io_inputs__ = (
+        "num_mel_bins",
+        "dft_length",
+        "sample_rate",
+        "lower_edge_hertz",
+        "upper_edge_hertz",
+    )
+    __io_outputs__ = ("output",)
+    num_mel_bins: str
+    dft_length: str
+    sample_rate: str
+    lower_edge_hertz: str
+    upper_edge_hertz: str
+    output: str
+    values: tuple[float, ...]
+
+
+@dataclass(frozen=True)
 class OneHotOp(RenderableOpBase):
     __io_inputs__ = ("indices", "depth", "values")
     __io_outputs__ = ("output",)

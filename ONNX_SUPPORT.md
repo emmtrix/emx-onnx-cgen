@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1555 / 1802, 86.3% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1556 / 1802, 86.3% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1555 / 1802 ONNX files (86.3%).
+Coverage 1556 / 1802 ONNX files (86.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -967,7 +967,7 @@ Coverage 1555 / 1802 ONNX files (86.3%).
 | node/test_mean_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_mean_one_input/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_mean_two_inputs/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
-| node/test_melweightmatrix/model.onnx | 17 | Data | ❌ | Unsupported op MelWeightMatrix |
+| node/test_melweightmatrix/model.onnx | 17 | Data | ✅ | OK (max ULP 0) |
 | node/test_min_example/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_min_float16/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
 | node/test_min_float32/model.onnx | 13 | Data | ✅ | OK (max ULP 0) |
