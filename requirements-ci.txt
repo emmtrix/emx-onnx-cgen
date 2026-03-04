@@ -26,5 +26,6 @@ onnxoptimizer>=0.3.13
 # Dev tooling (recommended)
 ruff>=0.6.0
 black>=24.0.0
+vulture>=2.11
 setuptools_scm[toml]>=7.0
 pyinstaller

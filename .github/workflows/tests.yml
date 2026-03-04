@@ -37,6 +37,9 @@ jobs:
       - name: Run Ruff
         run: ruff check src tests
 
+      - name: Run Vulture
+        run: vulture
+
       - name: Run tests
         if: github.event_name == 'push'
         run: pytest -n auto -q

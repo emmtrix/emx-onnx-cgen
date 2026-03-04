@@ -49,3 +49,13 @@ extend-exclude = [
     "onnx2c-org",
     "onnx-org",
 ]
+
+[tool.vulture]
+exclude = [
+    "emx-pytorch2c-org/",
+    "onnx2c-org/",
+    "onnx-org/",
+    "tests/",
+]
+min_confidence = 80
+paths = ["src"]

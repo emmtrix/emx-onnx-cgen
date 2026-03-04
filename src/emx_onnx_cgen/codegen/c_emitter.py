@@ -19,6 +19,7 @@ from jinja2 import (
 import numpy as np
 
 from ..errors import CodegenError
+from ..testbench_output_format import parse_testbench_output_format
 from ..ops import (
     COMPARE_FUNCTIONS,
     OperatorKind,
@@ -9858,6 +9859,66 @@ class CEmitter:
                 axis_dim=data_shape[op.axis],
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, GatherOp):
+            params = self._shared_param_map(
+                [
+                    ("data", op.data),
+                    ("indices", op.indices),
+                    ("output", op.output),
+                ]
+            )
+            data_shape = self._ctx_shape(op.data)
+            indices_shape = self._ctx_shape(op.indices)
+            output_shape_raw = self._ctx_shape(op.output)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            indices_start = op.axis
+            indices_end = indices_start + len(indices_shape)
+            indices_indices = loop_vars[indices_start:indices_end]
+            if not indices_indices:
+                indices_indices = ("0",)
+            data_indices = []
+            for axis_index in range(len(data_shape)):
+                if axis_index < op.axis:
+                    data_indices.append(loop_vars[axis_index])
+                elif axis_index == op.axis:
+                    data_indices.append("gather_index")
+                else:
+                    data_indices.append(loop_vars[axis_index + len(indices_shape) - 1])
+            data_suffix = self._param_array_suffix(data_shape)
+            indices_suffix = self._param_array_suffix(indices_shape)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["data"], c_type, data_suffix, True),
+                    (
+                        params["indices"],
+                        self._ctx_dtype(op.indices).c_type,
+                        indices_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = gather_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                data=params["data"],
+                indices=params["indices"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                data_suffix=data_suffix,
+                indices_suffix=indices_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                indices_indices=indices_indices,
+                data_indices=tuple(data_indices),
+                axis_dim=data_shape[op.axis],
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, GatherNDOp):
             params = self._shared_param_map(
                 [
@@ -11544,6 +11605,51 @@ class CEmitter:
                 iou_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_default=boxes_dtype.zero_literal,
                 score_threshold_enabled=op.score_threshold is not None,
+                dim_args=dim_args,
+            ).rstrip()
+            return with_node_comment(rendered)
+        if isinstance(op, ExpandOp):
+            params = self._shared_param_map(
+                [
+                    ("input0", op.input0),
+                    ("output", op.output),
+                ]
+            )
+            input_shape = self._ctx_shape(op.input0)
+            output_shape_raw = self._ctx_shape(op.output)
+            output_shape = CEmitter._codegen_shape(output_shape_raw)
+            input_shape_padded = self._derived(op, "input_shape_padded")
+            input_strides = self._derived(op, "input_strides")
+            if not isinstance(input_shape_padded, tuple) or not isinstance(
+                input_strides, tuple
+            ):
+                raise CodegenError("Expand derived shape metadata is invalid")
+            loop_vars = CEmitter._loop_vars(output_shape_raw)
+            input_terms: list[str] = []
+            for var, dim, stride in zip(loop_vars, input_shape_padded, input_strides):
+                index_var = "0" if dim == 1 else var
+                input_terms.append(f"({index_var}) * {stride}")
+            input_index_expr = " + ".join(input_terms) if input_terms else "0"
+            input_suffix = self._param_array_suffix(input_shape)
+            output_suffix = self._param_array_suffix(output_shape_raw)
+            param_decls = self._build_param_decls(
+                [
+                    (params["input0"], c_type, input_suffix, True),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            rendered = expand_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                input0=params["input0"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                input_suffix=input_suffix,
+                output_suffix=output_suffix,
+                output_shape=output_shape,
+                loop_vars=loop_vars,
+                input_index_expr=input_index_expr,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
@@ -16019,14 +16125,20 @@ class CEmitter:
                     "optional_flag_name": optional_flag,
                 }
             )
-        if testbench_output_format not in {"json", "txt", "txt-emmtrix"}:
-            raise CodegenError(
-                "Unsupported testbench output format "
-                f"{testbench_output_format!r}; expected 'json', 'txt', or 'txt-emmtrix'"
+        try:
+            parsed_output_format = parse_testbench_output_format(
+                testbench_output_format
             )
+        except ValueError as exc:
+            raise CodegenError(str(exc)) from exc
         rendered = testbench_template.render(
             model_name=model.name,
-            testbench_output_format=testbench_output_format,
+            testbench_output_format=parsed_output_format.kind,
+            testbench_emmtrix_ulp_tag=(
+                parsed_output_format.emmtrix_ulp_tag
+                if parsed_output_format.kind == "txt-emmtrix"
+                else None
+            ),
             rng_requires_u64=rng_requires_u64,
             rng_requires_float=rng_requires_float,
             rng_requires_double=rng_requires_double,

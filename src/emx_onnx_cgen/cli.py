@@ -30,6 +30,7 @@ from .ir.model import TensorType
 from .onnx_import import import_onnx
 from .determinism import deterministic_reference_runtime
 from .onnxruntime_utils import make_deterministic_session_options
+from .testbench_output_format import parse_testbench_output_format
 from .testbench import decode_testbench_array
 from .verification import worst_ulp_diff
 
@@ -91,6 +92,14 @@ def _env_flag(name: str) -> bool:
     if value is None:
         return False
     return value.strip().lower() not in {"", "0", "false", "no", "off"}
+
+
+def _parse_testbench_output_format_arg(value: str) -> str:
+    try:
+        parse_testbench_output_format(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+    return value
 
 
 @dataclass(frozen=True)
@@ -629,9 +638,12 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     compile_parser.add_argument(
         "--testbench-output-format",
-        choices=("json", "txt", "txt-emmtrix"),
+        type=_parse_testbench_output_format_arg,
         default="json",
-        help=("Output format used by the generated testbench (default: json)"),
+        help=(
+            "Output format used by the generated testbench "
+            "(json, txt, txt-emmtrix, or txt-emmtrix:<float>; default: json)"
+        ),
     )
     compile_parser.add_argument(
         "--testbench-file",

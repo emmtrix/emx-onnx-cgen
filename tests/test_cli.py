@@ -205,3 +205,31 @@ def test_cli_compile_accepts_testbench_output_format_txt_emmtrix() -> None:
         ]
     )
     assert args.testbench_output_format == "txt-emmtrix"
+
+
+def test_cli_compile_accepts_testbench_output_format_txt_emmtrix_with_ulp() -> None:
+    parser = cli._build_parser()
+    args = parser.parse_args(
+        [
+            "compile",
+            "model.onnx",
+            "out.c",
+            "--testbench-output-format",
+            "txt-emmtrix:123.5",
+        ]
+    )
+    assert args.testbench_output_format == "txt-emmtrix:123.5"
+
+
+def test_cli_compile_rejects_testbench_output_format_txt_emmtrix_invalid_ulp() -> None:
+    parser = cli._build_parser()
+    with pytest.raises(SystemExit):
+        parser.parse_args(
+            [
+                "compile",
+                "model.onnx",
+                "out.c",
+                "--testbench-output-format",
+                "txt-emmtrix:abc",
+            ]
+        )
