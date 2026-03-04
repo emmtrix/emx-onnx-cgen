@@ -51,7 +51,9 @@ For PyTorch models, see the related project [`emx-pytorch-cgen`](https://github.
   - `int8`, `uint8`, `int16`, `uint16`, `int32`, `uint32`, `int64`, `uint64`
   - `bool`
   - `string` (fixed-size `'\0'`-terminated C strings; see [`docs/output-format.md`](docs/output-format.md))
+  - `sequence(<tensor type>)` (fixed-capacity tensor sequences with presence/length metadata; see [`docs/output-format.md`](docs/output-format.md))
   - `optional(<tensor type>)` (optional tensors represented via an extra `_Bool <name>_present` flag; see [`docs/output-format.md`](docs/output-format.md))
+  - Not supported: `float8*`, `float4e2m1`, `int2/int4`, `uint2/uint4`, `complex64/complex128`, and ONNX `map/sparse_tensor/opaque` value types.
 - Optional support for dynamic dimensions using C99 variable-length arrays (VLAs), when the target compiler supports them.
 
 ## Usage Scenarios
