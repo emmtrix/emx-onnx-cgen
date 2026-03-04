@@ -14055,6 +14055,8 @@ class CEmitter:
                 round_fn=round_fn,
                 min_fn=min_fn,
                 max_fn=max_fn,
+                output_wrap=self._replicate_ort_bugs,
+                output_is_signed=op.dtype.is_signed,
                 dim_args=dim_args,
             ).rstrip()
             return with_node_comment(rendered)
