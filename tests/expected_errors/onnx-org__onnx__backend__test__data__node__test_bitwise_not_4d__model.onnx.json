@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op BitwiseNot",
+  "error": "OK (max abs diff 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_bitwise_not_4d model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "BitwiseNot"
   ],
-  "opset_version": 18
+  "opset_version": 18,
+  "generated_checksum": "19e796bde625b00ddd8d41dcad50260d0ca4554fe26d0ea19c7b61a03bcf5ab9"
 }
