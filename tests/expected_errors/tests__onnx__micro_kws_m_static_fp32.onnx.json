@@ -1,0 +1,18 @@
+{
+  "error": "OK (max ULP 6)",
+  "command_line": "verify --sanitize --model-base-dir tests/onnx micro_kws_m_static_fp32.onnx",
+  "verification_mode": "Random+ORT",
+  "operators": [
+    "Reshape",
+    "Conv",
+    "Relu",
+    "MaxPool",
+    "AveragePool",
+    "Transpose",
+    "MatMul",
+    "Add",
+    "Softmax"
+  ],
+  "opset_version": 15,
+  "generated_checksum": "3eaabd440f4effd8ce9bdb1dbe4ea6935f1587b3c7c95f06d543a0031503206f"
+}
