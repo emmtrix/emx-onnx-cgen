@@ -18,7 +18,7 @@ Aggregates non-success verification outcomes.
 | Unsupported elem_type 23 (FLOAT4E2M1) for tensor '*'. | 14 | 25 |
 | Unsupported op ImageDecoder | 9 | 20 |
 | Dropout supports only the data input and 1 or 2 outputs | 8 | 22 |
-| Out of tolerance | 8 | 15, 19, 20, 22 |
+| Out of tolerance | 6 | 15, 20, 22 |
 | Unsupported op Col2Im | 5 | 18 |
 | OptionalHasElement expects exactly one non-empty input. | 4 | 18 |
 | Unsupported elem_type 24 (FLOAT8E8M0) for tensor '*'. | 4 | 25 |
@@ -65,11 +65,10 @@ Aggregates non-success verification outcomes.
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
 | Unsupported op BitwiseNot | 18 | 2 |
-| Out of tolerance | 19 | 1 |
 | Unsupported op ImageDecoder | 20 | 9 |
-| Out of tolerance | 20 | 3 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
+| Out of tolerance | 20 | 2 |
 | ReduceMax does not support dtype bool | 20 | 1 |
 | ReduceMin does not support dtype bool | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |

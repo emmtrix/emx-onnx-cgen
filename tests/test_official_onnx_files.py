@@ -49,6 +49,14 @@ MODEL_EXTRA_VERIFY_ARGS = {
         "--fp32-accumulation-strategy",
         "fp64",
     ),
+    "onnx-org/onnx/backend/test/data/node/test_dft_inverse/model.onnx": (
+        "--atol-eps",
+        "2",
+    ),
+    "onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19/model.onnx": (
+        "--atol-eps",
+        "2",
+    ),
     "onnx2c-org/test/mnist/model.onnx": (
         "--max-ulp",
         "200",

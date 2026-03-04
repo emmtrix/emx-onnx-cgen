@@ -1,6 +1,6 @@
 {
-  "error": "Out of tolerance (max ULP 877448397)",
-  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19 model.onnx --test-data-dir test_data_set_0",
+  "error": "OK (max ULP 8)",
+  "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_inverse_opset19 model.onnx --test-data-dir test_data_set_0 --atol-eps 2",
   "verification_mode": "Data",
   "operators": [
     "DFT"

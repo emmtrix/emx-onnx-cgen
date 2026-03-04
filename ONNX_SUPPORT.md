@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1551 / 1802, 86.1% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1553 / 1802, 86.2% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1551 / 1802 ONNX files (86.1%).
+Coverage 1553 / 1802 ONNX files (86.2%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -593,8 +593,8 @@ Coverage 1551 / 1802 ONNX files (86.1%).
 | node/test_dft/model.onnx | 20 | Data | ✅ | OK (max ULP 4) |
 | node/test_dft_axis/model.onnx | 20 | Data | ✅ | OK (max ULP 72) |
 | node/test_dft_axis_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 72) |
-| node/test_dft_inverse/model.onnx | 20 | Data | ❌ | Out of tolerance (max ULP 877448397) |
-| node/test_dft_inverse_opset19/model.onnx | 19 | Data | ❌ | Out of tolerance (max ULP 877448397) |
+| node/test_dft_inverse/model.onnx | 20 | Data | ✅ | OK (max ULP 8) |
+| node/test_dft_inverse_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 8) |
 | node/test_dft_opset19/model.onnx | 19 | Data | ✅ | OK (max ULP 4) |
 | node/test_div/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
 | node/test_div_bcast/model.onnx | 14 | Data | ✅ | OK (max ULP 0) |
