@@ -455,6 +455,10 @@ def _reduce_dtype_supported(dtype: ScalarType) -> bool:
     }
 
 
+def _reduce_bool_dtype_supported(op_type: str) -> bool:
+    return op_type in {"ReduceMax", "ReduceMin"}
+
+
 def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
     if node.op_type not in REDUCE_KIND_BY_OP:
         raise UnsupportedOpError(f"Unsupported op {node.op_type}")
@@ -465,7 +469,11 @@ def lower_reduce(graph: Graph, node: Node) -> ReduceOp | ReshapeOp:
             f"{node.op_type} expects matching input/output dtypes, "
             f"got {op_dtype.onnx_name} and {output_dtype.onnx_name}"
         )
-    if not _reduce_dtype_supported(op_dtype):
+    if op_dtype == ScalarType.BOOL and not _reduce_bool_dtype_supported(node.op_type):
+        raise UnsupportedOpError(
+            f"{node.op_type} does not support dtype {op_dtype.onnx_name}"
+        )
+    if op_dtype != ScalarType.BOOL and not _reduce_dtype_supported(op_dtype):
         raise UnsupportedOpError(
             f"{node.op_type} does not support dtype {op_dtype.onnx_name}"
         )

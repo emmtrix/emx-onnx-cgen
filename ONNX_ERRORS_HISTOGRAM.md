@@ -43,8 +43,6 @@ Aggregates non-success verification outcomes.
 | Dropout mask output is not supported | 1 | 22 |
 | Graph must contain at least one node | 1 | 25 |
 | Pad value input must be a scalar | 1 | 24 |
-| ReduceMax does not support dtype bool | 1 | 20 |
-| ReduceMin does not support dtype bool | 1 | 20 |
 | Unsupported op ArrayFeatureExtractor | 1 |  |
 | Unsupported op Binarizer | 1 |  |
 | Unsupported op Loop | 1 | 16 |
@@ -65,8 +63,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
 | Out of tolerance | 20 | 2 |
-| ReduceMax does not support dtype bool | 20 | 1 |
-| ReduceMin does not support dtype bool | 20 | 1 |
 | Dropout supports only the data input and 1 or 2 outputs | 22 | 8 |
 | Unsupported op RNN | 22 | 4 |
 | HardSigmoid only supports alpha=0.2 | 22 | 3 |
