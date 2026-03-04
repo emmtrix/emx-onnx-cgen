@@ -20,7 +20,7 @@ for (idx_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }};
 {% for _ in axes %}
     }
 {% endfor %}
-    {{ c_type }} denom = {{ math_fn("sqrt", dtype) }}(var / {{ reduce_count }} + {{ epsilon_literal }});
+    {{ c_type }} denom = {{ scalar_fn(SF.SQRT, dtype) }}(var / {{ reduce_count }} + {{ epsilon_literal }});
 {% for axis in axes %}
     for (idx_t {{ loop_vars[axis] }} = 0; {{ loop_vars[axis] }} < {{ shape[axis] }}; ++{{ loop_vars[axis] }}) {
 {% endfor %}

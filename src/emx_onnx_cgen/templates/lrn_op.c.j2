@@ -13,7 +13,7 @@ for (idx_t c = channel_start; c <= channel_end; ++c) {
     sum += val * val;
 }
 {{ c_type }} scale = {{ bias_literal }} + {{ alpha_div_size_literal }} * sum;
-{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} / {{ math_fn("pow", dtype) }}(scale, {{ beta_literal }});
+{{ output }}{% for var in loop_vars %}[{{ var }}]{% endfor %} = {{ input0 }}{% for var in loop_vars %}[{{ var }}]{% endfor %} / {{ scalar_fn(SF.POW, dtype) }}(scale, {{ beta_literal }});
 {% for _ in shape %}
 }
 {% endfor %}

@@ -52,11 +52,11 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}quantized = requantized + (int64_t)output_zero;
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}} else {
             {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}{{ compute_type }} scaled = (({{ compute_type }})acc) * ({{ compute_type }})scale + ({{ compute_type }})output_zero;
-            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}quantized = (int64_t){{ math_fn("llrint", compute_dtype) }}(scaled);
+            {% for indent in range(output_loop_vars | length + 1) %}    {% endfor %}quantized = (int64_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}}
 {% else %}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} scaled = (({{ compute_type }})acc) * ({{ compute_type }})scale + ({{ compute_type }})output_zero;
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}int64_t quantized = (int64_t){{ math_fn("llrint", compute_dtype) }}(scaled);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}int64_t quantized = (int64_t){{ scalar_fn(SF.LLRINT, compute_dtype) }}(scaled);
 {% endif %}
 {% if output_wrap and output_is_signed %}
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}int32_t wrapped_input = (int32_t)quantized;

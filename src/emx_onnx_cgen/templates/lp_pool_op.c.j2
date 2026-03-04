@@ -12,11 +12,11 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                             const idx_t in_w = w_start + kw * {{ dilation_w }};
                             if (in_h >= 0 && in_h < {{ in_h }} && in_w >= 0 && in_w < {{ in_w }}) {
                                 {{ c_type }} value = {{ input0 }}[n][c][in_h][in_w];
-                                acc += {{ math_fn("pow", dtype) }}({{ math_fn("fabs", dtype) }}(value), ({{ c_type }}){{ p }});
+                                acc += {{ scalar_fn(SF.POW, dtype) }}({{ scalar_fn(SF.ABS, dtype) }}(value), ({{ c_type }}){{ p }});
                             }
                         }
                     }
-                    {{ output }}[n][c][oh][ow] = {{ math_fn("pow", dtype) }}(acc, ({{ c_type }})1.0 / ({{ c_type }}){{ p }});
+                    {{ output }}[n][c][oh][ow] = {{ scalar_fn(SF.POW, dtype) }}(acc, ({{ c_type }})1.0 / ({{ c_type }}){{ p }});
                 }
             }
         }

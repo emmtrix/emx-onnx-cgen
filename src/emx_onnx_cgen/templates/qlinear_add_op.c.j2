@@ -11,7 +11,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} input0_real = ((({{ compute_type }})((int32_t){{ input0_index_expr }} - input0_zero)) * input0_scale_value);
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} input1_real = ((({{ compute_type }})((int32_t){{ input1_index_expr }} - input1_zero)) * input1_scale_value);
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} scaled = (input0_real + input1_real) / output_scale_value + output_zero;
-        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} rounded = {{ math_fn("nearbyint", compute_dtype) }}(scaled);
+        {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled);
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ min_literal }});
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }}){{ max_literal }});
         {% for indent in range(output_loop_vars | length) %}    {% endfor %}{{ output_index_expr }} = ({{ output_c_type }})rounded;

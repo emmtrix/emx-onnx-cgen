@@ -31,9 +31,9 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             {{ acc_type }} sum = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {
                 {{ acc_type }} value = ({{ acc_type }})input_flat[base + c_idx * d] - max_value;
-                sum += {{ math_fn("exp", acc_dtype) }}(value);
+                sum += {{ scalar_fn(SF.EXP, acc_dtype) }}(value);
             }
-            {{ acc_type }} logsum = {{ math_fn("log", acc_dtype) }}(sum);
+            {{ acc_type }} logsum = {{ scalar_fn(SF.LOG, acc_dtype) }}(sum);
 {% if log_prob %}
             {{ acc_type }} loss_value = {{ acc_zero_literal }};
             for (idx_t c_idx = 0; c_idx < c; ++c_idx) {

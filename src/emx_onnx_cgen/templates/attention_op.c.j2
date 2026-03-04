@@ -123,7 +123,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                     {{ c_type }} score_bias = score + bias;
                     {{ c_type }} score_softcap = score_bias;
                     if (softcap != {{ zero_literal }}) {
-                        score_softcap = softcap * {{ math_fn("tanh", dtype) }}(score_bias / softcap);
+                        score_softcap = softcap * {{ scalar_fn(SF.TANH, dtype) }}(score_bias / softcap);
                     }
                     {% if output_qk_matmul %}
                     if ({{ qk_matmul_output_mode }} == 0) {
@@ -142,7 +142,7 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
                 for (int ki = 0; ki < {{ total_seq }}; ++ki) {
                     {{ c_type }} weight = {{ zero_literal }};
                     if (max_score != {{ min_literal }}) {
-                        weight = {{ math_fn("exp", dtype) }}(scores[ki] - max_score);
+                        weight = {{ scalar_fn(SF.EXP, dtype) }}(scores[ki] - max_score);
                     }
                     weights[ki] = weight;
                     sum += weight;

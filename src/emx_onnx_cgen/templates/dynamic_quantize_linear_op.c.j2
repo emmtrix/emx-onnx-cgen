@@ -15,7 +15,7 @@ for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ d
     {{ scale_expr }} = ({{ scale_c_type }})scale_value;
 
     {{ compute_type }} intermediate_zero_point = ({{ compute_type }})0 - (input_min / scale_value);
-    {{ compute_type }} zero_point_value = {{ math_fn("nearbyint", compute_dtype) }}(intermediate_zero_point);
+    {{ compute_type }} zero_point_value = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(intermediate_zero_point);
     zero_point_value = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(zero_point_value, ({{ compute_type }})0);
     zero_point_value = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(zero_point_value, ({{ compute_type }})255);
     {{ zero_point_expr }} = ({{ zero_point_c_type }})zero_point_value;
@@ -24,7 +24,7 @@ for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ d
 for (idx_t {{ loop_vars[loop.index0] }} = 0; {{ loop_vars[loop.index0] }} < {{ dim }}; ++{{ loop_vars[loop.index0] }}) {
 {% endfor %}
     {{ compute_type }} scaled = ({{ compute_type }}){{ input_expr }} / scale_value;
-    {{ compute_type }} rounded = {{ math_fn("nearbyint", compute_dtype) }}(scaled) + zero_point_value;
+    {{ compute_type }} rounded = {{ scalar_fn(SF.NEARBYINT, compute_dtype) }}(scaled) + zero_point_value;
     rounded = {{ scalar_fn(SF.MAXIMUM, compute_dtype) }}(rounded, ({{ compute_type }})0);
     rounded = {{ scalar_fn(SF.MINIMUM, compute_dtype) }}(rounded, ({{ compute_type }})255);
     {{ output_expr }} = ({{ output_c_type }})rounded;

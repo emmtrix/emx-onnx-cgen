@@ -151,35 +151,6 @@ from shared.scalar_functions import (
 from shared.scalar_types import ScalarFunctionError, ScalarType
 
 
-_MATH_FN_MAP: dict[str, tuple[str, str]] = {
-    "exp": ("expf", "exp"),
-    "log": ("logf", "log"),
-    "sqrt": ("sqrtf", "sqrt"),
-    "cos": ("cosf", "cos"),
-    "sin": ("sinf", "sin"),
-    "tan": ("tanf", "tan"),
-    "tanh": ("tanhf", "tanh"),
-    "fabs": ("fabsf", "fabs"),
-    "pow": ("powf", "pow"),
-    "floor": ("floorf", "floor"),
-    "ceil": ("ceilf", "ceil"),
-    "nearbyint": ("nearbyintf", "nearbyint"),
-    "llrint": ("llrintf", "llrint"),
-    "fmax": ("fmaxf", "fmax"),
-    "fmin": ("fminf", "fmin"),
-}
-
-
-def _resolve_math_fn(name: str, dtype: ScalarType) -> str:
-    pair = _MATH_FN_MAP.get(name)
-    if pair is None:
-        raise CodegenError(f"Unknown math function: {name}")
-    float_name, double_name = pair
-    if dtype == ScalarType.F64:
-        return double_name
-    return float_name
-
-
 def _format_c_indentation(source: str, *, indent: str = "    ") -> str:
     def strip_string_literals(line: str) -> str:
         sanitized: list[str] = []
@@ -436,11 +407,7 @@ class CEmitter:
                 function, dtype, scalar_registry, params=params
             )
 
-        def math_fn(name: str, dtype: ScalarType) -> str:
-            return _resolve_math_fn(name, dtype)
-
         self._env.globals["scalar_fn"] = scalar_fn
-        self._env.globals["math_fn"] = math_fn
         self._env.globals["SF"] = ScalarFunction
         self._env.globals["ST"] = ScalarType
 
@@ -3126,15 +3093,19 @@ class CEmitter:
             ScalarFunction.ERF,
             ScalarFunction.EXP,
             ScalarFunction.FLOOR,
+            ScalarFunction.FMAX,
+            ScalarFunction.FMIN,
             ScalarFunction.GELU,
             ScalarFunction.HARDSIGMOID,
             ScalarFunction.HARDSWISH,
+            ScalarFunction.LLRINT,
             ScalarFunction.LOG,
             ScalarFunction.FMOD,
             ScalarFunction.REMAINDER,
             ScalarFunction.LEAKY_RELU,
             ScalarFunction.MISH,
             ScalarFunction.MUL,
+            ScalarFunction.NEARBYINT,
             ScalarFunction.NEG,
             ScalarFunction.LOGICAL_NOT,
             ScalarFunction.LOGICAL_OR,
@@ -6228,10 +6199,10 @@ class CEmitter:
             update_expr = None
             init_literal = None
             final_expr = "acc"
-            fabs_fn = _resolve_math_fn("fabs", output_dtype)
-            exp_fn = _resolve_math_fn("exp", output_dtype)
-            log_fn = _resolve_math_fn("log", output_dtype)
-            sqrt_fn = _resolve_math_fn("sqrt", output_dtype)
+            fabs_fn = self._scalar_function_name(ScalarFunction.ABS, output_dtype, self._emit_state.scalar_registry)
+            exp_fn = self._scalar_function_name(ScalarFunction.EXP, output_dtype, self._emit_state.scalar_registry)
+            log_fn = self._scalar_function_name(ScalarFunction.LOG, output_dtype, self._emit_state.scalar_registry)
+            sqrt_fn = self._scalar_function_name(ScalarFunction.SQRT, output_dtype, self._emit_state.scalar_registry)
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"acc += {value_expr};"
@@ -6490,10 +6461,10 @@ class CEmitter:
             init_literal = None
             post_expr = None
             reduce_dtype = self._ctx_dtype(op.output)
-            fabs_fn = _resolve_math_fn("fabs", reduce_dtype)
-            exp_fn = _resolve_math_fn("exp", reduce_dtype)
-            log_fn = _resolve_math_fn("log", reduce_dtype)
-            sqrt_fn = _resolve_math_fn("sqrt", reduce_dtype)
+            fabs_fn = self._scalar_function_name(ScalarFunction.ABS, reduce_dtype, self._emit_state.scalar_registry)
+            exp_fn = self._scalar_function_name(ScalarFunction.EXP, reduce_dtype, self._emit_state.scalar_registry)
+            log_fn = self._scalar_function_name(ScalarFunction.LOG, reduce_dtype, self._emit_state.scalar_registry)
+            sqrt_fn = self._scalar_function_name(ScalarFunction.SQRT, reduce_dtype, self._emit_state.scalar_registry)
             if op.reduce_kind == "sum":
                 init_literal = zero_literal
                 update_expr = f"*out_ptr += {value_expr};"

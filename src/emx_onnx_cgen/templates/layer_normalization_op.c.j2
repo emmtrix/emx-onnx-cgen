@@ -43,7 +43,7 @@ for (idx_t {{ prefix_loop_vars[loop.index0] }} = 0; {{ prefix_loop_vars[loop.ind
     }
 {% endfor %}
     var = var / {{ inner }};
-    {{ acc_type }} inv_std = {{ acc_one_literal }} / {{ math_fn("sqrt", acc_dtype) }}(var + {{ acc_epsilon_literal }});
+    {{ acc_type }} inv_std = {{ acc_one_literal }} / {{ scalar_fn(SF.SQRT, acc_dtype) }}(var + {{ acc_epsilon_literal }});
 {% if mean_output %}
     {{ mean_output }}{% for var in mean_index_vars %}[{{ var }}]{% endfor %} = mean;
 {% endif %}

@@ -11,13 +11,13 @@ EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 {{ c_type }} value = input_flat[base + axis_idx * inner];
 {% if p == 1 %}
-                acc += {{ math_fn("fabs", dtype) }}(value);
+                acc += {{ scalar_fn(SF.ABS, dtype) }}(value);
 {% else %}
                 acc += value * value;
 {% endif %}
             }
 {% if p == 2 %}
-            acc = {{ math_fn("sqrt", dtype) }}(acc);
+            acc = {{ scalar_fn(SF.SQRT, dtype) }}(acc);
 {% endif %}
             for (idx_t axis_idx = 0; axis_idx < axis_size; ++axis_idx) {
                 output_flat[base + axis_idx * inner] = input_flat[base + axis_idx * inner] / acc;
