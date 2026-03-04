@@ -70,6 +70,7 @@ from ..ir.ops import (
     GroupNormalizationOp,
     HammingWindowOp,
     HannWindowOp,
+    MelWeightMatrixOp,
     IfOptionalSequenceConstOp,
     HardmaxOp,
     IdentityOp,
@@ -2144,6 +2145,16 @@ class CEmitter:
                 output=name_map.get(op.output, op.output),
                 periodic=op.periodic,
             )
+        if isinstance(op, MelWeightMatrixOp):
+            return MelWeightMatrixOp(
+                num_mel_bins=name_map.get(op.num_mel_bins, op.num_mel_bins),
+                dft_length=name_map.get(op.dft_length, op.dft_length),
+                sample_rate=name_map.get(op.sample_rate, op.sample_rate),
+                lower_edge_hertz=name_map.get(op.lower_edge_hertz, op.lower_edge_hertz),
+                upper_edge_hertz=name_map.get(op.upper_edge_hertz, op.upper_edge_hertz),
+                output=name_map.get(op.output, op.output),
+                values=op.values,
+            )
         if isinstance(op, BernoulliOp):
             return BernoulliOp(
                 input0=name_map.get(op.input0, op.input0),
@@ -2556,6 +2567,9 @@ class CEmitter:
                 "blackman_window": self._env.get_template("blackman_window_op.c.j2"),
                 "hamming_window": self._env.get_template("hamming_window_op.c.j2"),
                 "hann_window": self._env.get_template("hann_window_op.c.j2"),
+                "mel_weight_matrix": self._env.get_template(
+                    "mel_weight_matrix_op.c.j2"
+                ),
                 "one_hot": self._env.get_template("one_hot_op.c.j2"),
                 "tfidf_vectorizer": self._env.get_template("tfidf_vectorizer_op.c.j2"),
                 "string_concat": self._env.get_template("string_concat_op.c.j2"),
@@ -3353,6 +3367,8 @@ class CEmitter:
             and op.function in {ScalarFunction.ISINF, ScalarFunction.ISNAN}
             for op in resolved_ops
         ):
+            includes.add("#include <math.h>")
+        if any(isinstance(op, MelWeightMatrixOp) for op in resolved_ops):
             includes.add("#include <math.h>")
         constant_of_shape_inputs = {
             model.op_context.dtype(op.input0)
@@ -5602,6 +5618,16 @@ class CEmitter:
                 output=temp_map.get(op.output, op.output),
                 periodic=op.periodic,
             )
+        if isinstance(op, MelWeightMatrixOp):
+            return MelWeightMatrixOp(
+                num_mel_bins=temp_map.get(op.num_mel_bins, op.num_mel_bins),
+                dft_length=temp_map.get(op.dft_length, op.dft_length),
+                sample_rate=temp_map.get(op.sample_rate, op.sample_rate),
+                lower_edge_hertz=temp_map.get(op.lower_edge_hertz, op.lower_edge_hertz),
+                upper_edge_hertz=temp_map.get(op.upper_edge_hertz, op.upper_edge_hertz),
+                output=temp_map.get(op.output, op.output),
+                values=op.values,
+            )
         if isinstance(op, OneHotOp):
             return OneHotOp(
                 indices=temp_map.get(op.indices, op.indices),
@@ -6205,6 +6231,7 @@ class CEmitter:
             blackman_window_template=templates["blackman_window"],
             hamming_window_template=templates["hamming_window"],
             hann_window_template=templates["hann_window"],
+            mel_weight_matrix_template=templates["mel_weight_matrix"],
             one_hot_template=templates["one_hot"],
             tfidf_vectorizer_template=templates["tfidf_vectorizer"],
             string_concat_template=templates["string_concat"],
@@ -6758,6 +6785,7 @@ class CEmitter:
         blackman_window_template,
         hamming_window_template,
         hann_window_template,
+        mel_weight_matrix_template,
         one_hot_template,
         tfidf_vectorizer_template,
         string_concat_template,
@@ -12341,6 +12369,81 @@ class CEmitter:
                 compute_scalar_dtype=compute_dtype,
             ).rstrip()
             return with_node_comment(rendered)
+        if isinstance(op, MelWeightMatrixOp):
+            params = self._shared_param_map(
+                [
+                    ("num_mel_bins", op.num_mel_bins),
+                    ("dft_length", op.dft_length),
+                    ("sample_rate", op.sample_rate),
+                    ("lower_edge_hertz", op.lower_edge_hertz),
+                    ("upper_edge_hertz", op.upper_edge_hertz),
+                    ("output", op.output),
+                ]
+            )
+            scalar_suffix = self._param_array_suffix(())
+            output_shape = self._ctx_shape(op.output)
+            output_suffix = self._param_array_suffix(output_shape)
+            param_decls = self._build_param_decls(
+                [
+                    (
+                        params["num_mel_bins"],
+                        self._ctx_dtype(op.num_mel_bins).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["dft_length"],
+                        self._ctx_dtype(op.dft_length).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["sample_rate"],
+                        self._ctx_dtype(op.sample_rate).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["lower_edge_hertz"],
+                        self._ctx_dtype(op.lower_edge_hertz).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (
+                        params["upper_edge_hertz"],
+                        self._ctx_dtype(op.upper_edge_hertz).c_type,
+                        scalar_suffix,
+                        True,
+                    ),
+                    (params["output"], c_type, output_suffix, False),
+                ]
+            )
+            output_dtype = self._ctx_dtype(op.output)
+            compute_dtype = (
+                ScalarType.F64 if output_dtype == ScalarType.F64 else ScalarType.F32
+            )
+            compute_type = "double" if compute_dtype == ScalarType.F64 else "float"
+            rendered = mel_weight_matrix_template.render(
+                model_name=model.name,
+                op_name=op_name,
+                num_mel_bins=params["num_mel_bins"],
+                dft_length=params["dft_length"],
+                sample_rate=params["sample_rate"],
+                lower_edge_hertz=params["lower_edge_hertz"],
+                upper_edge_hertz=params["upper_edge_hertz"],
+                output=params["output"],
+                params=param_decls,
+                c_type=c_type,
+                output_suffix=output_suffix,
+                num_spectrogram_bins=output_shape[0],
+                num_mel_bins_dim=output_shape[1],
+                compute_type=compute_type,
+                seven_hundred_literal=self._format_literal(compute_dtype, 700.0),
+                mel_scale_literal=self._format_literal(compute_dtype, 2595.0),
+                ten_literal=self._format_literal(compute_dtype, 10.0),
+                one_literal=self._format_literal(compute_dtype, 1.0),
+            ).rstrip()
+            return with_node_comment(rendered)
         if isinstance(op, OneHotOp):
             params = self._shared_param_map(
                 [
@@ -15649,6 +15752,8 @@ class CEmitter:
             return self._ctx_shape(op.output)
         if isinstance(op, HannWindowOp):
             return self._ctx_shape(op.output)
+        if isinstance(op, MelWeightMatrixOp):
+            return self._ctx_shape(op.output)
         if isinstance(op, OneHotOp):
             return self._ctx_shape(op.output)
         if isinstance(op, TfIdfVectorizerOp):
@@ -15878,6 +15983,7 @@ class CEmitter:
                 BlackmanWindowOp,
                 HammingWindowOp,
                 HannWindowOp,
+                MelWeightMatrixOp,
                 GridSampleOp,
                 ResizeOp,
                 PadOp,
@@ -16379,8 +16485,9 @@ class CEmitter:
     @staticmethod
     def _testbench_requires_math(
         model: LoweredModel,
-        testbench_inputs: Mapping[str, tuple[float | int | bool, ...] | np.ndarray]
-        | None,
+        testbench_inputs: (
+            Mapping[str, tuple[float | int | bool, ...] | np.ndarray] | None
+        ),
     ) -> bool:
         if not testbench_inputs:
             return False

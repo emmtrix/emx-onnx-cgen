@@ -1,0 +1,84 @@
+EMX_NODE_FN void {{ op_name }}({{ dim_args }}{{ params | join(', ') }}) {
+    const int64_t mel_bins = (int64_t){{ num_mel_bins }}[0];
+    const int64_t dft_len = (int64_t){{ dft_length }}[0];
+    const int64_t sample_rate_value = (int64_t){{ sample_rate }}[0];
+    const {{ compute_type }} lower_hz = ({{ compute_type }}){{ lower_edge_hertz }}[0];
+    const {{ compute_type }} upper_hz = ({{ compute_type }}){{ upper_edge_hertz }}[0];
+    const idx_t freq_bin_count = (idx_t){{ num_spectrogram_bins }};
+    const idx_t mel_bin_count = (idx_t){{ num_mel_bins_dim }};
+
+    for (idx_t row = 0; row < freq_bin_count; ++row) {
+        for (idx_t col = 0; col < mel_bin_count; ++col) {
+            {{ output }}[row][col] = ({{ c_type }})0;
+        }
+    }
+
+    if (mel_bins <= 0 || dft_len <= 0 || sample_rate_value <= 0) {
+        return;
+    }
+
+    const {{ compute_type }} low_mel =
+        ({{ mel_scale_literal }}) * ({{ compute_type }})log10(({{ one_literal }}) + (lower_hz / ({{ seven_hundred_literal }})));
+    const {{ compute_type }} high_mel =
+        ({{ mel_scale_literal }}) * ({{ compute_type }})log10(({{ one_literal }}) + (upper_hz / ({{ seven_hundred_literal }})));
+    const {{ compute_type }} mel_step = (high_mel - low_mel) / ({{ compute_type }})(mel_bins + 2);
+
+    for (idx_t mel_idx = 0; mel_idx < mel_bin_count; ++mel_idx) {
+        const {{ compute_type }} left_mel = low_mel + mel_step * ({{ compute_type }})mel_idx;
+        const {{ compute_type }} center_mel = left_mel + mel_step;
+        const {{ compute_type }} right_mel = center_mel + mel_step;
+
+        const {{ compute_type }} left_hz =
+            ({{ seven_hundred_literal }})
+            * (({{ compute_type }})pow(({{ ten_literal }}), left_mel / ({{ mel_scale_literal }})) - ({{ one_literal }}));
+        const {{ compute_type }} center_hz =
+            ({{ seven_hundred_literal }})
+            * (({{ compute_type }})pow(({{ ten_literal }}), center_mel / ({{ mel_scale_literal }})) - ({{ one_literal }}));
+        const {{ compute_type }} right_hz =
+            ({{ seven_hundred_literal }})
+            * (({{ compute_type }})pow(({{ ten_literal }}), right_mel / ({{ mel_scale_literal }})) - ({{ one_literal }}));
+
+        int64_t left_bin = (int64_t)(((dft_len + 1) * left_hz) / ({{ compute_type }})sample_rate_value);
+        int64_t center_bin = (int64_t)(((dft_len + 1) * center_hz) / ({{ compute_type }})sample_rate_value);
+        int64_t right_bin = (int64_t)(((dft_len + 1) * right_hz) / ({{ compute_type }})sample_rate_value);
+
+        if (left_bin < 0) {
+            left_bin = 0;
+        }
+        if (center_bin < 0) {
+            center_bin = 0;
+        }
+        if (right_bin < 0) {
+            right_bin = 0;
+        }
+        if (left_bin >= (int64_t)freq_bin_count) {
+            left_bin = (int64_t)freq_bin_count - 1;
+        }
+        if (center_bin >= (int64_t)freq_bin_count) {
+            center_bin = (int64_t)freq_bin_count - 1;
+        }
+        if (right_bin >= (int64_t)freq_bin_count) {
+            right_bin = (int64_t)freq_bin_count - 1;
+        }
+
+        const int64_t rise = center_bin - left_bin;
+        if (rise == 0) {
+            if (center_bin >= 0 && center_bin < (int64_t)freq_bin_count) {
+                {{ output }}[(idx_t)center_bin][mel_idx] = ({{ c_type }})({{ one_literal }});
+            }
+        } else {
+            for (int64_t j = left_bin; j <= center_bin; ++j) {
+                const {{ compute_type }} value = ({{ compute_type }})(j - left_bin) / ({{ compute_type }})rise;
+                {{ output }}[(idx_t)j][mel_idx] = ({{ c_type }})value;
+            }
+        }
+
+        const int64_t fall = right_bin - center_bin;
+        if (fall > 0) {
+            for (int64_t j = center_bin; j < right_bin; ++j) {
+                const {{ compute_type }} value = ({{ compute_type }})(right_bin - j) / ({{ compute_type }})fall;
+                {{ output }}[(idx_t)j][mel_idx] = ({{ c_type }})value;
+            }
+        }
+    }
+}
