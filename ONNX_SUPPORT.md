@@ -7,7 +7,7 @@ Overview:
 
 | Test suite | Coverage | Version |
 | --- | --- | --- |
-| [Official ONNX test coverage](#official-onnx-test-coverage) | 1553 / 1802, 86.2% | 1.20.1 |
+| [Official ONNX test coverage](#official-onnx-test-coverage) | 1555 / 1802, 86.3% | 1.20.1 |
 | [ONNX2C test coverage](#onnx2c-test-coverage) | 123 / 125, 98.4% | n/a |
 | [Local ONNX test coverage](#local-onnx-test-coverage) | 6 / 7, 85.7% | n/a |
 
@@ -21,7 +21,7 @@ The `Verification` column uses `Input/Reference` notation (for example `Random/O
 
 Test directory: `onnx-org/onnx/backend/test/data`
 
-Coverage 1553 / 1802 ONNX files (86.2%).
+Coverage 1555 / 1802 ONNX files (86.3%).
 
 | File | Opset | Verification | Supported | Error |
 | --- | --- | --- | --- | --- |
@@ -286,8 +286,8 @@ Coverage 1553 / 1802 ONNX files (86.2%).
 | node/test_bitwise_and_ui64_bcast_3v1d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_and_ui8_bcast_4v3d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_not_2d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
-| node/test_bitwise_not_3d/model.onnx | 18 | Data | ❌ | Unsupported op BitwiseNot |
-| node/test_bitwise_not_4d/model.onnx | 18 | Data | ❌ | Unsupported op BitwiseNot |
+| node/test_bitwise_not_3d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
+| node/test_bitwise_not_4d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_or_i16_4d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_or_i32_2d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |
 | node/test_bitwise_or_ui64_bcast_3v1d/model.onnx | 18 | Data | ✅ | OK (max abs diff 0) |

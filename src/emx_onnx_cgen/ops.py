@@ -158,6 +158,12 @@ UNARY_SYMBOLS_INT8 = {
     ScalarFunction.SIGN: "sign",
 }
 
+UNARY_SYMBOLS_UINT = {
+    ScalarFunction.BITWISE_NOT: "bitwise_not",
+    ScalarFunction.POSITIVE: "identity",
+    ScalarFunction.ROUND: "round",
+}
+
 UNARY_SYMBOLS_DOUBLE = {
     ScalarFunction.ABS: "fabs",
     ScalarFunction.ACOS: "acos",
@@ -361,6 +367,10 @@ UNARY_SYMBOLS_BY_DTYPE = {
     ScalarType.I32: UNARY_SYMBOLS_INT32,
     ScalarType.I16: UNARY_SYMBOLS_INT16,
     ScalarType.I8: UNARY_SYMBOLS_INT8,
+    ScalarType.U64: UNARY_SYMBOLS_UINT,
+    ScalarType.U32: UNARY_SYMBOLS_UINT,
+    ScalarType.U16: UNARY_SYMBOLS_UINT,
+    ScalarType.U8: UNARY_SYMBOLS_UINT,
     ScalarType.F64: UNARY_SYMBOLS_DOUBLE,
     ScalarType.F32: UNARY_SYMBOLS_FLOAT,
     ScalarType.F16: UNARY_SYMBOLS_FLOAT,

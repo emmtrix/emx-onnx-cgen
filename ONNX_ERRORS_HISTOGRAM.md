@@ -36,7 +36,6 @@ Aggregates non-success verification outcomes.
 | Selu only supports alpha=1.6732632423543772 | 2 | 22 |
 | ThresholdedRelu only supports alpha=1.0 | 2 | 22 |
 | Unsupported op Adam | 2 |  |
-| Unsupported op BitwiseNot | 2 | 18 |
 | Unsupported op Det | 2 | 22 |
 | Unsupported op MaxUnpool | 2 | 22 |
 | Unsupported op STFT | 2 | 17 |
@@ -64,7 +63,6 @@ Aggregates non-success verification outcomes.
 | Unsupported op MelWeightMatrix | 17 | 1 |
 | Unsupported op Col2Im | 18 | 5 |
 | OptionalHasElement expects exactly one non-empty input. | 18 | 4 |
-| Unsupported op BitwiseNot | 18 | 2 |
 | Unsupported op ImageDecoder | 20 | 9 |
 | Unsupported op RegexFullMatch | 20 | 3 |
 | Gelu only supports approximate=none | 20 | 2 |
