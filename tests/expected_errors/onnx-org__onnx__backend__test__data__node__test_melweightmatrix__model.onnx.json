@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op MelWeightMatrix",
+  "error": "OK (max ULP 0)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_melweightmatrix model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "MelWeightMatrix"
   ],
-  "opset_version": 17
+  "opset_version": 17,
+  "generated_checksum": "eef0ee23ec31eb198eb414550aa05d884cf22efcfe0258c1d4a5491a1a94785a"
 }
