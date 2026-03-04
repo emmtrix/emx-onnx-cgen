@@ -1,9 +1,10 @@
 {
-  "error": "Unsupported op DFT",
+  "error": "OK (max ULP 4)",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_opset19 model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
     "DFT"
   ],
-  "opset_version": 19
+  "opset_version": 19,
+  "generated_checksum": "e4d34def2bc410f9f0c209697eb4b5a462a2abeb312643d3ef11f29db5b8c81e"
 }

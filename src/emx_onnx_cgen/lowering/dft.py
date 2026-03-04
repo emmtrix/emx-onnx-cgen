@@ -101,7 +101,9 @@ def lower_dft(graph: Graph | GraphContext, node: Node) -> DFTOp:
     inverse = bool(int(node.attrs.get("inverse", 0)))
     onesided = bool(int(node.attrs.get("onesided", 0)))
     if onesided and input_complex_lanes != 1:
-        raise UnsupportedOpError("DFT onesided output requires real input (last dim = 1)")
+        raise UnsupportedOpError(
+            "DFT onesided output requires real input (last dim = 1)"
+        )
 
     axis_value = int(node.attrs.get("axis", -2))
     axis_name = optional_name(node.inputs, 2)

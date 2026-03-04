@@ -1,5 +1,5 @@
 {
-  "error": "Unsupported op DFT",
+  "error": "DFT axis input must be a constant scalar for code generation",
   "command_line": "verify --sanitize --model-base-dir onnx-org/onnx/backend/test/data/node/test_dft_inverse model.onnx --test-data-dir test_data_set_0",
   "verification_mode": "Data",
   "operators": [
