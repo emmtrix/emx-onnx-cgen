@@ -206,6 +206,12 @@ ruff check .
 black .
 ```
 
+To detect potentially unused code in `src/`:
+
+```bash
+vulture
+```
+
 If the repository later adds explicit tool configuration in `pyproject.toml` (or dedicated config files), follow those settings.
 
 ---
